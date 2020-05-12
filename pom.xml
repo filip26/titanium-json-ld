@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+    >
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.apicatalog</groupId>
+    <artifactId>json-ld</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>JSON-LD</name>
+	
+    <description>
+    A JSON-LD Processor for Java
+    </description>
+    
+    <url>https://github.com/filip26/json-ld</url>
+    
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>    
+	
+    <distributionManagement>
+	    <repository>
+            <id>github</id>
+	        <name>GitHub filip26 Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/filip26/json-ld</url>
+        </repository>
+    </distributionManagement>
+
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/filip26/json-ld/issues</url>
+    </issueManagement>
+	
+    <scm>
+        <connection>scm:git:git://github.com/filip26/json-ld.git</connection>
+        <developerConnection>scm:git:git://github.com/filip26/json-ld.git</developerConnection>
+        <url>https://github.com/filip26/json-ld</url>
+    </scm>
+
+    <developers>
+        <developer>
+  	    <id>filip26</id>
+  	    <name>Filip Kolarik</name>
+  	    <email>filip26@gmail.com</email>
+  	    <roles><role>author</role></roles>
+        </developer>
+    </developers>
+    
+    <properties>
+        <maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.source>11</maven.compiler.source>
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+         
+        <junit.version>4.13</junit.version>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+                
+    </dependencies>
+
+    <build>		
+        <plugins>
+   			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>             
+		</plugins>
+    </build>
+</project>
