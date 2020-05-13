@@ -1,6 +1,7 @@
 package com.apicatalog.jsonld.impl;
 
-import com.apicatalog.json.JsonObject;
+import javax.json.JsonObject;
+
 import com.apicatalog.jsonld.JsonLdRecord;
 
 public class JsonLdObject implements JsonLdRecord {

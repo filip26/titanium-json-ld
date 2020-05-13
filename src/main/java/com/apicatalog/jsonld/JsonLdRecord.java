@@ -2,7 +2,8 @@ package com.apicatalog.jsonld;
 
 import java.util.Map;
 
-import com.apicatalog.json.JsonObject;
+import javax.json.JsonObject;
+
 import com.apicatalog.jsonld.impl.JsonLdObject;
 
 /**

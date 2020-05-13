@@ -3,7 +3,6 @@ package com.apicatalog.jsonld.impl;
 import java.util.Collection;
 import java.util.Collections;
 
-import com.apicatalog.json.JsonParser;
 import com.apicatalog.jsonld.JsonLdContext;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdInput;
@@ -15,12 +14,6 @@ import com.apicatalog.rdf.RdfDataset;
 
 public class DefaultJsonLdProcessor implements JsonLdProcessor {
 
-	private final JsonParser jsonParser;
-	
-	public DefaultJsonLdProcessor(JsonParser jsonParser) {
-		this.jsonParser = jsonParser;
-	}
-	
 	@Override
 	public JsonLdRecord compact(JsonLdInput input) throws JsonLdError {
 		return compact(input, JsonLdOptions.DEFAULT);
@@ -39,11 +32,8 @@ public class DefaultJsonLdProcessor implements JsonLdProcessor {
 	@Override
 	public JsonLdRecord compact(JsonLdInput input, JsonLdContext context, JsonLdOptions options) throws JsonLdError {
 
-		Collection<JsonLdRecord> records = input.getRecords(options, jsonParser);
-		
-		System.out.println("-> " + records);
-		
-		
+		Collection<JsonLdRecord> records = input.getRecords(options);
+				
 		return null;
 	}
 
@@ -55,7 +45,7 @@ public class DefaultJsonLdProcessor implements JsonLdProcessor {
 	@Override
 	public Collection<JsonLdRecord> expand(JsonLdInput input, JsonLdOptions options) throws JsonLdError {
 
-		final Collection<JsonLdRecord> records = input.getRecords(options, jsonParser);
+		final Collection<JsonLdRecord> records = input.getRecords(options);
 		
 		if (records.isEmpty()) {
 			return Collections.emptyList();
@@ -63,8 +53,6 @@ public class DefaultJsonLdProcessor implements JsonLdProcessor {
 		
 		JsonLdContext context = new JsonLdContextImpl();
 
-		System.out.println("-> " + records);
-				
 		return Expansion.expand(context, records, null, null);
 	}
 

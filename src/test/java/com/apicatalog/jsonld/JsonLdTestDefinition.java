@@ -1,5 +1,7 @@
 package com.apicatalog.jsonld;
 
+import javax.json.JsonObject;
+
 public class JsonLdTestDefinition {
 
 	public String id;
@@ -17,6 +19,17 @@ public class JsonLdTestDefinition {
 		expectErrorCode = errorCode.strip().toUpperCase().replace(" ", "_"); 
 		
 		return this;
+	}
+	
+	public static final JsonLdTestDefinition of(JsonObject o) {
+		final JsonLdTestDefinition testDefinition = new JsonLdTestDefinition();
+		testDefinition.id = o.getString("@id");
+		testDefinition.name = o.getString("name");
+		testDefinition.input = o.getString("input");
+		testDefinition.expect = o.getString("expect", null);
+		testDefinition.expectErrorCode(o.getString("expectErrorCode", null));
+		
+		return testDefinition;
 	}
 	
 }

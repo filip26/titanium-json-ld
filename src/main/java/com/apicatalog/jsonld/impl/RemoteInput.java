@@ -4,7 +4,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.Collection;
 
-import com.apicatalog.json.JsonParser;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdInput;
@@ -22,7 +21,7 @@ public class RemoteInput implements JsonLdInput {
 	}
 
 	@Override
-	public Collection<JsonLdRecord> getRecords(final JsonLdOptions options, final JsonParser jsonParser) throws JsonLdError {
+	public Collection<JsonLdRecord> getRecords(final JsonLdOptions options) throws JsonLdError {
 
 		if (options == null) {
 			throw new IllegalArgumentException();
@@ -35,7 +34,7 @@ public class RemoteInput implements JsonLdInput {
 			
 			final RemoteDocument remoteDocument = options.getDocumentLoader().get().loadDocument(uri.toURL(), new LoadDocumentOptions(options.isExtractAllScripts()));
 			
-			return remoteDocument.getDocument().parse(jsonParser);
+			return remoteDocument.getDocument().parse();
 			
 		} catch (MalformedURLException e) {
 			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
