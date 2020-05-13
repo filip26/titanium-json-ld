@@ -1,2 +1,2 @@
-# JSON-LD 1.1
-A processor and API for Java
+# JSON-P-LD 1.1 Processor
+
