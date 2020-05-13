@@ -20,7 +20,12 @@ public final class JsonLdError extends Throwable {
 		super(message);
 		this.code = code;
 	}
-	
+
+	public JsonLdError(JsonLdErrorCode code, Throwable cause) {
+		super(cause);
+		this.code = code;
+	}
+
 	public JsonLdErrorCode getCode() {
 		return code;
 	}

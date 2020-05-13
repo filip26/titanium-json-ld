@@ -2,6 +2,7 @@ package com.apicatalog.jsonld;
 
 import java.util.Optional;
 
+import com.apicatalog.jsonld.impl.DefaultDocumentLoader;
 import com.apicatalog.jsonld.remote.LoadDocumentCallback;
 
 /**
@@ -12,6 +13,12 @@ import com.apicatalog.jsonld.remote.LoadDocumentCallback;
  */
 public final class JsonLdOptions {
 
+    public static final String JSON_LD_1_0 = "json-ld-1.0";
+
+    public static final String JSON_LD_1_1 = "json-ld-1.1";
+	
+	public static final JsonLdOptions DEFAULT = new JsonLdOptions();
+	
 	private final String base;
 	private final boolean compactArrays;
 	private final boolean compactToRelative;
@@ -30,11 +37,11 @@ public final class JsonLdOptions {
 		this.base = null;
 		this.compactArrays = true;
 		this.compactToRelative = true;
-		this.documentLoader = null;
+		this.documentLoader = new DefaultDocumentLoader();
 		this.extractAllScripts = false;
 		this.frameExpansion = false;
 		this.ordered = false;
-		this.processingMode = "json-ld-1.1";
+		this.processingMode = JSON_LD_1_1;
 		this.produceGeneralizedRdf = true;
 		this.rdfDirection = null;
 		this.useNativeTypes = false;
