@@ -2,8 +2,8 @@ package com.apicatalog.jsonld;
 
 import java.util.Map;
 
+import com.apicatalog.json.JsonObject;
 import com.apicatalog.jsonld.impl.JsonLdObject;
-import com.apicatalog.jsonld.model.JsonObject;
 
 /**
  * The {@link JsonLdRecord} is the definition of a map used 

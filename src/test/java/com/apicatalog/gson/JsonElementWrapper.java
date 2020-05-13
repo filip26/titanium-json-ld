@@ -1,7 +1,8 @@
 package com.apicatalog.gson;
 
+import com.apicatalog.json.JsonArray;
 import com.apicatalog.json.JsonElement;
-import com.apicatalog.jsonld.model.JsonObject;
+import com.apicatalog.json.JsonObject;
 
 public class JsonElementWrapper implements JsonElement {
 
@@ -24,6 +25,11 @@ public class JsonElementWrapper implements JsonElement {
 	@Override
 	public JsonObject getAsJsonObject() {
 		return new JsonObjectWrapper(element.getAsJsonObject());
+	}
+
+	@Override
+	public JsonArray getAsJsonArray() {
+		return new JsonArrayWrapper(element.getAsJsonArray());
 	}
 
 }

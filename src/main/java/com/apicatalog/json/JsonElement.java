@@ -1,7 +1,5 @@
 package com.apicatalog.json;
 
-import com.apicatalog.jsonld.model.JsonObject;
-
 public interface JsonElement {
 
 	boolean isJsonArray();
@@ -9,5 +7,7 @@ public interface JsonElement {
 	boolean isJsonObject();
 
 	JsonObject getAsJsonObject();
+
+	JsonArray getAsJsonArray();
 
 }

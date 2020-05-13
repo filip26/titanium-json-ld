@@ -1,6 +1,6 @@
 package com.apicatalog.gson;
 
-import com.apicatalog.jsonld.model.JsonObject;
+import com.apicatalog.json.JsonObject;
 
 public class JsonObjectWrapper implements JsonObject {
 

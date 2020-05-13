@@ -1,7 +1,7 @@
 package com.apicatalog.jsonld.impl;
 
+import com.apicatalog.json.JsonObject;
 import com.apicatalog.jsonld.JsonLdRecord;
-import com.apicatalog.jsonld.model.JsonObject;
 
 public class JsonLdObject implements JsonLdRecord {
 

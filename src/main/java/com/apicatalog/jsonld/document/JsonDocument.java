@@ -1,8 +1,10 @@
 package com.apicatalog.jsonld.document;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import com.apicatalog.json.JsonArray;
 import com.apicatalog.json.JsonElement;
 import com.apicatalog.json.JsonParser;
 import com.apicatalog.jsonld.JsonLdError;
@@ -24,6 +26,20 @@ public class JsonDocument implements Document {
 		
 		if (root.isJsonArray()) {
 			
+			final JsonArray jsonArray = root.getAsJsonArray();
+			
+			final Collection<JsonLdRecord> records = new ArrayList<>(jsonArray.size());
+			
+			for (JsonElement jsonElement : jsonArray) {
+				
+				if (!jsonElement.isJsonObject()) {
+					throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+				}
+				
+				records.add(JsonLdRecord.of(jsonElement.getAsJsonObject()));
+			}
+			
+			return records;
 		}
 		
 		if (root.isJsonObject()) {
