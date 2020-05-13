@@ -2,8 +2,8 @@ package com.apicatalog.jsonld;
 
 import java.util.Optional;
 
+import com.apicatalog.jsonld.document.LoadDocumentCallback;
 import com.apicatalog.jsonld.impl.DefaultDocumentLoader;
-import com.apicatalog.jsonld.remote.LoadDocumentCallback;
 
 /**
  * The {@link JsonLdOptions} type is used to pass various options to the {@link JsonLdProcessor} methods.

@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.remote;
+package com.apicatalog.jsonld.document;
 
 import java.net.URL;
 

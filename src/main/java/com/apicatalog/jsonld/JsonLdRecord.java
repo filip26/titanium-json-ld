@@ -2,6 +2,9 @@ package com.apicatalog.jsonld;
 
 import java.util.Map;
 
+import com.apicatalog.jsonld.impl.JsonLdObject;
+import com.apicatalog.jsonld.model.JsonObject;
+
 /**
  * The {@link JsonLdRecord} is the definition of a map used 
  * to contain arbitrary map entries which are the result of 
@@ -14,5 +17,9 @@ public interface JsonLdRecord {
 
 	public static JsonLdRecord of(Map<String, Object> map) {
 		return null;
+	}	
+	
+	public static JsonLdRecord of(JsonObject jsonObject) {
+		return new JsonLdObject(jsonObject);
 	}
 }

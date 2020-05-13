@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.remote;
+package com.apicatalog.jsonld.document;
 
 import java.net.URL;
 
@@ -9,7 +9,7 @@ import java.net.URL;
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#remotedocument">RemoteDocument Specification</a>
  *
  */
-public interface RemoteDocument<T> {
+public interface RemoteDocument {
 
 	/**
 	 * The <a href="https://tools.ietf.org/html/rfc2045#section-5">Content-Type</a>
@@ -44,5 +44,5 @@ public interface RemoteDocument<T> {
 	 * 
 	 * @return
 	 */
-	T getDocument();
+	Document getDocument();
 }

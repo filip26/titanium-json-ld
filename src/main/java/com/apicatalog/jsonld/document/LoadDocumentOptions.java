@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.remote;
+package com.apicatalog.jsonld.document;
 
 /**
  * The {@link LoadDocumentOptions} type is used to pass various options to the {@link LoadDocumentCallback}.

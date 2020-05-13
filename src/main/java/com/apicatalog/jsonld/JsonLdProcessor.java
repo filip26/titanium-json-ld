@@ -34,9 +34,9 @@ public interface JsonLdProcessor {
 	 */
 	JsonLdRecord compact(JsonLdInput input, JsonLdContext context, JsonLdOptions options) throws JsonLdError;
 
-	Collection<JsonLdRecord> expand(JsonLdInput input);
+	Collection<JsonLdRecord> expand(JsonLdInput input) throws JsonLdError;
 	
-	Collection<JsonLdRecord> expand(JsonLdInput input, JsonLdOptions options);
+	Collection<JsonLdRecord> expand(JsonLdInput input, JsonLdOptions options) throws JsonLdError;
 	
 	JsonLdRecord flatten(JsonLdInput input);
 	
