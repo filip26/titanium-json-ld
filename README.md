@@ -1,2 +1,2 @@
-# JSONP-LD 1.1 Processor
+# JSON-LD 1.1 Processor
 
