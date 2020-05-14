@@ -1,7 +1,9 @@
 package com.apicatalog.jsonld;
 
+import java.util.Collection;
+
+import javax.json.JsonArray;
 import javax.json.JsonObject;
-import javax.json.JsonValue;
 
 import com.apicatalog.rdf.RdfDataset;
 
@@ -35,9 +37,21 @@ public interface JsonLdProcessor {
 	 */
 	JsonObject compact(JsonLdInput input, JsonLdContext context, JsonLdOptions options) throws JsonLdError;
 
-	JsonValue expand(JsonLdInput input) throws JsonLdError;
-	
-	JsonValue expand(JsonLdInput input, JsonLdOptions options) throws JsonLdError;
+	/**
+	 * 
+	 * @param input
+	 * @return {@link JsonArray} of {@link JsonObject}
+	 * @throws JsonLdError
+	 */
+	JsonArray expand(JsonLdInput input) throws JsonLdError;
+
+	/**
+	 * 
+	 * @param input
+	 * @return {@link JsonArray} of {@link JsonObject}
+	 * @throws JsonLdError
+	 */
+	JsonArray expand(JsonLdInput input, JsonLdOptions options) throws JsonLdError;
 	
 	JsonObject flatten(JsonLdInput input);
 	
@@ -47,9 +61,21 @@ public interface JsonLdProcessor {
 	
 	JsonObject flatten(JsonLdInput input, JsonLdContext context, JsonLdOptions options);
 	
-	JsonValue fromRdf(RdfDataset input);
+	/**
+	 * 
+	 * @param input
+	 * @return {@link Collection} of {@link JsonObject}
+	 * @throws JsonLdError
+	 */
+	Collection<JsonObject> fromRdf(RdfDataset input);
 	
-	JsonValue fromRdf(RdfDataset input, JsonLdOptions options);
+	/**
+	 * 
+	 * @param input
+	 * @return {@link Collection} of {@link JsonObject}
+	 * @throws JsonLdError
+	 */
+	Collection<JsonObject> fromRdf(RdfDataset input, JsonLdOptions options);
 	
 	RdfDataset toRdf(JsonLdInput input);
 	

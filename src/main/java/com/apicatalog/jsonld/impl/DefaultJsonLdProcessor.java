@@ -1,7 +1,13 @@
 package com.apicatalog.jsonld.impl;
 
+
+import java.util.Collection;
+
+import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
+import javax.json.JsonValue.ValueType;
 
 import com.apicatalog.jsonld.JsonLdContext;
 import com.apicatalog.jsonld.JsonLdError;
@@ -35,18 +41,31 @@ public class DefaultJsonLdProcessor implements JsonLdProcessor {
 	}
 
 	@Override
-	public JsonValue expand(JsonLdInput input) throws JsonLdError {
+	public JsonArray expand(JsonLdInput input) throws JsonLdError {
 		return expand(input, JsonLdOptions.DEFAULT);
 	}
 
 	@Override
-	public JsonValue expand(JsonLdInput input, JsonLdOptions options) throws JsonLdError {
+	public JsonArray expand(JsonLdInput input, JsonLdOptions options) throws JsonLdError {
 
-		final JsonValue records = input.toJsonValue(options);
+		final JsonValue jsonValue = input.asJsonValue(options);
 				
 		JsonLdContext context = new JsonLdContextImpl();
 
-		return Expansion.expand(context, records, null, null);
+		final JsonValue expanded = Expansion.expand(context, jsonValue, null, null);
+		
+		// 8.1
+		if (ValueType.OBJECT.equals(expanded.getValueType())) {
+			//TODO
+		}
+		
+		// 8.2
+		if (ValueType.NULL.equals(expanded.getValueType())) {
+			return JsonValue.EMPTY_JSON_ARRAY;
+		}
+		
+		// 8.3
+		return Json.createArrayBuilder().add(expanded).build();
 	}
 
 	@Override
@@ -74,13 +93,13 @@ public class DefaultJsonLdProcessor implements JsonLdProcessor {
 	}
 
 	@Override
-	public JsonValue fromRdf(RdfDataset input) {
+	public Collection<JsonObject> fromRdf(RdfDataset input) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public JsonValue fromRdf(RdfDataset input, JsonLdOptions options) {
+	public Collection<JsonObject> fromRdf(RdfDataset input, JsonLdOptions options) {
 		// TODO Auto-generated method stub
 		return null;
 	}

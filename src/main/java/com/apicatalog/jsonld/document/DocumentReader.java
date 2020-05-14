@@ -1,6 +1,6 @@
 package com.apicatalog.jsonld.document;
 
-import java.io.StringReader;
+import java.io.Reader;
 
 import javax.json.Json;
 import javax.json.JsonValue;
@@ -10,18 +10,18 @@ import javax.json.stream.JsonParser;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 
-public class JsonDocument implements Document {
+public class DocumentReader implements Document {
 
-	private final String json;
+	private final Reader reader;
 	
-	public JsonDocument(final String json) {
-		this.json = json;
+	public DocumentReader(final Reader reader) {
+		this.reader = reader;
 	}
 	
 	@Override
-	public JsonValue parse() throws JsonLdError {
+	public JsonValue asJsonValue() throws JsonLdError {
 
-	   try (final JsonParser parser = Json.createParser(new StringReader(json))) {
+	   try (final JsonParser parser = Json.createParser(reader)) {
 		
 		   if (!parser.hasNext()) {
 			   throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
@@ -32,23 +32,7 @@ public class JsonDocument implements Document {
 		   JsonValue root = parser.getValue();
 			
 			if (ValueType.ARRAY.equals(root.getValueType())) {
-				
 				return root.asJsonArray();
-				
-//				jsonArray.stream().
-//				
-//				final Collection<JsonLdRecord> records = new ArrayList<>(jsonArray.size());
-//				
-//				for (JsonValue item : jsonArray) {
-//					
-//					if (!ValueType.OBJECT.equals(item.getValueType())) {
-//						throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
-//					}
-//					
-//					records.add(JsonLdRecord.of(item.asJsonObject()));
-//				}
-//				
-//				return records;
 			}
 			
 			if (ValueType.OBJECT.equals(root.getValueType())) {

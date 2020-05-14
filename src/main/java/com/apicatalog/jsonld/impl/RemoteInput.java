@@ -21,7 +21,7 @@ public class RemoteInput implements JsonLdInput {
 	}
 
 	@Override
-	public JsonValue toJsonValue(final JsonLdOptions options) throws JsonLdError {
+	public JsonValue asJsonValue(final JsonLdOptions options) throws JsonLdError {
 
 		if (options == null) {
 			throw new IllegalArgumentException();
@@ -34,7 +34,7 @@ public class RemoteInput implements JsonLdInput {
 			
 			final RemoteDocument remoteDocument = options.getDocumentLoader().get().loadDocument(uri.toURL(), new LoadDocumentOptions(options.isExtractAllScripts()));
 			
-			return remoteDocument.getDocument().parse();
+			return remoteDocument.getDocument().asJsonValue();
 			
 		} catch (MalformedURLException e) {
 			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);

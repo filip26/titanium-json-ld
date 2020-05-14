@@ -3,7 +3,7 @@ package com.apicatalog.jsonld;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.document.LoadDocumentCallback;
-import com.apicatalog.jsonld.impl.DefaultDocumentLoader;
+import com.apicatalog.jsonld.impl.UrlConnectionLoader;
 
 /**
  * The {@link JsonLdOptions} type is used to pass various options to the {@link JsonLdProcessor} methods.
@@ -37,7 +37,7 @@ public final class JsonLdOptions {
 		this.base = null;
 		this.compactArrays = true;
 		this.compactToRelative = true;
-		this.documentLoader = new DefaultDocumentLoader();
+		this.documentLoader = new UrlConnectionLoader();
 		this.extractAllScripts = false;
 		this.frameExpansion = false;
 		this.ordered = false;

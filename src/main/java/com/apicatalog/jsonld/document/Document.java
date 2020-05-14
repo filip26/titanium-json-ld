@@ -6,6 +6,6 @@ import com.apicatalog.jsonld.JsonLdError;
 
 public interface Document {
 	
-	JsonValue parse() throws JsonLdError;
+	JsonValue asJsonValue() throws JsonLdError;
 	
 }

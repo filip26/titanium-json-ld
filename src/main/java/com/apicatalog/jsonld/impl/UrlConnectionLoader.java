@@ -1,21 +1,19 @@
 package com.apicatalog.jsonld.impl;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.document.DocumentReader;
 import com.apicatalog.jsonld.document.LoadDocumentCallback;
 import com.apicatalog.jsonld.document.LoadDocumentOptions;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.document.RemoteDocumentImpl;
 
-public class DefaultDocumentLoader implements LoadDocumentCallback {
+public class UrlConnectionLoader implements LoadDocumentCallback {
 
 	@Override
 	public RemoteDocument loadDocument(final URL url, final LoadDocumentOptions options) throws JsonLdError {
@@ -30,13 +28,10 @@ public class DefaultDocumentLoader implements LoadDocumentCallback {
 			urlConnection.connect();
 			
 			//TODO String contentType = urlConnection.getContentType();
-						
-			String text = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))
-					  .lines().collect(Collectors.joining("\n"));
-			
+
 			RemoteDocumentImpl remoteDocument = new RemoteDocumentImpl();
 			
-			JsonDocument document = new JsonDocument(text);
+			DocumentReader document = new DocumentReader(new InputStreamReader(urlConnection.getInputStream()));
 			
 			remoteDocument.setDocument(document);
 			
