@@ -1,7 +1,8 @@
 package com.apicatalog.jsonld;
 
-import java.net.URI;
 import java.util.Map;
+
+import javax.json.JsonObject;
 
 /**
  * The {@link JsonLdContext} interface is used to refer to a value 
@@ -15,7 +16,7 @@ import java.util.Map;
 public interface JsonLdContext {
 
 
-	public static JsonLdContext of(JsonLdRecord...records) {
+	public static JsonLdContext of(JsonObject...records) {
 		return null;
 	}
 

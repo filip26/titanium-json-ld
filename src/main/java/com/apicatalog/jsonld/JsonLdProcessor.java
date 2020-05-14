@@ -1,6 +1,7 @@
 package com.apicatalog.jsonld;
 
-import java.util.Collection;
+import javax.json.JsonObject;
+import javax.json.JsonValue;
 
 import com.apicatalog.rdf.RdfDataset;
 
@@ -13,11 +14,11 @@ import com.apicatalog.rdf.RdfDataset;
  */
 public interface JsonLdProcessor {
 
-	JsonLdRecord compact(JsonLdInput input) throws JsonLdError;
+	JsonObject compact(JsonLdInput input) throws JsonLdError;
 	
-	JsonLdRecord compact(JsonLdInput input, JsonLdContext context) throws JsonLdError;
+	JsonObject compact(JsonLdInput input, JsonLdContext context) throws JsonLdError;
 	
-	JsonLdRecord compact(JsonLdInput input, JsonLdOptions options) throws JsonLdError;
+	JsonObject compact(JsonLdInput input, JsonLdOptions options) throws JsonLdError;
 	
 	/**
 	 * This algorithm compacts a JSON-LD document, such that the given context is applied. 
@@ -32,23 +33,23 @@ public interface JsonLdProcessor {
 	 * @param options
 	 * @return
 	 */
-	JsonLdRecord compact(JsonLdInput input, JsonLdContext context, JsonLdOptions options) throws JsonLdError;
+	JsonObject compact(JsonLdInput input, JsonLdContext context, JsonLdOptions options) throws JsonLdError;
 
-	Collection<JsonLdRecord> expand(JsonLdInput input) throws JsonLdError;
+	JsonValue expand(JsonLdInput input) throws JsonLdError;
 	
-	Collection<JsonLdRecord> expand(JsonLdInput input, JsonLdOptions options) throws JsonLdError;
+	JsonValue expand(JsonLdInput input, JsonLdOptions options) throws JsonLdError;
 	
-	JsonLdRecord flatten(JsonLdInput input);
+	JsonObject flatten(JsonLdInput input);
 	
-	JsonLdRecord flatten(JsonLdInput input, JsonLdContext context);
+	JsonObject flatten(JsonLdInput input, JsonLdContext context);
 	
-	JsonLdRecord flatten(JsonLdInput input, JsonLdOptions options);
+	JsonObject flatten(JsonLdInput input, JsonLdOptions options);
 	
-	JsonLdRecord flatten(JsonLdInput input, JsonLdContext context, JsonLdOptions options);
+	JsonObject flatten(JsonLdInput input, JsonLdContext context, JsonLdOptions options);
 	
-	Collection<JsonLdRecord> fromRdf(RdfDataset input);
+	JsonValue fromRdf(RdfDataset input);
 	
-	Collection<JsonLdRecord> fromRdf(RdfDataset input, JsonLdOptions options);
+	JsonValue fromRdf(RdfDataset input, JsonLdOptions options);
 	
 	RdfDataset toRdf(JsonLdInput input);
 	

@@ -1,7 +1,9 @@
 package com.apicatalog.jsonld;
 
 import java.net.URI;
-import java.util.Collection;
+
+import javax.json.JsonObject;
+import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.impl.RemoteInput;
@@ -18,9 +20,9 @@ import com.apicatalog.jsonld.impl.RemoteInput;
  */
 public interface JsonLdInput {
 
-	Collection<JsonLdRecord> getRecords(final JsonLdOptions options) throws JsonLdError;
+	JsonValue toJsonValue(final JsonLdOptions options) throws JsonLdError;
 	
-	public static JsonLdInput of(JsonLdRecord...records) {
+	public static JsonLdInput of(JsonObject...records) {
 		return null;
 	}
 

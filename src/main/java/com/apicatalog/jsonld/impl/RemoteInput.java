@@ -2,13 +2,13 @@ package com.apicatalog.jsonld.impl;
 
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.util.Collection;
+
+import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdInput;
 import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.JsonLdRecord;
 import com.apicatalog.jsonld.document.LoadDocumentOptions;
 import com.apicatalog.jsonld.document.RemoteDocument;
 
@@ -21,7 +21,7 @@ public class RemoteInput implements JsonLdInput {
 	}
 
 	@Override
-	public Collection<JsonLdRecord> getRecords(final JsonLdOptions options) throws JsonLdError {
+	public JsonValue toJsonValue(final JsonLdOptions options) throws JsonLdError {
 
 		if (options == null) {
 			throw new IllegalArgumentException();

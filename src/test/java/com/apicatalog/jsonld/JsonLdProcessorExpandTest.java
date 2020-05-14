@@ -39,7 +39,7 @@ public class JsonLdProcessorExpandTest {
 		
 		final JsonLdProcessor processor = new DefaultJsonLdProcessor();
 		
-		Collection<JsonLdRecord> result = null;
+		JsonValue result = null;
 		
 		try {
 			result = processor.expand(JsonLdInput.of(inputPath.toUri()));
