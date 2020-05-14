@@ -1,11 +1,11 @@
 package com.apicatalog.jsonld.document;
 
-import javax.json.JsonValue;
+import javax.json.JsonStructure;
 
 import com.apicatalog.jsonld.JsonLdError;
 
 public interface Document {
 	
-	JsonValue asJsonValue() throws JsonLdError;
+	JsonStructure asJsonStructure() throws JsonLdError;
 	
 }

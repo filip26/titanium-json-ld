@@ -2,16 +2,17 @@ package com.apicatalog.jsonld;
 
 import java.net.URI;
 
+import javax.json.JsonArray;
 import javax.json.JsonObject;
-import javax.json.JsonValue;
+import javax.json.JsonStructure;
 
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.impl.RemoteInput;
+import com.apicatalog.jsonld.input.JsonStructureInput;
+import com.apicatalog.jsonld.input.RemoteLocation;
 
 /**
  * The {@link JsonLdInput} interface is used to refer to an 
- * input value that that may be a {@link JsonObject}, 
- * a sequence of {@link JsonObject}, {@link URI},
+ * input value that that may be a {@link JsonStructure}, {@link URI},
  * which can be dereferenced to retrieve a valid JSON document, or 
  * an already dereferenced {@link RemoteDocument}.
  * 
@@ -20,14 +21,31 @@ import com.apicatalog.jsonld.impl.RemoteInput;
  */
 public interface JsonLdInput {
 
-	JsonValue asJsonValue(final JsonLdOptions options) throws JsonLdError;
+	public enum Type {
+		RECORD,
+		ARRAY,
+		LOCATION,
+		DOCUMENT
+	}
 	
-	public static JsonLdInput of(JsonObject...objects) {
-		return null;
+	Type getType();
+	
+//	JsonObject asRecord();
+//	
+//	JsonArray asSequence();
+//	
+//	URI asUri();
+//	
+//	RemoteDocument asDocument();
+	
+//	JsonValue asJsonValue(final JsonLdOptions options) throws JsonLdError;
+	
+	public static JsonLdInput of(JsonStructure jsonStructure) {
+		return new JsonStructureInput(jsonStructure);
 	}
 
 	public static JsonLdInput of(URI documentUri) {
-		return new RemoteInput(documentUri);
+		return new RemoteLocation(documentUri);
 	}
 
 	public static JsonLdInput of(RemoteDocument remoteDocument) {

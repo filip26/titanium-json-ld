@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.model;
+package com.apicatalog.jsonld.impl;
 
 public final class Keyword implements PropertyName {
 
@@ -7,6 +7,8 @@ public final class Keyword implements PropertyName {
 	public static final Keyword CONTAINER = new Keyword("@container");
 	
 	public static final Keyword CONTEXT = new Keyword("@context");
+	
+//	public static final Keyword DEFAULT = new Keyword("@default");
 	
 	public static final Keyword DIRECTION = new Keyword("@direction");
 	
@@ -54,7 +56,7 @@ public final class Keyword implements PropertyName {
 		this.name = name;
 	}
 	
-	public String getName() {
+	public String name() {
 		return name;
 	}
 }

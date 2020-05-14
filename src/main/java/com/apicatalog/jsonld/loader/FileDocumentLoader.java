@@ -1,39 +1,30 @@
-package com.apicatalog.jsonld.impl;
+package com.apicatalog.jsonld.loader;
 
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
-import java.net.URLConnection;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.DocumentReader;
-import com.apicatalog.jsonld.document.LoadDocumentCallback;
-import com.apicatalog.jsonld.document.LoadDocumentOptions;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.document.RemoteDocumentImpl;
 
-public class UrlConnectionLoader implements LoadDocumentCallback {
+public class FileDocumentLoader implements LoadDocumentCallback {
 
 	@Override
 	public RemoteDocument loadDocument(final URL url, final LoadDocumentOptions options) throws JsonLdError {
+
+		if (!"file".equalsIgnoreCase(url.getProtocol())) {
+			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+		}
 		
 		try {
+			DocumentReader document = new DocumentReader(new FileReader(url.getFile()));
 			
-			URLConnection urlConnection = url.openConnection();
-			
-			urlConnection.setDoInput(false);
-			urlConnection.setDoOutput(false);
-			
-			urlConnection.connect();
-			
-			//TODO String contentType = urlConnection.getContentType();
-
 			RemoteDocumentImpl remoteDocument = new RemoteDocumentImpl();
-			
-			DocumentReader document = new DocumentReader(new InputStreamReader(urlConnection.getInputStream()));
-			
 			remoteDocument.setDocument(document);
+			remoteDocument.setDocumentUrl(url);
 			
 			return remoteDocument;
 	

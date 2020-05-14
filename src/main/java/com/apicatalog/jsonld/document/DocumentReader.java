@@ -3,6 +3,7 @@ package com.apicatalog.jsonld.document;
 import java.io.Reader;
 
 import javax.json.Json;
+import javax.json.JsonStructure;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
 import javax.json.stream.JsonParser;
@@ -19,7 +20,7 @@ public class DocumentReader implements Document {
 	}
 	
 	@Override
-	public JsonValue asJsonValue() throws JsonLdError {
+	public JsonStructure asJsonStructure() throws JsonLdError {
 
 	   try (final JsonParser parser = Json.createParser(reader)) {
 		

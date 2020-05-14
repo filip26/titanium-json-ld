@@ -42,7 +42,7 @@ public class JsonLdProcessorExpandTest {
 		JsonValue result = null;
 		
 		try {
-			result = processor.expand(JsonLdInput.of(inputPath.toUri()));
+			result = processor.expand(inputPath.toUri(), JsonLdOptions.DEFAULT);
 			
 			if (testDefinition.expectErrorCode != null) {
 				Assert.fail("Expected '" + testDefinition.expectErrorCode + "' error code");

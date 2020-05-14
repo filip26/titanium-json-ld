@@ -2,6 +2,8 @@ package com.apicatalog.jsonld.document;
 
 import java.net.URL;
 
+import com.apicatalog.jsonld.loader.LoadDocumentCallback;
+
 /**
  * The {@link RemoteDocument} is used by a {@link LoadDocumentCallback}
  * to return information about a remote document or context.

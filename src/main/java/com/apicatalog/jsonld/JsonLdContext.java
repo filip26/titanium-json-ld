@@ -1,5 +1,6 @@
 package com.apicatalog.jsonld;
 
+import java.util.Collection;
 import java.util.Map;
 
 import javax.json.JsonObject;
@@ -15,16 +16,17 @@ import javax.json.JsonObject;
  */
 public interface JsonLdContext {
 
+	public Collection<JsonLdContext> getContexts();
 
-	public static JsonLdContext of(JsonObject...records) {
-		return null;
-	}
-
-	public static JsonLdContext of(Map<String, Object>...maps) {
-		return null;
-	}
-
-	public static JsonLdContext of(String...iris) {
-		return null;
-	}
+//	public static JsonLdContext of(JsonObject...objects) {
+//		return null;
+//	}
+//
+//	public static JsonLdContext of(Map<String, Object>...maps) {
+//		return null;
+//	}
+//
+//	public static JsonLdContext of(String...iris) {
+//		return null;
+//	}
 }

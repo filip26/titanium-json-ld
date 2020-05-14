@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.model;
+package com.apicatalog.jsonld.impl;
 
 public final class Term implements PropertyName {
 
@@ -26,7 +26,7 @@ public final class Term implements PropertyName {
 	}
 	
 	@Override
-	public String getName() {
+	public String name() {
 		return name;
 	}
 	

@@ -1,10 +1,13 @@
 package com.apicatalog.jsonld;
 
+import java.net.URI;
 import java.util.Collection;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+import javax.json.JsonStructure;
 
+import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.rdf.RdfDataset;
 
 /**
@@ -37,21 +40,13 @@ public interface JsonLdProcessor {
 	 */
 	JsonObject compact(JsonLdInput input, JsonLdContext context, JsonLdOptions options) throws JsonLdError;
 
-	/**
-	 * 
-	 * @param input
-	 * @return {@link JsonArray} of {@link JsonObject}
-	 * @throws JsonLdError
-	 */
-	JsonArray expand(JsonLdInput input) throws JsonLdError;
+	
+	JsonArray expand(JsonStructure input, JsonLdOptions options) throws JsonLdError;
+	
+	JsonArray expand(RemoteDocument input, JsonLdOptions options) throws JsonLdError;
 
-	/**
-	 * 
-	 * @param input
-	 * @return {@link JsonArray} of {@link JsonObject}
-	 * @throws JsonLdError
-	 */
-	JsonArray expand(JsonLdInput input, JsonLdOptions options) throws JsonLdError;
+	JsonArray expand(URI input, JsonLdOptions options) throws JsonLdError;
+
 	
 	JsonObject flatten(JsonLdInput input);
 	

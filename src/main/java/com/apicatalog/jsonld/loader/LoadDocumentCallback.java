@@ -1,8 +1,9 @@
-package com.apicatalog.jsonld.document;
+package com.apicatalog.jsonld.loader;
 
 import java.net.URL;
 
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.document.RemoteDocument;
 
 /**
  *  The {@link LoadDocumentCallback} defines a callback that custom document 

@@ -1,9 +1,10 @@
 package com.apicatalog.jsonld;
 
+import java.net.URI;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.document.LoadDocumentCallback;
-import com.apicatalog.jsonld.impl.UrlConnectionLoader;
+import com.apicatalog.jsonld.loader.LoadDocumentCallback;
+import com.apicatalog.jsonld.loader.FileDocumentLoader;
 
 /**
  * The {@link JsonLdOptions} type is used to pass various options to the {@link JsonLdProcessor} methods.
@@ -19,7 +20,7 @@ public final class JsonLdOptions {
 	
 	public static final JsonLdOptions DEFAULT = new JsonLdOptions();
 	
-	private final String base;
+	private final URI baseUri;
 	private final boolean compactArrays;
 	private final boolean compactToRelative;
 	private final LoadDocumentCallback documentLoader;
@@ -34,10 +35,10 @@ public final class JsonLdOptions {
 	private final boolean useRdfType;
 	
 	protected JsonLdOptions() {
-		this.base = null;
+		this.baseUri = null;
 		this.compactArrays = true;
 		this.compactToRelative = true;
-		this.documentLoader = new UrlConnectionLoader();
+		this.documentLoader = new FileDocumentLoader();
 		this.extractAllScripts = false;
 		this.frameExpansion = false;
 		this.ordered = false;
@@ -55,8 +56,8 @@ public final class JsonLdOptions {
 	 * 
 	 * @return
 	 */
-	public Optional<String> getBase() {
-		return Optional.ofNullable(base);
+	public URI getBaseURI() {
+		return baseUri;
 	}
 	
 	/**
@@ -73,7 +74,7 @@ public final class JsonLdOptions {
 	}
 	
 	/**
-	 * Determines if IRIs are compacted relative to the {@link #getBase()} 
+	 * Determines if IRIs are compacted relative to the {@link #getBaseURI()} 
 	 * option or document location when <a href="https://www.w3.org/TR/json-ld11-api/#dfn-compact">compacting</a>.
 	 * 
 	 * @return

@@ -1,13 +1,12 @@
 package com.apicatalog.jsonld.impl;
 
 
+import java.net.URI;
 import java.util.Collection;
 
-import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
-import javax.json.JsonValue;
-import javax.json.JsonValue.ValueType;
+import javax.json.JsonStructure;
 
 import com.apicatalog.jsonld.JsonLdContext;
 import com.apicatalog.jsonld.JsonLdError;
@@ -15,6 +14,7 @@ import com.apicatalog.jsonld.JsonLdInput;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdProcessor;
 import com.apicatalog.jsonld.alg.Expansion;
+import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.rdf.RdfDataset;
 
 public class DefaultJsonLdProcessor implements JsonLdProcessor {
@@ -41,31 +41,18 @@ public class DefaultJsonLdProcessor implements JsonLdProcessor {
 	}
 
 	@Override
-	public JsonArray expand(JsonLdInput input) throws JsonLdError {
-		return expand(input, JsonLdOptions.DEFAULT);
+	public JsonArray expand(final JsonStructure input, final JsonLdOptions options) throws JsonLdError {
+		return Expansion.expand(input, options);
 	}
 
 	@Override
-	public JsonArray expand(JsonLdInput input, JsonLdOptions options) throws JsonLdError {
+	public JsonArray expand(final URI input, final JsonLdOptions options) throws JsonLdError {
+		return Expansion.expand(input, options);
+	}
 
-		final JsonValue jsonValue = input.asJsonValue(options);
-				
-		JsonLdContext context = new JsonLdContextImpl();
-
-		final JsonValue expanded = Expansion.expand(context, jsonValue, null, null);
-		
-		// 8.1
-		if (ValueType.OBJECT.equals(expanded.getValueType())) {
-			//TODO
-		}
-		
-		// 8.2
-		if (ValueType.NULL.equals(expanded.getValueType())) {
-			return JsonValue.EMPTY_JSON_ARRAY;
-		}
-		
-		// 8.3
-		return Json.createArrayBuilder().add(expanded).build();
+	@Override
+	public JsonArray expand(RemoteDocument input, final JsonLdOptions options) throws JsonLdError {
+		return Expansion.expand(input, options);
 	}
 
 	@Override
