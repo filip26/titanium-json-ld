@@ -97,7 +97,7 @@ public final class UriExpansion {
 			
 			// 5. If vocab is true and the active context has a term definition for value, return the associated IRI mapping
 			if (vocab) {
-				return Optional.of(termDefinition.getUriMapping());
+				return Optional.ofNullable(termDefinition.getUriMapping());
 			}
 		}
 		
