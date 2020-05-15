@@ -6,11 +6,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
+import javax.json.JsonWriter;
+import javax.json.JsonWriterFactory;
+import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
 
 import org.junit.Assert;
@@ -32,9 +37,16 @@ public class JsonLdProcessorExpandTest {
 	@Parameterized.Parameter(2)
 	public String testName;
 		
+
+	
 	@Test
 	public void testExpand() throws IOException, JsonLdError {
-		
+
+		Map<String, Object> properties = new HashMap<>(1);
+		properties.put(JsonGenerator.PRETTY_PRINTING, true);
+
+		JsonWriterFactory writerFactory = Json.createWriterFactory(properties);
+
 		final Path inputPath = Paths.get("src","test","resources", "json-ld-test-suite", testDefinition.input);
 		
 		final JsonLdProcessor processor = new DefaultJsonLdProcessor();
@@ -63,6 +75,10 @@ public class JsonLdProcessorExpandTest {
 			parser.next();
 			
 			final JsonValue expected = parser.getValue();
+			
+			JsonWriter jsonWriter2 = writerFactory.createWriter(System.out);
+			jsonWriter2.write(result);
+			jsonWriter2.close();
 			
 			Assert.assertEquals(expected, result);
 

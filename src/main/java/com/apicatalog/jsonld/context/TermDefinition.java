@@ -10,7 +10,7 @@ import com.apicatalog.jsonld.grammar.DirectionType;
 public class TermDefinition {
 
 	// mandatory
-	URI uriMapping;
+	String uriMapping;
 	
 	boolean prefixFlag;
 	
@@ -48,4 +48,14 @@ public class TermDefinition {
 	public void setBaseUrl(URI baseUrl) {
 		this.baseUrl = baseUrl;
 	}
+	
+	public String getUriMapping() {
+		return uriMapping;
+	}
+
+	public void setUriMapping(String uriMapping) {
+		this.uriMapping = uriMapping;
+		
+	}
+	
 }

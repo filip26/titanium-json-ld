@@ -3,9 +3,11 @@ package com.apicatalog.jsonld.expansion;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.json.JsonObject;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.grammar.Keywords;
 /**
  * 
@@ -23,7 +25,7 @@ public final class UriExpansion {
 	private boolean documentRelative;
 	private boolean vocab;
 	
-	private JsonValue localContext;
+	private JsonObject localContext;
 	private Map defined;	//TODO
 		
 	private UriExpansion(final ActiveContext activeContext, final String value) {
@@ -51,7 +53,7 @@ public final class UriExpansion {
 		return this;
 	}
 
-	public UriExpansion localContext(JsonValue value) {
+	public UriExpansion localContext(JsonObject value) {
 		this.localContext = value;
 		return this;
 	}
@@ -61,7 +63,7 @@ public final class UriExpansion {
 		return this;
 	}
 	
-	public Optional<String> expand() {
+	public Optional<String> compute() {
 		
 		// 1. If value is a keyword or null, return value as is.
 		if (value == null || Keywords.contains(value)) {
@@ -85,15 +87,21 @@ public final class UriExpansion {
 			//TODO
 		}
 		
-		// 4. f active context has a term definition for value, and the associated IRI mapping is a keyword, return that keyword.
+		// 4. if active context has a term definition for value, 
+		//	  and the associated IRI mapping is a keyword, return that keyword.
 		if (activeContext.containsTerm(value)) {
+			
+			TermDefinition termDefinition = activeContext.getTerm(value);
+//			System.out.println("        " + value + ", " + termDefinition.getUriMapping() + ", " + vocab);
 			//TODO
 			
 			// 5. If vocab is true and the active context has a term definition for value, return the associated IRI mapping
 			if (vocab) {
-				//TODO
+				return Optional.of(termDefinition.getUriMapping());
 			}
 		}
+		
+//		System.out.println("        " + value + ", " + vocab + ", " + documentRelative);
 		
 		// 6. If value contains a colon (:) anywhere after the first character, it is either an IRI, 
 		//    a compact IRI, or a blank node identifier
@@ -105,11 +113,13 @@ public final class UriExpansion {
 		//    return the result of concatenating the vocabulary mapping with value.
 		if (vocab) {
 			//TODO
+			
+		// 8.
+		} else {
+			
 		}
 		
-		// 8.
-		//TODO
-		
+		// 9.
 		return Optional.of(value);
 	}
 	

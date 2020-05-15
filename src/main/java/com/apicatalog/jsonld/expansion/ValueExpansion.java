@@ -1,9 +1,13 @@
 package com.apicatalog.jsonld.expansion;
 
+import javax.json.Json;
+import javax.json.JsonObject;
 import javax.json.JsonValue;
+import javax.json.JsonValue.ValueType;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.grammar.Keywords;
 
 /**
  * 
@@ -28,8 +32,26 @@ public final class ValueExpansion {
 	}
 	
 	public JsonValue compute() throws JsonLdError {
+		
+		// 1.
 		//TODO
-		return JsonValue.NULL;
+		
+		// 2.
+		//TODO
+		
+		// 3.
+		JsonObject result = Json.createObjectBuilder().add(Keywords.VALUE, value).build();
+		
+		// 4.
+		//TODO
+		
+		// 5.
+		if (ValueType.STRING.equals(value.getValueType())) {
+			//TODO
+		}
+
+		// 6.
+		return result;
 	}
 	
 }

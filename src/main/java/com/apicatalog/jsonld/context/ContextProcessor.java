@@ -202,18 +202,18 @@ public class ContextProcessor {
 								Keywords.VOCAB
 								)
 						) {
-					
+	
 					TermDefinitionCreator
 						.with(result, contextDefinition, key, defined)
-//TODO						.baseUrl(baseUrl)
+						.baseUrl(baseUrl)
+						//TODO
+						.remoteContexts(new ArrayList<>(remoteContexts))
 						.create();
-				}
-				
-				
+				}	
 			}
 			
 		}
-		
+
 		return result;
 	}
 	

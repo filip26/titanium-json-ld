@@ -62,16 +62,23 @@ public final class ArrayExpansion {
 	
 	public JsonValue compute() throws JsonLdError {
 
+		// 5.1
 		final JsonArrayBuilder builder = Json.createArrayBuilder();
 		
+		// 5.2.
 		for (final JsonValue item : element) {
 			
+			// 5.2.1
 			JsonValue expanded = Expansion
 										.with(activeContext, item, activeProperty, baseUrl)
 										.frameExpansion(frameExpansion)
 										.ordered(ordered)
+										.fromMap(fromMap)
 										.compute();
+			// 5.2.2
+			//TODO
 			
+			// 5.2.3
 			if (ValueType.ARRAY.equals(expanded.getValueType())) {
 
 				// append array
@@ -90,6 +97,7 @@ public final class ArrayExpansion {
 			}
 		}
 
+		// 5.3
 		return builder.build();
 	}	
 }

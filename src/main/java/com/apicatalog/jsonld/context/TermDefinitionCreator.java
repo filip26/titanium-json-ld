@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -12,6 +13,7 @@ import javax.json.JsonValue.ValueType;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.grammar.Keywords;
 
 /**
@@ -105,8 +107,8 @@ public final class TermDefinitionCreator {
 		// 5.
 		if (Keywords.contains(term)) {
 			throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
-		}
-		if (Keywords.hasForm(term)) {
+			
+		} else if (Keywords.hasForm(term)) {
 			//TODO warning
 			return;
 		}
@@ -159,8 +161,48 @@ public final class TermDefinitionCreator {
 			JsonValue idValue = valueObject.get(Keywords.ID);
 			
 			if (!ValueType.STRING.equals(idValue.getValueType()) || !term.equals(idValue.toString())) {
+				
 				// 14.1.
-				//TODO
+				if (JsonValue.NULL.equals(idValue.getValueType())) {
+					
+				// 14.2
+				} else {
+					
+					// 14.2.1
+					if (!ValueType.STRING.equals(idValue.getValueType())) {
+						throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
+					}
+					
+					// 14.2.2
+					//TODO
+					
+					// 14.2.3
+					definition.uriMapping = UriExpansion
+												.with(activeContext, idValue.toString())
+												.localContext(localContext)
+												.defined(defined)
+												.compute()
+												.orElse(null);
+					//TODO
+					
+					
+					// 14.2.4
+					if (term.indexOf(':', 1) != -1 /*TODO end limit - 1*/ || term.contains("/")) {
+						
+						// 14.2.4.1
+						defined.put(term, Boolean.TRUE);
+						
+						// 14.2.4.2
+						//TODO
+					}
+					
+					// 14.2.5
+					if (!term.contains(":") &&  !term.contains("/") && simpleTerm) {
+						
+					}
+					//TODO
+					
+				}
 				
 				
 			}
@@ -172,8 +214,8 @@ public final class TermDefinitionCreator {
 		} else if (term.contains("/")) {
 			
 		// 17.
-		} else if ("@type".equals(term)) {
-			//TODO
+		} else if (Keywords.TYPE.equals(term)) {
+			definition.setUriMapping(Keywords.TYPE);
 		}
 		
 		//TODO
@@ -210,8 +252,5 @@ public final class TermDefinitionCreator {
 		// 28
 		activeContext.setTerm(term, definition);
 		defined.put(term, Boolean.TRUE);
-	}
-	
-	
-	
+	}	
 }

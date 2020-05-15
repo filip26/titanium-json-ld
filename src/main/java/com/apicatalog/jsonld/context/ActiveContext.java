@@ -82,5 +82,9 @@ public class ActiveContext {
 
 	public void setTerm(String term, TermDefinition definition) {
 		terms.put(term, definition);
+	}
+
+	public TermDefinition getTerm(String value) {
+		return terms.get(value);
 	}	
 }
