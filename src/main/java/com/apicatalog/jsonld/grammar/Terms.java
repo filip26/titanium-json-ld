@@ -7,6 +7,8 @@ package com.apicatalog.jsonld.grammar;
  */
 public final class Terms {
 
+	
+	
 	public static final boolean isTerm(final String name) {
 
 		if ((name == null) || name.isBlank()) {

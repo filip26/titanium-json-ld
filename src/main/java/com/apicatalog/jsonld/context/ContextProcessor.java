@@ -1,16 +1,17 @@
 package com.apicatalog.jsonld.context;
 
-import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
 
-import com.apicatalog.jsonld.JsonLdContext;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.grammar.Keywords;
@@ -27,7 +28,7 @@ public class ContextProcessor {
 	private final URL baseUrl;	
 	
 	// optional
-	private Collection<JsonLdContext> remoteContexts;
+	private Collection<String> remoteContexts;
 	
 	private boolean overrideProtected;
 	
@@ -45,7 +46,7 @@ public class ContextProcessor {
 		this.baseUrl = baseUrl;
 		
 		// default optional values
-		this.remoteContexts = Collections.emptyList();
+		this.remoteContexts = new ArrayList<>();
 		this.overrideProtected = false;
 		this.propagate = true;
 		this.validateScopedContext = true;
@@ -55,8 +56,8 @@ public class ContextProcessor {
 		return new ContextProcessor(activeContext, localContext, baseUrl);
 	}
 	
-	public ContextProcessor remoteContexts(Collection<JsonLdContext> remoteContexts) {
-		this.remoteContexts = remoteContexts;
+	public ContextProcessor remoteContexts(Collection<String> value) {
+		this.remoteContexts = value;
 		return this;
 	}
 	
@@ -129,7 +130,22 @@ public class ContextProcessor {
 			
 			// 5.2. if context is a string,
 			if (ValueType.STRING.equals(localContextItem.getValueType())) {
+				
+				String contextUri = localContextItem.toString();
+				
+				// 5.2.1
 				//TODO
+				
+				// 5.2.2
+				if (!validateScopedContext && remoteContexts.contains(contextUri)) {
+					continue;
+				}
+				
+				// 5.2.3
+				remoteContexts.add(contextUri);
+				
+				//TODO
+				
 				continue;
 			}
 
@@ -143,10 +159,16 @@ public class ContextProcessor {
 
 			// 5.5. If context has an @version
 			if (contextDefinition.containsKey(Keywords.VERSION)) {
+
+				final String version = contextDefinition.get(Keywords.VERSION).toString();
+
+				// 5.5.1. If the associated value is not 1.1, an invalid @version value has been detected, 
+				//        and processing is aborted.
+				if (!"1.1".equals(version)) {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_VERSION_VALUE);
+				}
 				
-				
-				
-				// 5.5.1. If the associated value is not 1.1, an invalid @version value has been detected, and processing is aborted.
+				// 5.5.2. 
 				//TODO
 			}
 			
@@ -155,8 +177,42 @@ public class ContextProcessor {
 				//TODO
 			}
 			
+			// 5.7. If context has an @base entry and remote contexts is empty, 
+			//		i.e., the currently being processed context is not a remote context:
+			if (contextDefinition.containsKey(Keywords.BASE) && remoteContexts.isEmpty()) {
+				//TODO				
+			}
 			
-
+			//TODO
+			
+			// 5.12. Create a map defined to keep track of whether 
+			//       or not a term has already been defined or is currently being defined during recursion.
+			Map defined = new HashMap<>();
+			
+			// 5.13
+			for (Entry<String, JsonValue> entry : contextDefinition.entrySet()) {
+				
+				if (Keywords.isNot(entry.getKey(), 
+								Keywords.BASE,
+								Keywords.DIRECTION,
+								Keywords.IMPORT,
+								Keywords.LANGUAGE,
+								Keywords.PROPAGATE,
+								Keywords.PROTECTED,
+								Keywords.VERSION,
+								Keywords.VOCAB
+								)
+						) {
+					
+					TermDefinitionCreator
+						.with(result, localContextItem, entry.getKey(), defined)
+//TODO						.baseUrl(baseUrl)
+						.create();
+				}
+				
+				
+			}
+			
 		}
 		
 		return result;

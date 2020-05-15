@@ -97,5 +97,9 @@ public final class Keywords {
 		return !value.startsWith("@") 
 					&& value.length() > 1 
 					&& IntStream.range(1, value.length()).map(value::charAt).allMatch(Character::isAlphabetic);
+	}
+
+	public static boolean isNot(String key, String...keywords) {
+		return Arrays.stream(keywords).noneMatch(keyword -> keyword.equals(key));		
 	}	
 }
