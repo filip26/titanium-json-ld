@@ -61,9 +61,9 @@ public final class Expansion {
 
 		final ValueType elementType = element.getValueType();
 		
-		// 1. If element is null, return
+		// 1. If element is null, return null
 		if (ValueType.NULL.equals(elementType)) {
-			return element;
+			return JsonValue.NULL;
 		}
 		
 		// 2. If active property is @default, initialize the frameExpansion flag to false.
@@ -94,7 +94,7 @@ public final class Expansion {
 		}
 
 		// 6. Otherwise element is a map
-		return ObjectExpansion.with(activeContext, element.asJsonObject(), activeProperty, baseUrl)
+		return MapExpansion.with(activeContext, element.asJsonObject(), activeProperty, baseUrl)
 							  .frameExpansion(frameExpansion)
 							  .ordered(ordered)
 							  .fromMap(fromMap)

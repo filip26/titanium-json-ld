@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.impl;
+package com.apicatalog.jsonld.grammar;
 
 public enum DirectionType {
 

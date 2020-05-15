@@ -18,7 +18,7 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.expansion.Expansion;
-import com.apicatalog.jsonld.impl.Keywords;
+import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 
 /**
@@ -79,7 +79,15 @@ public class ExpansionProcessor {
 			}
 		}
 
-		final ActiveContext activeContext = new ActiveContext(baseUri, input.getDocumentUrl());
+		ActiveContext activeContext = null;
+		
+		try {
+			
+			activeContext = new ActiveContext(baseUri, input.getDocumentUrl().toURI());
+			
+		} catch (URISyntaxException e1) {
+			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+		}
 		
 		// 6. If the expandContext option in options is set, update the active context 
 		//    using the Context Processing algorithm, passing the expandContext as 

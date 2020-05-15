@@ -13,7 +13,7 @@ import javax.json.JsonValue.ValueType;
 import com.apicatalog.jsonld.JsonLdContext;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.impl.Keywords;
+import com.apicatalog.jsonld.grammar.Keywords;
 
 /**
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#context-processing-algorithms">Context Processing Algorithm</a>
@@ -84,6 +84,7 @@ public class ContextProcessor {
 		// 2. If local context is an object containing the member @propagate, 
 		//    its value MUST be boolean true or false, set propagate to that value.
 		if (ValueType.OBJECT.equals(localContext.getValueType())) {
+			
 			final JsonObject localContextObject = localContext.asJsonObject();
 			
 			if (localContextObject.containsKey(Keywords.PROPAGATE)) {
@@ -110,24 +111,17 @@ public class ContextProcessor {
 				
 				// 5.1.1. If override protected is false and active context contains any protected term definitions,
 				//       an invalid context nullification has been detected and processing is aborted.
-				if (!overrideProtected) {
-					//TODO
+				if (!overrideProtected && activeContext.containsProtectedTerm()) {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_CONTEXT_NULLIFICATION);
 				}
 				
 				// 5.1.2. Initialize result as a newly-initialized active context, 
 				//       setting both base IRI and original base URL to the value of original base URL in active context, 
 				//       and, if propagate is false, previous context in result to the previous value of result.
-				try {
-					result = new ActiveContext(activeContext.baseUrl.toURI(), activeContext.baseUrl);
-					if (!propagate) {
-						//TODO
-					}
-					
-				} catch (URISyntaxException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI, e);
-				}
+				result =  propagate
+						 	? new ActiveContext(activeContext.baseUrl, activeContext.baseUrl)
+				 			: new ActiveContext(activeContext.baseUrl, activeContext.baseUrl, result.previousContext)
+				 			;
 
 				// 5.1.3. Continue with the next context 
 				continue;

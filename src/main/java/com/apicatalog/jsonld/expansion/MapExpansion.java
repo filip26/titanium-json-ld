@@ -12,14 +12,14 @@ import javax.json.JsonValue.ValueType;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.ContextProcessor;
-import com.apicatalog.jsonld.impl.Keywords;
+import com.apicatalog.jsonld.grammar.Keywords;
 
 /**
  * 
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#expansion-algorithm">Expansion Algorithm</a>
  *
  */
-public final class ObjectExpansion {
+public final class MapExpansion {
 
 	// mandatory
 	private ActiveContext activeContext; 
@@ -32,7 +32,7 @@ public final class ObjectExpansion {
 	private boolean ordered;
 	private boolean fromMap;
 	
-	private ObjectExpansion(final ActiveContext activeContext, final JsonObject element, final String activeProperty, final URL baseUrl) {
+	private MapExpansion(final ActiveContext activeContext, final JsonObject element, final String activeProperty, final URL baseUrl) {
 		this.activeContext = activeContext;
 		this.element = element;
 		this.activeProperty = activeProperty;
@@ -44,21 +44,21 @@ public final class ObjectExpansion {
 		this.fromMap = false;
 	}
 	
-	public static final ObjectExpansion with(final ActiveContext activeContext, final JsonObject element, final String activeProperty, final URL baseUrl) {
-		return new ObjectExpansion(activeContext, element, activeProperty, baseUrl);
+	public static final MapExpansion with(final ActiveContext activeContext, final JsonObject element, final String activeProperty, final URL baseUrl) {
+		return new MapExpansion(activeContext, element, activeProperty, baseUrl);
 	}
 
-	public ObjectExpansion frameExpansion(boolean value) {
+	public MapExpansion frameExpansion(boolean value) {
 		this.frameExpansion = value;
 		return this;
 	}
 	
-	public ObjectExpansion ordered(boolean value) {
+	public MapExpansion ordered(boolean value) {
 		this.ordered = value;
 		return this;
 	}
 	
-	public ObjectExpansion fromMap(boolean value) {
+	public MapExpansion fromMap(boolean value) {
 		this.fromMap = value;
 		return this;
 	}

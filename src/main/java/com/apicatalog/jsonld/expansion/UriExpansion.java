@@ -6,7 +6,7 @@ import java.util.Optional;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.context.ActiveContext;
-import com.apicatalog.jsonld.impl.Keywords;
+import com.apicatalog.jsonld.grammar.Keywords;
 /**
  * 
  * 
