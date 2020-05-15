@@ -86,7 +86,7 @@ public final class UriExpansion {
 		}
 		
 		// 4. f active context has a term definition for value, and the associated IRI mapping is a keyword, return that keyword.
-		if (activeContext.hasTermDefinition(value)) {
+		if (activeContext.containsTerm(value)) {
 			//TODO
 			
 			// 5. If vocab is true and the active context has a term definition for value, return the associated IRI mapping

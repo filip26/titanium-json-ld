@@ -1,7 +1,8 @@
 package com.apicatalog.jsonld.context;
 
 import java.net.URI;
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.apicatalog.jsonld.grammar.DirectionType;
 
@@ -12,7 +13,7 @@ import com.apicatalog.jsonld.grammar.DirectionType;
 public class ActiveContext {
 
 	// the active term definitions which specify how keys and values have to be interpreted
-	Collection<TermDefinition> terms;
+	Map<String, TermDefinition> terms;
 	
 	// the current base IRI 
 	URI baseUri;
@@ -37,12 +38,14 @@ public class ActiveContext {
 	public ActiveContext(final URI baseUri, final URI baseUrl) {
 		this.baseUri = baseUri;
 		this.baseUrl = baseUrl;
+		this.terms = new HashMap<>();
 	}
 
 	public ActiveContext(final URI baseUri, final URI baseUrl, final ActiveContext previousContext) {
 		this.baseUri = baseUri;
 		this.baseUrl = baseUrl;
 		this.previousContext = previousContext;
+		this.terms = new HashMap<>();
 	}
 
 	// copy constructor
@@ -57,13 +60,27 @@ public class ActiveContext {
 		this.defaultBaseDirection = origin.defaultBaseDirection;
 	}
 
-	public boolean hasTermDefinition(String value) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean containsTerm(String term) {
+		return terms.containsKey(term);
 	}
 
 	public boolean containsProtectedTerm() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	public TermDefinition removeTerm(String term) {
+
+		if (terms.containsKey(term)) {
+			TermDefinition def = terms.get(term);
+			terms.remove(term);
+			return def;
+		}
+		
+		return null;
+	}
+
+	public void setTerm(String term, TermDefinition definition) {
+		terms.put(term, definition);
 	}	
 }

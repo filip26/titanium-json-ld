@@ -3,7 +3,6 @@ package com.apicatalog.jsonld.processor;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -95,16 +94,18 @@ public class ExpansionProcessor {
 		//    If expandContext is a map having an @context entry, pass that entry's value instead for local context.
 		//TODO
 		
-		URL baseUrl = input.getDocumentUrl();
+		URI baseUrl = null;
 		
-		if (baseUrl == null) {
+		if (input.getDocumentUrl() != null) {
 			try {
-				
-				baseUrl = options.getBaseURI().toURL();
-				
-			} catch (MalformedURLException e) {
+				baseUrl = input.getDocumentUrl().toURI();
+			} catch (URISyntaxException e) {
 				throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
 			}
+		}
+		
+		if (baseUrl == null) {
+			baseUrl = options.getBaseURI();
 		}
 	
 		JsonValue expanded = 

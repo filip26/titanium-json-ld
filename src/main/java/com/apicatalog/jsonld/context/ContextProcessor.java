@@ -1,11 +1,10 @@
 package com.apicatalog.jsonld.context;
 
-import java.net.URL;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -25,7 +24,7 @@ public class ContextProcessor {
 	// mandatory
 	private final ActiveContext activeContext; 
 	private JsonValue localContext; 
-	private final URL baseUrl;	
+	private final URI baseUrl;	
 	
 	// optional
 	private Collection<String> remoteContexts;
@@ -39,7 +38,7 @@ public class ContextProcessor {
 	private ContextProcessor(
 			ActiveContext activeContext, 
 			JsonValue localContext, 
-			URL baseUrl) {
+			URI baseUrl) {
 		
 		this.activeContext = activeContext;
 		this.localContext = localContext;
@@ -52,7 +51,7 @@ public class ContextProcessor {
 		this.validateScopedContext = true;
 	}
 
-	public static final ContextProcessor with(ActiveContext activeContext, JsonValue localContext, URL baseUrl) {
+	public static final ContextProcessor with(ActiveContext activeContext, JsonValue localContext, URI baseUrl) {
 		return new ContextProcessor(activeContext, localContext, baseUrl);
 	}
 	
@@ -187,12 +186,12 @@ public class ContextProcessor {
 			
 			// 5.12. Create a map defined to keep track of whether 
 			//       or not a term has already been defined or is currently being defined during recursion.
-			Map defined = new HashMap<>();
+			Map<String, Boolean> defined = new HashMap<>();
 			
 			// 5.13
-			for (Entry<String, JsonValue> entry : contextDefinition.entrySet()) {
+			for (String key : contextDefinition.keySet()) {
 				
-				if (Keywords.isNot(entry.getKey(), 
+				if (Keywords.isNot(key, 
 								Keywords.BASE,
 								Keywords.DIRECTION,
 								Keywords.IMPORT,
@@ -205,7 +204,7 @@ public class ContextProcessor {
 						) {
 					
 					TermDefinitionCreator
-						.with(result, localContextItem, entry.getKey(), defined)
+						.with(result, contextDefinition, key, defined)
 //TODO						.baseUrl(baseUrl)
 						.create();
 				}

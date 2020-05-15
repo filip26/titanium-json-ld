@@ -1,6 +1,6 @@
 package com.apicatalog.jsonld.expansion;
 
-import java.net.URL;
+import java.net.URI;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -22,14 +22,14 @@ public final class ArrayExpansion {
 	private ActiveContext activeContext; 
 	private JsonArray element;
 	private String activeProperty; 
-	private URL baseUrl;
+	private URI baseUrl;
 	
 	// optional
 	private boolean frameExpansion;
 	private boolean ordered;
 	private boolean fromMap;
 	
-	private ArrayExpansion(final ActiveContext activeContext, final JsonArray element, final String activeProperty, final URL baseUrl) {
+	private ArrayExpansion(final ActiveContext activeContext, final JsonArray element, final String activeProperty, final URI baseUrl) {
 		this.activeContext = activeContext;
 		this.element = element;
 		this.activeProperty = activeProperty;
@@ -41,7 +41,7 @@ public final class ArrayExpansion {
 		this.fromMap = false;
 	}
 	
-	public static final ArrayExpansion with(final ActiveContext activeContext, final JsonArray element, final String activeProperty, final URL baseUrl) {
+	public static final ArrayExpansion with(final ActiveContext activeContext, final JsonArray element, final String activeProperty, final URI baseUrl) {
 		return new ArrayExpansion(activeContext, element, activeProperty, baseUrl);
 	}
 

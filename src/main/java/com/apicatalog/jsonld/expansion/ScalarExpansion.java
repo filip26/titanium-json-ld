@@ -1,6 +1,6 @@
 package com.apicatalog.jsonld.expansion;
 
-import java.net.URL;
+import java.net.URI;
 
 import javax.json.JsonValue;
 
@@ -21,9 +21,9 @@ public final class ScalarExpansion {
 	private JsonValue propertyContext;
 	private JsonValue element;
 	private String activeProperty; 
-	private URL baseUrl;
+	private URI baseUrl;
 	
-	private ScalarExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final JsonValue element, final String activeProperty, final URL baseUrl) {
+	private ScalarExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final JsonValue element, final String activeProperty, final URI baseUrl) {
 		this.activeContext = activeContext;
 		this.propertyContext = propertyContext;
 		this.element = element;
@@ -31,7 +31,7 @@ public final class ScalarExpansion {
 		this.baseUrl = baseUrl;		
 	}
 	
-	public static final ScalarExpansion with(final ActiveContext activeContext, final JsonValue propertyContext, final JsonValue element, final String activeProperty, final URL baseUrl) {
+	public static final ScalarExpansion with(final ActiveContext activeContext, final JsonValue propertyContext, final JsonValue element, final String activeProperty, final URI baseUrl) {
 		return new ScalarExpansion(activeContext, propertyContext, element, activeProperty, baseUrl);
 	}
 	

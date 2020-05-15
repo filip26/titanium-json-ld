@@ -35,5 +35,17 @@ public class TermDefinition {
 	
 	URI typeMapping; 
 	
+	public TermDefinition(boolean prefixFlag, boolean protectedFlag, boolean reversePropertyFlag) {
+		this.prefixFlag = prefixFlag;
+		this.protectedFlag = protectedFlag;
+		this.reversePropertyFlag = reversePropertyFlag;
+	}
 	
+	public void setContext(JsonValue context) {
+		this.context = context;
+	}
+	
+	public void setBaseUrl(URI baseUrl) {
+		this.baseUrl = baseUrl;
+	}
 }

@@ -1,6 +1,6 @@
 package com.apicatalog.jsonld.expansion;
 
-import java.net.URL;
+import java.net.URI;
 import java.util.Map.Entry;
 
 import javax.json.Json;
@@ -25,14 +25,14 @@ public final class MapExpansion {
 	private ActiveContext activeContext; 
 	private JsonObject element;
 	private String activeProperty; 
-	private URL baseUrl;
+	private URI baseUrl;
 	
 	// optional
 	private boolean frameExpansion;
 	private boolean ordered;
 	private boolean fromMap;
 	
-	private MapExpansion(final ActiveContext activeContext, final JsonObject element, final String activeProperty, final URL baseUrl) {
+	private MapExpansion(final ActiveContext activeContext, final JsonObject element, final String activeProperty, final URI baseUrl) {
 		this.activeContext = activeContext;
 		this.element = element;
 		this.activeProperty = activeProperty;
@@ -44,7 +44,7 @@ public final class MapExpansion {
 		this.fromMap = false;
 	}
 	
-	public static final MapExpansion with(final ActiveContext activeContext, final JsonObject element, final String activeProperty, final URL baseUrl) {
+	public static final MapExpansion with(final ActiveContext activeContext, final JsonObject element, final String activeProperty, final URI baseUrl) {
 		return new MapExpansion(activeContext, element, activeProperty, baseUrl);
 	}
 
