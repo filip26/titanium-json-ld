@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.impl;
+package com.apicatalog.jsonld.context;
 
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -13,17 +13,20 @@ import javax.json.JsonValue.ValueType;
 import com.apicatalog.jsonld.JsonLdContext;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.impl.Keywords;
 
 /**
- * A context that is used to resolve terms while the processing algorithm is running.
+ * @see <a href="https://www.w3.org/TR/json-ld11-api/#context-processing-algorithms">Context Processing Algorithm</a>
  * 
  */
-public class ActiveContextBuilder {
+public class ContextProcessor {
 
+	// mandatory
 	private final ActiveContext activeContext; 
 	private JsonValue localContext; 
 	private final URL baseUrl;	
 	
+	// optional
 	private Collection<JsonLdContext> remoteContexts;
 	
 	private boolean overrideProtected;
@@ -32,7 +35,7 @@ public class ActiveContextBuilder {
 	
 	private boolean validateScopedContext;
 	
-	private ActiveContextBuilder(
+	private ContextProcessor(
 			ActiveContext activeContext, 
 			JsonValue localContext, 
 			URL baseUrl) {
@@ -48,31 +51,31 @@ public class ActiveContextBuilder {
 		this.validateScopedContext = true;
 	}
 
-	public static final ActiveContextBuilder create(ActiveContext activeContext, JsonValue localContext, URL baseUrl) {
-		return new ActiveContextBuilder(activeContext, localContext, baseUrl);
+	public static final ContextProcessor with(ActiveContext activeContext, JsonValue localContext, URL baseUrl) {
+		return new ContextProcessor(activeContext, localContext, baseUrl);
 	}
 	
-	public ActiveContextBuilder remoteContexts(Collection<JsonLdContext> remoteContexts) {
+	public ContextProcessor remoteContexts(Collection<JsonLdContext> remoteContexts) {
 		this.remoteContexts = remoteContexts;
 		return this;
 	}
 	
-	public ActiveContextBuilder overrideProtected(boolean overrideProtected) {
-		this.overrideProtected = overrideProtected;
+	public ContextProcessor overrideProtected(boolean value) {
+		this.overrideProtected = value;
 		return this;
 	}
 	
-	public ActiveContextBuilder propagate(boolean propagate) {
-		this.propagate = propagate;
+	public ContextProcessor propagate(boolean value) {
+		this.propagate = value;
 		return this;
 	}
 	
-	public ActiveContextBuilder validateScopedContext(boolean validateScopedContext) {
-		this.validateScopedContext = validateScopedContext;
+	public ContextProcessor validateScopedContext(boolean value) {
+		this.validateScopedContext = value;
 		return this;
 	}
 
-	public ActiveContext build() throws JsonLdError {
+	public ActiveContext compute() throws JsonLdError {
 		
 		// 1. Initialize result to the result of cloning active context, with inverse context set to null.
 		ActiveContext result = new ActiveContext(activeContext);

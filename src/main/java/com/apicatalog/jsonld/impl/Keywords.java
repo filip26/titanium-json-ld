@@ -2,6 +2,7 @@ package com.apicatalog.jsonld.impl;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.IntStream;
 
 public final class Keywords {
 
@@ -85,4 +86,15 @@ public final class Keywords {
 	public static boolean contains(final String value) {
 		return KEYWORDS.contains(value);
 	}
+	
+	/**
+	 * If value has the form of a keyword (i.e., it matches the ABNF rule "@"1*ALPHA from [RFC5234])
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static boolean hasForm(final String value) {
+		return !value.startsWith("@")
+					&& IntStream.range(1, value.length()).map(value::charAt).allMatch(Character::isAlphabetic);
+	}	
 }
