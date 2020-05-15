@@ -13,7 +13,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdInput;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdProcessor;
-import com.apicatalog.jsonld.alg.Expansion;
+import com.apicatalog.jsonld.alg.StructureExpansion;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.rdf.RdfDataset;
 
@@ -42,17 +42,17 @@ public class DefaultJsonLdProcessor implements JsonLdProcessor {
 
 	@Override
 	public JsonArray expand(final JsonStructure input, final JsonLdOptions options) throws JsonLdError {
-		return Expansion.expand(input, options);
+		return StructureExpansion.expand(input, options);
 	}
 
 	@Override
 	public JsonArray expand(final URI input, final JsonLdOptions options) throws JsonLdError {
-		return Expansion.expand(input, options);
+		return StructureExpansion.expand(input, options);
 	}
 
 	@Override
 	public JsonArray expand(RemoteDocument input, final JsonLdOptions options) throws JsonLdError {
-		return Expansion.expand(input, options);
+		return StructureExpansion.expand(input, options);
 	}
 
 	@Override

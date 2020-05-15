@@ -4,11 +4,13 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Map.Entry;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonStructure;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
@@ -18,7 +20,8 @@ import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.impl.ActiveContext;
-import com.apicatalog.jsonld.impl.Keyword;
+import com.apicatalog.jsonld.impl.ActiveContextBuilder;
+import com.apicatalog.jsonld.impl.Keywords;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 
 /**
@@ -26,7 +29,7 @@ import com.apicatalog.jsonld.loader.LoadDocumentOptions;
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#expansion-algorithm">Expansion Algorithm</a>
  *
  */
-public class Expansion {
+public class StructureExpansion {
 
 	public static JsonArray expand(JsonStructure input, JsonLdOptions options) {
 		// TODO Auto-generated method stub
@@ -114,8 +117,8 @@ public class Expansion {
 			
 			final JsonObject object = expanded.asJsonObject();
 			
-			if (object.size() == 1 && object.containsKey(Keyword.GRAPH.name())) {
-				expanded = object.get(Keyword.GRAPH.name()); 
+			if (object.size() == 1 && object.containsKey(Keywords.GRAPH)) {
+				expanded = object.get(Keywords.GRAPH); 
 			}
 		}
 		
@@ -135,11 +138,11 @@ public class Expansion {
 					final URL baseUrl,
 					final boolean frameExpansion,
 					final boolean ordered
-					) {
+					) throws JsonLdError {
 
 		final ValueType elementType = element.getValueType();
 		
-		// 1. If element is null, return null.
+		// 1. If element is null, return
 		if (ValueType.NULL.equals(elementType)) {
 			return element;
 		}
@@ -159,77 +162,156 @@ public class Expansion {
 			|| ValueType.TRUE.equals(elementType)
 			|| ValueType.FALSE.equals(elementType)
 			) {
-
-			// 4.1. If active property is null or @graph, drop the free-floating scalar by returning null.
-			if (activeProperty == null || "@graph".equals(activeProperty)) {
-				return JsonValue.NULL;
-			}
 			
-			/* 
-			 * 4.2. If property-scoped context is defined, set active context 
-			 *		to the result of the Context Processing algorithm, passing 
-			 *		active context, property-scoped context as local context, 
-			 *		and base URL from the term definition for active property in active context.
-			 */
-			//TODO 
-			
-			/*
-			 * 4.3. Return the result of the Value Expansion algorithm, passing 
-			 * 		the active context, active property, and element as value. 
-			 */
-		//	return ValueExpansion.expand(activeContext, element, activeProperty);
+			return expandPrimitive(activeContext, element, activeProperty, baseUrl, frameExpansion, ordered);
 		}
 		
 		// 5. If element is an array,
 		if (ValueType.ARRAY.equals(elementType)) {
 			
-			final JsonArray inputArray = element.asJsonArray();
-			
-			final JsonArrayBuilder builder = Json.createArrayBuilder();
-			
-			for (JsonValue item : inputArray) {
-				
-				JsonValue expanded = expand(activeContext, item, activeProperty, baseUrl, frameExpansion, ordered);
-				
-				if (ValueType.ARRAY.equals(expanded.getValueType())) {
-					for (JsonValue expandedItem : expanded.asJsonArray()) {
-						if (ValueType.NULL.equals(expandedItem.getValueType())) {
-							continue;
-						}
-						builder.add(expandedItem);
-					}
-				} else if (!ValueType.NULL.equals(expanded.getValueType())) {
-					builder.add(expanded);
-				}
-			}
-			return builder.build();
+			return expandArray(activeContext, element.asJsonArray(), activeProperty, baseUrl, frameExpansion, ordered);
 		}
 		
 		// 6. Otherwise element is a map
+		return expandObject(activeContext, element.asJsonObject(), activeProperty, baseUrl, frameExpansion, ordered);
+	}
+
+	static final JsonValue expandPrimitive(
+			final ActiveContext activeContext, 
+			final JsonValue input, 
+			final String activeProperty, 
+			final URL baseUrl,
+			final boolean frameExpansion,
+			final boolean ordered
+			) {
+		// 4.1. If active property is null or @graph, drop the free-floating scalar by returning null.
+		if (activeProperty == null || "@graph".equals(activeProperty)) {
+			return JsonValue.NULL;
+		}
 		
-		JsonValue result = element;
+		/* 
+		 * 4.2. If property-scoped context is defined, set active context 
+		 *		to the result of the Context Processing algorithm, passing 
+		 *		active context, property-scoped context as local context, 
+		 *		and base URL from the term definition for active property in active context.
+		 */
+		//TODO 
 		
-		// 19.
-		if (activeProperty == null || Keyword.GRAPH.name().equals(activeProperty)) {
+		/*
+		 * 4.3. Return the result of the Value Expansion algorithm, passing 
+		 * 		the active context, active property, and element as value. 
+		 */
+	//	return ValueExpansion.expand(activeContext, element, activeProperty);
+		return JsonValue.NULL;
+	}
+	
+	static final JsonValue expandArray(
+			final ActiveContext activeContext, 
+			final JsonArray input, 
+			final String activeProperty, 
+			final URL baseUrl,
+			final boolean frameExpansion,
+			final boolean ordered
+			) throws JsonLdError {
+		
+		final JsonArrayBuilder builder = Json.createArrayBuilder();
+		
+		for (final JsonValue item : input) {
 			
-			if (ValueType.OBJECT.equals(elementType)) {
+			JsonValue expanded = expand(activeContext, item, activeProperty, baseUrl, frameExpansion, ordered);
+			
+			if (ValueType.ARRAY.equals(expanded.getValueType())) {
+
+				// append array
+				for (JsonValue expandedItem : expanded.asJsonArray()) {
+					
+					if (ValueType.NULL.equals(expandedItem.getValueType())) {
+						continue;
+					}
+					
+					builder.add(expandedItem);
+				}
 				
-				JsonObject object = element.asJsonObject();
+			// append non-null element
+			} else if (!ValueType.NULL.equals(expanded.getValueType())) {
+				builder.add(expanded);
+			}
+		}
+
+		return builder.build();
+	}
+	
+	static final JsonValue expandObject(
+			ActiveContext activeContext, 
+			final JsonObject input, 
+			final String activeProperty, 
+			final URL baseUrl,
+			final boolean frameExpansion,
+			final boolean ordered
+			) throws JsonLdError {
+
+		// 9.
+		if (input.containsKey(Keywords.CONTEXT)) {
+			activeContext = ActiveContextBuilder.create(activeContext,input.get(Keywords.CONTEXT), baseUrl).build();
+		}
+		
+		// 12.
+		JsonObjectBuilder resultBuilder = Json.createObjectBuilder();
+		JsonObjectBuilder nestBuilder = Json.createObjectBuilder();
+		
+		// 13.
+		//TODO ordered
+		for (Entry<String, JsonValue> entry : input.entrySet()) {
 			
+			// 13.1.
+			if (Keywords.CONTEXT.equals(entry.getKey())) {
+				continue;
+			}
+			
+			
+		}
+		
+		JsonObject result = resultBuilder.build();
+		
+		if (ValueType.OBJECT.equals(result.getValueType())) {
+
+			final JsonObject object = result.asJsonObject();
+			
+			// 18.
+			if (object.size() == 1 && object.containsKey(Keywords.LANGUAGE)) {
+				return JsonValue.NULL;
+			}
+			
+			// 19.
+			if (activeProperty == null || Keywords.GRAPH.equals(activeProperty)) {
+
 				// 19.1. If result is a map which is empty, or contains only the entries @value or @list, set result to null
 				if (object.isEmpty()) {
 					return JsonValue.NULL;
 				}
-				//TODO
 				
-				// 19.2. Otherwise, if result is a map whose only entry is @id, set result to null. When the frameExpansion flag is set, a map containing only the @id entry is retained.
-				if (object.size() == 1 && object.containsKey(Keyword.ID.name()) && !frameExpansion) {
+				if (object.size() == 1
+						&& (object.containsKey(Keywords.VALUE)
+								|| object.containsKey(Keywords.LIST)
+								)
+						) {
 					return JsonValue.NULL;
 				}
-				
+
+				if (object.size() == 2
+						&& object.containsKey(Keywords.VALUE)
+						&& object.containsKey(Keywords.LIST)
+						) {
+					return JsonValue.NULL;
+				}
+
+				// 19.2. if result is a map whose only entry is @id, set result to null. When the frameExpansion flag is set, a map containing only the @id entry is retained.
+				if (object.size() == 1 && object.containsKey(Keywords.ID) && !frameExpansion) {
+					return JsonValue.NULL;
+				}
 			}
 		}
 		
-		return element;
+		return result;
 	}	
 }

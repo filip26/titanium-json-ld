@@ -1,6 +1,6 @@
 package com.apicatalog.jsonld.impl;
 
-public final class Term implements PropertyName {
+public final class Term {
 
 	private final String name;
 	
@@ -25,7 +25,6 @@ public final class Term implements PropertyName {
 		return new Term(name);
 	}
 	
-	@Override
 	public String name() {
 		return name;
 	}

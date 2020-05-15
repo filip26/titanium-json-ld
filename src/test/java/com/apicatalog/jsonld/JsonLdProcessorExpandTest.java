@@ -45,7 +45,7 @@ public class JsonLdProcessorExpandTest {
 			result = processor.expand(inputPath.toUri(), JsonLdOptions.DEFAULT);
 			
 			if (testDefinition.expectErrorCode != null) {
-				Assert.fail("Expected '" + testDefinition.expectErrorCode + "' error code");
+				Assert.fail("expected '" + testDefinition.expectErrorCode + "' error code");
 			}
 			
 			Assert.assertNotNull(result);

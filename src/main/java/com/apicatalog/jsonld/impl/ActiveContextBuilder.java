@@ -5,6 +5,11 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonValue;
+import javax.json.JsonValue.ValueType;
+
 import com.apicatalog.jsonld.JsonLdContext;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -16,7 +21,7 @@ import com.apicatalog.jsonld.JsonLdErrorCode;
 public class ActiveContextBuilder {
 
 	private final ActiveContext activeContext; 
-	private final JsonLdContext localContext; 
+	private JsonValue localContext; 
 	private final URL baseUrl;	
 	
 	private Collection<JsonLdContext> remoteContexts;
@@ -29,7 +34,7 @@ public class ActiveContextBuilder {
 	
 	private ActiveContextBuilder(
 			ActiveContext activeContext, 
-			JsonLdContext localContext, 
+			JsonValue localContext, 
 			URL baseUrl) {
 		
 		this.activeContext = activeContext;
@@ -43,7 +48,7 @@ public class ActiveContextBuilder {
 		this.validateScopedContext = true;
 	}
 
-	public static final ActiveContextBuilder create(ActiveContext activeContext, JsonLdContext localContext, URL baseUrl) {
+	public static final ActiveContextBuilder create(ActiveContext activeContext, JsonValue localContext, URL baseUrl) {
 		return new ActiveContextBuilder(activeContext, localContext, baseUrl);
 	}
 	
@@ -68,13 +73,20 @@ public class ActiveContextBuilder {
 	}
 
 	public ActiveContext build() throws JsonLdError {
+		
 		// 1. Initialize result to the result of cloning active context, with inverse context set to null.
 		ActiveContext result = new ActiveContext(activeContext);
-		//TODO
+		result.inverseContext = null;
 		
 		// 2. If local context is an object containing the member @propagate, 
 		//    its value MUST be boolean true or false, set propagate to that value.
-		//TODO
+		if (ValueType.OBJECT.equals(localContext.getValueType())) {
+			final JsonObject localContextObject = localContext.asJsonObject();
+			
+			if (localContextObject.containsKey(Keywords.PROPAGATE)) {
+				this.propagate = localContextObject.getBoolean(Keywords.PROPAGATE, this.propagate);
+			}
+		}
 
 		// 3. If propagate is false, and result does not have a previous context, 
 		//    set previous context in result to active context.
@@ -83,11 +95,16 @@ public class ActiveContextBuilder {
 		}
 		
 		// 4. If local context is not an array, set local context to an array containing only local context.
+		if (!ValueType.ARRAY.equals(localContext.getValueType())) {
+			localContext = Json.createArrayBuilder().add(localContext).build();
+		}
 		
 		// 5. For each item context in local context:
-		for (JsonLdContext item : localContext.getContexts()) {
+		for (JsonValue localContextItem : localContext.asJsonArray()) {
+			
 			// 5.1. If context is null:
-			if (item == null) {
+			if (ValueType.NULL.equals(localContextItem.getValueType())) {
+				
 				// 5.1.1. If override protected is false and active context contains any protected term definitions,
 				//       an invalid context nullification has been detected and processing is aborted.
 				if (!overrideProtected) {
@@ -113,9 +130,36 @@ public class ActiveContextBuilder {
 				continue;
 			} 
 			
-//			if (item.isURI()) {
-//				
-//			}
+			// 5.2. if context is a string,
+			if (ValueType.STRING.equals(localContextItem.getValueType())) {
+				//TODO
+				continue;
+			}
+
+			// 5.3. If context is not a map, an invalid local context error has been detected and processing is aborted.
+			if (!ValueType.OBJECT.equals(localContextItem.getValueType())) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_LOCAL_CONTEXT);
+			}
+
+			// 5.4. Otherwise, context is a context definition
+			JsonObject contextDefinition = localContextItem.asJsonObject();
+
+			// 5.5. If context has an @version
+			if (contextDefinition.containsKey(Keywords.VERSION)) {
+				
+				
+				
+				// 5.5.1. If the associated value is not 1.1, an invalid @version value has been detected, and processing is aborted.
+				//TODO
+			}
+			
+			// 5.6. If context has an @import
+			if (contextDefinition.containsKey(Keywords.IMPORT)) {
+				//TODO
+			}
+			
+			
+
 		}
 		
 		return result;

@@ -15,6 +15,8 @@ public class ActiveContext {
 	// the original base URL
 	protected URL baseUrl;
 	
+	protected Object inverseContext;	//TODO
+	
 	// an optional previous context, used when a non-propagated context is defined.
 	protected ActiveContext previousContext;
 	
@@ -36,6 +38,7 @@ public class ActiveContext {
 	public ActiveContext(final ActiveContext activeContext) {
 		this.baseUri = activeContext.baseUri;
 		this.baseUrl = activeContext.baseUrl;
+		this.inverseContext = activeContext.inverseContext;
 		this.previousContext = activeContext.previousContext;
 		this.vocabularyMapping = activeContext.vocabularyMapping;
 		this.defaultLanguage = activeContext.defaultLanguage;
