@@ -78,6 +78,8 @@ public final class ArrayExpansion {
 			// 5.2.2
 			//TODO
 			
+			
+			
 			// 5.2.3
 			if (ValueType.ARRAY.equals(expanded.getValueType())) {
 

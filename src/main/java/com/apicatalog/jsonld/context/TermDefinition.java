@@ -72,4 +72,7 @@ public class TermDefinition {
 		this.containerMapping.add(mapping);
 	}
 	
+	public Collection<String> getContainerMapping() {
+		return containerMapping;
+	}
 }
