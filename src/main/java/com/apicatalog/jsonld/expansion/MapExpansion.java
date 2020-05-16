@@ -158,13 +158,15 @@ public final class MapExpansion {
 					// 13.4.3.2
 					} else {
 					
-						String stringValue = ((JsonString)value).getString();
-						
-						expandedValue = Json.createValue(UriExpansion
-											.with(activeContext, stringValue)
-											.documentRelative(true)
-											.vocab(false)
-											.compute().get());	//FIXME !!!
+						Optional<String> expandedStringValue = UriExpansion
+												.with(activeContext, ((JsonString)value).getString())
+												.documentRelative(true)
+												.vocab(false)
+												.compute(); 
+
+						if (expandedStringValue.isPresent()) {
+							expandedValue = Json.createValue(expandedStringValue.get());
+						}
 						//TODO frameExpansion
 					}	
 				}
@@ -186,11 +188,17 @@ public final class MapExpansion {
 					} else {
 						
 						if (ValueType.STRING.equals(value.getValueType())) {
-							expandedValue = Json.createValue(UriExpansion
+							
+							Optional<String> expandedStringValue = 
+										UriExpansion
 												.with(typeScoppedContext, ((JsonString)value).getString())
 												.vocab(true)	//TODO ?!
 												.documentRelative(true)
-												.compute().get());	//FIXME !!!
+												.compute(); 
+							
+							if (expandedStringValue.isPresent()) {
+								expandedValue = Json.createValue(expandedStringValue.get());
+							}
 							
 
 						} else {
