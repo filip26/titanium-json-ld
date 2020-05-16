@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.json.JsonObject;
-import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
@@ -44,7 +43,7 @@ public final class UriExpansion {
 	}
 
 	public UriExpansion documentRelative(boolean value) {
-		this.documentRelative = false;
+		this.documentRelative = value;
 		return this;
 	}
 
@@ -92,16 +91,16 @@ public final class UriExpansion {
 		if (activeContext.containsTerm(value)) {
 			
 			TermDefinition termDefinition = activeContext.getTerm(value);
-//			System.out.println("        " + value + ", " + termDefinition.getUriMapping() + ", " + vocab);
-			//TODO
+			
+			if (Keywords.contains(termDefinition.getUriMapping())) {
+				return Optional.of(termDefinition.getUriMapping());
+			}
 			
 			// 5. If vocab is true and the active context has a term definition for value, return the associated IRI mapping
 			if (vocab) {
 				return Optional.ofNullable(termDefinition.getUriMapping());
 			}
 		}
-		
-//		System.out.println("        " + value + ", " + vocab + ", " + documentRelative);
 		
 		// 6. If value contains a colon (:) anywhere after the first character, it is either an IRI, 
 		//    a compact IRI, or a blank node identifier
@@ -115,8 +114,9 @@ public final class UriExpansion {
 			//TODO
 			
 		// 8.
-		} else {
-			
+		} else if (documentRelative) {
+			//TODO
+			//System.out.println(">> " + activeContext.getBaseUri());
 		}
 		
 		// 9.

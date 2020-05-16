@@ -3,8 +3,7 @@ package com.apicatalog.jsonld.expansion;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,7 +20,6 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.ContextProcessor;
-import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.grammar.Keywords;
 
 /**
@@ -85,27 +83,32 @@ public final class MapExpansion {
 		}
 		
 		// 10.
+		ActiveContext typeScoppedContext = activeContext;
 		//TODO
 		
-		// 11.
-		//TODO
-		
-		// 12.
-		Map<String, JsonValue> result = new HashMap<>(); 
-		Map<String, JsonValue> nest = new HashMap<>();
-		String inputType = null; //TODO
-		
-//	   input_type = Array(input[type_key]).last
-//      input_type = context.expand_iri(input_type, vocab: true, as_string: true, base: @options[:base]) if input_type
-		
-		// 13.
 		List<String> keys = new ArrayList<>(element.keySet());
 		
 		if (ordered) {
 			Collections.sort(keys);
 		}
 		
+		// 11.
 		for (String key : keys) {
+			//TODO
+		}
+		
+		
+		// 12.
+		final Map<String, JsonValue> result = new LinkedHashMap<>(); 
+		final Map<String, JsonValue> nest = new LinkedHashMap<>();
+		String inputType = null; //TODO
+		
+//	   input_type = Array(input[type_key]).last
+//      input_type = context.expand_iri(input_type, vocab: true, as_string: true, base: @options[:base]) if input_type
+		
+		// 13.
+		for (String key : keys) {
+			
 			
 			// 13.1.
 			if (Keywords.CONTEXT.equals(key)) {
@@ -163,9 +166,40 @@ public final class MapExpansion {
 											.vocab(false)
 											.compute().get());	//FIXME !!!
 						//TODO frameExpansion
-					}
-										
+					}	
+				}
+				
+				// 13.4.4
+				if (Keywords.TYPE.equals(expandedProperty.get())) {
+					// 13.4.4.1
+					//TODO
 					
+					// 13.4.4.2
+					if (ValueType.OBJECT.equals(value.getValueType()) && value.asJsonObject().isEmpty()) {
+						expandedValue = value;
+						
+					// 13.4.4.3
+					} else if (false) {
+						//TODO
+						
+					// 13.4.4.4
+					} else {
+						
+						if (ValueType.STRING.equals(value.getValueType())) {
+							expandedValue = Json.createValue(UriExpansion
+												.with(typeScoppedContext, ((JsonString)value).getString())
+												.vocab(true)	//TODO ?!
+												.documentRelative(true)
+												.compute().get());	//FIXME !!!
+							
+
+						} else {
+							//TODO
+						}
+					}
+
+					// 13.4.4.5
+					//TODO
 				}
 				
 				//TODO
@@ -176,22 +210,45 @@ public final class MapExpansion {
 					
 					// 13.4.7.1
 					if (Keywords.JSON.equals(inputType)) {
-						expandedValue = element.get(key);
+						expandedValue = value;
+						
+					} else {
+					
+						//TODO
+						// 13.4.7.3
+						expandedValue = value;
 					}
 					
-					//TODO
 				}
+
+				// 13.4.8
+				if (Keywords.LANGUAGE.equals(expandedProperty.get())) {
+					
+					// 13.4.8.1
+					if (!ValueType.STRING.equals(value.getValueType())) {
+						//TODO frameExpansion
+						throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
+					}
+					
+					// 13.4.8.2
+					expandedValue = value;
+					//TODO validation, warning, frameExpansion
+
+					
+				}
+				
 				//TODO
 
 				
 				// 13.4.16
 				if (!ValueType.NULL.equals(expandedValue.getValueType())
-						&& !Keywords.VALUE.equals(expandedProperty.get())
+//FIXME?!						&& Keywords.VALUE.equals(expandedProperty.get())
 						&& !Keywords.JSON.equals(inputType)
 						) {
 					
 					result.put(expandedProperty.get(), expandedValue);
 				}
+				
 				// 13.4.17
 				continue;
 			}
@@ -247,9 +304,19 @@ public final class MapExpansion {
 				
 			// 15.5			
 			//TODO
+
+		// 16. Otherwise, if result contains the entry @type and its associated value is not an array, 
+		//	   set it to an array containing only the associated value.
+		} else if (result.containsKey(Keywords.TYPE)) {
 			
+			final JsonValue value = result.get(Keywords.TYPE);
+			
+			if (!ValueType.ARRAY.equals(value.getValueType())) {
+				result.put(Keywords.TYPE, Json.createArrayBuilder().add(value).build());
+			}
 		}
-		// 16-17
+				
+		// 17.
 		// TODO
 
 		// 18.
@@ -288,7 +355,10 @@ public final class MapExpansion {
 
 		final JsonObjectBuilder resultBuilder = Json.createObjectBuilder();
 
-		result.entrySet().stream().sorted(Map.Entry.<String, JsonValue>comparingByKey()).forEach(e -> resultBuilder.add(e.getKey(), e.getValue()));
+		result.entrySet()
+				.stream()
+//				.sorted(Map.Entry.<String, JsonValue>comparingByKey())
+				.forEach(e -> resultBuilder.add(e.getKey(), e.getValue()));
 		
 		return resultBuilder.build();
 	}	

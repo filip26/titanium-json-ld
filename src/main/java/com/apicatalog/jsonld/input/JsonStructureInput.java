@@ -1,7 +1,6 @@
 package com.apicatalog.jsonld.input;
 
 import javax.json.JsonStructure;
-import javax.json.JsonValue.ValueType;
 
 import com.apicatalog.jsonld.JsonLdInput;
 

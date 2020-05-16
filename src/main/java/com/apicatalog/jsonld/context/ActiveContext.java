@@ -95,4 +95,8 @@ public class ActiveContext {
 	public String getDefaultLanguage() {
 		return defaultLanguage;
 	}
+	
+	public URI getBaseUri() {
+		return baseUri;
+	}
 }

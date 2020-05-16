@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -85,7 +84,7 @@ public final class TermDefinitionCreator {
 		if (term.isBlank()) {
 			throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
 		}
-		
+	
 		// 1.
 		if (defined.containsKey(term)) {
 			
@@ -101,7 +100,7 @@ public final class TermDefinitionCreator {
 		
 		// 3.
 		JsonValue value = localContext.get(term);
-		
+
 		// 4.
 		//TODO
 		
@@ -148,6 +147,7 @@ public final class TermDefinitionCreator {
 		
 		// 12.
 		if (valueObject.containsKey(Keywords.TYPE)) {
+
 			//TODO
 		}
 		

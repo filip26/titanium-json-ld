@@ -3,8 +3,8 @@ package com.apicatalog.jsonld;
 import java.net.URI;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.loader.FileDocumentLoader;
+import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 
 /**
  * The {@link JsonLdOptions} type is used to pass various options to the {@link JsonLdProcessor} methods.

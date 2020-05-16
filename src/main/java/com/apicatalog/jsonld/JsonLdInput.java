@@ -2,8 +2,6 @@ package com.apicatalog.jsonld;
 
 import java.net.URI;
 
-import javax.json.JsonArray;
-import javax.json.JsonObject;
 import javax.json.JsonStructure;
 
 import com.apicatalog.jsonld.document.RemoteDocument;

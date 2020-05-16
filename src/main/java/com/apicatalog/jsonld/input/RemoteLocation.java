@@ -7,8 +7,6 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdInput;
 import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.document.RemoteDocumentImpl;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 
 public class RemoteLocation implements JsonLdInput {
