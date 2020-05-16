@@ -32,6 +32,9 @@ public final class ValueExpansion {
 	}
 	
 	public JsonValue compute() throws JsonLdError {
+//		
+		
+		
 		
 		// 1.
 		//TODO
@@ -47,7 +50,20 @@ public final class ValueExpansion {
 		
 		// 5.
 		if (ValueType.STRING.equals(value.getValueType())) {
+			// 5.1.
+			String language = null;
+			if (activeContext.containsTerm(Keywords.LANGUAGE)) {
+				language = activeContext.getTerm(Keywords.LANGUAGE).getLanguageMapping();
+			}
+			if (language == null) {
+				language = activeContext.getDefaultLanguage();
+			}
+								
+
 			//TODO
+			//System.out.println(">> " + value + ", " + result + ", " + language);
+			
+
 		}
 
 		// 6.

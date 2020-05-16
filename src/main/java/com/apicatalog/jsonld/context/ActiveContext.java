@@ -87,4 +87,12 @@ public class ActiveContext {
 	public TermDefinition getTerm(String value) {
 		return terms.get(value);
 	}	
+	
+	public DirectionType getDefaultBaseDirection() {
+		return defaultBaseDirection;
+	}
+	
+	public String getDefaultLanguage() {
+		return defaultLanguage;
+	}
 }

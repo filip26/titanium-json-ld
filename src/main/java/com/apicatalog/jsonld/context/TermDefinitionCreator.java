@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
 
@@ -117,7 +118,7 @@ public final class TermDefinitionCreator {
 		TermDefinition previousDefinition = activeContext.removeTerm(term);
 
 		JsonObject valueObject = null;
-		boolean simpleTerm = true;
+		Boolean simpleTerm = null;
 
 		if (ValueType.NULL.equals(value.getValueType())) {
 			// 7.
@@ -139,7 +140,7 @@ public final class TermDefinitionCreator {
 		
 		// 10.
 		TermDefinition definition = new TermDefinition(false, protectedFlag, false);
-		
+
 		// 11.
 		if (valueObject.containsKey(Keywords.PROTECTED)) {
 			//TODO
@@ -160,7 +161,7 @@ public final class TermDefinitionCreator {
 			
 			JsonValue idValue = valueObject.get(Keywords.ID);
 			
-			if (!ValueType.STRING.equals(idValue.getValueType()) || !term.equals(idValue.toString())) {
+			if (!ValueType.STRING.equals(idValue.getValueType()) || !term.equals(((JsonString)idValue).getString())) {
 				
 				// 14.1.
 				if (JsonValue.NULL.equals(idValue.getValueType())) {
@@ -178,7 +179,7 @@ public final class TermDefinitionCreator {
 					
 					// 14.2.3
 					definition.uriMapping = UriExpansion
-												.with(activeContext, idValue.toString())
+												.with(activeContext, ((JsonString)idValue).getString())
 												.localContext(localContext)
 												.defined(defined)
 												.compute()
@@ -216,7 +217,15 @@ public final class TermDefinitionCreator {
 		// 17.
 		} else if (Keywords.TYPE.equals(term)) {
 			definition.setUriMapping(Keywords.TYPE);
+			
+		// 18.
+		} else if (activeContext.vocabularyMapping != null) {
+			//TODO
 		}
+		
+		// 19.
+		
+		// 20.
 		
 		//TODO
 		

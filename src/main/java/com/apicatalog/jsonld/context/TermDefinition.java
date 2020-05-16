@@ -58,4 +58,11 @@ public class TermDefinition {
 		
 	}
 	
+	public String getLanguageMapping() {
+		return languageMapping;
+	}
+	
+	public void setLanguageMapping(String languageMapping) {
+		this.languageMapping = languageMapping;
+	}
 }
