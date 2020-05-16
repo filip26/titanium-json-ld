@@ -1,6 +1,7 @@
 package com.apicatalog.jsonld.context;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.json.JsonValue;
@@ -39,6 +40,7 @@ public class TermDefinition {
 		this.prefixFlag = prefixFlag;
 		this.protectedFlag = protectedFlag;
 		this.reversePropertyFlag = reversePropertyFlag;
+		this.containerMapping = new ArrayList<>();
 	}
 	
 	public void setContext(JsonValue context) {
@@ -65,4 +67,9 @@ public class TermDefinition {
 	public void setLanguageMapping(String languageMapping) {
 		this.languageMapping = languageMapping;
 	}
+	
+	public void addContainerMapping(String mapping) {
+		this.containerMapping.add(mapping);
+	}
+	
 }

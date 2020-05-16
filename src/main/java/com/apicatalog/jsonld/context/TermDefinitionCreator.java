@@ -224,6 +224,24 @@ public final class TermDefinitionCreator {
 		}
 		
 		// 19.
+		if (valueObject.containsKey(Keywords.CONTAINER)) {
+			
+			// 19.1.
+			JsonValue container = valueObject.get(Keywords.CONTAINER);
+			//TODO check value and throw an exception
+			
+			// 19.2.
+			//TODO
+			
+			String containerMapping = ((JsonString)container).getString();	//FIXME
+		
+			
+			// 19.3.
+			definition.addContainerMapping(containerMapping);
+			
+			// 19.4.
+			//TODO
+		}
 		
 		// 20.
 		

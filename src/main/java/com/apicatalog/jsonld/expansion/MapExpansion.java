@@ -99,8 +99,8 @@ public final class MapExpansion {
 		
 		
 		// 12.
-		final Map<String, JsonValue> result = new LinkedHashMap<>(); 
-		final Map<String, JsonValue> nest = new LinkedHashMap<>();
+		Map<String, JsonValue> result = new LinkedHashMap<>(); 
+		Map<String, JsonValue> nest = new LinkedHashMap<>();
 		String inputType = null; //TODO
 		
 //	   input_type = Array(input[type_key]).last
@@ -246,7 +246,33 @@ public final class MapExpansion {
 				}
 				
 				//TODO
+				
+				// 13.4.11
+				if (Keywords.LIST.equals(expandedProperty.get())) {
+					
+					// 13.4.11.1
+					if (activeProperty == null || Keywords.GRAPH.equals(activeProperty)) {
+						continue;
+					}
+					
+					expandedValue = Expansion
+										.with(activeContext, value, activeProperty, baseUrl)
+										.frameExpansion(frameExpansion)
+										.ordered(ordered)
+										.compute();
+				}
 
+				// 13.4.12
+				if (Keywords.SET.equals(expandedProperty.get())) {
+					
+					expandedValue = Expansion
+							.with(activeContext, value, activeProperty, baseUrl)
+							.frameExpansion(frameExpansion)
+							.ordered(ordered)
+							.compute();
+				}
+				
+				//TODO
 				
 				// 13.4.16
 				if (!ValueType.NULL.equals(expandedValue.getValueType())
@@ -322,16 +348,26 @@ public final class MapExpansion {
 			if (!ValueType.ARRAY.equals(value.getValueType())) {
 				result.put(Keywords.TYPE, Json.createArrayBuilder().add(value).build());
 			}
-		}
-				
+			
 		// 17.
-		// TODO
+		} else if (result.containsKey(Keywords.LIST) || result.containsKey(Keywords.SET)) {
+			
+			// 17.1.
+			//TODO
+			
+			// 17.2.
+			if (result.containsKey(Keywords.SET)) {
+				return result.get(Keywords.SET);
+//				//TODO
+			}
+			
+		}
 
 		// 18.
 		if (result.size() == 1 && result.containsKey(Keywords.LANGUAGE)) {
 			return JsonValue.NULL;
 		}
-			
+
 		// 19.
 		if (activeProperty == null || Keywords.GRAPH.equals(activeProperty)) {
 
@@ -360,6 +396,10 @@ public final class MapExpansion {
 				return JsonValue.NULL;
 			}
 		}
+		
+		if (result.isEmpty()) {
+			return JsonValue.NULL;
+		}
 
 		final JsonObjectBuilder resultBuilder = Json.createObjectBuilder();
 
@@ -373,6 +413,7 @@ public final class MapExpansion {
 	
 	public static void addValue(Map<String, JsonValue> object, String key, JsonValue value, boolean asArray) {
 		
+		
 		JsonArrayBuilder array = null;
 		
 		// 1. If as array is true and the value of key in object does not exist or is not an array, 
@@ -384,13 +425,14 @@ public final class MapExpansion {
 			if (object.containsKey(key)) {
 				array.add(object.get(key));
 			}
+			object.put(key,  array.build());
 		}
 		
 		// 2. If value is an array, then for each element v in value, use add value recursively to add v to key in entry.
 		if (ValueType.ARRAY.equals(value.getValueType())) {
 			
 			for (JsonValue v : value.asJsonArray()) {
-				addValue(object, key, v, false);
+				addValue(object, key, v, true);
 			}
 
 		// 3.
