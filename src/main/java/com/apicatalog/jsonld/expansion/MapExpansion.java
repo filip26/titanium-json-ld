@@ -411,49 +411,57 @@ public final class MapExpansion {
 		return resultBuilder.build();
 	}	
 	
+	//TODO don't use this algorithm, easy reduce complexity 
 	public static void addValue(Map<String, JsonValue> object, String key, JsonValue value, boolean asArray) {
-		
-		
-		JsonArrayBuilder array = null;
 		
 		// 1. If as array is true and the value of key in object does not exist or is not an array, 
 		//    set it to a new array containing any original value.
 		if (asArray) {
 			
-			array = Json.createArrayBuilder();
-			
-			if (object.containsKey(key)) {
-				array.add(object.get(key));
+			if (!object.containsKey(key)) {
+				object.put(key,  Json.createArrayBuilder().build());
+				
+			} else {
+				
+				JsonValue original = object.get(key);
+				
+				if (!ValueType.ARRAY.equals(original.getValueType())){
+					object.put(key,  Json.createArrayBuilder().add(original).build());
+				}
 			}
-			object.put(key,  array.build());
 		}
 		
 		// 2. If value is an array, then for each element v in value, use add value recursively to add v to key in entry.
 		if (ValueType.ARRAY.equals(value.getValueType())) {
 			
 			for (JsonValue v : value.asJsonArray()) {
-				addValue(object, key, v, true);
+				addValue(object, key, v, false);
 			}
 
 		// 3.
 		} else {
 			// 3.1
-			if (array == null && !object.containsKey(key)) {
+			if (!object.containsKey(key)) {
 				object.put(key, value);
 				
 			// 3.2
 			} else {
+
+				JsonValue original = object.get(key);
 				
 				// 3.2.1
-				if (array == null) {
-					array  = Json.createArrayBuilder();
-					if (object.containsKey(key)) {
-						array.add(object.get(key));
-					}
-				}
-		
+				if (!ValueType.ARRAY.equals(original.getValueType())){
+					object.put(key,  Json.createArrayBuilder().add(original).build());
+
 				// 3.2.2
-				object.put(key, array.add(value).build());
+				} else {
+					
+					JsonArrayBuilder array = Json.createArrayBuilder();
+					
+					original.asJsonArray().stream().forEach(array::add);
+					
+					object.put(key, array.add(value).build());
+				}
 			}	
 		}
 	}
