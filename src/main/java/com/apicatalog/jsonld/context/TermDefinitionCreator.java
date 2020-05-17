@@ -14,6 +14,7 @@ import javax.json.JsonValue.ValueType;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.expansion.UriExpansion;
+import com.apicatalog.jsonld.grammar.Commons;
 import com.apicatalog.jsonld.grammar.Keywords;
 
 /**
@@ -102,7 +103,9 @@ public final class TermDefinitionCreator {
 		JsonValue value = localContext.get(term);
 
 		// 4.
-		//TODO
+		if (Keywords.TYPE.equals(term)) {
+			//TODO
+		}
 		
 		// 5.
 		if (Keywords.contains(term)) {
@@ -166,10 +169,12 @@ public final class TermDefinitionCreator {
 			// 12.3.
 			if (Keywords.JSON.equals(typeString) || Keywords.NONE.equals(typeString)) {
 				//TODO
-				
+
 			// 12.4.
-			} else {
-				//TODO
+			} else  if (Keywords.isNot(typeString, Keywords.ID, Keywords.JSON, Keywords.NONE, Keywords.VOCAB) 
+						|| !Commons.isURI(typeString)
+					) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING);
 			}
 
 			// 12.5.
@@ -254,7 +259,7 @@ public final class TermDefinitionCreator {
 		
 		// 19.
 		if (valueObject.containsKey(Keywords.CONTAINER)) {
-			System.out.println("1 > " + valueObject);
+
 			// 19.1.
 			JsonValue container = valueObject.get(Keywords.CONTAINER);
 			//TODO check value and throw an exception

@@ -99,6 +99,10 @@ public class ActiveContext {
 	public URI getBaseUri() {
 		return baseUri;
 	}
+	
+	public URI getVocabularyMapping() {
+		return vocabularyMapping;
+	}
 
 	public boolean hasTypeMapping(String term, String expected) {
 

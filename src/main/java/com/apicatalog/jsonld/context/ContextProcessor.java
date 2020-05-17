@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
 
@@ -179,10 +180,93 @@ public class ContextProcessor {
 			// 5.7. If context has an @base entry and remote contexts is empty, 
 			//		i.e., the currently being processed context is not a remote context:
 			if (contextDefinition.containsKey(Keywords.BASE) && remoteContexts.isEmpty()) {
-				//TODO				
+				// 5.7.1
+				JsonValue value = contextDefinition.get(Keywords.BASE);
+				
+				// 5.7.2.
+				if (ValueType.NULL.equals(value.getValueType())) {
+					result.baseUri = null;
+					
+				} else {
+					
+					if (!ValueType.STRING.equals(value.getValueType())) {
+						throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);
+					}
+					
+					String valueString = ((JsonString)value).getString();
+					
+					// 5.7.3
+					URI baseUri = null;
+					try {
+						
+						 baseUri = URI.create(valueString);
+						 if (baseUri != null) {
+							 result.baseUri = baseUri;
+						 }
+						
+					} catch (IllegalArgumentException e) {
+						
+					}
+
+					if (baseUri == null) {
+
+						// 5.7.4
+						if (result.baseUri != null) {
+							//TODO
+						}
+					}
+				}
 			}
 			
-			//TODO
+			// 5.8.
+			if (contextDefinition.containsKey(Keywords.VOCAB)) {
+				// 5.8.1.
+				JsonValue value = contextDefinition.get(Keywords.VOCAB);
+				
+				// 5.8.2.
+				if (ValueType.NULL.equals(value.getValueType())) {
+					result.vocabularyMapping = null;
+					
+				// 5.8.3
+				} else {
+					
+					if (!ValueType.STRING.equals(value.getValueType())) {
+						throw new JsonLdError(JsonLdErrorCode.INVALID_VOCAB_MAPPING);
+					}
+					//TODO
+				}
+			}
+			
+			// 5.9.
+			if (contextDefinition.containsKey(Keywords.LANGUAGE)) {
+				// 5.9.1
+				JsonValue value = contextDefinition.get(Keywords.LANGUAGE);
+				
+				// 5.9.2.
+				if (ValueType.NULL.equals(value.getValueType())) {
+					result.defaultLanguage = null;
+					
+				// 5.9.3
+				} else {
+					
+					if (!ValueType.STRING.equals(value.getValueType())) {
+						throw new JsonLdError(JsonLdErrorCode.INVALID_DEFAULT_LANGUAGE);
+					}
+					
+					result.defaultLanguage = ((JsonString)value).getString();
+					//TODO check language format, generate warning if needed
+				}
+			}
+
+			// 5.10.
+			if (contextDefinition.containsKey(Keywords.DIRECTION)) {
+				//TODO
+			}
+				
+			// 5.11.
+			if (contextDefinition.containsKey(Keywords.PROPAGATE)) {
+				//TODO
+			}
 			
 			// 5.12. Create a map defined to keep track of whether 
 			//       or not a term has already been defined or is currently being defined during recursion.
@@ -211,9 +295,9 @@ public class ContextProcessor {
 						.create();
 				}	
 			}
-			
 		}
 
+		// 6.
 		return result;
 	}
 	

@@ -304,7 +304,6 @@ public final class MapExpansion {
 
 			JsonValue expandedValue = JsonValue.NULL;
 
-			System.out.println(">>> " + key + ", " + containerMapping + ", " + value);
 			// 13.6.
 			if (false) {
 				//TODO
@@ -326,8 +325,6 @@ public final class MapExpansion {
 
 				// 13.8.1
 				expandedValue = Json.createArrayBuilder().build();
-
-				System.out.println(">>> " + value);
 				
 			// 13.9.
 			} else {

@@ -26,7 +26,7 @@ public final class UriExpansion {
 	private boolean vocab;
 	
 	private JsonObject localContext;
-	private Map defined;	//TODO
+	private Map<String, Boolean> defined;
 		
 	private UriExpansion(final ActiveContext activeContext, final String value) {
 		this.activeContext = activeContext;
@@ -58,14 +58,13 @@ public final class UriExpansion {
 		return this;
 	}
 	
-	public UriExpansion defined(Map value) {
+	public UriExpansion defined(Map<String, Boolean> value) {
 		this.defined = value;
 		return this;
 	}
 	
 	public Optional<String> compute() {
-	
-		
+
 		// 1. If value is a keyword or null, return value as is.
 		if (value == null || Keywords.contains(value)) {
 			return Optional.of(value);
@@ -131,8 +130,8 @@ public final class UriExpansion {
 		
 		// 7. If vocab is true, and active context has a vocabulary mapping, 
 		//    return the result of concatenating the vocabulary mapping with value.
-		if (vocab) {
-			//TODO
+		if (vocab && activeContext.getVocabularyMapping() != null) {
+			value = activeContext.getVocabularyMapping().toString().concat(value);
 			
 		// 8.
 		} else if (documentRelative) {
@@ -145,7 +144,7 @@ public final class UriExpansion {
 	
 	static final String resolve(URI baseUri, String value) {
 
-		if (URI.create(value).isAbsolute()) {
+		if ((baseUri == null) || URI.create(value).isAbsolute()) {
 			return value;
 		}
 
