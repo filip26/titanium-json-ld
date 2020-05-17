@@ -82,7 +82,7 @@ public class ExpansionProcessor {
 		
 		try {
 			
-			activeContext = new ActiveContext(baseUri, input.getDocumentUrl().toURI());
+			activeContext = new ActiveContext(baseUri, input.getDocumentUrl().toURI(), options.getProcessingMode());
 			
 		} catch (URISyntaxException e1) {
 			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);

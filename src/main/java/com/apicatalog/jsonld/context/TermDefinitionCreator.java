@@ -16,6 +16,7 @@ import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.grammar.Commons;
 import com.apicatalog.jsonld.grammar.Keywords;
+import com.apicatalog.jsonld.grammar.Version;
 
 /**
  * 
@@ -36,7 +37,6 @@ public final class TermDefinitionCreator {
 	boolean overrideProtectedFlag;
 	Collection remoteContexts;
 	boolean validateScopedContext;
-	
 	
 	private TermDefinitionCreator(ActiveContext activeContext, JsonObject localContext, String term, Map<String, Boolean> defined) {
 		this.activeContext = activeContext;
@@ -104,8 +104,32 @@ public final class TermDefinitionCreator {
 		JsonValue value = localContext.get(term);
 
 		// 4.
-		if (Keywords.TYPE.equals(term)) {
-			//TODO
+		if (Keywords.TYPE.equals(term) && activeContext.inMode(Version.V1_0)) {
+			
+			if (ValueType.OBJECT.equals(value.getValueType())) {
+				
+				JsonObject map = value.asJsonObject();
+				
+				if (map.size() == 1 && map.containsKey(Keywords.PROTECTED)) {
+					
+				} else if (map.size() == 1 && map.containsKey(Keywords.CONTAINER)) {
+					JsonValue container = map.get(Keywords.CONTAINER);
+					if (!ValueType.STRING.equals(container.getValueType())
+							|| !Keywords.SET.equals(((JsonString)container).getString())
+							) {
+						throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
+						}
+				
+				} else if (map.size() == 2) {
+					//TODO
+				} else {
+					throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
+				}
+
+			} else {			
+				throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
+			}
+
 		}
 		
 		// 5.
@@ -168,13 +192,14 @@ public final class TermDefinitionCreator {
 						.orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING));
 
 			// 12.3.
-			if (Keywords.JSON.equals(typeString) || Keywords.NONE.equals(typeString)) {
-				//TODO
-
-			// 12.4.
-			} else  if (Keywords.isNot(typeString, Keywords.ID, Keywords.JSON, Keywords.NONE, Keywords.VOCAB) 
+			if (((Keywords.JSON.equals(typeString) || Keywords.NONE.equals(typeString))
+				&& activeContext.inMode(Version.V1_0) 
+				)
+				// 12.4.
+				|| (Keywords.isNot(typeString, Keywords.ID, Keywords.JSON, Keywords.NONE, Keywords.VOCAB) 
 						|| !Commons.isURI(typeString)
-					) {
+					)
+			) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING);
 			}
 

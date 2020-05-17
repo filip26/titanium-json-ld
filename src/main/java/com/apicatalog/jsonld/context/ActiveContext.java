@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.apicatalog.jsonld.grammar.DirectionType;
+import com.apicatalog.jsonld.grammar.Version;
 
 /**
  * A context that is used to resolve terms while the processing algorithm is running.
@@ -35,17 +36,21 @@ public class ActiveContext {
 	// an optional default base direction ("ltr" or "rtl")
 	DirectionType defaultBaseDirection;
 	
-	public ActiveContext(final URI baseUri, final URI baseUrl) {
+	Version processingMode;
+	
+	public ActiveContext(final URI baseUri, final URI baseUrl, Version processingMode) {
 		this.baseUri = baseUri;
 		this.baseUrl = baseUrl;
 		this.terms = new HashMap<>();
+		this.processingMode = processingMode;
 	}
 
-	public ActiveContext(final URI baseUri, final URI baseUrl, final ActiveContext previousContext) {
+	public ActiveContext(final URI baseUri, final URI baseUrl, final ActiveContext previousContext, Version processingMode) {
 		this.baseUri = baseUri;
 		this.baseUrl = baseUrl;
 		this.previousContext = previousContext;
 		this.terms = new HashMap<>();
+		this.processingMode = processingMode;
 	}
 
 	// copy constructor
@@ -58,6 +63,7 @@ public class ActiveContext {
 		this.vocabularyMapping = origin.vocabularyMapping;
 		this.defaultLanguage = origin.defaultLanguage;
 		this.defaultBaseDirection = origin.defaultBaseDirection;
+		this.processingMode = origin.processingMode;
 	}
 
 	public boolean containsTerm(String term) {
@@ -102,6 +108,10 @@ public class ActiveContext {
 	
 	public URI getVocabularyMapping() {
 		return vocabularyMapping;
+	}
+
+	public boolean inMode(Version version) {
+		return processingMode != null && processingMode.equals(version);
 	}
 
 	public boolean hasTypeMapping(String term, String expected) {

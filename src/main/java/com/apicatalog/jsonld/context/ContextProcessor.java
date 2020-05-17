@@ -120,8 +120,8 @@ public class ContextProcessor {
 				//       setting both base IRI and original base URL to the value of original base URL in active context, 
 				//       and, if propagate is false, previous context in result to the previous value of result.
 				result =  propagate
-						 	? new ActiveContext(activeContext.baseUrl, activeContext.baseUrl)
-				 			: new ActiveContext(activeContext.baseUrl, activeContext.baseUrl, result.previousContext)
+						 	? new ActiveContext(activeContext.baseUrl, activeContext.baseUrl, activeContext.processingMode)
+				 			: new ActiveContext(activeContext.baseUrl, activeContext.baseUrl, result.previousContext, activeContext.processingMode)
 				 			;
 
 				// 5.1.3. Continue with the next context 
