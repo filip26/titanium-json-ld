@@ -20,19 +20,19 @@ public final class JsonLdOptions {
 	
 	public static final JsonLdOptions DEFAULT = new JsonLdOptions();
 	
-	private final URI baseUri;
-	private final boolean compactArrays;
-	private final boolean compactToRelative;
-	private final LoadDocumentCallback documentLoader;
+	private URI baseUri;
+	private boolean compactArrays;
+	private boolean compactToRelative;
+	private LoadDocumentCallback documentLoader;
 	//private final (JsonLdRecord? or USVString) expandContext = null;
-	private final boolean extractAllScripts;
-	private final boolean frameExpansion;
-	private final boolean ordered;
-	private final String processingMode;
-	private final boolean produceGeneralizedRdf;
-	private final String rdfDirection;
-	private final boolean useNativeTypes;
-	private final boolean useRdfType;
+	private boolean extractAllScripts;
+	private boolean frameExpansion;
+	private boolean ordered;
+	private String processingMode;
+	private boolean produceGeneralizedRdf;
+	private String rdfDirection;
+	private boolean useNativeTypes;
+	private boolean useRdfType;
 	
 	protected JsonLdOptions() {
 		this.baseUri = null;
@@ -47,6 +47,21 @@ public final class JsonLdOptions {
 		this.rdfDirection = null;
 		this.useNativeTypes = false;
 		this.useRdfType = false;
+	}
+	
+	protected JsonLdOptions(JsonLdOptions options) {
+		this.baseUri = options.baseUri;
+		this.compactArrays = options.compactArrays;
+		this.compactToRelative = options.compactToRelative;
+		this.documentLoader = options.documentLoader;
+		this.extractAllScripts = options.extractAllScripts;
+		this.frameExpansion = options.frameExpansion;
+		this.ordered = options.ordered;
+		this.processingMode = options.processingMode;
+		this.produceGeneralizedRdf = options.produceGeneralizedRdf;
+		this.rdfDirection = options.rdfDirection;
+		this.useNativeTypes = options.useNativeTypes;
+		this.useRdfType = options.useRdfType;		
 	}
 	
 	/**
@@ -154,8 +169,9 @@ public final class JsonLdOptions {
 	public boolean isUseRdfType() {
 		return useRdfType;
 	}
-	  
-	public class Builder {
-		
+	
+	protected void setBaseUri(URI baseUri) {
+		this.baseUri = baseUri;
 	}
+	
 }

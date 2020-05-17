@@ -1,5 +1,6 @@
 package com.apicatalog.jsonld.expansion;
 
+import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
 
@@ -63,6 +64,7 @@ public final class UriExpansion {
 	}
 	
 	public Optional<String> compute() {
+	
 		
 		// 1. If value is a keyword or null, return value as is.
 		if (value == null || Keywords.contains(value)) {
@@ -75,7 +77,7 @@ public final class UriExpansion {
 			//TODO varning
 			return Optional.empty();
 		}
-		
+	
 		/*
 		 *  3. If local context is not null, it contains an entry with a key that equals value, 
 		 *     and the value of the entry for value in defined is not true, invoke the Create Term Definition algorithm, 
@@ -85,6 +87,8 @@ public final class UriExpansion {
 		if (localContext != null) {
 			//TODO
 		}
+		
+		
 		
 		// 4. if active context has a term definition for value, 
 		//	  and the associated IRI mapping is a keyword, return that keyword.
@@ -115,12 +119,20 @@ public final class UriExpansion {
 			
 		// 8.
 		} else if (documentRelative) {
-			//TODO
-			//System.out.println(">> " + activeContext.getBaseUri());
+			value = resolve(activeContext.getBaseUri(), value);
 		}
 		
 		// 9.
 		return Optional.of(value);
+	}
+	
+	static final String resolve(URI baseUri, String value) {
+
+		if (URI.create(value).isAbsolute()) {
+			return value;
+		}
+
+		return baseUri.resolve(value).toString();		
 	}
 	
 	

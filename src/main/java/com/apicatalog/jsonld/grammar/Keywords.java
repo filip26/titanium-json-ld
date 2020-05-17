@@ -94,7 +94,7 @@ public final class Keywords {
 	 * @return
 	 */
 	public static boolean hasForm(final String value) {
-		return !value.startsWith("@") 
+		return value.startsWith("@") 
 					&& value.length() > 1 
 					&& IntStream.range(1, value.length()).map(value::charAt).allMatch(Character::isAlphabetic);
 	}

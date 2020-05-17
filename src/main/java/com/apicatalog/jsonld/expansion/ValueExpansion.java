@@ -34,8 +34,6 @@ public final class ValueExpansion {
 	public JsonValue compute() throws JsonLdError {
 //		
 		
-		
-		
 		// 1.
 		//TODO
 		

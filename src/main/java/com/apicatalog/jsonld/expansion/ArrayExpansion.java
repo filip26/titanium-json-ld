@@ -64,10 +64,10 @@ public final class ArrayExpansion {
 
 		// 5.1
 		final JsonArrayBuilder builder = Json.createArrayBuilder();
-		
+
 		// 5.2.
 		for (final JsonValue item : element) {
-			
+
 			// 5.2.1
 			JsonValue expanded = Expansion
 										.with(activeContext, item, activeProperty, baseUrl)

@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.json.Json;
-import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -112,7 +111,6 @@ public final class MapExpansion {
 		// 13.
 		for (String key : keys) {
 			
-			
 			// 13.1.
 			if (Keywords.CONTEXT.equals(key)) {
 				continue;
@@ -126,7 +124,6 @@ public final class MapExpansion {
 									.vocab(true)
 									.compute();
 			
-
 			// 13.3.
 			if (expandedProperty.isEmpty() 
 					|| !expandedProperty.get().contains(":") 
@@ -308,9 +305,12 @@ public final class MapExpansion {
 
 			// 13.6.
 			//TODO
+
+			// 13.7.1
+			JsonValue expandedValue = Json.createArrayBuilder().build();
 			
 			// 13.9.
-			JsonValue expandedValue =  Expansion
+			expandedValue =  Expansion
 											.with(activeContext, value, key, baseUrl)
 											.frameExpansion(frameExpansion)
 											.ordered(ordered)

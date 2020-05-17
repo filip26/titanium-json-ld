@@ -1,6 +1,7 @@
 package com.apicatalog.jsonld;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.JsonWriter;
 import javax.json.JsonWriterFactory;
@@ -37,7 +39,8 @@ public class JsonLdProcessorExpandTest {
 	@Parameterized.Parameter(2)
 	public String testName;
 		
-
+	@Parameterized.Parameter(3)
+	public String baseUri;
 	
 	@Test
 	public void testExpand() throws IOException, JsonLdError {
@@ -53,8 +56,10 @@ public class JsonLdProcessorExpandTest {
 		
 		JsonValue result = null;
 		
+		JsonLdOptions options = new JsonLdOptionsBuilder().baseUri(URI.create(baseUri + testDefinition.input)).create();
+		
 		try {
-			result = processor.expand(inputPath.toUri(), JsonLdOptions.DEFAULT);
+			result = processor.expand(inputPath.toUri(), options);
 			
 			if (testDefinition.expectErrorCode != null) {
 				Assert.fail("expected '" + testDefinition.expectErrorCode + "' error code");
@@ -102,13 +107,13 @@ public class JsonLdProcessorExpandTest {
 			parser.next();
 			
 			final JsonObject manifest = parser.getObject();
-		
+			
 			return manifest
 					.getJsonArray("sequence")
 						.stream()
 							.map(JsonValue::asJsonObject)
 							.map(JsonLdTestDefinition::of)
-							.map(o -> new Object[] {o, o.id, o.name})
+							.map(o -> new Object[] {o, o.id, o.name, ((JsonString)(manifest.get("baseIri"))).getString()})
 							.collect(Collectors.toList());
 		}
     }
