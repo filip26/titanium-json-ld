@@ -8,6 +8,7 @@ import javax.json.JsonObject;
 
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.grammar.Commons;
 import com.apicatalog.jsonld.grammar.Keywords;
 /**
  * 
@@ -119,13 +120,35 @@ public final class UriExpansion {
 			}
 			
 			// 6.3.
-			//TODO
+			if (localContext != null) {
+				//TODO
+			}
 			
-			// 6.4. 
-			//TODO
+			// 6.4.
+			if (activeContext.containsTerm(split[0])) {
+				
+				TermDefinition prefixDefinition = activeContext.getTerm(split[0]);
+				
+				if (prefixDefinition != null
+					&& prefixDefinition.getUriMapping() != null
+					&& prefixDefinition.isPrefixFlag()
+						) {
+					
+					TermDefinition suffixDefinition = activeContext.getTerm(split[1]);
+					
+					if (suffixDefinition != null && suffixDefinition.getUriMapping() != null) {
+						value = prefixDefinition.getUriMapping().concat(suffixDefinition.getUriMapping());
+					} else {
+						value = prefixDefinition.getUriMapping().concat(split[1]);
+					}
+					
+				}
+			}
 			
 			// 6.5
-			return Optional.of(value);
+			if (Commons.isURI(value)) {
+				return Optional.of(value);
+			}
 		}
 		
 		// 7. If vocab is true, and active context has a vocabulary mapping, 

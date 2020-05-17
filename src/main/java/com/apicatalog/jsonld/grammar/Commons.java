@@ -19,4 +19,20 @@ public class Commons {
 		return false;
 	}
 	
+	/**
+	 * @see <a href="https://tools.ietf.org/html/rfc3986#section-2.2">URI - Reserved Characters </a>
+	 * @param uri
+	 * @return
+	 */
+	public static boolean endsWithGenDelim(String uri) {
+		return uri.endsWith(":") 
+				|| uri.endsWith("/") 
+				|| uri.endsWith("?") 
+				|| uri.endsWith("#") 
+				|| uri.endsWith("[")
+				|| uri.endsWith("]")
+				|| uri.endsWith("@")
+				;
+	}
+	
 }

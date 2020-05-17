@@ -254,14 +254,18 @@ public final class TermDefinitionCreator {
 					}
 					
 					// 14.2.5
-					if (!term.contains(":") &&  !term.contains("/") && simpleTerm) {
-						
-					}
-					//TODO
+					if (!term.contains(":") &&  !term.contains("/") && Boolean.TRUE.equals(simpleTerm)) {
 					
-				}
-				
-				
+						if (definition.uriMapping != null 
+								&& Commons.isURI(definition.uriMapping) 
+								&& Commons.endsWithGenDelim(definition.uriMapping)
+								) {
+							definition.prefixFlag = true;
+						}
+						//TODO
+					}
+					
+				}				
 			}
 			
 		// 15.

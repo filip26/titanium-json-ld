@@ -71,6 +71,10 @@ public class TermDefinition {
 		return typeMapping;
 	}
 	
+	public boolean isPrefixFlag() {
+		return prefixFlag;
+	}
+	
 	public void setLanguageMapping(String languageMapping) {
 		this.languageMapping = languageMapping;
 	}
