@@ -301,21 +301,42 @@ public final class MapExpansion {
 			if (containerMapping == null) {
 				containerMapping = Collections.emptyList();
 			}
-									
 
+			JsonValue expandedValue = JsonValue.NULL;
+
+			System.out.println(">>> " + key + ", " + containerMapping + ", " + value);
 			// 13.6.
-			//TODO
+			if (false) {
+				//TODO
+				
+			// 13.7			
+			} else if (containerMapping.contains(Keywords.LANGUAGE)
+					&& ValueType.OBJECT.equals(value.getValueType())
+					) {
+				// 13.7.1
+				expandedValue = Json.createArrayBuilder().build();
+				
+			// 13.8.
+			} else if (
+					(containerMapping.contains(Keywords.INDEX)
+					|| containerMapping.contains(Keywords.TYPE)
+					|| containerMapping.contains(Keywords.ID))
+					&& ValueType.OBJECT.equals(value.getValueType())
+					) {
 
-			// 13.7.1
-			JsonValue expandedValue = Json.createArrayBuilder().build();
-			
+				// 13.8.1
+				expandedValue = Json.createArrayBuilder().build();
+
+				System.out.println(">>> " + value);
+				
 			// 13.9.
-			expandedValue =  Expansion
-											.with(activeContext, value, key, baseUrl)
-											.frameExpansion(frameExpansion)
-											.ordered(ordered)
-											.compute();
-					
+			} else {
+				expandedValue =  Expansion
+						.with(activeContext, value, key, baseUrl)
+						.frameExpansion(frameExpansion)
+						.ordered(ordered)
+						.compute();
+			}
 			
 			// 13.10.
 			if (ValueType.NULL.equals(expandedValue.getValueType())) {

@@ -254,7 +254,7 @@ public final class TermDefinitionCreator {
 		
 		// 19.
 		if (valueObject.containsKey(Keywords.CONTAINER)) {
-			
+			System.out.println("1 > " + valueObject);
 			// 19.1.
 			JsonValue container = valueObject.get(Keywords.CONTAINER);
 			//TODO check value and throw an exception

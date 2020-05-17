@@ -9,6 +9,7 @@ public class JsonLdTestDefinition {
 	public String input;
 	public String expect;
 	public String expectErrorCode;
+	public JsonLdTestOptions options;
 	
 	public JsonLdTestDefinition expectErrorCode(String errorCode) {
 		
@@ -28,6 +29,10 @@ public class JsonLdTestDefinition {
 		testDefinition.input = o.getString("input");
 		testDefinition.expect = o.getString("expect", null);
 		testDefinition.expectErrorCode(o.getString("expectErrorCode", null));
+
+		if (o.containsKey("option")) {
+			testDefinition.options = JsonLdTestOptions.of(o.get("option").asJsonObject());
+		}
 		
 		return testDefinition;
 	}
