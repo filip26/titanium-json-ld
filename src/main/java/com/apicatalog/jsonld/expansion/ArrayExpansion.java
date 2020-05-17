@@ -10,6 +10,9 @@ import javax.json.JsonValue.ValueType;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.grammar.Keywords;
+import com.apicatalog.jsonld.grammar.ListObject;
 
 /**
  * 
@@ -65,6 +68,8 @@ public final class ArrayExpansion {
 		// 5.1
 		final JsonArrayBuilder builder = Json.createArrayBuilder();
 
+		TermDefinition definition = activeContext.getTerm(activeProperty);
+		
 		// 5.2.
 		for (final JsonValue item : element) {
 
@@ -76,9 +81,14 @@ public final class ArrayExpansion {
 										.fromMap(fromMap)
 										.compute();
 			// 5.2.2
-			//TODO
-			
-			
+			if (definition != null 
+					&& definition.getContainerMapping() != null 
+					&& definition.getContainerMapping().contains(Keywords.LIST)
+					&& ValueType.ARRAY.equals(expanded.getValueType())
+					) {
+				
+				expanded = ListObject.toListObject(expanded);	
+			}
 			
 			// 5.2.3
 			if (ValueType.ARRAY.equals(expanded.getValueType())) {
