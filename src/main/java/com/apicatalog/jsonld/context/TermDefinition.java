@@ -63,6 +63,10 @@ public class TermDefinition {
 		return languageMapping;
 	}
 	
+	public DirectionType getDirectionMapping() {
+		return directionMapping;
+	}
+	
 	public String getTypeMapping() {
 		return typeMapping;
 	}

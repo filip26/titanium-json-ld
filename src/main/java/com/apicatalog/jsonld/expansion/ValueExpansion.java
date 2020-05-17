@@ -9,6 +9,7 @@ import javax.json.JsonValue.ValueType;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.grammar.DirectionType;
 import com.apicatalog.jsonld.grammar.Keywords;
 
 /**
@@ -86,20 +87,38 @@ public final class ValueExpansion {
 		
 		// 5.
 		if (ValueType.STRING.equals(value.getValueType())) {
+			
 			// 5.1.
 			String language = null;
+			
 			if (activeContext.containsTerm(Keywords.LANGUAGE)) {
 				language = activeContext.getTerm(Keywords.LANGUAGE).getLanguageMapping();
 			}
+			
 			if (language == null) {
 				language = activeContext.getDefaultLanguage();
 			}
-								
-
-			//TODO
-			//System.out.println(">> " + value + ", " + result + ", " + language);
+					
+			// 5.2.
+			DirectionType direction = null;
 			
+			if (activeContext.containsTerm(Keywords.DIRECTION)) {
+				direction = activeContext.getTerm(Keywords.DIRECTION).getDirectionMapping();
+			}
+			
+			if (direction == null) {
+				direction = activeContext.getDefaultBaseDirection();
+			}
+			
+			// 5.3.
+			if (language != null) {
+				result = Json.createObjectBuilder(result).add(Keywords.LANGUAGE, Json.createValue(language)).build();	
+			}
 
+			// 5.4.
+			if (direction != null) {
+				result = Json.createObjectBuilder(result).add(Keywords.DIRECTION, Json.createValue(direction.name().toLowerCase())).build();	
+			}
 		}
 
 		// 6.
