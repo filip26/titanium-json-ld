@@ -39,42 +39,50 @@ public final class ValueExpansion {
 
 		final String typeMapping = (definition != null) ? definition.getTypeMapping() : null;
 
-		// 1.
-		if (Keywords.ID.equals(typeMapping)
-				&& ValueType.STRING.equals(value.getValueType())
-				) {
+		if (typeMapping != null) {
+			// 1.
+			if (Keywords.ID.equals(typeMapping)
+					&& ValueType.STRING.equals(value.getValueType())
+					) {
+				
+				String expandedValue = UriExpansion
+											.with(activeContext, ((JsonString)value).getString())
+											.documentRelative(true)
+											.vocab(false)
+											.compute()
+											.orElse(null);	//FIXME
+				
+				return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();
+			}
 			
-			String expandedValue = UriExpansion
-										.with(activeContext, ((JsonString)value).getString())
-										.documentRelative(true)
-										.vocab(false)
-										.compute()
-										.orElse(null);	//FIXME
-			
-			return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();
-		}
-		
-		// 2.
-		if (Keywords.VOCAB.equals(typeMapping)
-				&& ValueType.STRING.equals(value.getValueType())
-				) {
-			
-			String expandedValue = UriExpansion
-										.with(activeContext, ((JsonString)value).getString())
-										.documentRelative(true)
-										.vocab(true)
-										.compute()
-										.orElse(null);	//FIXME
-			
-			return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();
+			// 2.
+			if (Keywords.VOCAB.equals(typeMapping)
+					&& ValueType.STRING.equals(value.getValueType())
+					) {
+				
+				String expandedValue = UriExpansion
+											.with(activeContext, ((JsonString)value).getString())
+											.documentRelative(true)
+											.vocab(true)
+											.compute()
+											.orElse(null);	//FIXME
+				
+				return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();
+			}
 		}
 		
 		// 3.
 		JsonObject result = Json.createObjectBuilder().add(Keywords.VALUE, value).build();
 		
 		// 4.
-		
-		//TODO
+		if (typeMapping != null
+			&& !Keywords.ID.equals(typeMapping)
+			&& !Keywords.VOCAB.equals(typeMapping)
+			&& !Keywords.NONE.equals(typeMapping)
+				) {
+			
+			result = Json.createObjectBuilder(result).add(Keywords.TYPE, Json.createValue(typeMapping)).build();
+		}
 		
 		// 5.
 		if (ValueType.STRING.equals(value.getValueType())) {
