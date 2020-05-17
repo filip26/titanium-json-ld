@@ -2,6 +2,7 @@ package com.apicatalog.jsonld.expansion;
 
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
 
@@ -32,10 +33,21 @@ public final class ValueExpansion {
 	}
 	
 	public JsonValue compute() throws JsonLdError {
-//		
 		
 		// 1.
-		//TODO
+		if (activeContext.hasTypeMapping(activeProperty, Keywords.ID)
+				&& ValueType.STRING.equals(value.getValueType())
+				) {
+			
+			String expandedValue = UriExpansion
+										.with(activeContext, ((JsonString)value).getString())
+										.documentRelative(true)
+										.vocab(false)
+										.compute()
+										.orElse(null);	//FIXME
+			
+			return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();
+		}
 		
 		// 2.
 		//TODO

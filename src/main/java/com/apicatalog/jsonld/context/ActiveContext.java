@@ -99,4 +99,9 @@ public class ActiveContext {
 	public URI getBaseUri() {
 		return baseUri;
 	}
+
+	public boolean hasTypeMapping(String term, String expected) {
+
+		return containsTerm(term) && URI.create(expected).equals(getTerm(term).typeMapping);
+	}
 }

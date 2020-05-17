@@ -148,7 +148,32 @@ public final class TermDefinitionCreator {
 		// 12.
 		if (valueObject.containsKey(Keywords.TYPE)) {
 
-			//TODO
+			// 12.1.
+			JsonValue type = valueObject.get(Keywords.TYPE);
+
+			if (!ValueType.STRING.equals(type.getValueType())) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING);
+			}
+
+			// 12.2.
+			String typeString = UriExpansion
+						.with(activeContext, ((JsonString)type).getString())
+						.localContext(localContext)
+						.defined(defined)
+						.compute()
+						.orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING));
+
+			// 12.3.
+			if (Keywords.JSON.equals(typeString) || Keywords.NONE.equals(typeString)) {
+				//TODO
+				
+			// 12.4.
+			} else {
+				//TODO
+			}
+
+			// 12.5.
+			definition.typeMapping = URI.create(typeString) ;
 		}
 		
 		// 13.
