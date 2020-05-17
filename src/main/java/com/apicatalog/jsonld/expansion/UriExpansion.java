@@ -109,7 +109,24 @@ public final class UriExpansion {
 		// 6. If value contains a colon (:) anywhere after the first character, it is either an IRI, 
 		//    a compact IRI, or a blank node identifier
 		if (value.indexOf(':', 1) != -1) {
+			
+			// 6.1. Split value into a prefix and suffix at the first occurrence of a colon (:).
+			String[] split = value.split(":", 2);
+			
+			// 6.2. If prefix is underscore (_) or suffix begins with double-forward-slash (//), 
+			//		return value as it is already an IRI or a blank node identifier.
+			if ("_".equals(split[0]) || split[1].startsWith("//")) {
+				return Optional.of(value);
+			}
+			
+			// 6.3.
 			//TODO
+			
+			// 6.4. 
+			//TODO
+			
+			// 6.5
+			return Optional.of(value);
 		}
 		
 		// 7. If vocab is true, and active context has a vocabulary mapping, 

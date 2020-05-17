@@ -173,7 +173,11 @@ public final class TermDefinitionCreator {
 			}
 
 			// 12.5.
-			definition.typeMapping = URI.create(typeString) ;
+			try {
+				definition.typeMapping = URI.create(typeString);
+			} catch (IllegalArgumentException e) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING, e);
+			}
 		}
 		
 		// 13.
@@ -255,8 +259,15 @@ public final class TermDefinitionCreator {
 			JsonValue container = valueObject.get(Keywords.CONTAINER);
 			//TODO check value and throw an exception
 			
+			if (ValueType.ARRAY.equals(container.getValueType())) {
+				container = container.asJsonArray().get(0);
+			}
+			
 			// 19.2.
 			//TODO
+			if (!ValueType.STRING.equals(container.getValueType())) {
+ 
+			}
 			
 			String containerMapping = ((JsonString)container).getString();	//FIXME
 		
