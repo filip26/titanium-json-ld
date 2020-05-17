@@ -4,6 +4,8 @@ import java.net.URI;
 
 import javax.json.JsonObject;
 
+import com.apicatalog.jsonld.grammar.Version;
+
 public class JsonLdTestOptions {
 
 	public String specVersion;
@@ -29,7 +31,7 @@ public class JsonLdTestOptions {
 	public void setup(JsonLdOptionsBuilder optionsBuilder) {
 
 		if (processingMode != null) {
-			optionsBuilder.mode(processingMode);
+			optionsBuilder.mode(Version.of(processingMode));
 		}
 		if (base != null) {
 			optionsBuilder.baseUri(URI.create(base));

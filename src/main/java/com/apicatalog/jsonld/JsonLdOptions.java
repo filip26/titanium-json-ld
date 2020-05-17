@@ -3,6 +3,7 @@ package com.apicatalog.jsonld;
 import java.net.URI;
 import java.util.Optional;
 
+import com.apicatalog.jsonld.grammar.Version;
 import com.apicatalog.jsonld.loader.FileDocumentLoader;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 
@@ -13,10 +14,6 @@ import com.apicatalog.jsonld.loader.LoadDocumentCallback;
  *  
  */
 public final class JsonLdOptions {
-
-    public static final String JSON_LD_1_0 = "json-ld-1.0";
-
-    public static final String JSON_LD_1_1 = "json-ld-1.1";
 	
 	public static final JsonLdOptions DEFAULT = new JsonLdOptions();
 	
@@ -28,7 +25,7 @@ public final class JsonLdOptions {
 	private boolean extractAllScripts;
 	private boolean frameExpansion;
 	private boolean ordered;
-	private String processingMode;
+	private Version processingMode;
 	private boolean produceGeneralizedRdf;
 	private String rdfDirection;
 	private boolean useNativeTypes;
@@ -42,7 +39,7 @@ public final class JsonLdOptions {
 		this.extractAllScripts = false;
 		this.frameExpansion = false;
 		this.ordered = false;
-		this.processingMode = JSON_LD_1_1;
+		this.processingMode = Version.V1_1;
 		this.produceGeneralizedRdf = true;
 		this.rdfDirection = null;
 		this.useNativeTypes = false;
@@ -150,7 +147,7 @@ public final class JsonLdOptions {
 		return ordered;
 	}
 	
-	public String getProcessingMode() {
+	public Version getProcessingMode() {
 		return processingMode;
 	}
 	
@@ -198,7 +195,7 @@ public final class JsonLdOptions {
 		this.ordered = ordered;
 	}
 	
-	protected void setProcessingMode(String processingMode) {
+	protected void setProcessingMode(Version processingMode) {
 		this.processingMode = processingMode;
 	}
 	

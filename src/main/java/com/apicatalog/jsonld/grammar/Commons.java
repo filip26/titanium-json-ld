@@ -4,6 +4,9 @@ import java.net.URI;
 
 public class Commons {
 
+	Commons() {
+	}
+	
 	public static boolean isURI(String value) {
 		
 		try {

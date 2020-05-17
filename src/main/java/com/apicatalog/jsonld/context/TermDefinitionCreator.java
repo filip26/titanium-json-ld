@@ -36,7 +36,8 @@ public final class TermDefinitionCreator {
 	boolean overrideProtectedFlag;
 	Collection remoteContexts;
 	boolean validateScopedContext;
-
+	
+	
 	private TermDefinitionCreator(ActiveContext activeContext, JsonObject localContext, String term, Map<String, Boolean> defined) {
 		this.activeContext = activeContext;
 		this.localContext = localContext;

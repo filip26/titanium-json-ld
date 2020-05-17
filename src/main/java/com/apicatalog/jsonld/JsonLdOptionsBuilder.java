@@ -2,6 +2,8 @@ package com.apicatalog.jsonld;
 
 import java.net.URI;
 
+import com.apicatalog.jsonld.grammar.Version;
+
 public final class JsonLdOptionsBuilder {
 
 	JsonLdOptions options;
@@ -19,7 +21,7 @@ public final class JsonLdOptionsBuilder {
 		return options;
 	}
 
-	public void mode(String processingMode) {
+	public void mode(Version processingMode) {
 		options.setProcessingMode(processingMode);
 	}
 }
