@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -253,12 +254,17 @@ public final class MapExpansion {
 					if (activeProperty == null || Keywords.GRAPH.equals(activeProperty)) {
 						continue;
 					}
-					
+
+					// 13.4.11.1
 					expandedValue = Expansion
 										.with(activeContext, value, activeProperty, baseUrl)
 										.frameExpansion(frameExpansion)
 										.ordered(ordered)
 										.compute();
+					
+					if (!ValueType.ARRAY.equals(expandedValue.getValueType())) {
+						expandedValue = Json.createArrayBuilder().add(expandedValue).build();
+					}
 				}
 
 				// 13.4.12
@@ -452,7 +458,7 @@ public final class MapExpansion {
 		if (ValueType.ARRAY.equals(value.getValueType())) {
 			
 			for (JsonValue v : value.asJsonArray()) {
-				addValue(object, key, v, true);
+				addValue(object, key, v, asArray);
 			}
 
 		// 3.
@@ -501,10 +507,12 @@ public final class MapExpansion {
 	}
 	
 	/*
-	 *  convert expanded value to a list object by first setting it to an array containing only expanded value if it is not already an array, and then by setting it to a map containing the key-value pair @list-expanded value.
+	 *  convert expanded value to a list object by 
+	 *  first setting it to an array containing only expanded value if it is not already an array, 
+	 *  and then by setting it to a map containing the key-value pair @list-expanded value.
 	 */
 	static final JsonObject toListObject(JsonValue value) {
-		if (!ValueType.ARRAY.equals(value.getValueType())) {
+		if (ValueType.ARRAY.equals(value.getValueType())) {
 			return Json.createObjectBuilder().add(Keywords.LIST, value).build();
 		}
 		
