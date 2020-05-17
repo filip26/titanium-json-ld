@@ -18,4 +18,8 @@ public final class JsonLdOptionsBuilder {
 	public JsonLdOptions create() {
 		return options;
 	}
+
+	public void mode(String processingMode) {
+		options.setProcessingMode(processingMode);
+	}
 }

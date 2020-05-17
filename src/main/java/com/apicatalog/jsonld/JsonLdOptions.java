@@ -174,4 +174,48 @@ public final class JsonLdOptions {
 		this.baseUri = baseUri;
 	}
 	
+	protected void setCompactArrays(boolean compactArrays) {
+		this.compactArrays = compactArrays;
+	}
+	
+	protected void setCompactToRelative(boolean compactToRelative) {
+		this.compactToRelative = compactToRelative;
+	}
+	
+	protected void setDocumentLoader(LoadDocumentCallback documentLoader) {
+		this.documentLoader = documentLoader;
+	}
+	
+	protected void setExtractAllScripts(boolean extractAllScripts) {
+		this.extractAllScripts = extractAllScripts;
+	}
+	
+	protected void setFrameExpansion(boolean frameExpansion) {
+		this.frameExpansion = frameExpansion;
+	}
+	
+	protected void setOrdered(boolean ordered) {
+		this.ordered = ordered;
+	}
+	
+	protected void setProcessingMode(String processingMode) {
+		this.processingMode = processingMode;
+	}
+	
+	protected void setProduceGeneralizedRdf(boolean produceGeneralizedRdf) {
+		this.produceGeneralizedRdf = produceGeneralizedRdf;
+	}
+	
+	protected void setRdfDirection(String rdfDirection) {
+		this.rdfDirection = rdfDirection;
+	}
+	
+	protected void setUseNativeTypes(boolean useNativeTypes) {
+		this.useNativeTypes = useNativeTypes;
+	}
+	
+	protected void setUseRdfType(boolean useRdfType) {
+		this.useRdfType = useRdfType;
+	}
+	
 }

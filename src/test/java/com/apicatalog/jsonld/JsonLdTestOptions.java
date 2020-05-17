@@ -1,5 +1,7 @@
 package com.apicatalog.jsonld;
 
+import java.net.URI;
+
 import javax.json.JsonObject;
 
 public class JsonLdTestOptions {
@@ -22,6 +24,17 @@ public class JsonLdTestOptions {
 		options.expandContext = o.getString("expandContext", null);
 		
 		return options;
+	}
+
+	public void setup(JsonLdOptionsBuilder optionsBuilder) {
+
+		if (processingMode != null) {
+			optionsBuilder.mode(processingMode);
+		}
+		if (base != null) {
+			optionsBuilder.baseUri(URI.create(base));
+		}
+		
 	}
 	
 }

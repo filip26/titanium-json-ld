@@ -56,7 +56,13 @@ public class JsonLdProcessorExpandTest {
 		
 		JsonValue result = null;
 		
-		JsonLdOptions options = new JsonLdOptionsBuilder().baseUri(URI.create(baseUri + testDefinition.input)).create();
+		JsonLdOptionsBuilder optionsBuilder = new JsonLdOptionsBuilder().baseUri(URI.create(baseUri + testDefinition.input));
+		
+		if (testDefinition.options != null) {
+			testDefinition.options.setup(optionsBuilder);
+		}
+		
+		JsonLdOptions options = optionsBuilder.create();
 		
 		try {
 			result = processor.expand(inputPath.toUri(), options);

@@ -35,6 +35,5 @@ public class JsonLdTestDefinition {
 		}
 		
 		return testDefinition;
-	}
-	
+	}	
 }
