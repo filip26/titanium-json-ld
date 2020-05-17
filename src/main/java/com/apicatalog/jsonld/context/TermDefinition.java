@@ -22,7 +22,7 @@ public class TermDefinition {
 	// optional
 	URI baseUrl;
 	
-	JsonValue context;
+	JsonValue localContext;
 	
 	Collection<String> containerMapping;
 	
@@ -43,8 +43,8 @@ public class TermDefinition {
 		this.containerMapping = new ArrayList<>();
 	}
 	
-	public void setContext(JsonValue context) {
-		this.context = context;
+	public void setLocalContext(JsonValue context) {
+		this.localContext = context;
 	}
 	
 	public void setBaseUrl(URI baseUrl) {
@@ -85,5 +85,13 @@ public class TermDefinition {
 	
 	public Collection<String> getContainerMapping() {
 		return containerMapping;
+	}
+	
+	public JsonValue getLocalContext() {
+		return localContext;
+	}
+	
+	public URI getBaseUrl() {
+		return baseUrl;
 	}
 }

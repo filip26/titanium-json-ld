@@ -33,18 +33,20 @@ import com.apicatalog.jsonld.grammar.ListObject;
 public final class MapExpansion {
 
 	// mandatory
-	private ActiveContext activeContext; 
+	private ActiveContext activeContext;
+	private JsonValue propertyContext;
 	private JsonObject element;
 	private String activeProperty; 
 	private URI baseUrl;
-	
+
 	// optional
 	private boolean frameExpansion;
 	private boolean ordered;
 	private boolean fromMap;
 	
-	private MapExpansion(final ActiveContext activeContext, final JsonObject element, final String activeProperty, final URI baseUrl) {
+	private MapExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final JsonObject element, final String activeProperty, final URI baseUrl) {
 		this.activeContext = activeContext;
+		this.propertyContext = propertyContext;
 		this.element = element;
 		this.activeProperty = activeProperty;
 		this.baseUrl = baseUrl;
@@ -55,8 +57,8 @@ public final class MapExpansion {
 		this.fromMap = false;
 	}
 	
-	public static final MapExpansion with(final ActiveContext activeContext, final JsonObject element, final String activeProperty, final URI baseUrl) {
-		return new MapExpansion(activeContext, element, activeProperty, baseUrl);
+	public static final MapExpansion with(final ActiveContext activeContext, final JsonValue propertyContext, final JsonObject element, final String activeProperty, final URI baseUrl) {
+		return new MapExpansion(activeContext, propertyContext, element, activeProperty, baseUrl);
 	}
 
 	public MapExpansion frameExpansion(boolean value) {
@@ -79,6 +81,16 @@ public final class MapExpansion {
 		// 7.
 		
 		// 8.
+		if (propertyContext != null) {
+			
+			TermDefinition activePropertyDefinition = activeContext.getTerm(activeProperty);
+			
+			activeContext = ContextProcessor
+								.with(activeContext, propertyContext, activePropertyDefinition.getBaseUrl())
+								.overrideProtected(true)
+								.compute()
+								;
+		}		
 		
 		// 9.
 		if (element.containsKey(Keywords.CONTEXT)) {

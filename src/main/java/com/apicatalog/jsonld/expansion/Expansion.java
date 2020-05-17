@@ -73,8 +73,11 @@ public final class Expansion {
 		
 		// 3. If active property has a term definition in active context with a local context, 
 		//    initialize property-scoped context to that local context.
-		//TODO
-		JsonValue propertyContext = null; 
+		JsonValue propertyContext = null;
+		
+		if (activeContext.containsTerm(activeProperty)) {	
+			propertyContext = activeContext.getTerm(activeProperty).getLocalContext();			
+		}
 		
 		// 4. If element is a scalar
 		if (ValueType.STRING.equals(elementType)
@@ -94,7 +97,7 @@ public final class Expansion {
 		}
 
 		// 6. Otherwise element is a map
-		return MapExpansion.with(activeContext, element.asJsonObject(), activeProperty, baseUrl)
+		return MapExpansion.with(activeContext, propertyContext, element.asJsonObject(), activeProperty, baseUrl)
 							  .frameExpansion(frameExpansion)
 							  .ordered(ordered)
 							  .fromMap(fromMap)

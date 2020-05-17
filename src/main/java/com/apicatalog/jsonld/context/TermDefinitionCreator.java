@@ -337,7 +337,7 @@ public final class TermDefinitionCreator {
 			}
 					
 			// 21.4.
-			definition.setContext(context);
+			definition.setLocalContext(context);
 			definition.setBaseUrl(baseUrl);			
 		}
 		
