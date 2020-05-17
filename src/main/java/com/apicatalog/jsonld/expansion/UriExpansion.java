@@ -5,9 +5,14 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.json.JsonObject;
+import javax.json.JsonString;
+import javax.json.JsonValue;
+import javax.json.JsonValue.ValueType;
 
+import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.context.TermDefinitionCreator;
 import com.apicatalog.jsonld.grammar.Commons;
 import com.apicatalog.jsonld.grammar.Keywords;
 /**
@@ -64,7 +69,7 @@ public final class UriExpansion {
 		return this;
 	}
 	
-	public Optional<String> compute() {
+	public Optional<String> compute() throws JsonLdError {
 
 		// 1. If value is a keyword or null, return value as is.
 		if (value == null || Keywords.contains(value)) {
@@ -84,12 +89,21 @@ public final class UriExpansion {
 		 *     passing active context, local context, value as term, and defined. 
 		 *     This will ensure that a term definition is created for value in active context during Context Processing 
 		 */
-		if (localContext != null) {
-			//TODO
+		if (localContext != null && localContext.containsKey(value)) {
+			
+			JsonValue entryValue = localContext.get(value);
+			
+			if (ValueType.STRING.equals(entryValue.getValueType())) {
+
+				String entryValueString = ((JsonString)entryValue).getString();
+				
+				if (!defined.containsKey(entryValueString) || Boolean.FALSE.equals(defined.get(entryValueString))) {
+					
+					TermDefinitionCreator.with(activeContext, localContext, value, defined).create();		
+				}
+			}
 		}
-		
-		
-		
+
 		// 4. if active context has a term definition for value, 
 		//	  and the associated IRI mapping is a keyword, return that keyword.
 		if (activeContext.containsTerm(value)) {
@@ -120,8 +134,19 @@ public final class UriExpansion {
 			}
 			
 			// 6.3.
-			if (localContext != null) {
-				//TODO
+			if (localContext != null && localContext.containsKey(split[0])) {
+				
+				JsonValue prefixValue = localContext.get(split[0]);
+				
+				if (ValueType.STRING.equals(prefixValue.getValueType())) {
+
+					String prefixValueString = ((JsonString)prefixValue).getString();
+					
+					if (!defined.containsKey(prefixValueString) || Boolean.FALSE.equals(defined.get(prefixValueString))) {
+
+						TermDefinitionCreator.with(activeContext, localContext, split[0], defined).create();		
+					}
+				}								
 			}
 			
 			// 6.4.
@@ -140,8 +165,7 @@ public final class UriExpansion {
 						value = prefixDefinition.getUriMapping().concat(suffixDefinition.getUriMapping());
 					} else {
 						value = prefixDefinition.getUriMapping().concat(split[1]);
-					}
-					
+					}	
 				}
 			}
 			

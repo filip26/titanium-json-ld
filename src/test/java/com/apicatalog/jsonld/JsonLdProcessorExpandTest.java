@@ -90,7 +90,7 @@ public class JsonLdProcessorExpandTest {
 //			JsonWriter jsonWriter2 = writerFactory.createWriter(System.out);
 //			jsonWriter2.write(result);
 //			jsonWriter2.close();
-			
+//			
 			Assert.assertEquals(expected, result);
 
 		}
