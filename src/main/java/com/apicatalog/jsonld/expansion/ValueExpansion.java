@@ -8,6 +8,7 @@ import javax.json.JsonValue.ValueType;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.grammar.Keywords;
 
 /**
@@ -33,9 +34,13 @@ public final class ValueExpansion {
 	}
 	
 	public JsonValue compute() throws JsonLdError {
-		
+
+		final TermDefinition definition = activeContext.getTerm(activeProperty);
+
+		final String typeMapping = (definition != null) ? definition.getTypeMapping() : null;
+
 		// 1.
-		if (activeContext.hasTypeMapping(activeProperty, Keywords.ID)
+		if (Keywords.ID.equals(typeMapping)
 				&& ValueType.STRING.equals(value.getValueType())
 				) {
 			
@@ -50,12 +55,25 @@ public final class ValueExpansion {
 		}
 		
 		// 2.
-		//TODO
+		if (Keywords.VOCAB.equals(typeMapping)
+				&& ValueType.STRING.equals(value.getValueType())
+				) {
+			
+			String expandedValue = UriExpansion
+										.with(activeContext, ((JsonString)value).getString())
+										.documentRelative(true)
+										.vocab(true)
+										.compute()
+										.orElse(null);	//FIXME
+			
+			return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();
+		}
 		
 		// 3.
 		JsonObject result = Json.createObjectBuilder().add(Keywords.VALUE, value).build();
 		
 		// 4.
+		
 		//TODO
 		
 		// 5.

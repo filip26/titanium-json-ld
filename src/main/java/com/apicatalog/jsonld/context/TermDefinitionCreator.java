@@ -204,11 +204,7 @@ public final class TermDefinitionCreator {
 			}
 
 			// 12.5.
-			try {
-				definition.typeMapping = URI.create(typeString);
-			} catch (IllegalArgumentException e) {
-				throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING, e);
-			}
+			definition.typeMapping = typeString;
 		}
 		
 		// 13.

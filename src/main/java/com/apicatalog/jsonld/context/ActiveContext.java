@@ -113,9 +113,4 @@ public class ActiveContext {
 	public boolean inMode(Version version) {
 		return processingMode != null && processingMode.equals(version);
 	}
-
-	public boolean hasTypeMapping(String term, String expected) {
-
-		return containsTerm(term) && URI.create(expected).equals(getTerm(term).typeMapping);
-	}
 }

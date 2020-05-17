@@ -34,7 +34,7 @@ public class TermDefinition {
 	
 	String nestValue;
 	
-	URI typeMapping; 
+	String typeMapping; 
 	
 	public TermDefinition(boolean prefixFlag, boolean protectedFlag, boolean reversePropertyFlag) {
 		this.prefixFlag = prefixFlag;
@@ -57,11 +57,14 @@ public class TermDefinition {
 
 	public void setUriMapping(String uriMapping) {
 		this.uriMapping = uriMapping;
-		
 	}
-	
+		
 	public String getLanguageMapping() {
 		return languageMapping;
+	}
+	
+	public String getTypeMapping() {
+		return typeMapping;
 	}
 	
 	public void setLanguageMapping(String languageMapping) {
