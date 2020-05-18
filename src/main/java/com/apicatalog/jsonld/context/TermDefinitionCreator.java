@@ -18,6 +18,7 @@ import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.DirectionType;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.Version;
+import com.apicatalog.jsonld.utils.JsonUtils;
 import com.apicatalog.jsonld.utils.UriUtils;
 
 /**
@@ -179,7 +180,16 @@ public final class TermDefinitionCreator {
 
 		// 11.
 		if (valueObject.containsKey(Keywords.PROTECTED)) {
-			//TODO
+			
+			if (activeContext.inMode(Version.V1_0)) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
+			}
+			
+			if (JsonUtils.isNotBoolean(valueObject.get(Keywords.PROTECTED))) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_PROTECTED_VALUE);
+			}
+			
+			definition.protectedFlag = JsonUtils.isTrue(valueObject.get(Keywords.PROTECTED));			
 		}
 		
 		// 12.
@@ -222,7 +232,68 @@ public final class TermDefinitionCreator {
 		
 		// 13.
 		if (valueObject.containsKey(Keywords.REVERSE)) {
-			//TODO
+			
+			// 13.1.
+			if (valueObject.containsKey(Keywords.ID) || valueObject.containsKey(Keywords.NEST)) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY);
+			}
+			
+			JsonValue reverse = valueObject.get(Keywords.REVERSE);
+			
+			// 13.2.
+			if (JsonUtils.isNotString(reverse)) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
+			}
+			
+			String reverseString = ((JsonString)reverse).getString();
+			
+			// 13.3.
+			if (Keywords.hasForm(reverseString)) {
+				//TODO warning;
+				return;
+			}
+			
+			// 13.4.
+			definition.uriMapping = UriExpansion.with(activeContext, reverseString)
+										.localContext(localContext)
+										.defined(defined)
+										.vocab(true)
+										.compute();
+			
+			if (UriUtils.isNotURI(definition.uriMapping)) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
+			}
+			
+			// 13.5.
+			if (valueObject.containsKey(Keywords.CONTAINER)) {
+				
+				JsonValue container = valueObject.get(Keywords.CONTAINER);
+				
+				if (JsonUtils.isNotString(container) && JsonUtils.isNotNull(container)) {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY);
+				}
+				
+				if (JsonUtils.isString(container)) {
+				
+					String containerString = ((JsonString)container).getString();
+					
+					if (Keywords.isNot(containerString, Keywords.SET, Keywords.INDEX)) {
+					
+						definition.addContainerMapping(containerString);
+						
+					} else {
+						throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY);
+					}
+				}				
+			}
+			
+			// 13.6.
+			definition.reversePropertyFlag = true;
+			
+			// 13.7.
+			activeContext.setTerm(term, definition);
+			defined.put(term, Boolean.TRUE);
+			return;
 		}
 		
 		// 14.
