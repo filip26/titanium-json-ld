@@ -15,11 +15,11 @@ import javax.json.JsonValue.ValueType;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.expansion.UriExpansion;
-import com.apicatalog.jsonld.grammar.UriUtils;
 import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.DirectionType;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.Version;
+import com.apicatalog.jsonld.utils.UriUtils;
 
 /**
  * 
@@ -518,6 +518,7 @@ public final class TermDefinitionCreator {
 		// 25.
 		if (valueObject.containsKey(Keywords.PREFIX)) {
 
+			// 25.1.
 			if (activeContext.inMode(Version.V1_0)
 					|| term.contains(":")
 					|| term.contains("/")
@@ -525,6 +526,7 @@ public final class TermDefinitionCreator {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
 			}
 			
+			// 25.2.
 			JsonValue prefix = valueObject.get(Keywords.PREFIX);
 			
 			if (ValueType.TRUE.equals(prefix.getValueType())) {
@@ -536,14 +538,20 @@ public final class TermDefinitionCreator {
 			} else {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
 			}
+			
+			// 25.3
+			if (definition.prefixFlag && Keywords.contains(definition.uriMapping)) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
+			}
 		}
 		
 		// 26.
 		//TODO
 		
 		// 27.
-		//TODO
-		
+		if (overrideProtectedFlag && previousDefinition != null && previousDefinition.protectedFlag) {
+			//TODO
+		}		
 		// 28
 		activeContext.setTerm(term, definition);
 		defined.put(term, Boolean.TRUE);

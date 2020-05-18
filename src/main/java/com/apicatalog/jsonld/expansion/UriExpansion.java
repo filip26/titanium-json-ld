@@ -13,8 +13,8 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.context.TermDefinitionCreator;
-import com.apicatalog.jsonld.grammar.UriUtils;
 import com.apicatalog.jsonld.grammar.Keywords;
+import com.apicatalog.jsonld.utils.UriUtils;
 /**
  * 
  * 

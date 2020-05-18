@@ -103,4 +103,9 @@ public final class Keywords {
 	public static boolean isNot(String key, String...keywords) {
 		return Arrays.stream(keywords).noneMatch(keyword -> keyword.equals(key));		
 	}	
+	
+	public static boolean allIsOneOf(final Collection<String> values, final String...keywords) {
+		return values.stream().allMatch(v -> Arrays.asList(keywords).contains(v));
+	}
+	
 }

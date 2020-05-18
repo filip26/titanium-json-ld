@@ -24,6 +24,8 @@ import com.apicatalog.jsonld.context.ContextProcessor;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.ListObject;
+import com.apicatalog.jsonld.utils.JsonUtils;
+import com.apicatalog.jsonld.utils.UriUtils;
 
 /**
  * 
@@ -441,28 +443,54 @@ public final class MapExpansion {
 		if (result.containsKey(Keywords.VALUE)) {
 			
 			// 15.1.
-			//TODO
-			
-			// 15.2.
-			//TODO
-			
-
-			JsonValue value = result.get(Keywords.VALUE);
-
-			// 15.3.
-			if (ValueType.NULL.equals(value.getValueType())
-				|| (ValueType.ARRAY.equals(value.getValueType()) && value.asJsonArray().isEmpty())
-					) {
-				return JsonValue.NULL;
+			if (!Keywords.allIsOneOf(
+					result.keySet(), 
+					Keywords.DIRECTION,
+					Keywords.INDEX,
+					Keywords.LANGUAGE,
+					Keywords.TYPE,
+					Keywords.VALUE
+					)) {
 				
+				throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
 			}
-			
-			// 15.4
-			//TODO
-				
-			// 15.5			
-			//TODO
+			if ((result.keySet().contains(Keywords.DIRECTION)
+					|| result.keySet().contains(Keywords.LANGUAGE))
+				&& result.keySet().contains(Keywords.TYPE)
+				) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
+			}
 
+			// 15.2.
+			JsonValue type = result.get(Keywords.TYPE);
+			
+			if (JsonUtils.contains(Keywords.JSON, type)) {
+
+			} else {
+				
+				JsonValue value = result.get(Keywords.VALUE);
+				
+				// 15.3.
+				if (value == null || ValueType.NULL.equals(value.getValueType())
+						|| (ValueType.ARRAY.equals(value.getValueType()) && value.asJsonArray().isEmpty())
+						) {
+					return JsonValue.NULL;
+					
+
+				// 15.4
+				} else if (!ValueType.STRING.equals(value.getValueType()) && result.containsKey(Keywords.LANGUAGE))  {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
+
+				// 15.5			
+				} else if (result.containsKey(Keywords.TYPE)
+						&& !ValueType.STRING.equals(type.getValueType())
+						&& UriUtils.isNotURI(((JsonString)type).getString())
+						){
+					throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE);
+				}
+			}
+
+			
 		// 16. Otherwise, if result contains the entry @type and its associated value is not an array, 
 		//	   set it to an array containing only the associated value.
 		} else if (result.containsKey(Keywords.TYPE)) {
@@ -477,14 +505,20 @@ public final class MapExpansion {
 		} else if (result.containsKey(Keywords.LIST) || result.containsKey(Keywords.SET)) {
 			
 			// 17.1.
-			//TODO
+			if (result.size() > 2 || result.size() == 2 && !result.containsKey(Keywords.INDEX)) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_SET_OR_LIST_OBJECT);
+			}
 			
 			// 17.2.
 			if (result.containsKey(Keywords.SET)) {
-				return result.get(Keywords.SET);
-//				//TODO
+				JsonValue set = result.get(Keywords.SET);
+				
+				if (!ValueType.OBJECT.equals(set.getValueType())) {
+					return set;
+				}			
+
+				result = set.asJsonObject();
 			}
-			
 		}
 
 		// 18.
