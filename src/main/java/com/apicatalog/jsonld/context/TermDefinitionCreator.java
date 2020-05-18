@@ -17,6 +17,7 @@ import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.grammar.UriUtils;
 import com.apicatalog.jsonld.grammar.CompactUri;
+import com.apicatalog.jsonld.grammar.DirectionType;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.Version;
 
@@ -438,10 +439,9 @@ public final class TermDefinitionCreator {
 			definition.indexMapping = indexString;
 		}
 		
-		
 		// 21.
 		if (valueObject.containsKey(Keywords.CONTEXT)) {
-			
+	
 			// 21.1.
 			//TODO
 			
@@ -465,11 +465,70 @@ public final class TermDefinitionCreator {
 			definition.setLocalContext(context);
 			definition.setBaseUrl(baseUrl);			
 		}
-		
+
 		// 22.
+		if (valueObject.containsKey(Keywords.LANGUAGE) && !valueObject.containsKey(Keywords.TYPE)) {
+			
+			// 22.1. - 2.
+			JsonValue language = valueObject.get(Keywords.LANGUAGE);
+			
+			if (ValueType.NULL.equals(language.getValueType())) {
+				definition.languageMapping = null;
+				
+			} else if (ValueType.STRING.equals(language.getValueType())) {
+				definition.languageMapping = ((JsonString)language).getString();
+				
+			} else {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_MAPPING);
+			}			
+		}
+
+		// 23.
+		if (valueObject.containsKey(Keywords.DIRECTION) && !valueObject.containsKey(Keywords.TYPE)) {
+
+			JsonValue direction = valueObject.get(Keywords.DIRECTION);
+			
+			if (ValueType.NULL.equals(direction.getValueType())) {
+				definition.directionMapping = null;
+				
+			} else if (ValueType.STRING.equals(direction.getValueType())) {
+				
+				String directionString = ((JsonString)direction).getString();
+				
+				if ("ltr".equals(directionString)) {
+					definition.directionMapping = DirectionType.LTR;
+					
+				} else 	if ("rtl".equals(directionString)) {
+					definition.directionMapping = DirectionType.RTL;
+					
+				} else {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
+				}
+				
+			} else {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
+			}			
+		}
+
+		// 24.
+		if (valueObject.containsKey(Keywords.NEST)) {
+		//TODO
+		}
+
+		// 25.
+		if (valueObject.containsKey(Keywords.PREFIX)) {
+
+			System.out.println(">> " + valueObject);
+			//TODO		
+
+		//TODO
+
+		}
+		
+		// 26.
 		//TODO
 		
-		
+		// 27.
 		//TODO
 		
 		// 28
