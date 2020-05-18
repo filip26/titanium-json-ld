@@ -1,12 +1,12 @@
 package com.apicatalog.jsonld.expansion;
 
-import java.net.URI;
-
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.ContextProcessor;
+import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.grammar.Keywords;
 
 /**
  * Steps 4.1 - 4.3
@@ -21,18 +21,16 @@ public final class ScalarExpansion {
 	private JsonValue propertyContext;
 	private JsonValue element;
 	private String activeProperty; 
-	private URI baseUrl;
 	
-	private ScalarExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final JsonValue element, final String activeProperty, final URI baseUrl) {
+	private ScalarExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final JsonValue element, final String activeProperty) {
 		this.activeContext = activeContext;
 		this.propertyContext = propertyContext;
 		this.element = element;
-		this.activeProperty = activeProperty;
-		this.baseUrl = baseUrl;		
+		this.activeProperty = activeProperty;		
 	}
 	
-	public static final ScalarExpansion with(final ActiveContext activeContext, final JsonValue propertyContext, final JsonValue element, final String activeProperty, final URI baseUrl) {
-		return new ScalarExpansion(activeContext, propertyContext, element, activeProperty, baseUrl);
+	public static final ScalarExpansion with(final ActiveContext activeContext, final JsonValue propertyContext, final JsonValue element, final String activeProperty) {
+		return new ScalarExpansion(activeContext, propertyContext, element, activeProperty);
 	}
 	
 	public JsonValue compute() throws JsonLdError {
@@ -40,7 +38,7 @@ public final class ScalarExpansion {
 		/*
 		 *  4.1. If active property is null or @graph, drop the free-floating scalar by returning null.
 		 */
-		if (activeProperty == null || "@graph".equals(activeProperty)) {
+		if (activeProperty == null || Keywords.GRAPH.equals(activeProperty)) {
 			return JsonValue.NULL;
 		}
 		
@@ -50,8 +48,11 @@ public final class ScalarExpansion {
 		 *		active context, property-scoped context as local context, 
 		 *		and base URL from the term definition for active property in active context.
 		 */
-		if (propertyContext != null) {	
-			activeContext = ContextProcessor.with(activeContext, propertyContext, baseUrl).compute();		
+		if (propertyContext != null) {
+			
+			final TermDefinition definition = activeContext.getTerm(activeProperty);
+			
+			activeContext = ContextProcessor.with(activeContext, propertyContext, definition.getBaseUrl()).compute();		
 		}
 		
 		/*

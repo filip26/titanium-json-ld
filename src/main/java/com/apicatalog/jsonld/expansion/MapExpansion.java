@@ -722,10 +722,8 @@ public final class MapExpansion {
 			// 15.2.
 			JsonValue type = result.get(Keywords.TYPE);
 			
-			if (JsonUtils.contains(Keywords.JSON, type)) {
-
-			} else {
-				
+			if (!JsonUtils.contains(Keywords.JSON, type)) {
+								
 				JsonValue value = result.get(Keywords.VALUE);
 				
 				// 15.3.

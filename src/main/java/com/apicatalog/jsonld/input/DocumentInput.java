@@ -16,4 +16,7 @@ public class DocumentInput implements JsonLdInput {
 		return Type.DOCUMENT;
 	}
 	
+	public RemoteDocument getRemoteDocument() {
+		return remoteDocument;
+	}
 }

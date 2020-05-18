@@ -18,5 +18,9 @@ public class JsonStructureInput implements JsonLdInput {
 		// TODO Auto-generated method stub
 		return Type.RECORD;
 	}
+	
+	public JsonStructure getJsonStructure() {
+		return jsonStructure;
+	}
 
 }

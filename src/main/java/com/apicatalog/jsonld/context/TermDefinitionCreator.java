@@ -121,6 +121,8 @@ public final class TermDefinitionCreator {
 				JsonObject map = value.asJsonObject();
 				
 				if (map.size() == 1 && map.containsKey(Keywords.PROTECTED)) {
+
+					//TODO
 					
 				} else if (map.size() == 1 && map.containsKey(Keywords.CONTAINER)) {
 					JsonValue container = map.get(Keywords.CONTAINER);
@@ -301,10 +303,10 @@ public final class TermDefinitionCreator {
 			
 			JsonValue idValue = valueObject.get(Keywords.ID);
 			
-			if (!ValueType.STRING.equals(idValue.getValueType()) || !term.equals(((JsonString)idValue).getString())) {
+			if (JsonUtils.isNotString(idValue) || !term.equals(((JsonString)idValue).getString())) {
 				
 				// 14.1.
-				if (JsonValue.NULL.equals(idValue.getValueType())) {
+				if (JsonUtils.isNull(idValue)) {
 					
 				// 14.2
 				} else {

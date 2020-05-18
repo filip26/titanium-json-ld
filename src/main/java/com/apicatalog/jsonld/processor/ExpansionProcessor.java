@@ -27,6 +27,9 @@ import com.apicatalog.jsonld.loader.LoadDocumentOptions;
  */
 public class ExpansionProcessor {
 
+	ExpansionProcessor() {
+	}
+	
 	public static JsonArray expand(JsonStructure input, JsonLdOptions options) {
 		// TODO Auto-generated method stub
 		return null;
@@ -39,7 +42,7 @@ public class ExpansionProcessor {
 		}
 		
 		try {
-						 
+			 
 			final RemoteDocument remoteDocument = 
 					options
 						.getDocumentLoader()

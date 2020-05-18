@@ -1,5 +1,7 @@
 package com.apicatalog.jsonld.utils;
 
+import java.util.Map;
+
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -73,7 +75,7 @@ public final class JsonUtils {
 		return object.entrySet()
 					.stream()
 						.filter(e -> e.getValue().equals(Json.createValue(value)))
-						.map(e -> e.getKey())
+						.map(Map.Entry::getKey)
 						.findFirst()
 						.orElse(null);
 	}

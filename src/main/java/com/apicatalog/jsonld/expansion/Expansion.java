@@ -2,12 +2,12 @@ package com.apicatalog.jsonld.expansion;
 
 import java.net.URI;
 
-import javax.json.Json;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.utils.JsonUtils;
 
 /**
@@ -69,7 +69,7 @@ public final class Expansion {
 		}
 		
 		// 2. If active property is @default, initialize the frameExpansion flag to false.
-		if ("@default".equals(activeProperty)) {
+		if (Keywords.DEFAULT.equals(activeProperty)) {
 			frameExpansion = false;
 		}
 		
@@ -83,8 +83,7 @@ public final class Expansion {
 		
 		// 4. If element is a scalar
 		if (JsonUtils.isScalar(element)) {
-		
-			return ScalarExpansion.with(activeContext, propertyContext, element, activeProperty, baseUrl).compute();
+			return ScalarExpansion.with(activeContext, propertyContext, element, activeProperty).compute();
 		}
 		
 		// 5. If element is an array,
