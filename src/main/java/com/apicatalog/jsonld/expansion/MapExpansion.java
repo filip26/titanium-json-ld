@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.json.Json;
-import javax.json.JsonArrayBuilder;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
@@ -79,6 +79,9 @@ public final class MapExpansion {
 	public JsonValue compute() throws JsonLdError {
 		
 		// 7.
+		if (activeContext.hasPreviousContext()) {
+			//TODO
+		}
 		
 		// 8.
 		if (propertyContext != null) {
@@ -98,18 +101,52 @@ public final class MapExpansion {
 		}
 		
 		// 10.
-		ActiveContext typeScoppedContext = activeContext;
-		//TODO
+		ActiveContext typeContext = activeContext;
 		
-		List<String> keys = new ArrayList<>(element.keySet());
-		
-		if (ordered) {
-			Collections.sort(keys);
-		}
+		List<String> keys = new ArrayList<>(element.keySet());		
+		Collections.sort(keys);
 		
 		// 11.
 		for (String key : keys) {
-			//TODO
+			
+			String expandedKey = UriExpansion
+									.with(activeContext, key)
+									.vocab(true)
+									.compute()
+									.orElse(null) //FIXME
+									;
+			
+			if (!Keywords.TYPE.equals(expandedKey)) {
+				continue;
+			}
+			
+			JsonValue value = element.get(key);
+			
+			// 11.1
+			if (!ValueType.ARRAY.equals(value.getValueType())) {
+				value = Json.createArrayBuilder().add(value).build();
+			}
+			
+			// 11.2
+			JsonArray valueArray = value.asJsonArray();
+			//TODO oder lex
+			
+			for (JsonValue term : valueArray) {
+				
+				if (ValueType.STRING.equals(term.getValueType()) 
+						&& typeContext.containsTerm(((JsonString)term).getString())) {
+					
+					TermDefinition termDefinition = typeContext.getTerm(((JsonString)term).getString());
+					//TODO ?! TermDefinition activeTermDefinition = activeContext.getTerm(((JsonString)term).getString());
+					
+					if (termDefinition.hasLocalContext()) {		
+						activeContext = ContextProcessor
+											.with(typeContext, termDefinition.getLocalContext(), termDefinition.getBaseUrl())
+											.propagate(false)
+											.compute();
+					}
+				}
+			}		
 		}
 		
 		
@@ -122,6 +159,10 @@ public final class MapExpansion {
 //      input_type = context.expand_iri(input_type, vocab: true, as_string: true, base: @options[:base]) if input_type
 		
 		// 13.
+		if (!ordered) {
+			keys = new ArrayList<>(element.keySet());
+		}
+
 		for (String key : keys) {
 			
 			// 13.1.
@@ -152,6 +193,11 @@ public final class MapExpansion {
 				
 				JsonValue expandedValue = JsonValue.NULL;
 				
+				// 13.4.1
+				if (Keywords.REVERSE.equals(activeProperty)) {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_MAP);
+				}
+				
 				// 13.4.2
 				if (result.containsKey(expandedProperty.get()) && Keywords.isNot(expandedProperty.get(), Keywords.INCLUDED, Keywords.TYPE)) {
 					throw new JsonLdError(JsonLdErrorCode.COLLIDING_KEYWORDS);
@@ -167,7 +213,7 @@ public final class MapExpansion {
 						
 					// 13.4.3.2
 					} else {
-					
+
 						Optional<String> expandedStringValue = UriExpansion
 												.with(activeContext, ((JsonString)value).getString())
 												.documentRelative(true)
@@ -201,7 +247,7 @@ public final class MapExpansion {
 							
 							Optional<String> expandedStringValue = 
 										UriExpansion
-												.with(typeScoppedContext, ((JsonString)value).getString())
+												.with(typeContext, ((JsonString)value).getString())
 												.vocab(true)	//TODO ?!
 												.documentRelative(true)
 												.compute(); 
@@ -217,11 +263,35 @@ public final class MapExpansion {
 					}
 
 					// 13.4.4.5
-					//TODO
+					if (result.containsKey(Keywords.TYPE)) {
+						
+						JsonValue type = result.get(Keywords.TYPE);
+						
+						if (ValueType.ARRAY.equals(type.getValueType())) {
+							
+							expandedValue = Json.createArrayBuilder(type.asJsonArray()).add(expandedValue).build();
+						} else {
+							expandedValue = Json.createArrayBuilder().add(value).add(expandedValue).build();
+						}
+						
+					}
 				}
 				
-				//TODO
+				// 13.4.5
+				if (Keywords.GRAPH.equals(expandedProperty.get())) {
+					
+					expandedValue = Expansion
+										.with(typeContext, value, Keywords.GRAPH, baseUrl)
+										.frameExpansion(frameExpansion)
+										.ordered(ordered)
+										.compute()
+										;
+				}
 				
+				// 13.4.6
+				if (Keywords.INCLUDED.equals(expandedProperty.get())) {
+					
+				}
 				
 				// 13.4.7
 				if (Keywords.VALUE.equals(expandedProperty.get())) {
@@ -509,12 +579,7 @@ public final class MapExpansion {
 
 				// 3.2.2
 				} else {
-					
-					JsonArrayBuilder array = Json.createArrayBuilder();
-					
-					original.asJsonArray().stream().forEach(array::add);
-					
-					object.put(key, array.add(value).build());
+					object.put(key, Json.createArrayBuilder(original.asJsonArray()).add(value).build());
 				}
 			}	
 		}

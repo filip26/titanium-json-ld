@@ -27,15 +27,22 @@ public final class TermDefinitionCreator {
 
 	// mandatory
 	ActiveContext activeContext;
+	
 	JsonObject localContext;
+	
 	String term;
+	
 	Map<String, Boolean> defined;
 	
 	// optional
 	URI baseUrl;
+	
 	boolean protectedFlag;
+	
 	boolean overrideProtectedFlag;
+	
 	Collection remoteContexts;
+	
 	boolean validateScopedContext;
 	
 	private TermDefinitionCreator(ActiveContext activeContext, JsonObject localContext, String term, Map<String, Boolean> defined) {
@@ -271,12 +278,25 @@ public final class TermDefinitionCreator {
 		// 15.
 		} else if (term.indexOf(':', 1) != -1) {
 			
+			//TODO
+			
 		// 16.
 		} else if (term.contains("/")) {
+
+			definition.uriMapping = UriExpansion.with(activeContext, term)
+										.localContext(localContext)
+										.defined(defined)
+										.vocab(true)
+										.compute()
+										.orElse(null);	//FIXME
+			
+			if (!Commons.isURI(definition.uriMapping)) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
+			}					
 			
 		// 17.
 		} else if (Keywords.TYPE.equals(term)) {
-			definition.setUriMapping(Keywords.TYPE);
+			definition.uriMapping = Keywords.TYPE;
 			
 		// 18.
 		} else if (activeContext.vocabularyMapping != null) {
@@ -311,8 +331,11 @@ public final class TermDefinitionCreator {
 		}
 		
 		// 20.
+		if (valueObject.containsKey(Keywords.INDEX)) {
 		
-		//TODO
+			//TODO
+		}
+		
 		
 		// 21.
 		if (valueObject.containsKey(Keywords.CONTEXT)) {
@@ -340,6 +363,10 @@ public final class TermDefinitionCreator {
 			definition.setLocalContext(context);
 			definition.setBaseUrl(baseUrl);			
 		}
+		
+		// 22.
+		//TODO
+		
 		
 		//TODO
 		

@@ -94,4 +94,8 @@ public class TermDefinition {
 	public URI getBaseUrl() {
 		return baseUrl;
 	}
+
+	public boolean hasLocalContext() {
+		return localContext != null;
+	}
 }

@@ -113,4 +113,8 @@ public class ActiveContext {
 	public boolean inMode(Version version) {
 		return processingMode != null && processingMode.equals(version);
 	}
+
+	public boolean hasPreviousContext() {
+		return previousContext != null;
+	}
 }
