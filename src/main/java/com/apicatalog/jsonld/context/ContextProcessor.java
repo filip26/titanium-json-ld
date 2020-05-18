@@ -10,7 +10,6 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
-import javax.json.JsonValue.ValueType;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -228,12 +227,12 @@ public class ContextProcessor {
 				JsonValue value = contextDefinition.get(Keywords.BASE);
 				
 				// 5.7.2.
-				if (ValueType.NULL.equals(value.getValueType())) {
+				if (JsonUtils.isNull(value)) {
 					result.baseUri = null;
 					
 				} else {
 					
-					if (!ValueType.STRING.equals(value.getValueType())) {
+					if (JsonUtils.isNotString(value)) {
 						throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);
 					}
 					
@@ -256,13 +255,13 @@ public class ContextProcessor {
 				JsonValue value = contextDefinition.get(Keywords.VOCAB);
 				
 				// 5.8.2.
-				if (ValueType.NULL.equals(value.getValueType())) {
+				if (JsonUtils.isNull(value)) {
 					result.vocabularyMapping = null;
 					
 				// 5.8.3
 				} else {
 					
-					if (!ValueType.STRING.equals(value.getValueType())) {
+					if (JsonUtils.isNotString(value)) {
 						throw new JsonLdError(JsonLdErrorCode.INVALID_VOCAB_MAPPING);
 					}
 					
@@ -294,13 +293,13 @@ public class ContextProcessor {
 				JsonValue value = contextDefinition.get(Keywords.LANGUAGE);
 				
 				// 5.9.2.
-				if (ValueType.NULL.equals(value.getValueType())) {
+				if (JsonUtils.isNull(value)) {
 					result.defaultLanguage = null;
 					
 				// 5.9.3
 				} else {
 					
-					if (!ValueType.STRING.equals(value.getValueType())) {
+					if (JsonUtils.isNotString(value)) {
 						throw new JsonLdError(JsonLdErrorCode.INVALID_DEFAULT_LANGUAGE);
 					}
 					
@@ -316,7 +315,14 @@ public class ContextProcessor {
 				
 			// 5.11.
 			if (contextDefinition.containsKey(Keywords.PROPAGATE)) {
-				//TODO
+				// 5.11.1.
+				if (activeContext.inMode(Version.V1_0)) {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_CONTEXT_ENTRY);
+				}
+				// 5.11.2.
+				if (JsonUtils.isNotBoolean(contextDefinition.get(Keywords.PROPAGATE))) {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_PROPAGATE_VALUE);	
+				}
 			}
 			
 			// 5.12. Create a map defined to keep track of whether 
@@ -338,10 +344,14 @@ public class ContextProcessor {
 								)
 						) {
 	
+					boolean protectedFlag = contextDefinition.containsKey(Keywords.PROTECTED) 
+												&& JsonUtils.isTrue(contextDefinition.get(Keywords.PROTECTED));
+					
 					TermDefinitionCreator
 						.with(result, contextDefinition, key, defined)
 						.baseUrl(baseUrl)
-						//TODO
+						.protectedFlag(protectedFlag)
+						.overrideProtectedFlag(protectedFlag)
 						.remoteContexts(new ArrayList<>(remoteContexts))
 						.create();
 				}	

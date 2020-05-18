@@ -43,7 +43,7 @@ public final class TermDefinitionCreator {
 	
 	boolean overrideProtectedFlag;
 	
-	Collection remoteContexts;
+	Collection<String> remoteContexts;
 	
 	boolean validateScopedContext;
 	
@@ -80,7 +80,7 @@ public final class TermDefinitionCreator {
 		return this;
 	}
 	
-	public TermDefinitionCreator remoteContexts(Collection remoteContexts) {
+	public TermDefinitionCreator remoteContexts(Collection<String> remoteContexts) {
 		this.remoteContexts = remoteContexts;
 		return this;
 	}

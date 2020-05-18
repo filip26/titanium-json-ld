@@ -92,4 +92,15 @@ public final class JsonUtils {
 		return value != null && ValueType.NUMBER.equals(value.getValueType());
 	}
 
+	public static boolean isNotBoolean(JsonValue value) {
+		return value == null 
+					|| (!ValueType.TRUE.equals(value.getValueType()) 
+							&& !ValueType.FALSE.equals(value.getValueType())
+							);
+	}
+
+	public static boolean isTrue(JsonValue value) {
+		return value != null && ValueType.TRUE.equals(value.getValueType());
+	}
+
 }
