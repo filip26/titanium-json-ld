@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -192,27 +193,28 @@ public final class TermDefinitionCreator {
 			}
 
 			// 12.2.
-			String typeString = UriExpansion
+			String expandedTypeString = UriExpansion
 						.with(activeContext, ((JsonString)type).getString())
 						.localContext(localContext)
 						.defined(defined)
+						.vocab(true)
 						.compute()
 						.orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING));
 
 			// 12.3.
-			if (((Keywords.JSON.equals(typeString) || Keywords.NONE.equals(typeString))
+			if (((Keywords.JSON.equals(expandedTypeString) || Keywords.NONE.equals(expandedTypeString))
 				&& activeContext.inMode(Version.V1_0) 
 				)
 				// 12.4.
-				|| (Keywords.isNot(typeString, Keywords.ID, Keywords.JSON, Keywords.NONE, Keywords.VOCAB) 
-						|| !UriUtils.isURI(typeString)
+				|| (Keywords.isNot(expandedTypeString, Keywords.ID, Keywords.JSON, Keywords.NONE, Keywords.VOCAB) 
+						&& UriUtils.isNotURI(expandedTypeString)
 					)
 			) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING);
 			}
 
 			// 12.5.
-			definition.typeMapping = typeString;
+			definition.typeMapping = expandedTypeString;
 		}
 		
 		// 13.
@@ -238,19 +240,34 @@ public final class TermDefinitionCreator {
 						throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
 					}
 					
-					// 14.2.2
-					//TODO
+					String idValueString = ((JsonString)idValue).getString();
 					
+					// 14.2.2
+					if (!Keywords.contains(idValueString) && Keywords.hasForm(idValueString)) {
+						//TODO generate warning
+						return;
+					}
+
 					// 14.2.3
 					definition.uriMapping = UriExpansion
-												.with(activeContext, ((JsonString)idValue).getString())
+												.with(activeContext, idValueString)
 												.localContext(localContext)
 												.defined(defined)
+												.vocab(true)
 												.compute()
 												.orElse(null);
-					//TODO
 					
+					if (Keywords.CONTEXT.equals(definition.uriMapping)) {
+						throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ALIAS);
+					}
 					
+					if (!Keywords.contains(definition.uriMapping)
+							&& !UriUtils.isURI(definition.uriMapping)
+							//TODO not a blank node
+							) {
+						throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
+					}
+
 					// 14.2.4
 					if (term.indexOf(':', 1) != -1 /*TODO end limit - 1*/ || term.contains("/")) {
 						
@@ -258,7 +275,17 @@ public final class TermDefinitionCreator {
 						defined.put(term, Boolean.TRUE);
 						
 						// 14.2.4.2
-						//TODO
+						Optional<String> expandedTerm = UriExpansion.with(activeContext, term)
+								.localContext(localContext)
+								.defined(defined)
+								.vocab(true)
+								.compute();
+						
+						if (expandedTerm.isEmpty() 
+								|| !expandedTerm.get().equals(definition.uriMapping)
+								) {
+							throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
+						}
 					}
 					
 					// 14.2.5
@@ -302,10 +329,7 @@ public final class TermDefinitionCreator {
 			} else {
 				definition.uriMapping = term;
 			}
-			
-	
-			//TODO
-			
+				
 		// 16.
 		} else if (term.contains("/")) {
 
@@ -325,8 +349,11 @@ public final class TermDefinitionCreator {
 			definition.uriMapping = Keywords.TYPE;
 			
 		// 18.
-		} else if (activeContext.vocabularyMapping != null) {
-			//TODO
+		} else if (activeContext.vocabularyMapping == null) {
+			throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
+			
+		} else {
+			
 		}
 		
 		// 19.

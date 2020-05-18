@@ -34,4 +34,8 @@ public class UriUtils {
 				|| uri.endsWith("@")
 				;
 	}
+
+	public static boolean isNotURI(String expandedTypeString) {
+		return !isURI(expandedTypeString);
+	}
 }
