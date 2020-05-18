@@ -71,7 +71,7 @@ public class TermDefinition {
 		return typeMapping;
 	}
 	
-	public boolean isPrefixFlag() {
+	public boolean isPrefix() {
 		return prefixFlag;
 	}
 	
@@ -97,5 +97,9 @@ public class TermDefinition {
 
 	public boolean hasLocalContext() {
 		return localContext != null;
+	}
+	
+	public boolean isReverseProperty() {
+		return reversePropertyFlag;
 	}
 }

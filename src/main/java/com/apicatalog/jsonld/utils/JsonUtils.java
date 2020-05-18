@@ -56,5 +56,9 @@ public final class JsonUtils {
 	public static boolean isNotString(JsonValue value) {
 		return value == null || !ValueType.STRING.equals(value.getValueType());
 	}
+
+	public static boolean isNotArray(JsonValue value) {
+		return value == null || !ValueType.ARRAY.equals(value.getValueType());
+	}
 	
 }

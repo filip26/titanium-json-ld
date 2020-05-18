@@ -454,7 +454,7 @@ public final class MapExpansion {
 				containerMapping = Collections.emptyList();
 			}
 
-			JsonValue expandedValue = JsonValue.NULL;
+			JsonValue expandedValue;
 
 			// 13.6.
 			if (keyTermDefinition != null && Keywords.JSON.equals(keyTermDefinition.getTypeMapping())) {
@@ -501,8 +501,30 @@ public final class MapExpansion {
 				expandedValue = ListObject.toListObject(expandedValue);
 			}
 
-			//TODO
-			
+			// 13.12.
+			if (containerMapping.contains(Keywords.GRAPH) 
+					&& !containerMapping.contains(Keywords.ID)
+					&& !containerMapping.contains(Keywords.INDEX)
+					) {
+				
+				if (JsonUtils.isNotArray(expandedValue)) {
+					expandedValue = Json.createArrayBuilder().add(expandedValue).build();
+				}
+				
+				JsonArrayBuilder array = Json.createArrayBuilder();
+
+				for (JsonValue ev : expandedValue.asJsonArray()) {
+					array.add(Json.createObjectBuilder().add(Keywords.GRAPH, Json.createArrayBuilder().add(ev)));
+				}
+				
+				expandedValue = array.build();				
+			}
+
+			// 13.13.
+			if (keyTermDefinition != null && keyTermDefinition.isReverseProperty()) {
+				//TODO
+			}
+
 			// 13.14
 			addValue(result, expandedProperty, expandedValue, true);			
 		}

@@ -155,7 +155,7 @@ public final class UriExpansion {
 				
 				if (prefixDefinition != null
 					&& prefixDefinition.getUriMapping() != null
-					&& prefixDefinition.isPrefixFlag()
+					&& prefixDefinition.isPrefix()
 						) {
 					
 					TermDefinition suffixDefinition = activeContext.getTerm(split[1]);
