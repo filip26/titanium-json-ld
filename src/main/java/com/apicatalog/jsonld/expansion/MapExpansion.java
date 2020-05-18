@@ -457,8 +457,12 @@ public final class MapExpansion {
 			JsonValue expandedValue = JsonValue.NULL;
 
 			// 13.6.
-			if (false) {
-				//TODO
+			if (keyTermDefinition != null && Keywords.JSON.equals(keyTermDefinition.getTypeMapping())) {
+				
+				expandedValue = Json.createObjectBuilder()
+									.add(Keywords.VALUE, value)
+									.add(Keywords.TYPE, Json.createValue(Keywords.JSON))
+									.build();
 				
 			// 13.7			
 			} else if (containerMapping.contains(Keywords.LANGUAGE)
