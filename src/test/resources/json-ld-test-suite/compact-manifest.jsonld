@@ -1176,6 +1176,15 @@
       "expect": "compact/c027-out.jsonld",
       "option": {"specVersion": "json-ld-1.1"}
     }, {
+      "@id": "#tc028",
+      "@type": ["jld:PositiveEvaluationTest", "jld:CompactTest"],
+      "name": "Empty-property scoped context does not affect term selection.",
+      "purpose": "Adding a minimal/empty property-scoped context should not affect the using terms defined in outer context.",
+      "input": "compact/c028-in.jsonld",
+      "context": "compact/c028-context.jsonld",
+      "expect": "compact/c028-out.jsonld",
+      "option": {"specVersion": "json-ld-1.1"}
+    }, {
       "@id": "#tdi01",
       "@type": [ "jld:PositiveEvaluationTest", "jld:CompactTest" ],
       "name": "term direction null",

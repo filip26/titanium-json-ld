@@ -4197,6 +4197,34 @@ Test tc035 Term scoping with embedded contexts.
 </dd>
 </dl>
 </dd>
+<dt id='tc036'>
+Test tc036 Expansion with empty property-scoped context.
+</dt>
+<dd>
+<dl class='entry'>
+<dt>id</dt>
+<dd>#tc036</dd>
+<dt>Type</dt>
+<dd>jld:PositiveEvaluationTest, jld:ExpandTest</dd>
+<dt>Purpose</dt>
+<dd>Adding a minimal/empty property-scoped context should not affect expansion of terms defined in the outer scope.</dd>
+<dt>input</dt>
+<dd>
+<a href='expand/c036-in.jsonld'>expand/c036-in.jsonld</a>
+</dd>
+<dt>expect</dt>
+<dd>
+<a href='expand/c036-out.jsonld'>expand/c036-out.jsonld</a>
+</dd>
+<dt>Options</dt>
+<dd>
+<dl class='options'>
+<dt>specVersion</dt>
+<dd>json-ld-1.1</dd>
+</dl>
+</dd>
+</dl>
+</dd>
 <dt id='tdi01'>
 Test tdi01 Expand string using default and term directions
 </dt>
@@ -5866,6 +5894,48 @@ Test ter53 Invalid prefix value
 <dt>expect</dt>
 <dd>
 invalid @prefix value
+</dd>
+</dl>
+</dd>
+<dt id='ter54'>
+Test ter54 Invalid value object, multiple values for @type.
+</dt>
+<dd>
+<dl class='entry'>
+<dt>id</dt>
+<dd>#ter54</dd>
+<dt>Type</dt>
+<dd>jld:NegativeEvaluationTest, jld:ExpandTest</dd>
+<dt>Purpose</dt>
+<dd>The value of @type in a value object MUST be a string or null.</dd>
+<dt>input</dt>
+<dd>
+<a href='expand/er54-in.jsonld'>expand/er54-in.jsonld</a>
+</dd>
+<dt>expect</dt>
+<dd>
+invalid typed value
+</dd>
+</dl>
+</dd>
+<dt id='ter55'>
+Test ter55 Invalid term definition, multiple values for @type.
+</dt>
+<dd>
+<dl class='entry'>
+<dt>id</dt>
+<dd>#ter55</dd>
+<dt>Type</dt>
+<dd>jld:NegativeEvaluationTest, jld:ExpandTest</dd>
+<dt>Purpose</dt>
+<dd>The value of @type in an expanded term definition object MUST be a string or null.</dd>
+<dt>input</dt>
+<dd>
+<a href='expand/er55-in.jsonld'>expand/er55-in.jsonld</a>
+</dd>
+<dt>expect</dt>
+<dd>
+invalid type mapping
 </dd>
 </dl>
 </dd>
