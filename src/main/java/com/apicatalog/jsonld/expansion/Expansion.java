@@ -3,7 +3,6 @@ package com.apicatalog.jsonld.expansion;
 import java.net.URI;
 
 import javax.json.JsonValue;
-import javax.json.JsonValue.ValueType;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
@@ -61,10 +60,8 @@ public final class Expansion {
 	
 	public JsonValue compute() throws JsonLdError {
 
-		final ValueType elementType = element.getValueType();
-		
 		// 1. If element is null, return null
-		if (ValueType.NULL.equals(elementType)) {
+		if (JsonUtils.isNull(element)) {
 			return JsonValue.NULL;
 		}
 		
@@ -83,11 +80,12 @@ public final class Expansion {
 		
 		// 4. If element is a scalar
 		if (JsonUtils.isScalar(element)) {
+			
 			return ScalarExpansion.with(activeContext, propertyContext, element, activeProperty).compute();
 		}
 		
 		// 5. If element is an array,
-		if (ValueType.ARRAY.equals(elementType)) {
+		if (JsonUtils.isArray(element)) {
 			
 			return ArrayExpansion.with(activeContext, element.asJsonArray(), activeProperty, baseUrl)
 								 .compute();

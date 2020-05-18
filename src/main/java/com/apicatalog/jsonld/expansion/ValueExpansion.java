@@ -4,13 +4,13 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
-import javax.json.JsonValue.ValueType;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.grammar.DirectionType;
 import com.apicatalog.jsonld.grammar.Keywords;
+import com.apicatalog.jsonld.utils.JsonUtils;
 
 /**
  * 
@@ -41,10 +41,9 @@ public final class ValueExpansion {
 		final String typeMapping = (definition != null) ? definition.getTypeMapping() : null;
 
 		if (typeMapping != null) {
+			
 			// 1.
-			if (Keywords.ID.equals(typeMapping)
-					&& ValueType.STRING.equals(value.getValueType())
-					) {
+			if (Keywords.ID.equals(typeMapping) && JsonUtils.isString(value)) {
 				
 				String expandedValue = UriExpansion
 											.with(activeContext, ((JsonString)value).getString())
@@ -56,9 +55,7 @@ public final class ValueExpansion {
 			}
 			
 			// 2.
-			if (Keywords.VOCAB.equals(typeMapping)
-					&& ValueType.STRING.equals(value.getValueType())
-					) {
+			if (Keywords.VOCAB.equals(typeMapping) && JsonUtils.isString(value)) {
 				
 				String expandedValue = UriExpansion
 											.with(activeContext, ((JsonString)value).getString())
@@ -81,16 +78,15 @@ public final class ValueExpansion {
 				) {
 			
 			result = Json.createObjectBuilder(result).add(Keywords.TYPE, Json.createValue(typeMapping)).build();
-		}
-		
+			
 		// 5.
-		if (ValueType.STRING.equals(value.getValueType())) {
+		} else if (JsonUtils.isString(value)) {
 			
 			// 5.1.
 			String language = null;
-			
-			if (activeContext.containsTerm(Keywords.LANGUAGE)) {
-				language = activeContext.getTerm(Keywords.LANGUAGE).getLanguageMapping();
+						
+			if (definition != null) {
+				language = definition.getLanguageMapping();
 			}
 			
 			if (language == null) {
@@ -99,9 +95,9 @@ public final class ValueExpansion {
 					
 			// 5.2.
 			DirectionType direction = null;
-			
-			if (activeContext.containsTerm(Keywords.DIRECTION)) {
-				direction = activeContext.getTerm(Keywords.DIRECTION).getDirectionMapping();
+
+			if (definition != null) {
+				direction = definition.getDirectionMapping();
 			}
 			
 			if (direction == null) {

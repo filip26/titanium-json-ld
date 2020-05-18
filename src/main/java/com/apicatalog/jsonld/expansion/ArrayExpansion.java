@@ -6,13 +6,13 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonValue;
-import javax.json.JsonValue.ValueType;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.ListObject;
+import com.apicatalog.jsonld.utils.JsonUtils;
 
 /**
  * 
@@ -66,10 +66,8 @@ public final class ArrayExpansion {
 	public JsonValue compute() throws JsonLdError {
 
 		// 5.1
-		final JsonArrayBuilder builder = Json.createArrayBuilder();
+		final JsonArrayBuilder result = Json.createArrayBuilder();
 
-		TermDefinition definition = activeContext.getTerm(activeProperty);
-		
 		// 5.2.
 		for (final JsonValue item : element) {
 
@@ -80,36 +78,39 @@ public final class ArrayExpansion {
 										.ordered(ordered)
 										.fromMap(fromMap)
 										.compute();
+			
+			TermDefinition definition = activeContext.getTerm(activeProperty);
+						
 			// 5.2.2
 			if (definition != null 
 					&& definition.getContainerMapping() != null 
 					&& definition.getContainerMapping().contains(Keywords.LIST)
-					&& ValueType.ARRAY.equals(expanded.getValueType())
+					&& JsonUtils.isArray(expanded)
 					) {
 				
 				expanded = ListObject.toListObject(expanded);	
 			}
 			
 			// 5.2.3
-			if (ValueType.ARRAY.equals(expanded.getValueType())) {
+			if (JsonUtils.isArray(expanded)) {
 
 				// append array
 				for (JsonValue expandedItem : expanded.asJsonArray()) {
 					
-					if (ValueType.NULL.equals(expandedItem.getValueType())) {
+					if (JsonUtils.isNull(expandedItem)) {
 						continue;
 					}
-					
-					builder.add(expandedItem);
+
+					result.add(expandedItem);
 				}
 				
 			// append non-null element
-			} else if (!ValueType.NULL.equals(expanded.getValueType())) {
-				builder.add(expanded);
+			} else if (JsonUtils.isNotNull(expanded)) {
+				result.add(expanded);
 			}
 		}
 
 		// 5.3
-		return builder.build();
+		return result.build();
 	}	
 }
