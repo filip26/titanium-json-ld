@@ -12,7 +12,7 @@ public final class Keywords {
 	
 	public static final String CONTEXT = "@context";
 	
-//	public static final Keyword DEFAULT = new Keyword("@default";
+	public static final String DEFAULT = "@default";
 	
 	public static final String DIRECTION = "@direction";
 	
@@ -54,10 +54,11 @@ public final class Keywords {
 	
 	public static final String VOCAB = "@vocab";
 	
-	static final Collection<String> KEYWORDS = Arrays.asList(
+	static final Collection<String> ALL_KEYWORDS = Arrays.asList(
 			BASE,
 			CONTAINER,
 			CONTEXT,
+			DEFAULT,
 			DIRECTION,
 			GRAPH,
 			ID,
@@ -79,12 +80,12 @@ public final class Keywords {
 			VERSION,
 			VOCAB
 			);
-	
+
 	protected Keywords() {
 	}
 
 	public static boolean contains(final String value) {
-		return KEYWORDS.contains(value);
+		return ALL_KEYWORDS.contains(value);
 	}
 	
 	/**

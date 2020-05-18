@@ -2,9 +2,9 @@ package com.apicatalog.jsonld.grammar;
 
 import java.net.URI;
 
-public class Commons {
+public class UriUtils {
 
-	Commons() {
+	UriUtils() {
 	}
 	
 	public static boolean isURI(String value) {
@@ -34,5 +34,4 @@ public class Commons {
 				|| uri.endsWith("@")
 				;
 	}
-	
 }

@@ -13,7 +13,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.context.TermDefinitionCreator;
-import com.apicatalog.jsonld.grammar.Commons;
+import com.apicatalog.jsonld.grammar.UriUtils;
 import com.apicatalog.jsonld.grammar.Keywords;
 /**
  * 
@@ -170,7 +170,7 @@ public final class UriExpansion {
 			}
 			
 			// 6.5
-			if (Commons.isURI(value)) {
+			if (UriUtils.isURI(value)) {
 				return Optional.of(value);
 			}
 		}

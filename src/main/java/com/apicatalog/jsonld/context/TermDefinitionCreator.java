@@ -14,7 +14,8 @@ import javax.json.JsonValue.ValueType;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.expansion.UriExpansion;
-import com.apicatalog.jsonld.grammar.Commons;
+import com.apicatalog.jsonld.grammar.UriUtils;
+import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.Version;
 
@@ -204,7 +205,7 @@ public final class TermDefinitionCreator {
 				)
 				// 12.4.
 				|| (Keywords.isNot(typeString, Keywords.ID, Keywords.JSON, Keywords.NONE, Keywords.VOCAB) 
-						|| !Commons.isURI(typeString)
+						|| !UriUtils.isURI(typeString)
 					)
 			) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING);
@@ -264,8 +265,8 @@ public final class TermDefinitionCreator {
 					if (!term.contains(":") &&  !term.contains("/") && Boolean.TRUE.equals(simpleTerm)) {
 					
 						if (definition.uriMapping != null 
-								&& Commons.isURI(definition.uriMapping) 
-								&& Commons.endsWithGenDelim(definition.uriMapping)
+								&& UriUtils.isURI(definition.uriMapping) 
+								&& UriUtils.endsWithGenDelim(definition.uriMapping)
 								) {
 							definition.prefixFlag = true;
 						}
@@ -278,6 +279,31 @@ public final class TermDefinitionCreator {
 		// 15.
 		} else if (term.indexOf(':', 1) != -1) {
 			
+			final CompactUri compactUri = CompactUri.create(term);
+			
+			// 15.1.
+			if (compactUri != null 
+					&& compactUri.isNotBlank()
+					&& localContext.containsKey(compactUri.getPrefix())
+					) {
+				
+				TermDefinitionCreator.with(activeContext, localContext, compactUri.getPrefix(), defined).create();
+
+			// 15.2.
+			} else if (compactUri != null
+					&& compactUri.isNotBlank()
+					&& activeContext.containsTerm(compactUri.getPrefix())) {
+				
+				TermDefinition prefixDefinition = activeContext.getTerm(compactUri.getPrefix());
+				
+				definition.uriMapping = prefixDefinition.uriMapping.concat(compactUri.getSuffix());
+				
+			// 15.3.
+			} else {
+				definition.uriMapping = term;
+			}
+			
+	
 			//TODO
 			
 		// 16.
@@ -290,7 +316,7 @@ public final class TermDefinitionCreator {
 										.compute()
 										.orElse(null);	//FIXME
 			
-			if (!Commons.isURI(definition.uriMapping)) {
+			if (!UriUtils.isURI(definition.uriMapping)) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
 			}					
 			
