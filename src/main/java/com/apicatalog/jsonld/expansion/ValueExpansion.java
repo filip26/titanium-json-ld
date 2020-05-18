@@ -50,8 +50,7 @@ public final class ValueExpansion {
 											.with(activeContext, ((JsonString)value).getString())
 											.documentRelative(true)
 											.vocab(false)
-											.compute()
-											.orElse(null);	//FIXME
+											.compute();
 				
 				return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();
 			}
@@ -65,8 +64,7 @@ public final class ValueExpansion {
 											.with(activeContext, ((JsonString)value).getString())
 											.documentRelative(true)
 											.vocab(true)
-											.compute()
-											.orElse(null);	//FIXME
+											.compute();
 				
 				return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();
 			}

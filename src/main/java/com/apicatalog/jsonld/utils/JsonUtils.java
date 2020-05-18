@@ -48,5 +48,13 @@ public final class JsonUtils {
 		return !isNull(value);
 	}
 	
+	public static boolean isString(JsonValue value) {
+		return value != null && ValueType.STRING.equals(value.getValueType());
+	}
+
+
+	public static boolean isNotString(JsonValue value) {
+		return value == null || !ValueType.STRING.equals(value.getValueType());
+	}
 	
 }

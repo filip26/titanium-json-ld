@@ -2,7 +2,6 @@ package com.apicatalog.jsonld.expansion;
 
 import java.net.URI;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.json.JsonObject;
 import javax.json.JsonString;
@@ -69,18 +68,18 @@ public final class UriExpansion {
 		return this;
 	}
 	
-	public Optional<String> compute() throws JsonLdError {
+	public String compute() throws JsonLdError {
 
 		// 1. If value is a keyword or null, return value as is.
 		if (value == null || Keywords.contains(value)) {
-			return Optional.of(value);
+			return value;
 		}
 		
 		// 2. If value has the form of a keyword (i.e., it matches the ABNF rule "@"1*ALPHA from [RFC5234]),
 		//	  a processor SHOULD generate a warning and return null.
 		if (Keywords.hasForm(value)) {
 			//TODO varning
-			return Optional.empty();
+			return null;
 		}
 	
 		/*
@@ -111,12 +110,12 @@ public final class UriExpansion {
 			TermDefinition termDefinition = activeContext.getTerm(value);
 			
 			if (Keywords.contains(termDefinition.getUriMapping())) {
-				return Optional.of(termDefinition.getUriMapping());
+				return termDefinition.getUriMapping();
 			}
 			
 			// 5. If vocab is true and the active context has a term definition for value, return the associated IRI mapping
 			if (vocab) {
-				return Optional.ofNullable(termDefinition.getUriMapping());
+				return termDefinition.getUriMapping();
 			}
 		}
 		
@@ -130,7 +129,7 @@ public final class UriExpansion {
 			// 6.2. If prefix is underscore (_) or suffix begins with double-forward-slash (//), 
 			//		return value as it is already an IRI or a blank node identifier.
 			if ("_".equals(split[0]) || split[1].startsWith("//")) {
-				return Optional.of(value);
+				return value;
 			}
 			
 			// 6.3.
@@ -171,7 +170,7 @@ public final class UriExpansion {
 			
 			// 6.5
 			if (UriUtils.isURI(value)) {
-				return Optional.of(value);
+				return value;
 			}
 		}
 		
@@ -186,7 +185,7 @@ public final class UriExpansion {
 		}
 		
 		// 9.
-		return Optional.of(value);
+		return value;
 	}
 	
 	static final String resolve(URI baseUri, String value) {

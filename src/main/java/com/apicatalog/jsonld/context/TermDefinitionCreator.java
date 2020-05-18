@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -199,8 +198,11 @@ public final class TermDefinitionCreator {
 						.localContext(localContext)
 						.defined(defined)
 						.vocab(true)
-						.compute()
-						.orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING));
+						.compute();
+			
+			if (expandedTypeString == null) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING);
+			}
 
 			// 12.3.
 			if (((Keywords.JSON.equals(expandedTypeString) || Keywords.NONE.equals(expandedTypeString))
@@ -255,8 +257,7 @@ public final class TermDefinitionCreator {
 												.localContext(localContext)
 												.defined(defined)
 												.vocab(true)
-												.compute()
-												.orElse(null);
+												.compute();
 					
 					if (Keywords.CONTEXT.equals(definition.uriMapping)) {
 						throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ALIAS);
@@ -276,14 +277,14 @@ public final class TermDefinitionCreator {
 						defined.put(term, Boolean.TRUE);
 						
 						// 14.2.4.2
-						Optional<String> expandedTerm = UriExpansion.with(activeContext, term)
+						String expandedTerm = UriExpansion.with(activeContext, term)
 								.localContext(localContext)
 								.defined(defined)
 								.vocab(true)
 								.compute();
 						
-						if (expandedTerm.isEmpty() 
-								|| !expandedTerm.get().equals(definition.uriMapping)
+						if (expandedTerm == null 
+								|| !expandedTerm.equals(definition.uriMapping)
 								) {
 							throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
 						}
@@ -339,8 +340,7 @@ public final class TermDefinitionCreator {
 										.localContext(localContext)
 										.defined(defined)
 										.vocab(true)
-										.compute()
-										.orElse(null);	//FIXME
+										.compute();
 			
 			if (!UriUtils.isURI(definition.uriMapping)) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
@@ -424,7 +424,7 @@ public final class TermDefinitionCreator {
 			
 			String indexString = ((JsonString)index).getString();
 			
-			Optional<String> expandedIndex = 
+			String expandedIndex = 
 					UriExpansion
 						.with(activeContext, indexString)
 						.localContext(localContext)
@@ -432,7 +432,7 @@ public final class TermDefinitionCreator {
 						.vocab(true)
 						.compute();
 			
-			if (expandedIndex.isEmpty() || UriUtils.isNotURI(expandedIndex.get())) {
+			if (expandedIndex == null || UriUtils.isNotURI(expandedIndex)) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
 			}
 
