@@ -17,7 +17,7 @@ public class DefaultObject {
 	 * @param value
 	 * @return
 	 */
-	public static final boolean isListObject(JsonValue value) {
+	public static final boolean isDefaultObject(JsonValue value) {
 		return ValueType.OBJECT.equals(value.getValueType()) && value.asJsonObject().containsKey(Keywords.DEFAULT);		
 	}
 	

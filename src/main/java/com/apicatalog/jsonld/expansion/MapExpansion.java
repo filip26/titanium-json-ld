@@ -22,8 +22,10 @@ import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.ContextProcessor;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.grammar.DefaultObject;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.ListObject;
+import com.apicatalog.jsonld.grammar.Version;
 import com.apicatalog.jsonld.utils.JsonUtils;
 import com.apicatalog.jsonld.utils.UriUtils;
 
@@ -232,6 +234,11 @@ public final class MapExpansion {
 				// 13.4.4
 				if (Keywords.TYPE.equals(expandedProperty.get())) {
 					// 13.4.4.1
+					if (!frameExpansion 
+							&& !ValueType.STRING.equals(value.getValueType()) 
+							&& !ValueType.ARRAY.equals(value.getValueType())) {
+						throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_VALUE);
+					}
 					//TODO
 					
 					// 13.4.4.2
@@ -239,7 +246,8 @@ public final class MapExpansion {
 						expandedValue = value;
 						
 					// 13.4.4.3
-					} else if (false) {
+					} else if (DefaultObject.isDefaultObject(value)) {
+						
 						//TODO
 						
 					// 13.4.4.4
@@ -300,15 +308,33 @@ public final class MapExpansion {
 					
 					// 13.4.7.1
 					if (Keywords.JSON.equals(inputType)) {
+						
+						if (activeContext.inMode(Version.V1_0)) {
+							throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
+						}
+						
 						expandedValue = value;
 						
+					// 13.4.7.2
+					} else if (!frameExpansion && JsonUtils.isNotNull(value) && JsonUtils.isNotScalar(value)
+							//TODO frameexpansion
+							) {
+						throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
+
+					// 13.4.7.3
 					} else {
-					
+						System.out.println("TODO " + value);
 						//TODO
-						// 13.4.7.3
+
 						expandedValue = value;
+						
 					}
 					
+					// 13.4.7.3
+					if (JsonUtils.isNull(expandedValue)) {
+						result.put(Keywords.VALUE, JsonValue.NULL);
+						continue;
+					}
 				}
 
 				// 13.4.8

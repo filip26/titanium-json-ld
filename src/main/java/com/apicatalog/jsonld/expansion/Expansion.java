@@ -2,11 +2,13 @@ package com.apicatalog.jsonld.expansion;
 
 import java.net.URI;
 
+import javax.json.Json;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.utils.JsonUtils;
 
 /**
  * 
@@ -80,11 +82,7 @@ public final class Expansion {
 		}
 		
 		// 4. If element is a scalar
-		if (ValueType.STRING.equals(elementType)
-			|| ValueType.NUMBER.equals(elementType)
-			|| ValueType.TRUE.equals(elementType)
-			|| ValueType.FALSE.equals(elementType)
-			) {
+		if (JsonUtils.isScalar(element)) {
 		
 			return ScalarExpansion.with(activeContext, propertyContext, element, activeProperty, baseUrl).compute();
 		}
