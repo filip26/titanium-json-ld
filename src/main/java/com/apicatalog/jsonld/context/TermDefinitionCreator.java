@@ -159,7 +159,7 @@ public final class TermDefinitionCreator {
 		JsonObject valueObject = null;
 		Boolean simpleTerm = null;
 
-		if (ValueType.NULL.equals(value.getValueType())) {
+		if (value == null || ValueType.NULL.equals(value.getValueType())) {
 			// 7.
 			valueObject = Json.createObjectBuilder().add(Keywords.ID, JsonValue.NULL).build();
 			

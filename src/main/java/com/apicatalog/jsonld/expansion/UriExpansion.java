@@ -11,6 +11,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.context.TermDefinitionCreator;
+import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.utils.UriUtils;
 /**
@@ -96,7 +97,7 @@ public final class UriExpansion {
 				String entryValueString = ((JsonString)entryValue).getString();
 				
 				if (!defined.containsKey(entryValueString) || Boolean.FALSE.equals(defined.get(entryValueString))) {
-					
+
 					TermDefinitionCreator.with(activeContext, localContext, value, defined).create();		
 				}
 			}
@@ -107,13 +108,9 @@ public final class UriExpansion {
 		if (activeContext.containsTerm(value)) {
 			
 			TermDefinition termDefinition = activeContext.getTerm(value);
-			
-			if (Keywords.contains(termDefinition.getUriMapping())) {
-				return termDefinition.getUriMapping();
-			}
-			
+
 			// 5. If vocab is true and the active context has a term definition for value, return the associated IRI mapping
-			if (vocab) {
+			if (Keywords.contains(termDefinition.getUriMapping()) || vocab) {
 				return termDefinition.getUriMapping();
 			}
 		}
@@ -157,18 +154,12 @@ public final class UriExpansion {
 					&& prefixDefinition.isPrefix()
 						) {
 					
-					TermDefinition suffixDefinition = activeContext.getTerm(split[1]);
-					
-					if (suffixDefinition != null && suffixDefinition.getUriMapping() != null) {
-						value = prefixDefinition.getUriMapping().concat(suffixDefinition.getUriMapping());
-					} else {
-						value = prefixDefinition.getUriMapping().concat(split[1]);
-					}	
+					value = prefixDefinition.getUriMapping().concat(split[1]);
 				}
 			}
-			
+
 			// 6.5
-			if (UriUtils.isURI(value)) {
+			if (CompactUri.create(value) != null && UriUtils.isURI(value)) {
 				return value;
 			}
 		}
@@ -176,7 +167,7 @@ public final class UriExpansion {
 		// 7. If vocab is true, and active context has a vocabulary mapping, 
 		//    return the result of concatenating the vocabulary mapping with value.
 		if (vocab && activeContext.getVocabularyMapping() != null) {
-			value = activeContext.getVocabularyMapping().toString().concat(value);
+			return activeContext.getVocabularyMapping().toString().concat(value);
 			
 		// 8.
 		} else if (documentRelative) {

@@ -10,7 +10,7 @@ public class UriUtils {
 	public static boolean isURI(String value) {
 		try {
 			
-			return URI.create(value) != null;
+			return value != null && URI.create(value) != null;
 			
 		} catch (IllegalArgumentException e) {
 			return false;			

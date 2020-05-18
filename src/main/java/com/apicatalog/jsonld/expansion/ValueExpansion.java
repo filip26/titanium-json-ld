@@ -19,7 +19,7 @@ import com.apicatalog.jsonld.utils.JsonUtils;
  */
 public final class ValueExpansion {
 
-	// required
+	// mandatory
 	private ActiveContext activeContext;
 	private String activeProperty;
 	private JsonValue value;
