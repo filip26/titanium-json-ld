@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -25,6 +26,7 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.grammar.DefaultObject;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.ListObject;
+import com.apicatalog.jsonld.grammar.ValueObject;
 import com.apicatalog.jsonld.grammar.Version;
 import com.apicatalog.jsonld.utils.JsonUtils;
 import com.apicatalog.jsonld.utils.UriUtils;
@@ -185,8 +187,10 @@ public final class MapExpansion {
 		if (!ordered) {
 			keys = new ArrayList<>(element.keySet());
 		}
+		
+		Map<String, JsonValue> reverseMap = null;
 
-		for (String key : keys) {
+		for (final String key : keys) {
 			
 			// 13.1.
 			if (Keywords.CONTEXT.equals(key)) {
@@ -203,8 +207,8 @@ public final class MapExpansion {
 			
 			// 13.3.
 			if (expandedProperty == null 
-					|| !expandedProperty.contains(":") 
-					&& !Keywords.contains(expandedProperty)
+					|| (!expandedProperty.contains(":") 
+					&& !Keywords.contains(expandedProperty))
 					) {
 				continue;
 			}
@@ -266,7 +270,7 @@ public final class MapExpansion {
 						
 					// 13.4.4.3
 					} else if (DefaultObject.isDefaultObject(value)) {
-						
+
 						//TODO
 						
 					// 13.4.4.4
@@ -338,6 +342,32 @@ public final class MapExpansion {
 				// 13.4.6
 				if (Keywords.INCLUDED.equals(expandedProperty)) {
 					
+					// 13.4.6.1
+					if (activeContext.inMode(Version.V1_0)) {
+						continue;
+					}
+					
+					// 13.4.6.2					
+					expandedValue = Expansion
+										.with(activeContext, value, null, baseUrl)
+										.frameExpansion(frameExpansion)
+										.ordered(ordered)
+										.compute();
+					
+					if (JsonUtils.isNotNull(expandedValue)) {
+					
+						if (JsonUtils.isNotArray(expandedValue)) {
+							expandedValue = Json.createArrayBuilder().add(expandedValue).build();
+						}
+						
+						// 13.4.6.3
+						//TODO
+						
+						// 13.4.6.4
+						if (result.containsKey(Keywords.INCLUDED)) {
+							expandedValue = Json.createArrayBuilder(result.get(Keywords.INCLUDED).asJsonArray()).add(expandedValue).build();
+						}
+					}
 				}
 				
 				// 13.4.7
@@ -363,7 +393,7 @@ public final class MapExpansion {
 						expandedValue = value;
 					}
 					
-					// 13.4.7.3
+					// 13.4.7.4
 					if (JsonUtils.isNull(expandedValue)) {
 						result.put(Keywords.VALUE, JsonValue.NULL);
 						continue;
@@ -446,8 +476,86 @@ public final class MapExpansion {
 							.compute();
 				}
 				
-				//TODO
-				
+				// 13.4.13
+				if (Keywords.REVERSE.equals(expandedProperty)) {
+
+					// 13.4.13.1.
+					if (JsonUtils.isNotObject(value)) {
+						throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_REVERSE_VALUE);
+					}
+					
+					// 13.4.13.2.
+					expandedValue = Expansion
+										.with(activeContext, value, Keywords.REVERSE, baseUrl)
+										.frameExpansion(frameExpansion)
+										.ordered(ordered)
+										.compute();
+
+
+					if (JsonUtils.isObject(expandedValue)) { 
+
+						// 13.4.13.3.
+						if (expandedValue.asJsonObject().containsKey(Keywords.REVERSE)) {
+							for (Entry<String, JsonValue> entry : expandedValue.asJsonObject().entrySet()) {
+								// 13.4.13.3.1.
+								//TODO
+							}
+						}
+					
+						// 13.4.13.4.
+						if (expandedValue.asJsonObject().size() > 1
+								|| !expandedValue.asJsonObject().containsKey(Keywords.REVERSE)
+								) {
+
+							// 13.4.13.4.1
+							if (result.containsKey(Keywords.REVERSE)) {
+								reverseMap = new LinkedHashMap<>(result.get(Keywords.REVERSE).asJsonObject());
+							}
+							
+							if (reverseMap == null) {
+								reverseMap = new LinkedHashMap<>();
+							}
+							
+							// 13.4.13.4.2
+							for (Entry<String, JsonValue> entry : expandedValue.asJsonObject().entrySet()) {
+
+								if (Keywords.REVERSE.equals(entry.getKey())) {
+									continue;
+								}
+								
+								// 13.4.13.4.2.1
+								if (JsonUtils.isArray(entry.getValue())) {
+									
+									for (JsonValue item : entry.getValue().asJsonArray()) {
+										
+										// 13.4.13.4.2.1.1
+										if (ListObject.isListObject(item) || ValueObject.isValueObject(item)) {
+											throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
+										}
+									
+										// 13.4.13.4.2.1.1
+										addValue(reverseMap, entry.getKey(), item, true);
+									}
+								}
+							}
+						}						
+					}
+		
+					// 13.4.13.5.
+					continue;
+				}
+
+				// 13.4.14
+				if (Keywords.NEST.equals(expandedProperty)) {
+					if (!nest.containsKey(key)) {
+						nest.put(key, Json.createArrayBuilder().build());
+					}
+					continue;
+				}
+
+				// 13.4.15
+				//TODO					
+
 				// 13.4.16
 				if (!ValueType.NULL.equals(expandedValue.getValueType())
 //FIXME?!						&& Keywords.VALUE.equals(expandedProperty.get())
@@ -542,15 +650,47 @@ public final class MapExpansion {
 
 			// 13.13.
 			if (keyTermDefinition != null && keyTermDefinition.isReverseProperty()) {
-				//TODO
-			}
 
-			// 13.14
-			addValue(result, expandedProperty, expandedValue, true);			
+				// 13.13.1.
+				if (!result.containsKey(Keywords.REVERSE)) {
+					result.put(Keywords.REVERSE, Json.createObjectBuilder().build());
+				}
+				
+				// 13.13.2.
+				//TODO
+
+				// 13.13.3.
+				if (JsonUtils.isNotArray(expandedValue)) {
+					expandedValue = Json.createArrayBuilder().add(expandedValue).build();
+				}
+				
+				// 13.13.4.
+				for (JsonValue item : expandedValue.asJsonArray()) {
+					
+					if (ListObject.isListObject(item) || ValueObject.isValueObject(item)) {
+						throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
+					}
+
+					//TODO
+					
+				}
+				
+			// 13.14				
+			} else {
+				addValue(result, expandedProperty, expandedValue, true);
+			}
 		}
 		
 		// 14.
-		//TODO
+		List<String> nestKeys = new ArrayList<>(nest.keySet());
+		
+		if (ordered) {
+			Collections.sort(nestKeys);
+		}
+		
+		for (String nestKey : nestKeys) {
+			//TODO
+		}
 
 		// 15.
 		if (result.containsKey(Keywords.VALUE)) {
