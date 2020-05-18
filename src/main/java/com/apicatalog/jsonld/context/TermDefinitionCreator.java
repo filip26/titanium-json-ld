@@ -269,7 +269,7 @@ public final class TermDefinitionCreator {
 					}
 
 					// 14.2.4
-					if (term.indexOf(':', 1) != -1 /*TODO end limit - 1*/ || term.contains("/")) {
+					if (term.indexOf(':', 1) != -1 || term.contains("/")) {
 						
 						// 14.2.4.1
 						defined.put(term, Boolean.TRUE);
@@ -292,14 +292,15 @@ public final class TermDefinitionCreator {
 					if (!term.contains(":") &&  !term.contains("/") && Boolean.TRUE.equals(simpleTerm)) {
 					
 						if (definition.uriMapping != null 
-								&& UriUtils.isURI(definition.uriMapping) 
-								&& UriUtils.endsWithGenDelim(definition.uriMapping)
+								&& (
+									(UriUtils.isURI(definition.uriMapping) 
+											&& UriUtils.endsWithGenDelim(definition.uriMapping))
+									|| CompactUri.isBlank(definition.uriMapping)
+									)
 								) {
 							definition.prefixFlag = true;
 						}
-						//TODO
 					}
-					
 				}				
 			}
 			
@@ -353,7 +354,7 @@ public final class TermDefinitionCreator {
 			throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
 			
 		} else {
-			
+			definition.uriMapping = activeContext.vocabularyMapping.toString().concat(term);
 		}
 		
 		// 19.
@@ -361,32 +362,80 @@ public final class TermDefinitionCreator {
 
 			// 19.1.
 			JsonValue container = valueObject.get(Keywords.CONTAINER);
-			//TODO check value and throw an exception
+			
+			if (ValueType.NULL.equals(container.getValueType())) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
+			}			
 			
 			if (ValueType.ARRAY.equals(container.getValueType())) {
+				//TODO
 				container = container.asJsonArray().get(0);
 			}
 			
-			// 19.2.
-			//TODO
 			if (!ValueType.STRING.equals(container.getValueType())) {
- 
+				throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
 			}
+
+			String containerString = ((JsonString)container).getString();
 			
-			String containerMapping = ((JsonString)container).getString();	//FIXME
-		
-			
-			// 19.3.
-			definition.addContainerMapping(containerMapping);
-			
+
+			// 19.2.
+			if (activeContext.inMode(Version.V1_0) 
+					&& (Keywords.ID.equals(containerString) 
+						|| Keywords.GRAPH.equals(containerString)
+						|| Keywords.TYPE.equals(containerString)	
+						)) {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
+			}
+					
+			// 19.3.			
+			definition.addContainerMapping(containerString);
+
 			// 19.4.
-			//TODO
+			if (definition.getContainerMapping().contains(Keywords.TYPE)) {
+				
+				// 19.4.1.
+				if (definition.typeMapping == null) {
+					definition.typeMapping = Keywords.ID;  
+				}
+				
+				if (!Keywords.ID.equals(definition.typeMapping) && !Keywords.VOCAB.equals(definition.typeMapping)) {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING);
+				}
+			}
 		}
 		
 		// 20.
 		if (valueObject.containsKey(Keywords.INDEX)) {
 		
-			//TODO
+			// 20.1.
+			if (activeContext.inMode(Version.V1_0)
+					|| !definition.getContainerMapping().contains(Keywords.INDEX)) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
+			}
+
+			// 20.2.
+			JsonValue index = valueObject.get(Keywords.INDEX);
+			
+			if (!ValueType.STRING.equals(index.getValueType())) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
+			}
+			
+			String indexString = ((JsonString)index).getString();
+			
+			Optional<String> expandedIndex = 
+					UriExpansion
+						.with(activeContext, indexString)
+						.localContext(localContext)
+						.defined(defined)
+						.vocab(true)
+						.compute();
+			
+			if (expandedIndex.isEmpty() || UriUtils.isNotURI(expandedIndex.get())) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
+			}
+
+			definition.indexMapping = indexString;
 		}
 		
 		

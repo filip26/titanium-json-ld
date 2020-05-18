@@ -79,4 +79,8 @@ public final class CompactUri {
 		CompactUri other = (CompactUri) obj;
 		return Objects.equals(prefix, other.prefix) && Objects.equals(suffix, other.suffix);
 	}
+
+	public static boolean isBlank(final String value) {		
+		return value.indexOf(':', 1) != -1 && value.startsWith("_");
+	}
 }
