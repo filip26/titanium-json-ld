@@ -214,8 +214,10 @@ public class ContextProcessor {
 					throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE);
 				}
 				
+				// 5.6.3.
 				String contextImportUri = UriUtils.resolve(baseUrl, ((JsonString)contextImport).getString());
 				
+				// 5.6.4.
 				//TODO
 				
 			}
@@ -237,14 +239,23 @@ public class ContextProcessor {
 					}
 					
 					String valueString = ((JsonString)value).getString();
-					
-					// 5.7.3
-					if (UriUtils.isURI(valueString)) {
-						 result.baseUri = URI.create(valueString);
-						 
-					// 5.7.4
-					} else {
-						//TODO
+
+					if (UriUtils.isURI(valueString) && !valueString.isBlank()) {
+						
+						URI uri = URI.create(valueString);
+
+						// 5.7.3
+						if (uri.isAbsolute() ) {
+							 result.baseUri = uri;
+							
+						// 5.7.4
+						} else if (result.baseUri != null) {
+							
+							result.baseUri = UriUtils.resolveAsUri(result.baseUri, valueString);
+														
+						} else {
+							throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);
+						}
 					}
 				}
 			}
@@ -310,6 +321,7 @@ public class ContextProcessor {
 
 			// 5.10.
 			if (contextDefinition.containsKey(Keywords.DIRECTION)) {
+				System.out.println("TODO");
 				//TODO
 			}
 				

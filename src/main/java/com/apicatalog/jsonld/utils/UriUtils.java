@@ -40,12 +40,15 @@ public class UriUtils {
 	}
 	
 	public static final String resolve(URI baseUri, String value) {
+		return resolveAsUri(baseUri, value).toString();		
+	}
 
+	public static URI resolveAsUri(URI baseUri, String value) {
 		if ((baseUri == null) || URI.create(value).isAbsolute()) {
-			return value;
+			return URI.create(value);
 		}
 
-		return baseUri.resolve(value).toString();		
+		return baseUri.resolve(value);
 	}
 	
 

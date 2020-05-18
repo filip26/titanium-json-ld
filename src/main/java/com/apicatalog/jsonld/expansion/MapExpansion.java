@@ -141,18 +141,21 @@ public final class MapExpansion {
 			// 11.2
 			JsonArray valueArray = value.asJsonArray();
 			//TODO oder lex
-			
+
 			for (JsonValue term : valueArray) {
 				
 				if (ValueType.STRING.equals(term.getValueType()) 
 						&& typeContext.containsTerm(((JsonString)term).getString())) {
 					
-					TermDefinition termDefinition = typeContext.getTerm(((JsonString)term).getString());
-					//TODO ?! TermDefinition activeTermDefinition = activeContext.getTerm(((JsonString)term).getString());
 					
-					if (termDefinition.hasLocalContext()) {		
+					
+					TermDefinition termDefinition = typeContext.getTerm(((JsonString)term).getString());
+					//TODO ?!
+					TermDefinition activeTermDefinition = activeContext.getTerm(((JsonString)term).getString());
+					
+					if (termDefinition.hasLocalContext() && activeTermDefinition != null) {		
 						activeContext = ContextProcessor
-											.with(typeContext, termDefinition.getLocalContext(), termDefinition.getBaseUrl())
+											.with(typeContext, termDefinition.getLocalContext(), activeTermDefinition.getBaseUrl())
 											.propagate(false)
 											.compute();
 					}
@@ -362,7 +365,7 @@ public final class MapExpansion {
 						
 						// 13.4.6.3
 						//TODO
-						
+
 						// 13.4.6.4
 						if (result.containsKey(Keywords.INCLUDED)) {
 							expandedValue = Json.createArrayBuilder(result.get(Keywords.INCLUDED).asJsonArray()).add(expandedValue).build();
@@ -498,7 +501,7 @@ public final class MapExpansion {
 						if (expandedValue.asJsonObject().containsKey(Keywords.REVERSE)) {
 							for (Entry<String, JsonValue> entry : expandedValue.asJsonObject().entrySet()) {
 								// 13.4.13.3.1.
-								//TODO
+								addValue(result, entry.getKey(), entry.getValue(), true);
 							}
 						}
 					
@@ -554,7 +557,9 @@ public final class MapExpansion {
 				}
 
 				// 13.4.15
-				//TODO					
+				if (frameExpansion) {
+					//TODO					
+				}
 
 				// 13.4.16
 				if (!ValueType.NULL.equals(expandedValue.getValueType())
@@ -808,15 +813,10 @@ public final class MapExpansion {
 			}
 		}
 		
-		if (result.isEmpty()) {
-			return JsonValue.NULL;
-		}
-
 		final JsonObjectBuilder resultBuilder = Json.createObjectBuilder();
 
 		result.entrySet()
 				.stream()
-//				.sorted(Map.Entry.<String, JsonValue>comparingByKey())
 				.forEach(e -> resultBuilder.add(e.getKey(), e.getValue()));
 		
 		return resultBuilder.build();
