@@ -518,11 +518,24 @@ public final class TermDefinitionCreator {
 		// 25.
 		if (valueObject.containsKey(Keywords.PREFIX)) {
 
-			System.out.println(">> " + valueObject);
-			//TODO		
-
-		//TODO
-
+			if (activeContext.inMode(Version.V1_0)
+					|| term.contains(":")
+					|| term.contains("/")
+					) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
+			}
+			
+			JsonValue prefix = valueObject.get(Keywords.PREFIX);
+			
+			if (ValueType.TRUE.equals(prefix.getValueType())) {
+				definition.prefixFlag = true;
+				
+			} else if (ValueType.FALSE.equals(prefix.getValueType())) {
+				definition.prefixFlag = false;
+				
+			} else {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
+			}
 		}
 		
 		// 26.
