@@ -621,7 +621,11 @@ public final class TermDefinitionCreator {
 		
 		// 27.
 		if (overrideProtectedFlag && previousDefinition != null && previousDefinition.protectedFlag) {
+			// 27.1.
 			//TODO
+			
+			// 27.2.
+			definition = previousDefinition;
 		}		
 		// 28
 		activeContext.setTerm(term, definition);

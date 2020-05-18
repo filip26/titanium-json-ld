@@ -81,14 +81,16 @@ public final class MapExpansion {
 	}
 	
 	public JsonValue compute() throws JsonLdError {
-		
+
 		// 7.
 		if (activeContext.hasPreviousContext() 
 				&& !fromMap 
 				&& !element.containsKey(Keywords.VALUE)
-				
-				) {			
-			//TODO
+				&& (element.size() != 1
+					|| !element.containsKey(Keywords.ID)
+				)
+				) {		
+			activeContext = activeContext.getPreviousContext();
 		}
 		
 		// 8.

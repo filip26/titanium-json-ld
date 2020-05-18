@@ -30,11 +30,9 @@ public final class JsonUtils {
 	
 	public static final boolean isScalar(final JsonValue value) {
 		return value != null
-				&& (ValueType.STRING.equals(value.getValueType())
-				|| ValueType.NUMBER.equals(value.getValueType())
-				|| ValueType.TRUE.equals(value.getValueType())
-				|| ValueType.FALSE.equals(value.getValueType())
-				);
+				&& !ValueType.ARRAY.equals(value.getValueType())
+				&& !ValueType.OBJECT.equals(value.getValueType())
+				;
 	}
 	
 	public static final boolean isNotScalar(final JsonValue value) {
