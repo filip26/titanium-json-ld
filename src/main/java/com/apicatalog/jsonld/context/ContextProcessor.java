@@ -15,6 +15,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.grammar.CompactUri;
+import com.apicatalog.jsonld.grammar.DirectionType;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.Version;
 import com.apicatalog.jsonld.utils.JsonUtils;
@@ -321,8 +322,38 @@ public class ContextProcessor {
 
 			// 5.10.
 			if (contextDefinition.containsKey(Keywords.DIRECTION)) {
-				System.out.println("TODO");
-				//TODO
+				
+				// 5.10.1.
+				if (activeContext.inMode(Version.V1_0)) {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_CONTEXT_ENTRY);
+				}
+				
+				// 5.10.2.
+				JsonValue value = contextDefinition.get(Keywords.DIRECTION);
+				
+				// 5.10.3.
+				if (JsonUtils.isNull(value)) {
+					result.defaultBaseDirection = null;
+					
+				// 5.10.4.
+				} else {
+					
+					if (!JsonUtils.isString(value)) {
+						throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
+					}
+					
+					String direction = ((JsonString)value).getString();
+					
+					if ("ltr".equals(direction)) {
+						result.defaultBaseDirection = DirectionType.LTR;
+						
+					} else if ("rtl".equals(direction)) {
+						result.defaultBaseDirection = DirectionType.RTL;
+						
+					} else {
+						throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
+					}
+				}
 			}
 				
 			// 5.11.
