@@ -38,4 +38,15 @@ public class UriUtils {
 	public static boolean isNotURI(String expandedTypeString) {
 		return !isURI(expandedTypeString);
 	}
+	
+	public static final String resolve(URI baseUri, String value) {
+
+		if ((baseUri == null) || URI.create(value).isAbsolute()) {
+			return value;
+		}
+
+		return baseUri.resolve(value).toString();		
+	}
+	
+
 }

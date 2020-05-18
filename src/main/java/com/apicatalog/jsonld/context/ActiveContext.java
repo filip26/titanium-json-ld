@@ -71,8 +71,7 @@ public class ActiveContext {
 	}
 
 	public boolean containsProtectedTerm() {
-		// TODO Auto-generated method stub
-		return false;
+		return terms.values().stream().anyMatch(d -> d.protectedFlag);
 	}
 
 	public TermDefinition removeTerm(String term) {
@@ -116,5 +115,9 @@ public class ActiveContext {
 
 	public boolean hasPreviousContext() {
 		return previousContext != null;
+	}
+	
+	public ActiveContext getPreviousContext() {
+		return previousContext;
 	}
 }

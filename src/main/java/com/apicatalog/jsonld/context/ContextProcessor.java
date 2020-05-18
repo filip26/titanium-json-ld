@@ -14,7 +14,12 @@ import javax.json.JsonValue.ValueType;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.expansion.UriExpansion;
+import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.Keywords;
+import com.apicatalog.jsonld.grammar.Version;
+import com.apicatalog.jsonld.utils.JsonUtils;
+import com.apicatalog.jsonld.utils.UriUtils;
 
 /**
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#context-processing-algorithms">Context Processing Algorithm</a>
@@ -84,31 +89,31 @@ public class ContextProcessor {
 		
 		// 2. If local context is an object containing the member @propagate, 
 		//    its value MUST be boolean true or false, set propagate to that value.
-		if (ValueType.OBJECT.equals(localContext.getValueType())) {
+		if (JsonUtils.isObject(localContext)) {
 			
 			final JsonObject localContextObject = localContext.asJsonObject();
 			
 			if (localContextObject.containsKey(Keywords.PROPAGATE)) {
-				this.propagate = localContextObject.getBoolean(Keywords.PROPAGATE, this.propagate);
+				propagate = localContextObject.getBoolean(Keywords.PROPAGATE, this.propagate);
 			}
 		}
 
 		// 3. If propagate is false, and result does not have a previous context, 
 		//    set previous context in result to active context.
-		if (!propagate && result.previousContext == null) {
+		if (!propagate && !result.hasPreviousContext()) {
 			result.previousContext = activeContext;
 		}
 		
 		// 4. If local context is not an array, set local context to an array containing only local context.
-		if (!ValueType.ARRAY.equals(localContext.getValueType())) {
+		if (JsonUtils.isNotArray(localContext)) {
 			localContext = Json.createArrayBuilder().add(localContext).build();
 		}
 		
 		// 5. For each item context in local context:
-		for (JsonValue localContextItem : localContext.asJsonArray()) {
+		for (JsonValue itemContext : localContext.asJsonArray()) {
 			
 			// 5.1. If context is null:
-			if (ValueType.NULL.equals(localContextItem.getValueType())) {
+			if (JsonUtils.isNull(itemContext)) {
 				
 				// 5.1.1. If override protected is false and active context contains any protected term definitions,
 				//       an invalid context nullification has been detected and processing is aborted.
@@ -129,12 +134,18 @@ public class ContextProcessor {
 			} 
 			
 			// 5.2. if context is a string,
-			if (ValueType.STRING.equals(localContextItem.getValueType())) {
+			if (JsonUtils.isString(itemContext)) {
 				
-				String contextUri = localContextItem.toString();
+				String contextUri = itemContext.toString();
 				
 				// 5.2.1
-				//TODO
+				if (baseUrl != null) {
+					contextUri = UriUtils.resolve(baseUrl, ((JsonString)itemContext).getString());
+				}
+				
+				if (UriUtils.isNotURI(contextUri)) {
+					throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+				}
 				
 				// 5.2.2
 				if (!validateScopedContext && remoteContexts.contains(contextUri)) {
@@ -143,38 +154,71 @@ public class ContextProcessor {
 				
 				// 5.2.3
 				remoteContexts.add(contextUri);
-				
+
+				// 5.2.4
 				//TODO
 				
+				// 5.2.5
+				//TODO
+				
+				// 5.2.6
+				//TODO
+				
+				// 5.2.7
 				continue;
 			}
 
 			// 5.3. If context is not a map, an invalid local context error has been detected and processing is aborted.
-			if (!ValueType.OBJECT.equals(localContextItem.getValueType())) {
+			if (JsonUtils.isNotObject(itemContext)) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_LOCAL_CONTEXT);
 			}
 
 			// 5.4. Otherwise, context is a context definition
-			JsonObject contextDefinition = localContextItem.asJsonObject();
+			JsonObject contextDefinition = itemContext.asJsonObject();
 
 			// 5.5. If context has an @version
 			if (contextDefinition.containsKey(Keywords.VERSION)) {
 
-				final String version = contextDefinition.get(Keywords.VERSION).toString();
-
+				JsonValue version = contextDefinition.get(Keywords.VERSION);
+				
+				String versionString = null;
+				
+				if (JsonUtils.isString(version)) {
+					versionString = ((JsonString)version).getString();
+					
+				} else if (JsonUtils.isNumber(version)) {
+					versionString = version.toString();
+				}
+								
 				// 5.5.1. If the associated value is not 1.1, an invalid @version value has been detected, 
 				//        and processing is aborted.
-				if (!"1.1".equals(version)) {
+				if (versionString == null || !"1.1".equals(versionString)) {
 					throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_VERSION_VALUE);
 				}
 				
 				// 5.5.2. 
-				//TODO
+				if (activeContext.inMode(Version.V1_0)) {
+					throw new JsonLdError(JsonLdErrorCode.PROCESSING_MODE_CONFLICT);
+				}
 			}
 			
 			// 5.6. If context has an @import
 			if (contextDefinition.containsKey(Keywords.IMPORT)) {
+				// 5.6.1.
+				if (activeContext.inMode(Version.V1_0)) {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_CONTEXT_ENTRY);
+				}
+
+				JsonValue contextImport = contextDefinition.get(Keywords.IMPORT);
+				// 5.6.2.
+				if (JsonUtils.isNotString(contextImport)) {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE);
+				}
+				
+				String contextImportUri = UriUtils.resolve(baseUrl, ((JsonString)contextImport).getString());
+				
 				//TODO
+				
 			}
 			
 			// 5.7. If context has an @base entry and remote contexts is empty, 
@@ -196,24 +240,12 @@ public class ContextProcessor {
 					String valueString = ((JsonString)value).getString();
 					
 					// 5.7.3
-					URI baseUri = null;
-					try {
-						
-						 baseUri = URI.create(valueString);
-						 if (baseUri != null) {
-							 result.baseUri = baseUri;
-						 }
-						
-					} catch (IllegalArgumentException e) {
-						
-					}
-
-					if (baseUri == null) {
-
-						// 5.7.4
-						if (result.baseUri != null) {
-							//TODO
-						}
+					if (UriUtils.isURI(valueString)) {
+						 result.baseUri = URI.create(valueString);
+						 
+					// 5.7.4
+					} else {
+						//TODO
 					}
 				}
 			}
@@ -233,7 +265,26 @@ public class ContextProcessor {
 					if (!ValueType.STRING.equals(value.getValueType())) {
 						throw new JsonLdError(JsonLdErrorCode.INVALID_VOCAB_MAPPING);
 					}
-					//TODO
+					
+					String valueString = ((JsonString)value).getString();
+					
+					if (UriUtils.isURI(valueString) || CompactUri.isBlank(valueString)) {
+
+						String vocabularyMapping = UriExpansion.with(result, valueString)
+																.vocab(true)
+																.documentRelative(true)
+																.compute();
+								
+						if (UriUtils.isURI(vocabularyMapping)) {
+							result.vocabularyMapping = URI.create(vocabularyMapping);
+							
+						} else {
+							throw new JsonLdError(JsonLdErrorCode.INVALID_VOCAB_MAPPING);
+						}
+						
+					} else {
+						throw new JsonLdError(JsonLdErrorCode.INVALID_VOCAB_MAPPING);
+					}
 				}
 			}
 			

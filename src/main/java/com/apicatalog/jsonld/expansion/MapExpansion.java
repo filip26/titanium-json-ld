@@ -83,7 +83,11 @@ public final class MapExpansion {
 	public JsonValue compute() throws JsonLdError {
 		
 		// 7.
-		if (activeContext.hasPreviousContext()) {
+		if (activeContext.hasPreviousContext() 
+				&& !fromMap 
+				&& !element.containsKey(Keywords.VALUE)
+				
+				) {			
 			//TODO
 		}
 		
@@ -152,14 +156,28 @@ public final class MapExpansion {
 			}		
 		}
 		
-		
 		// 12.
 		Map<String, JsonValue> result = new LinkedHashMap<>(); 
 		Map<String, JsonValue> nest = new LinkedHashMap<>();
-		String inputType = null; //TODO
+		String inputType = null;
 		
-//	   input_type = Array(input[type_key]).last
-//      input_type = context.expand_iri(input_type, vocab: true, as_string: true, base: @options[:base]) if input_type
+		// Initialize input type to expansion of the last value of the first entry in element 
+		// expanding to @type (if any), ordering entries lexicographically by key. Both the key and
+		// value of the matched entry are IRI expanded.	
+		if (element.containsKey(Keywords.TYPE)) { //TODO ?!?!
+			
+			JsonValue t = element.get(Keywords.TYPE);
+			
+			if (JsonUtils.isArray(t)) {
+				t = JsonUtils.last(t.asJsonArray());
+			}
+
+			if (JsonUtils.isString(t)) {
+				inputType = UriExpansion.with(typeContext, ((JsonString)t).getString())
+											.vocab(true)
+											.compute();
+			}
+		}		
 		
 		// 13.
 		if (!ordered) {

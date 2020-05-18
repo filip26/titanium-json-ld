@@ -1,6 +1,5 @@
 package com.apicatalog.jsonld.expansion;
 
-import java.net.URI;
 import java.util.Map;
 
 import javax.json.JsonObject;
@@ -181,20 +180,11 @@ public final class UriExpansion {
 			
 		// 8.
 		} else if (documentRelative) {
-			value = resolve(activeContext.getBaseUri(), value);
+			value = UriUtils.resolve(activeContext.getBaseUri(), value);
 		}
 		
 		// 9.
 		return value;
-	}
-	
-	static final String resolve(URI baseUri, String value) {
-
-		if ((baseUri == null) || URI.create(value).isAbsolute()) {
-			return value;
-		}
-
-		return baseUri.resolve(value).toString();		
 	}
 	
 	
