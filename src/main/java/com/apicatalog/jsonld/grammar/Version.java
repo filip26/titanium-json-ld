@@ -17,7 +17,7 @@ public enum Version {
 			throw new IllegalArgumentException();
 		}
 		
-		if (V1_0.name().equalsIgnoreCase(text)) {
+		if (V1_0.text.equalsIgnoreCase(text)) {
 			return V1_0;
 		}
 		return V1_1;

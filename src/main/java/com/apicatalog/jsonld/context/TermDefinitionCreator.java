@@ -215,7 +215,7 @@ public final class TermDefinitionCreator {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING);
 			}
 
-			// 12.3.
+			// 12.3.			
 			if (((Keywords.JSON.equals(expandedTypeString) || Keywords.NONE.equals(expandedTypeString))
 				&& activeContext.inMode(Version.V1_0) 
 				)

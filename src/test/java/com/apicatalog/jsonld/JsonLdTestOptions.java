@@ -33,6 +33,7 @@ public class JsonLdTestOptions {
 		if (processingMode != null) {
 			optionsBuilder.mode(Version.of(processingMode));
 		}
+				
 		if (base != null) {
 			optionsBuilder.baseUri(URI.create(base));
 		}
