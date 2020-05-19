@@ -12,6 +12,7 @@ import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.ListObject;
+import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.utils.JsonUtils;
 
 /**
@@ -31,6 +32,7 @@ public final class ArrayExpansion {
 	private boolean frameExpansion;
 	private boolean ordered;
 	private boolean fromMap;
+	private LoadDocumentCallback documentLoader;
 	
 	private ArrayExpansion(final ActiveContext activeContext, final JsonArray element, final String activeProperty, final URI baseUrl) {
 		this.activeContext = activeContext;
@@ -63,6 +65,11 @@ public final class ArrayExpansion {
 		return this;
 	}
 	
+	public ArrayExpansion documentLoader(LoadDocumentCallback documentLoader) {
+		this.documentLoader = documentLoader;
+		return this;
+	}
+
 	public JsonValue compute() throws JsonLdError {
 
 		// 5.1
@@ -74,6 +81,7 @@ public final class ArrayExpansion {
 			// 5.2.1
 			JsonValue expanded = Expansion
 										.with(activeContext, item, activeProperty, baseUrl)
+										.documentLoader(documentLoader)
 										.frameExpansion(frameExpansion)
 										.ordered(ordered)
 										.fromMap(fromMap)

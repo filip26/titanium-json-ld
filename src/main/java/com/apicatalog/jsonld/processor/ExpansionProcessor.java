@@ -37,7 +37,7 @@ public class ExpansionProcessor {
 
 	public static final JsonArray expand(final URI input, final JsonLdOptions options) throws JsonLdError {
 		
-		if (options.getDocumentLoader().isEmpty()) {
+		if (options.getDocumentLoader() == null) {
 			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
 		}
 		
@@ -46,7 +46,6 @@ public class ExpansionProcessor {
 			final RemoteDocument remoteDocument = 
 					options
 						.getDocumentLoader()
-						.get()
 							.loadDocument(
 									input.toURL(), 
 									new LoadDocumentOptions()
@@ -114,6 +113,7 @@ public class ExpansionProcessor {
 		JsonValue expanded = 
 				Expansion
 					.with(activeContext,jsonStructure, null, baseUrl)
+					.documentLoader(options.getDocumentLoader())
 					.frameExpansion(options.isFrameExpansion())
 					.ordered(options.isOrdered())
 					.compute();

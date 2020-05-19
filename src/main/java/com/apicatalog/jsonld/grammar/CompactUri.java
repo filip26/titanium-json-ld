@@ -27,13 +27,11 @@ public final class CompactUri {
 			
 			final String prefix = value.substring(0, splitIndex);
 			final String suffix = value.substring(splitIndex + 1);
-
-			//!prefix.startsWith("_")
 			
 			if ((Character.isAlphabetic(prefix.charAt(0))
-					|| prefix.startsWith("_"))
+					|| prefix.equals("_"))
 					&& !suffix.startsWith("/")) {
-				return new CompactUri(prefix, suffix, prefix.startsWith("_"));
+				return new CompactUri(prefix, suffix, prefix.equals("_"));
 			}
 		}
 		return null;		

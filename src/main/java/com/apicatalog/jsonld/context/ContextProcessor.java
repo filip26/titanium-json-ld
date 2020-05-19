@@ -1,7 +1,11 @@
 package com.apicatalog.jsonld.context;
 
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,15 +13,19 @@ import java.util.Map;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonString;
+import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.DirectionType;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.Version;
+import com.apicatalog.jsonld.loader.LoadDocumentCallback;
+import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.utils.JsonUtils;
 import com.apicatalog.jsonld.utils.UriUtils;
 
@@ -40,6 +48,8 @@ public class ContextProcessor {
 	private boolean propagate;
 	
 	private boolean validateScopedContext;
+	
+	private LoadDocumentCallback documentLoader;
 	
 	private ContextProcessor(
 			ActiveContext activeContext, 
@@ -78,6 +88,11 @@ public class ContextProcessor {
 	
 	public ContextProcessor validateScopedContext(boolean value) {
 		this.validateScopedContext = value;
+		return this;
+	}
+	
+	public ContextProcessor documentLoader(LoadDocumentCallback documentLoader) {
+		this.documentLoader = documentLoader;
 		return this;
 	}
 
@@ -158,11 +173,58 @@ public class ContextProcessor {
 				// 5.2.4
 				//TODO
 				
-				// 5.2.5
-				//TODO
+				// 5.2.5.
+				if (documentLoader == null) {
+					throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED);
+				}
 				
+				LoadDocumentOptions options = new LoadDocumentOptions();
+				options.setProfile("http://www.w3.org/ns/json-ld#context");
+				options.setRequestProfile(Arrays.asList(options.getProfile()));
+				
+				JsonStructure importedStructure = null;
+				URL documentUrl = null;
+				
+				try {
+					RemoteDocument remoteImport = documentLoader.loadDocument(new URL(contextUri), options);
+					
+					documentUrl = remoteImport.getDocumentUrl();
+					
+					importedStructure = remoteImport.getDocument().asJsonStructure();
+					
+					if (importedStructure == null) {
+						throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT);
+					}
+					
+				// 5.2.5.1.
+				} catch (MalformedURLException | JsonLdError e) {
+					throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
+				}
+				
+				// 5.2.5.2.
+				if (JsonUtils.isNotObject(importedStructure)) {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT);
+				}
+				
+				JsonObject importedContext = importedStructure.asJsonObject();
+				
+				if (!importedContext.containsKey(Keywords.CONTEXT) 
+						|| JsonUtils.isNotObject(importedContext.get(Keywords.CONTEXT))) {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT);
+				}
+				
+				// 5.2.5.3.
+				importedContext = importedContext.getJsonObject(Keywords.CONTEXT);
+								
 				// 5.2.6
-				//TODO
+				try {
+					result = ContextProcessor.with(result, importedContext, documentUrl.toURI())
+									.remoteContexts(new ArrayList<>(remoteContexts))
+									.validateScopedContext(validateScopedContext)
+									.compute();
+				} catch (URISyntaxException | JsonLdError e) {
+					throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
+				}
 				
 				// 5.2.7
 				continue;
@@ -210,6 +272,7 @@ public class ContextProcessor {
 				}
 
 				JsonValue contextImport = contextDefinition.get(Keywords.IMPORT);
+				
 				// 5.6.2.
 				if (JsonUtils.isNotString(contextImport)) {
 					throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE);
@@ -218,9 +281,53 @@ public class ContextProcessor {
 				// 5.6.3.
 				String contextImportUri = UriUtils.resolve(baseUrl, ((JsonString)contextImport).getString());
 				
-				// 5.6.4.
-				//TODO
 				
+				// 5.6.4.
+				if (documentLoader == null) {
+					throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED);
+				}
+				
+				LoadDocumentOptions options = new LoadDocumentOptions();
+				options.setProfile("http://www.w3.org/ns/json-ld#context");
+				options.setRequestProfile(Arrays.asList(options.getProfile()));
+				
+				JsonStructure importedStructure = null;
+				
+				try {
+					RemoteDocument remoteImport = documentLoader.loadDocument(new URL(contextImportUri), options);
+					
+					importedStructure = remoteImport.getDocument().asJsonStructure();
+					
+					if (importedStructure == null) {
+						throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE);
+					}
+					
+				// 5.6.5
+				} catch (MalformedURLException | JsonLdError e) {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE, e);
+				}
+				
+				// 5.6.6
+				if (JsonUtils.isNotObject(importedStructure)) {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT);
+				}
+				
+				JsonObject importedContext = importedStructure.asJsonObject();
+				
+				if (!importedContext.containsKey(Keywords.CONTEXT) 
+						|| JsonUtils.isNotObject(importedContext.get(Keywords.CONTEXT))) {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT);
+				}
+				
+				importedContext = importedContext.getJsonObject(Keywords.CONTEXT);
+				
+				// 5.6.7
+				if (importedContext.containsKey(Keywords.IMPORT)) {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_CONTEXT_ENTRY);
+				}
+
+				// 5.6.8				
+				contextDefinition = JsonUtils.merge(importedContext, contextDefinition);
 			}
 			
 			// 5.7. If context has an @base entry and remote contexts is empty, 
@@ -392,6 +499,7 @@ public class ContextProcessor {
 					
 					TermDefinitionCreator
 						.with(result, contextDefinition, key, defined)
+						.documentLoader(documentLoader)
 						.baseUrl(baseUrl)
 						.protectedFlag(protectedFlag)
 						.overrideProtectedFlag(protectedFlag)
@@ -404,5 +512,4 @@ public class ContextProcessor {
 		// 6.
 		return result;
 	}
-	
 }

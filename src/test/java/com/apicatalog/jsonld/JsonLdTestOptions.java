@@ -15,6 +15,7 @@ public class JsonLdTestOptions {
 	public String expandContext;
 	
 	public static final JsonLdTestOptions of(JsonObject o) {
+		
 		final JsonLdTestOptions options = new JsonLdTestOptions();
 		
 		options.specVersion = o.getString("specVersion", null);
@@ -37,6 +38,9 @@ public class JsonLdTestOptions {
 		if (base != null) {
 			optionsBuilder.baseUri(URI.create(base));
 		}
+		
+
+		
 	}
 	
 }

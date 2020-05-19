@@ -20,6 +20,7 @@ import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.ContextProcessor;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.grammar.Keywords;
+import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.utils.JsonUtils;
 import com.apicatalog.jsonld.utils.UriUtils;
 
@@ -41,6 +42,7 @@ public final class MapExpansion {
 	private boolean frameExpansion;
 	private boolean ordered;
 	private boolean fromMap;
+	private LoadDocumentCallback documentLoader;
 	
 	private MapExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final JsonObject element, final String activeProperty, final URI baseUrl) {
 		this.activeContext = activeContext;
@@ -71,6 +73,11 @@ public final class MapExpansion {
 	
 	public MapExpansion fromMap(boolean value) {
 		this.fromMap = value;
+		return this;
+	}
+	
+	public MapExpansion documentLoader(LoadDocumentCallback documentLoader) {
+		this.documentLoader = documentLoader;
 		return this;
 	}
 	
@@ -115,6 +122,7 @@ public final class MapExpansion {
 			
 			activeContext = ContextProcessor
 								.with(activeContext, propertyContext, activePropertyDefinition.getBaseUrl())
+								.documentLoader(documentLoader)
 								.overrideProtected(true)
 								.compute()
 								;
@@ -122,7 +130,10 @@ public final class MapExpansion {
 		
 		// 9.
 		if (element.containsKey(Keywords.CONTEXT)) {
-			activeContext = ContextProcessor.with(activeContext, element.get(Keywords.CONTEXT), baseUrl).compute();
+			activeContext = ContextProcessor
+								.with(activeContext, element.get(Keywords.CONTEXT), baseUrl)
+								.documentLoader(documentLoader)
+								.compute();
 		}
 		
 		// 10.
@@ -176,6 +187,7 @@ public final class MapExpansion {
 					if (termDefinition.hasLocalContext() && activeTermDefinition != null) {		
 						activeContext = ContextProcessor
 											.with(activeContext, termDefinition.getLocalContext(), activeTermDefinition.getBaseUrl())
+											.documentLoader(documentLoader)
 											.propagate(false)
 											.compute();
 					}
@@ -227,6 +239,7 @@ public final class MapExpansion {
 		}		
 
 		MapExpansionStep1314.with(activeContext, element, activeProperty, baseUrl)
+							.documentLoader(documentLoader)
 							.inputType(inputType)
 							.result(result)
 							.typeContext(typeContext)

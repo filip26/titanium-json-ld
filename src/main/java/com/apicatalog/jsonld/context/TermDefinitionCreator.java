@@ -18,6 +18,7 @@ import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.DirectionType;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.Version;
+import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.utils.JsonUtils;
 import com.apicatalog.jsonld.utils.UriUtils;
 
@@ -47,6 +48,8 @@ public final class TermDefinitionCreator {
 	Collection<String> remoteContexts;
 	
 	boolean validateScopedContext;
+	
+	LoadDocumentCallback documentLoader;
 	
 	private TermDefinitionCreator(ActiveContext activeContext, JsonObject localContext, String term, Map<String, Boolean> defined) {
 		this.activeContext = activeContext;
@@ -88,6 +91,11 @@ public final class TermDefinitionCreator {
 
 	public TermDefinitionCreator validateScopedContext(boolean validateScopedContext) {
 		this.validateScopedContext = validateScopedContext;
+		return this;
+	}
+	
+	public TermDefinitionCreator documentLoader(LoadDocumentCallback documentLoader) {
+		this.documentLoader = documentLoader;
 		return this;
 	}
 
@@ -158,16 +166,16 @@ public final class TermDefinitionCreator {
 		JsonObject valueObject = null;
 		Boolean simpleTerm = null;
 
-		if (value == null || ValueType.NULL.equals(value.getValueType())) {
+		if (value == null || JsonUtils.isNull(value)) {
 			// 7.
 			valueObject = Json.createObjectBuilder().add(Keywords.ID, JsonValue.NULL).build();
 			
-		} else if (ValueType.STRING.equals(value.getValueType())) {
+		} else if (JsonUtils.isString(value)) {
 			// 8.
 			valueObject = Json.createObjectBuilder().add(Keywords.ID, value).build();
 			simpleTerm = true;
 			
-		} else if (ValueType.OBJECT.equals(value.getValueType())) {
+		} else if (JsonUtils.isObject(value)) {
 			// 9.
 			valueObject = value.asJsonObject();
 			simpleTerm = false;
@@ -388,10 +396,13 @@ public final class TermDefinitionCreator {
 					&& localContext.containsKey(compactUri.getPrefix())
 					) {
 				
-				TermDefinitionCreator.with(activeContext, localContext, compactUri.getPrefix(), defined).create();
-
+				TermDefinitionCreator
+					.with(activeContext, localContext, compactUri.getPrefix(), defined)
+					.documentLoader(documentLoader)
+					.create();
+			}
 			// 15.2.
-			} else if (compactUri != null
+			if (compactUri != null
 					&& compactUri.isNotBlank()
 					&& activeContext.containsTerm(compactUri.getPrefix())) {
 				
@@ -400,7 +411,7 @@ public final class TermDefinitionCreator {
 				definition.uriMapping = prefixDefinition.uriMapping.concat(compactUri.getSuffix());
 				
 			// 15.3.
-			} else {
+			} else if (UriUtils.isURI(term) || CompactUri.isBlankNode(term)){
 				definition.uriMapping = term;
 			}
 				
@@ -412,7 +423,7 @@ public final class TermDefinitionCreator {
 										.defined(defined)
 										.vocab(true)
 										.compute();
-			
+
 			if (!UriUtils.isURI(definition.uriMapping)) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
 			}					
@@ -447,6 +458,7 @@ public final class TermDefinitionCreator {
 			if (!ValueType.STRING.equals(container.getValueType())) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
 			}
+			//TODO
 
 			String containerString = ((JsonString)container).getString();
 			
@@ -514,7 +526,9 @@ public final class TermDefinitionCreator {
 		if (valueObject.containsKey(Keywords.CONTEXT)) {
 	
 			// 21.1.
-			//TODO
+			if (activeContext.inMode(Version.V1_0)) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
+			}
 			
 			// 21.2.
 			JsonValue context = valueObject.get(Keywords.CONTEXT);
@@ -526,6 +540,7 @@ public final class TermDefinitionCreator {
 						.overrideProtected(true)
 						.remoteContexts(new ArrayList<>(remoteContexts))
 						.validateScopedContext(false)
+						.documentLoader(documentLoader)
 						.compute()
 						;
 			} catch (JsonLdError e) {

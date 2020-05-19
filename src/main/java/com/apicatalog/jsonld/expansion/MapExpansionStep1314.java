@@ -21,11 +21,13 @@ import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.grammar.DefaultObject;
+import com.apicatalog.jsonld.grammar.DirectionType;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.ListObject;
 import com.apicatalog.jsonld.grammar.NodeObject;
 import com.apicatalog.jsonld.grammar.ValueObject;
 import com.apicatalog.jsonld.grammar.Version;
+import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.utils.JsonUtils;
 
 /**
@@ -37,7 +39,7 @@ public final class MapExpansionStep1314 {
 
 	// mandatory
 	private final ActiveContext activeContext;
-	private final JsonObject element;
+	private JsonObject element;
 	private final String activeProperty; 
 	private final URI baseUrl;
 	
@@ -49,6 +51,7 @@ public final class MapExpansionStep1314 {
 	// optional
 	private boolean frameExpansion;
 	private boolean ordered;
+	private LoadDocumentCallback documentLoader;
 	
 	private MapExpansionStep1314(final ActiveContext activeContext,  final JsonObject element, final String activeProperty, final URI baseUrl) {
 		this.activeContext = activeContext;
@@ -80,7 +83,6 @@ public final class MapExpansionStep1314 {
 		return this;
 	}
 
-	
 	public MapExpansionStep1314 typeContext(ActiveContext typeContext) {
 		this.typeContext = typeContext;
 		return this;
@@ -95,6 +97,11 @@ public final class MapExpansionStep1314 {
 		this.inputType = inputType;
 		return this;
 	}
+	
+	public MapExpansionStep1314 documentLoader(LoadDocumentCallback documentLoader) {
+		this.documentLoader = documentLoader;
+		return this;
+	}	
 		
 	public void compute() throws JsonLdError {
 						
@@ -266,10 +273,15 @@ public final class MapExpansionStep1314 {
 					
 					expandedValue = Expansion
 										.with(typeContext, value, Keywords.GRAPH, baseUrl)
+										.documentLoader(documentLoader)
 										.frameExpansion(frameExpansion)
 										.ordered(ordered)
 										.compute()
 										;
+					
+					if (JsonUtils.isObject(expandedValue)) {
+						expandedValue = Json.createArrayBuilder().add(expandedValue).build();
+					}
 				}
 				
 				// 13.4.6
@@ -283,6 +295,7 @@ public final class MapExpansionStep1314 {
 					// 13.4.6.2					
 					expandedValue = Expansion
 										.with(activeContext, value, null, baseUrl)
+										.documentLoader(documentLoader)
 										.frameExpansion(frameExpansion)
 										.ordered(ordered)
 										.compute();
@@ -393,6 +406,7 @@ public final class MapExpansionStep1314 {
 					// 13.4.11.1
 					expandedValue = Expansion
 										.with(activeContext, value, activeProperty, baseUrl)
+										.documentLoader(documentLoader)
 										.frameExpansion(frameExpansion)
 										.ordered(ordered)
 										.compute();
@@ -407,6 +421,7 @@ public final class MapExpansionStep1314 {
 					
 					expandedValue = Expansion
 							.with(activeContext, value, activeProperty, baseUrl)
+							.documentLoader(documentLoader)
 							.frameExpansion(frameExpansion)
 							.ordered(ordered)
 							.compute();
@@ -423,6 +438,7 @@ public final class MapExpansionStep1314 {
 					// 13.4.13.2.
 					expandedValue = Expansion
 										.with(activeContext, value, Keywords.REVERSE, baseUrl)
+										.documentLoader(documentLoader)
 										.frameExpansion(frameExpansion)
 										.ordered(ordered)
 										.compute();
@@ -538,12 +554,71 @@ public final class MapExpansionStep1314 {
 									.add(Keywords.TYPE, Json.createValue(Keywords.JSON))
 									.build();
 				
-			// 13.7			
+			// 13.7.
 			} else if (containerMapping.contains(Keywords.LANGUAGE)
 					&& ValueType.OBJECT.equals(value.getValueType())
 					) {
-				// 13.7.1
+				// 13.7.1.
 				expandedValue = Json.createArrayBuilder().build();
+
+				// 13.7.2.
+				DirectionType direction = activeContext.getDefaultBaseDirection();
+				
+				// 13.7.3.
+				if (keyTermDefinition != null && keyTermDefinition.getDirectionMapping() != null) {
+					direction = keyTermDefinition.getDirectionMapping();
+				}
+
+				// 13.7.4.
+				List<String> langCodes = new ArrayList<>(value.asJsonObject().keySet());
+				
+				if (ordered) {
+					Collections.sort(langCodes);
+				}
+				
+				for (String langCode : langCodes) {
+					
+					JsonValue langValue = value.asJsonObject().get(langCode);
+
+					// 13.7.4.1.
+					if (JsonUtils.isNotArray(langValue)) {
+						langValue = Json.createArrayBuilder().add(langValue).build();
+					}
+					
+					// 13.7.4.2.
+					for (JsonValue item : langValue.asJsonArray()) {
+
+						// 13.7.4.2.1.
+						if (JsonUtils.isNull(item)) {
+							continue;
+						}
+
+						// 13.7.4.2.2.
+						if (JsonUtils.isNotString(item)) {
+							throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_MAP_VALUE);
+						}
+						
+						// 13.7.4.2.3.
+						//TODO
+						
+						JsonObject langMap = 
+										Json.createObjectBuilder()
+											.add(Keywords.VALUE, langValue)
+											.add(Keywords.LANGUAGE, Json.createValue(langCode))
+											.build();
+
+						// 13.7.4.2.4.
+						//TODO
+						
+						// 13.7.4.2.5.
+						if (direction != null) {
+							langMap = Json.createObjectBuilder(langMap).add(Keywords.DIRECTION, Json.createValue(direction.name().toLowerCase())).build();
+						}
+						
+						// 13.7.4.2.6.
+						expandedValue = Json.createArrayBuilder(expandedValue.asJsonArray()).add(langMap).build();
+					}
+				}
 				
 			// 13.8.
 			} else if (
@@ -556,10 +631,14 @@ public final class MapExpansionStep1314 {
 				// 13.8.1
 				expandedValue = Json.createArrayBuilder().build();
 				
+				//TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				
 			// 13.9.
 			} else {
-				expandedValue =  Expansion
+				expandedValue =  
+					Expansion
 						.with(activeContext, value, key, baseUrl)
+						.documentLoader(documentLoader)
 						.frameExpansion(frameExpansion)
 						.ordered(ordered)
 						.compute();
@@ -646,7 +725,7 @@ public final class MapExpansionStep1314 {
 			
 			// 14.1.
 			JsonValue nestedValues = element.get(nestedKey);
-
+			
 			if (JsonUtils.isNotArray(nestedValues)) {
 				nestedValues = Json.createArrayBuilder().add(nestedValues).build();
 			}
@@ -672,14 +751,16 @@ public final class MapExpansionStep1314 {
 				}
 				
 				// 14.2.2
-				MapExpansionStep1314.with(activeContext, nestValue.asJsonObject(), activeProperty, baseUrl)
-									.inputType(inputType)
-									.result(result)
-									.typeContext(typeContext)
-									.nest(new LinkedHashMap<>())
-									.frameExpansion(frameExpansion)
-									.ordered(ordered)
-									.compute();				
+				MapExpansionStep1314
+						.with(activeContext, nestValue.asJsonObject(), activeProperty, baseUrl)
+						.documentLoader(documentLoader)
+						.inputType(inputType)
+						.result(result)
+						.typeContext(typeContext)
+						.nest(new LinkedHashMap<>())
+						.frameExpansion(frameExpansion)
+						.ordered(ordered)
+						.compute();
 			}			
 		}
 	}

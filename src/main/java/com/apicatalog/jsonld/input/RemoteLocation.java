@@ -27,7 +27,7 @@ public class RemoteLocation implements JsonLdInput {
 		if (options == null) {
 			throw new IllegalArgumentException();
 		}
-		if (options.getDocumentLoader().isEmpty()) {
+		if (options.getDocumentLoader() == null) {
 			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
 		}
 		
@@ -35,7 +35,6 @@ public class RemoteLocation implements JsonLdInput {
 						 
 			return new DocumentInput(options
 					.getDocumentLoader()
-					.get()
 						.loadDocument(
 								documentUri.toURL(), 
 								new LoadDocumentOptions()

@@ -1,5 +1,6 @@
 package com.apicatalog.jsonld.utils;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.json.Json;
@@ -116,6 +117,15 @@ public final class JsonUtils {
 				.forEach(e -> builder.add(e.getKey(), e.getValue()));
 		
 		return builder.build();
+	}
+	
+	public static JsonObject merge(JsonObject target, JsonObject source) {
+		
+		Map<String, JsonValue> targetMap = (new LinkedHashMap<>(target));
+				
+		source.forEach(targetMap::put);
+		
+		return toObject(targetMap);
 	}
 
 }

@@ -7,6 +7,7 @@ import javax.json.JsonValue;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.grammar.Keywords;
+import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.utils.JsonUtils;
 
 /**
@@ -26,6 +27,7 @@ public final class Expansion {
 	private boolean frameExpansion;
 	private boolean ordered;
 	private boolean fromMap;
+	private LoadDocumentCallback documentLoader;
 	
 	private Expansion(final ActiveContext activeContext, final JsonValue element, final String activeProperty, final URI baseUrl) {
 		this.activeContext = activeContext;
@@ -58,6 +60,11 @@ public final class Expansion {
 		return this;
 	}
 	
+	public Expansion documentLoader(LoadDocumentCallback documentLoader) {
+		this.documentLoader = documentLoader;
+		return this;
+	}
+	
 	public JsonValue compute() throws JsonLdError {
 
 		// 1. If element is null, return null
@@ -81,21 +88,28 @@ public final class Expansion {
 		// 4. If element is a scalar
 		if (JsonUtils.isScalar(element)) {
 			
-			return ScalarExpansion.with(activeContext, propertyContext, element, activeProperty).compute();
+			return ScalarExpansion
+						.with(activeContext, propertyContext, element, activeProperty)
+						.documentLoader(documentLoader)
+						.compute();
 		}
 		
 		// 5. If element is an array,
 		if (JsonUtils.isArray(element)) {
 			
-			return ArrayExpansion.with(activeContext, element.asJsonArray(), activeProperty, baseUrl)
-								 .compute();
+			return ArrayExpansion
+						.with(activeContext, element.asJsonArray(), activeProperty, baseUrl)
+						.documentLoader(documentLoader)
+						.compute();
 		}
 
 		// 6. Otherwise element is a map
-		return MapExpansion.with(activeContext, propertyContext, element.asJsonObject(), activeProperty, baseUrl)
-							  .frameExpansion(frameExpansion)
-							  .ordered(ordered)
-							  .fromMap(fromMap)
-							  .compute();
+		return MapExpansion
+					.with(activeContext, propertyContext, element.asJsonObject(), activeProperty, baseUrl)
+					.documentLoader(documentLoader)
+					.frameExpansion(frameExpansion)
+					.ordered(ordered)
+					.fromMap(fromMap)
+					.compute();
 	}
 }

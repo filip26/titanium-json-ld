@@ -103,8 +103,8 @@ public final class JsonLdOptions {
 	 * 
 	 * @return
 	 */
-	public Optional<LoadDocumentCallback> getDocumentLoader() {
-		return Optional.ofNullable(documentLoader);
+	public LoadDocumentCallback getDocumentLoader() {
+		return documentLoader;
 	}
 	
 	/**
