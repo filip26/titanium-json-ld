@@ -1,7 +1,8 @@
 package com.apicatalog.jsonld.grammar;
 
 import javax.json.JsonValue;
-import javax.json.JsonValue.ValueType;
+
+import com.apicatalog.jsonld.utils.JsonUtils;
 
 public class DefaultObject {
 
@@ -18,7 +19,12 @@ public class DefaultObject {
 	 * @return
 	 */
 	public static final boolean isDefaultObject(JsonValue value) {
-		return ValueType.OBJECT.equals(value.getValueType()) && value.asJsonObject().containsKey(Keywords.DEFAULT);		
+		return JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.DEFAULT);		
+	}
+
+
+	public static JsonValue getValue(JsonValue value) {
+		return JsonUtils.isObject(value) ? value.asJsonObject().get(Keywords.DEFAULT) : null;
 	}
 	
 }

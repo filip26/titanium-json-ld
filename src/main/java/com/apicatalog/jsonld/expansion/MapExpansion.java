@@ -2,16 +2,13 @@ package com.apicatalog.jsonld.expansion;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
@@ -23,11 +20,7 @@ import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.ContextProcessor;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.grammar.DefaultObject;
 import com.apicatalog.jsonld.grammar.Keywords;
-import com.apicatalog.jsonld.grammar.ListObject;
-import com.apicatalog.jsonld.grammar.ValueObject;
-import com.apicatalog.jsonld.grammar.Version;
 import com.apicatalog.jsonld.utils.JsonUtils;
 import com.apicatalog.jsonld.utils.UriUtils;
 
@@ -84,15 +77,36 @@ public final class MapExpansion {
 	
 	public JsonValue compute() throws JsonLdError {
 
-		// 7.
-		if (activeContext.hasPreviousContext() 
-				&& !fromMap 
-				&& !element.containsKey(Keywords.VALUE)
-				&& (element.size() != 1
-					|| !element.containsKey(Keywords.ID)
-				)
-				) {		
-			activeContext = activeContext.getPreviousContext();
+		// 7. If active context has a previous context, the active context is not propagated. 
+		//    If from map is undefined or false, and element does not contain an entry expanding to @value, 
+		//    and element does not consist of a single entry expanding to @id (where entries are IRI expanded), 
+		//    set active context to previous context from active context,
+		//    as the scope of a term-scoped context does not apply when processing new node objects.
+		if (activeContext.hasPreviousContext() && !fromMap) {
+
+			List<String> keys = new ArrayList<>(element.keySet());
+			Collections.sort(keys);
+			
+			boolean revert = true;
+			
+			for (String key : keys) {
+				
+				String expandedKey = UriExpansion
+											.with(activeContext, key)
+											.vocab(true)
+											.compute();
+
+				if (Keywords.VALUE.equals(expandedKey)
+						|| (Keywords.ID.equals(expandedKey) && (element.size() == 1))
+						) {
+					revert = false;
+					break;
+				}
+			}
+			
+			if (revert) {
+				activeContext = activeContext.getPreviousContext();	
+			}			
 		}
 		
 		// 8.
@@ -115,8 +129,9 @@ public final class MapExpansion {
 		// 10.
 		ActiveContext typeContext = activeContext;
 		
-		List<String> keys = new ArrayList<>(element.keySet());		
-		Collections.sort(keys);
+		List<String> keys = new ArrayList<>(element.keySet());
+		
+		String typeKey = null;
 		
 		// 11.
 		for (String key : keys) {
@@ -126,36 +141,42 @@ public final class MapExpansion {
 									.vocab(true)
 									.compute()
 									;
-			
+
+
 			if (!Keywords.TYPE.equals(expandedKey)) {
 				continue;
+				
+			} else if (typeKey == null) {
+				typeKey = key;
 			}
-			
+
 			JsonValue value = element.get(key);
-			
+						
 			// 11.1
-			if (!ValueType.ARRAY.equals(value.getValueType())) {
+			if (JsonUtils.isNotArray(value)) {
 				value = Json.createArrayBuilder().add(value).build();
 			}
 			
 			// 11.2
-			JsonArray valueArray = value.asJsonArray();
-			//TODO oder lex
+			List<String> terms = value.asJsonArray()
+										.stream()
+										.filter(JsonUtils::isString)
+										.map(JsonString.class::cast)
+										.map(JsonString::getString)
+										.sorted()
+										.collect(Collectors.toList());
+										
+			for (String term : terms) {
 
-			for (JsonValue term : valueArray) {
-				
-				if (ValueType.STRING.equals(term.getValueType()) 
-						&& typeContext.containsTerm(((JsonString)term).getString())) {
-					
-					
-					
-					TermDefinition termDefinition = typeContext.getTerm(((JsonString)term).getString());
-					//TODO ?!
-					TermDefinition activeTermDefinition = activeContext.getTerm(((JsonString)term).getString());
+				if (typeContext.containsTerm(term)) {
+	
+					TermDefinition termDefinition = typeContext.getTerm(term);
+
+					TermDefinition activeTermDefinition = activeContext.getTerm(term);
 					
 					if (termDefinition.hasLocalContext() && activeTermDefinition != null) {		
 						activeContext = ContextProcessor
-											.with(typeContext, termDefinition.getLocalContext(), activeTermDefinition.getBaseUrl())
+											.with(activeContext, termDefinition.getLocalContext(), activeTermDefinition.getBaseUrl())
 											.propagate(false)
 											.compute();
 					}
@@ -165,553 +186,55 @@ public final class MapExpansion {
 		
 		// 12.
 		Map<String, JsonValue> result = new LinkedHashMap<>(); 
-		Map<String, JsonValue> nest = new LinkedHashMap<>();
-		String inputType = null;
 		
+		String inputType = null;
+
 		// Initialize input type to expansion of the last value of the first entry in element 
 		// expanding to @type (if any), ordering entries lexicographically by key. Both the key and
 		// value of the matched entry are IRI expanded.	
-		if (element.containsKey(Keywords.TYPE)) { //TODO ?!?!
-			
-			JsonValue t = element.get(Keywords.TYPE);
+		if (typeKey != null) {
+	
+			JsonValue t = element.get(typeKey);
+
+			String lastValue = null;
 			
 			if (JsonUtils.isArray(t)) {
-				t = JsonUtils.last(t.asJsonArray());
+				
+				List<String> sortedValues = 
+						new ArrayList<>(
+								t.asJsonArray()
+									.stream()
+									.filter(JsonUtils::isString)
+									.map(JsonString.class::cast)
+									.map(JsonString::getString)
+									.sorted()
+									.collect(Collectors.toList()));
+								
+				if (!sortedValues.isEmpty()) {
+					lastValue = sortedValues.get(sortedValues.size() - 1);
+				}
 			}
 
 			if (JsonUtils.isString(t)) {
-				inputType = UriExpansion.with(typeContext, ((JsonString)t).getString())
-											.vocab(true)
-											.compute();
+				lastValue = ((JsonString)t).getString();
+			}
+			
+			if (lastValue != null) {
+			
+				inputType = UriExpansion.with(activeContext, lastValue)
+						.vocab(true)
+						.compute();
 			}
 		}		
-		
-		// 13.
-		if (!ordered) {
-			keys = new ArrayList<>(element.keySet());
-		}
-		
-		Map<String, JsonValue> reverseMap = null;
 
-		for (final String key : keys) {
-			
-			// 13.1.
-			if (Keywords.CONTEXT.equals(key)) {
-				continue;
-			}
-
-			// 13.2.
-			String expandedProperty = 
-								UriExpansion
-									.with(activeContext, key)
-									.documentRelative(false)
-									.vocab(true)
-									.compute();
-			
-			// 13.3.
-			if (expandedProperty == null 
-					|| (!expandedProperty.contains(":") 
-					&& !Keywords.contains(expandedProperty))
-					) {
-				continue;
-			}
-			
-			JsonValue value = element.get(key);
-			
-			// 13.4. If expanded property is a keyword:
-			if (Keywords.contains(expandedProperty)) {
-				
-				JsonValue expandedValue = JsonValue.NULL;
-				
-				// 13.4.1
-				if (Keywords.REVERSE.equals(activeProperty)) {
-					throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_MAP);
-				}
-				
-				// 13.4.2
-				if (result.containsKey(expandedProperty) && Keywords.isNot(expandedProperty, Keywords.INCLUDED, Keywords.TYPE)) {
-					throw new JsonLdError(JsonLdErrorCode.COLLIDING_KEYWORDS);
-				}
-				
-				// 13.4.3
-				if (Keywords.ID.equals(expandedProperty)) {
-					
-					// 13.4.3.1
-					if (!ValueType.STRING.equals(value.getValueType())) {
-						//TODO frameExpansion
-						throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE);
-						
-					// 13.4.3.2
-					} else {
-
-						String expandedStringValue = UriExpansion
-												.with(activeContext, ((JsonString)value).getString())
-												.documentRelative(true)
-												.vocab(false)
-												.compute(); 
-
-						if (expandedStringValue != null) {
-							expandedValue = Json.createValue(expandedStringValue);
-						}
-						//TODO frameExpansion
-					}	
-				}
-				
-				// 13.4.4
-				if (Keywords.TYPE.equals(expandedProperty)) {
-					// 13.4.4.1
-					if (!frameExpansion 
-							&& !ValueType.STRING.equals(value.getValueType()) 
-							&& !ValueType.ARRAY.equals(value.getValueType())) {
-						throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_VALUE);
-					}
-					//TODO
-					
-					// 13.4.4.2
-					if (ValueType.OBJECT.equals(value.getValueType()) && value.asJsonObject().isEmpty()) {
-						expandedValue = value;
-						
-					// 13.4.4.3
-					} else if (DefaultObject.isDefaultObject(value)) {
-
-						//TODO
-						
-					// 13.4.4.4
-					} else {
-						
-						if (ValueType.STRING.equals(value.getValueType())) {
-							
-							String expandedStringValue = 
-										UriExpansion
-												.with(typeContext, ((JsonString)value).getString())
-												.vocab(true)
-												.documentRelative(true)
-												.compute(); 
-							
-							if (expandedStringValue != null) {
-								expandedValue = Json.createValue(expandedStringValue);
-							}
-
-						} else if (ValueType.ARRAY.equals(value.getValueType())) {
-
-							JsonArrayBuilder array = Json.createArrayBuilder();
-							
-							for (JsonValue item : value.asJsonArray()) {
-								
-								if (ValueType.STRING.equals(item.getValueType())) {
-									
-									String expandedStringValue = 
-												UriExpansion
-														.with(typeContext, ((JsonString)item).getString())
-														.vocab(true)
-														.documentRelative(true)
-														.compute(); 
-									
-									if (expandedStringValue != null) {
-										array.add(Json.createValue(expandedStringValue));
-									}
-								}
-							}
-							expandedValue = array.build();
-						}
-					}
-
-					// 13.4.4.5
-					if (result.containsKey(Keywords.TYPE)) {
-						
-						JsonValue type = result.get(Keywords.TYPE);
-						
-						if (ValueType.ARRAY.equals(type.getValueType())) {
-							
-							expandedValue = Json.createArrayBuilder(type.asJsonArray()).add(expandedValue).build();
-						} else {
-							expandedValue = Json.createArrayBuilder().add(value).add(expandedValue).build();
-						}
-						
-					}
-				}
-				
-				// 13.4.5
-				if (Keywords.GRAPH.equals(expandedProperty)) {
-					
-					expandedValue = Expansion
-										.with(typeContext, value, Keywords.GRAPH, baseUrl)
-										.frameExpansion(frameExpansion)
-										.ordered(ordered)
-										.compute()
-										;
-				}
-				
-				// 13.4.6
-				if (Keywords.INCLUDED.equals(expandedProperty)) {
-					
-					// 13.4.6.1
-					if (activeContext.inMode(Version.V1_0)) {
-						continue;
-					}
-					
-					// 13.4.6.2					
-					expandedValue = Expansion
-										.with(activeContext, value, null, baseUrl)
-										.frameExpansion(frameExpansion)
-										.ordered(ordered)
-										.compute();
-					
-					if (JsonUtils.isNotNull(expandedValue)) {
-					
-						if (JsonUtils.isNotArray(expandedValue)) {
-							expandedValue = Json.createArrayBuilder().add(expandedValue).build();
-						}
-						
-						// 13.4.6.3
-						//TODO
-
-						// 13.4.6.4
-						if (result.containsKey(Keywords.INCLUDED)) {
-							expandedValue = Json.createArrayBuilder(result.get(Keywords.INCLUDED).asJsonArray()).add(expandedValue).build();
-						}
-					}
-				}
-				
-				// 13.4.7
-				if (Keywords.VALUE.equals(expandedProperty)) {
-					
-					// 13.4.7.1
-					if (Keywords.JSON.equals(inputType)) {
-						
-						if (activeContext.inMode(Version.V1_0)) {
-							throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
-						}
-						
-						expandedValue = value;
-						
-					// 13.4.7.2
-					} else if (!frameExpansion && JsonUtils.isNotNull(value) && JsonUtils.isNotScalar(value)
-							//TODO frameexpansion
-							) {
-						throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
-
-					// 13.4.7.3
-					} else {
-						expandedValue = value;
-					}
-					
-					// 13.4.7.4
-					if (JsonUtils.isNull(expandedValue)) {
-						result.put(Keywords.VALUE, JsonValue.NULL);
-						continue;
-					}
-				}
-
-				// 13.4.8
-				if (Keywords.LANGUAGE.equals(expandedProperty)) {
-					
-					// 13.4.8.1
-					if (!ValueType.STRING.equals(value.getValueType())) {
-						//TODO frameExpansion
-						throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
-					}
-
-					// 13.4.8.2
-					expandedValue = value;
-					//TODO validation, warning, frameExpansion					
-				}
-				
-				// 13.4.9
-				if (Keywords.DIRECTION.equals(expandedProperty)) {
-					// 13.4.9.1
-					if (activeContext.inMode(Version.V1_0)) {
-						continue;
-					}
-					
-					// 13.4.9.2
-					if (JsonUtils.isNotString(value) 
-							&& !((JsonString)value).getString().equals("ltr")
-							&& !((JsonString)value).getString().equals("rtl")
-							) {
-						//TODO frameexpansion
-						throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
-					}
-					
-					expandedValue = value;
-					//TODO
-				}
-				
-				// 13.4.10
-				if (Keywords.INDEX.equals(expandedProperty)) {
-
-					// 13.4.10.1
-					if (JsonUtils.isNotString(value)) {
-						throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_INDEX_VALUE);
-					}
-					
-					// 13.4.10.2
-					expandedValue = value;
-				}
-				
-				// 13.4.11
-				if (Keywords.LIST.equals(expandedProperty)) {
-					
-					// 13.4.11.1
-					if (activeProperty == null || Keywords.GRAPH.equals(activeProperty)) {
-						continue;
-					}
-
-					// 13.4.11.1
-					expandedValue = Expansion
-										.with(activeContext, value, activeProperty, baseUrl)
-										.frameExpansion(frameExpansion)
-										.ordered(ordered)
-										.compute();
-					
-					if (!ValueType.ARRAY.equals(expandedValue.getValueType())) {
-						expandedValue = Json.createArrayBuilder().add(expandedValue).build();
-					}
-				}
-
-				// 13.4.12
-				if (Keywords.SET.equals(expandedProperty)) {
-					
-					expandedValue = Expansion
-							.with(activeContext, value, activeProperty, baseUrl)
+		MapExpansionStep1314.with(activeContext, element, activeProperty, baseUrl)
+							.inputType(inputType)
+							.result(result)
+							.typeContext(typeContext)
+							.nest(new LinkedHashMap<>())
 							.frameExpansion(frameExpansion)
 							.ordered(ordered)
 							.compute();
-				}
-				
-				// 13.4.13
-				if (Keywords.REVERSE.equals(expandedProperty)) {
-
-					// 13.4.13.1.
-					if (JsonUtils.isNotObject(value)) {
-						throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_REVERSE_VALUE);
-					}
-					
-					// 13.4.13.2.
-					expandedValue = Expansion
-										.with(activeContext, value, Keywords.REVERSE, baseUrl)
-										.frameExpansion(frameExpansion)
-										.ordered(ordered)
-										.compute();
-
-
-					if (JsonUtils.isObject(expandedValue)) { 
-
-						// 13.4.13.3.
-						if (expandedValue.asJsonObject().containsKey(Keywords.REVERSE)) {
-							for (Entry<String, JsonValue> entry : expandedValue.asJsonObject().entrySet()) {
-								// 13.4.13.3.1.
-								addValue(result, entry.getKey(), entry.getValue(), true);
-							}
-						}
-					
-						// 13.4.13.4.
-						if (expandedValue.asJsonObject().size() > 1
-								|| !expandedValue.asJsonObject().containsKey(Keywords.REVERSE)
-								) {
-
-							// 13.4.13.4.1
-							if (result.containsKey(Keywords.REVERSE)) {
-								reverseMap = new LinkedHashMap<>(result.get(Keywords.REVERSE).asJsonObject());
-							}
-							
-							if (reverseMap == null) {
-								reverseMap = new LinkedHashMap<>();
-							}
-							
-							// 13.4.13.4.2
-							for (Entry<String, JsonValue> entry : expandedValue.asJsonObject().entrySet()) {
-
-								if (Keywords.REVERSE.equals(entry.getKey())) {
-									continue;
-								}
-								
-								// 13.4.13.4.2.1
-								if (JsonUtils.isArray(entry.getValue())) {
-									
-									for (JsonValue item : entry.getValue().asJsonArray()) {
-										
-										// 13.4.13.4.2.1.1
-										if (ListObject.isListObject(item) || ValueObject.isValueObject(item)) {
-											throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
-										}
-									
-										// 13.4.13.4.2.1.1
-										addValue(reverseMap, entry.getKey(), item, true);
-									}
-								}
-							}
-						}						
-					}
-		
-					// 13.4.13.5.
-					continue;
-				}
-
-				// 13.4.14
-				if (Keywords.NEST.equals(expandedProperty)) {
-					if (!nest.containsKey(key)) {
-						nest.put(key, Json.createArrayBuilder().build());
-					}
-					continue;
-				}
-
-				// 13.4.15
-				if (frameExpansion) {
-					//TODO					
-				}
-
-				// 13.4.16
-				if (!ValueType.NULL.equals(expandedValue.getValueType())
-//FIXME?!						&& Keywords.VALUE.equals(expandedProperty.get())
-						&& !Keywords.JSON.equals(inputType)
-						) {
-					
-					result.put(expandedProperty, expandedValue);
-				}
-				
-				// 13.4.17
-				continue;
-			}
-
-			
-			// 13.5.
-			TermDefinition keyTermDefinition = activeContext.getTerm(key);
-
-			Collection<String> containerMapping = null;
-			
-			if (keyTermDefinition != null) {
-				containerMapping = keyTermDefinition.getContainerMapping();
-			}
-			if (containerMapping == null) {
-				containerMapping = Collections.emptyList();
-			}
-
-			JsonValue expandedValue;
-
-			// 13.6.
-			if (keyTermDefinition != null && Keywords.JSON.equals(keyTermDefinition.getTypeMapping())) {
-				
-				expandedValue = Json.createObjectBuilder()
-									.add(Keywords.VALUE, value)
-									.add(Keywords.TYPE, Json.createValue(Keywords.JSON))
-									.build();
-				
-			// 13.7			
-			} else if (containerMapping.contains(Keywords.LANGUAGE)
-					&& ValueType.OBJECT.equals(value.getValueType())
-					) {
-				// 13.7.1
-				expandedValue = Json.createArrayBuilder().build();
-				
-			// 13.8.
-			} else if (
-					(containerMapping.contains(Keywords.INDEX)
-					|| containerMapping.contains(Keywords.TYPE)
-					|| containerMapping.contains(Keywords.ID))
-					&& ValueType.OBJECT.equals(value.getValueType())
-					) {
-
-				// 13.8.1
-				expandedValue = Json.createArrayBuilder().build();
-				
-			// 13.9.
-			} else {
-				expandedValue =  Expansion
-						.with(activeContext, value, key, baseUrl)
-						.frameExpansion(frameExpansion)
-						.ordered(ordered)
-						.compute();
-			}
-			
-			// 13.10.
-			if (ValueType.NULL.equals(expandedValue.getValueType())) {
-				continue;
-			}
-			
-			// 13.11.
-			if (containerMapping.contains(Keywords.LIST) && !ListObject.isListObject(expandedValue)) {
-				expandedValue = ListObject.toListObject(expandedValue);
-			}
-
-			// 13.12.
-			if (containerMapping.contains(Keywords.GRAPH) 
-					&& !containerMapping.contains(Keywords.ID)
-					&& !containerMapping.contains(Keywords.INDEX)
-					) {
-				
-				if (JsonUtils.isNotArray(expandedValue)) {
-					expandedValue = Json.createArrayBuilder().add(expandedValue).build();
-				}
-				
-				JsonArrayBuilder array = Json.createArrayBuilder();
-
-				for (JsonValue ev : expandedValue.asJsonArray()) {
-					array.add(Json.createObjectBuilder().add(Keywords.GRAPH, Json.createArrayBuilder().add(ev)));
-				}
-				
-				expandedValue = array.build();				
-			}
-
-			// 13.13.
-			if (keyTermDefinition != null && keyTermDefinition.isReverseProperty()) {
-
-				// 13.13.1.
-				if (!result.containsKey(Keywords.REVERSE)) {
-					result.put(Keywords.REVERSE, Json.createObjectBuilder().build());
-				}
-				
-				// 13.13.2.
-				//TODO
-
-				// 13.13.3.
-				if (JsonUtils.isNotArray(expandedValue)) {
-					expandedValue = Json.createArrayBuilder().add(expandedValue).build();
-				}
-				
-				// 13.13.4.
-				for (JsonValue item : expandedValue.asJsonArray()) {
-					
-					if (ListObject.isListObject(item) || ValueObject.isValueObject(item)) {
-						throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
-					}
-
-					//TODO
-					
-				}
-				
-			// 13.14				
-			} else {
-				addValue(result, expandedProperty, expandedValue, true);
-			}
-		}
-		
-		// 14.
-		List<String> nestKeys = new ArrayList<>(nest.keySet());
-		
-		if (ordered) {
-			Collections.sort(nestKeys);
-		}
-		
-		for (String nestKey : nestKeys) {
-			
-			JsonValue nestValues = element.get(nestKey);
-			
-			if (JsonUtils.isNotArray(nestValues)) {
-				nestValues = Json.createArrayBuilder().add(nestValues).build();
-			}
-			
-			for (JsonValue nestValue : nestValues.asJsonArray()) {
-				
-				// ?!?!? key expands to @value
-				if (JsonUtils.isNotObject(nestValue) || nestValue.asJsonObject().containsKey(Keywords.VALUE)) {
-					throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
-				}
-				
-				//TODO
-				//System.out.println("TODO NEST " + nestKey + ", " + nestValue);				
-			}			
-		}
 
 		// 15.
 		if (result.containsKey(Keywords.VALUE)) {

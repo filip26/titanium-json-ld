@@ -1,6 +1,6 @@
 package com.apicatalog.jsonld.utils;
 
-import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -8,6 +8,9 @@ import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
+
+import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.expansion.UriExpansion;
 
 public final class JsonUtils {
 
@@ -71,15 +74,15 @@ public final class JsonUtils {
 		return array != null ? array.get(array.size() - 1) : null;
 	}
 	
-	public static String fisrtKeyExpandingTo(final String value, JsonObject object) {
-		return object.entrySet()
-					.stream()
-						.filter(e -> e.getValue().equals(Json.createValue(value)))
-						.map(Map.Entry::getKey)
-						.findFirst()
-						.orElse(null);
-	}
-
+//	public static String fisrtKeyExpandingTo(final String value, JsonObject object) {
+//		return object.entrySet()
+//					.stream()
+//						.filter(e -> e.getValue().equals(Json.createValue(value)))
+//						.map(Map.Entry::getKey)
+//						.findFirst()
+//						.orElse(null);
+//	}
+	
 	public static boolean isObject(JsonValue value) {
 		return value != null && ValueType.OBJECT.equals(value.getValueType());
 	}
@@ -101,6 +104,10 @@ public final class JsonUtils {
 
 	public static boolean isTrue(JsonValue value) {
 		return value != null && ValueType.TRUE.equals(value.getValueType());
+	}
+
+	public static boolean isEmptyObject(JsonValue value) {
+		return isObject(value) && value.asJsonObject().isEmpty();
 	}
 
 }
