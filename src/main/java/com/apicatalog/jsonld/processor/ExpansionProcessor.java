@@ -9,7 +9,6 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
 import javax.json.JsonValue;
-import javax.json.JsonValue.ValueType;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -19,6 +18,7 @@ import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.expansion.Expansion;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
+import com.apicatalog.jsonld.utils.JsonUtils;
 
 /**
  * 
@@ -119,7 +119,7 @@ public class ExpansionProcessor {
 					.compute();
 
 		// 8.1
-		if (ValueType.OBJECT.equals(expanded.getValueType())) {
+		if (JsonUtils.isObject(expanded)) {
 			
 			final JsonObject object = expanded.asJsonObject();
 			
@@ -129,10 +129,14 @@ public class ExpansionProcessor {
 		}
 		
 		// 8.2
-		if (ValueType.NULL.equals(expanded.getValueType())) {
+		if (JsonUtils.isNull(expanded)) {
 			return JsonValue.EMPTY_JSON_ARRAY;
 		}
 		
+		if (JsonUtils.isArray(expanded)) {
+			return expanded.asJsonArray();
+		}
+
 		// 8.3
 		return Json.createArrayBuilder().add(expanded).build();
 	}
