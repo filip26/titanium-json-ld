@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
@@ -575,6 +576,7 @@ public final class MapExpansionStep1314 {
 				if (ordered) {
 					Collections.sort(langCodes);
 				}
+				Collections.sort(langCodes);	//FIXME ?!
 				
 				for (String langCode : langCodes) {
 					
@@ -601,18 +603,28 @@ public final class MapExpansionStep1314 {
 						// 13.7.4.2.3.
 						//TODO
 						
-						JsonObject langMap = 
+						
+						JsonObjectBuilder langMap = 
 										Json.createObjectBuilder()
-											.add(Keywords.VALUE, langValue)
-											.add(Keywords.LANGUAGE, Json.createValue(langCode))
-											.build();
+											.add(Keywords.VALUE, item)
+											;
 
 						// 13.7.4.2.4.
-						//TODO
+						if (!Keywords.NONE.equals(langCode)) {
+							
+							String expandedLangCode = UriExpansion
+														.with(activeContext, langCode)
+														.vocab(true)
+														.compute();
+
+							if (!Keywords.NONE.equals(expandedLangCode)) {
+								langMap.add(Keywords.LANGUAGE, Json.createValue(langCode));
+							}
+						}
 						
 						// 13.7.4.2.5.
 						if (direction != null) {
-							langMap = Json.createObjectBuilder(langMap).add(Keywords.DIRECTION, Json.createValue(direction.name().toLowerCase())).build();
+							langMap.add(Keywords.DIRECTION, Json.createValue(direction.name().toLowerCase()));
 						}
 						
 						// 13.7.4.2.6.
@@ -628,8 +640,52 @@ public final class MapExpansionStep1314 {
 					&& ValueType.OBJECT.equals(value.getValueType())
 					) {
 
-				// 13.8.1
+				// 13.8.1.
 				expandedValue = Json.createArrayBuilder().build();
+				
+				// 13.8.2.
+				String indexKey = null;
+				
+				if (keyTermDefinition != null) {
+					indexKey = keyTermDefinition.getIndexMapping();
+				}
+				
+				if (indexKey == null) {
+					indexKey = Keywords.INDEX;
+				}
+				
+				// 13.8.3.
+				List<String> indicies = new ArrayList<>(value.asJsonObject().keySet());
+				
+				if (ordered) {
+					Collections.sort(indicies);
+				}
+				
+				for (String indexKey2 : indicies) {
+					
+					JsonValue indexValue = value.asJsonObject().get(indexKey2);
+					
+					// 13.8.3.1.
+					ActiveContext mapContext = activeContext;
+					
+					if (activeContext.hasPreviousContext()
+							&& (containerMapping.contains(Keywords.ID) 
+									|| containerMapping.contains(Keywords.TYPE))) {
+						mapContext = activeContext.getPreviousContext();
+					}
+					
+					// 13.8.3.2.	
+//					if (containerMapping.contains(Keywords.TYPE) && )
+//TODO
+					
+					// 13.8.3.3.
+					//TODO
+					
+					
+					
+					
+
+				}
 				
 				//TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				

@@ -21,7 +21,13 @@ public final class JsonLdOptionsBuilder {
 		return options;
 	}
 
-	public void mode(Version processingMode) {
+	public JsonLdOptionsBuilder mode(Version processingMode) {
 		options.setProcessingMode(processingMode);
+		return this;
+	}
+	
+	public JsonLdOptionsBuilder ordered(boolean ordered) {
+		options.setOrdered(ordered);
+		return this;
 	}
 }

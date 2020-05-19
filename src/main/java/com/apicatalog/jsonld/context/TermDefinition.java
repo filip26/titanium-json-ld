@@ -102,4 +102,12 @@ public class TermDefinition {
 	public boolean isReverseProperty() {
 		return reversePropertyFlag;
 	}
+	
+	public String getIndexMapping() {
+		return indexMapping;
+	}
+	
+	public void setIndexMapping(String indexMapping) {
+		this.indexMapping = indexMapping;
+	}
 }

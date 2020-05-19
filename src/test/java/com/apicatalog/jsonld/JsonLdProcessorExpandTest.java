@@ -61,6 +61,8 @@ public class JsonLdProcessorExpandTest {
 			testDefinition.options.setup(optionsBuilder);
 		}
 		
+		optionsBuilder.ordered(true);	//FIXME ?!
+		
 		JsonLdOptions options = optionsBuilder.create();
 		
 		try {
