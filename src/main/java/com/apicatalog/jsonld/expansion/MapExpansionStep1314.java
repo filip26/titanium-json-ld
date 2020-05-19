@@ -598,13 +598,13 @@ public final class MapExpansionStep1314 {
 			// 13.13.
 			if (keyTermDefinition != null && keyTermDefinition.isReverseProperty()) {
 
-				// 13.13.1.
-				if (!result.containsKey(Keywords.REVERSE)) {
-					result.put(Keywords.REVERSE, Json.createObjectBuilder().build());
+				if (reverseMap == null) {
+					reverseMap = new LinkedHashMap<>();
 				}
 				
+				// 13.13.1.
+				
 				// 13.13.2.
-				//TODO
 
 				// 13.13.3.
 				if (JsonUtils.isNotArray(expandedValue)) {
@@ -614,13 +614,21 @@ public final class MapExpansionStep1314 {
 				// 13.13.4.
 				for (JsonValue item : expandedValue.asJsonArray()) {
 					
+					// 13.13.4.1.
 					if (ListObject.isListObject(item) || ValueObject.isValueObject(item)) {
 						throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
 					}
 
-					//TODO
-					
+					// 13.13.4.2.
+					if (!reverseMap.containsKey(expandedProperty)) {
+						reverseMap.put(expandedProperty, Json.createArrayBuilder().build());
+					}
+
+					// 13.13.4.3.
+					MapExpansion.addValue(reverseMap, expandedProperty, item, true);
 				}
+				
+				result.put(Keywords.REVERSE, JsonUtils.toObject(reverseMap));
 				
 			// 13.14				
 			} else {

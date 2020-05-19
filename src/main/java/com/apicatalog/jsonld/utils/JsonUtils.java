@@ -1,16 +1,14 @@
 package com.apicatalog.jsonld.utils;
 
-import java.util.Map.Entry;
+import java.util.Map;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
-
-import com.apicatalog.jsonld.context.ActiveContext;
-import com.apicatalog.jsonld.expansion.UriExpansion;
 
 public final class JsonUtils {
 
@@ -108,6 +106,16 @@ public final class JsonUtils {
 
 	public static boolean isEmptyObject(JsonValue value) {
 		return isObject(value) && value.asJsonObject().isEmpty();
+	}
+	
+	public static JsonObject toObject(Map<String, JsonValue> map) {
+		final JsonObjectBuilder builder = Json.createObjectBuilder();
+
+		map.entrySet()
+				.stream()
+				.forEach(e -> builder.add(e.getKey(), e.getValue()));
+		
+		return builder.build();
 	}
 
 }
