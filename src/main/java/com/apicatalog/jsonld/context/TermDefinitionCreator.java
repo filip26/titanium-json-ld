@@ -585,7 +585,25 @@ public final class TermDefinitionCreator {
 
 		// 24.
 		if (valueObject.containsKey(Keywords.NEST)) {
-		//TODO
+
+			// 24.1
+			if (activeContext.inMode(Version.V1_0)) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
+			}
+			
+			JsonValue nest = valueObject.get(Keywords.NEST);
+			
+			if (JsonUtils.isNotString(nest)) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
+			}
+			
+			String nestString = ((JsonString)nest).getString();
+			
+			if (Keywords.contains(nestString) && !Keywords.NEST.equals(nestString)) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
+			}
+			
+			definition.nestValue = nestString;
 		}
 
 		// 25.
@@ -619,7 +637,21 @@ public final class TermDefinitionCreator {
 		}
 		
 		// 26.
-		//TODO
+		if (!Keywords.allIsOneOf(valueObject.keySet(),
+				Keywords.ID,
+				Keywords.REVERSE,
+				Keywords.CONTAINER,
+				Keywords.CONTEXT,
+				Keywords.DIRECTION,
+				Keywords.INDEX,
+				Keywords.LANGUAGE,
+				Keywords.NEST,
+				Keywords.PREFIX,
+				Keywords.PROTECTED,
+				Keywords.TYPE
+				)) {
+			throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
+		}			
 		
 		// 27.
 		if (overrideProtectedFlag && previousDefinition != null && previousDefinition.protectedFlag) {

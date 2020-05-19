@@ -694,7 +694,23 @@ public final class MapExpansion {
 		}
 		
 		for (String nestKey : nestKeys) {
-			//TODO
+			
+			JsonValue nestValues = element.get(nestKey);
+			
+			if (JsonUtils.isNotArray(nestValues)) {
+				nestValues = Json.createArrayBuilder().add(nestValues).build();
+			}
+			
+			for (JsonValue nestValue : nestValues.asJsonArray()) {
+				
+				// ?!?!? key expands to @value
+				if (JsonUtils.isNotObject(nestValue) || nestValue.asJsonObject().containsKey(Keywords.VALUE)) {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
+				}
+				
+				//TODO
+				//System.out.println("TODO NEST " + nestKey + ", " + nestValue);				
+			}			
 		}
 
 		// 15.
