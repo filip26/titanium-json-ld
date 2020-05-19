@@ -14,12 +14,13 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 
 *work in progress*
 
- Feature | Tests | Pass | Result
+ Feature | Tests | Pass | Status
  --- | ---: | ---: | ---:
 Expansion | 378 |  193 | 51%
- Compaction | | | 0%
- Flattening | | | 0%
- RDF | | | 0%
+ Compaction | | | TBD
+ Flattening | | | TDB
+ Framing | | | TBD
+ RDF | | | TDB
 
 
 ## Notes
