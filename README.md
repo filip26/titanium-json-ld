@@ -12,6 +12,15 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 
 ###  Status
 
+*work in progress*
+
+ Feature | Tests | Pass | Result
+ --- | ---: | ---: | ---:
+Expansion | 378 |  193 | 51%
+ Compaction | | | 0%
+ Flattening | | | 0%
+ RDF | | | 0%
+
 
 ## Notes
 * uses `java.net.URI`
