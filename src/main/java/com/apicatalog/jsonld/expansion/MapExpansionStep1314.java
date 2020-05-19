@@ -97,9 +97,7 @@ public final class MapExpansionStep1314 {
 	}
 		
 	public void compute() throws JsonLdError {
-				
-//		Map<String, JsonValue> nest = new LinkedHashMap<>();
-		
+						
 		// 13.
 		List<String> keys = new ArrayList<>(element.keySet());
 		
@@ -351,14 +349,14 @@ public final class MapExpansionStep1314 {
 					//TODO validation, warning, frameExpansion					
 				}
 				
-				// 13.4.9
+				// 13.4.9.
 				if (Keywords.DIRECTION.equals(expandedProperty)) {
-					// 13.4.9.1
+					// 13.4.9.1.
 					if (activeContext.inMode(Version.V1_0)) {
 						continue;
 					}
 					
-					// 13.4.9.2
+					// 13.4.9.2.
 					if (JsonUtils.isNotString(value) 
 							&& !((JsonString)value).getString().equals("ltr")
 							&& !((JsonString)value).getString().equals("rtl")
@@ -367,14 +365,15 @@ public final class MapExpansionStep1314 {
 						throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
 					}
 					
+					// 13.4.9.3.
 					expandedValue = value;
-					//TODO
+					//TODO frameexpansion
 				}
 				
-				// 13.4.10
+				// 13.4.10.
 				if (Keywords.INDEX.equals(expandedProperty)) {
 
-					// 13.4.10.1
+					// 13.4.10.1.
 					if (JsonUtils.isNotString(value)) {
 						throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_INDEX_VALUE);
 					}

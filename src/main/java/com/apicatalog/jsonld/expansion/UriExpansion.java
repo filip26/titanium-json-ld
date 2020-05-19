@@ -118,7 +118,7 @@ public final class UriExpansion {
 		// 6. If value contains a colon (:) anywhere after the first character, it is either an IRI, 
 		//    a compact IRI, or a blank node identifier
 		if (value.indexOf(':', 1) != -1) {
-			
+
 			// 6.1. Split value into a prefix and suffix at the first occurrence of a colon (:).
 			String[] split = value.split(":", 2);
 			
@@ -156,10 +156,11 @@ public final class UriExpansion {
 					
 					value = prefixDefinition.getUriMapping().concat(split[1]);
 				}
+
 			}
 
 			// 6.5
-			if (CompactUri.create(value) != null && UriUtils.isURI(value)) {
+			if (CompactUri.create(value) != null && (UriUtils.isURI(value) || CompactUri.isBlankNode(value))) {
 				return value;
 			}
 		}
@@ -170,7 +171,7 @@ public final class UriExpansion {
 			return activeContext.getVocabularyMapping().toString().concat(value);
 			
 		// 8.
-		} else if (documentRelative) {
+		} else if (documentRelative) {			
 			value = UriUtils.resolve(activeContext.getBaseUri(), value);
 		}
 		

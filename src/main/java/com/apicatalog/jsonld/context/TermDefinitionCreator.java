@@ -121,7 +121,6 @@ public final class TermDefinitionCreator {
 				JsonObject map = value.asJsonObject();
 				
 				if (map.size() == 1 && map.containsKey(Keywords.PROTECTED)) {
-
 					//TODO
 					
 				} else if (map.size() == 1 && map.containsKey(Keywords.CONTAINER)) {
@@ -338,11 +337,11 @@ public final class TermDefinitionCreator {
 					
 					if (!Keywords.contains(definition.uriMapping)
 							&& !UriUtils.isURI(definition.uriMapping)
-							//TODO not a blank node
+							&& !CompactUri.isBlankNode(definition.uriMapping)
 							) {
 						throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
 					}
-
+					
 					// 14.2.4
 					if (term.indexOf(':', 1) != -1 || term.contains("/")) {
 						
@@ -368,9 +367,8 @@ public final class TermDefinitionCreator {
 					
 						if (definition.uriMapping != null 
 								&& (
-									(UriUtils.isURI(definition.uriMapping) 
-											&& UriUtils.endsWithGenDelim(definition.uriMapping))
-									|| CompactUri.isBlank(definition.uriMapping)
+									(UriUtils.isURI(definition.uriMapping) && UriUtils.endsWithGenDelim(definition.uriMapping))
+									|| CompactUri.isBlankNode(definition.uriMapping)
 									)
 								) {
 							definition.prefixFlag = true;

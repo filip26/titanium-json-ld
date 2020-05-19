@@ -80,7 +80,7 @@ public final class CompactUri {
 		return Objects.equals(prefix, other.prefix) && Objects.equals(suffix, other.suffix);
 	}
 
-	public static boolean isBlank(final String value) {		
-		return value.indexOf(':', 1) != -1 && value.startsWith("_");
+	public static boolean isBlankNode(final String value) {		
+		return value.startsWith("_:");
 	}
 }
