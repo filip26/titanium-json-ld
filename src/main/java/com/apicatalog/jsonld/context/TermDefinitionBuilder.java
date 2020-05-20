@@ -309,7 +309,7 @@ public final class TermDefinitionBuilder {
 		if (valueObject.containsKey(Keywords.ID)) {
 			
 			JsonValue idValue = valueObject.get(Keywords.ID);
-			
+
 			if (JsonUtils.isNotString(idValue) || !term.equals(((JsonString)idValue).getString())) {
 				
 				// 14.1.
@@ -319,7 +319,7 @@ public final class TermDefinitionBuilder {
 				} else {
 					
 					// 14.2.1
-					if (!ValueType.STRING.equals(idValue.getValueType())) {
+					if (JsonUtils.isNotString(idValue)) {
 						throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
 					}
 					
@@ -332,8 +332,7 @@ public final class TermDefinitionBuilder {
 					}
 
 					// 14.2.3
-					definition.uriMapping = UriExpansionBuilder
-												.with(activeContext, idValueString)
+					definition.uriMapping = activeContext.expandUri(idValueString)
 												.localContext(localContext)
 												.defined(defined)
 												.vocab(true)
@@ -349,19 +348,21 @@ public final class TermDefinitionBuilder {
 							) {
 						throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
 					}
-					
+
 					// 14.2.4
-					if (term.indexOf(':', 1) != -1 || term.contains("/")) {
+					if (term.indexOf(':', 1) != -1 || term.contains("/")) {	//TODO : except last char
 						
 						// 14.2.4.1
 						defined.put(term, Boolean.TRUE);
 						
 						// 14.2.4.2
-						String expandedTerm = UriExpansionBuilder.with(activeContext, term)
-								.localContext(localContext)
-								.defined(defined)
-								.vocab(true)
-								.build();
+						String expandedTerm = 
+									activeContext
+										.expandUri(term)
+										.localContext(localContext)
+										.defined(defined)
+										.vocab(true)
+										.build();
 						
 						if (expandedTerm == null 
 								|| !expandedTerm.equals(definition.uriMapping)

@@ -42,11 +42,15 @@ public class UriUtils {
 	}
 
 	public static URI resolveAsUri(URI baseUri, String value) {
+		
+		
 		if ((baseUri == null) || URI.create(value).isAbsolute()) {
 			return URI.create(value);
 		}
+		
+		return UriResolver.resolve(baseUri, value);
 
-		return baseUri.resolve(value);
+		
 	}
 	
 
