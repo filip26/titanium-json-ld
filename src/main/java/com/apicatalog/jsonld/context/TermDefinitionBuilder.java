@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
@@ -442,24 +443,78 @@ public final class TermDefinitionBuilder {
 		if (valueObject.containsKey(Keywords.CONTAINER)) {
 
 			// 19.1.
-			JsonValue container = valueObject.get(Keywords.CONTAINER);
+			JsonValue containerValue = valueObject.get(Keywords.CONTAINER);
 			
-			if (ValueType.NULL.equals(container.getValueType())) {
+			if (JsonUtils.isNull(containerValue)) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
-			}			
+			}	
 			
-			if (ValueType.ARRAY.equals(container.getValueType())) {
-				//TODO
-				container = container.asJsonArray().get(0);
-			}
+			String containerString = null;
 			
-			if (!ValueType.STRING.equals(container.getValueType())) {
-				throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
-			}
-			//TODO
+			if (JsonUtils.isArray(containerValue)) {
+				
+				if (containerValue.asJsonArray().size() == 1) {
+					containerValue = containerValue.asJsonArray().get(0);
+					
+				} else if (containerValue.asJsonArray().size() >= 2 
+							&& containerValue.asJsonArray().size() <= 3
+						) {
 
-			String containerString = ((JsonString)container).getString();
+					JsonArray containerArray = containerValue.asJsonArray();
+
+					if (containerArray.contains(Json.createValue(Keywords.GRAPH))
+							&& (containerArray.contains(Json.createValue(Keywords.ID))
+								|| containerArray.contains(Json.createValue(Keywords.INDEX))
+								)
+							) {
+
+						if (containerArray.size() == 2 || containerArray.contains(Json.createValue(Keywords.SET))) {
+							containerValue = containerValue.asJsonArray().get(0);
+
+						}
+					} else if ((containerArray.size() == 2)
+							&& containerArray.contains(Json.createValue(Keywords.SET))
+							&& (containerArray.contains(Json.createValue(Keywords.INDEX))
+								|| containerArray.contains(Json.createValue(Keywords.GRAPH))
+								|| containerArray.contains(Json.createValue(Keywords.ID))
+								|| containerArray.contains(Json.createValue(Keywords.TYPE))
+								|| containerArray.contains(Json.createValue(Keywords.LANGUAGE))
+									)
+							) {
+						
+						containerValue = containerValue.asJsonArray().get(0);						
+					}
+										
+
+					//TODO	
+				}				
+			}
 			
+			if (containerValue == null) {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
+			}
+
+			if (JsonUtils.isString(containerValue)) {
+				
+				containerString = ((JsonString)containerValue).getString();
+				
+				if (Keywords
+						.isNot(
+							containerString,
+							Keywords.GRAPH,
+							Keywords.ID,
+							Keywords.INDEX,
+							Keywords.LANGUAGE,
+							Keywords.LIST,
+							Keywords.SET,
+							Keywords.TYPE
+						)) {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
+				}
+				
+			} else {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
+			}
 
 			// 19.2.
 			if (activeContext.inMode(Version.V1_0) 
