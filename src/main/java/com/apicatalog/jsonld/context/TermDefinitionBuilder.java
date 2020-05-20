@@ -451,7 +451,7 @@ public final class TermDefinitionBuilder {
 			
 			String containerString = null;
 			
-			if (JsonUtils.isArray(containerValue)) {
+			if (JsonUtils.isArray(containerValue) && !activeContext.inMode(Version.V1_0)) {
 				
 				if (containerValue.asJsonArray().size() == 1) {
 					containerValue = containerValue.asJsonArray().get(0);
@@ -517,7 +517,8 @@ public final class TermDefinitionBuilder {
 			if (activeContext.inMode(Version.V1_0) 
 					&& (Keywords.ID.equals(containerString) 
 						|| Keywords.GRAPH.equals(containerString)
-						|| Keywords.TYPE.equals(containerString)	
+						|| Keywords.TYPE.equals(containerString)
+						|| containerString == null
 						)) {
 					throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
 			}

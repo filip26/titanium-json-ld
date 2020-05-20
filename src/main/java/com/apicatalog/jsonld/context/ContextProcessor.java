@@ -384,17 +384,17 @@ public class ContextProcessor {
 					if (JsonUtils.isNotString(value)) {
 						throw new JsonLdError(JsonLdErrorCode.INVALID_VOCAB_MAPPING);
 					}
-										
+				
 					String valueString = ((JsonString)value).getString();
 
-					if (UriUtils.isURI(valueString) || CompactUri.isBlankNode(valueString)) {
+					if (UriUtils.isURI(valueString) || valueString.isBlank() || CompactUri.isBlankNode(valueString)) {
 						
 						String vocabularyMapping = UriExpansionBuilder.with(result, valueString)
 																.vocab(true)
 																.documentRelative(true)
 																.build();
-								
-						if (UriUtils.isURI(vocabularyMapping)) {
+
+						if (UriUtils.isURI(vocabularyMapping) /*|| CompactUri.isBlankNode(valueString)*/) {
 							result.vocabularyMapping = URI.create(vocabularyMapping);
 							
 						} else {

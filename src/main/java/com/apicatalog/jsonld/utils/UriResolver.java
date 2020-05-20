@@ -66,6 +66,7 @@ public final class UriResolver {
 			}
 			scheme = base.getScheme();
 		}
+
 		return toString(scheme, authority, path, query, components.getFragment());		
 	}
 

@@ -90,9 +90,9 @@ public class JsonLdProcessorExpandTest {
 			
 			final JsonValue expected = parser.getValue();
 			
-//			JsonWriter jsonWriter2 = writerFactory.createWriter(System.out);
-//			jsonWriter2.write(result);
-//			jsonWriter2.close();
+			JsonWriter jsonWriter2 = writerFactory.createWriter(System.out);
+			jsonWriter2.write(result);
+			jsonWriter2.close();
 			
 			Assert.assertEquals(expected, result);
 

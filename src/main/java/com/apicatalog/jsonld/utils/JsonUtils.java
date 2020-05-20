@@ -134,4 +134,8 @@ public final class JsonUtils {
 					: Json.createArrayBuilder().add(value).build();
 	}
 
+	public static boolean isBlankString(JsonValue value) {
+		return isString(value) && ((JsonString)value).getString().isBlank();
+	}
+
 }
