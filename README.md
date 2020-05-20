@@ -32,9 +32,9 @@ Version | Features |
 0.4 | RDF serizalization
 0.5 | RDF deserialization
 0.6 | Framing
-0.8 | JsonLdProcessor API 
-0.7 | Issues, code cleaning and optimization
-0.8-0.9 | reserved - TBD
+0.7 | JsonLdProcessor API
+0.8 | Issues, code cleaning and optimization
+0.9 | reserved - TBD
 1.0 | GA
 
 ## Notes
