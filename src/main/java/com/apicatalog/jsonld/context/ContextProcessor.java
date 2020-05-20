@@ -380,11 +380,11 @@ public class ContextProcessor {
 					
 				// 5.8.3
 				} else {
-					
+
 					if (JsonUtils.isNotString(value)) {
 						throw new JsonLdError(JsonLdErrorCode.INVALID_VOCAB_MAPPING);
 					}
-					
+										
 					String valueString = ((JsonString)value).getString();
 					
 					if (UriUtils.isURI(valueString) || CompactUri.isBlankNode(valueString)) {

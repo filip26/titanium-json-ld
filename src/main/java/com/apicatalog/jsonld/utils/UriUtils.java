@@ -12,7 +12,7 @@ public class UriUtils {
 	public static boolean isURI(String value) {
 		try {
 			
-			return value != null && !Keywords.hasForm(value) && URI.create(value) != null;
+			return value != null && !value.isBlank() && !Keywords.hasForm(value) && URI.create(value) != null;
 			
 		} catch (IllegalArgumentException e) {
 			return false;			
