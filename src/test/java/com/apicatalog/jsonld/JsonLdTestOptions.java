@@ -38,9 +38,6 @@ public class JsonLdTestOptions {
 		if (base != null) {
 			optionsBuilder.baseUri(URI.create(base));
 		}
-		
-
-		
 	}
 	
 }

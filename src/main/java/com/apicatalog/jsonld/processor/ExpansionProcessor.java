@@ -69,7 +69,7 @@ public class ExpansionProcessor {
 		//    If set, the base option from options overrides the base IRI.
 
 		URI baseUri = options.getBaseURI();
-		
+
 		if (baseUri == null) {
 			try {
 				baseUri = input.getDocumentUrl().toURI();
@@ -79,15 +79,8 @@ public class ExpansionProcessor {
 			}
 		}
 
-		ActiveContext activeContext = null;
-		
-		try {
+		ActiveContext activeContext = new ActiveContext(baseUri, baseUri, options.getProcessingMode());
 			
-			activeContext = new ActiveContext(baseUri, input.getDocumentUrl().toURI(), options.getProcessingMode());
-			
-		} catch (URISyntaxException e1) {
-			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
-		}
 		
 		// 6. If the expandContext option in options is set, update the active context 
 		//    using the Context Processing algorithm, passing the expandContext as 
