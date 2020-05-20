@@ -12,7 +12,8 @@ public class UriUtils {
 	public static boolean isURI(String value) {
 		try {
 			
-			return value != null && !value.isBlank() && !Keywords.hasForm(value) && URI.create(value) != null;
+			//TODO ':' 1-length-1 indices only
+			return value != null && !value.isBlank()/*&& value.indexOf(':', 1) != -1 */&& !Keywords.hasForm(value) && URI.create(value) != null;
 			
 		} catch (IllegalArgumentException e) {
 			return false;			

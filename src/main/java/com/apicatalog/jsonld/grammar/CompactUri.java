@@ -79,6 +79,6 @@ public final class CompactUri {
 	}
 
 	public static boolean isBlankNode(final String value) {		
-		return value.startsWith("_:");
+		return value.startsWith("_:") && value.length() > 2;
 	}
 }

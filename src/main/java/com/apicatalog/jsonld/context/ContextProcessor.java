@@ -349,7 +349,7 @@ public class ContextProcessor {
 					
 					String valueString = ((JsonString)value).getString();
 
-					if (UriUtils.isURI(valueString) && !valueString.isBlank()) {
+					if (UriUtils.isURI(valueString)) {
 						
 						URI uri = URI.create(valueString);
 
@@ -386,9 +386,9 @@ public class ContextProcessor {
 					}
 										
 					String valueString = ((JsonString)value).getString();
-					
-					if (UriUtils.isURI(valueString) || CompactUri.isBlankNode(valueString)) {
 
+					if (UriUtils.isURI(valueString) || CompactUri.isBlankNode(valueString)) {
+						
 						String vocabularyMapping = UriExpansionBuilder.with(result, valueString)
 																.vocab(true)
 																.documentRelative(true)

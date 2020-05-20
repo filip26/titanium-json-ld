@@ -686,7 +686,7 @@ public final class TermDefinitionBuilder {
 				definition.prefixFlag = false;
 				
 			} else {
-				throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
+				throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_PREFIX_VALUE);
 			}
 			
 			// 25.3
