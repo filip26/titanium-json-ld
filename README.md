@@ -24,17 +24,17 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 
 ## Roadmap
 
-Version | Features
+Version | Features | 
 --- | ---
-0.1 | Expansion
+0.1 | Expansion |
 0.2 | Compaction 
 0.3 | Flattening
 0.4 | RDF serizalization
 0.5 | RDF deserialization
 0.6 | Framing
-0.8 | JsonLd API & JsonpLd API
-0.7 | Stabilization (issues, code)
-0.8-0.9 | reserved - TBD
+0.7 | JsonLdProcessor API
+0.8 | Issues, code cleaning and optimization
+0.9 | reserved - TBD
 1.0 | GA
 
 ## Notes
