@@ -20,7 +20,10 @@ public enum Version {
 		if (V1_0.text.equalsIgnoreCase(text)) {
 			return V1_0;
 		}
-		return V1_1;
+		if (V1_1.text.equalsIgnoreCase(text)) {
+			return V1_1;
+		}
+		return null;
 	}
 	
 	@Override

@@ -61,9 +61,9 @@ public class JsonLdProcessorExpandTest {
 		if (testDefinition.options != null) {
 			testDefinition.options.setup(optionsBuilder);
 		}
-		
-		optionsBuilder.ordered(true);	//FIXME ?!
-		
+
+		optionsBuilder.ordered(true);
+
 		JsonLdOptions options = optionsBuilder.create();
 		
 		try {
@@ -81,6 +81,8 @@ public class JsonLdProcessorExpandTest {
 			return;
 		}
 
+		
+		
 		final Path expectPath = Paths.get("src","test","resources", "json-ld-test-suite", testDefinition.expect);
 		
 		// compare expected with the result
