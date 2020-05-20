@@ -97,10 +97,10 @@ public final class MapExpansion {
 			
 			for (String key : keys) {
 				
-				String expandedKey = UriExpansion
+				String expandedKey = UriExpansionBuilder
 											.with(activeContext, key)
 											.vocab(true)
-											.compute();
+											.build();
 
 				if (Keywords.VALUE.equals(expandedKey)
 						|| (Keywords.ID.equals(expandedKey) && (element.size() == 1))
@@ -124,8 +124,7 @@ public final class MapExpansion {
 								.with(activeContext, propertyContext, activePropertyDefinition.getBaseUrl())
 								.documentLoader(documentLoader)
 								.overrideProtected(true)
-								.compute()
-								;
+								.compute();
 		}		
 		
 		// 9.
@@ -146,10 +145,10 @@ public final class MapExpansion {
 		// 11.
 		for (String key : keys) {
 			
-			String expandedKey = UriExpansion
+			String expandedKey = UriExpansionBuilder
 									.with(activeContext, key)
 									.vocab(true)
-									.compute()
+									.build()
 									;
 
 
@@ -232,9 +231,9 @@ public final class MapExpansion {
 			
 			if (lastValue != null) {
 			
-				inputType = UriExpansion.with(activeContext, lastValue)
+				inputType = UriExpansionBuilder.with(activeContext, lastValue)
 						.vocab(true)
-						.compute();
+						.build();
 			}
 		}		
 
@@ -246,7 +245,7 @@ public final class MapExpansion {
 							.nest(new LinkedHashMap<>())
 							.frameExpansion(frameExpansion)
 							.ordered(ordered)
-							.compute();
+							.compute();;
 
 		// 15.
 		if (result.containsKey(Keywords.VALUE)) {

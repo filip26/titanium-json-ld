@@ -19,7 +19,7 @@ import javax.json.JsonValue;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.expansion.UriExpansion;
+import com.apicatalog.jsonld.expansion.UriExpansionBuilder;
 import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.DirectionType;
 import com.apicatalog.jsonld.grammar.Keywords;
@@ -388,10 +388,10 @@ public class ContextProcessor {
 					
 					if (UriUtils.isURI(valueString) || CompactUri.isBlankNode(valueString)) {
 
-						String vocabularyMapping = UriExpansion.with(result, valueString)
+						String vocabularyMapping = UriExpansionBuilder.with(result, valueString)
 																.vocab(true)
 																.documentRelative(true)
-																.compute();
+																.build();
 								
 						if (UriUtils.isURI(vocabularyMapping)) {
 							result.vocabularyMapping = URI.create(vocabularyMapping);
@@ -497,14 +497,14 @@ public class ContextProcessor {
 					boolean protectedFlag = contextDefinition.containsKey(Keywords.PROTECTED) 
 												&& JsonUtils.isTrue(contextDefinition.get(Keywords.PROTECTED));
 					
-					TermDefinitionCreator
+					TermDefinitionBuilder
 						.with(result, contextDefinition, key, defined)
 						.documentLoader(documentLoader)
 						.baseUrl(baseUrl)
 						.protectedFlag(protectedFlag)
 						.overrideProtectedFlag(protectedFlag)
 						.remoteContexts(new ArrayList<>(remoteContexts))
-						.create();
+						.build();
 				}	
 			}
 		}

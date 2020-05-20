@@ -10,9 +10,10 @@ import javax.json.JsonValue.ValueType;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.context.TermDefinitionCreator;
+import com.apicatalog.jsonld.context.TermDefinitionBuilder;
 import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.Keywords;
+import com.apicatalog.jsonld.utils.JsonUtils;
 import com.apicatalog.jsonld.utils.UriUtils;
 /**
  * 
@@ -20,7 +21,7 @@ import com.apicatalog.jsonld.utils.UriUtils;
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#algorithm-4">IRI Expansion</a>
  *
  */
-public final class UriExpansion {
+public final class UriExpansionBuilder {
 
 	// mandatory
 	private ActiveContext activeContext;
@@ -33,7 +34,7 @@ public final class UriExpansion {
 	private JsonObject localContext;
 	private Map<String, Boolean> defined;
 		
-	private UriExpansion(final ActiveContext activeContext, final String value) {
+	private UriExpansionBuilder(final ActiveContext activeContext, final String value) {
 		this.activeContext = activeContext;
 		this.value = value;
 		
@@ -44,31 +45,31 @@ public final class UriExpansion {
 		this.defined = null;
 	}
 	
-	public static final UriExpansion with(final ActiveContext activeContext, final String value) {
-		return new UriExpansion(activeContext, value);
+	public static final UriExpansionBuilder with(final ActiveContext activeContext, final String value) {
+		return new UriExpansionBuilder(activeContext, value);
 	}
 
-	public UriExpansion documentRelative(boolean value) {
+	public UriExpansionBuilder documentRelative(boolean value) {
 		this.documentRelative = value;
 		return this;
 	}
 
-	public UriExpansion vocab(boolean value) {
+	public UriExpansionBuilder vocab(boolean value) {
 		this.vocab = value;
 		return this;
 	}
 
-	public UriExpansion localContext(JsonObject value) {
+	public UriExpansionBuilder localContext(JsonObject value) {
 		this.localContext = value;
 		return this;
 	}
 	
-	public UriExpansion defined(Map<String, Boolean> value) {
+	public UriExpansionBuilder defined(Map<String, Boolean> value) {
 		this.defined = value;
 		return this;
 	}
 	
-	public String compute() throws JsonLdError {
+	public String build() throws JsonLdError {
 
 		// 1. If value is a keyword or null, return value as is.
 		if (value == null || Keywords.contains(value)) {
@@ -98,7 +99,7 @@ public final class UriExpansion {
 				
 				if (!defined.containsKey(entryValueString) || Boolean.FALSE.equals(defined.get(entryValueString))) {
 
-					TermDefinitionCreator.with(activeContext, localContext, value, defined).create();		
+					TermDefinitionBuilder.with(activeContext, localContext, value, defined).build();		
 				}
 			}
 		}
@@ -133,13 +134,13 @@ public final class UriExpansion {
 				
 				JsonValue prefixValue = localContext.get(split[0]);
 				
-				if (ValueType.STRING.equals(prefixValue.getValueType())) {
+				if (JsonUtils.isString(prefixValue)) {
 
 					String prefixValueString = ((JsonString)prefixValue).getString();
 					
 					if (!defined.containsKey(prefixValueString) || Boolean.FALSE.equals(defined.get(prefixValueString))) {
 
-						TermDefinitionCreator.with(activeContext, localContext, split[0], defined).create();		
+						TermDefinitionBuilder.with(activeContext, localContext, split[0], defined).build();		
 					}
 				}								
 			}

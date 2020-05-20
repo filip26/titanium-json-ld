@@ -13,7 +13,7 @@ import javax.json.JsonValue.ValueType;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.expansion.UriExpansion;
+import com.apicatalog.jsonld.expansion.UriExpansionBuilder;
 import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.DirectionType;
 import com.apicatalog.jsonld.grammar.Keywords;
@@ -27,7 +27,7 @@ import com.apicatalog.jsonld.utils.UriUtils;
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#create-term-definition">Create Term Definition</a>
  *
  */
-public final class TermDefinitionCreator {
+public final class TermDefinitionBuilder {
 
 	// mandatory
 	ActiveContext activeContext;
@@ -51,7 +51,7 @@ public final class TermDefinitionCreator {
 	
 	LoadDocumentCallback documentLoader;
 	
-	private TermDefinitionCreator(ActiveContext activeContext, JsonObject localContext, String term, Map<String, Boolean> defined) {
+	private TermDefinitionBuilder(ActiveContext activeContext, JsonObject localContext, String term, Map<String, Boolean> defined) {
 		this.activeContext = activeContext;
 		this.localContext = localContext;
 		this.term = term;
@@ -65,41 +65,41 @@ public final class TermDefinitionCreator {
 		this.validateScopedContext = true;
 	}
 
-	public static final TermDefinitionCreator with(	ActiveContext activeContext, JsonObject localContext, String term, Map<String, Boolean> defined) {
-		return new TermDefinitionCreator(activeContext, localContext, term, defined);
+	public static final TermDefinitionBuilder with(	ActiveContext activeContext, JsonObject localContext, String term, Map<String, Boolean> defined) {
+		return new TermDefinitionBuilder(activeContext, localContext, term, defined);
 	}
 	
-	public TermDefinitionCreator baseUrl(URI baseUrl) {
+	public TermDefinitionBuilder baseUrl(URI baseUrl) {
 		this.baseUrl = baseUrl;
 		return this;
 	}
 	
-	public TermDefinitionCreator protectedFlag(boolean protectedFlag) {
+	public TermDefinitionBuilder protectedFlag(boolean protectedFlag) {
 		this.protectedFlag = protectedFlag;
 		return this;
 	}
 	
-	public TermDefinitionCreator overrideProtectedFlag(boolean overrideProtectedFlag) {
+	public TermDefinitionBuilder overrideProtectedFlag(boolean overrideProtectedFlag) {
 		this.overrideProtectedFlag = overrideProtectedFlag;
 		return this;
 	}
 	
-	public TermDefinitionCreator remoteContexts(Collection<String> remoteContexts) {
+	public TermDefinitionBuilder remoteContexts(Collection<String> remoteContexts) {
 		this.remoteContexts = remoteContexts;
 		return this;
 	}
 
-	public TermDefinitionCreator validateScopedContext(boolean validateScopedContext) {
+	public TermDefinitionBuilder validateScopedContext(boolean validateScopedContext) {
 		this.validateScopedContext = validateScopedContext;
 		return this;
 	}
 	
-	public TermDefinitionCreator documentLoader(LoadDocumentCallback documentLoader) {
+	public TermDefinitionBuilder documentLoader(LoadDocumentCallback documentLoader) {
 		this.documentLoader = documentLoader;
 		return this;
 	}
 
-	public void create() throws JsonLdError {
+	public void build() throws JsonLdError {
 		
 		if (term.isBlank()) {
 			throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
@@ -212,12 +212,12 @@ public final class TermDefinitionCreator {
 			}
 
 			// 12.2.
-			String expandedTypeString = UriExpansion
+			String expandedTypeString = UriExpansionBuilder
 						.with(activeContext, ((JsonString)type).getString())
 						.localContext(localContext)
 						.defined(defined)
 						.vocab(true)
-						.compute();
+						.build();
 			
 			if (expandedTypeString == null) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING);
@@ -263,11 +263,11 @@ public final class TermDefinitionCreator {
 			}
 			
 			// 13.4.
-			definition.uriMapping = UriExpansion.with(activeContext, reverseString)
+			definition.uriMapping = UriExpansionBuilder.with(activeContext, reverseString)
 										.localContext(localContext)
 										.defined(defined)
 										.vocab(true)
-										.compute();
+										.build();
 			
 			if (UriUtils.isNotURI(definition.uriMapping)) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
@@ -332,12 +332,12 @@ public final class TermDefinitionCreator {
 					}
 
 					// 14.2.3
-					definition.uriMapping = UriExpansion
+					definition.uriMapping = UriExpansionBuilder
 												.with(activeContext, idValueString)
 												.localContext(localContext)
 												.defined(defined)
 												.vocab(true)
-												.compute();
+												.build();
 					
 					if (Keywords.CONTEXT.equals(definition.uriMapping)) {
 						throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ALIAS);
@@ -357,11 +357,11 @@ public final class TermDefinitionCreator {
 						defined.put(term, Boolean.TRUE);
 						
 						// 14.2.4.2
-						String expandedTerm = UriExpansion.with(activeContext, term)
+						String expandedTerm = UriExpansionBuilder.with(activeContext, term)
 								.localContext(localContext)
 								.defined(defined)
 								.vocab(true)
-								.compute();
+								.build();
 						
 						if (expandedTerm == null 
 								|| !expandedTerm.equals(definition.uriMapping)
@@ -396,10 +396,10 @@ public final class TermDefinitionCreator {
 					&& localContext.containsKey(compactUri.getPrefix())
 					) {
 				
-				TermDefinitionCreator
+				TermDefinitionBuilder
 					.with(activeContext, localContext, compactUri.getPrefix(), defined)
 					.documentLoader(documentLoader)
-					.create();
+					.build();
 			}
 			// 15.2.
 			if (compactUri != null
@@ -418,11 +418,11 @@ public final class TermDefinitionCreator {
 		// 16.
 		} else if (term.contains("/")) {
 
-			definition.uriMapping = UriExpansion.with(activeContext, term)
+			definition.uriMapping = UriExpansionBuilder.with(activeContext, term)
 										.localContext(localContext)
 										.defined(defined)
 										.vocab(true)
-										.compute();
+										.build();
 
 			if (!UriUtils.isURI(definition.uriMapping)) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
@@ -508,12 +508,12 @@ public final class TermDefinitionCreator {
 			String indexString = ((JsonString)index).getString();
 			
 			String expandedIndex = 
-					UriExpansion
+					UriExpansionBuilder
 						.with(activeContext, indexString)
 						.localContext(localContext)
 						.defined(defined)
 						.vocab(true)
-						.compute();
+						.build();
 			
 			if (expandedIndex == null || UriUtils.isNotURI(expandedIndex)) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
@@ -541,8 +541,8 @@ public final class TermDefinitionCreator {
 						.remoteContexts(new ArrayList<>(remoteContexts))
 						.validateScopedContext(false)
 						.documentLoader(documentLoader)
-						.compute()
-						;
+						.compute();
+				
 			} catch (JsonLdError e) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_SCOPED_CONTEXT);
 			}

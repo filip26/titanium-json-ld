@@ -4,6 +4,12 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.json.JsonObject;
+import javax.json.JsonValue;
+
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.expansion.UriExpansionBuilder;
+import com.apicatalog.jsonld.expansion.ValueExpansionBuilder;
 import com.apicatalog.jsonld.grammar.DirectionType;
 import com.apicatalog.jsonld.grammar.Version;
 
@@ -119,5 +125,17 @@ public class ActiveContext {
 	
 	public ActiveContext getPreviousContext() {
 		return previousContext;
+	}
+	
+	public ValueExpansionBuilder expandValue(final JsonValue element, final String activeProperty) throws JsonLdError {
+		return ValueExpansionBuilder.with(this, element, activeProperty);
+	}
+	
+	public UriExpansionBuilder expandUri(final String value) {
+		return UriExpansionBuilder.with(this, value);
+	}
+	
+	public TermDefinitionBuilder createTerm(JsonObject localContext, String term, Map<String, Boolean> defined) {
+		return TermDefinitionBuilder.with(this, localContext, term, defined);
 	}
 }

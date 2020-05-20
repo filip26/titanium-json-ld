@@ -17,24 +17,24 @@ import com.apicatalog.jsonld.utils.JsonUtils;
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#value-expansion">Value Expansion Algorithm</a>
  *
  */
-public final class ValueExpansion {
+public final class ValueExpansionBuilder {
 
 	// mandatory
 	private ActiveContext activeContext;
 	private String activeProperty;
 	private JsonValue value;
 	
-	public ValueExpansion(final ActiveContext activeContext, final JsonValue value, final String activeProperty) {
+	public ValueExpansionBuilder(final ActiveContext activeContext, final JsonValue value, final String activeProperty) {
 		this.activeContext = activeContext;
 		this.value = value;
 		this.activeProperty = activeProperty;
 	}
 	
-	public static final ValueExpansion with(final ActiveContext activeContext, final JsonValue element, final String activeProperty) {
-		return new ValueExpansion(activeContext, element, activeProperty);
+	public static final ValueExpansionBuilder with(final ActiveContext activeContext, final JsonValue element, final String activeProperty) {
+		return new ValueExpansionBuilder(activeContext, element, activeProperty);
 	}
 	
-	public JsonValue compute() throws JsonLdError {
+	public JsonValue build() throws JsonLdError {
 
 		final TermDefinition definition = activeContext.getTerm(activeProperty);
 
@@ -45,11 +45,11 @@ public final class ValueExpansion {
 			// 1.
 			if (Keywords.ID.equals(typeMapping) && JsonUtils.isString(value)) {
 				
-				String expandedValue = UriExpansion
-											.with(activeContext, ((JsonString)value).getString())
+				String expandedValue = activeContext
+											.expandUri(((JsonString)value).getString())
 											.documentRelative(true)
 											.vocab(false)
-											.compute();
+											.build();
 				
 				return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();
 			}
@@ -57,11 +57,11 @@ public final class ValueExpansion {
 			// 2.
 			if (Keywords.VOCAB.equals(typeMapping) && JsonUtils.isString(value)) {
 				
-				String expandedValue = UriExpansion
-											.with(activeContext, ((JsonString)value).getString())
+				String expandedValue = activeContext
+											.expandUri(((JsonString)value).getString())
 											.documentRelative(true)
 											.vocab(true)
-											.compute();
+											.build();
 				
 				return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();
 			}
@@ -118,5 +118,4 @@ public final class ValueExpansion {
 		// 6.
 		return result;
 	}
-	
 }

@@ -127,5 +127,11 @@ public final class JsonUtils {
 		
 		return toObject(targetMap);
 	}
+	
+	public static JsonArray toArray(JsonValue value) {
+		return JsonUtils.isArray(value)
+					? value.asJsonArray()
+					: Json.createArrayBuilder().add(value).build();
+	}
 
 }

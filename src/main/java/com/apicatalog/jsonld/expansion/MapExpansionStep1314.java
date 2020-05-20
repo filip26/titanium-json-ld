@@ -20,9 +20,11 @@ import javax.json.JsonValue.ValueType;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.context.ContextProcessor;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.grammar.DefaultObject;
 import com.apicatalog.jsonld.grammar.DirectionType;
+import com.apicatalog.jsonld.grammar.GraphObject;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.ListObject;
 import com.apicatalog.jsonld.grammar.NodeObject;
@@ -124,11 +126,11 @@ public final class MapExpansionStep1314 {
 
 			// 13.2.
 			String expandedProperty = 
-								UriExpansion
+								UriExpansionBuilder
 									.with(activeContext, key)
 									.documentRelative(false)
 									.vocab(true)
-									.compute();
+									.build();
 			
 			// 13.3.
 			if (expandedProperty == null 
@@ -166,11 +168,11 @@ public final class MapExpansionStep1314 {
 					// 13.4.3.2
 					} else {
 
-						String expandedStringValue = UriExpansion
+						String expandedStringValue = UriExpansionBuilder
 												.with(activeContext, ((JsonString)value).getString())
 												.documentRelative(true)
 												.vocab(false)
-												.compute(); 
+												.build(); 
 
 						if (expandedStringValue != null) {
 							expandedValue = Json.createValue(expandedStringValue);
@@ -207,11 +209,11 @@ public final class MapExpansionStep1314 {
 						
 						expandedValue = Json.createObjectBuilder()
 											.add(Keywords.DEFAULT, 
-													UriExpansion
+													UriExpansionBuilder
 														.with(typeContext, ((JsonString)value).getString())
 														.vocab(true)
 														.documentRelative(true)
-														.compute()
+														.build()
 											).build();
 						
 					// 13.4.4.4
@@ -220,11 +222,11 @@ public final class MapExpansionStep1314 {
 						if (ValueType.STRING.equals(value.getValueType())) {
 							
 							String expandedStringValue = 
-										UriExpansion
+										UriExpansionBuilder
 												.with(typeContext, ((JsonString)value).getString())
 												.vocab(true)
 												.documentRelative(true)
-												.compute(); 
+												.build(); 
 							
 							if (expandedStringValue != null) {
 								expandedValue = Json.createValue(expandedStringValue);
@@ -239,11 +241,11 @@ public final class MapExpansionStep1314 {
 								if (ValueType.STRING.equals(item.getValueType())) {
 									
 									String expandedStringValue = 
-												UriExpansion
+												UriExpansionBuilder
 														.with(typeContext, ((JsonString)item).getString())
 														.vocab(true)
 														.documentRelative(true)
-														.compute(); 
+														.build(); 
 									
 									if (expandedStringValue != null) {
 										array.add(Json.createValue(expandedStringValue));
@@ -277,8 +279,7 @@ public final class MapExpansionStep1314 {
 										.documentLoader(documentLoader)
 										.frameExpansion(frameExpansion)
 										.ordered(ordered)
-										.compute()
-										;
+										.compute();
 					
 					if (JsonUtils.isObject(expandedValue)) {
 						expandedValue = Json.createArrayBuilder().add(expandedValue).build();
@@ -556,9 +557,8 @@ public final class MapExpansionStep1314 {
 									.build();
 				
 			// 13.7.
-			} else if (containerMapping.contains(Keywords.LANGUAGE)
-					&& ValueType.OBJECT.equals(value.getValueType())
-					) {
+			} else if (containerMapping.contains(Keywords.LANGUAGE) && JsonUtils.isObject(value)) {
+				
 				// 13.7.1.
 				expandedValue = Json.createArrayBuilder().build();
 
@@ -601,21 +601,22 @@ public final class MapExpansionStep1314 {
 						}
 						
 						// 13.7.4.2.3.
-						//TODO
-						
-						
 						JsonObjectBuilder langMap = 
 										Json.createObjectBuilder()
 											.add(Keywords.VALUE, item)
 											;
 
+						if (Keywords.NONE.equals(((JsonString)item).getString())) {
+							//TODO warning
+						}
+						
 						// 13.7.4.2.4.
 						if (!Keywords.NONE.equals(langCode)) {
 							
-							String expandedLangCode = UriExpansion
-														.with(activeContext, langCode)
+							String expandedLangCode = activeContext
+														.expandUri(langCode)
 														.vocab(true)
-														.compute();
+														.build();
 
 							if (!Keywords.NONE.equals(expandedLangCode)) {
 								langMap.add(Keywords.LANGUAGE, Json.createValue(langCode));
@@ -637,7 +638,7 @@ public final class MapExpansionStep1314 {
 					(containerMapping.contains(Keywords.INDEX)
 					|| containerMapping.contains(Keywords.TYPE)
 					|| containerMapping.contains(Keywords.ID))
-					&& ValueType.OBJECT.equals(value.getValueType())
+					&& JsonUtils.isObject(value)
 					) {
 
 				// 13.8.1.
@@ -661,9 +662,9 @@ public final class MapExpansionStep1314 {
 					Collections.sort(indicies);
 				}
 				
-				for (String indexKey2 : indicies) {
+				for (String index : indicies) {
 					
-					JsonValue indexValue = value.asJsonObject().get(indexKey2);
+					JsonValue indexValue = value.asJsonObject().get(index);
 					
 					// 13.8.3.1.
 					ActiveContext mapContext = activeContext;
@@ -671,24 +672,129 @@ public final class MapExpansionStep1314 {
 					if (activeContext.hasPreviousContext()
 							&& (containerMapping.contains(Keywords.ID) 
 									|| containerMapping.contains(Keywords.TYPE))) {
+						
 						mapContext = activeContext.getPreviousContext();
 					}
 					
-					// 13.8.3.2.	
-//					if (containerMapping.contains(Keywords.TYPE) && )
-//TODO
+					// 13.8.3.2.
+					TermDefinition indexTermDefinition = activeContext.getTerm(index);
+					
+					if (containerMapping.contains(Keywords.TYPE)
+							&& indexTermDefinition != null
+							&& indexTermDefinition.hasLocalContext()
+							) {
+						
+						mapContext = ContextProcessor.with(mapContext, indexValue, indexTermDefinition.getBaseUrl()).compute();
+					}
 					
 					// 13.8.3.3.
-					//TODO
-					
-					
-					
-					
+					if (mapContext == null) {
+						mapContext = activeContext;
+					}
 
+					// 13.8.3.4.
+					String expandedIndex = activeContext.expandUri(index).vocab(true).build();
+					
+					// 13.8.3.5.
+					if (JsonUtils.isNotArray(indexValue)) {
+						indexValue = Json.createArrayBuilder().add(indexValue).build();
+					}
+
+					// 13.8.3.6.
+					indexValue = Expansion
+									.with(mapContext, indexValue, key, baseUrl)
+									.fromMap(true)
+									.frameExpansion(frameExpansion)
+									.ordered(ordered)
+									.compute();
+					
+					// 13.8.3.7.
+					for (JsonValue item : indexValue.asJsonArray()) {
+						
+						// 13.8.3.7.1.
+						if (containerMapping.contains(Keywords.GRAPH) && !GraphObject.isGraphObject(item)) {
+							item = GraphObject.toGraphObject(item);
+						}
+						
+						// 13.8.3.7.2.
+						if (containerMapping.contains(Keywords.INDEX) 
+								&& !Keywords.INDEX.equals(indexKey)
+								&& !Keywords.NONE.equals(expandedIndex)
+								) {
+							
+							// 13.8.3.7.2.1.
+							JsonValue reExpandedIndex = activeContext.expandValue(Json.createValue(index), indexKey).build();
+
+							// 13.8.3.7.2.2.
+							String expandedIndexKey = activeContext.expandUri(indexKey).vocab(true).build();
+
+							// 13.8.3.7.2.3.
+							JsonArrayBuilder indexPropertyValues = 
+											Json
+												.createArrayBuilder()
+												.add(reExpandedIndex);
+							
+							JsonValue existingValues = item.asJsonObject().get(expandedIndexKey);
+							
+							if (JsonUtils.isNotNull(existingValues)) {
+								indexPropertyValues.add(existingValues);
+							}
+							
+							// 13.8.3.7.2.4.
+							item = Json
+									.createObjectBuilder(item.asJsonObject())
+									.add(expandedIndexKey, indexPropertyValues)
+									.build();
+							
+							// 13.8.3.7.2.5.
+							if (ValueObject.isValueObject(item) && item.asJsonObject().size() > 1) {
+								throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
+							}
+							
+						// 13.8.3.7.3.							
+						} else if (containerMapping.contains(Keywords.INDEX)
+									&& !item.asJsonObject().containsKey(Keywords.INDEX)
+									&& !Keywords.NONE.equals(expandedIndex)									
+								) {
+							
+							item = Json
+									.createObjectBuilder(item.asJsonObject()).add(Keywords.INDEX, index).build();
+
+						// 13.8.3.7.4.
+						} else if (containerMapping.contains(Keywords.ID)
+								&& !item.asJsonObject().containsKey(Keywords.ID)
+								&& !Keywords.NONE.equals(expandedIndex)									
+							) {
+							
+							expandedIndex = activeContext.expandUri(index).vocab(false).documentRelative(true).build();
+
+							item = Json
+									.createObjectBuilder(item.asJsonObject()).add(Keywords.ID, expandedIndex).build();
+
+						// 13.8.3.7.5.
+						} else if (containerMapping.contains(Keywords.TYPE)
+								&& !Keywords.NONE.equals(expandedIndex)									
+							) {
+
+							JsonArrayBuilder types = Json
+														.createArrayBuilder()
+														.add(expandedIndex);
+							
+							JsonValue existingType = item.asJsonObject().get(Keywords.TYPE);
+							if (JsonUtils.isNotNull(existingType)) {
+								types.add(existingType);
+							}
+							
+							item = Json
+									.createObjectBuilder(item.asJsonObject()).add(Keywords.TYPE, types).build();							
+						}
+
+						// 13.8.3.7.6.
+						expandedValue = Json.createArrayBuilder(expandedValue.asJsonArray()).add(item).build();
+						
+					}
 				}
-				
-				//TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-				
+								
 			// 13.9.
 			} else {
 				expandedValue =  
@@ -796,10 +902,10 @@ public final class MapExpansionStep1314 {
 
 				for (String nestedValueKey : nestValue.asJsonObject().keySet()) {
 					
-					String expandedNestedValueKey = UriExpansion
+					String expandedNestedValueKey = UriExpansionBuilder
 														.with(typeContext, nestedValueKey)
 														.vocab(true)
-														.compute();
+														.build();
 					
 					if (Keywords.VALUE.equals(expandedNestedValueKey)) {
 						throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
