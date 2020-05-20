@@ -359,7 +359,7 @@ public class ContextProcessor {
 						// 5.7.4
 						} else if (result.baseUri != null) {
 							
-							result.baseUri = UriUtils.resolveAsUri(result.baseUri, valueString);
+							result.baseUri = URI.create(UriUtils.resolve(result.baseUri, valueString));
 														
 						} else {
 							throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);

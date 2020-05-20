@@ -15,8 +15,8 @@ public class UriResolver {
 	UriResolver() {
 	}
 	
-	public static URI resolve(URI base, String relative) {
-		
+	public static String resolve(URI base, String relative) {
+
 		URI components = URI.create(relative);
 		
 		String scheme = null;
@@ -62,7 +62,7 @@ public class UriResolver {
 			}
 			scheme = base.getScheme();
 		}
-		return URI.create(toString(scheme, authority, path, query, components.getFragment()));		
+		return toString(scheme, authority, path, query, components.getFragment());		
 	}
 
 	/**
@@ -75,6 +75,10 @@ public class UriResolver {
 	 */
 	static String removeDotSegments(final String path) {
 
+		if (isNotDefined(path)) {
+			return "";
+		}
+		
 		String input = path;
 		List<String> output = new ArrayList<>();
 		

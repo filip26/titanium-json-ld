@@ -17,7 +17,7 @@ public class JsonLdTestDefinition {
 			return this;
 		}
 		
-		expectErrorCode = errorCode.strip().toUpperCase().replace(" ", "_"); 
+		expectErrorCode = errorCode.strip().toUpperCase().replace(" ", "_").replaceAll("\\_\\@", "_KEYWORD_" ); 
 		
 		return this;
 	}
