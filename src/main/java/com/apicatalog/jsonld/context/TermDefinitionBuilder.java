@@ -573,12 +573,12 @@ public final class TermDefinitionBuilder {
 			JsonValue direction = valueObject.get(Keywords.DIRECTION);
 			
 			if (ValueType.NULL.equals(direction.getValueType())) {
-				definition.directionMapping = null;
+				definition.directionMapping = DirectionType.NULL;
 				
 			} else if (ValueType.STRING.equals(direction.getValueType())) {
 				
 				String directionString = ((JsonString)direction).getString();
-				
+
 				if ("ltr".equals(directionString)) {
 					definition.directionMapping = DirectionType.LTR;
 					

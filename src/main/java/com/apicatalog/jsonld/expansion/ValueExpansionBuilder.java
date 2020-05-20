@@ -109,7 +109,7 @@ public final class ValueExpansionBuilder {
 			}
 
 			// 5.4.
-			if (direction != null) {
+			if (direction != null && !DirectionType.NULL.equals(direction)) {
 				result = Json.createObjectBuilder(result).add(Keywords.DIRECTION, Json.createValue(direction.name().toLowerCase())).build();	
 			}
 		}

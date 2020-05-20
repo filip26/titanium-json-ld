@@ -440,7 +440,7 @@ public class ContextProcessor {
 				
 				// 5.10.3.
 				if (JsonUtils.isNull(value)) {
-					result.defaultBaseDirection = null;
+					result.defaultBaseDirection = DirectionType.NULL;
 					
 				// 5.10.4.
 				} else {
@@ -450,7 +450,7 @@ public class ContextProcessor {
 					}
 					
 					String direction = ((JsonString)value).getString();
-					
+
 					if ("ltr".equals(direction)) {
 						result.defaultBaseDirection = DirectionType.LTR;
 						

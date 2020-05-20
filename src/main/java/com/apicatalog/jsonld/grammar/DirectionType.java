@@ -4,6 +4,8 @@ public enum DirectionType {
 
 	LTR,
 	
-	RTL
+	RTL,
+	
+	NULL
 	
 }

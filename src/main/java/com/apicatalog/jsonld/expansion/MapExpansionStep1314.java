@@ -624,7 +624,7 @@ public final class MapExpansionStep1314 {
 						}
 						
 						// 13.7.4.2.5.
-						if (direction != null) {
+						if (direction != null && !DirectionType.NULL.equals(direction)) {
 							langMap.add(Keywords.DIRECTION, Json.createValue(direction.name().toLowerCase()));
 						}
 						
