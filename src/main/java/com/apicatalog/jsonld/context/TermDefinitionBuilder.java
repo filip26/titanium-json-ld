@@ -558,15 +558,12 @@ public final class TermDefinitionBuilder {
 			// 22.1. - 2.
 			JsonValue language = valueObject.get(Keywords.LANGUAGE);
 			
-			if (JsonUtils.isNull(language)) {
-				definition.languageMapping = null;
-				
-			} else if (JsonUtils.isString(language)) {
-				definition.languageMapping = ((JsonString)language).getString();
+			if (JsonUtils.isNull(language) || JsonUtils.isString(language)) {
+				definition.languageMapping = language;
 				
 			} else {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_MAPPING);
-			}			
+			}
 		}
 
 		// 23.

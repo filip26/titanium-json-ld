@@ -30,7 +30,7 @@ public class TermDefinition {
 	
 	String indexMapping;
 	
-	String languageMapping;
+	JsonValue languageMapping;
 	
 	String nestValue;
 	
@@ -59,7 +59,7 @@ public class TermDefinition {
 		this.uriMapping = uriMapping;
 	}
 		
-	public String getLanguageMapping() {
+	public JsonValue getLanguageMapping() {
 		return languageMapping;
 	}
 	
@@ -75,7 +75,7 @@ public class TermDefinition {
 		return prefixFlag;
 	}
 	
-	public void setLanguageMapping(String languageMapping) {
+	public void setLanguageMapping(JsonValue languageMapping) {
 		this.languageMapping = languageMapping;
 	}
 	

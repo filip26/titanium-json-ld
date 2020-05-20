@@ -83,13 +83,13 @@ public final class ValueExpansionBuilder {
 		} else if (JsonUtils.isString(value)) {
 			
 			// 5.1.
-			String language = null;
+			JsonValue language = null;
 						
-			if (definition != null) {
+			if (definition != null && definition.getLanguageMapping() != null) {
 				language = definition.getLanguageMapping();
 				
-			} else {
-				language = activeContext.getDefaultLanguage();
+			} else if (activeContext.getDefaultLanguage() != null) {
+				language = Json.createValue(activeContext.getDefaultLanguage());				
 			}
 					
 			// 5.2.
@@ -97,14 +97,15 @@ public final class ValueExpansionBuilder {
 
 			if (definition != null) {
 				direction = definition.getDirectionMapping();
-				
-			} else {
+			}
+			
+			if (direction == null) {
 				direction = activeContext.getDefaultBaseDirection();
 			}
 			
 			// 5.3.
-			if (language != null) {
-				result = Json.createObjectBuilder(result).add(Keywords.LANGUAGE, Json.createValue(language)).build();	
+			if (JsonUtils.isNotNull(language)) {
+				result = Json.createObjectBuilder(result).add(Keywords.LANGUAGE, language).build();	
 			}
 
 			// 5.4.
