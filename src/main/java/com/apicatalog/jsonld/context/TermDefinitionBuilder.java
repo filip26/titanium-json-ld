@@ -166,7 +166,7 @@ public final class TermDefinitionBuilder {
 		JsonObject valueObject = null;
 		Boolean simpleTerm = null;
 
-		if (value == null || JsonUtils.isNull(value)) {
+		if (JsonUtils.isNull(value)) {
 			// 7.
 			valueObject = Json.createObjectBuilder().add(Keywords.ID, JsonValue.NULL).build();
 			
@@ -489,10 +489,9 @@ public final class TermDefinitionBuilder {
 				}
 			}
 		}
-		
 		// 20.
 		if (valueObject.containsKey(Keywords.INDEX)) {
-		
+			
 			// 20.1.
 			if (activeContext.inMode(Version.V1_0)
 					|| !definition.getContainerMapping().contains(Keywords.INDEX)) {
@@ -501,13 +500,13 @@ public final class TermDefinitionBuilder {
 
 			// 20.2.
 			JsonValue index = valueObject.get(Keywords.INDEX);
-			
-			if (!ValueType.STRING.equals(index.getValueType())) {
+
+			if (JsonUtils.isNotString(index)) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
 			}
 			
 			String indexString = ((JsonString)index).getString();
-			
+
 			String expandedIndex = 
 					UriExpansionBuilder
 						.with(activeContext, indexString)

@@ -2,6 +2,8 @@ package com.apicatalog.jsonld.utils;
 
 import java.net.URI;
 
+import com.apicatalog.jsonld.grammar.Keywords;
+
 public class UriUtils {
 
 	UriUtils() {
@@ -10,7 +12,7 @@ public class UriUtils {
 	public static boolean isURI(String value) {
 		try {
 			
-			return value != null && URI.create(value) != null;
+			return value != null && !Keywords.hasForm(value) && URI.create(value) != null;
 			
 		} catch (IllegalArgumentException e) {
 			return false;			
