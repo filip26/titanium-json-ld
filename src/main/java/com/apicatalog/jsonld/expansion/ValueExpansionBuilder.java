@@ -87,9 +87,8 @@ public final class ValueExpansionBuilder {
 						
 			if (definition != null) {
 				language = definition.getLanguageMapping();
-			}
-			
-			if (language == null) {
+				
+			} else {
 				language = activeContext.getDefaultLanguage();
 			}
 					
@@ -98,9 +97,8 @@ public final class ValueExpansionBuilder {
 
 			if (definition != null) {
 				direction = definition.getDirectionMapping();
-			}
-			
-			if (direction == null) {
+				
+			} else {
 				direction = activeContext.getDefaultBaseDirection();
 			}
 			

@@ -554,14 +554,14 @@ public final class TermDefinitionBuilder {
 
 		// 22.
 		if (valueObject.containsKey(Keywords.LANGUAGE) && !valueObject.containsKey(Keywords.TYPE)) {
-			
+
 			// 22.1. - 2.
 			JsonValue language = valueObject.get(Keywords.LANGUAGE);
 			
-			if (ValueType.NULL.equals(language.getValueType())) {
+			if (JsonUtils.isNull(language)) {
 				definition.languageMapping = null;
 				
-			} else if (ValueType.STRING.equals(language.getValueType())) {
+			} else if (JsonUtils.isString(language)) {
 				definition.languageMapping = ((JsonString)language).getString();
 				
 			} else {

@@ -4,7 +4,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
@@ -133,11 +132,7 @@ public class ExpansionProcessor {
 			return JsonValue.EMPTY_JSON_ARRAY;
 		}
 		
-		if (JsonUtils.isArray(expanded)) {
-			return expanded.asJsonArray();
-		}
-
 		// 8.3
-		return Json.createArrayBuilder().add(expanded).build();
+		return JsonUtils.toArray(expanded);
 	}
 }
