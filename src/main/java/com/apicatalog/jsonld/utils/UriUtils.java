@@ -37,13 +37,5 @@ public class UriUtils {
 
 	public static boolean isNotURI(String expandedTypeString) {
 		return !isURI(expandedTypeString);
-	}
-	
-	public static final String resolve(URI baseUri, String value) {
-		if (baseUri == null) {
-			return value;
-		}
-
-		return UriResolver.resolve(baseUri, value);
-	}
+	}	
 }

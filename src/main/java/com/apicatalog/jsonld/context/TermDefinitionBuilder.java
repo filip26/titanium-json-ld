@@ -484,9 +484,6 @@ public final class TermDefinitionBuilder {
 						
 						containerValue = containerValue.asJsonArray().get(0);						
 					}
-										
-
-					//TODO	
 				}				
 			}
 			

@@ -27,6 +27,7 @@ import com.apicatalog.jsonld.grammar.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.utils.JsonUtils;
+import com.apicatalog.jsonld.utils.UriResolver;
 import com.apicatalog.jsonld.utils.UriUtils;
 
 /**
@@ -155,7 +156,7 @@ public class ContextProcessor {
 				
 				// 5.2.1
 				if (baseUrl != null) {
-					contextUri = UriUtils.resolve(baseUrl, ((JsonString)itemContext).getString());
+					contextUri = UriResolver.resolve(baseUrl, ((JsonString)itemContext).getString());
 				}
 				
 				if (UriUtils.isNotURI(contextUri)) {
@@ -279,7 +280,7 @@ public class ContextProcessor {
 				}
 				
 				// 5.6.3.
-				String contextImportUri = UriUtils.resolve(baseUrl, ((JsonString)contextImport).getString());
+				String contextImportUri = UriResolver.resolve(baseUrl, ((JsonString)contextImport).getString());
 				
 				
 				// 5.6.4.
@@ -359,7 +360,7 @@ public class ContextProcessor {
 						// 5.7.4
 						} else if (result.baseUri != null) {
 							
-							result.baseUri = URI.create(UriUtils.resolve(result.baseUri, valueString));
+							result.baseUri = URI.create(UriResolver.resolve(result.baseUri, valueString));
 														
 						} else {
 							throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);

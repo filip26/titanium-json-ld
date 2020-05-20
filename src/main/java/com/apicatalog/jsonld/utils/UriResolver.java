@@ -10,13 +10,17 @@ import java.util.stream.Collectors;
  * @see <a href="https://tools.ietf.org/html/rfc3986#section-5.2">Relative Resolution</a>
  *
  */
-public class UriResolver {
+public final class UriResolver {
 
 	UriResolver() {
 	}
 	
 	public static String resolve(URI base, String relative) {
 
+		if (base == null) {
+			return relative;
+		}
+		
 		URI components = URI.create(relative);
 		
 		String scheme = null;

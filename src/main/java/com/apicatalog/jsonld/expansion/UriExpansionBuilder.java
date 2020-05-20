@@ -14,6 +14,7 @@ import com.apicatalog.jsonld.context.TermDefinitionBuilder;
 import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.utils.JsonUtils;
+import com.apicatalog.jsonld.utils.UriResolver;
 import com.apicatalog.jsonld.utils.UriUtils;
 /**
  * 
@@ -173,7 +174,7 @@ public final class UriExpansionBuilder {
 			
 		// 8.
 		} else if (documentRelative) {			
-			value = UriUtils.resolve(activeContext.getBaseUri(), value);
+			value = UriResolver.resolve(activeContext.getBaseUri(), value);
 		}
 		
 		// 9.
