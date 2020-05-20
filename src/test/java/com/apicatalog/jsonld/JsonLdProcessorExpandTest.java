@@ -1,5 +1,7 @@
 package com.apicatalog.jsonld;
 
+import static org.junit.Assume.assumeTrue;
+
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -25,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import com.apicatalog.jsonld.grammar.Version;
 import com.apicatalog.jsonld.impl.DefaultJsonLdProcessor;
 
 @RunWith(Parameterized.class)
@@ -44,6 +47,9 @@ public class JsonLdProcessorExpandTest {
 	
 	@Test
 	public void testExpand() throws IOException, JsonLdError {
+
+		// skip specVersion == 1.0
+		assumeTrue(Version.V1_1.equals(testDefinition.specVersion) || testDefinition.specVersion == null);
 
 		Map<String, Object> properties = new HashMap<>(1);
 		properties.put(JsonGenerator.PRETTY_PRINTING, true);
@@ -65,7 +71,7 @@ public class JsonLdProcessorExpandTest {
 		optionsBuilder.ordered(true);
 
 		JsonLdOptions options = optionsBuilder.create();
-		
+
 		try {
 			result = processor.expand(inputPath.toUri(), options);
 			
