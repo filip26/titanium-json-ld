@@ -100,7 +100,7 @@ public final class TermDefinitionBuilder {
 	}
 
 	public void build() throws JsonLdError {
-		
+	
 		if (term.isBlank()) {
 			throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
 		}
@@ -159,7 +159,7 @@ public final class TermDefinitionBuilder {
 			//TODO warning
 			return;
 		}
-		
+	
 		// 6.
 		TermDefinition previousDefinition = activeContext.removeTerm(term);
 
@@ -183,7 +183,7 @@ public final class TermDefinitionBuilder {
 		} else {
 			throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
 		}
-		
+
 		// 10.
 		TermDefinition definition = new TermDefinition(false, protectedFlag, false);
 
@@ -218,7 +218,7 @@ public final class TermDefinitionBuilder {
 						.defined(defined)
 						.vocab(true)
 						.build();
-			
+
 			if (expandedTypeString == null) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING);
 			}
@@ -304,14 +304,12 @@ public final class TermDefinitionBuilder {
 			defined.put(term, Boolean.TRUE);
 			return;
 		}
-		
-		// 14.
-		if (valueObject.containsKey(Keywords.ID)) {
-			
-			JsonValue idValue = valueObject.get(Keywords.ID);
 
-			if (JsonUtils.isNotString(idValue) || !term.equals(((JsonString)idValue).getString())) {
-				
+		JsonValue idValue = valueObject.get(Keywords.ID);
+
+		// 14.
+		if (idValue != null && (JsonUtils.isNotString(idValue) || !term.equals(((JsonString)idValue).getString()))) {
+							
 				// 14.1.
 				if (JsonUtils.isNull(idValue)) {
 					
@@ -383,9 +381,8 @@ public final class TermDefinitionBuilder {
 							definition.prefixFlag = true;
 						}
 					}
-				}				
-			}
-			
+				}
+				
 		// 15.
 		} else if (term.indexOf(':', 1) != -1) {
 			
