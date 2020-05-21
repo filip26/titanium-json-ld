@@ -288,7 +288,7 @@ public final class MapExpansionStep1314 {
 				
 				// 13.4.6
 				if (Keywords.INCLUDED.equals(expandedProperty)) {
-					
+
 					// 13.4.6.1
 					if (activeContext.inMode(Version.V1_0)) {
 						continue;
@@ -301,7 +301,7 @@ public final class MapExpansionStep1314 {
 										.frameExpansion(frameExpansion)
 										.ordered(ordered)
 										.compute();
-					
+
 					if (JsonUtils.isNotNull(expandedValue)) {
 					
 						if (JsonUtils.isNotArray(expandedValue)) {
@@ -312,11 +312,19 @@ public final class MapExpansionStep1314 {
 						if (!expandedValue.asJsonArray().stream().allMatch(NodeObject::isNodeObject)) {
 							throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_INCLUDED_VALUE);
 						}
+						
 
 						// 13.4.6.4
 						if (result.containsKey(Keywords.INCLUDED)) {
-							expandedValue = Json.createArrayBuilder(result.get(Keywords.INCLUDED).asJsonArray()).add(expandedValue).build();
+							
+							JsonArrayBuilder includes = Json.createArrayBuilder(result.get(Keywords.INCLUDED).asJsonArray());
+							
+							expandedValue.asJsonArray().stream().forEach(includes::add);
+							
+							expandedValue = includes.build();
 						}
+					} else {
+						throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_INCLUDED_VALUE);
 					}
 				}
 				
