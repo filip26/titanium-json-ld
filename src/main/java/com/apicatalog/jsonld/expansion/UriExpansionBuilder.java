@@ -13,7 +13,6 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.context.TermDefinitionBuilder;
 import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.Keywords;
-import com.apicatalog.jsonld.utils.JsonUtils;
 import com.apicatalog.jsonld.utils.UriResolver;
 import com.apicatalog.jsonld.utils.UriUtils;
 /**
@@ -83,7 +82,7 @@ public final class UriExpansionBuilder {
 			//TODO varning
 			return null;
 		}
-	
+
 		/*
 		 *  3. If local context is not null, it contains an entry with a key that equals value, 
 		 *     and the value of the entry for value in defined is not true, invoke the Create Term Definition algorithm, 
@@ -131,19 +130,10 @@ public final class UriExpansionBuilder {
 			}
 			
 			// 6.3.
-			if (localContext != null && localContext.containsKey(split[0])) {
-				
-				JsonValue prefixValue = localContext.get(split[0]);
-				
-				if (JsonUtils.isString(prefixValue)) {
+			if (localContext != null && localContext.containsKey(split[0])
+					&& (!defined.containsKey(split[0]) || !Boolean.TRUE.equals(defined.get(split[0])))) {
 
-					String prefixValueString = ((JsonString)prefixValue).getString();
-					
-					if (!defined.containsKey(prefixValueString) || Boolean.FALSE.equals(defined.get(prefixValueString))) {
-
-						TermDefinitionBuilder.with(activeContext, localContext, split[0], defined).build();		
-					}
-				}								
+				TermDefinitionBuilder.with(activeContext, localContext, split[0], defined).build();		
 			}
 			
 			// 6.4.

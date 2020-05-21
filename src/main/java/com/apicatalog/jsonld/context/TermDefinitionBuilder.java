@@ -108,7 +108,6 @@ public final class TermDefinitionBuilder {
 	
 		// 1.
 		if (defined.containsKey(term)) {
-			
 			if (Boolean.TRUE.equals(defined.get(term))) {
 				return;
 			}
@@ -151,7 +150,7 @@ public final class TermDefinitionBuilder {
 			}
 
 		}
-		
+
 		// 5.
 		if (Keywords.contains(term)) {
 			throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
@@ -306,11 +305,11 @@ public final class TermDefinitionBuilder {
 			return;
 		}
 
-		JsonValue idValue = valueObject.get(Keywords.ID);
+		JsonValue idValue = valueObject.get(Keywords.ID);		
 
 		// 14.
 		if (idValue != null && (JsonUtils.isNotString(idValue) || !term.equals(((JsonString)idValue).getString()))) {
-							
+
 				// 14.1.
 				if (JsonUtils.isNull(idValue)) {
 					
@@ -386,7 +385,7 @@ public final class TermDefinitionBuilder {
 				
 		// 15.
 		} else if (term.indexOf(':', 1) != -1) {
-			
+	
 			final CompactUri compactUri = CompactUri.create(term);
 			
 			// 15.1.
@@ -436,9 +435,9 @@ public final class TermDefinitionBuilder {
 			throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
 			
 		} else {
-			definition.uriMapping = activeContext.vocabularyMapping.toString().concat(term);
+			definition.uriMapping = activeContext.vocabularyMapping.concat(term);
 		}
-		
+	
 		// 19.
 		if (valueObject.containsKey(Keywords.CONTAINER)) {
 

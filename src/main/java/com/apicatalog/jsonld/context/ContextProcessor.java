@@ -98,7 +98,7 @@ public class ContextProcessor {
 	}
 
 	public ActiveContext compute() throws JsonLdError {
-		
+	
 		// 1. Initialize result to the result of cloning active context, with inverse context set to null.
 		ActiveContext result = new ActiveContext(activeContext);
 		result.inverseContext = null;
