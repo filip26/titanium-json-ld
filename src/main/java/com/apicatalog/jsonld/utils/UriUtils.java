@@ -38,5 +38,13 @@ public class UriUtils {
 
 	public static boolean isNotURI(String expandedTypeString) {
 		return !isURI(expandedTypeString);
+	}
+
+	public static boolean isNotAbsoluteURI(String uri) {
+		try {
+			return !URI.create(uri).isAbsolute();
+		} catch (IllegalArgumentException e) {
+			return true;			
+		}
 	}	
 }

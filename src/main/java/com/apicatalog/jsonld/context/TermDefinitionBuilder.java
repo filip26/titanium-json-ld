@@ -208,7 +208,7 @@ public final class TermDefinitionBuilder {
 			// 12.1.
 			JsonValue type = valueObject.get(Keywords.TYPE);
 
-			if (!ValueType.STRING.equals(type.getValueType())) {
+			if (JsonUtils.isNotString(type)) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING);
 			}
 
@@ -230,7 +230,7 @@ public final class TermDefinitionBuilder {
 				)
 				// 12.4.
 				|| (Keywords.isNot(expandedTypeString, Keywords.ID, Keywords.JSON, Keywords.NONE, Keywords.VOCAB) 
-						&& UriUtils.isNotURI(expandedTypeString)
+						&& UriUtils.isNotAbsoluteURI(expandedTypeString)
 					)
 			) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING);

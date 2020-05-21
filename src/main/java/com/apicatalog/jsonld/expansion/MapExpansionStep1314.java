@@ -529,9 +529,9 @@ public final class MapExpansionStep1314 {
 				}
 
 				// 13.4.16
-				if (JsonUtils.isNotNull(expandedValue)
-//FIXME?!						&& Keywords.VALUE.equals(expandedProperty.get())
-//						&& !Keywords.JSON.equals(inputType)
+				if (JsonUtils.isNotNull(expandedValue) ||
+						(Keywords.VALUE.equals(expandedProperty) &&
+						 Keywords.JSON.equals(inputType))
 						) {
 
 					result.put(expandedProperty, expandedValue);
