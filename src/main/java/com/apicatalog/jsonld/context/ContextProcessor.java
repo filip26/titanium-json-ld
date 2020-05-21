@@ -393,7 +393,7 @@ public class ContextProcessor {
 																.vocab(true)
 																.documentRelative(true)
 																.build();
-//System.out.println(">> " + vocabularyMapping);
+
 						if (UriUtils.isURI(vocabularyMapping) || CompactUri.isBlankNode(valueString)) {
 							result.vocabularyMapping = vocabularyMapping;
 							

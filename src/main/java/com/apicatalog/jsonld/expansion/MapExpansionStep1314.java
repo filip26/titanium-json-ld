@@ -330,7 +330,7 @@ public final class MapExpansionStep1314 {
 				
 				// 13.4.7
 				if (Keywords.VALUE.equals(expandedProperty)) {
-					
+
 					// 13.4.7.1
 					if (Keywords.JSON.equals(inputType)) {
 						
@@ -527,11 +527,11 @@ public final class MapExpansionStep1314 {
 
 					System.out.println("TODO " + expandedProperty + ", " + expandedValue);					
 				}
-				
+
 				// 13.4.16
 				if (JsonUtils.isNotNull(expandedValue)
 //FIXME?!						&& Keywords.VALUE.equals(expandedProperty.get())
-						&& !Keywords.JSON.equals(inputType)
+//						&& !Keywords.JSON.equals(inputType)
 						) {
 
 					result.put(expandedProperty, expandedValue);
@@ -557,7 +557,7 @@ public final class MapExpansionStep1314 {
 
 			// 13.6.
 			if (keyTermDefinition != null && Keywords.JSON.equals(keyTermDefinition.getTypeMapping())) {
-				
+
 				expandedValue = Json.createObjectBuilder()
 									.add(Keywords.VALUE, value)
 									.add(Keywords.TYPE, Json.createValue(Keywords.JSON))

@@ -271,31 +271,29 @@ public final class MapExpansion {
 
 			// 15.2.
 			JsonValue type = result.get(Keywords.TYPE);
-			
-			if (!JsonUtils.contains(Keywords.JSON, type)) {
+	
+			JsonValue value = result.get(Keywords.VALUE);
+		
+			if (JsonUtils.contains(Keywords.JSON, type)) {
 								
-				JsonValue value = result.get(Keywords.VALUE);
+			// 15.3.
+			} else if (value == null || ValueType.NULL.equals(value.getValueType())
+					|| (ValueType.ARRAY.equals(value.getValueType()) && value.asJsonArray().isEmpty())
+					) {
+				return JsonValue.NULL;
 				
-				// 15.3.
-				if (value == null || ValueType.NULL.equals(value.getValueType())
-						|| (ValueType.ARRAY.equals(value.getValueType()) && value.asJsonArray().isEmpty())
-						) {
-					return JsonValue.NULL;
-					
 
-				// 15.4
-				} else if (!ValueType.STRING.equals(value.getValueType()) && result.containsKey(Keywords.LANGUAGE))  {
-					throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
+			// 15.4
+			} else if (!ValueType.STRING.equals(value.getValueType()) && result.containsKey(Keywords.LANGUAGE))  {
+				throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
 
-				// 15.5			
-				} else if (result.containsKey(Keywords.TYPE)
-						&& (!ValueType.STRING.equals(type.getValueType())
-						|| UriUtils.isNotURI(((JsonString)type).getString()))
-						){
-					throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE);
-				}
+			// 15.5			
+			} else if (result.containsKey(Keywords.TYPE)
+					&& (!ValueType.STRING.equals(type.getValueType())
+					|| UriUtils.isNotURI(((JsonString)type).getString()))
+					){
+				throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE);
 			}
-
 			
 		// 16. Otherwise, if result contains the entry @type and its associated value is not an array, 
 		//	   set it to an array containing only the associated value.
