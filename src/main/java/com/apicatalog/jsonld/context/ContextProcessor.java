@@ -225,7 +225,7 @@ public class ContextProcessor {
 									.remoteContexts(new ArrayList<>(remoteContexts))
 									.validateScopedContext(validateScopedContext)
 									.compute();
-				} catch (URISyntaxException | JsonLdError e) {
+				} catch (URISyntaxException/* | JsonLdError*/ e) {
 					throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
 				}
 				

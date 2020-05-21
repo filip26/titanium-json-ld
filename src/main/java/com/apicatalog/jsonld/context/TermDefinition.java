@@ -3,6 +3,7 @@ package com.apicatalog.jsonld.context;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 import javax.json.JsonValue;
 
@@ -110,4 +111,18 @@ public class TermDefinition {
 	public void setIndexMapping(String indexMapping) {
 		this.indexMapping = indexMapping;
 	}
+	
+	public boolean isNotSameExceptProtected(TermDefinition ref) {
+		
+		return !Objects.equals(uriMapping, ref.uriMapping)
+				|| !Objects.equals(prefixFlag, ref.prefixFlag)
+				|| ! Objects.equals(reversePropertyFlag, ref.reversePropertyFlag)
+				;
+		
+		//TODO compare other values?!
+		
+	}
+	
+	
+	
 }

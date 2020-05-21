@@ -713,9 +713,11 @@ public final class TermDefinitionBuilder {
 		}			
 		
 		// 27.
-		if (overrideProtectedFlag && previousDefinition != null && previousDefinition.protectedFlag) {
+		if (!overrideProtectedFlag && previousDefinition != null && previousDefinition.protectedFlag) {
 			// 27.1.
-			//TODO
+			if (definition.isNotSameExceptProtected(previousDefinition)) {
+				throw new JsonLdError(JsonLdErrorCode.PROTECTED_TERM_REDEFINITION);
+			}
 			
 			// 27.2.
 			definition = previousDefinition;
