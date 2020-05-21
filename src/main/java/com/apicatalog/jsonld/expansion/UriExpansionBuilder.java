@@ -170,7 +170,7 @@ public final class UriExpansionBuilder {
 		// 7. If vocab is true, and active context has a vocabulary mapping, 
 		//    return the result of concatenating the vocabulary mapping with value.
 		if (vocab && activeContext.getVocabularyMapping() != null) {
-			return activeContext.getVocabularyMapping().toString().concat(value);
+			return activeContext.getVocabularyMapping().concat(value);
 			
 		// 8.
 		} else if (documentRelative) {			

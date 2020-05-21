@@ -1,6 +1,6 @@
 package com.apicatalog.jsonld;
 
-import static org.junit.Assume.assumeTrue;
+import static org.junit.Assume.assumeFalse;
 
 import java.io.IOException;
 import java.net.URI;
@@ -49,7 +49,7 @@ public class JsonLdProcessorExpandTest {
 	public void testExpand() throws IOException, JsonLdError {
 
 		// skip specVersion == 1.0
-		assumeTrue(Version.V1_1.equals(testDefinition.specVersion) || testDefinition.specVersion == null);
+		assumeFalse(Version.V1_0.equals(testDefinition.specVersion));
 
 		Map<String, Object> properties = new HashMap<>(1);
 		properties.put(JsonGenerator.PRETTY_PRINTING, true);
@@ -98,9 +98,9 @@ public class JsonLdProcessorExpandTest {
 			
 			final JsonValue expected = parser.getValue();
 			
-			JsonWriter jsonWriter2 = writerFactory.createWriter(System.out);
-			jsonWriter2.write(result);
-			jsonWriter2.close();
+//			JsonWriter jsonWriter2 = writerFactory.createWriter(System.out);
+//			jsonWriter2.write(result);
+//			jsonWriter2.close();
 			
 			Assert.assertEquals(expected, result);
 

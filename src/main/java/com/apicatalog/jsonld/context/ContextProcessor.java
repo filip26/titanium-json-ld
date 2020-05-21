@@ -393,9 +393,9 @@ public class ContextProcessor {
 																.vocab(true)
 																.documentRelative(true)
 																.build();
-
-						if (UriUtils.isURI(vocabularyMapping) /*|| CompactUri.isBlankNode(valueString)*/) {
-							result.vocabularyMapping = URI.create(vocabularyMapping);
+//System.out.println(">> " + vocabularyMapping);
+						if (UriUtils.isURI(vocabularyMapping) || CompactUri.isBlankNode(valueString)) {
+							result.vocabularyMapping = vocabularyMapping;
 							
 						} else {
 							throw new JsonLdError(JsonLdErrorCode.INVALID_VOCAB_MAPPING);

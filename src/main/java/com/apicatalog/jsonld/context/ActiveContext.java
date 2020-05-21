@@ -34,7 +34,7 @@ public class ActiveContext {
 	ActiveContext previousContext;
 	
 	// an optional vocabulary mapping
-	URI vocabularyMapping;
+	String vocabularyMapping;
 	
 	// an optional default language 
 	String defaultLanguage;
@@ -111,7 +111,7 @@ public class ActiveContext {
 		return baseUri;
 	}
 	
-	public URI getVocabularyMapping() {
+	public String getVocabularyMapping() {
 		return vocabularyMapping;
 	}
 
