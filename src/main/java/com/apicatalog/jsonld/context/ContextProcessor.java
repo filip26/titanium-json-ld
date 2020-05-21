@@ -157,10 +157,12 @@ public class ContextProcessor {
 				// 5.2.1
 				if (baseUrl != null) {
 					contextUri = UriResolver.resolve(baseUrl, ((JsonString)itemContext).getString());
-				}
-				
-				if (UriUtils.isNotURI(contextUri)) {
+				} else if (UriUtils.isNotURI(contextUri)) {
 					throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+				}
+
+				if (UriUtils.isNotAbsoluteURI(contextUri)) {
+					throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED);
 				}
 				
 				// 5.2.2
