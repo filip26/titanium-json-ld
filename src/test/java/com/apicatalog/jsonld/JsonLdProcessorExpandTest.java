@@ -50,7 +50,7 @@ public class JsonLdProcessorExpandTest {
 
 		// skip specVersion == 1.0
 		assumeFalse(Version.V1_0.equals(testDefinition.specVersion));
-
+		
 		Map<String, Object> properties = new HashMap<>(1);
 		properties.put(JsonGenerator.PRETTY_PRINTING, true);
 

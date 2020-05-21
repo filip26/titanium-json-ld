@@ -118,7 +118,7 @@ public final class MapExpansionStep1314 {
 		Map<String, JsonValue> reverseMap = null;
 
 		for (final String key : keys) {
-			
+
 			// 13.1.
 			if (Keywords.CONTEXT.equals(key)) {
 				continue;
@@ -159,7 +159,7 @@ public final class MapExpansionStep1314 {
 				
 				// 13.4.3
 				if (Keywords.ID.equals(expandedProperty)) {
-					
+
 					// 13.4.3.1
 					if (!ValueType.STRING.equals(value.getValueType())) {
 						//TODO frameExpansion
@@ -175,14 +175,15 @@ public final class MapExpansionStep1314 {
 												.build(); 
 
 						if (expandedStringValue != null) {
-							expandedValue = Json.createValue(expandedStringValue);
+							expandedValue =  Json.createValue(expandedStringValue);
 						}
 						//TODO frameExpansion
 					}	
 				}
-				
+
 				// 13.4.4
 				if (Keywords.TYPE.equals(expandedProperty)) {
+					
 					// 13.4.4.1
 					if (((!frameExpansion 
 							&& JsonUtils.isNotString(value) && JsonUtils.isNotArray(value))
@@ -259,15 +260,14 @@ public final class MapExpansionStep1314 {
 					// 13.4.4.5
 					if (result.containsKey(Keywords.TYPE)) {
 						
-						JsonValue type = result.get(Keywords.TYPE);
-						
-						if (ValueType.ARRAY.equals(type.getValueType())) {
+						JsonValue typeValue = result.get(Keywords.TYPE);
+
+						if (JsonUtils.isArray(typeValue)) {
 							
-							expandedValue = Json.createArrayBuilder(type.asJsonArray()).add(expandedValue).build();
+							expandedValue = Json.createArrayBuilder(typeValue.asJsonArray()).add(expandedValue).build();
 						} else {
-							expandedValue = Json.createArrayBuilder().add(value).add(expandedValue).build();
+							expandedValue = Json.createArrayBuilder().add(expandedValue).build();
 						}
-						
 					}
 				}
 				
@@ -519,13 +519,13 @@ public final class MapExpansionStep1314 {
 
 					System.out.println("TODO " + expandedProperty + ", " + expandedValue);					
 				}
-
+				
 				// 13.4.16
-				if (!ValueType.NULL.equals(expandedValue.getValueType())
+				if (JsonUtils.isNotNull(expandedValue)
 //FIXME?!						&& Keywords.VALUE.equals(expandedProperty.get())
 						&& !Keywords.JSON.equals(inputType)
 						) {
-					
+
 					result.put(expandedProperty, expandedValue);
 				}
 				
@@ -533,7 +533,6 @@ public final class MapExpansionStep1314 {
 				continue;
 			}
 
-			
 			// 13.5.
 			TermDefinition keyTermDefinition = activeContext.getTerm(key);
 
@@ -632,7 +631,7 @@ public final class MapExpansionStep1314 {
 						expandedValue = Json.createArrayBuilder(expandedValue.asJsonArray()).add(langMap).build();
 					}
 				}
-				
+
 			// 13.8.
 			} else if (
 					(containerMapping.contains(Keywords.INDEX)
@@ -643,7 +642,7 @@ public final class MapExpansionStep1314 {
 
 				// 13.8.1.
 				expandedValue = Json.createArrayBuilder().build();
-				
+	
 				// 13.8.2.
 				String indexKey = null;
 				
@@ -782,21 +781,28 @@ public final class MapExpansionStep1314 {
 							
 							JsonValue existingType = item.asJsonObject().get(Keywords.TYPE);
 							if (JsonUtils.isNotNull(existingType)) {
-								types.add(existingType);
+								
+								if (JsonUtils.isArray(existingType)) {
+									
+									existingType.asJsonArray().stream().forEach(types::add);
+									
+								} else {
+									types.add(existingType);
+								}
 							}
-							
-							item = Json
-									.createObjectBuilder(item.asJsonObject()).add(Keywords.TYPE, types).build();							
-						}
 
+							item = Json
+									.createObjectBuilder(item.asJsonObject()).add(Keywords.TYPE, types).build();
+							
+						}
 						// 13.8.3.7.6.
-						expandedValue = Json.createArrayBuilder(expandedValue.asJsonArray()).add(item).build();
-						
+						expandedValue = Json.createArrayBuilder(expandedValue.asJsonArray()).add(item).build();					
 					}
 				}
-								
+
 			// 13.9.
 			} else {
+
 				expandedValue =  
 					Expansion
 						.with(activeContext, value, key, baseUrl)
@@ -804,10 +810,11 @@ public final class MapExpansionStep1314 {
 						.frameExpansion(frameExpansion)
 						.ordered(ordered)
 						.compute();
+
 			}
 			
 			// 13.10.
-			if (ValueType.NULL.equals(expandedValue.getValueType())) {
+			if (JsonUtils.isNull(expandedValue)) {
 				continue;
 			}
 			
@@ -875,7 +882,7 @@ public final class MapExpansionStep1314 {
 				MapExpansion.addValue(result, expandedProperty, expandedValue, true);
 			}
 		}
-		
+	
 		// 14.
 		List<String> nestedKeys = new ArrayList<>(nest.keySet());
 		
@@ -925,5 +932,6 @@ public final class MapExpansionStep1314 {
 						.compute();
 			}			
 		}
+
 	}
 }

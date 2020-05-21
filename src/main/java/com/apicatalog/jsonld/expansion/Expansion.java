@@ -88,7 +88,7 @@ public final class Expansion {
 		// 4. If element is a scalar
 		if (JsonUtils.isScalar(element)) {
 			
-			return ScalarExpansion
+			return ScalarExpansionBuilder
 						.with(activeContext, propertyContext, element, activeProperty)
 						.documentLoader(documentLoader)
 						.compute();

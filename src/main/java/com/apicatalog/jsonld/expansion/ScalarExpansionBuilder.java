@@ -15,7 +15,7 @@ import com.apicatalog.jsonld.loader.LoadDocumentCallback;
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#expansion-algorithm">Expansion Algorithm</a>
  *
  */
-public final class ScalarExpansion {
+public final class ScalarExpansionBuilder {
 
 	// mandatory
 	private ActiveContext activeContext;
@@ -25,18 +25,18 @@ public final class ScalarExpansion {
 	
 	private LoadDocumentCallback documentLoader;
 	
-	private ScalarExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final JsonValue element, final String activeProperty) {
+	private ScalarExpansionBuilder(final ActiveContext activeContext, final JsonValue propertyContext, final JsonValue element, final String activeProperty) {
 		this.activeContext = activeContext;
 		this.propertyContext = propertyContext;
 		this.element = element;
 		this.activeProperty = activeProperty;		
 	}
 	
-	public static final ScalarExpansion with(final ActiveContext activeContext, final JsonValue propertyContext, final JsonValue element, final String activeProperty) {
-		return new ScalarExpansion(activeContext, propertyContext, element, activeProperty);
+	public static final ScalarExpansionBuilder with(final ActiveContext activeContext, final JsonValue propertyContext, final JsonValue element, final String activeProperty) {
+		return new ScalarExpansionBuilder(activeContext, propertyContext, element, activeProperty);
 	}
 	
-	public ScalarExpansion documentLoader(LoadDocumentCallback documentLoader) {
+	public ScalarExpansionBuilder documentLoader(LoadDocumentCallback documentLoader) {
 		this.documentLoader = documentLoader;
 		return this;
 	}

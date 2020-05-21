@@ -41,7 +41,7 @@ public final class ValueExpansionBuilder {
 		final String typeMapping = (definition != null) ? definition.getTypeMapping() : null;
 
 		if (typeMapping != null) {
-			
+
 			// 1.
 			if (Keywords.ID.equals(typeMapping) && JsonUtils.isString(value)) {
 				
