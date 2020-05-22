@@ -14,34 +14,34 @@ import com.apicatalog.jsonld.utils.JsonUtils;
 public class DocumentReader implements Document {
 
 	private final Reader reader;
-	
+
 	public DocumentReader(final Reader reader) {
 		this.reader = reader;
 	}
-	
+
 	@Override
 	public JsonStructure asJsonStructure() throws JsonLdError {
 
-	   try (final JsonParser parser = Json.createParser(reader)) {
-		
-		   if (!parser.hasNext()) {
-			   throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
-		   }
-		   
-		   parser.next();
-		   
-		   JsonValue root = parser.getValue();
-			
+		try (final JsonParser parser = Json.createParser(reader)) {
+
+			if (!parser.hasNext()) {
+				throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+			}
+
+			parser.next();
+
+			JsonValue root = parser.getValue();
+
 			if (JsonUtils.isArray(root)) {
 				return root.asJsonArray();
 			}
-			
+
 			if (JsonUtils.isObject(root)) {
-				return root.asJsonObject();			
+				return root.asJsonObject();
 			}
-			
+
 			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
-	   }
+		}
 	}
-	
+
 }

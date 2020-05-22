@@ -5,10 +5,12 @@ import java.net.URL;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 
 /**
- * The {@link RemoteDocument} is used by a {@link LoadDocumentCallback}
- * to return information about a remote document or context.
+ * The {@link RemoteDocument} is used by a {@link LoadDocumentCallback} to
+ * return information about a remote document or context.
  * 
- * @see <a href="https://www.w3.org/TR/json-ld11-api/#remotedocument">RemoteDocument Specification</a>
+ * @see <a href=
+ *      "https://www.w3.org/TR/json-ld11-api/#remotedocument">RemoteDocument
+ *      Specification</a>
  *
  */
 public interface RemoteDocument {
@@ -20,29 +22,32 @@ public interface RemoteDocument {
 	 * @return
 	 */
 	String getContextType();
-	
+
 	/**
 	 * 
 	 * @return
 	 */
 	URL getContextUrl();
-	
+
 	/**
-	 * The final URL of the loaded document. This is important to handle HTTP redirects properly.
+	 * The final URL of the loaded document. This is important to handle HTTP
+	 * redirects properly.
 	 * 
 	 * @return
 	 */
 	URL getDocumentUrl();
-	
+
 	/**
-	 * The value of any <code>profile</code> parameter retrieved as part of the original {@link #getContextType()}.
+	 * The value of any <code>profile</code> parameter retrieved as part of the
+	 * original {@link #getContextType()}.
 	 * 
 	 * @return
 	 */
 	String getProfile();
-	
+
 	/**
-	 * The retrieved document. This can either be the raw payload or the already parsed document.
+	 * The retrieved document. This can either be the raw payload or the already
+	 * parsed document.
 	 * 
 	 * @return
 	 */

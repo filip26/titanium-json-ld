@@ -28,68 +28,62 @@ public class ExpansionProcessor {
 
 	ExpansionProcessor() {
 	}
-	
+
 	public static JsonArray expand(JsonStructure input, JsonLdOptions options) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public static final JsonArray expand(final URI input, final JsonLdOptions options) throws JsonLdError {
-		
+
 		if (options.getDocumentLoader() == null) {
 			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
 		}
-		
+
 		try {
-			 
-			final RemoteDocument remoteDocument = 
-					options
-						.getDocumentLoader()
-							.loadDocument(
-									input.toURL(), 
-									new LoadDocumentOptions()
-										.setExtractAllScripts(options.isExtractAllScripts())
-									);
-			
+
+			final RemoteDocument remoteDocument = options.getDocumentLoader().loadDocument(input.toURL(),
+					new LoadDocumentOptions().setExtractAllScripts(options.isExtractAllScripts()));
+
 			return expand(remoteDocument, options);
-			
+
 		} catch (MalformedURLException e) {
 			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
 		}
 	}
 
-	
 	public static final JsonArray expand(RemoteDocument input, final JsonLdOptions options) throws JsonLdError {
 
 		final JsonStructure jsonStructure = input.getDocument().asJsonStructure();
-		
-		// 5. Initialize a new empty active context. The base IRI and 
-		//    original base URL of the active context is set to the documentUrl 
-		//    from remote document, if available; otherwise to the base option from options.
-		//    If set, the base option from options overrides the base IRI.
+
+		// 5. Initialize a new empty active context. The base IRI and
+		// original base URL of the active context is set to the documentUrl
+		// from remote document, if available; otherwise to the base option from
+		// options.
+		// If set, the base option from options overrides the base IRI.
 
 		URI baseUri = options.getBaseURI();
 
 		if (baseUri == null) {
 			try {
 				baseUri = input.getDocumentUrl().toURI();
-			 
+
 			} catch (URISyntaxException e) {
 				throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
 			}
 		}
 
 		ActiveContext activeContext = new ActiveContext(baseUri, baseUri, options.getProcessingMode());
-			
-		
-		// 6. If the expandContext option in options is set, update the active context 
-		//    using the Context Processing algorithm, passing the expandContext as 
-		//    local context and the original base URL from active context as base URL. 
-		//    If expandContext is a map having an @context entry, pass that entry's value instead for local context.
-		//TODO
-		
+
+		// 6. If the expandContext option in options is set, update the active context
+		// using the Context Processing algorithm, passing the expandContext as
+		// local context and the original base URL from active context as base URL.
+		// If expandContext is a map having an @context entry, pass that entry's value
+		// instead for local context.
+		// TODO
+
 		URI baseUrl = null;
-		
+
 		if (input.getDocumentUrl() != null) {
 			try {
 				baseUrl = input.getDocumentUrl().toURI();
@@ -97,34 +91,30 @@ public class ExpansionProcessor {
 				throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
 			}
 		}
-		
+
 		if (baseUrl == null) {
 			baseUrl = options.getBaseURI();
 		}
-	
-		JsonValue expanded = 
-				Expansion
-					.with(activeContext,jsonStructure, null, baseUrl)
-					.documentLoader(options.getDocumentLoader())
-					.frameExpansion(options.isFrameExpansion())
-					.ordered(options.isOrdered())
-					.compute();
+
+		JsonValue expanded = Expansion.with(activeContext, jsonStructure, null, baseUrl)
+				.documentLoader(options.getDocumentLoader()).frameExpansion(options.isFrameExpansion())
+				.ordered(options.isOrdered()).compute();
 
 		// 8.1
 		if (JsonUtils.isObject(expanded)) {
-			
+
 			final JsonObject object = expanded.asJsonObject();
-			
+
 			if (object.size() == 1 && object.containsKey(Keywords.GRAPH)) {
-				expanded = object.get(Keywords.GRAPH); 
+				expanded = object.get(Keywords.GRAPH);
 			}
 		}
-		
+
 		// 8.2
 		if (JsonUtils.isNull(expanded)) {
 			return JsonValue.EMPTY_JSON_ARRAY;
 		}
-		
+
 		// 8.3
 		return JsonUtils.asArray(expanded);
 	}

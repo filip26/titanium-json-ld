@@ -30,20 +30,15 @@ public class RemoteLocation implements JsonLdInput {
 		if (options.getDocumentLoader() == null) {
 			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
 		}
-		
+
 		try {
-						 
-			return new DocumentInput(options
-					.getDocumentLoader()
-						.loadDocument(
-								documentUri.toURL(), 
-								new LoadDocumentOptions()
-									.setExtractAllScripts(options.isExtractAllScripts())
-								));
-			
+
+			return new DocumentInput(options.getDocumentLoader().loadDocument(documentUri.toURL(),
+					new LoadDocumentOptions().setExtractAllScripts(options.isExtractAllScripts())));
+
 		} catch (MalformedURLException e) {
 			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
 		}
 	}
-	
+
 }

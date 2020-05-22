@@ -18,19 +18,19 @@ public class FileDocumentLoader implements LoadDocumentCallback {
 		if (!"file".equalsIgnoreCase(url.getProtocol())) {
 			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
 		}
-		
+
 		try {
 			DocumentReader document = new DocumentReader(new FileReader(url.getFile()));
-			
+
 			RemoteDocumentImpl remoteDocument = new RemoteDocumentImpl();
 			remoteDocument.setDocument(document);
 			remoteDocument.setDocumentUrl(url);
-			
+
 			return remoteDocument;
-	
+
 		} catch (IOException e) {
 			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
-		}		
+		}
 	}
 
 }

@@ -3,7 +3,9 @@ package com.apicatalog.rdf;
 /**
  * The {@link RdfTriple} interface describes an triple.
  * 
- * @see <a href="https://www.w3.org/TR/json-ld11-api/#webidl-1589662450">RdfTriple IDL</a>
+ * @see <a href=
+ *      "https://www.w3.org/TR/json-ld11-api/#webidl-1589662450">RdfTriple
+ *      IDL</a>
  *
  */
 public interface RdfTriple {
@@ -14,5 +16,5 @@ public interface RdfTriple {
 	 * @return
 	 */
 	String getSubject();
-	
+
 }

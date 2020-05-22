@@ -6,7 +6,7 @@ import com.apicatalog.jsonld.document.RemoteDocument;
 public class DocumentInput implements JsonLdInput {
 
 	private final RemoteDocument remoteDocument;
-	
+
 	public DocumentInput(final RemoteDocument remoteDocument) {
 		this.remoteDocument = remoteDocument;
 	}
@@ -15,7 +15,7 @@ public class DocumentInput implements JsonLdInput {
 	public Type getType() {
 		return Type.DOCUMENT;
 	}
-	
+
 	public RemoteDocument getRemoteDocument() {
 		return remoteDocument;
 	}

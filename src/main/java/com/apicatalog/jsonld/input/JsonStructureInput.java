@@ -8,7 +8,7 @@ public class JsonStructureInput implements JsonLdInput {
 
 	private final JsonStructure jsonStructure;
 //TODO	private final Type type;
-	
+
 	public JsonStructureInput(JsonStructure jsonStructure) {
 		this.jsonStructure = jsonStructure;
 	}
@@ -18,7 +18,7 @@ public class JsonStructureInput implements JsonLdInput {
 		// TODO Auto-generated method stub
 		return Type.RECORD;
 	}
-	
+
 	public JsonStructure getJsonStructure() {
 		return jsonStructure;
 	}

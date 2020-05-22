@@ -9,25 +9,24 @@ import com.apicatalog.jsonld.input.JsonStructureInput;
 import com.apicatalog.jsonld.input.RemoteLocation;
 
 /**
- * The {@link JsonLdInput} interface is used to refer to an 
- * input value that that may be a {@link JsonStructure}, {@link URI},
- * which can be dereferenced to retrieve a valid JSON document, or 
- * an already dereferenced {@link RemoteDocument}.
+ * The {@link JsonLdInput} interface is used to refer to an input value that
+ * that may be a {@link JsonStructure}, {@link URI}, which can be dereferenced
+ * to retrieve a valid JSON document, or an already dereferenced
+ * {@link RemoteDocument}.
  * 
- * @see <a href="https://www.w3.org/TR/json-ld11-api/#webidl-295859679">JsonLdInput IDL</a>
+ * @see <a href=
+ *      "https://www.w3.org/TR/json-ld11-api/#webidl-295859679">JsonLdInput
+ *      IDL</a>
  *
  */
 public interface JsonLdInput {
 
 	public enum Type {
-		RECORD,
-		ARRAY,
-		LOCATION,
-		DOCUMENT
+		RECORD, ARRAY, LOCATION, DOCUMENT
 	}
-	
+
 	Type getType();
-	
+
 //	JsonObject asRecord();
 //	
 //	JsonArray asSequence();
@@ -35,9 +34,9 @@ public interface JsonLdInput {
 //	URI asUri();
 //	
 //	RemoteDocument asDocument();
-	
+
 //	JsonValue asJsonValue(final JsonLdOptions options) throws JsonLdError;
-	
+
 	public static JsonLdInput of(JsonStructure jsonStructure) {
 		return new JsonStructureInput(jsonStructure);
 	}

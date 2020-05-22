@@ -7,7 +7,7 @@ import com.apicatalog.jsonld.grammar.Version;
 public final class JsonLdOptionsBuilder {
 
 	JsonLdOptions options;
-	
+
 	public JsonLdOptionsBuilder() {
 		this.options = new JsonLdOptions(JsonLdOptions.DEFAULT);
 	}
@@ -16,7 +16,7 @@ public final class JsonLdOptionsBuilder {
 		options.setBaseUri(value);
 		return this;
 	}
-		
+
 	public JsonLdOptions create() {
 		return options;
 	}
@@ -25,7 +25,7 @@ public final class JsonLdOptionsBuilder {
 		options.setProcessingMode(processingMode);
 		return this;
 	}
-	
+
 	public JsonLdOptionsBuilder ordered(boolean ordered) {
 		options.setOrdered(ordered);
 		return this;

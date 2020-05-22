@@ -1,6 +1,5 @@
 package com.apicatalog.jsonld.impl;
 
-
 import java.net.URI;
 import java.util.Collection;
 
@@ -36,7 +35,7 @@ public class DefaultJsonLdProcessor implements JsonLdProcessor {
 
 	@Override
 	public JsonObject compact(JsonLdInput input, JsonLdContext context, JsonLdOptions options) throws JsonLdError {
-		//TODO
+		// TODO
 		return null;
 	}
 

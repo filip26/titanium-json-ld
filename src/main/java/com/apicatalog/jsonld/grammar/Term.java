@@ -9,22 +9,22 @@ public final class Term {
 
 	Term() {
 	}
-	
+
 	public static final boolean isTerm(final String name) {
 
 		if ((name == null) || name.isBlank()) {
 			return false;
 		}
-		
+
 		if (Keywords.hasForm(name)) {
 			return Keywords.TYPE.equals(name);
 		}
-		
+
 //TODO 		if (name.contains(":")) {
 //			throw new IllegalArgumentException("A term should not include a colon (:)");
 //		}
-		
+
 		return true;
 	}
-		
+
 }

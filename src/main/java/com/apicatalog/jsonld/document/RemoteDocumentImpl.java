@@ -6,9 +6,9 @@ public class RemoteDocumentImpl implements RemoteDocument {
 
 	private String contextType;
 	private URL contextUrl;
-	
+
 	private Document document;
-	
+
 	private URL documentUrl;
 	private String profile;
 
@@ -36,13 +36,13 @@ public class RemoteDocumentImpl implements RemoteDocument {
 	public Document getDocument() {
 		return document;
 	}
-	
+
 	public void setDocument(Document document) {
 		this.document = document;
 	}
-	
+
 	public void setDocumentUrl(URL documentUrl) {
 		this.documentUrl = documentUrl;
 	}
-	
+
 }

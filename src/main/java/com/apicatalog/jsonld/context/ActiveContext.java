@@ -15,36 +15,38 @@ import com.apicatalog.jsonld.grammar.DirectionType;
 import com.apicatalog.jsonld.grammar.Version;
 
 /**
- * A context that is used to resolve terms while the processing algorithm is running.
+ * A context that is used to resolve terms while the processing algorithm is
+ * running.
  * 
  */
 public final class ActiveContext {
 
-	// the active term definitions which specify how keys and values have to be interpreted
+	// the active term definitions which specify how keys and values have to be
+	// interpreted
 	Map<String, TermDefinition> terms;
-	
-	// the current base IRI 
+
+	// the current base IRI
 	URI baseUri;
-	
+
 	// the original base URL
 	URI baseUrl;
-	
-	Object inverseContext;	//TODO
-	
+
+	Object inverseContext; // TODO
+
 	// an optional previous context, used when a non-propagated context is defined.
 	ActiveContext previousContext;
-	
+
 	// an optional vocabulary mapping
 	String vocabularyMapping;
-	
-	// an optional default language 
+
+	// an optional default language
 	String defaultLanguage;
-	
+
 	// an optional default base direction ("ltr" or "rtl")
 	DirectionType defaultBaseDirection;
-	
+
 	Version processingMode;
-	
+
 	public ActiveContext(final URI baseUri, final URI baseUrl, Version processingMode) {
 		this.baseUri = baseUri;
 		this.baseUrl = baseUrl;
@@ -52,7 +54,8 @@ public final class ActiveContext {
 		this.processingMode = processingMode;
 	}
 
-	public ActiveContext(final URI baseUri, final URI baseUrl, final ActiveContext previousContext, Version processingMode) {
+	public ActiveContext(final URI baseUri, final URI baseUrl, final ActiveContext previousContext,
+			Version processingMode) {
 		this.baseUri = baseUri;
 		this.baseUrl = baseUrl;
 		this.previousContext = previousContext;
@@ -62,7 +65,7 @@ public final class ActiveContext {
 
 	// copy constructor
 	public ActiveContext(final ActiveContext origin) {
-		this.terms =  new LinkedHashMap<>(origin.terms);
+		this.terms = new LinkedHashMap<>(origin.terms);
 		this.baseUri = origin.baseUri;
 		this.baseUrl = origin.baseUrl;
 		this.inverseContext = origin.inverseContext;
@@ -88,7 +91,7 @@ public final class ActiveContext {
 			terms.remove(term);
 			return def;
 		}
-		
+
 		return null;
 	}
 
@@ -98,20 +101,20 @@ public final class ActiveContext {
 
 	public TermDefinition getTerm(String value) {
 		return terms.get(value);
-	}	
-	
+	}
+
 	public DirectionType getDefaultBaseDirection() {
 		return defaultBaseDirection;
 	}
-	
+
 	public String getDefaultLanguage() {
 		return defaultLanguage;
 	}
-	
+
 	public URI getBaseUri() {
 		return baseUri;
 	}
-	
+
 	public String getVocabularyMapping() {
 		return vocabularyMapping;
 	}
@@ -123,23 +126,23 @@ public final class ActiveContext {
 	public boolean hasPreviousContext() {
 		return previousContext != null;
 	}
-	
+
 	public ActiveContext getPreviousContext() {
 		return previousContext;
 	}
-	
+
 	public ValueExpansionBuilder expandValue(final JsonValue element, final String activeProperty) throws JsonLdError {
 		return ValueExpansionBuilder.with(this, element, activeProperty);
 	}
-	
+
 	public UriExpansionBuilder expandUri(final String value) {
 		return UriExpansionBuilder.with(this, value);
 	}
-	
+
 	public TermDefinitionBuilder createTerm(JsonObject localContext, String term, Map<String, Boolean> defined) {
 		return TermDefinitionBuilder.with(this, localContext, term, defined);
 	}
-	
+
 	public ActiveContextBuilder create(final JsonValue localContext, final URI baseUrl) {
 		return ActiveContextBuilder.with(this, localContext, baseUrl);
 	}
