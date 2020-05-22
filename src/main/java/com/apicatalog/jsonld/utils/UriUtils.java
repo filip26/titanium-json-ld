@@ -10,6 +10,7 @@ public class UriUtils {
 	}
 
 	public static boolean isURI(String value) {
+				
 		try {
 
 			// TODO ':' 1-length-1 indices only

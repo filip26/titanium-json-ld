@@ -22,6 +22,11 @@ public final class UriResolver {
 			return relative;
 		}
 
+		//FIXME hack
+		if (relative.endsWith(":")) {
+			relative = relative + ".";
+		}
+		
 		URI components = URI.create(relative);
 
 		String scheme = null;

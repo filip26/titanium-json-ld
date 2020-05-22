@@ -373,6 +373,7 @@ public class ActiveContextBuilder {
 
 			// 5.8.
 			if (contextDefinition.containsKey(Keywords.VOCAB)) {
+				
 				// 5.8.1.
 				JsonValue value = contextDefinition.get(Keywords.VOCAB);
 
@@ -380,7 +381,7 @@ public class ActiveContextBuilder {
 				if (JsonUtils.isNull(value)) {
 					result.vocabularyMapping = null;
 
-					// 5.8.3
+				// 5.8.3
 				} else {
 
 					if (JsonUtils.isNotString(value)) {
@@ -389,12 +390,14 @@ public class ActiveContextBuilder {
 
 					String valueString = ((JsonString) value).getString();
 
-					if (UriUtils.isURI(valueString) || valueString.isBlank() || CompactUri.isBlankNode(valueString)) {
+					//FIXME hack -  ex: prefixes paas
+					if (valueString.indexOf(':', 1) != -1 || UriUtils.isURI(valueString) || valueString.isBlank() || CompactUri.isBlankNode(valueString)) {
 
 						String vocabularyMapping = UriExpansionBuilder.with(result, valueString).vocab(true)
 								.documentRelative(true).build();
 
-						if (UriUtils.isURI(vocabularyMapping) || CompactUri.isBlankNode(valueString)) {
+						//FIXME hack -  ex: prefixes paas
+						if (valueString.indexOf(':', 1) != -1 || UriUtils.isURI(vocabularyMapping) || CompactUri.isBlankNode(valueString)) {
 							result.vocabularyMapping = vocabularyMapping;
 
 						} else {
