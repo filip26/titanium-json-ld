@@ -3,6 +3,8 @@ package com.apicatalog.jsonld.api;
 import java.net.URI;
 import java.util.Optional;
 
+import javax.json.JsonObject;
+
 import com.apicatalog.jsonld.grammar.Version;
 import com.apicatalog.jsonld.loader.FileDocumentLoader;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
@@ -19,11 +21,39 @@ public final class JsonLdOptions {
 
 	public static final JsonLdOptions DEFAULT = new JsonLdOptions();
 
+	/**
+	 * The base IRI to use when expanding or compacting the document. 
+	 * If set, this overrides the input document's IRI.
+	 */
 	private URI baseUri;
+	
+	/**
+	 * If set to true, the JSON-LD processor replaces arrays with 
+	 * just one element with that element during compaction. 
+	 * If set to false, all arrays will remain arrays 
+	 * even if they have just one element.
+	 */
 	private boolean compactArrays;
+	
+	/**
+	 * Determines if IRIs are compacted relative to the base option 
+	 * or document location when compacting.
+	 */
 	private boolean compactToRelative;
+
+	/**
+	 * The callback of the loader to be used to retrieve remote documents and contexts,
+	 *  implementing the LoadDocumentCallback. If specified, it is used to retrieve 
+	 *  remote documents and contexts; otherwise, if not specified, 
+	 *  the processor's built-in loader is used.
+	 */
 	private LoadDocumentCallback documentLoader;
-	// private final (JsonLdRecord? or USVString) expandContext = null;
+	
+	/**
+	 * A context that is used to initialize the active context when expanding a document.
+	 */
+	private JsonLdContext expandContext;
+	
 	private boolean extractAllScripts;
 	private boolean frameExpansion;
 	private boolean ordered;
@@ -38,6 +68,7 @@ public final class JsonLdOptions {
 		this.compactArrays = true;
 		this.compactToRelative = true;
 		this.documentLoader = new FileDocumentLoader();
+		this.expandContext = null;
 		this.extractAllScripts = false;
 		this.frameExpansion = false;
 		this.ordered = false;
@@ -53,6 +84,7 @@ public final class JsonLdOptions {
 		this.compactArrays = options.compactArrays;
 		this.compactToRelative = options.compactToRelative;
 		this.documentLoader = options.documentLoader;
+		this.expandContext = options.expandContext;
 		this.extractAllScripts = options.extractAllScripts;
 		this.frameExpansion = options.frameExpansion;
 		this.ordered = options.ordered;
@@ -172,6 +204,10 @@ public final class JsonLdOptions {
 	public boolean isUseRdfType() {
 		return useRdfType;
 	}
+	
+	public JsonLdContext getExpandContext() {
+		return expandContext;
+	}
 
 	protected void setBaseUri(URI baseUri) {
 		this.baseUri = baseUri;
@@ -219,6 +255,14 @@ public final class JsonLdOptions {
 
 	protected void setUseRdfType(boolean useRdfType) {
 		this.useRdfType = useRdfType;
+	}
+
+	protected void setExpandContext(URI contextLocation) {
+		this.expandContext = JsonLdContext.of(contextLocation);
+	}
+	
+	protected void setExpandContext(JsonObject contextObject) {
+		this.expandContext = JsonLdContext.of(contextObject);
 	}
 
 }

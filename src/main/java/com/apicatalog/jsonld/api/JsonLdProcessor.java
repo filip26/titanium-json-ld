@@ -42,22 +42,36 @@ public interface JsonLdProcessor {
 	 * @param context
 	 * @param options
 	 * @return
+	 * @throws JsonLdError 
 	 */
 	JsonObject compact(JsonLdInput input, JsonLdContext context, JsonLdOptions options) throws JsonLdError;
 
+	/**
+	 * 
+	 * @param input
+	 * @param options
+	 * @return
+	 * @throws JsonLdError
+	 */
 	JsonArray expand(JsonStructure input, JsonLdOptions options) throws JsonLdError;
 
 	JsonArray expand(RemoteDocument input, JsonLdOptions options) throws JsonLdError;
 
 	JsonArray expand(URI input, JsonLdOptions options) throws JsonLdError;
 
-	JsonObject flatten(JsonLdInput input);
+	/**
+	 * 
+	 * @param input
+	 * @return
+	 * @throws JsonLdError
+	 */
+	JsonObject flatten(JsonLdInput input) throws JsonLdError;;
 
-	JsonObject flatten(JsonLdInput input, JsonLdContext context);
+	JsonObject flatten(JsonLdInput input, JsonLdContext context) throws JsonLdError;
 
-	JsonObject flatten(JsonLdInput input, JsonLdOptions options);
+	JsonObject flatten(JsonLdInput input, JsonLdOptions options) throws JsonLdError;
 
-	JsonObject flatten(JsonLdInput input, JsonLdContext context, JsonLdOptions options);
+	JsonObject flatten(JsonLdInput input, JsonLdContext context, JsonLdOptions options) throws JsonLdError;
 
 	/**
 	 * 
@@ -65,18 +79,18 @@ public interface JsonLdProcessor {
 	 * @return {@link Collection} of {@link JsonObject}
 	 * @throws JsonLdError
 	 */
-	Collection<JsonObject> fromRdf(RdfDataset input);
+	Collection<JsonObject> fromRdf(RdfDataset input) throws JsonLdError;
+
+	Collection<JsonObject> fromRdf(RdfDataset input, JsonLdOptions options) throws JsonLdError;
 
 	/**
 	 * 
 	 * @param input
-	 * @return {@link Collection} of {@link JsonObject}
+	 * @return
 	 * @throws JsonLdError
 	 */
-	Collection<JsonObject> fromRdf(RdfDataset input, JsonLdOptions options);
+	RdfDataset toRdf(JsonLdInput input) throws JsonLdError;
 
-	RdfDataset toRdf(JsonLdInput input);
-
-	RdfDataset toRdf(JsonLdInput input, JsonLdOptions options);
+	RdfDataset toRdf(JsonLdInput input, JsonLdOptions options) throws JsonLdError;
 
 }

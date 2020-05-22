@@ -80,7 +80,15 @@ public class ExpansionProcessor {
 		// local context and the original base URL from active context as base URL.
 		// If expandContext is a map having an @context entry, pass that entry's value
 		// instead for local context.
-		// TODO
+		if (options.getExpandContext() != null) {
+			
+			//TODO @context entry
+			
+			activeContext = activeContext
+								.create(options.getExpandContext().asList().iterator().next(), activeContext.getBaseUri())
+								.build();
+		}
+
 
 		URI baseUrl = null;
 

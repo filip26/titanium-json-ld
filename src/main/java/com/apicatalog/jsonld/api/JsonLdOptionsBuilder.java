@@ -2,6 +2,8 @@ package com.apicatalog.jsonld.api;
 
 import java.net.URI;
 
+import javax.json.JsonObject;
+
 import com.apicatalog.jsonld.grammar.Version;
 
 public final class JsonLdOptionsBuilder {
@@ -28,6 +30,16 @@ public final class JsonLdOptionsBuilder {
 
 	public JsonLdOptionsBuilder ordered(boolean ordered) {
 		options.setOrdered(ordered);
+		return this;
+	}
+
+	public JsonLdOptionsBuilder expandContext(URI contextLocation) {
+		options.setExpandContext(contextLocation);
+		return this;
+	}
+	
+	public JsonLdOptionsBuilder expandContext(JsonObject contextObject) {
+		options.setExpandContext(contextObject);
 		return this;
 	}
 }

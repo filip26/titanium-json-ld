@@ -1,5 +1,13 @@
 package com.apicatalog.jsonld.api;
 
+import java.net.URI;
+import java.util.Collection;
+import java.util.LinkedList;
+
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonValue;
+
 /**
  * The {@link JsonLdContext} interface is used to refer to a value that may be a
  * {@link JsonLdRecord}, a sequence of {@link JsonLdRecord}, or a string
@@ -7,11 +15,37 @@ package com.apicatalog.jsonld.api;
  * valid JSON document.
  * 
  * @see <a href=
- *      "https://www.w3.org/TR/json-ld11-api/#dom-jsonldcontext">JsonLdContext
+ *      "https://www.w3.org/TR/json-ld11-api/#webidl-1159289741">JsonLdContext
  *      Specification</a>
  *
  */
-public interface JsonLdContext {
+public final class JsonLdContext {
 
-	//TODO
+	private final Collection<JsonValue> contexts;
+	
+	protected JsonLdContext() {
+		this.contexts = new LinkedList<>();
+	}
+	
+	public static JsonLdContext of(final URI contextLocation) {
+		return new JsonLdContext().add(contextLocation);
+	}
+
+	public static JsonLdContext of(final JsonObject contextObject) {
+		return new JsonLdContext().add(contextObject);
+	}
+
+	public JsonLdContext add(URI contextLocation) {
+		contexts.add(Json.createValue(contextLocation.toString()));
+		return this;
+	}
+
+	public JsonLdContext add(JsonObject contextObject) {
+		contexts.add(contextObject);
+		return this;
+	}
+
+	public Collection<JsonValue> asList() {
+		return contexts;
+	}
 }
