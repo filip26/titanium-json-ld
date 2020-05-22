@@ -215,7 +215,7 @@ public final class MapExpansion {
 			}
 		}
 
-		MapExpansionStep1314.with(activeContext, element, activeProperty, baseUrl).documentLoader(documentLoader)
+		MapExpansion1314.with(activeContext, element, activeProperty, baseUrl).documentLoader(documentLoader)
 				.inputType(inputType).result(result).typeContext(typeContext).nest(new LinkedHashMap<>())
 				.frameExpansion(frameExpansion).ordered(ordered).compute();
 

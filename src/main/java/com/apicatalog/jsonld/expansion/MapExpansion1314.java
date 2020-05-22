@@ -38,7 +38,7 @@ import com.apicatalog.jsonld.utils.JsonUtils;
  *      Algorithm</a>
  *
  */
-public final class MapExpansionStep1314 {
+final class MapExpansion1314 {
 
 	// mandatory
 	private final ActiveContext activeContext;
@@ -56,7 +56,7 @@ public final class MapExpansionStep1314 {
 	private boolean ordered;
 	private LoadDocumentCallback documentLoader;
 
-	private MapExpansionStep1314(final ActiveContext activeContext, final JsonObject element,
+	private MapExpansion1314(final ActiveContext activeContext, final JsonObject element,
 			final String activeProperty, final URI baseUrl) {
 		this.activeContext = activeContext;
 		this.element = element;
@@ -68,42 +68,42 @@ public final class MapExpansionStep1314 {
 		this.ordered = false;
 	}
 
-	public static final MapExpansionStep1314 with(final ActiveContext activeContext, final JsonObject element,
+	public static final MapExpansion1314 with(final ActiveContext activeContext, final JsonObject element,
 			final String activeProperty, final URI baseUrl) {
-		return new MapExpansionStep1314(activeContext, element, activeProperty, baseUrl);
+		return new MapExpansion1314(activeContext, element, activeProperty, baseUrl);
 	}
 
-	public MapExpansionStep1314 frameExpansion(boolean value) {
+	public MapExpansion1314 frameExpansion(boolean value) {
 		this.frameExpansion = value;
 		return this;
 	}
 
-	public MapExpansionStep1314 ordered(boolean value) {
+	public MapExpansion1314 ordered(boolean value) {
 		this.ordered = value;
 		return this;
 	}
 
-	public MapExpansionStep1314 nest(Map<String, JsonValue> nest) {
+	public MapExpansion1314 nest(Map<String, JsonValue> nest) {
 		this.nest = nest;
 		return this;
 	}
 
-	public MapExpansionStep1314 typeContext(ActiveContext typeContext) {
+	public MapExpansion1314 typeContext(ActiveContext typeContext) {
 		this.typeContext = typeContext;
 		return this;
 	}
 
-	public MapExpansionStep1314 result(Map<String, JsonValue> result) {
+	public MapExpansion1314 result(Map<String, JsonValue> result) {
 		this.result = result;
 		return this;
 	}
 
-	public MapExpansionStep1314 inputType(String inputType) {
+	public MapExpansion1314 inputType(String inputType) {
 		this.inputType = inputType;
 		return this;
 	}
 
-	public MapExpansionStep1314 documentLoader(LoadDocumentCallback documentLoader) {
+	public MapExpansion1314 documentLoader(LoadDocumentCallback documentLoader) {
 		this.documentLoader = documentLoader;
 		return this;
 	}
@@ -835,7 +835,7 @@ public final class MapExpansionStep1314 {
 				}
 
 				// 14.2.2
-				MapExpansionStep1314.with(activeContext, nestValue.asJsonObject(), activeProperty, baseUrl)
+				MapExpansion1314.with(activeContext, nestValue.asJsonObject(), activeProperty, baseUrl)
 						.documentLoader(documentLoader).inputType(inputType).result(result).typeContext(typeContext)
 						.nest(new LinkedHashMap<>()).frameExpansion(frameExpansion).ordered(ordered).compute();
 			}
