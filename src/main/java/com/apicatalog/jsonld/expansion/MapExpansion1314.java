@@ -125,9 +125,13 @@ final class MapExpansion1314 {
 			}
 
 			// 13.2.
-			String expandedProperty = UriExpansionBuilder.with(activeContext, key).documentRelative(false).vocab(true)
-					.build();
-
+			String expandedProperty = 
+						UriExpansionBuilder
+							.with(activeContext, key)
+							.documentRelative(false)
+							.vocab(true)
+							.build();
+	
 			// 13.3.
 			if (expandedProperty == null || (!expandedProperty.contains(":") && !Keywords.contains(expandedProperty))) {
 				continue;
@@ -162,9 +166,12 @@ final class MapExpansion1314 {
 						// 13.4.3.2
 					} else {
 
-						String expandedStringValue = UriExpansionBuilder
-								.with(activeContext, ((JsonString) value).getString()).documentRelative(true)
-								.vocab(false).build();
+						String expandedStringValue = 
+									UriExpansionBuilder
+										.with(activeContext, ((JsonString) value).getString())
+										.documentRelative(true)
+										.vocab(false)
+										.build();
 
 						if (expandedStringValue != null) {
 							expandedValue = Json.createValue(expandedStringValue);
@@ -206,9 +213,12 @@ final class MapExpansion1314 {
 
 						if (JsonUtils.isString(value)) {
 
-							String expandedStringValue = UriExpansionBuilder
-									.with(typeContext, ((JsonString) value).getString()).vocab(true)
-									.documentRelative(true).build();
+							String expandedStringValue = 
+										UriExpansionBuilder
+											.with(typeContext, ((JsonString) value).getString())
+											.vocab(true)
+											.documentRelative(true)
+											.build();
 
 							if (expandedStringValue != null) {
 								expandedValue = Json.createValue(expandedStringValue);
@@ -422,7 +432,7 @@ final class MapExpansion1314 {
 						// 13.4.13.3.
 						if (expandedValue.asJsonObject().containsKey(Keywords.REVERSE)) {
 
-							for (Entry<String, JsonValue> entry : expandedValue.asJsonObject().entrySet()) {
+							for (Entry<String, JsonValue> entry : expandedValue.asJsonObject().get(Keywords.REVERSE).asJsonObject().entrySet()) {
 								// 13.4.13.3.1.
 								MapExpansion.addValue(result, entry.getKey(), entry.getValue(), true);
 							}
@@ -432,8 +442,9 @@ final class MapExpansion1314 {
 						if (expandedValue.asJsonObject().size() > 1
 								|| !expandedValue.asJsonObject().containsKey(Keywords.REVERSE)) {
 
-							Map<String, JsonValue> reverseMap = null;
 							
+							Map<String, JsonValue> reverseMap = null;
+
 							// 13.4.13.4.1
 							if (result.containsKey(Keywords.REVERSE)) {
 								reverseMap = new LinkedHashMap<>(result.get(Keywords.REVERSE).asJsonObject());
@@ -465,7 +476,11 @@ final class MapExpansion1314 {
 									}
 								}
 							}
-							result.put(Keywords.REVERSE, JsonUtils.toObject(reverseMap));
+
+							if (!reverseMap.isEmpty()) {
+								result.put(Keywords.REVERSE, JsonUtils.toObject(reverseMap));
+							}
+
 						}
 					}
 
@@ -772,21 +787,21 @@ final class MapExpansion1314 {
 			// 13.13.
 			if (keyTermDefinition != null && keyTermDefinition.isReverseProperty()) {
 
+				// 13.13.1.
+				// 13.13.2.
+				
 				Map<String, JsonValue> reverseMap = null;
-
+				
+				if (result.containsKey(Keywords.REVERSE)) {
+					reverseMap = new LinkedHashMap<>(result.get(Keywords.REVERSE).asJsonObject());
+				}
 
 				if (reverseMap == null) {
 					reverseMap = new LinkedHashMap<>();
 				}
 
-				// 13.13.1.
-
-				// 13.13.2.
-
 				// 13.13.3.
-				if (JsonUtils.isNotArray(expandedValue)) {
-					expandedValue = Json.createArrayBuilder().add(expandedValue).build();
-				}
+				expandedValue = JsonUtils.asArray(expandedValue);
 
 				// 13.13.4.
 				for (JsonValue item : expandedValue.asJsonArray()) {
@@ -804,7 +819,7 @@ final class MapExpansion1314 {
 					// 13.13.4.3.
 					MapExpansion.addValue(reverseMap, expandedProperty, item, true);
 				}
-
+ 
 				result.put(Keywords.REVERSE, JsonUtils.toObject(reverseMap));
 
 			// 13.14
@@ -853,6 +868,5 @@ final class MapExpansion1314 {
 						.nest(new LinkedHashMap<>()).frameExpansion(frameExpansion).ordered(ordered).compute();
 			}
 		}
-
 	}
 }
