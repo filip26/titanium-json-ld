@@ -6,7 +6,6 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.grammar.Keywords;
-import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 
 /**
  * Steps 4.1 - 4.3
@@ -24,8 +23,6 @@ public final class ScalarExpansionBuilder {
 	private JsonValue element;
 	private String activeProperty;
 
-	private LoadDocumentCallback documentLoader;
-
 	private ScalarExpansionBuilder(final ActiveContext activeContext, final JsonValue propertyContext,
 			final JsonValue element, final String activeProperty) {
 		this.activeContext = activeContext;
@@ -37,11 +34,6 @@ public final class ScalarExpansionBuilder {
 	public static final ScalarExpansionBuilder with(final ActiveContext activeContext, final JsonValue propertyContext,
 			final JsonValue element, final String activeProperty) {
 		return new ScalarExpansionBuilder(activeContext, propertyContext, element, activeProperty);
-	}
-
-	public ScalarExpansionBuilder documentLoader(LoadDocumentCallback documentLoader) {
-		this.documentLoader = documentLoader;
-		return this;
 	}
 
 	public JsonValue compute() throws JsonLdError {
@@ -64,8 +56,9 @@ public final class ScalarExpansionBuilder {
 
 			final TermDefinition definition = activeContext.getTerm(activeProperty);
 
-			activeContext = activeContext.create(propertyContext, definition.getBaseUrl())
-					.documentLoader(documentLoader).build();
+			activeContext = activeContext
+								.create(propertyContext, definition.getBaseUrl())
+								.build();
 		}
 
 		/*

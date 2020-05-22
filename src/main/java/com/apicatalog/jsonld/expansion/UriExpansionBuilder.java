@@ -34,7 +34,7 @@ public final class UriExpansionBuilder {
 
 	private JsonObject localContext;
 	private Map<String, Boolean> defined;
-
+	
 	private UriExpansionBuilder(final ActiveContext activeContext, final String value) {
 		this.activeContext = activeContext;
 		this.value = value;
@@ -69,7 +69,7 @@ public final class UriExpansionBuilder {
 		this.defined = value;
 		return this;
 	}
-
+	
 	public String build() throws JsonLdError {
 
 		// 1. If value is a keyword or null, return value as is.
@@ -102,7 +102,9 @@ public final class UriExpansionBuilder {
 
 				if (!defined.containsKey(entryValueString) || Boolean.FALSE.equals(defined.get(entryValueString))) {
 
-					activeContext.createTerm(localContext, value, defined).build();
+					activeContext
+							.createTerm(localContext, value, defined)
+							.build();
 				}
 			}
 		}
@@ -140,7 +142,9 @@ public final class UriExpansionBuilder {
 			if (localContext != null && localContext.containsKey(split[0])
 					&& (!defined.containsKey(split[0]) || !Boolean.TRUE.equals(defined.get(split[0])))) {
 
-				activeContext.createTerm(localContext, split[0], defined).build();
+				activeContext
+					.createTerm(localContext, split[0], defined)
+					.build();
 			}
 
 			// 6.4.

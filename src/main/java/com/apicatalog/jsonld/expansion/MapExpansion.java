@@ -18,7 +18,6 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.grammar.Keywords;
-import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.utils.JsonUtils;
 import com.apicatalog.jsonld.utils.UriUtils;
 
@@ -42,7 +41,6 @@ public final class MapExpansion {
 	private boolean frameExpansion;
 	private boolean ordered;
 	private boolean fromMap;
-	private LoadDocumentCallback documentLoader;
 
 	private MapExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final JsonObject element,
 			final String activeProperty, final URI baseUrl) {
@@ -78,11 +76,6 @@ public final class MapExpansion {
 		return this;
 	}
 
-	public MapExpansion documentLoader(LoadDocumentCallback documentLoader) {
-		this.documentLoader = documentLoader;
-		return this;
-	}
-
 	public JsonValue compute() throws JsonLdError {
 
 		// 7. If active context has a previous context, the active context is not
@@ -103,7 +96,11 @@ public final class MapExpansion {
 
 			for (String key : keys) {
 
-				String expandedKey = UriExpansionBuilder.with(activeContext, key).vocab(true).build();
+				String expandedKey = 
+							activeContext
+								.expandUri(key)
+								.vocab(true)
+								.build();
 
 				if (Keywords.VALUE.equals(expandedKey) || (Keywords.ID.equals(expandedKey) && (element.size() == 1))) {
 					revert = false;
@@ -121,15 +118,17 @@ public final class MapExpansion {
 //			TermDefinition activePropertyDefinition = activeContext.getTerm(activeProperty);
 
 			activeContext = activeContext
-					.create(propertyContext, baseUrl/* TODO activePropertyDefinition.getBaseUrl() */)
-					.documentLoader(documentLoader).overrideProtected(true).build();
+								.create(propertyContext, baseUrl/* TODO activePropertyDefinition.getBaseUrl() */)
+								.overrideProtected(true)
+								.build();
 		}
 
 		// 9.
 		if (element.containsKey(Keywords.CONTEXT)) {
 
-			activeContext = activeContext.create(element.get(Keywords.CONTEXT), baseUrl).documentLoader(documentLoader)
-					.build();
+			activeContext = activeContext
+								.create(element.get(Keywords.CONTEXT), baseUrl)
+								.build();
 		}
 
 		// 10.
@@ -142,7 +141,11 @@ public final class MapExpansion {
 		// 11.
 		for (String key : keys) {
 
-			String expandedKey = UriExpansionBuilder.with(activeContext, key).vocab(true).build();
+			String expandedKey = 
+						activeContext
+							.expandUri(key)
+							.vocab(true)
+							.build();
 
 			if (!Keywords.TYPE.equals(expandedKey)) {
 				continue;
@@ -171,9 +174,11 @@ public final class MapExpansion {
 					TermDefinition activeTermDefinition = activeContext.getTerm(term);
 
 					if (termDefinition.hasLocalContext() && activeTermDefinition != null) {
-						activeContext = activeContext
-								.create(termDefinition.getLocalContext(), activeTermDefinition.getBaseUrl())
-								.documentLoader(documentLoader).propagate(false).build();
+						activeContext = 
+								activeContext
+									.create(termDefinition.getLocalContext(), activeTermDefinition.getBaseUrl())
+									.propagate(false)
+									.build();
 					}
 				}
 			}
@@ -211,13 +216,22 @@ public final class MapExpansion {
 
 			if (lastValue != null) {
 
-				inputType = UriExpansionBuilder.with(activeContext, lastValue).vocab(true).build();
+				inputType = activeContext
+								.expandUri(lastValue)
+								.vocab(true)
+								.build();
 			}
 		}
 
-		MapExpansion1314.with(activeContext, element, activeProperty, baseUrl).documentLoader(documentLoader)
-				.inputType(inputType).result(result).typeContext(typeContext).nest(new LinkedHashMap<>())
-				.frameExpansion(frameExpansion).ordered(ordered).compute();
+		MapExpansion1314
+					.with(activeContext, element, activeProperty, baseUrl)
+					.inputType(inputType)
+					.result(result)
+					.typeContext(typeContext)
+					.nest(new LinkedHashMap<>())
+					.frameExpansion(frameExpansion)
+					.ordered(ordered)
+					.compute();
 
 		// 15.
 		if (result.containsKey(Keywords.VALUE)) {

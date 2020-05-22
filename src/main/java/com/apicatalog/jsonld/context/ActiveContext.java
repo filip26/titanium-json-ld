@@ -8,6 +8,7 @@ import javax.json.JsonObject;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.expansion.UriExpansionBuilder;
 import com.apicatalog.jsonld.expansion.ValueExpansionBuilder;
 import com.apicatalog.jsonld.grammar.DirectionType;
@@ -44,22 +45,21 @@ public final class ActiveContext {
 	// an optional default base direction ("ltr" or "rtl")
 	DirectionType defaultBaseDirection;
 
-	Version processingMode;
+	final JsonLdOptions options;
 
-	public ActiveContext(final URI baseUri, final URI baseUrl, Version processingMode) {
+	public ActiveContext(final URI baseUri, final URI baseUrl, JsonLdOptions options) {
 		this.baseUri = baseUri;
 		this.baseUrl = baseUrl;
 		this.terms = new LinkedHashMap<>();
-		this.processingMode = processingMode;
+		this.options = options;
 	}
 
-	public ActiveContext(final URI baseUri, final URI baseUrl, final ActiveContext previousContext,
-			Version processingMode) {
+	public ActiveContext(final URI baseUri, final URI baseUrl, final ActiveContext previousContext, final JsonLdOptions options) {
 		this.baseUri = baseUri;
 		this.baseUrl = baseUrl;
 		this.previousContext = previousContext;
 		this.terms = new LinkedHashMap<>();
-		this.processingMode = processingMode;
+		this.options = options;
 	}
 
 	// copy constructor
@@ -72,7 +72,7 @@ public final class ActiveContext {
 		this.vocabularyMapping = origin.vocabularyMapping;
 		this.defaultLanguage = origin.defaultLanguage;
 		this.defaultBaseDirection = origin.defaultBaseDirection;
-		this.processingMode = origin.processingMode;
+		this.options = origin.options;
 	}
 
 	public boolean containsTerm(String term) {
@@ -119,7 +119,7 @@ public final class ActiveContext {
 	}
 
 	public boolean inMode(Version version) {
-		return processingMode != null && processingMode.equals(version);
+		return options.getProcessingMode() != null && options.getProcessingMode().equals(version);
 	}
 
 	public boolean hasPreviousContext() {
@@ -143,7 +143,7 @@ public final class ActiveContext {
 	}
 
 	public ActiveContextBuilder create(final JsonValue localContext, final URI baseUrl) {
-		return ActiveContextBuilder.with(this, localContext, baseUrl);
+		return ActiveContextBuilder.with(this, localContext, baseUrl, options);
 	}
 
 }

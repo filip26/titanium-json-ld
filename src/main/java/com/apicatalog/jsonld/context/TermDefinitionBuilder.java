@@ -13,12 +13,10 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
-import com.apicatalog.jsonld.expansion.UriExpansionBuilder;
 import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.DirectionType;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.Version;
-import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.utils.JsonUtils;
 import com.apicatalog.jsonld.utils.UriUtils;
 
@@ -50,8 +48,6 @@ public final class TermDefinitionBuilder {
 	Collection<String> remoteContexts;
 
 	boolean validateScopedContext;
-
-	LoadDocumentCallback documentLoader;
 
 	private TermDefinitionBuilder(ActiveContext activeContext, JsonObject localContext, String term,
 			Map<String, Boolean> defined) {
@@ -95,11 +91,6 @@ public final class TermDefinitionBuilder {
 
 	public TermDefinitionBuilder validateScopedContext(boolean validateScopedContext) {
 		this.validateScopedContext = validateScopedContext;
-		return this;
-	}
-
-	public TermDefinitionBuilder documentLoader(LoadDocumentCallback documentLoader) {
-		this.documentLoader = documentLoader;
 		return this;
 	}
 
@@ -226,8 +217,13 @@ public final class TermDefinitionBuilder {
 			}
 
 			// 12.2.
-			String expandedTypeString = UriExpansionBuilder.with(activeContext, ((JsonString) type).getString())
-					.localContext(localContext).defined(defined).vocab(true).build();
+			String expandedTypeString = 
+						activeContext
+							.expandUri(((JsonString) type).getString())					
+							.localContext(localContext)
+							.defined(defined)
+							.vocab(true)
+							.build();
 
 			if (expandedTypeString == null) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING);
@@ -270,8 +266,13 @@ public final class TermDefinitionBuilder {
 			}
 
 			// 13.4.
-			definition.uriMapping = UriExpansionBuilder.with(activeContext, reverseString).localContext(localContext)
-					.defined(defined).vocab(true).build();
+			definition.uriMapping = 
+						activeContext
+							.expandUri(reverseString)
+							.localContext(localContext)
+							.defined(defined)
+							.vocab(true)
+							.build();
 
 			if (UriUtils.isNotURI(definition.uriMapping)) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
@@ -357,8 +358,13 @@ public final class TermDefinitionBuilder {
 					defined.put(term, Boolean.TRUE);
 
 					// 14.2.4.2
-					String expandedTerm = activeContext.expandUri(term).localContext(localContext).defined(defined)
-							.vocab(true).build();
+					String expandedTerm = 
+								activeContext
+									.expandUri(term)
+									.localContext(localContext)
+									.defined(defined)
+									.vocab(true)
+									.build();
 
 					if (expandedTerm == null || !expandedTerm.equals(definition.uriMapping)) {
 						throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
@@ -384,8 +390,9 @@ public final class TermDefinitionBuilder {
 			// 15.1.
 			if (compactUri != null && compactUri.isNotBlank() && localContext.containsKey(compactUri.getPrefix())) {
 
-				TermDefinitionBuilder.with(activeContext, localContext, compactUri.getPrefix(), defined)
-						.documentLoader(documentLoader).build();
+				activeContext
+						.createTerm(localContext, compactUri.getPrefix(), defined)
+						.build();
 			}
 			// 15.2.
 			if (compactUri != null && compactUri.isNotBlank() && activeContext.containsTerm(compactUri.getPrefix())) {
@@ -402,8 +409,13 @@ public final class TermDefinitionBuilder {
 		// 16.
 		} else if (term.contains("/")) {
 
-			definition.uriMapping = UriExpansionBuilder.with(activeContext, term).localContext(localContext)
-					.defined(defined).vocab(true).build();
+			definition.uriMapping = 
+							activeContext
+								.expandUri(term)
+								.localContext(localContext)
+								.defined(defined)
+								.vocab(true)
+								.build();
 
 			if (!UriUtils.isURI(definition.uriMapping)) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
@@ -520,8 +532,13 @@ public final class TermDefinitionBuilder {
 
 			String indexString = ((JsonString) index).getString();
 
-			String expandedIndex = UriExpansionBuilder.with(activeContext, indexString).localContext(localContext)
-					.defined(defined).vocab(true).build();
+			String expandedIndex =
+							activeContext
+								.expandUri(indexString)
+								.localContext(localContext)
+								.defined(defined)
+								.vocab(true)
+								.build();
 
 			if (expandedIndex == null || UriUtils.isNotURI(expandedIndex)) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
@@ -543,10 +560,12 @@ public final class TermDefinitionBuilder {
 
 			// 21.3.
 			try {
-
-				activeContext.create(context, baseUrl).overrideProtected(true)
-						.remoteContexts(new ArrayList<>(remoteContexts)).validateScopedContext(false)
-						.documentLoader(documentLoader).build();
+				activeContext
+						.create(context, baseUrl)
+						.overrideProtected(true)
+						.remoteContexts(new ArrayList<>(remoteContexts))
+						.validateScopedContext(false)
+						.build();
 
 			} catch (JsonLdError e) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_SCOPED_CONTEXT, e);

@@ -28,7 +28,6 @@ import com.apicatalog.jsonld.grammar.ListObject;
 import com.apicatalog.jsonld.grammar.NodeObject;
 import com.apicatalog.jsonld.grammar.ValueObject;
 import com.apicatalog.jsonld.grammar.Version;
-import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.utils.JsonUtils;
 
 /**
@@ -54,7 +53,6 @@ final class MapExpansion1314 {
 	// optional
 	private boolean frameExpansion;
 	private boolean ordered;
-	private LoadDocumentCallback documentLoader;
 
 	private MapExpansion1314(final ActiveContext activeContext, final JsonObject element,
 			final String activeProperty, final URI baseUrl) {
@@ -103,11 +101,6 @@ final class MapExpansion1314 {
 		return this;
 	}
 
-	public MapExpansion1314 documentLoader(LoadDocumentCallback documentLoader) {
-		this.documentLoader = documentLoader;
-		return this;
-	}
-
 	public void compute() throws JsonLdError {
 
 		// 13.
@@ -126,8 +119,8 @@ final class MapExpansion1314 {
 
 			// 13.2.
 			String expandedProperty = 
-						UriExpansionBuilder
-							.with(activeContext, key)
+						activeContext
+							.expandUri(key)
 							.documentRelative(false)
 							.vocab(true)
 							.build();
@@ -167,8 +160,8 @@ final class MapExpansion1314 {
 					} else {
 
 						String expandedStringValue = 
-									UriExpansionBuilder
-										.with(activeContext, ((JsonString) value).getString())
+									activeContext
+										.expandUri(((JsonString) value).getString())
 										.documentRelative(true)
 										.vocab(false)
 										.build();
@@ -204,8 +197,11 @@ final class MapExpansion1314 {
 
 						expandedValue = Json.createObjectBuilder()
 								.add(Keywords.DEFAULT,
-										UriExpansionBuilder.with(typeContext, ((JsonString) value).getString())
-												.vocab(true).documentRelative(true).build())
+										typeContext
+												.expandUri(((JsonString) value).getString())
+												.vocab(true)
+												.documentRelative(true)
+												.build())
 								.build();
 
 					// 13.4.4.4
@@ -214,8 +210,8 @@ final class MapExpansion1314 {
 						if (JsonUtils.isString(value)) {
 
 							String expandedStringValue = 
-										UriExpansionBuilder
-											.with(typeContext, ((JsonString) value).getString())
+										typeContext
+											.expandUri(((JsonString) value).getString())
 											.vocab(true)
 											.documentRelative(true)
 											.build();
@@ -232,9 +228,12 @@ final class MapExpansion1314 {
 
 								if (JsonUtils.isString(item)) {
 
-									String expandedStringValue = UriExpansionBuilder
-											.with(typeContext, ((JsonString) item).getString()).vocab(true)
-											.documentRelative(true).build();
+									String expandedStringValue =
+											typeContext
+												.expandUri(((JsonString) item).getString())
+												.vocab(true)
+												.documentRelative(true)
+												.build();
 
 									if (expandedStringValue != null) {
 										array.add(Json.createValue(expandedStringValue));
@@ -262,8 +261,11 @@ final class MapExpansion1314 {
 				// 13.4.5
 				if (Keywords.GRAPH.equals(expandedProperty)) {
 
-					expandedValue = Expansion.with(typeContext, value, Keywords.GRAPH, baseUrl)
-							.documentLoader(documentLoader).frameExpansion(frameExpansion).ordered(ordered).compute();
+					expandedValue = Expansion
+										.with(typeContext, value, Keywords.GRAPH, baseUrl)
+										.frameExpansion(frameExpansion)
+										.ordered(ordered)
+										.compute();
 
 					if (JsonUtils.isObject(expandedValue)) {
 						expandedValue = Json.createArrayBuilder().add(expandedValue).build();
@@ -279,8 +281,11 @@ final class MapExpansion1314 {
 					}
 
 					// 13.4.6.2
-					expandedValue = Expansion.with(activeContext, value, null, baseUrl).documentLoader(documentLoader)
-							.frameExpansion(frameExpansion).ordered(ordered).compute();
+					expandedValue = Expansion
+										.with(activeContext, value, null, baseUrl)
+										.frameExpansion(frameExpansion)
+										.ordered(ordered)
+										.compute();
 
 					if (JsonUtils.isNotNull(expandedValue)) {
 
@@ -392,8 +397,11 @@ final class MapExpansion1314 {
 					}
 
 					// 13.4.11.1
-					expandedValue = Expansion.with(activeContext, value, activeProperty, baseUrl)
-							.documentLoader(documentLoader).frameExpansion(frameExpansion).ordered(ordered).compute();
+					expandedValue = Expansion
+										.with(activeContext, value, activeProperty, baseUrl)
+										.frameExpansion(frameExpansion)
+										.ordered(ordered)
+										.compute();
 
 					if (JsonUtils.isNotArray(expandedValue)) {
 						expandedValue = Json.createArrayBuilder().add(expandedValue).build();
@@ -405,7 +413,6 @@ final class MapExpansion1314 {
 
 					expandedValue = Expansion
 										.with(activeContext, value, activeProperty, baseUrl)
-										.documentLoader(documentLoader)
 										.frameExpansion(frameExpansion)
 										.ordered(ordered)
 										.compute();
@@ -422,7 +429,6 @@ final class MapExpansion1314 {
 					// 13.4.13.2.
 					expandedValue = Expansion
 										.with(activeContext, value, Keywords.REVERSE, baseUrl)
-										.documentLoader(documentLoader)
 										.frameExpansion(frameExpansion)
 										.ordered(ordered)
 										.compute();
@@ -589,7 +595,11 @@ final class MapExpansion1314 {
 						// 13.7.4.2.4.
 						if (!Keywords.NONE.equals(langCode)) {
 
-							String expandedLangCode = activeContext.expandUri(langCode).vocab(true).build();
+							String expandedLangCode = 
+										activeContext
+											.expandUri(langCode)
+											.vocab(true)
+											.build();
 
 							if (!Keywords.NONE.equals(expandedLangCode)) {
 								langMap.add(Keywords.LANGUAGE, Json.createValue(langCode));
@@ -662,7 +672,11 @@ final class MapExpansion1314 {
 					}
 
 					// 13.8.3.4.
-					String expandedIndex = activeContext.expandUri(index).vocab(true).build();
+					String expandedIndex = 
+								activeContext
+									.expandUri(index)
+									.vocab(true)
+									.build();
 
 					// 13.8.3.5.
 					if (JsonUtils.isNotArray(indexValue)) {
@@ -690,7 +704,11 @@ final class MapExpansion1314 {
 									.build();
 
 							// 13.8.3.7.2.2.
-							String expandedIndexKey = activeContext.expandUri(indexKey).vocab(true).build();
+							String expandedIndexKey = 
+										activeContext
+											.expandUri(indexKey)
+											.vocab(true)
+											.build();
 
 							// 13.8.3.7.2.3.
 							JsonArrayBuilder indexPropertyValues = Json.createArrayBuilder().add(reExpandedIndex);
@@ -722,7 +740,11 @@ final class MapExpansion1314 {
 								&& !item.asJsonObject().containsKey(Keywords.ID)
 								&& !Keywords.NONE.equals(expandedIndex)) {
 
-							expandedIndex = activeContext.expandUri(index).vocab(false).documentRelative(true).build();
+							expandedIndex = activeContext
+												.expandUri(index)
+												.vocab(false)
+												.documentRelative(true)
+												.build();
 
 							item = Json.createObjectBuilder(item.asJsonObject()).add(Keywords.ID, expandedIndex)
 									.build();
@@ -755,9 +777,11 @@ final class MapExpansion1314 {
 				// 13.9.
 			} else {
 
-				expandedValue = Expansion.with(activeContext, value, key, baseUrl).documentLoader(documentLoader)
-						.frameExpansion(frameExpansion).ordered(ordered).compute();
-
+				expandedValue = Expansion
+									.with(activeContext, value, key, baseUrl)
+									.frameExpansion(frameExpansion)
+									.ordered(ordered)
+									.compute();
 			}
 
 			// 13.10.
@@ -857,8 +881,11 @@ final class MapExpansion1314 {
 
 				for (String nestedValueKey : nestValue.asJsonObject().keySet()) {
 
-					String expandedNestedValueKey = UriExpansionBuilder.with(typeContext, nestedValueKey).vocab(true)
-							.build();
+					String expandedNestedValueKey = 
+											typeContext
+												.expandUri(nestedValueKey)
+												.vocab(true)
+												.build();
 
 					if (Keywords.VALUE.equals(expandedNestedValueKey)) {
 						throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
@@ -866,9 +893,15 @@ final class MapExpansion1314 {
 				}
 
 				// 14.2.2
-				MapExpansion1314.with(activeContext, nestValue.asJsonObject(), activeProperty, baseUrl)
-						.documentLoader(documentLoader).inputType(inputType).result(result).typeContext(typeContext)
-						.nest(new LinkedHashMap<>()).frameExpansion(frameExpansion).ordered(ordered).compute();
+				MapExpansion1314
+						.with(activeContext, nestValue.asJsonObject(), activeProperty, baseUrl)
+						.inputType(inputType)
+						.result(result)
+						.typeContext(typeContext)
+						.nest(new LinkedHashMap<>())
+						.frameExpansion(frameExpansion)
+						.ordered(ordered)
+						.compute();
 			}
 		}
 	}

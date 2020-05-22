@@ -17,13 +17,12 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
+import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.expansion.UriExpansionBuilder;
 import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.DirectionType;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.Version;
-import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.utils.JsonUtils;
 import com.apicatalog.jsonld.utils.UriResolver;
@@ -51,13 +50,14 @@ public class ActiveContextBuilder {
 
 	private boolean validateScopedContext;
 
-	private LoadDocumentCallback documentLoader;
+	private final JsonLdOptions options;
 
-	private ActiveContextBuilder(ActiveContext activeContext, JsonValue localContext, URI baseUrl) {
+	private ActiveContextBuilder(ActiveContext activeContext, JsonValue localContext, URI baseUrl, final JsonLdOptions options) {
 
 		this.activeContext = activeContext;
 		this.localContext = localContext;
 		this.baseUrl = baseUrl;
+		this.options = options;
 
 		// default optional values
 		this.remoteContexts = new ArrayList<>();
@@ -66,8 +66,8 @@ public class ActiveContextBuilder {
 		this.validateScopedContext = true;
 	}
 
-	public static final ActiveContextBuilder with(ActiveContext activeContext, JsonValue localContext, URI baseUrl) {
-		return new ActiveContextBuilder(activeContext, localContext, baseUrl);
+	public static final ActiveContextBuilder with(ActiveContext activeContext, JsonValue localContext, URI baseUrl, JsonLdOptions options) {
+		return new ActiveContextBuilder(activeContext, localContext, baseUrl, options);
 	}
 
 	public ActiveContextBuilder remoteContexts(Collection<String> value) {
@@ -87,11 +87,6 @@ public class ActiveContextBuilder {
 
 	public ActiveContextBuilder validateScopedContext(boolean value) {
 		this.validateScopedContext = value;
-		return this;
-	}
-
-	public ActiveContextBuilder documentLoader(LoadDocumentCallback documentLoader) {
-		this.documentLoader = documentLoader;
 		return this;
 	}
 
@@ -140,9 +135,9 @@ public class ActiveContextBuilder {
 				// and, if propagate is false, previous context in result to the previous value
 				// of result.
 				result = propagate
-						? new ActiveContext(activeContext.baseUrl, activeContext.baseUrl, activeContext.processingMode)
+						? new ActiveContext(activeContext.baseUrl, activeContext.baseUrl, activeContext.options)
 						: new ActiveContext(activeContext.baseUrl, activeContext.baseUrl, result.previousContext,
-								activeContext.processingMode);
+								activeContext.options);
 
 				// 5.1.3. Continue with the next context
 				continue;
@@ -176,19 +171,19 @@ public class ActiveContextBuilder {
 				// TODO
 
 				// 5.2.5.
-				if (documentLoader == null) {
+				if (options.getDocumentLoader() == null) {
 					throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED);
 				}
 
-				LoadDocumentOptions options = new LoadDocumentOptions();
-				options.setProfile("http://www.w3.org/ns/json-ld#context");
-				options.setRequestProfile(Arrays.asList(options.getProfile()));
+				LoadDocumentOptions loaderOptions = new LoadDocumentOptions();
+				loaderOptions.setProfile("http://www.w3.org/ns/json-ld#context");
+				loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
 
 				JsonStructure importedStructure = null;
 				URL documentUrl = null;
 
 				try {
-					RemoteDocument remoteImport = documentLoader.loadDocument(new URL(contextUri), options);
+					RemoteDocument remoteImport = options.getDocumentLoader().loadDocument(new URL(contextUri), loaderOptions);
 
 					documentUrl = remoteImport.getDocumentUrl();
 
@@ -198,7 +193,7 @@ public class ActiveContextBuilder {
 						throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT);
 					}
 
-					// 5.2.5.1.
+				// 5.2.5.1.
 				} catch (MalformedURLException | JsonLdError e) {
 					throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
 				}
@@ -220,9 +215,11 @@ public class ActiveContextBuilder {
 
 				// 5.2.6
 				try {
-					result = ActiveContextBuilder.with(result, importedContext, documentUrl.toURI())
-							.remoteContexts(new ArrayList<>(remoteContexts))
-							.validateScopedContext(validateScopedContext).build();
+					result = result
+								.create(importedContext, documentUrl.toURI())
+								.remoteContexts(new ArrayList<>(remoteContexts))
+								.validateScopedContext(validateScopedContext)
+								.build();
 
 				} catch (URISyntaxException/* TODO ? | JsonLdError */ e) {
 					throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
@@ -286,18 +283,18 @@ public class ActiveContextBuilder {
 				String contextImportUri = UriResolver.resolve(baseUrl, ((JsonString) contextImport).getString());
 
 				// 5.6.4.
-				if (documentLoader == null) {
+				if (options.getDocumentLoader() == null) {
 					throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED);
 				}
 
-				LoadDocumentOptions options = new LoadDocumentOptions();
-				options.setProfile("http://www.w3.org/ns/json-ld#context");
-				options.setRequestProfile(Arrays.asList(options.getProfile()));
+				LoadDocumentOptions loaderOptions = new LoadDocumentOptions();
+				loaderOptions.setProfile("http://www.w3.org/ns/json-ld#context");
+				loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
 
 				JsonStructure importedStructure = null;
 
 				try {
-					RemoteDocument remoteImport = documentLoader.loadDocument(new URL(contextImportUri), options);
+					RemoteDocument remoteImport = options.getDocumentLoader().loadDocument(new URL(contextImportUri), loaderOptions);
 
 					importedStructure = remoteImport.getDocument().asJsonStructure();
 
@@ -393,8 +390,12 @@ public class ActiveContextBuilder {
 					//FIXME hack -  ex: prefixes paas
 					if (valueString.indexOf(':', 1) != -1 || UriUtils.isURI(valueString) || valueString.isBlank() || CompactUri.isBlankNode(valueString)) {
 
-						String vocabularyMapping = UriExpansionBuilder.with(result, valueString).vocab(true)
-								.documentRelative(true).build();
+						String vocabularyMapping =
+									result
+										.expandUri(valueString)
+										.vocab(true)
+										.documentRelative(true)
+										.build();
 
 						//FIXME hack -  ex: prefixes paas
 						if (valueString.indexOf(':', 1) != -1 || UriUtils.isURI(vocabularyMapping) || CompactUri.isBlankNode(valueString)) {
@@ -493,9 +494,13 @@ public class ActiveContextBuilder {
 					boolean protectedFlag = contextDefinition.containsKey(Keywords.PROTECTED)
 							&& JsonUtils.isTrue(contextDefinition.get(Keywords.PROTECTED));
 
-					TermDefinitionBuilder.with(result, contextDefinition, key, defined).documentLoader(documentLoader)
-							.baseUrl(baseUrl).protectedFlag(protectedFlag).overrideProtectedFlag(overrideProtected)
-							.remoteContexts(new ArrayList<>(remoteContexts)).build();
+					result
+						.createTerm(contextDefinition, key, defined)
+						.baseUrl(baseUrl)
+						.protectedFlag(protectedFlag)
+						.overrideProtectedFlag(overrideProtected)
+						.remoteContexts(new ArrayList<>(remoteContexts))
+						.build();
 				}
 			}
 		}

@@ -73,7 +73,7 @@ public class ExpansionProcessor {
 			}
 		}
 
-		ActiveContext activeContext = new ActiveContext(baseUri, baseUri, options.getProcessingMode());
+		ActiveContext activeContext = new ActiveContext(baseUri, baseUri, options);
 
 		// 6. If the expandContext option in options is set, update the active context
 		// using the Context Processing algorithm, passing the expandContext as
@@ -96,9 +96,12 @@ public class ExpansionProcessor {
 			baseUrl = options.getBaseURI();
 		}
 
-		JsonValue expanded = Expansion.with(activeContext, jsonStructure, null, baseUrl)
-				.documentLoader(options.getDocumentLoader()).frameExpansion(options.isFrameExpansion())
-				.ordered(options.isOrdered()).compute();
+		JsonValue expanded = 
+						Expansion
+							.with(activeContext, jsonStructure, null, baseUrl)
+							.frameExpansion(options.isFrameExpansion())
+							.ordered(options.isOrdered())
+							.compute();
 
 		// 8.1
 		if (JsonUtils.isObject(expanded)) {
