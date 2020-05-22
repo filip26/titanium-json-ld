@@ -117,8 +117,6 @@ final class MapExpansion1314 {
 			Collections.sort(keys);
 		}
 
-		Map<String, JsonValue> reverseMap = null;
-
 		for (final String key : keys) {
 
 			// 13.1.
@@ -395,26 +393,35 @@ final class MapExpansion1314 {
 				// 13.4.12
 				if (Keywords.SET.equals(expandedProperty)) {
 
-					expandedValue = Expansion.with(activeContext, value, activeProperty, baseUrl)
-							.documentLoader(documentLoader).frameExpansion(frameExpansion).ordered(ordered).compute();
+					expandedValue = Expansion
+										.with(activeContext, value, activeProperty, baseUrl)
+										.documentLoader(documentLoader)
+										.frameExpansion(frameExpansion)
+										.ordered(ordered)
+										.compute();
 				}
 
 				// 13.4.13
 				if (Keywords.REVERSE.equals(expandedProperty)) {
-
+					
 					// 13.4.13.1.
 					if (JsonUtils.isNotObject(value)) {
 						throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_REVERSE_VALUE);
 					}
 
 					// 13.4.13.2.
-					expandedValue = Expansion.with(activeContext, value, Keywords.REVERSE, baseUrl)
-							.documentLoader(documentLoader).frameExpansion(frameExpansion).ordered(ordered).compute();
+					expandedValue = Expansion
+										.with(activeContext, value, Keywords.REVERSE, baseUrl)
+										.documentLoader(documentLoader)
+										.frameExpansion(frameExpansion)
+										.ordered(ordered)
+										.compute();
 
 					if (JsonUtils.isObject(expandedValue)) {
 
 						// 13.4.13.3.
 						if (expandedValue.asJsonObject().containsKey(Keywords.REVERSE)) {
+
 							for (Entry<String, JsonValue> entry : expandedValue.asJsonObject().entrySet()) {
 								// 13.4.13.3.1.
 								MapExpansion.addValue(result, entry.getKey(), entry.getValue(), true);
@@ -425,6 +432,8 @@ final class MapExpansion1314 {
 						if (expandedValue.asJsonObject().size() > 1
 								|| !expandedValue.asJsonObject().containsKey(Keywords.REVERSE)) {
 
+							Map<String, JsonValue> reverseMap = null;
+							
 							// 13.4.13.4.1
 							if (result.containsKey(Keywords.REVERSE)) {
 								reverseMap = new LinkedHashMap<>(result.get(Keywords.REVERSE).asJsonObject());
@@ -440,12 +449,12 @@ final class MapExpansion1314 {
 								if (Keywords.REVERSE.equals(entry.getKey())) {
 									continue;
 								}
-
+								
 								// 13.4.13.4.2.1
 								if (JsonUtils.isArray(entry.getValue())) {
 
 									for (JsonValue item : entry.getValue().asJsonArray()) {
-
+								
 										// 13.4.13.4.2.1.1
 										if (ListObject.isListObject(item) || ValueObject.isValueObject(item)) {
 											throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
@@ -456,6 +465,7 @@ final class MapExpansion1314 {
 									}
 								}
 							}
+							result.put(Keywords.REVERSE, JsonUtils.toObject(reverseMap));
 						}
 					}
 
@@ -762,6 +772,9 @@ final class MapExpansion1314 {
 			// 13.13.
 			if (keyTermDefinition != null && keyTermDefinition.isReverseProperty()) {
 
+				Map<String, JsonValue> reverseMap = null;
+
+
 				if (reverseMap == null) {
 					reverseMap = new LinkedHashMap<>();
 				}
@@ -794,7 +807,7 @@ final class MapExpansion1314 {
 
 				result.put(Keywords.REVERSE, JsonUtils.toObject(reverseMap));
 
-				// 13.14
+			// 13.14
 			} else {
 				MapExpansion.addValue(result, expandedProperty, expandedValue, true);
 			}

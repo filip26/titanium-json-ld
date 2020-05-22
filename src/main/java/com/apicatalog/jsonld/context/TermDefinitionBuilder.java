@@ -313,7 +313,7 @@ public final class TermDefinitionBuilder {
 			// 14.1.
 			if (JsonUtils.isNull(idValue)) {
 
-				// 14.2
+			// 14.2
 			} else {
 
 				// 14.2.1
@@ -368,7 +368,7 @@ public final class TermDefinitionBuilder {
 				}
 			}
 
-			// 15.
+		// 15.
 		} else if (term.indexOf(':', 1) != -1) {
 
 			final CompactUri compactUri = CompactUri.create(term);
@@ -386,12 +386,12 @@ public final class TermDefinitionBuilder {
 
 				definition.uriMapping = prefixDefinition.uriMapping.concat(compactUri.getSuffix());
 
-				// 15.3.
+			// 15.3.
 			} else if (UriUtils.isURI(term) || CompactUri.isBlankNode(term)) {
 				definition.uriMapping = term;
 			}
 
-			// 16.
+		// 16.
 		} else if (term.contains("/")) {
 
 			definition.uriMapping = UriExpansionBuilder.with(activeContext, term).localContext(localContext)
@@ -401,11 +401,11 @@ public final class TermDefinitionBuilder {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
 			}
 
-			// 17.
+		// 17.
 		} else if (Keywords.TYPE.equals(term)) {
 			definition.uriMapping = Keywords.TYPE;
 
-			// 18.
+		// 18.
 		} else if (activeContext.vocabularyMapping == null) {
 			throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
 
