@@ -263,8 +263,8 @@ public final class MapExpansionStep1314 {
 						JsonValue typeValue = result.get(Keywords.TYPE);
 
 						if (JsonUtils.isArray(typeValue)) {
-							
 							expandedValue = Json.createArrayBuilder(typeValue.asJsonArray()).add(expandedValue).build();
+							
 						} else {
 							expandedValue = Json.createArrayBuilder().add(typeValue).add(expandedValue).build();
 						}						

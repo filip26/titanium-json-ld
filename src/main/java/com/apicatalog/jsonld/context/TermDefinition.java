@@ -112,7 +112,7 @@ public class TermDefinition {
 		this.indexMapping = indexMapping;
 	}
 	
-	public boolean isNotSameExceptProtected(TermDefinition ref) {
+	public boolean isNotSameExcept(TermDefinition ref) {
 		
 		return !Objects.equals(uriMapping, ref.uriMapping)
 				|| prefixFlag != ref.prefixFlag
@@ -130,5 +130,5 @@ public class TermDefinition {
 //		Collection<String> containerMapping;	// any order?
 //		JsonValue languageMapping;
 		
-	}	
+	}
 }

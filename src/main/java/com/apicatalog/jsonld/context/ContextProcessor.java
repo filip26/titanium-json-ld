@@ -500,7 +500,7 @@ public class ContextProcessor {
 						.documentLoader(documentLoader)
 						.baseUrl(baseUrl)
 						.protectedFlag(protectedFlag)
-						.overrideProtectedFlag(protectedFlag)
+						.overrideProtectedFlag(overrideProtected)
 						.remoteContexts(new ArrayList<>(remoteContexts))
 						.build();
 				}	

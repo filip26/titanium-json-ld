@@ -580,7 +580,7 @@ public final class TermDefinitionBuilder {
 		
 		// 21.
 		if (valueObject.containsKey(Keywords.CONTEXT)) {
-	
+
 			// 21.1.
 			if (activeContext.inMode(Version.V1_0)) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
@@ -601,7 +601,7 @@ public final class TermDefinitionBuilder {
 						.compute();
 				
 			} catch (JsonLdError e) {
-				throw new JsonLdError(JsonLdErrorCode.INVALID_SCOPED_CONTEXT);
+				throw new JsonLdError(JsonLdErrorCode.INVALID_SCOPED_CONTEXT, e);
 			}
 
 			// 21.4.
@@ -722,9 +722,9 @@ public final class TermDefinitionBuilder {
 
 		// 27.
 		if (!overrideProtectedFlag && previousDefinition != null && previousDefinition.protectedFlag) {
-			
+
 			// 27.1.
-			if (definition.isNotSameExceptProtected(previousDefinition)) {
+			if (definition.isNotSameExcept(previousDefinition)) {
 				throw new JsonLdError(JsonLdErrorCode.PROTECTED_TERM_REDEFINITION);
 			}
 			
