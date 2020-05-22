@@ -76,7 +76,7 @@ public final class ValueExpansionBuilder {
 			&& !Keywords.VOCAB.equals(typeMapping)
 			&& !Keywords.NONE.equals(typeMapping)
 				) {
-			
+	
 			result = Json.createObjectBuilder(result).add(Keywords.TYPE, Json.createValue(typeMapping)).build();
 			
 		// 5.

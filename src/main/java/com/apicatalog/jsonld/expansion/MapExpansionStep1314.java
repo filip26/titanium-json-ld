@@ -266,8 +266,8 @@ public final class MapExpansionStep1314 {
 							
 							expandedValue = Json.createArrayBuilder(typeValue.asJsonArray()).add(expandedValue).build();
 						} else {
-							expandedValue = Json.createArrayBuilder().add(expandedValue).build();
-						}
+							expandedValue = Json.createArrayBuilder().add(typeValue).add(expandedValue).build();
+						}						
 					}
 				}
 				

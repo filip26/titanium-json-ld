@@ -122,7 +122,7 @@ public final class TermDefinitionBuilder {
 		JsonValue value = localContext.get(term);
 
 		// 4.
-		if (Keywords.TYPE.equals(term) /*&& activeContext.inMode(Version.V1_0)*/) {
+		if (Keywords.TYPE.equals(term)) {
 
 			if (activeContext.inMode(Version.V1_0)) {
 				throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
@@ -133,8 +133,7 @@ public final class TermDefinitionBuilder {
 				JsonObject map = value.asJsonObject();
 				
 				if (map.size() == 1 && map.containsKey(Keywords.PROTECTED)) {
-					//TODO
-					
+	
 				} else if (map.size() == 1 && map.containsKey(Keywords.CONTAINER)) {
 					
 					JsonValue container = map.get(Keywords.CONTAINER);
@@ -144,8 +143,13 @@ public final class TermDefinitionBuilder {
 						throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
 					}
 				
-				} else if (map.size() == 2) {
-					//TODO
+				} else if (map.size() == 2 && map.containsKey(Keywords.CONTAINER) && map.containsKey(Keywords.PROTECTED)) {
+
+					JsonValue containerValue = map.get(Keywords.CONTAINER);
+					if (!JsonUtils.contains(Keywords.SET, containerValue)) {
+						throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
+					}
+					
 				} else {
 					throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
 				}
@@ -153,11 +157,9 @@ public final class TermDefinitionBuilder {
 			} else {			
 				throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
 			}
-
-		}
-
+			
 		// 5.
-		else if (Keywords.contains(term)) {
+		} else if (Keywords.contains(term)) {
 			throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
 			
 		} else if (Keywords.hasForm(term)) {
@@ -728,7 +730,8 @@ public final class TermDefinitionBuilder {
 			
 			// 27.2.
 			definition = previousDefinition;
-		}		
+		}
+		
 		// 28
 		activeContext.setTerm(term, definition);
 		defined.put(term, Boolean.TRUE);
