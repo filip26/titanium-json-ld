@@ -233,7 +233,7 @@ public final class TermDefinitionBuilder {
 			if (((Keywords.JSON.equals(expandedTypeString) || Keywords.NONE.equals(expandedTypeString))
 					&& activeContext.inMode(Version.V1_0))
 					// 12.4.
-					|| (Keywords.isNot(expandedTypeString, Keywords.ID, Keywords.JSON, Keywords.NONE, Keywords.VOCAB)
+					|| (Keywords.isNotOneOf(expandedTypeString, Keywords.ID, Keywords.JSON, Keywords.NONE, Keywords.VOCAB)
 							&& UriUtils.isNotAbsoluteURI(expandedTypeString))) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING);
 			}
@@ -286,12 +286,11 @@ public final class TermDefinitionBuilder {
 
 					String containerString = ((JsonString) container).getString();
 
-					if (Keywords.isNot(containerString, Keywords.SET, Keywords.INDEX)) {
-						throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY);
-
-					} else {
+					if (Keywords.isOneOf(containerString, Keywords.SET, Keywords.INDEX)) {
 						definition.addContainerMapping(containerString);
 
+					} else {
+						throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY);
 					}
 				}
 			}
@@ -462,7 +461,7 @@ public final class TermDefinitionBuilder {
 
 				containerString = ((JsonString) containerValue).getString();
 
-				if (Keywords.isNot(containerString, Keywords.GRAPH, Keywords.ID, Keywords.INDEX, Keywords.LANGUAGE,
+				if (Keywords.isNotOneOf(containerString, Keywords.GRAPH, Keywords.ID, Keywords.INDEX, Keywords.LANGUAGE,
 						Keywords.LIST, Keywords.SET, Keywords.TYPE)) {
 					throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
 				}
