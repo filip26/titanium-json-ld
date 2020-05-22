@@ -1,7 +1,6 @@
 package com.apicatalog.jsonld.context;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -50,7 +49,7 @@ public final class ActiveContext {
 	public ActiveContext(final URI baseUri, final URI baseUrl, Version processingMode) {
 		this.baseUri = baseUri;
 		this.baseUrl = baseUrl;
-		this.terms = new HashMap<>();
+		this.terms = new LinkedHashMap<>();
 		this.processingMode = processingMode;
 	}
 
@@ -59,7 +58,7 @@ public final class ActiveContext {
 		this.baseUri = baseUri;
 		this.baseUrl = baseUrl;
 		this.previousContext = previousContext;
-		this.terms = new HashMap<>();
+		this.terms = new LinkedHashMap<>();
 		this.processingMode = processingMode;
 	}
 

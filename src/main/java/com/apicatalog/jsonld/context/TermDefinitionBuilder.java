@@ -161,7 +161,7 @@ public final class TermDefinitionBuilder {
 				throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
 			}
 
-			// 5.
+		// 5.
 		} else if (Keywords.contains(term)) {
 			throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
 
@@ -176,17 +176,20 @@ public final class TermDefinitionBuilder {
 		JsonObject valueObject = null;
 		Boolean simpleTerm = null;
 
+		// 7.
 		if (JsonUtils.isNull(value)) {
-			// 7.
+
 			valueObject = Json.createObjectBuilder().add(Keywords.ID, JsonValue.NULL).build();
 
+		// 8.
 		} else if (JsonUtils.isString(value)) {
-			// 8.
+			
 			valueObject = Json.createObjectBuilder().add(Keywords.ID, value).build();
 			simpleTerm = true;
 
+		// 9.
 		} else if (JsonUtils.isObject(value)) {
-			// 9.
+
 			valueObject = value.asJsonObject();
 			simpleTerm = false;
 
@@ -196,6 +199,7 @@ public final class TermDefinitionBuilder {
 
 		// 10.
 		TermDefinition definition = new TermDefinition(false, protectedFlag, false);
+
 
 		// 11.
 		if (valueObject.containsKey(Keywords.PROTECTED)) {
@@ -239,7 +243,7 @@ public final class TermDefinitionBuilder {
 			}
 
 			// 12.5.
-			definition.typeMapping = expandedTypeString;
+			definition.typeMapping =  expandedTypeString;
 		}
 
 		// 13.
@@ -329,8 +333,13 @@ public final class TermDefinitionBuilder {
 				}
 
 				// 14.2.3
-				definition.uriMapping = activeContext.expandUri(idValueString).localContext(localContext)
-						.defined(defined).vocab(true).build();
+				definition.uriMapping = 
+								activeContext
+									.expandUri(idValueString)
+									.localContext(localContext)
+									.defined(defined)
+									.vocab(true)
+									.build();
 
 				if (Keywords.CONTEXT.equals(definition.uriMapping)) {
 					throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ALIAS);
@@ -409,6 +418,7 @@ public final class TermDefinitionBuilder {
 			throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
 
 		} else {
+
 			definition.uriMapping = activeContext.vocabularyMapping.concat(term);
 		}
 
@@ -421,8 +431,6 @@ public final class TermDefinitionBuilder {
 			if (JsonUtils.isNull(containerValue)) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
 			}
-
-			String containerString = null;
 
 			if (JsonUtils.isArray(containerValue) && !activeContext.inMode(Version.V1_0)) {
 
@@ -456,6 +464,8 @@ public final class TermDefinitionBuilder {
 			if (containerValue == null) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
 			}
+
+			String containerString = null;
 
 			if (JsonUtils.isString(containerValue)) {
 

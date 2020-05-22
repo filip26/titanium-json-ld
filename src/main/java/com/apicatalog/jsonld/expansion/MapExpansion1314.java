@@ -634,7 +634,7 @@ final class MapExpansion1314 {
 				for (String index : indicies) {
 
 					JsonValue indexValue = value.asJsonObject().get(index);
-
+					
 					// 13.8.3.1.
 					ActiveContext mapContext = activeContext;
 
@@ -645,12 +645,15 @@ final class MapExpansion1314 {
 					}
 
 					// 13.8.3.2.
-					TermDefinition indexTermDefinition = activeContext.getTerm(index);
+					TermDefinition indexTermDefinition = mapContext.getTerm(index);
 
 					if (containerMapping.contains(Keywords.TYPE) && indexTermDefinition != null
 							&& indexTermDefinition.hasLocalContext()) {
 
-						mapContext = mapContext.create(indexValue, indexTermDefinition.getBaseUrl()).build();
+						mapContext = 
+								mapContext
+									.create(indexTermDefinition.getLocalContext(), indexTermDefinition.getBaseUrl())
+									.build();
 					}
 
 					// 13.8.3.3.
