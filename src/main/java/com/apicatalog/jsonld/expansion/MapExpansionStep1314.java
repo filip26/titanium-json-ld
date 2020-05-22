@@ -42,7 +42,7 @@ public final class MapExpansionStep1314 {
 
 	// mandatory
 	private final ActiveContext activeContext;
-	private JsonObject element;
+	private final JsonObject element;
 	private final String activeProperty; 
 	private final URI baseUrl;
 	

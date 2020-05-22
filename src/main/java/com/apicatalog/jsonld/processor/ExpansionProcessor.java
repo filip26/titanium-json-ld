@@ -126,6 +126,6 @@ public class ExpansionProcessor {
 		}
 		
 		// 8.3
-		return JsonUtils.toArray(expanded);
+		return JsonUtils.asArray(expanded);
 	}
 }

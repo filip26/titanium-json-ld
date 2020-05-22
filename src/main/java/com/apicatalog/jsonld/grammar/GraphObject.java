@@ -16,7 +16,7 @@ public class GraphObject {
 	}
 	
 	public static final JsonObject toGraphObject(JsonValue value) {
-		return Json.createObjectBuilder().add(Keywords.GRAPH, JsonUtils.toArray(value)).build();		
+		return Json.createObjectBuilder().add(Keywords.GRAPH, JsonUtils.asArray(value)).build();		
 	}
 
 }

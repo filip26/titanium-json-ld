@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonStructure;
@@ -38,7 +37,7 @@ public class ContextProcessor {
 
 	// mandatory
 	private final ActiveContext activeContext; 
-	private JsonValue localContext; 
+	private final JsonValue localContext; 
 	private final URI baseUrl;	
 	
 	// optional
@@ -98,7 +97,7 @@ public class ContextProcessor {
 	}
 
 	public ActiveContext compute() throws JsonLdError {
-	
+
 		// 1. Initialize result to the result of cloning active context, with inverse context set to null.
 		ActiveContext result = new ActiveContext(activeContext);
 		result.inverseContext = null;
@@ -119,14 +118,10 @@ public class ContextProcessor {
 		if (!propagate && !result.hasPreviousContext()) {
 			result.previousContext = activeContext;
 		}
-		
+
 		// 4. If local context is not an array, set local context to an array containing only local context.
-		if (JsonUtils.isNotArray(localContext)) {
-			localContext = Json.createArrayBuilder().add(localContext).build();
-		}
-		
 		// 5. For each item context in local context:
-		for (JsonValue itemContext : localContext.asJsonArray()) {
+		for (JsonValue itemContext : JsonUtils.asArray(localContext)) {
 			
 			// 5.1. If context is null:
 			if (JsonUtils.isNull(itemContext)) {
@@ -465,7 +460,7 @@ public class ContextProcessor {
 					}
 				}
 			}
-				
+	
 			// 5.11.
 			if (contextDefinition.containsKey(Keywords.PROPAGATE)) {
 				// 5.11.1.

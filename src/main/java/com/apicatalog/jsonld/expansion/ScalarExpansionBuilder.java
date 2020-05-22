@@ -65,7 +65,7 @@ public final class ScalarExpansionBuilder {
 								.documentLoader(documentLoader)
 								.compute();		
 		}
-		
+
 		/*
 		 * 4.3. Return the result of the Value Expansion algorithm, passing 
 		 * 		the active context, active property, and element as value. 

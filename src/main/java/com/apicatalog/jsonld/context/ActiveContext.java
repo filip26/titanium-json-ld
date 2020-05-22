@@ -2,6 +2,7 @@ package com.apicatalog.jsonld.context;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.json.JsonObject;
@@ -61,7 +62,7 @@ public class ActiveContext {
 
 	// copy constructor
 	public ActiveContext(final ActiveContext origin) {
-		this.terms = origin.terms;
+		this.terms =  new LinkedHashMap<>(origin.terms);
 		this.baseUri = origin.baseUri;
 		this.baseUrl = origin.baseUrl;
 		this.inverseContext = origin.inverseContext;

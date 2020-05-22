@@ -120,7 +120,6 @@ public final class JsonUtils {
 	}
 	
 	public static JsonObject merge(JsonObject target, JsonObject source) {
-		
 		Map<String, JsonValue> targetMap = (new LinkedHashMap<>(target));
 				
 		source.forEach(targetMap::put);
@@ -128,7 +127,7 @@ public final class JsonUtils {
 		return toObject(targetMap);
 	}
 	
-	public static JsonArray toArray(JsonValue value) {
+	public static JsonArray asArray(JsonValue value) {
 		return JsonUtils.isArray(value)
 					? value.asJsonArray()
 					: Json.createArrayBuilder().add(value).build();

@@ -89,6 +89,8 @@ public final class MapExpansion {
 		//    set active context to previous context from active context,
 		//    as the scope of a term-scoped context does not apply when processing new node objects.
 		if (activeContext.hasPreviousContext() && !fromMap) {
+			
+
 
 			List<String> keys = new ArrayList<>(element.keySet());
 			Collections.sort(keys);
@@ -117,18 +119,18 @@ public final class MapExpansion {
 		
 		// 8.
 		if (propertyContext != null) {
-			
-			TermDefinition activePropertyDefinition = activeContext.getTerm(activeProperty);
-			
+//			TermDefinition activePropertyDefinition = activeContext.getTerm(activeProperty);
+						
 			activeContext = ContextProcessor
-								.with(activeContext, propertyContext, activePropertyDefinition.getBaseUrl())
+								.with(activeContext, propertyContext, baseUrl/*TODO activePropertyDefinition.getBaseUrl()*/)
 								.documentLoader(documentLoader)
 								.overrideProtected(true)
 								.compute();
-		}		
+		}	
 		
 		// 9.
 		if (element.containsKey(Keywords.CONTEXT)) {
+			
 			activeContext = ContextProcessor
 								.with(activeContext, element.get(Keywords.CONTEXT), baseUrl)
 								.documentLoader(documentLoader)
@@ -151,7 +153,6 @@ public final class MapExpansion {
 									.build()
 									;
 
-
 			if (!Keywords.TYPE.equals(expandedKey)) {
 				continue;
 				
@@ -160,7 +161,8 @@ public final class MapExpansion {
 			}
 
 			JsonValue value = element.get(key);
-						
+
+	
 			// 11.1
 			if (JsonUtils.isNotArray(value)) {
 				value = Json.createArrayBuilder().add(value).build();
@@ -245,7 +247,7 @@ public final class MapExpansion {
 							.nest(new LinkedHashMap<>())
 							.frameExpansion(frameExpansion)
 							.ordered(ordered)
-							.compute();;
+							.compute();
 
 		// 15.
 		if (result.containsKey(Keywords.VALUE)) {

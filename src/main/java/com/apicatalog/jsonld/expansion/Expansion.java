@@ -79,12 +79,12 @@ public final class Expansion {
 		
 		// 3. If active property has a term definition in active context with a local context, 
 		//    initialize property-scoped context to that local context.
-		JsonValue propertyContext = null;
+		JsonValue propertyContext = null;	//JsonValue.NULL;
 		
 		if (activeContext.containsTerm(activeProperty)) {	
 			propertyContext = activeContext.getTerm(activeProperty).getLocalContext();			
 		}
-		
+
 		// 4. If element is a scalar
 		if (JsonUtils.isScalar(element)) {
 			

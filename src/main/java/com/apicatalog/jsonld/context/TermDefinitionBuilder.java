@@ -123,21 +123,22 @@ public final class TermDefinitionBuilder {
 
 		// 4.
 		if (Keywords.TYPE.equals(term) && activeContext.inMode(Version.V1_0)) {
-			
+
 			if (ValueType.OBJECT.equals(value.getValueType())) {
-				
+
 				JsonObject map = value.asJsonObject();
 				
 				if (map.size() == 1 && map.containsKey(Keywords.PROTECTED)) {
 					//TODO
 					
 				} else if (map.size() == 1 && map.containsKey(Keywords.CONTAINER)) {
+					
 					JsonValue container = map.get(Keywords.CONTAINER);
 					if (!ValueType.STRING.equals(container.getValueType())
 							|| !Keywords.SET.equals(((JsonString)container).getString())
 							) {
 						throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
-						}
+					}
 				
 				} else if (map.size() == 2) {
 					//TODO
@@ -349,7 +350,7 @@ public final class TermDefinitionBuilder {
 
 					// 14.2.4
 					if (term.indexOf(':', 1) != -1 || term.contains("/")) {	//TODO : except last char
-						
+
 						// 14.2.4.1
 						defined.put(term, Boolean.TRUE);
 						
@@ -584,6 +585,7 @@ public final class TermDefinitionBuilder {
 			
 			// 21.3.
 			try {
+
 				ContextProcessor
 						.with(activeContext, context, baseUrl)
 						.overrideProtected(true)
@@ -595,7 +597,7 @@ public final class TermDefinitionBuilder {
 			} catch (JsonLdError e) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_SCOPED_CONTEXT);
 			}
-					
+
 			// 21.4.
 			definition.setLocalContext(context);
 			definition.setBaseUrl(baseUrl);			
