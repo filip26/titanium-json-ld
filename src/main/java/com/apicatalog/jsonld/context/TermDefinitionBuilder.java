@@ -287,11 +287,11 @@ public final class TermDefinitionBuilder {
 					String containerString = ((JsonString) container).getString();
 
 					if (Keywords.isNot(containerString, Keywords.SET, Keywords.INDEX)) {
-
-						definition.addContainerMapping(containerString);
+						throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY);
 
 					} else {
-						throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY);
+						definition.addContainerMapping(containerString);
+
 					}
 				}
 			}
