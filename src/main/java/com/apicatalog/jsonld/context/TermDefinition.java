@@ -115,14 +115,20 @@ public class TermDefinition {
 	public boolean isNotSameExceptProtected(TermDefinition ref) {
 		
 		return !Objects.equals(uriMapping, ref.uriMapping)
-				|| !Objects.equals(prefixFlag, ref.prefixFlag)
+				|| prefixFlag != ref.prefixFlag
 				|| ! Objects.equals(reversePropertyFlag, ref.reversePropertyFlag)
+				|| ! Objects.equals(baseUrl, ref.baseUrl)
+				|| ! Objects.equals(containerMapping, ref.containerMapping)
+				|| ! Objects.equals(directionMapping, ref.directionMapping)
+				|| ! Objects.equals(indexMapping, ref.indexMapping)
+				|| ! Objects.equals(nestValue, ref.nestValue)
+				|| ! Objects.equals(typeMapping, ref.typeMapping)
 				;
 		
-		//TODO compare other values?!
+//TODO 
+//		JsonValue localContext;
+//		Collection<String> containerMapping;	// any order?
+//		JsonValue languageMapping;
 		
-	}
-	
-	
-	
+	}	
 }

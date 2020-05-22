@@ -122,8 +122,12 @@ public final class TermDefinitionBuilder {
 		JsonValue value = localContext.get(term);
 
 		// 4.
-		if (Keywords.TYPE.equals(term) && activeContext.inMode(Version.V1_0)) {
+		if (Keywords.TYPE.equals(term) /*&& activeContext.inMode(Version.V1_0)*/) {
 
+			if (activeContext.inMode(Version.V1_0)) {
+				throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
+			}
+			
 			if (ValueType.OBJECT.equals(value.getValueType())) {
 
 				JsonObject map = value.asJsonObject();
@@ -153,7 +157,7 @@ public final class TermDefinitionBuilder {
 		}
 
 		// 5.
-		if (Keywords.contains(term)) {
+		else if (Keywords.contains(term)) {
 			throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
 			
 		} else if (Keywords.hasForm(term)) {
@@ -713,9 +717,10 @@ public final class TermDefinitionBuilder {
 				)) {
 			throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
 		}			
-		
+
 		// 27.
 		if (!overrideProtectedFlag && previousDefinition != null && previousDefinition.protectedFlag) {
+			
 			// 27.1.
 			if (definition.isNotSameExceptProtected(previousDefinition)) {
 				throw new JsonLdError(JsonLdErrorCode.PROTECTED_TERM_REDEFINITION);

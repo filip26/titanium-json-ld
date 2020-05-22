@@ -118,11 +118,11 @@ public class ContextProcessor {
 		if (!propagate && !result.hasPreviousContext()) {
 			result.previousContext = activeContext;
 		}
-
+		
 		// 4. If local context is not an array, set local context to an array containing only local context.
 		// 5. For each item context in local context:
 		for (JsonValue itemContext : JsonUtils.asArray(localContext)) {
-			
+		
 			// 5.1. If context is null:
 			if (JsonUtils.isNull(itemContext)) {
 				
@@ -479,7 +479,7 @@ public class ContextProcessor {
 			
 			// 5.13
 			for (String key : contextDefinition.keySet()) {
-				
+
 				if (Keywords.isNot(key, 
 								Keywords.BASE,
 								Keywords.DIRECTION,
@@ -494,7 +494,7 @@ public class ContextProcessor {
 	
 					boolean protectedFlag = contextDefinition.containsKey(Keywords.PROTECTED) 
 												&& JsonUtils.isTrue(contextDefinition.get(Keywords.PROTECTED));
-					
+
 					TermDefinitionBuilder
 						.with(result, contextDefinition, key, defined)
 						.documentLoader(documentLoader)
