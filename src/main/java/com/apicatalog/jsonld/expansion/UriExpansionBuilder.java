@@ -5,13 +5,13 @@ import java.util.Map;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
-import javax.json.JsonValue.ValueType;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.Keywords;
+import com.apicatalog.jsonld.utils.JsonUtils;
 import com.apicatalog.jsonld.utils.UriResolver;
 import com.apicatalog.jsonld.utils.UriUtils;
 /**
@@ -92,7 +92,7 @@ public final class UriExpansionBuilder {
 			
 			JsonValue entryValue = localContext.get(value);
 			
-			if (ValueType.STRING.equals(entryValue.getValueType())) {
+			if (JsonUtils.isString(entryValue)) {
 
 				String entryValueString = ((JsonString)entryValue).getString();
 				

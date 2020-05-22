@@ -10,7 +10,6 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
-import javax.json.JsonValue.ValueType;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -128,7 +127,7 @@ public final class TermDefinitionBuilder {
 				throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
 			}
 			
-			if (ValueType.OBJECT.equals(value.getValueType())) {
+			if (JsonUtils.isObject(value)) {
 
 				JsonObject map = value.asJsonObject();
 				
@@ -137,7 +136,7 @@ public final class TermDefinitionBuilder {
 				} else if (map.size() == 1 && map.containsKey(Keywords.CONTAINER)) {
 					
 					JsonValue container = map.get(Keywords.CONTAINER);
-					if (!ValueType.STRING.equals(container.getValueType())
+					if (JsonUtils.isNotString(container)
 							|| !Keywords.SET.equals(((JsonString)container).getString())
 							) {
 						throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
@@ -628,10 +627,10 @@ public final class TermDefinitionBuilder {
 
 			JsonValue direction = valueObject.get(Keywords.DIRECTION);
 			
-			if (ValueType.NULL.equals(direction.getValueType())) {
+			if (JsonUtils.isNull(direction)) {
 				definition.directionMapping = DirectionType.NULL;
 				
-			} else if (ValueType.STRING.equals(direction.getValueType())) {
+			} else if (JsonUtils.isString(direction)) {
 				
 				String directionString = ((JsonString)direction).getString();
 
@@ -687,10 +686,10 @@ public final class TermDefinitionBuilder {
 			// 25.2.
 			JsonValue prefix = valueObject.get(Keywords.PREFIX);
 			
-			if (ValueType.TRUE.equals(prefix.getValueType())) {
+			if (JsonUtils.isTrue(prefix)) {
 				definition.prefixFlag = true;
 				
-			} else if (ValueType.FALSE.equals(prefix.getValueType())) {
+			} else if (JsonUtils.isFalse(prefix) && JsonUtils.isNotNull(prefix)) {
 				definition.prefixFlag = false;
 				
 			} else {

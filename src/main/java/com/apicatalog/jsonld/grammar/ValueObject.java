@@ -1,7 +1,8 @@
 package com.apicatalog.jsonld.grammar;
 
 import javax.json.JsonValue;
-import javax.json.JsonValue.ValueType;
+
+import com.apicatalog.jsonld.utils.JsonUtils;
 
 public final class ValueObject {
 
@@ -10,7 +11,7 @@ public final class ValueObject {
 	
 	
 	public static final boolean isValueObject(JsonValue value) {
-		return ValueType.OBJECT.equals(value.getValueType()) && value.asJsonObject().containsKey(Keywords.VALUE);		
+		return JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.VALUE);		
 	}
 	
 }

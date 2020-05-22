@@ -43,7 +43,6 @@ public final class JsonUtils {
 		return !isScalar(value);
 	}
 	
-	
 	public static final boolean isNull(final JsonValue value) {
 		return value == null || ValueType.NULL.equals(value.getValueType());
 	}
@@ -56,7 +55,6 @@ public final class JsonUtils {
 		return value != null && ValueType.STRING.equals(value.getValueType());
 	}
 
-
 	public static boolean isNotString(JsonValue value) {
 		return value == null || !ValueType.STRING.equals(value.getValueType());
 	}
@@ -68,20 +66,7 @@ public final class JsonUtils {
 	public static boolean isArray(JsonValue value) {
 		return value != null && ValueType.ARRAY.equals(value.getValueType());
 	}
-	
-	public static JsonValue last(JsonArray array) {
-		return array != null ? array.get(array.size() - 1) : null;
-	}
-	
-//	public static String fisrtKeyExpandingTo(final String value, JsonObject object) {
-//		return object.entrySet()
-//					.stream()
-//						.filter(e -> e.getValue().equals(Json.createValue(value)))
-//						.map(Map.Entry::getKey)
-//						.findFirst()
-//						.orElse(null);
-//	}
-	
+		
 	public static boolean isObject(JsonValue value) {
 		return value != null && ValueType.OBJECT.equals(value.getValueType());
 	}
@@ -103,6 +88,10 @@ public final class JsonUtils {
 
 	public static boolean isTrue(JsonValue value) {
 		return value != null && ValueType.TRUE.equals(value.getValueType());
+	}
+
+	public static boolean isFalse(JsonValue value) {
+		return value == null || ValueType.FALSE.equals(value.getValueType());
 	}
 
 	public static boolean isEmptyObject(JsonValue value) {
@@ -135,6 +124,5 @@ public final class JsonUtils {
 
 	public static boolean isBlankString(JsonValue value) {
 		return isString(value) && ((JsonString)value).getString().isBlank();
-	}
-
+	}	
 }

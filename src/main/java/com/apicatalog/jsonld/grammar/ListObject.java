@@ -3,7 +3,8 @@ package com.apicatalog.jsonld.grammar;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
-import javax.json.JsonValue.ValueType;
+
+import com.apicatalog.jsonld.utils.JsonUtils;
 
 public class ListObject {
 
@@ -23,7 +24,7 @@ public class ListObject {
 	 */
 	public static final boolean isListObject(JsonValue value) {
 		
-		return ValueType.OBJECT.equals(value.getValueType()) && value.asJsonObject().containsKey(Keywords.LIST);
+		return JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.LIST);
 		//TODO check @index and no other entries
 		
 	}
@@ -34,7 +35,7 @@ public class ListObject {
 	 *  and then by setting it to a map containing the key-value pair @list-expanded value.
 	 */
 	public static final JsonObject toListObject(JsonValue value) {
-		if (ValueType.ARRAY.equals(value.getValueType())) {
+		if (JsonUtils.isArray(value)) {
 			return Json.createObjectBuilder().add(Keywords.LIST, value).build();
 		}
 		

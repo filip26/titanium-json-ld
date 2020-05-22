@@ -12,7 +12,6 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
-import javax.json.JsonValue.ValueType;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -278,19 +277,19 @@ public final class MapExpansion {
 			if (JsonUtils.contains(Keywords.JSON, type)) {
 								
 			// 15.3.
-			} else if (value == null || ValueType.NULL.equals(value.getValueType())
-					|| (ValueType.ARRAY.equals(value.getValueType()) && value.asJsonArray().isEmpty())
+			} else if (JsonUtils.isNull(value)
+					|| (JsonUtils.isArray(value) && value.asJsonArray().isEmpty())
 					) {
 				return JsonValue.NULL;
 				
 
 			// 15.4
-			} else if (!ValueType.STRING.equals(value.getValueType()) && result.containsKey(Keywords.LANGUAGE))  {
+			} else if (JsonUtils.isNotString(value) && result.containsKey(Keywords.LANGUAGE))  {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
 
 			// 15.5			
 			} else if (result.containsKey(Keywords.TYPE)
-					&& (!ValueType.STRING.equals(type.getValueType())
+					&& (JsonUtils.isNotString(type)
 					|| UriUtils.isNotURI(((JsonString)type).getString()))
 					){
 				throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE);
@@ -318,7 +317,7 @@ public final class MapExpansion {
 			if (result.containsKey(Keywords.SET)) {
 				JsonValue set = result.get(Keywords.SET);
 				
-				if (!ValueType.OBJECT.equals(set.getValueType())) {
+				if (JsonUtils.isNotObject(set)) {
 					return set;
 				}			
 
@@ -377,14 +376,14 @@ public final class MapExpansion {
 				
 				JsonValue original = object.get(key);
 				
-				if (!ValueType.ARRAY.equals(original.getValueType())){
+				if (JsonUtils.isNotArray(original)){
 					object.put(key,  Json.createArrayBuilder().add(original).build());
 				}
 			}
 		}
 		
 		// 2. If value is an array, then for each element v in value, use add value recursively to add v to key in entry.
-		if (ValueType.ARRAY.equals(value.getValueType())) {
+		if (JsonUtils.isArray(value)) {
 			
 			for (JsonValue v : value.asJsonArray()) {
 				addValue(object, key, v, asArray);
@@ -402,7 +401,7 @@ public final class MapExpansion {
 				JsonValue original = object.get(key);
 				
 				// 3.2.1
-				if (!ValueType.ARRAY.equals(original.getValueType())){
+				if (JsonUtils.isNotArray(original)){
 					object.put(key,  Json.createArrayBuilder().add(original).build());
 
 				// 3.2.2

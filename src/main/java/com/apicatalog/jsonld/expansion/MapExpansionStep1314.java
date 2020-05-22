@@ -15,7 +15,6 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
 import javax.json.JsonValue;
-import javax.json.JsonValue.ValueType;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -160,7 +159,7 @@ public final class MapExpansionStep1314 {
 				if (Keywords.ID.equals(expandedProperty)) {
 
 					// 13.4.3.1
-					if (!ValueType.STRING.equals(value.getValueType())) {
+					if (JsonUtils.isNotString(value)) {
 						//TODO frameExpansion
 						throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE);
 						
@@ -219,7 +218,7 @@ public final class MapExpansionStep1314 {
 					// 13.4.4.4
 					} else {
 						
-						if (ValueType.STRING.equals(value.getValueType())) {
+						if (JsonUtils.isString(value)) {
 							
 							String expandedStringValue = 
 										UriExpansionBuilder
@@ -232,13 +231,13 @@ public final class MapExpansionStep1314 {
 								expandedValue = Json.createValue(expandedStringValue);
 							}
 
-						} else if (ValueType.ARRAY.equals(value.getValueType())) {
+						} else if (JsonUtils.isArray(value)) {
 
 							JsonArrayBuilder array = Json.createArrayBuilder();
 							
 							for (JsonValue item : value.asJsonArray()) {
 								
-								if (ValueType.STRING.equals(item.getValueType())) {
+								if (JsonUtils.isString(item)) {
 									
 									String expandedStringValue = 
 												UriExpansionBuilder
@@ -361,7 +360,7 @@ public final class MapExpansionStep1314 {
 				if (Keywords.LANGUAGE.equals(expandedProperty)) {
 					
 					// 13.4.8.1
-					if (!ValueType.STRING.equals(value.getValueType())) {
+					if (JsonUtils.isNotString(value)) {
 						//TODO frameExpansion
 						throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
 					}
@@ -420,7 +419,7 @@ public final class MapExpansionStep1314 {
 										.ordered(ordered)
 										.compute();
 					
-					if (!ValueType.ARRAY.equals(expandedValue.getValueType())) {
+					if (JsonUtils.isNotArray(expandedValue)) {
 						expandedValue = Json.createArrayBuilder().add(expandedValue).build();
 					}
 				}
