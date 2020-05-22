@@ -89,7 +89,7 @@ public class JsonLdProcessorExpandTest {
 			Assert.assertNotNull(result);
 			
 		} catch (JsonLdError e) {	
-			//e.printStackTrace();
+//			e.printStackTrace();
 			Assert.assertEquals(testDefinition.expectErrorCode, e.getCode().name());
 			return;
 		}

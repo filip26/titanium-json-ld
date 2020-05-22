@@ -165,6 +165,10 @@ public class ActiveContextBuilder {
 				}
 
 				// 5.2.3
+				//TODO make it option, get rid of magic numbers
+				if (remoteContexts.size() > 256) {
+					throw new JsonLdError(JsonLdErrorCode.CONTEXT_OVERFLOW);
+				}
 				remoteContexts.add(contextUri);
 
 				// 5.2.4
@@ -203,15 +207,14 @@ public class ActiveContextBuilder {
 					throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT);
 				}
 
-				JsonObject importedContext = importedStructure.asJsonObject();
+				JsonValue importedContext = importedStructure.asJsonObject();
 
-				if (!importedContext.containsKey(Keywords.CONTEXT)
-						|| JsonUtils.isNotObject(importedContext.get(Keywords.CONTEXT))) {
+				if (JsonUtils.isNotObject(importedContext) || !importedContext.asJsonObject().containsKey(Keywords.CONTEXT)) {
 					throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT);
 				}
 
 				// 5.2.5.3.
-				importedContext = importedContext.getJsonObject(Keywords.CONTEXT);
+				importedContext = importedContext.asJsonObject().get(Keywords.CONTEXT);
 
 				// 5.2.6
 				try {
