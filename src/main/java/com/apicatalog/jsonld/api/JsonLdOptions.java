@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld;
+package com.apicatalog.jsonld.api;
 
 import java.net.URI;
 import java.util.Optional;

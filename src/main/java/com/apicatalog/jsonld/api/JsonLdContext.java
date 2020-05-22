@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld;
+package com.apicatalog.jsonld.api;
 
 /**
  * The {@link JsonLdContext} interface is used to refer to a value that may be a

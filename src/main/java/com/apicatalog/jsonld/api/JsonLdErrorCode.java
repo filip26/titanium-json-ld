@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld;
+package com.apicatalog.jsonld.api;
 
 /**
  * The {@link JsonLdErrorCode} represents the collection of valid JSON-LD error

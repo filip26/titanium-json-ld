@@ -2,7 +2,7 @@ package com.apicatalog.jsonld.document;
 
 import javax.json.JsonStructure;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.api.JsonLdError;
 
 public interface Document {
 

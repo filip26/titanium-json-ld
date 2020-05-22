@@ -2,7 +2,7 @@ package com.apicatalog.jsonld.input;
 
 import javax.json.JsonStructure;
 
-import com.apicatalog.jsonld.JsonLdInput;
+import com.apicatalog.jsonld.api.JsonLdInput;
 
 public class JsonStructureInput implements JsonLdInput {
 

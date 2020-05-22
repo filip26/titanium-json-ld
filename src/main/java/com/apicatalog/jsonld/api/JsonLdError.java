@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld;
+package com.apicatalog.jsonld.api;
 
 /**
  * The {@link JsonLdError} type is used to report processing errors.

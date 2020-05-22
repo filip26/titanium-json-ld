@@ -4,8 +4,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.DocumentReader;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.document.RemoteDocumentImpl;

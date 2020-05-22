@@ -7,8 +7,8 @@ import javax.json.JsonStructure;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.utils.JsonUtils;
 
 public class DocumentReader implements Document {

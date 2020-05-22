@@ -2,7 +2,7 @@ package com.apicatalog.rdf;
 
 import java.util.Iterator;
 
-import com.apicatalog.jsonld.JsonLdProcessor;
+import com.apicatalog.jsonld.api.JsonLdProcessor;
 
 /**
  * The {@link RdfGraph} interface describes operations on an RDF graph used by

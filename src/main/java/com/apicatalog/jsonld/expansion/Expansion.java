@@ -4,7 +4,7 @@ import java.net.URI;
 
 import javax.json.JsonValue;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;

@@ -7,11 +7,11 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
 
-import com.apicatalog.jsonld.JsonLdContext;
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdInput;
-import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.JsonLdProcessor;
+import com.apicatalog.jsonld.api.JsonLdContext;
+import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.api.JsonLdInput;
+import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.api.JsonLdProcessor;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.processor.ExpansionProcessor;
 import com.apicatalog.rdf.RdfDataset;

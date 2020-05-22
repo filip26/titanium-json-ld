@@ -1,6 +1,6 @@
 package com.apicatalog.jsonld.input;
 
-import com.apicatalog.jsonld.JsonLdInput;
+import com.apicatalog.jsonld.api.JsonLdInput;
 import com.apicatalog.jsonld.document.RemoteDocument;
 
 public class DocumentInput implements JsonLdInput {

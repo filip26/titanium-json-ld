@@ -4,6 +4,7 @@ import java.net.URI;
 
 import javax.json.JsonObject;
 
+import com.apicatalog.jsonld.api.JsonLdOptionsBuilder;
 import com.apicatalog.jsonld.grammar.Version;
 
 public class JsonLdTestOptions {

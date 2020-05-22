@@ -9,9 +9,9 @@ import javax.json.JsonObject;
 import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.api.JsonLdErrorCode;
+import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.expansion.Expansion;

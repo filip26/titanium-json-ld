@@ -27,6 +27,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.api.JsonLdOptionsBuilder;
+import com.apicatalog.jsonld.api.JsonLdProcessor;
 import com.apicatalog.jsonld.grammar.Version;
 import com.apicatalog.jsonld.impl.DefaultJsonLdProcessor;
 

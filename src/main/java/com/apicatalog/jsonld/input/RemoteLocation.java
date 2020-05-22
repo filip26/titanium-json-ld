@@ -3,10 +3,10 @@ package com.apicatalog.jsonld.input;
 import java.net.MalformedURLException;
 import java.net.URI;
 
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.JsonLdInput;
-import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.api.JsonLdErrorCode;
+import com.apicatalog.jsonld.api.JsonLdInput;
+import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 
 public class RemoteLocation implements JsonLdInput {

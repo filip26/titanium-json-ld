@@ -8,7 +8,7 @@ import java.util.Map;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.expansion.UriExpansionBuilder;
 import com.apicatalog.jsonld.expansion.ValueExpansionBuilder;
 import com.apicatalog.jsonld.grammar.DirectionType;
