@@ -18,7 +18,7 @@ import com.apicatalog.jsonld.grammar.Version;
  * A context that is used to resolve terms while the processing algorithm is running.
  * 
  */
-public class ActiveContext {
+public final class ActiveContext {
 
 	// the active term definitions which specify how keys and values have to be interpreted
 	Map<String, TermDefinition> terms;
@@ -139,4 +139,9 @@ public class ActiveContext {
 	public TermDefinitionBuilder createTerm(JsonObject localContext, String term, Map<String, Boolean> defined) {
 		return TermDefinitionBuilder.with(this, localContext, term, defined);
 	}
+	
+	public ActiveContextBuilder create(final JsonValue localContext, final URI baseUrl) {
+		return ActiveContextBuilder.with(this, localContext, baseUrl);
+	}
+
 }

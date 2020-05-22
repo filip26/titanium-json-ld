@@ -592,13 +592,13 @@ public final class TermDefinitionBuilder {
 			// 21.3.
 			try {
 
-				ContextProcessor
-						.with(activeContext, context, baseUrl)
+				activeContext
+						.create(context, baseUrl)
 						.overrideProtected(true)
 						.remoteContexts(new ArrayList<>(remoteContexts))
 						.validateScopedContext(false)
 						.documentLoader(documentLoader)
-						.compute();
+						.build();
 				
 			} catch (JsonLdError e) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_SCOPED_CONTEXT, e);

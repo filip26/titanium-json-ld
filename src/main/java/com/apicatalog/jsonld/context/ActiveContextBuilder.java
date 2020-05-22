@@ -33,7 +33,7 @@ import com.apicatalog.jsonld.utils.UriUtils;
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#context-processing-algorithms">Context Processing Algorithm</a>
  * 
  */
-public class ContextProcessor {
+public class ActiveContextBuilder {
 
 	// mandatory
 	private final ActiveContext activeContext; 
@@ -51,7 +51,7 @@ public class ContextProcessor {
 	
 	private LoadDocumentCallback documentLoader;
 	
-	private ContextProcessor(
+	private ActiveContextBuilder(
 			ActiveContext activeContext, 
 			JsonValue localContext, 
 			URI baseUrl) {
@@ -67,36 +67,36 @@ public class ContextProcessor {
 		this.validateScopedContext = true;
 	}
 
-	public static final ContextProcessor with(ActiveContext activeContext, JsonValue localContext, URI baseUrl) {
-		return new ContextProcessor(activeContext, localContext, baseUrl);
+	public static final ActiveContextBuilder with(ActiveContext activeContext, JsonValue localContext, URI baseUrl) {
+		return new ActiveContextBuilder(activeContext, localContext, baseUrl);
 	}
 	
-	public ContextProcessor remoteContexts(Collection<String> value) {
+	public ActiveContextBuilder remoteContexts(Collection<String> value) {
 		this.remoteContexts = value;
 		return this;
 	}
 	
-	public ContextProcessor overrideProtected(boolean value) {
+	public ActiveContextBuilder overrideProtected(boolean value) {
 		this.overrideProtected = value;
 		return this;
 	}
 	
-	public ContextProcessor propagate(boolean value) {
+	public ActiveContextBuilder propagate(boolean value) {
 		this.propagate = value;
 		return this;
 	}
 	
-	public ContextProcessor validateScopedContext(boolean value) {
+	public ActiveContextBuilder validateScopedContext(boolean value) {
 		this.validateScopedContext = value;
 		return this;
 	}
 	
-	public ContextProcessor documentLoader(LoadDocumentCallback documentLoader) {
+	public ActiveContextBuilder documentLoader(LoadDocumentCallback documentLoader) {
 		this.documentLoader = documentLoader;
 		return this;
 	}
 
-	public ActiveContext compute() throws JsonLdError {
+	public ActiveContext build() throws JsonLdError {
 
 		// 1. Initialize result to the result of cloning active context, with inverse context set to null.
 		ActiveContext result = new ActiveContext(activeContext);
@@ -216,11 +216,13 @@ public class ContextProcessor {
 								
 				// 5.2.6
 				try {
-					result = ContextProcessor.with(result, importedContext, documentUrl.toURI())
+					result = ActiveContextBuilder
+									.with(result, importedContext, documentUrl.toURI())
 									.remoteContexts(new ArrayList<>(remoteContexts))
 									.validateScopedContext(validateScopedContext)
-									.compute();
-				} catch (URISyntaxException/* | JsonLdError*/ e) {
+									.build();
+					
+				} catch (URISyntaxException/*TODO ? | JsonLdError*/ e) {
 					throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
 				}
 				

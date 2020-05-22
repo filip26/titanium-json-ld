@@ -20,7 +20,6 @@ import javax.json.JsonValue.ValueType;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.ActiveContext;
-import com.apicatalog.jsonld.context.ContextProcessor;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.grammar.DefaultObject;
 import com.apicatalog.jsonld.grammar.DirectionType;
@@ -691,7 +690,9 @@ public final class MapExpansionStep1314 {
 							&& indexTermDefinition.hasLocalContext()
 							) {
 						
-						mapContext = ContextProcessor.with(mapContext, indexValue, indexTermDefinition.getBaseUrl()).compute();
+						mapContext = mapContext
+										.create(indexValue, indexTermDefinition.getBaseUrl())
+										.build();
 					}
 					
 					// 13.8.3.3.

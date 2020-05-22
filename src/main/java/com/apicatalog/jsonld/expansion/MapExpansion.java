@@ -17,7 +17,6 @@ import javax.json.JsonValue.ValueType;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.ActiveContext;
-import com.apicatalog.jsonld.context.ContextProcessor;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
@@ -121,20 +120,20 @@ public final class MapExpansion {
 		if (propertyContext != null) {
 //			TermDefinition activePropertyDefinition = activeContext.getTerm(activeProperty);
 						
-			activeContext = ContextProcessor
-								.with(activeContext, propertyContext, baseUrl/*TODO activePropertyDefinition.getBaseUrl()*/)
+			activeContext = activeContext
+								.create(propertyContext, baseUrl/*TODO activePropertyDefinition.getBaseUrl()*/)
 								.documentLoader(documentLoader)
 								.overrideProtected(true)
-								.compute();
+								.build();
 		}	
 		
 		// 9.
 		if (element.containsKey(Keywords.CONTEXT)) {
 			
-			activeContext = ContextProcessor
-								.with(activeContext, element.get(Keywords.CONTEXT), baseUrl)
+			activeContext = activeContext
+								.create(element.get(Keywords.CONTEXT), baseUrl)
 								.documentLoader(documentLoader)
-								.compute();
+								.build();
 		}
 		
 		// 10.
@@ -186,11 +185,11 @@ public final class MapExpansion {
 					TermDefinition activeTermDefinition = activeContext.getTerm(term);
 					
 					if (termDefinition.hasLocalContext() && activeTermDefinition != null) {		
-						activeContext = ContextProcessor
-											.with(activeContext, termDefinition.getLocalContext(), activeTermDefinition.getBaseUrl())
+						activeContext = activeContext
+											.create(termDefinition.getLocalContext(), activeTermDefinition.getBaseUrl())
 											.documentLoader(documentLoader)
 											.propagate(false)
-											.compute();
+											.build();
 					}
 				}
 			}		

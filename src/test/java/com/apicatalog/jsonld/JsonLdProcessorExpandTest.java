@@ -86,8 +86,6 @@ public class JsonLdProcessorExpandTest {
 			Assert.assertEquals(testDefinition.expectErrorCode, e.getCode().name());
 			return;
 		}
-
-		
 		
 		final Path expectPath = Paths.get("src","test","resources", "json-ld-test-suite", testDefinition.expect);
 		

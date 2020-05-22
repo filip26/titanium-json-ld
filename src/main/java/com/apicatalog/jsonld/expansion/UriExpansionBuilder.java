@@ -10,7 +10,6 @@ import javax.json.JsonValue.ValueType;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.context.TermDefinitionBuilder;
 import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.utils.UriResolver;
@@ -98,8 +97,8 @@ public final class UriExpansionBuilder {
 				String entryValueString = ((JsonString)entryValue).getString();
 				
 				if (!defined.containsKey(entryValueString) || Boolean.FALSE.equals(defined.get(entryValueString))) {
-
-					TermDefinitionBuilder.with(activeContext, localContext, value, defined).build();		
+					
+					activeContext.createTerm(localContext, value, defined).build();		
 				}
 			}
 		}
@@ -133,7 +132,7 @@ public final class UriExpansionBuilder {
 			if (localContext != null && localContext.containsKey(split[0])
 					&& (!defined.containsKey(split[0]) || !Boolean.TRUE.equals(defined.get(split[0])))) {
 
-				TermDefinitionBuilder.with(activeContext, localContext, split[0], defined).build();		
+				activeContext.createTerm(localContext, split[0], defined).build();		
 			}
 			
 			// 6.4.

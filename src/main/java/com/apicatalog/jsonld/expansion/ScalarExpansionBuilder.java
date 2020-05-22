@@ -4,7 +4,6 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
-import com.apicatalog.jsonld.context.ContextProcessor;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
@@ -60,10 +59,10 @@ public final class ScalarExpansionBuilder {
 			
 			final TermDefinition definition = activeContext.getTerm(activeProperty);
 			
-			activeContext = ContextProcessor
-								.with(activeContext, propertyContext, definition.getBaseUrl())
+			activeContext = activeContext
+								.create(propertyContext, definition.getBaseUrl())
 								.documentLoader(documentLoader)
-								.compute();		
+								.build();		
 		}
 
 		/*
