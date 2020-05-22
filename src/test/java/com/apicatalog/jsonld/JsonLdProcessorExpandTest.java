@@ -1,6 +1,7 @@
 package com.apicatalog.jsonld;
 
 import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 import java.net.URI;
@@ -17,7 +18,6 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
-import javax.json.JsonWriter;
 import javax.json.JsonWriterFactory;
 import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
@@ -38,7 +38,7 @@ import com.apicatalog.jsonld.impl.DefaultJsonLdProcessor;
 public class JsonLdProcessorExpandTest {
 
 	@Parameterized.Parameter(0)
-	public JsonLdTestDefinition testDefinition;
+	public JsonLdTestCase testDefinition;
 
 	@Parameterized.Parameter(1)
 	public String testId;
@@ -53,7 +53,9 @@ public class JsonLdProcessorExpandTest {
 	public void testExpand() throws IOException, JsonLdError {
 
 		// skip specVersion == 1.0
-		assumeFalse(Version.V1_0.equals(testDefinition.specVersion));
+		assumeFalse(Version.V1_0.equals(testDefinition.options.specVersion));
+		// skip normative == false
+		assumeTrue(testDefinition.options.normative == null || testDefinition.options.normative);
 		
 		Map<String, Object> properties = new HashMap<>(1);
 		properties.put(JsonGenerator.PRETTY_PRINTING, true);
@@ -131,7 +133,7 @@ public class JsonLdProcessorExpandTest {
 					.getJsonArray("sequence")
 						.stream()
 							.map(JsonValue::asJsonObject)
-							.map(JsonLdTestDefinition::of)
+							.map(JsonLdTestCase::of)
 							.map(o -> new Object[] {o, o.id, o.name, ((JsonString)(manifest.get("baseIri"))).getString()})
 							.collect(Collectors.toList());
 		}

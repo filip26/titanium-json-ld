@@ -7,24 +7,28 @@ import javax.json.JsonObject;
 import com.apicatalog.jsonld.api.JsonLdOptionsBuilder;
 import com.apicatalog.jsonld.grammar.Version;
 
-public class JsonLdTestOptions {
+public class JsonLdTestCaseOptions {
 
-	public String specVersion;
+	public Version specVersion;
 	public String base;
 	public String processingMode;
 	public Boolean normative;
 	public String expandContext;
 	
-	public static final JsonLdTestOptions of(JsonObject o) {
+	public static final JsonLdTestCaseOptions of(JsonObject o) {
 		
-		final JsonLdTestOptions options = new JsonLdTestOptions();
+		final JsonLdTestCaseOptions options = new JsonLdTestCaseOptions();
 		
-		options.specVersion = o.getString("specVersion", null);
+		if (o.containsKey("specVersion")) {
+			options.specVersion = Version.of(o.getString("specVersion"));
+		}
 		options.base = o.getString("base", null);
 		options.processingMode = o.getString("processingMode", null);
+
 		if (o.containsKey("normative")) {
 			options.normative = o.getBoolean("normative");
 		}
+
 		options.expandContext = o.getString("expandContext", null);
 		
 		return options;
