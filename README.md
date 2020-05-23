@@ -14,13 +14,13 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 
 *work in progress*
 
- Feature | Tests | Pass | Status
+ Feature | Tests | Pass | Status | Notes
  --- | ---: | ---: | ---:
-[Expansion](https://www.w3.org/TR/json-ld/#expanded-document-form) | 378 |  342 | 90%
-[Compaction](https://www.w3.org/TR/json-ld/#compacted-document-form) | | | TBD
-[Flattening](https://www.w3.org/TR/json-ld/#flattened-document-form) | | | TBD
-[Framing](https://www.w3.org/TR/json-ld11-framing/#framing) | | | TBD
-[RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | | | TBD
+[Expansion](https://www.w3.org/TR/json-ld/#expanded-document-form) | 378 |  342 | 90% | specification 1.0 (8) and normative = false (1) tests do no pass 
+[Compaction](https://www.w3.org/TR/json-ld/#compacted-document-form) | | | TBD |
+[Flattening](https://www.w3.org/TR/json-ld/#flattened-document-form) | | | TBD |
+[Framing](https://www.w3.org/TR/json-ld11-framing/#framing) | | | TBD |
+[RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | | | TBD |
 
 ## Roadmap
 
@@ -34,7 +34,7 @@ Version | Features |
 0.6 | Framing
 0.7 | JsonLdProcessor API
 0.8 | Issues, code cleaning and optimization
-0.9 | reserved - TBD
+0.9 | reserved
 1.0 | GA
 
 ## Notes
