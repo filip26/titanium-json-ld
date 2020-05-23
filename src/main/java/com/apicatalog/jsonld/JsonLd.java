@@ -1,5 +1,11 @@
 package com.apicatalog.jsonld;
 
-public class JsonLd {
-//TODO stub class, an entry point to access JsonLdProcessor
+import com.apicatalog.jsonld.api.JsonLdProcessor;
+
+public interface JsonLd {
+
+	public static JsonLdProcessor createProcessor() {
+		return new JsonLd11Processor();
+	}
+	
 }

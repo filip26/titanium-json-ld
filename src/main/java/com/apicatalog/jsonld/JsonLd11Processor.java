@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.impl;
+package com.apicatalog.jsonld;
 
 import java.net.URI;
 import java.util.Collection;
@@ -17,7 +17,7 @@ import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.processor.ExpansionProcessor;
 import com.apicatalog.rdf.RdfDataset;
 
-public class JsonLd11Processor implements JsonLdProcessor {
+final class JsonLd11Processor implements JsonLdProcessor {
 
 	@Override
 	public JsonObject compact(JsonLdInput input) throws JsonLdError {

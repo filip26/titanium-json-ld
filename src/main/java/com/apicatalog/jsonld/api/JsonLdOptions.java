@@ -6,8 +6,8 @@ import java.util.Optional;
 import javax.json.JsonObject;
 
 import com.apicatalog.jsonld.grammar.Version;
-import com.apicatalog.jsonld.loader.FileDocumentLoader;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
+import com.apicatalog.jsonld.loader.UrlConnectionLoader;
 
 /**
  * The {@link JsonLdOptions} type is used to pass various options to the
@@ -74,7 +74,7 @@ public final class JsonLdOptions {
 		this.base = null;
 		this.compactArrays = true;
 		this.compactToRelative = true;
-		this.documentLoader = new FileDocumentLoader();
+		this.documentLoader = new UrlConnectionLoader();
 		this.expandContext = null;
 		this.extractAllScripts = false;
 		this.frameExpansion = false;

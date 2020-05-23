@@ -31,7 +31,6 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.api.JsonLdProcessor;
 import com.apicatalog.jsonld.grammar.Version;
-import com.apicatalog.jsonld.impl.JsonLd11Processor;
 
 @RunWith(Parameterized.class)
 public class JsonLdProcessorExpandTest {
@@ -63,7 +62,7 @@ public class JsonLdProcessorExpandTest {
 
 		final Path inputPath = Paths.get("src","test","resources", "json-ld-test-suite", testDefinition.input);
 		
-		final JsonLdProcessor processor = new JsonLd11Processor();
+		final JsonLdProcessor processor = JsonLd.createProcessor();
 		
 		JsonValue result = null;
 		
