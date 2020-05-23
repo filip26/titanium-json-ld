@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import javax.json.Json;
-import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
@@ -443,35 +442,37 @@ public final class TermDefinitionBuilder {
 			if (JsonUtils.isNull(containerValue)) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
 			}
+			
 
-			if (JsonUtils.isArray(containerValue) && !activeContext.inMode(Version.V1_0)) {
-
-				if (containerValue.asJsonArray().size() == 1) {
-					containerValue = containerValue.asJsonArray().get(0);
-
-				} else if (containerValue.asJsonArray().size() >= 2 && containerValue.asJsonArray().size() <= 3) {
-
-					JsonArray containerArray = containerValue.asJsonArray();
-
-					if (containerArray.contains(Json.createValue(Keywords.GRAPH))
-							&& (containerArray.contains(Json.createValue(Keywords.ID))
-									|| containerArray.contains(Json.createValue(Keywords.INDEX)))) {
-
-						if (containerArray.size() == 2 || containerArray.contains(Json.createValue(Keywords.SET))) {
-							containerValue = containerValue.asJsonArray().get(0);
-
-						}
-					} else if ((containerArray.size() == 2) && containerArray.contains(Json.createValue(Keywords.SET))
-							&& (containerArray.contains(Json.createValue(Keywords.INDEX))
-									|| containerArray.contains(Json.createValue(Keywords.GRAPH))
-									|| containerArray.contains(Json.createValue(Keywords.ID))
-									|| containerArray.contains(Json.createValue(Keywords.TYPE))
-									|| containerArray.contains(Json.createValue(Keywords.LANGUAGE)))) {
-
-						containerValue = containerValue.asJsonArray().get(0);
-					}
-				}
-			}
+			//FIXME
+//			if (JsonUtils.isArray(containerValue) && !activeContext.inMode(Version.V1_0)) {
+//				System.out.println(">> " + valueObject);
+//				if (containerValue.asJsonArray().size() == 1) {
+//					containerValue = containerValue.asJsonArray().get(0);
+//
+//				} else if (containerValue.asJsonArray().size() >= 2 && containerValue.asJsonArray().size() <= 3) {
+//
+//					JsonArray containerArray = containerValue.asJsonArray();
+//
+//					if (containerArray.contains(Json.createValue(Keywords.GRAPH))
+//							&& (containerArray.contains(Json.createValue(Keywords.ID))
+//									|| containerArray.contains(Json.createValue(Keywords.INDEX)))) {
+//
+//						if (containerArray.size() == 2 || containerArray.contains(Json.createValue(Keywords.SET))) {
+//							containerValue = containerValue.asJsonArray().get(0);
+//
+//						}
+//					} else if ((containerArray.size() == 2) && containerArray.contains(Json.createValue(Keywords.SET))
+//							&& (containerArray.contains(Json.createValue(Keywords.INDEX))
+//									|| containerArray.contains(Json.createValue(Keywords.GRAPH))
+//									|| containerArray.contains(Json.createValue(Keywords.ID))
+//									|| containerArray.contains(Json.createValue(Keywords.TYPE))
+//									|| containerArray.contains(Json.createValue(Keywords.LANGUAGE)))) {
+//
+//						containerValue = containerValue.asJsonArray().get(0);
+//					}
+//				}
+//			}
 
 			if (containerValue == null) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
@@ -479,28 +480,33 @@ public final class TermDefinitionBuilder {
 
 			String containerString = null;
 
-			if (JsonUtils.isString(containerValue)) {
-
-				containerString = ((JsonString) containerValue).getString();
-
-				if (Keywords.isNotOneOf(containerString, Keywords.GRAPH, Keywords.ID, Keywords.INDEX, Keywords.LANGUAGE,
-						Keywords.LIST, Keywords.SET, Keywords.TYPE)) {
-					throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
-				}
-
-			} else {
-				throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
-			}
+//			if (JsonUtils.isString(containerValue)) {
+//
+//				containerString = ((JsonString) containerValue).getString();
+//
+//				if (Keywords.isNotOneOf(containerString, Keywords.GRAPH, Keywords.ID, Keywords.INDEX, Keywords.LANGUAGE,
+//						Keywords.LIST, Keywords.SET, Keywords.TYPE)) {
+//					throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
+//				}
+//
+//			} else {
+//				throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
+//			}
 
 			// 19.2.
-			if (activeContext.inMode(Version.V1_0)
-					&& (Keywords.ID.equals(containerString) || Keywords.GRAPH.equals(containerString)
-							|| Keywords.TYPE.equals(containerString) || containerString == null)) {
-				throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
-			}
+//			if (activeContext.inMode(Version.V1_0)
+//					&& (Keywords.ID.equals(containerString) || Keywords.GRAPH.equals(containerString)
+//							|| Keywords.TYPE.equals(containerString) || containerString == null)) {
+//				throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
+//			}
 
+			containerValue = JsonUtils.asArray(containerValue);
+			
 			// 19.3.
-			definition.addContainerMapping(containerString);
+			for (JsonValue item : containerValue.asJsonArray()) {
+					definition.addContainerMapping(((JsonString)item).getString());
+			}
+				
 
 			// 19.4.
 			if (definition.getContainerMapping().contains(Keywords.TYPE)) {
@@ -519,7 +525,7 @@ public final class TermDefinitionBuilder {
 		if (valueObject.containsKey(Keywords.INDEX)) {
 
 			// 20.1.
-			if (activeContext.inMode(Version.V1_0) || !definition.getContainerMapping().contains(Keywords.INDEX)) {
+			if (activeContext.inMode(Version.V1_0) && !definition.getContainerMapping().contains(Keywords.INDEX)) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
 			}
 

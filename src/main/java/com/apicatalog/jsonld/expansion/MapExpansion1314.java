@@ -261,15 +261,12 @@ final class MapExpansion1314 {
 				// 13.4.5
 				if (Keywords.GRAPH.equals(expandedProperty)) {
 
-					expandedValue = Expansion
+					expandedValue = JsonUtils.asArray(Expansion
 										.with(typeContext, value, Keywords.GRAPH, baseUrl)
 										.frameExpansion(frameExpansion)
 										.ordered(ordered)
-										.compute();
-
-					if (JsonUtils.isObject(expandedValue)) {
-						expandedValue = Json.createArrayBuilder().add(expandedValue).build();
-					}
+										.compute()
+										);					
 				}
 
 				// 13.4.6
@@ -507,7 +504,7 @@ final class MapExpansion1314 {
 						|| "@explicit".equals(expandedProperty) || "@omitDefault".equals(expandedProperty)
 						|| "@requireAll)".equals(expandedProperty))) {
 
-					System.out.println("TODO " + expandedProperty + ", " + expandedValue);
+					//TODO frame expansion
 				}
 
 				// 13.4.16
@@ -541,7 +538,7 @@ final class MapExpansion1314 {
 				expandedValue = Json.createObjectBuilder().add(Keywords.VALUE, value)
 						.add(Keywords.TYPE, Json.createValue(Keywords.JSON)).build();
 
-				// 13.7.
+			// 13.7.
 			} else if (containerMapping.contains(Keywords.LANGUAGE) && JsonUtils.isObject(value)) {
 
 				// 13.7.1.
@@ -616,7 +613,7 @@ final class MapExpansion1314 {
 					}
 				}
 
-				// 13.8.
+			// 13.8.
 			} else if ((containerMapping.contains(Keywords.INDEX) || containerMapping.contains(Keywords.TYPE)
 					|| containerMapping.contains(Keywords.ID)) && JsonUtils.isObject(value)) {
 
@@ -691,7 +688,7 @@ final class MapExpansion1314 {
 					for (JsonValue item : indexValue.asJsonArray()) {
 
 						// 13.8.3.7.1.
-						if (containerMapping.contains(Keywords.GRAPH) && !GraphObject.isGraphObject(item)) {
+						if (containerMapping.contains(Keywords.GRAPH) && !GraphObject.isGraphObject(item)) {							
 							item = GraphObject.toGraphObject(item);
 						}
 
@@ -728,14 +725,14 @@ final class MapExpansion1314 {
 								throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
 							}
 
-							// 13.8.3.7.3.
+						// 13.8.3.7.3.
 						} else if (containerMapping.contains(Keywords.INDEX)
 								&& !item.asJsonObject().containsKey(Keywords.INDEX)
 								&& !Keywords.NONE.equals(expandedIndex)) {
 
 							item = Json.createObjectBuilder(item.asJsonObject()).add(Keywords.INDEX, index).build();
 
-							// 13.8.3.7.4.
+						// 13.8.3.7.4.
 						} else if (containerMapping.contains(Keywords.ID)
 								&& !item.asJsonObject().containsKey(Keywords.ID)
 								&& !Keywords.NONE.equals(expandedIndex)) {
@@ -749,7 +746,7 @@ final class MapExpansion1314 {
 							item = Json.createObjectBuilder(item.asJsonObject()).add(Keywords.ID, expandedIndex)
 									.build();
 
-							// 13.8.3.7.5.
+						// 13.8.3.7.5.
 						} else if (containerMapping.contains(Keywords.TYPE) && !Keywords.NONE.equals(expandedIndex)) {
 
 							JsonArrayBuilder types = Json.createArrayBuilder().add(expandedIndex);
@@ -774,7 +771,7 @@ final class MapExpansion1314 {
 					}
 				}
 
-				// 13.9.
+			// 13.9.
 			} else {
 
 				expandedValue = Expansion
@@ -798,14 +795,13 @@ final class MapExpansion1314 {
 			if (containerMapping.contains(Keywords.GRAPH) && !containerMapping.contains(Keywords.ID)
 					&& !containerMapping.contains(Keywords.INDEX)) {
 
-				if (JsonUtils.isNotArray(expandedValue)) {
-					expandedValue = Json.createArrayBuilder().add(expandedValue).build();
-				}
+
+				expandedValue = JsonUtils.asArray(expandedValue);
 
 				JsonArrayBuilder array = Json.createArrayBuilder();
 
 				for (JsonValue ev : expandedValue.asJsonArray()) {
-					array.add(Json.createObjectBuilder().add(Keywords.GRAPH, Json.createArrayBuilder().add(ev)));
+						array.add(GraphObject.toGraphObject(ev));
 				}
 
 				expandedValue = array.build();

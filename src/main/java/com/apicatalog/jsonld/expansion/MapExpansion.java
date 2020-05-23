@@ -361,13 +361,13 @@ public final class MapExpansion {
 				addValue(object, key, v, asArray);
 			}
 
-			// 3.
+		// 3.
 		} else {
 			// 3.1
 			if (!object.containsKey(key)) {
 				object.put(key, value);
 
-				// 3.2
+			// 3.2
 			} else {
 
 				JsonValue original = object.get(key);
@@ -376,7 +376,7 @@ public final class MapExpansion {
 				if (JsonUtils.isNotArray(original)) {
 					object.put(key, Json.createArrayBuilder().add(original).build());
 
-					// 3.2.2
+				// 3.2.2
 				} else {
 					object.put(key, Json.createArrayBuilder(original.asJsonArray()).add(value).build());
 				}
