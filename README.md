@@ -42,9 +42,9 @@ Version | Features |
 #### Expansion 
 
 ```javascript
-JsonValue result = JsonJsonLd
-                       .createProcessor()
-                       .expand(URI.create("https://w3c.github.io/json-ld-api/tests/expand/0001-in.jsonld"));
+JsonValue result = JsonLd
+                     .createProcessor()
+                     .expand(URI.create("https://w3c.github.io/json-ld-api/tests/expand/0001-in.jsonld"));
 ```
 
 
