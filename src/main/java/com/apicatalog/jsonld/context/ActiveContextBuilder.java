@@ -496,7 +496,7 @@ public class ActiveContextBuilder {
 			// 5.13
 			for (String key : contextDefinition.keySet()) {
 
-				if (Keywords.isNotOneOf(key, Keywords.BASE, Keywords.DIRECTION, Keywords.IMPORT, Keywords.LANGUAGE,
+				if (Keywords.isNoneOf(key, Keywords.BASE, Keywords.DIRECTION, Keywords.IMPORT, Keywords.LANGUAGE,
 						Keywords.PROPAGATE, Keywords.PROTECTED, Keywords.VERSION, Keywords.VOCAB)) {
 
 					boolean protectedFlag = contextDefinition.containsKey(Keywords.PROTECTED)
