@@ -443,6 +443,20 @@ public final class TermDefinitionBuilder {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
 			}
 			
+			if (activeContext.inMode(Version.V1_0)) {
+				if (JsonUtils.isNotString(containerValue)) {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
+				}
+				
+				String valueString = ((JsonString)containerValue).getString();
+				
+				if (Keywords.isOneOf(valueString, Keywords.GRAPH, Keywords.ID, Keywords.TYPE)) {
+					throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
+				}
+				
+			} else {
+				
+			}
 
 			//FIXME
 //			if (JsonUtils.isArray(containerValue) && !activeContext.inMode(Version.V1_0)) {
@@ -474,11 +488,6 @@ public final class TermDefinitionBuilder {
 //				}
 //			}
 
-			if (containerValue == null) {
-				throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
-			}
-
-			String containerString = null;
 
 //			if (JsonUtils.isString(containerValue)) {
 //
@@ -490,13 +499,6 @@ public final class TermDefinitionBuilder {
 //				}
 //
 //			} else {
-//				throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
-//			}
-
-			// 19.2.
-//			if (activeContext.inMode(Version.V1_0)
-//					&& (Keywords.ID.equals(containerString) || Keywords.GRAPH.equals(containerString)
-//							|| Keywords.TYPE.equals(containerString) || containerString == null)) {
 //				throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
 //			}
 
