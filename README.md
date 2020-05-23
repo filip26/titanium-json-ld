@@ -37,6 +37,17 @@ Version | Features |
 0.9 | reserved
 1.0 | GA
 
+## Examples
+
+#### Expansion 
+
+```javascript
+JsonValue result = JsonLd
+                     .createProcessor()
+                     .expand(URI.create("https://w3c.github.io/json-ld-api/tests/expand/0001-in.jsonld"));
+```
+
+
 ## Notes
 * uses `java.net.URI`
 
