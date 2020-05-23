@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
@@ -45,7 +47,12 @@ public final class JsonLdContext {
 		return this;
 	}
 
-	public Collection<JsonValue> asList() {
-		return contexts;
+	public JsonArray asJsonArray() {
+		
+		final JsonArrayBuilder builder = Json.createArrayBuilder();
+		
+		contexts.forEach(builder::add);
+		
+		return builder.build();
 	}
 }

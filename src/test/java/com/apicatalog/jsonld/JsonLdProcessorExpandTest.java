@@ -82,7 +82,7 @@ public class JsonLdProcessorExpandTest {
 		}
 
 		JsonLdOptions options = optionsBuilder.create();
-		
+				
 		try {
 			result = processor.expand(inputPath.toUri(), options);
 			

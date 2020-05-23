@@ -63,7 +63,7 @@ public final class JsonLdOptions {
 	private boolean useNativeTypes;
 	private boolean useRdfType;
 
-	protected JsonLdOptions() {
+	public JsonLdOptions() {
 		this.baseUri = null;
 		this.compactArrays = true;
 		this.compactToRelative = true;
@@ -79,7 +79,7 @@ public final class JsonLdOptions {
 		this.useRdfType = false;
 	}
 
-	protected JsonLdOptions(JsonLdOptions options) {
+	public JsonLdOptions(JsonLdOptions options) {
 		this.baseUri = options.baseUri;
 		this.compactArrays = options.compactArrays;
 		this.compactToRelative = options.compactToRelative;

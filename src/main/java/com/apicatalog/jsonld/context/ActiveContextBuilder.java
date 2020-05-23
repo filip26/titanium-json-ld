@@ -150,7 +150,9 @@ public class ActiveContextBuilder {
 
 				// 5.2.1
 				if (baseUrl != null) {
+					
 					contextUri = UriResolver.resolve(baseUrl, ((JsonString) itemContext).getString());
+					
 				} else if (UriUtils.isNotURI(contextUri)) {
 					throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
 				}
@@ -187,7 +189,10 @@ public class ActiveContextBuilder {
 				URL documentUrl = null;
 
 				try {
-					RemoteDocument remoteImport = options.getDocumentLoader().loadDocument(new URL(contextUri), loaderOptions);
+					RemoteDocument remoteImport = 
+										options
+											.getDocumentLoader()
+											.loadDocument(new URL(contextUri), loaderOptions);
 
 					documentUrl = remoteImport.getDocumentUrl();
 

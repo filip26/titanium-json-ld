@@ -62,17 +62,26 @@ public class ExpansionProcessor {
 		// options.
 		// If set, the base option from options overrides the base IRI.
 
-		URI baseUri = options.getBaseURI();
+		URI baseUri = null;
+		URI baseUrl = null;
 
-		if (baseUri == null) {
+		if (input.getDocumentUrl() != null) {
 			try {
-				baseUri = input.getDocumentUrl().toURI();
-
+				baseUrl = input.getDocumentUrl().toURI();
+				baseUri = null;
+				
 			} catch (URISyntaxException e) {
 				throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
 			}
 		}
 
+		if (baseUrl == null) {
+			baseUrl = options.getBaseURI();
+		}
+		if (options.getBaseURI() != null) {
+			baseUri = options.getBaseURI();
+		}
+		
 		ActiveContext activeContext = new ActiveContext(baseUri, baseUri, options);
 
 		// 6. If the expandContext option in options is set, update the active context
@@ -85,23 +94,8 @@ public class ExpansionProcessor {
 			//TODO @context entry
 			
 			activeContext = activeContext
-								.create(options.getExpandContext().asList().iterator().next(), activeContext.getBaseUri())
+								.create(options.getExpandContext().asJsonArray(), baseUrl)
 								.build();
-		}
-
-
-		URI baseUrl = null;
-
-		if (input.getDocumentUrl() != null) {
-			try {
-				baseUrl = input.getDocumentUrl().toURI();
-			} catch (URISyntaxException e) {
-				throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
-			}
-		}
-
-		if (baseUrl == null) {
-			baseUrl = options.getBaseURI();
 		}
 
 		JsonValue expanded = 

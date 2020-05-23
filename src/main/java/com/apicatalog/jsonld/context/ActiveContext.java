@@ -129,6 +129,10 @@ public final class ActiveContext {
 	public ActiveContext getPreviousContext() {
 		return previousContext;
 	}
+	
+	public URI getBaseUrl() {
+		return baseUrl;
+	}
 
 	public ValueExpansionBuilder expandValue(final JsonValue element, final String activeProperty) throws JsonLdError {
 		return ValueExpansionBuilder.with(this, element, activeProperty);

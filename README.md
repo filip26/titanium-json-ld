@@ -16,7 +16,7 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 
  Feature | Tests | Pass | Status | Notes
  --- | ---: | ---: | ---: | ---
-[Expansion](https://www.w3.org/TR/json-ld/#expanded-document-form) | 378 |  342 | 90% | specification 1.0 (8) and non-normative (1) tests do no pass 
+[Expansion](https://www.w3.org/TR/json-ld/#expanded-document-form) | 378 |  342 | 90% | JSON-LD 1.0 (8) and non-normative (1) tests do no pass 
 [Compaction](https://www.w3.org/TR/json-ld/#compacted-document-form) | | | TBD |
 [Flattening](https://www.w3.org/TR/json-ld/#flattened-document-form) | | | TBD |
 [Framing](https://www.w3.org/TR/json-ld11-framing/#framing) | | | TBD |
@@ -29,10 +29,10 @@ Version | Features |
 0.1 | Expansion |
 0.2 | Compaction 
 0.3 | Flattening
-0.4 | RDF serizalization
+0.4 | RDF serialization
 0.5 | RDF deserialization
 0.6 | Framing
-0.7 | JsonLdProcessor API
+0.7 | API
 0.8 | Issues, code cleaning and optimization
 0.9 | reserved
 1.0 | GA
