@@ -465,7 +465,7 @@ public final class TermDefinitionBuilder {
 		if (valueObject.containsKey(Keywords.INDEX)) {
 
 			// 20.1.
-			if (activeContext.inMode(Version.V1_0) && !definition.getContainerMapping().contains(Keywords.INDEX)) {
+			if (activeContext.inMode(Version.V1_0) || !definition.getContainerMapping().contains(Keywords.INDEX)) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
 			}
 
