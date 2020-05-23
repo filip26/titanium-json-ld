@@ -713,13 +713,19 @@ final class MapExpansion1314 {
 							JsonValue existingValues = item.asJsonObject().get(expandedIndexKey);
 
 							if (JsonUtils.isNotNull(existingValues)) {
-								indexPropertyValues.add(existingValues);
+								if (JsonUtils.isArray(existingValues)) {
+									existingValues.asJsonArray().forEach(indexPropertyValues::add);
+									
+								} else {
+									indexPropertyValues.add(existingValues);
+								}
 							}
 
 							// 13.8.3.7.2.4.
 							item = Json.createObjectBuilder(item.asJsonObject())
 									.add(expandedIndexKey, indexPropertyValues).build();
 
+							
 							// 13.8.3.7.2.5.
 							if (ValueObject.isValueObject(item) && item.asJsonObject().size() > 1) {
 								throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
@@ -766,6 +772,7 @@ final class MapExpansion1314 {
 							item = Json.createObjectBuilder(item.asJsonObject()).add(Keywords.TYPE, types).build();
 
 						}
+						
 						// 13.8.3.7.6.
 						expandedValue = Json.createArrayBuilder(expandedValue.asJsonArray()).add(item).build();
 					}

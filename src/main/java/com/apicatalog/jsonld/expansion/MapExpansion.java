@@ -327,6 +327,7 @@ public final class MapExpansion {
 			if (result.size() == 1 && result.containsKey(Keywords.ID) && !frameExpansion) {
 				return JsonValue.NULL;
 			}
+
 		}
 
 		return JsonUtils.toObject(result);
@@ -334,7 +335,7 @@ public final class MapExpansion {
 
 	// TODO don't use this algorithm, easy reduce complexity
 	public static void addValue(Map<String, JsonValue> object, String key, JsonValue value, boolean asArray) {
-
+		
 		// 1. If as array is true and the value of key in object does not exist or is
 		// not an array,
 		// set it to a new array containing any original value.
