@@ -76,10 +76,10 @@ public class ExpansionProcessor {
 		}
 
 		if (baseUrl == null) {
-			baseUrl = options.getBaseURI();
+			baseUrl = options.getBase();
 		}
-		if (options.getBaseURI() != null) {
-			baseUri = options.getBaseURI();
+		if (options.getBase() != null) {
+			baseUri = options.getBase();
 		}
 		
 		ActiveContext activeContext = new ActiveContext(baseUri, baseUri, options);
@@ -90,7 +90,6 @@ public class ExpansionProcessor {
 		// If expandContext is a map having an @context entry, pass that entry's value
 		// instead for local context.
 		if (options.getExpandContext() != null) {
-			
 			//TODO @context entry
 			
 			activeContext = activeContext

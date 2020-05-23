@@ -18,7 +18,6 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
-import javax.json.JsonWriter;
 import javax.json.JsonWriterFactory;
 import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
@@ -30,10 +29,9 @@ import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.api.JsonLdOptionsBuilder;
 import com.apicatalog.jsonld.api.JsonLdProcessor;
 import com.apicatalog.jsonld.grammar.Version;
-import com.apicatalog.jsonld.impl.DefaultJsonLdProcessor;
+import com.apicatalog.jsonld.impl.JsonLd11Processor;
 
 @RunWith(Parameterized.class)
 public class JsonLdProcessorExpandTest {
@@ -65,23 +63,19 @@ public class JsonLdProcessorExpandTest {
 
 		final Path inputPath = Paths.get("src","test","resources", "json-ld-test-suite", testDefinition.input);
 		
-		final JsonLdProcessor processor = new DefaultJsonLdProcessor();
+		final JsonLdProcessor processor = new JsonLd11Processor();
 		
 		JsonValue result = null;
 		
-		JsonLdOptionsBuilder optionsBuilder = new JsonLdOptionsBuilder().baseUri(URI.create(baseUri + testDefinition.input));
-		
-		if (testDefinition.options != null) {
-			testDefinition.options.setup(optionsBuilder);
-		}
-
-		optionsBuilder.ordered(true);
+		JsonLdOptions options = new JsonLdOptions();
+		options.setBase(URI.create(baseUri + testDefinition.input));
+		options.setOrdered(true);
 		
 		if (testDefinition.options.expandContext != null) {
-			optionsBuilder.expandContext(URI.create(testDefinition.options.expandContext));
+			options.setExpandContext(URI.create(testDefinition.options.expandContext));
 		}
 
-		JsonLdOptions options = optionsBuilder.create();
+		testDefinition.options.setup(options);
 				
 		try {
 			result = processor.expand(inputPath.toUri(), options);

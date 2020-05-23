@@ -2,6 +2,7 @@ package com.apicatalog.jsonld.impl;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.Collections;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -16,7 +17,7 @@ import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.processor.ExpansionProcessor;
 import com.apicatalog.rdf.RdfDataset;
 
-public class DefaultJsonLdProcessor implements JsonLdProcessor {
+public class JsonLd11Processor implements JsonLdProcessor {
 
 	@Override
 	public JsonObject compact(JsonLdInput input) throws JsonLdError {
@@ -81,13 +82,13 @@ public class DefaultJsonLdProcessor implements JsonLdProcessor {
 	@Override
 	public Collection<JsonObject> fromRdf(RdfDataset input) {
 		// TODO Auto-generated method stub
-		return null;
+		return Collections.emptyList();
 	}
 
 	@Override
 	public Collection<JsonObject> fromRdf(RdfDataset input, JsonLdOptions options) {
 		// TODO Auto-generated method stub
-		return null;
+		return Collections.emptyList();
 	}
 
 	@Override

@@ -177,7 +177,7 @@ final class MapExpansion1314 {
 				if (Keywords.TYPE.equals(expandedProperty)) {
 
 					// 13.4.4.1
-					if (((!frameExpansion && JsonUtils.isNotString(value) && JsonUtils.isNotArray(value)))
+					if (!frameExpansion && JsonUtils.isNotString(value) && JsonUtils.isNotArray(value)
 							|| (frameExpansion && !JsonUtils.isEmptyObject(value) && JsonUtils.isNotString(value)
 									&& JsonUtils.isNotArray(value) && !DefaultObject.isDefaultObject(value)
 							/* TODO default object */

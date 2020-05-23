@@ -4,7 +4,7 @@ import java.net.URI;
 
 import javax.json.JsonObject;
 
-import com.apicatalog.jsonld.api.JsonLdOptionsBuilder;
+import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.grammar.Version;
 
 public class JsonLdTestCaseOptions {
@@ -34,14 +34,14 @@ public class JsonLdTestCaseOptions {
 		return options;
 	}
 
-	public void setup(JsonLdOptionsBuilder optionsBuilder) {
+	public void setup(JsonLdOptions options) {
 
 		if (processingMode != null) {
-			optionsBuilder.mode(Version.of(processingMode));
+			options.setProcessingMode(Version.of(processingMode));
 		}
 				
 		if (base != null) {
-			optionsBuilder.baseUri(URI.create(base));
+			options.setBase(URI.create(base));
 		}
 	}
 	

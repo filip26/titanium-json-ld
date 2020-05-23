@@ -65,7 +65,7 @@ public interface JsonLdProcessor {
 	 * @return
 	 * @throws JsonLdError
 	 */
-	JsonObject flatten(JsonLdInput input) throws JsonLdError;;
+	JsonObject flatten(JsonLdInput input) throws JsonLdError;
 
 	JsonObject flatten(JsonLdInput input, JsonLdContext context) throws JsonLdError;
 

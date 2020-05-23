@@ -25,7 +25,7 @@ public final class JsonLdOptions {
 	 * The base IRI to use when expanding or compacting the document. 
 	 * If set, this overrides the input document's IRI.
 	 */
-	private URI baseUri;
+	private URI base;
 	
 	/**
 	 * If set to true, the JSON-LD processor replaces arrays with 
@@ -55,16 +55,23 @@ public final class JsonLdOptions {
 	private JsonLdContext expandContext;
 	
 	private boolean extractAllScripts;
+	
 	private boolean frameExpansion;
+	
 	private boolean ordered;
+	
 	private Version processingMode;
+	
 	private boolean produceGeneralizedRdf;
+	
 	private String rdfDirection;
+	
 	private boolean useNativeTypes;
+	
 	private boolean useRdfType;
 
 	public JsonLdOptions() {
-		this.baseUri = null;
+		this.base = null;
 		this.compactArrays = true;
 		this.compactToRelative = true;
 		this.documentLoader = new FileDocumentLoader();
@@ -80,7 +87,7 @@ public final class JsonLdOptions {
 	}
 
 	public JsonLdOptions(JsonLdOptions options) {
-		this.baseUri = options.baseUri;
+		this.base = options.base;
 		this.compactArrays = options.compactArrays;
 		this.compactToRelative = options.compactToRelative;
 		this.documentLoader = options.documentLoader;
@@ -102,8 +109,8 @@ public final class JsonLdOptions {
 	 * 
 	 * @return
 	 */
-	public URI getBaseURI() {
-		return baseUri;
+	public URI getBase() {
+		return base;
 	}
 
 	/**
@@ -120,7 +127,7 @@ public final class JsonLdOptions {
 	}
 
 	/**
-	 * Determines if IRIs are compacted relative to the {@link #getBaseURI()} option
+	 * Determines if IRIs are compacted relative to the {@link #getBase()} option
 	 * or document location when
 	 * <a href="https://www.w3.org/TR/json-ld11-api/#dfn-compact">compacting</a>.
 	 * 
@@ -209,60 +216,59 @@ public final class JsonLdOptions {
 		return expandContext;
 	}
 
-	protected void setBaseUri(URI baseUri) {
-		this.baseUri = baseUri;
+	public void setBase(URI baseUri) {
+		this.base = baseUri;
 	}
 
-	protected void setCompactArrays(boolean compactArrays) {
+	public void setCompactArrays(boolean compactArrays) {
 		this.compactArrays = compactArrays;
 	}
 
-	protected void setCompactToRelative(boolean compactToRelative) {
+	public void setCompactToRelative(boolean compactToRelative) {
 		this.compactToRelative = compactToRelative;
 	}
 
-	protected void setDocumentLoader(LoadDocumentCallback documentLoader) {
+	public void setDocumentLoader(LoadDocumentCallback documentLoader) {
 		this.documentLoader = documentLoader;
 	}
 
-	protected void setExtractAllScripts(boolean extractAllScripts) {
+	public void setExtractAllScripts(boolean extractAllScripts) {
 		this.extractAllScripts = extractAllScripts;
 	}
 
-	protected void setFrameExpansion(boolean frameExpansion) {
+	public void setFrameExpansion(boolean frameExpansion) {
 		this.frameExpansion = frameExpansion;
 	}
 
-	protected void setOrdered(boolean ordered) {
+	public void setOrdered(boolean ordered) {
 		this.ordered = ordered;
 	}
 
-	protected void setProcessingMode(Version processingMode) {
+	public void setProcessingMode(Version processingMode) {
 		this.processingMode = processingMode;
 	}
 
-	protected void setProduceGeneralizedRdf(boolean produceGeneralizedRdf) {
+	public void setProduceGeneralizedRdf(boolean produceGeneralizedRdf) {
 		this.produceGeneralizedRdf = produceGeneralizedRdf;
 	}
 
-	protected void setRdfDirection(String rdfDirection) {
+	public void setRdfDirection(String rdfDirection) {
 		this.rdfDirection = rdfDirection;
 	}
 
-	protected void setUseNativeTypes(boolean useNativeTypes) {
+	public void setUseNativeTypes(boolean useNativeTypes) {
 		this.useNativeTypes = useNativeTypes;
 	}
 
-	protected void setUseRdfType(boolean useRdfType) {
+	public void setUseRdfType(boolean useRdfType) {
 		this.useRdfType = useRdfType;
 	}
 
-	protected void setExpandContext(URI contextLocation) {
+	public void setExpandContext(URI contextLocation) {
 		this.expandContext = JsonLdContext.of(contextLocation);
 	}
 	
-	protected void setExpandContext(JsonObject contextObject) {
+	public void setExpandContext(JsonObject contextObject) {
 		this.expandContext = JsonLdContext.of(contextObject);
 	}
-
 }
