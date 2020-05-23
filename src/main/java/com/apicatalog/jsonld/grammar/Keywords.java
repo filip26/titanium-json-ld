@@ -85,7 +85,7 @@ public final class Keywords {
 		return Arrays.stream(keywords).anyMatch(key::equals);
 	}
 
-	public static boolean allIsOneOf(final Collection<String> values, final String... keywords) {
+	public static boolean allIn(final Collection<String> values, final String... keywords) {
 		return values.stream().allMatch(v -> Arrays.asList(keywords).contains(v));
 	}
 

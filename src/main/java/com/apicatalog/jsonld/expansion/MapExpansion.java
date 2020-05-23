@@ -243,12 +243,12 @@ public final class MapExpansion {
 		if (result.containsKey(Keywords.VALUE)) {
 
 			// 15.1.
-			if (!Keywords.allIsOneOf(result.keySet(), Keywords.DIRECTION, Keywords.INDEX, Keywords.LANGUAGE,
+			if (!Keywords.allIn(result.keySet(), Keywords.DIRECTION, Keywords.INDEX, Keywords.LANGUAGE,
 					Keywords.TYPE, Keywords.VALUE)) {
 
 				throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
 			}
-			if ((result.keySet().contains(Keywords.DIRECTION) || result.keySet().contains(Keywords.LANGUAGE))
+			if ((result.containsKey(Keywords.DIRECTION) || result.containsKey(Keywords.LANGUAGE))
 					&& result.keySet().contains(Keywords.TYPE)) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
 			}
@@ -260,23 +260,23 @@ public final class MapExpansion {
 
 			if (JsonUtils.contains(Keywords.JSON, type)) {
 
-				// 15.3.
+			// 15.3.
 			} else if (JsonUtils.isNull(value) || (JsonUtils.isArray(value) && value.asJsonArray().isEmpty())) {
 				return JsonValue.NULL;
 
-				// 15.4
+			// 15.4
 			} else if (JsonUtils.isNotString(value) && result.containsKey(Keywords.LANGUAGE)) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
 
-				// 15.5
+			// 15.5
 			} else if (result.containsKey(Keywords.TYPE)
 					&& (JsonUtils.isNotString(type) || UriUtils.isNotURI(((JsonString) type).getString()))) {
 				throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE);
 			}
 
-			// 16. Otherwise, if result contains the entry @type and its associated value is
-			// not an array,
-			// set it to an array containing only the associated value.
+		// 16. Otherwise, if result contains the entry @type and its associated value is
+		// not an array,
+		// set it to an array containing only the associated value.
 		} else if (result.containsKey(Keywords.TYPE)) {
 
 			final JsonValue value = result.get(Keywords.TYPE);
@@ -285,7 +285,7 @@ public final class MapExpansion {
 				result.put(Keywords.TYPE, Json.createArrayBuilder().add(value).build());
 			}
 
-			// 17.
+		// 17.
 		} else if (result.containsKey(Keywords.LIST) || result.containsKey(Keywords.SET)) {
 
 			// 17.1.
@@ -315,15 +315,7 @@ public final class MapExpansion {
 
 			// 19.1. If result is a map which is empty, or contains only the entries @value
 			// or @list, set result to null
-			if (result.isEmpty()) {
-				return JsonValue.NULL;
-			}
-
-			if (result.size() == 1 && (result.containsKey(Keywords.VALUE) || result.containsKey(Keywords.LIST))) {
-				return JsonValue.NULL;
-			}
-
-			if (result.size() == 2 && result.containsKey(Keywords.VALUE) && result.containsKey(Keywords.LIST)) {
+			if (result.isEmpty() || result.containsKey(Keywords.VALUE) || result.containsKey(Keywords.LIST)) {
 				return JsonValue.NULL;
 			}
 

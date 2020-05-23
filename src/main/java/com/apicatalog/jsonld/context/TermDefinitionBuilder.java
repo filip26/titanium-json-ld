@@ -614,7 +614,7 @@ public final class TermDefinitionBuilder {
 		}
 
 		// 26.
-		if (!Keywords.allIsOneOf(valueObject.keySet(), Keywords.ID, Keywords.REVERSE, Keywords.CONTAINER,
+		if (!Keywords.allIn(valueObject.keySet(), Keywords.ID, Keywords.REVERSE, Keywords.CONTAINER,
 				Keywords.CONTEXT, Keywords.DIRECTION, Keywords.INDEX, Keywords.LANGUAGE, Keywords.NEST, Keywords.PREFIX,
 				Keywords.PROTECTED, Keywords.TYPE)) {
 			throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
