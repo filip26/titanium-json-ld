@@ -115,10 +115,14 @@ public final class MapExpansion {
 
 		// 8.
 		if (propertyContext != null) {
-//			TermDefinition activePropertyDefinition = activeContext.getTerm(activeProperty);
+			
+			TermDefinition activePropertyDefinition = activeContext.getTerm(activeProperty);
 
 			activeContext = activeContext
-								.create(propertyContext, baseUrl/* TODO activePropertyDefinition.getBaseUrl() */)
+								.create(propertyContext, activePropertyDefinition != null
+															? activePropertyDefinition.getBaseUrl() 
+															: null
+										)								
 								.overrideProtected(true)
 								.build();
 		}
@@ -156,12 +160,8 @@ public final class MapExpansion {
 				typeKey = key;
 			}
 
-			JsonValue value = element.get(key);
-
 			// 11.1
-			if (JsonUtils.isNotArray(value)) {
-				value = Json.createArrayBuilder().add(value).build();
-			}
+			JsonValue value = JsonUtils.asArray(element.get(key));
 
 			// 11.2
 			List<String> terms = value
@@ -180,9 +180,16 @@ public final class MapExpansion {
 					TermDefinition termDefinition = typeContext.getTerm(term);
 
 					if (termDefinition.hasLocalContext()) {
+						
+						TermDefinition valueDefinition = activeContext.getTerm(term);						
+
 						activeContext = 
 								activeContext
-									.create(termDefinition.getLocalContext(), termDefinition.getBaseUrl())
+									.create(termDefinition.getLocalContext(), 
+											valueDefinition != null
+												? valueDefinition.getBaseUrl()
+												: null
+											)
 									.propagate(false)
 									.build();
 					}

@@ -364,7 +364,7 @@ public class ActiveContextBuilder {
 						if (uri.isAbsolute()) {
 							result.baseUri = uri;
 
-							// 5.7.4
+						// 5.7.4
 						} else if (result.baseUri != null) {
 
 							result.baseUri = URI.create(UriResolver.resolve(result.baseUri, valueString));

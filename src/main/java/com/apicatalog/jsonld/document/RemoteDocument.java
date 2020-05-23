@@ -52,4 +52,7 @@ public interface RemoteDocument {
 	 * @return
 	 */
 	Document getDocument();
+	
+	void setDocumentUrl(URL documentUrl);
+	
 }

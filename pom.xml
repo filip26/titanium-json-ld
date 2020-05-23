@@ -11,7 +11,7 @@
     <version>0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>JSON-LD 1.1</name>
+    <name>JSONP-LD 1.1</name>
 	
     <description>
     A JSON-LD 1.1 Processor

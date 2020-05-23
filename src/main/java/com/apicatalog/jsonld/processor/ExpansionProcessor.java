@@ -42,9 +42,17 @@ public class ExpansionProcessor {
 
 		try {
 
-			final RemoteDocument remoteDocument = options.getDocumentLoader().loadDocument(input.toURL(),
-					new LoadDocumentOptions().setExtractAllScripts(options.isExtractAllScripts()));
+			final RemoteDocument remoteDocument = 
+									options
+										.getDocumentLoader()
+										.loadDocument(input.toURL(),
+												new LoadDocumentOptions()
+														.setExtractAllScripts(options.isExtractAllScripts()));
 
+			if (remoteDocument == null) {
+				throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+			}
+			
 			return expand(remoteDocument, options);
 
 		} catch (MalformedURLException e) {
@@ -68,7 +76,7 @@ public class ExpansionProcessor {
 		if (input.getDocumentUrl() != null) {
 			try {
 				baseUrl = input.getDocumentUrl().toURI();
-				baseUri = null;
+				baseUri = baseUrl;
 				
 			} catch (URISyntaxException e) {
 				throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
@@ -82,7 +90,7 @@ public class ExpansionProcessor {
 			baseUri = options.getBase();
 		}
 		
-		ActiveContext activeContext = new ActiveContext(baseUri, baseUri, options);
+		ActiveContext activeContext = new ActiveContext(baseUri, baseUrl, options);
 
 		// 6. If the expandContext option in options is set, update the active context
 		// using the Context Processing algorithm, passing the expandContext as

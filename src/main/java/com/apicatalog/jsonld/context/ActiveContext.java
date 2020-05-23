@@ -146,8 +146,8 @@ public final class ActiveContext {
 		return TermDefinitionBuilder.with(this, localContext, term, defined);
 	}
 
-	public ActiveContextBuilder create(final JsonValue localContext, final URI baseUrl) {
-		return ActiveContextBuilder.with(this, localContext, baseUrl, options);
+	public ActiveContextBuilder create(final JsonValue localContext, final URI base) {
+		return ActiveContextBuilder.with(this, localContext, base, options);
 	}
 
 }

@@ -171,7 +171,7 @@ public final class UriExpansionBuilder {
 		if (vocab && activeContext.getVocabularyMapping() != null) {
 			return activeContext.getVocabularyMapping().concat(value);
 
-			// 8.
+		// 8.
 		} else if (documentRelative) {
 			value = UriResolver.resolve(activeContext.getBaseUri(), value);
 		}

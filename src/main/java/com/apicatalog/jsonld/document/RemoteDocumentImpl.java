@@ -2,6 +2,7 @@ package com.apicatalog.jsonld.document;
 
 import java.net.URL;
 
+@Deprecated
 public class RemoteDocumentImpl implements RemoteDocument {
 
 	private String contextType;
