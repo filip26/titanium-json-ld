@@ -36,7 +36,7 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 
 ## Examples
 
-JSONP-LD implements [The JsonLdProcessor Interface](https://www.w3.org/TR/json-ld11-api/#the-jsonldprocessor-interface).
+JSONP-LD implements the [JsonLdProcessor](https://www.w3.org/TR/json-ld11-api/#the-jsonldprocessor-interface) interface.
 
 #### Expansion 
 
