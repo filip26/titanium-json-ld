@@ -49,7 +49,17 @@ JsonValue result = JsonLd
 ```javascript
 JsonValue result = JsonLd
                      .createProcessor()
-                     .expand(URI.create("file:/home/filip/.....jsonld"));
+                     .expand(URI.create("file:/home/filip/... .jsonld"));
+```
+```javascript
+
+JsonLdOptions options = new JsonLdOptions();
+// external context
+options.setExpandContext(URI.create(...));
+
+JsonValue result = JsonLd
+                     .createProcessor()
+                     .expand(URI.create(...), options);
 ```
 
 
