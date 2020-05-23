@@ -46,11 +46,7 @@ JsonValue result = JsonLd
                      .createProcessor()
                      .expand(URI.create("https://w3c.github.io/json-ld-api/tests/expand/0001-in.jsonld"));
 ```
-```javascript
-JsonValue result = JsonLd
-                     .createProcessor()
-                     .expand(URI.create("file:/home/filip/... .jsonld"));
-```
+
 ```javascript
 
 JsonLdOptions options = new JsonLdOptions();
