@@ -136,6 +136,8 @@ public final class MapExpansion {
 
 		List<String> keys = new ArrayList<>(element.keySet());
 
+		Collections.sort(keys);
+		
 		String typeKey = null;
 
 		// 11.
@@ -162,8 +164,14 @@ public final class MapExpansion {
 			}
 
 			// 11.2
-			List<String> terms = value.asJsonArray().stream().filter(JsonUtils::isString).map(JsonString.class::cast)
-					.map(JsonString::getString).sorted().collect(Collectors.toList());
+			List<String> terms = value
+									.asJsonArray()
+									.stream()
+									.filter(JsonUtils::isString)
+									.map(JsonString.class::cast)
+									.map(JsonString::getString)
+									.sorted()
+									.collect(Collectors.toList());
 
 			for (String term : terms) {
 
@@ -171,12 +179,10 @@ public final class MapExpansion {
 
 					TermDefinition termDefinition = typeContext.getTerm(term);
 
-					TermDefinition activeTermDefinition = activeContext.getTerm(term);
-
-					if (termDefinition.hasLocalContext() && activeTermDefinition != null) {
+					if (termDefinition.hasLocalContext()) {
 						activeContext = 
 								activeContext
-									.create(termDefinition.getLocalContext(), activeTermDefinition.getBaseUrl())
+									.create(termDefinition.getLocalContext(), termDefinition.getBaseUrl())
 									.propagate(false)
 									.build();
 					}
