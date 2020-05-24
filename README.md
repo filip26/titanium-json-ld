@@ -24,20 +24,19 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 
 ## Roadmap
 
-Version | Features | 
---- | ---
-0.1 | Expansion |
-0.2 | Compaction 
-0.3 | Flattening
-0.4 | RDF serialization
-0.5 | RDF deserialization
-0.6 | Framing
-0.7 | API
-0.8 | Issues, code cleaning and optimization
-0.9 | reserved
-1.0 | GA
+- [x] 0.1 - Expansion
+- [ ] 0.2 - Compaction
+- [ ] 0.3 - Flattening
+- [ ] 0.4 - RDF serialization
+- [ ] 0.5 - RDF deserialization
+- [ ] 0.6 - Framing
+- [ ] 0.7 - API
+- [ ] 0.8 - Issues, code cleaning and optimization
+- [ ] 1.0 - GA
 
 ## Examples
+
+JSONP-LD implements the [JsonLdProcessor](https://www.w3.org/TR/json-ld11-api/#the-jsonldprocessor-interface) interface.
 
 #### Expansion 
 
@@ -57,7 +56,6 @@ JsonValue result = JsonLd
                      .createProcessor()
                      .expand(URI.create(...), options);
 ```
-
 
 ## Notes
 * uses `java.net.URI`
