@@ -43,7 +43,6 @@ public final class JsonDocument implements Document {
 			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
 			
 		} catch (JsonException e) {
-			e.printStackTrace();
 			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
 		}
 	}

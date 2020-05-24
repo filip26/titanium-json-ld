@@ -218,15 +218,16 @@ public class ActiveContextBuilder {
 				importedContext = importedContext.asJsonObject().get(Keywords.CONTEXT);
 
 				// 5.2.6
-				result = result
-							.create(importedContext, documentUrl)
-							.remoteContexts(new ArrayList<>(remoteContexts))
-							.validateScopedContext(validateScopedContext)
-							.build();
+				try {
+					result = result
+								.create(importedContext, documentUrl)
+								.remoteContexts(new ArrayList<>(remoteContexts))
+								.validateScopedContext(validateScopedContext)
+								.build();
 
-//				} catch (/* TODO ? | JsonLdError */ e) {
-//					throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
-//				}
+				} catch (JsonLdError e) {
+					throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
+				}
 
 				// 5.2.7
 				continue;

@@ -20,10 +20,6 @@ public final class Term {
 			return Keywords.TYPE.equals(name);
 		}
 
-//TODO 		if (name.contains(":")) {
-//			throw new IllegalArgumentException("A term should not include a colon (:)");
-//		}
-
 		return true;
 	}
 

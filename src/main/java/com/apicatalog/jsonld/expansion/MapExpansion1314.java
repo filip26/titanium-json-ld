@@ -558,7 +558,6 @@ final class MapExpansion1314 {
 				if (ordered) {
 					Collections.sort(langCodes);
 				}
-				Collections.sort(langCodes); // FIXME ?!
 
 				for (String langCode : langCodes) {
 

@@ -11,11 +11,6 @@ public class DocumentInput implements JsonLdInput {
 		this.remoteDocument = remoteDocument;
 	}
 
-	@Override
-	public Type getType() {
-		return Type.DOCUMENT;
-	}
-
 	public RemoteDocument getRemoteDocument() {
 		return remoteDocument;
 	}

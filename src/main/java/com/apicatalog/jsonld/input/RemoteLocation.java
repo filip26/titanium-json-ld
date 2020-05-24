@@ -16,11 +16,6 @@ public class RemoteLocation implements JsonLdInput {
 		this.documentUri = documentUri;
 	}
 
-	@Override
-	public Type getType() {
-		return Type.LOCATION;
-	}
-
 	public DocumentInput fetch(final JsonLdOptions options) throws JsonLdError {
 
 		if (options == null) {

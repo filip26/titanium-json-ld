@@ -21,22 +21,6 @@ import com.apicatalog.jsonld.input.RemoteLocation;
  */
 public interface JsonLdInput {
 
-	public enum Type {
-		RECORD, ARRAY, LOCATION, DOCUMENT
-	}
-
-	Type getType();
-
-//	JsonObject asRecord();
-//	
-//	JsonArray asSequence();
-//	
-//	URI asUri();
-//	
-//	RemoteDocument asDocument();
-
-//	JsonValue asJsonValue(final JsonLdOptions options) throws JsonLdError;
-
 	public static JsonLdInput of(JsonStructure jsonStructure) {
 		return new JsonStructureInput(jsonStructure);
 	}

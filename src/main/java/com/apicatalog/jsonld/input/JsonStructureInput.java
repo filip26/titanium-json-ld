@@ -7,16 +7,9 @@ import com.apicatalog.jsonld.api.JsonLdInput;
 public class JsonStructureInput implements JsonLdInput {
 
 	private final JsonStructure jsonStructure;
-//TODO	private final Type type;
 
 	public JsonStructureInput(JsonStructure jsonStructure) {
 		this.jsonStructure = jsonStructure;
-	}
-
-	@Override
-	public Type getType() {
-		// TODO Auto-generated method stub
-		return Type.RECORD;
 	}
 
 	public JsonStructure getJsonStructure() {
