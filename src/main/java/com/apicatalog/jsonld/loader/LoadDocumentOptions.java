@@ -13,41 +13,41 @@ import java.util.Collection;
  */
 public class LoadDocumentOptions {
 
-	private boolean extractAllScripts;
+    private boolean extractAllScripts;
 
-	private String profile;
+    private String profile;
 
-	private Collection<String> requestProfile;
+    private Collection<String> requestProfile;
 
-	public LoadDocumentOptions() {
-		this.extractAllScripts = false;
-		this.profile = null;
-		this.requestProfile = null;
-	}
+    public LoadDocumentOptions() {
+        this.extractAllScripts = false;
+        this.profile = null;
+        this.requestProfile = null;
+    }
 
-	public boolean isExtractAllScripts() {
-		return extractAllScripts;
-	}
+    public boolean isExtractAllScripts() {
+        return extractAllScripts;
+    }
 
-	public LoadDocumentOptions setExtractAllScripts(boolean extractAllScripts) {
-		this.extractAllScripts = extractAllScripts;
-		return this;
-	}
+    public LoadDocumentOptions setExtractAllScripts(boolean extractAllScripts) {
+        this.extractAllScripts = extractAllScripts;
+        return this;
+    }
 
-	public String getProfile() {
-		return profile;
-	}
+    public String getProfile() {
+        return profile;
+    }
 
-	public void setProfile(String profile) {
-		this.profile = profile;
-	}
+    public void setProfile(String profile) {
+        this.profile = profile;
+    }
 
-	public Collection<String> getRequestProfile() {
-		return requestProfile;
-	}
+    public Collection<String> getRequestProfile() {
+        return requestProfile;
+    }
 
-	public void setRequestProfile(Collection<String> requestProfile) {
-		this.requestProfile = requestProfile;
-	}
+    public void setRequestProfile(Collection<String> requestProfile) {
+        this.requestProfile = requestProfile;
+    }
 
 }

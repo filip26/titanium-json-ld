@@ -21,133 +21,133 @@ import com.apicatalog.jsonld.grammar.Version;
  */
 public final class ActiveContext {
 
-	// the active term definitions which specify how keys and values have to be
-	// interpreted
-	Map<String, TermDefinition> terms;
+    // the active term definitions which specify how keys and values have to be
+    // interpreted
+    Map<String, TermDefinition> terms;
 
-	// the current base IRI
-	URI baseUri;
+    // the current base IRI
+    URI baseUri;
 
-	// the original base URL
-	URI baseUrl;
+    // the original base URL
+    URI baseUrl;
 
-	Object inverseContext; // TODO
+    Object inverseContext; // TODO
 
-	// an optional previous context, used when a non-propagated context is defined.
-	ActiveContext previousContext;
+    // an optional previous context, used when a non-propagated context is defined.
+    ActiveContext previousContext;
 
-	// an optional vocabulary mapping
-	String vocabularyMapping;
+    // an optional vocabulary mapping
+    String vocabularyMapping;
 
-	// an optional default language
-	String defaultLanguage;
+    // an optional default language
+    String defaultLanguage;
 
-	// an optional default base direction ("ltr" or "rtl")
-	DirectionType defaultBaseDirection;
+    // an optional default base direction ("ltr" or "rtl")
+    DirectionType defaultBaseDirection;
 
-	final JsonLdOptions options;
+    final JsonLdOptions options;
 
-	public ActiveContext(final URI baseUri, final URI baseUrl, JsonLdOptions options) {
-		this.baseUri = baseUri;
-		this.baseUrl = baseUrl;
-		this.terms = new LinkedHashMap<>();
-		this.options = options;
-	}
+    public ActiveContext(final URI baseUri, final URI baseUrl, JsonLdOptions options) {
+        this.baseUri = baseUri;
+        this.baseUrl = baseUrl;
+        this.terms = new LinkedHashMap<>();
+        this.options = options;
+    }
 
-	public ActiveContext(final URI baseUri, final URI baseUrl, final ActiveContext previousContext, final JsonLdOptions options) {
-		this.baseUri = baseUri;
-		this.baseUrl = baseUrl;
-		this.previousContext = previousContext;
-		this.terms = new LinkedHashMap<>();
-		this.options = options;
-	}
+    public ActiveContext(final URI baseUri, final URI baseUrl, final ActiveContext previousContext, final JsonLdOptions options) {
+        this.baseUri = baseUri;
+        this.baseUrl = baseUrl;
+        this.previousContext = previousContext;
+        this.terms = new LinkedHashMap<>();
+        this.options = options;
+    }
 
-	// copy constructor
-	public ActiveContext(final ActiveContext origin) {
-		this.terms = new LinkedHashMap<>(origin.terms);
-		this.baseUri = origin.baseUri;
-		this.baseUrl = origin.baseUrl;
-		this.inverseContext = origin.inverseContext;
-		this.previousContext = origin.previousContext;
-		this.vocabularyMapping = origin.vocabularyMapping;
-		this.defaultLanguage = origin.defaultLanguage;
-		this.defaultBaseDirection = origin.defaultBaseDirection;
-		this.options = origin.options;
-	}
+    // copy constructor
+    public ActiveContext(final ActiveContext origin) {
+        this.terms = new LinkedHashMap<>(origin.terms);
+        this.baseUri = origin.baseUri;
+        this.baseUrl = origin.baseUrl;
+        this.inverseContext = origin.inverseContext;
+        this.previousContext = origin.previousContext;
+        this.vocabularyMapping = origin.vocabularyMapping;
+        this.defaultLanguage = origin.defaultLanguage;
+        this.defaultBaseDirection = origin.defaultBaseDirection;
+        this.options = origin.options;
+    }
 
-	public boolean containsTerm(String term) {
-		return terms.containsKey(term);
-	}
+    public boolean containsTerm(String term) {
+        return terms.containsKey(term);
+    }
 
-	public boolean containsProtectedTerm() {
-		return terms.values().stream().anyMatch(d -> d.protectedFlag);
-	}
+    public boolean containsProtectedTerm() {
+        return terms.values().stream().anyMatch(d -> d.protectedFlag);
+    }
 
-	public TermDefinition removeTerm(String term) {
+    public TermDefinition removeTerm(String term) {
 
-		if (terms.containsKey(term)) {
-			TermDefinition def = terms.get(term);
-			terms.remove(term);
-			return def;
-		}
+        if (terms.containsKey(term)) {
+            TermDefinition def = terms.get(term);
+            terms.remove(term);
+            return def;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public void setTerm(String term, TermDefinition definition) {
-		terms.put(term, definition);
-	}
+    public void setTerm(String term, TermDefinition definition) {
+        terms.put(term, definition);
+    }
 
-	public TermDefinition getTerm(String value) {
-		return terms.get(value);
-	}
+    public TermDefinition getTerm(String value) {
+        return terms.get(value);
+    }
 
-	public DirectionType getDefaultBaseDirection() {
-		return defaultBaseDirection;
-	}
+    public DirectionType getDefaultBaseDirection() {
+        return defaultBaseDirection;
+    }
 
-	public String getDefaultLanguage() {
-		return defaultLanguage;
-	}
+    public String getDefaultLanguage() {
+        return defaultLanguage;
+    }
 
-	public URI getBaseUri() {
-		return baseUri;
-	}
+    public URI getBaseUri() {
+        return baseUri;
+    }
 
-	public String getVocabularyMapping() {
-		return vocabularyMapping;
-	}
+    public String getVocabularyMapping() {
+        return vocabularyMapping;
+    }
 
-	public boolean inMode(Version version) {
-		return options.getProcessingMode() != null && options.getProcessingMode().equals(version);
-	}
+    public boolean inMode(Version version) {
+        return options.getProcessingMode() != null && options.getProcessingMode().equals(version);
+    }
 
-	public boolean hasPreviousContext() {
-		return previousContext != null;
-	}
+    public boolean hasPreviousContext() {
+        return previousContext != null;
+    }
 
-	public ActiveContext getPreviousContext() {
-		return previousContext;
-	}
-	
-	public URI getBaseUrl() {
-		return baseUrl;
-	}
+    public ActiveContext getPreviousContext() {
+        return previousContext;
+    }
+    
+    public URI getBaseUrl() {
+        return baseUrl;
+    }
 
-	public ValueExpansionBuilder expandValue(final JsonValue element, final String activeProperty) throws JsonLdError {
-		return ValueExpansionBuilder.with(this, element, activeProperty);
-	}
+    public ValueExpansionBuilder expandValue(final JsonValue element, final String activeProperty) throws JsonLdError {
+        return ValueExpansionBuilder.with(this, element, activeProperty);
+    }
 
-	public UriExpansionBuilder expandUri(final String value) {
-		return UriExpansionBuilder.with(this, value);
-	}
+    public UriExpansionBuilder expandUri(final String value) {
+        return UriExpansionBuilder.with(this, value);
+    }
 
-	public TermDefinitionBuilder createTerm(JsonObject localContext, String term, Map<String, Boolean> defined) {
-		return TermDefinitionBuilder.with(this, localContext, term, defined);
-	}
+    public TermDefinitionBuilder createTerm(JsonObject localContext, String term, Map<String, Boolean> defined) {
+        return TermDefinitionBuilder.with(this, localContext, term, defined);
+    }
 
-	public ActiveContextBuilder create(final JsonValue localContext, final URI base) {
-		return ActiveContextBuilder.with(this, localContext, base, options);
-	}
+    public ActiveContextBuilder create(final JsonValue localContext, final URI base) {
+        return ActiveContextBuilder.with(this, localContext, base, options);
+    }
 
 }

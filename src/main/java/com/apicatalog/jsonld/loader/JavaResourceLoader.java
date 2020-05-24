@@ -13,32 +13,32 @@ import com.apicatalog.jsonld.document.RemoteDocument;
 
 public class JavaResourceLoader implements LoadDocumentCallback {
 
-	@Override
-	public RemoteDocument loadDocument(URI url, LoadDocumentOptions options) throws JsonLdError {
-		
-		
-		if (!"classpath".equals(url.getScheme())) {
-			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
-		}
+    @Override
+    public RemoteDocument loadDocument(URI url, LoadDocumentOptions options) throws JsonLdError {
+        
+        
+        if (!"classpath".equals(url.getScheme())) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+        }
 
-		try (InputStream is = getClass().getResourceAsStream(url.toString().substring("classpath:".length()))) {
+        try (InputStream is = getClass().getResourceAsStream(url.toString().substring("classpath:".length()))) {
 
-			if (is == null) {
-				throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
-			}
-			
-			Document document = JsonDocument.parse(new InputStreamReader(is));
-			
-			RemoteDocument remoteDocument = new RemoteDocument();
-			remoteDocument.setDocument(document);
-			remoteDocument.setDocumentUrl(url); 
+            if (is == null) {
+                throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            }
+            
+            Document document = JsonDocument.parse(new InputStreamReader(is));
+            
+            RemoteDocument remoteDocument = new RemoteDocument();
+            remoteDocument.setDocument(document);
+            remoteDocument.setDocumentUrl(url); 
 
-			return remoteDocument;
-			
-			
-		} catch (IOException e) {
-			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
-		}
-	}
+            return remoteDocument;
+            
+            
+        } catch (IOException e) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+        }
+    }
 
 }

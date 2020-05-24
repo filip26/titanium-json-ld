@@ -7,20 +7,20 @@ package com.apicatalog.jsonld.grammar;
  */
 public final class Term {
 
-	Term() {
-	}
+    Term() {
+    }
 
-	public static final boolean isTerm(final String name) {
+    public static final boolean isTerm(final String name) {
 
-		if ((name == null) || name.isBlank()) {
-			return false;
-		}
+        if ((name == null) || name.isBlank()) {
+            return false;
+        }
 
-		if (Keywords.hasForm(name)) {
-			return Keywords.TYPE.equals(name);
-		}
+        if (Keywords.hasForm(name)) {
+            return Keywords.TYPE.equals(name);
+        }
 
-		return true;
-	}
+        return true;
+    }
 
 }

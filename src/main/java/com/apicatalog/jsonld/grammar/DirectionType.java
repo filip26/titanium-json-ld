@@ -2,10 +2,10 @@ package com.apicatalog.jsonld.grammar;
 
 public enum DirectionType {
 
-	LTR,
+    LTR,
 
-	RTL,
+    RTL,
 
-	NULL
+    NULL
 
 }

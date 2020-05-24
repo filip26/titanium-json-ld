@@ -6,6 +6,6 @@ import com.apicatalog.jsonld.api.JsonLdError;
 
 public interface Document {
 
-	JsonStructure asJsonStructure() throws JsonLdError;
+    JsonStructure asJsonStructure() throws JsonLdError;
 
 }

@@ -21,16 +21,16 @@ import com.apicatalog.jsonld.input.RemoteLocation;
  */
 public interface JsonLdInput {
 
-	public static JsonLdInput of(JsonStructure jsonStructure) {
-		return new JsonStructureInput(jsonStructure);
-	}
+    public static JsonLdInput of(JsonStructure jsonStructure) {
+        return new JsonStructureInput(jsonStructure);
+    }
 
-	public static JsonLdInput of(URI documentUri) {
-		return new RemoteLocation(documentUri);
-	}
+    public static JsonLdInput of(URI documentUri) {
+        return new RemoteLocation(documentUri);
+    }
 
-	public static JsonLdInput of(RemoteDocument remoteDocument) {
-		return null;
-	}
+    public static JsonLdInput of(RemoteDocument remoteDocument) {
+        return null;
+    }
 
 }

@@ -9,25 +9,25 @@ package com.apicatalog.jsonld.api;
  */
 public final class JsonLdError extends Throwable {
 
-	private static final long serialVersionUID = -1912600269069309493L;
+    private static final long serialVersionUID = -1912600269069309493L;
 
-	private final JsonLdErrorCode code;
+    private final JsonLdErrorCode code;
 
-	public JsonLdError(JsonLdErrorCode code) {
-		this.code = code;
-	}
+    public JsonLdError(JsonLdErrorCode code) {
+        this.code = code;
+    }
 
-	public JsonLdError(JsonLdErrorCode code, String message) {
-		super(message);
-		this.code = code;
-	}
+    public JsonLdError(JsonLdErrorCode code, String message) {
+        super(message);
+        this.code = code;
+    }
 
-	public JsonLdError(JsonLdErrorCode code, Throwable cause) {
-		super(cause);
-		this.code = code;
-	}
+    public JsonLdError(JsonLdErrorCode code, Throwable cause) {
+        super(cause);
+        this.code = code;
+    }
 
-	public JsonLdErrorCode getCode() {
-		return code;
-	}
+    public JsonLdErrorCode getCode() {
+        return code;
+    }
 }

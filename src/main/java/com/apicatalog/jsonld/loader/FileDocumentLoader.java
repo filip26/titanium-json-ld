@@ -12,26 +12,26 @@ import com.apicatalog.jsonld.document.RemoteDocument;
 
 public class FileDocumentLoader implements LoadDocumentCallback {
 
-	@Override
-	public RemoteDocument loadDocument(final URI uri, final LoadDocumentOptions options) throws JsonLdError {
+    @Override
+    public RemoteDocument loadDocument(final URI uri, final LoadDocumentOptions options) throws JsonLdError {
 
-		if (!"file".equalsIgnoreCase(uri.getScheme())) {
-			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
-		}
+        if (!"file".equalsIgnoreCase(uri.getScheme())) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+        }
 
-		try {
-			
-			Document document = JsonDocument.parse(new FileReader(uri.toURL().getFile()));
+        try {
+            
+            Document document = JsonDocument.parse(new FileReader(uri.toURL().getFile()));
 
-			RemoteDocument remoteDocument = new RemoteDocument();
-			remoteDocument.setDocument(document);
-			remoteDocument.setDocumentUrl(uri);
+            RemoteDocument remoteDocument = new RemoteDocument();
+            remoteDocument.setDocument(document);
+            remoteDocument.setDocumentUrl(uri);
 
-			return remoteDocument;
+            return remoteDocument;
 
-		} catch (IOException e) {
-			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
-		}
-	}
+        } catch (IOException e) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+        }
+    }
 
 }

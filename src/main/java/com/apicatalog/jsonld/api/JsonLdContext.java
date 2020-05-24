@@ -23,36 +23,36 @@ import javax.json.JsonValue;
  */
 public final class JsonLdContext {
 
-	private final Collection<JsonValue> contexts;
-	
-	protected JsonLdContext() {
-		this.contexts = new LinkedList<>();
-	}
-	
-	public static JsonLdContext of(final URI contextLocation) {
-		return new JsonLdContext().add(contextLocation);
-	}
+    private final Collection<JsonValue> contexts;
+    
+    protected JsonLdContext() {
+        this.contexts = new LinkedList<>();
+    }
+    
+    public static JsonLdContext of(final URI contextLocation) {
+        return new JsonLdContext().add(contextLocation);
+    }
 
-	public static JsonLdContext of(final JsonObject contextObject) {
-		return new JsonLdContext().add(contextObject);
-	}
+    public static JsonLdContext of(final JsonObject contextObject) {
+        return new JsonLdContext().add(contextObject);
+    }
 
-	public JsonLdContext add(URI contextLocation) {
-		contexts.add(Json.createValue(contextLocation.toString()));
-		return this;
-	}
+    public JsonLdContext add(URI contextLocation) {
+        contexts.add(Json.createValue(contextLocation.toString()));
+        return this;
+    }
 
-	public JsonLdContext add(JsonObject contextObject) {
-		contexts.add(contextObject);
-		return this;
-	}
+    public JsonLdContext add(JsonObject contextObject) {
+        contexts.add(contextObject);
+        return this;
+    }
 
-	public JsonArray asJsonArray() {
-		
-		final JsonArrayBuilder builder = Json.createArrayBuilder();
-		
-		contexts.forEach(builder::add);
-		
-		return builder.build();
-	}
+    public JsonArray asJsonArray() {
+        
+        final JsonArrayBuilder builder = Json.createArrayBuilder();
+        
+        contexts.forEach(builder::add);
+        
+        return builder.build();
+    }
 }

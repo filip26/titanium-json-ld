@@ -6,11 +6,11 @@ import com.apicatalog.jsonld.utils.JsonUtils;
 
 public final class ValueObject {
 
-	ValueObject() {
-	}
+    ValueObject() {
+    }
 
-	public static final boolean isValueObject(JsonValue value) {
-		return JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.VALUE);
-	}
+    public static final boolean isValueObject(JsonValue value) {
+        return JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.VALUE);
+    }
 
 }

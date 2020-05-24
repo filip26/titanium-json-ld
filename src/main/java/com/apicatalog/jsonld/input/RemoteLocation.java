@@ -10,29 +10,29 @@ import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 
 public class RemoteLocation implements JsonLdInput {
 
-	private final URI documentUri;
+    private final URI documentUri;
 
-	public RemoteLocation(URI documentUri) {
-		this.documentUri = documentUri;
-	}
+    public RemoteLocation(URI documentUri) {
+        this.documentUri = documentUri;
+    }
 
-	public DocumentInput fetch(final JsonLdOptions options) throws JsonLdError {
+    public DocumentInput fetch(final JsonLdOptions options) throws JsonLdError {
 
-		if (options == null) {
-			throw new IllegalArgumentException();
-		}
-		if (options.getDocumentLoader() == null) {
-			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
-		}
+        if (options == null) {
+            throw new IllegalArgumentException();
+        }
+        if (options.getDocumentLoader() == null) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+        }
 
-		return new DocumentInput(
-						options
-							.getDocumentLoader()
-							.loadDocument(
-									documentUri,
-									new LoadDocumentOptions().setExtractAllScripts(options.isExtractAllScripts()))
-							)
-					;
-	}
+        return new DocumentInput(
+                        options
+                            .getDocumentLoader()
+                            .loadDocument(
+                                    documentUri,
+                                    new LoadDocumentOptions().setExtractAllScripts(options.isExtractAllScripts()))
+                            )
+                    ;
+    }
 
 }

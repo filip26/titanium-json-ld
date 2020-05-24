@@ -18,14 +18,14 @@ import com.apicatalog.jsonld.api.JsonLdProcessor;
  */
 public interface RdfGraph extends Iterable<RdfGraph> {
 
-	/**
-	 * Adds an RdfTriple to the RdfGraph. Used by the Deserialize JSON-LD to RDF
-	 * Algorithm.
-	 * 
-	 * @param triple The RdfTriple to add to the RdfGraph
-	 */
-	void add(RdfTriple triple);
+    /**
+     * Adds an RdfTriple to the RdfGraph. Used by the Deserialize JSON-LD to RDF
+     * Algorithm.
+     * 
+     * @param triple The RdfTriple to add to the RdfGraph
+     */
+    void add(RdfTriple triple);
 
-	Iterator<RdfGraph> iterator();
+    Iterator<RdfGraph> iterator();
 
 }

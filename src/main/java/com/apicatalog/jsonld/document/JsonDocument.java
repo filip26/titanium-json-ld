@@ -14,43 +14,43 @@ import com.apicatalog.jsonld.utils.JsonUtils;
 
 public final class JsonDocument implements Document {
 
-	private JsonStructure structure;
+    private JsonStructure structure;
 
-	public JsonDocument(final JsonStructure structue) {
-		this.structure = structue;
-	}
+    public JsonDocument(final JsonStructure structue) {
+        this.structure = structue;
+    }
 
-	public static final Document parse(final Reader reader)  throws JsonLdError {
-		
-		try (final JsonParser parser = Json.createParser(reader)) {
+    public static final Document parse(final Reader reader)  throws JsonLdError {
+        
+        try (final JsonParser parser = Json.createParser(reader)) {
 
-			if (!parser.hasNext()) {
-				throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
-			}
+            if (!parser.hasNext()) {
+                throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            }
 
-			parser.next();
+            parser.next();
 
-			JsonValue root = parser.getValue();
+            JsonValue root = parser.getValue();
 
-			if (JsonUtils.isArray(root)) {
-				return new JsonDocument(root.asJsonArray());
-			}
+            if (JsonUtils.isArray(root)) {
+                return new JsonDocument(root.asJsonArray());
+            }
 
-			if (JsonUtils.isObject(root)) {
-				return new JsonDocument(root.asJsonObject());
-			}
+            if (JsonUtils.isObject(root)) {
+                return new JsonDocument(root.asJsonObject());
+            }
 
-			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
-			
-		} catch (JsonException e) {
-			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
-		}
-	}
-	
-	
-	@Override
-	public JsonStructure asJsonStructure() throws JsonLdError {
-		return structure;
-	}
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            
+        } catch (JsonException e) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+        }
+    }
+    
+    
+    @Override
+    public JsonStructure asJsonStructure() throws JsonLdError {
+        return structure;
+    }
 
 }

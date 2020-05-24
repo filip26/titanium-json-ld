@@ -10,11 +10,11 @@ package com.apicatalog.rdf;
  */
 public interface RdfTriple {
 
-	/**
-	 * An absolute IRI or blank node identifier denoting the subject of the triple.
-	 * 
-	 * @return
-	 */
-	String getSubject();
+    /**
+     * An absolute IRI or blank node identifier denoting the subject of the triple.
+     * 
+     * @return
+     */
+    String getSubject();
 
 }

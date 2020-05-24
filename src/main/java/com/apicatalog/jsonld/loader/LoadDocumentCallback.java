@@ -18,6 +18,6 @@ import com.apicatalog.jsonld.document.RemoteDocument;
  */
 public interface LoadDocumentCallback {
 
-	RemoteDocument loadDocument(URI url, LoadDocumentOptions options) throws JsonLdError;
+    RemoteDocument loadDocument(URI url, LoadDocumentOptions options) throws JsonLdError;
 
 }

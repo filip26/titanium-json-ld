@@ -8,15 +8,15 @@ import com.apicatalog.jsonld.utils.JsonUtils;
 
 public class GraphObject {
 
-	GraphObject() {
-	}
+    GraphObject() {
+    }
 
-	public static final boolean isGraphObject(JsonValue value) {
-		return JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.GRAPH);
-	}
+    public static final boolean isGraphObject(JsonValue value) {
+        return JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.GRAPH);
+    }
 
-	public static final JsonObject toGraphObject(JsonValue value) {
-		return Json.createObjectBuilder().add(Keywords.GRAPH, JsonUtils.asArray(value)).build();
-	}
+    public static final JsonObject toGraphObject(JsonValue value) {
+        return Json.createObjectBuilder().add(Keywords.GRAPH, JsonUtils.asArray(value)).build();
+    }
 
 }

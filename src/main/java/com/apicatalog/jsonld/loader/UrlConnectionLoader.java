@@ -13,33 +13,33 @@ import com.apicatalog.jsonld.document.RemoteDocument;
 
 public class UrlConnectionLoader implements LoadDocumentCallback {
 
-	@Override
-	public RemoteDocument loadDocument(final URI url, final LoadDocumentOptions options) throws JsonLdError {
+    @Override
+    public RemoteDocument loadDocument(final URI url, final LoadDocumentOptions options) throws JsonLdError {
 
-		try {
-			URLConnection connection = url.toURL().openConnection();
+        try {
+            URLConnection connection = url.toURL().openConnection();
 
-			//TODO set accept header
-			//TODO set timeout
-			//TODO set follow redirects
-			
-			connection.setDoInput(false);
-			connection.setDoInput(true);
-			
-			connection.connect();
-			
-			//TODO check response headers
-			
-			Document document = JsonDocument.parse(new InputStreamReader(connection.getInputStream()));
-			RemoteDocument remoteDocument = new RemoteDocument();
-			remoteDocument.setDocument(document);
-			remoteDocument.setDocumentUrl(url);	//TODO set final URL 
+            //TODO set accept header
+            //TODO set timeout
+            //TODO set follow redirects
+            
+            connection.setDoInput(false);
+            connection.setDoInput(true);
+            
+            connection.connect();
+            
+            //TODO check response headers
+            
+            Document document = JsonDocument.parse(new InputStreamReader(connection.getInputStream()));
+            RemoteDocument remoteDocument = new RemoteDocument();
+            remoteDocument.setDocument(document);
+            remoteDocument.setDocumentUrl(url);    //TODO set final URL 
 
-			return remoteDocument;
-			
-		} catch (IOException e) {
-			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);			
-		}		
-	}
+            return remoteDocument;
+            
+        } catch (IOException e) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);            
+        }        
+    }
 
 }
