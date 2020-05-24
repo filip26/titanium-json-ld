@@ -16,7 +16,6 @@ public class JavaResourceLoader implements LoadDocumentCallback {
     @Override
     public RemoteDocument loadDocument(URI url, LoadDocumentOptions options) throws JsonLdError {
         
-        
         if (!"classpath".equals(url.getScheme())) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }

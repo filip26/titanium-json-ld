@@ -233,5 +233,8 @@ public enum JsonLdErrorCode {
     /**
      * An attempt was made to redefine a protected term.
      */
-    PROTECTED_TERM_REDEFINITION
+    PROTECTED_TERM_REDEFINITION, 
+    
+    UNSPECIFIED
 }
+
