@@ -1,9 +1,0 @@
-[
-  {
-    "@id": "http://example.com/1",
-    "@type": [
-      "http://example.org/ns/Bar",
-      "http://example.org/ns/Foo"
-    ]
-  }
-]

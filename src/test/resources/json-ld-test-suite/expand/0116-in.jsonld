@@ -1,8 +1,0 @@
-{
-  "@context": {
-    "@base": "http://example.com/some/deep/directory/and/file/",
-    "@vocab": "/relative"
-  },
-  "@id": "relativePropertyIris",
-  "link": "link"
-}

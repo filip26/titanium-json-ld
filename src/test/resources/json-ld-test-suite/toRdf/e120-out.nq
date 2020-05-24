@@ -1,3 +1,0 @@
-_:b0 <http://example.orb/vocab/@> "allowed" .
-_:b0 <http://example.orb/vocab/@foo.bar> "allowed" .
-_:b0 <http://example.orb/vocab/ignoreMe> "resolves to @vocab" .

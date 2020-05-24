@@ -63,7 +63,9 @@
          
          <json-p.version>1.1</json-p.version>
          
+         <!--  test resources -->
         <junit.version>4.13</junit.version>
+        <test-suite.version>20200518</test-suite.version>
     </properties>
 
     <dependencies>
@@ -79,14 +81,21 @@
 		    <version>${json-p.version}</version>
             <scope>test</scope>
 		</dependency>
-		
+
+        <!--  Tests -->		
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-                
+        <dependency>        
+            <groupId>com.github.w3c</groupId>
+            <artifactId>json-ld-test-suite</artifactId>
+            <version>${test-suite.version}</version>
+            <scope>test</scope>           
+        </dependency>
+
     </dependencies>
 
     <build>		
@@ -105,5 +114,14 @@
                 </executions>
             </plugin>             
 		</plugins>
-    </build>
+	</build>
+	<repositories>
+	   <repository>
+		    <id>github</id>
+     	<name>GitHub filip26 Apache Maven Packages</name>
+     	<url>https://maven.pkg.github.com/filip26/json-ld-api</url>
+   		</repository>
+	</repositories>
+
+
 </project>

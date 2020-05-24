@@ -1,8 +1,0 @@
-{
-  "@context": {
-    "@vocab": "_:"
-  },
-  "@id": "ex:node1",
-  "b1": "blank node property 1",
-  "b2": "blank node property 1"
-}

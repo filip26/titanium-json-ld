@@ -1,8 +1,0 @@
-{
-  "@context": {
-    "ns": "http://example.com/core#"
-  },
-  "ns:associated": {
-    "@id": "#Light"
-  }
-}

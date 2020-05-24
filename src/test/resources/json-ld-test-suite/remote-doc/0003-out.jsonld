@@ -1,4 +1,0 @@
-[{
-  "@id": "https://w3c.github.io/json-ld-api/tests/remote-doc/0003-in.jldt",
-  "http://example/vocab#term": [{"@value": "object"}]
-}]

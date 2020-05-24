@@ -1,9 +1,0 @@
-{
-  "@context": [{
-    "foo": "http://example.com/foo"
-  }, {
-    "bar": "http://example.com/bar"
-  }],
-  "foo": "foo-value",
-  "bar": "bar-value"
-}

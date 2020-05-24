@@ -1,8 +1,0 @@
-[
-  {
-    "http://example/foo#bar": [{
-      "@value": "foobar"
-    }]
-  }
-]
-

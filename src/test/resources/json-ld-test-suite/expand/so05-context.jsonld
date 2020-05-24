@@ -1,5 +1,0 @@
-{
-  "@context": {
-    "baz": {"@id": "http://example.org/baz", "@type": "@vocab"}
-  }
-}

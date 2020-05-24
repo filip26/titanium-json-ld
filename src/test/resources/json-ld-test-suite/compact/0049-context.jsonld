@@ -1,5 +1,0 @@
-{
-  "@context": {
-    "property": { "@id": "http://example.org", "@type": "@id" }
-  }
-}

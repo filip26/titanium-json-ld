@@ -1,7 +1,6 @@
 package com.apicatalog.jsonld.loader;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
@@ -26,7 +25,7 @@ public class UrlRewriteLoader implements LoadDocumentCallback {
 	}
 	
 	@Override
-	public RemoteDocument loadDocument(URL url, LoadDocumentOptions options) throws JsonLdError {
+	public RemoteDocument loadDocument(URI url, LoadDocumentOptions options) throws JsonLdError {
 
 		String sourceUrl = url.toString();
 		
@@ -36,18 +35,14 @@ public class UrlRewriteLoader implements LoadDocumentCallback {
 
 		String realivePath = sourceUrl.substring(sourceBase.length());
 
-		try {
-			RemoteDocument remoteDocument = loader.loadDocument(new URL(targetBase + realivePath), options);
-			
-			if (remoteDocument == null) {
-				throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
-			}
-
-			remoteDocument.setDocumentUrl(url);
-			return remoteDocument;
-
-		} catch (MalformedURLException e) {
+		RemoteDocument remoteDocument = loader.loadDocument(URI.create(targetBase + realivePath), options);
+		
+		if (remoteDocument == null) {
 			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
 		}
+
+		remoteDocument.setDocumentUrl(url);
+		return remoteDocument;
+
 	}
 }

@@ -1,7 +1,0 @@
-[{
-  "@id": "http://example.com/a",
-  "http://example.com/property": [{"@list": [
-    {"@list": [{"@value": "a"}]},
-    {"@list": [{"@value": "b"}]}
-  ]}]
-}]

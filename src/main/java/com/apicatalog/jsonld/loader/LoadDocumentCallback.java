@@ -1,6 +1,6 @@
 package com.apicatalog.jsonld.loader;
 
-import java.net.URL;
+import java.net.URI;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.document.RemoteDocument;
@@ -18,6 +18,6 @@ import com.apicatalog.jsonld.document.RemoteDocument;
  */
 public interface LoadDocumentCallback {
 
-	RemoteDocument loadDocument(URL url, LoadDocumentOptions options) throws JsonLdError;
+	RemoteDocument loadDocument(URI url, LoadDocumentOptions options) throws JsonLdError;
 
 }

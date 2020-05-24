@@ -1,8 +1,6 @@
 package com.apicatalog.jsonld.processor;
 
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -40,24 +38,18 @@ public class ExpansionProcessor {
 			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
 		}
 
-		try {
+		final RemoteDocument remoteDocument = 
+								options
+									.getDocumentLoader()
+									.loadDocument(input,
+											new LoadDocumentOptions()
+													.setExtractAllScripts(options.isExtractAllScripts()));
 
-			final RemoteDocument remoteDocument = 
-									options
-										.getDocumentLoader()
-										.loadDocument(input.toURL(),
-												new LoadDocumentOptions()
-														.setExtractAllScripts(options.isExtractAllScripts()));
-
-			if (remoteDocument == null) {
-				throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
-			}
-			
-			return expand(remoteDocument, options);
-
-		} catch (MalformedURLException e) {
-			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+		if (remoteDocument == null) {
+			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
 		}
+		
+		return expand(remoteDocument, options);
 	}
 
 	public static final JsonArray expand(RemoteDocument input, final JsonLdOptions options) throws JsonLdError {
@@ -74,13 +66,8 @@ public class ExpansionProcessor {
 		URI baseUrl = null;
 
 		if (input.getDocumentUrl() != null) {
-			try {
-				baseUrl = input.getDocumentUrl().toURI();
-				baseUri = baseUrl;
-				
-			} catch (URISyntaxException e) {
-				throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
-			}
+			baseUrl = input.getDocumentUrl();
+			baseUri = baseUrl;				
 		}
 
 		if (baseUrl == null) {

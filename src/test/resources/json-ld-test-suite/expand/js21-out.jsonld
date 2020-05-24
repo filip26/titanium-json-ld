@@ -1,9 +1,0 @@
-[{
-  "ex:foo": [{
-    "@type": "@json",
-    "@value": {
-      "@context": "ex:not:a:context",
-      "test": 1
-    }
-  }]
-}]

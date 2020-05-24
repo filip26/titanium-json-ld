@@ -43,6 +43,10 @@ public class JsonLdTestCaseOptions {
 		if (base != null) {
 			options.setBase(URI.create(base));
 		}
+		
+		if (expandContext != null) {
+			options.setExpandContext(URI.create(expandContext));
+		}
 	}
 	
 }

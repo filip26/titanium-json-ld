@@ -1,5 +1,0 @@
-{
-  "@context": {"@base": "http://example.com/api/things/1"},
-  "@id": "1",
-  "http://example.com": ""
-}

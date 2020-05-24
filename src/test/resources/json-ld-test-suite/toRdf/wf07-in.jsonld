@@ -1,7 +1,0 @@
-{
-  "@id": "http://example.com/invalid gn",
-  "@graph": {
-    "@id": "http://example.com/foo",
-    "http://example.com/bar": "baz"
-  }
-}

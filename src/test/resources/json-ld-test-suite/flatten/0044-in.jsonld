@@ -1,4 +1,0 @@
-[{
-  "@id": "http://example/foo",
-  "http://example/term": [{"@value": "value"}]
-}]

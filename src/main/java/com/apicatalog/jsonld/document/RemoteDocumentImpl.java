@@ -1,16 +1,16 @@
 package com.apicatalog.jsonld.document;
 
-import java.net.URL;
+import java.net.URI;
 
 @Deprecated
 public class RemoteDocumentImpl implements RemoteDocument {
 
 	private String contextType;
-	private URL contextUrl;
+	private URI contextUrl;
 
 	private Document document;
 
-	private URL documentUrl;
+	private URI documentUrl;
 	private String profile;
 
 	@Override
@@ -19,12 +19,12 @@ public class RemoteDocumentImpl implements RemoteDocument {
 	}
 
 	@Override
-	public URL getContextUrl() {
+	public URI getContextUrl() {
 		return contextUrl;
 	}
 
 	@Override
-	public URL getDocumentUrl() {
+	public URI getDocumentUrl() {
 		return documentUrl;
 	}
 
@@ -42,7 +42,7 @@ public class RemoteDocumentImpl implements RemoteDocument {
 		this.document = document;
 	}
 
-	public void setDocumentUrl(URL documentUrl) {
+	public void setDocumentUrl(URI documentUrl) {
 		this.documentUrl = documentUrl;
 	}
 

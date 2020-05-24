@@ -1,7 +1,0 @@
-{
-  "@context":  {
-    "@base": "http://example.com/",
-    "iot": "http://example.com/core/#"
-  },
-  "iot:associated": { "@id": "#Light" }
-}

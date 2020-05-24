@@ -1,3 +1,0 @@
-_:b1 <ex:protected> "p === ex:protected" .
-_:b0 <ex:protected> "p === ex:protected" .
-_:b0 <ex:unprotected> _:b1 .

@@ -1,3 +1,0 @@
-<ex:inner> <http://vocab.org/prop1> "baz1" .
-<ex:inner> <http://vocab.override.org/prop2> "baz2" .
-<ex:outer> <http://vocab.org/foo> <ex:inner> .

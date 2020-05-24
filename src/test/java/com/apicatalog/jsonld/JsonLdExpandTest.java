@@ -4,11 +4,8 @@ import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -28,6 +25,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.grammar.Version;
+import com.apicatalog.jsonld.loader.JavaResourceLoader;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.loader.UrlRewriteLoader;
@@ -35,6 +33,8 @@ import com.apicatalog.jsonld.loader.UrlRewriteLoader;
 @RunWith(Parameterized.class)
 public class JsonLdExpandTest {
 
+	public static final String RESOURCES_BASE = "/com/github/w3c/json-ld-api/tests/"; 
+	
 	@Parameterized.Parameter(0)
 	public JsonLdTestCase testDefinition;
 
@@ -56,17 +56,17 @@ public class JsonLdExpandTest {
 		// skip normative == false
 		assumeTrue(testDefinition.options.normative == null || testDefinition.options.normative);
 		
-		final LoadDocumentCallback loader = new UrlRewriteLoader(baseUri, Paths.get("src","test","resources", "json-ld-test-suite").toUri().toString());
+		final LoadDocumentCallback loader = 
+				new UrlRewriteLoader(
+							baseUri, 
+							"classpath:" + RESOURCES_BASE,
+							new JavaResourceLoader()
+						);
 		
 		JsonLdOptions options = new JsonLdOptions();
-//		options.setBase(URI.create(baseUri));
 		options.setOrdered(true);
 		options.setDocumentLoader(loader);
 		
-		if (testDefinition.options.expandContext != null) {
-			options.setExpandContext(URI.create(testDefinition.options.expandContext));
-		}
-
 		testDefinition.options.setup(options);
 
 		JsonValue result = null;
@@ -87,7 +87,7 @@ public class JsonLdExpandTest {
 			return;
 		}
 		
-		RemoteDocument expectedDocument = loader.loadDocument(new URL(baseUri + testDefinition.expect), new LoadDocumentOptions());
+		RemoteDocument expectedDocument = loader.loadDocument(URI.create(baseUri + testDefinition.expect), new LoadDocumentOptions());
 		
 //		Map<String, Object> properties = new HashMap<>(1);
 //		properties.put(JsonGenerator.PRETTY_PRINTING, true);
@@ -108,28 +108,28 @@ public class JsonLdExpandTest {
 	@Parameterized.Parameters(name = "{1}: {2}")
 	public static Collection<Object[]> data() throws IOException {
 		
-		final Path manifestPath = Paths.get("src","test","resources", "json-ld-test-suite", "expand-manifest.jsonld");
-		
-		Assert.assertTrue(Files.isRegularFile(manifestPath));
-		Assert.assertTrue(Files.isReadable(manifestPath));
+		try (InputStream is = JsonLdExpandTest.class.getResourceAsStream(RESOURCES_BASE + "expand-manifest.jsonld")) {
 
-		try (final JsonParser parser = Json.createParser(Files.newBufferedReader(manifestPath))) {
-
-			if (!parser.hasNext()) {
-				return Collections.emptyList();
+			Assert.assertNotNull(is);
+	
+			try (final JsonParser parser = Json.createParser(is)) {
+	
+				if (!parser.hasNext()) {
+					return Collections.emptyList();
+				}
+				
+				parser.next();
+				
+				final JsonObject manifest = parser.getObject();
+				
+				return manifest
+						.getJsonArray("sequence")
+							.stream()
+								.map(JsonValue::asJsonObject)
+								.map(JsonLdTestCase::of)
+								.map(o -> new Object[] {o, o.id, o.name, ((JsonString)(manifest.get("baseIri"))).getString()})
+								.collect(Collectors.toList());
 			}
-			
-			parser.next();
-			
-			final JsonObject manifest = parser.getObject();
-			
-			return manifest
-					.getJsonArray("sequence")
-						.stream()
-							.map(JsonValue::asJsonObject)
-							.map(JsonLdTestCase::of)
-							.map(o -> new Object[] {o, o.id, o.name, ((JsonString)(manifest.get("baseIri"))).getString()})
-							.collect(Collectors.toList());
-		}
+		}		
     }
 }

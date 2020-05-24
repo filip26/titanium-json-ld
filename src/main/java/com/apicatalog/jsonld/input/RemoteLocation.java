@@ -1,6 +1,5 @@
 package com.apicatalog.jsonld.input;
 
-import java.net.MalformedURLException;
 import java.net.URI;
 
 import com.apicatalog.jsonld.api.JsonLdError;
@@ -31,14 +30,14 @@ public class RemoteLocation implements JsonLdInput {
 			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
 		}
 
-		try {
-
-			return new DocumentInput(options.getDocumentLoader().loadDocument(documentUri.toURL(),
-					new LoadDocumentOptions().setExtractAllScripts(options.isExtractAllScripts())));
-
-		} catch (MalformedURLException e) {
-			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
-		}
+		return new DocumentInput(
+						options
+							.getDocumentLoader()
+							.loadDocument(
+									documentUri,
+									new LoadDocumentOptions().setExtractAllScripts(options.isExtractAllScripts()))
+							)
+					;
 	}
 
 }

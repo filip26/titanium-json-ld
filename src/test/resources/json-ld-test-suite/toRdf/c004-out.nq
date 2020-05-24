@@ -1,3 +1,0 @@
-_:b0 <http://example/foo> _:b1 .
-_:b1 <http://example/bar> _:b2 .
-_:b2 <http://example/baz> <http://example/buzz> .

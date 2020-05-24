@@ -1,6 +1,0 @@
-{
-  "@context": {
-    "ex": "http://example.org/ns#",
-    "ex:property": {"@container": "@list"}
-  }
-}

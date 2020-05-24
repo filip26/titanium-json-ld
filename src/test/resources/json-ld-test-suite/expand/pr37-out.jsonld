@@ -1,4 +1,0 @@
-[{
-  "@type": ["http://example.com/IgnoreTest"],
-  "http://example.org/ignoreMe": [{"@value": "vocabulary relative"}]
-}]

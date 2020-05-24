@@ -1,6 +1,6 @@
 package com.apicatalog.jsonld.document;
 
-import java.net.URL;
+import java.net.URI;
 
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 
@@ -27,7 +27,7 @@ public interface RemoteDocument {
 	 * 
 	 * @return
 	 */
-	URL getContextUrl();
+	URI getContextUrl();
 
 	/**
 	 * The final URL of the loaded document. This is important to handle HTTP
@@ -35,7 +35,7 @@ public interface RemoteDocument {
 	 * 
 	 * @return
 	 */
-	URL getDocumentUrl();
+	URI getDocumentUrl();
 
 	/**
 	 * The value of any <code>profile</code> parameter retrieved as part of the
@@ -53,6 +53,6 @@ public interface RemoteDocument {
 	 */
 	Document getDocument();
 	
-	void setDocumentUrl(URL documentUrl);
+	void setDocumentUrl(URI documentUrl);
 	
 }

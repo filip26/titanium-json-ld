@@ -1,6 +1,0 @@
-[{
-  "http://example.com/foo": [{"@list": [
-    {"@list": [{"@value": "a"}]},
-    {"@value": "b"}
-  ]}]
-}]

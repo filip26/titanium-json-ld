@@ -1,6 +1,0 @@
-{
-  "@context": {
-    "term": {"@id": "http://example.org/term", "@prefix": 10}
-  },
-  "@id": "http://example/test#example"
-}

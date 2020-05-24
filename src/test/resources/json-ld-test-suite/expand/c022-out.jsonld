@@ -1,4 +1,0 @@
-[{
-  "@type": ["ex:Type"],
-  "ex:foo": [{"@id": "ex:Bar"}]
-}]

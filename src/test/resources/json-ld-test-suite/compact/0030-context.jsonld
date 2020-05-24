@@ -1,6 +1,0 @@
-{
-  "@context": {
-    "property": "http://example.com/property",
-    "indexContainer": { "@id": "http://example.com/container", "@container": "@index" }
-  }
-}

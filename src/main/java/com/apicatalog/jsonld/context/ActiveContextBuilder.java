@@ -1,9 +1,6 @@
 package com.apicatalog.jsonld.context;
 
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -186,13 +183,13 @@ public class ActiveContextBuilder {
 				loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
 
 				JsonStructure importedStructure = null;
-				URL documentUrl = null;
+				URI documentUrl = null;
 
 				try {
 					RemoteDocument remoteImport = 
 										options
 											.getDocumentLoader()
-											.loadDocument(new URL(contextUri), loaderOptions);
+											.loadDocument(URI.create(contextUri), loaderOptions);
 
 					documentUrl = remoteImport.getDocumentUrl();
 
@@ -203,7 +200,7 @@ public class ActiveContextBuilder {
 					}
 
 				// 5.2.5.1.
-				} catch (MalformedURLException | JsonLdError e) {
+				} catch (JsonLdError e) {
 					throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
 				}
 
@@ -222,16 +219,15 @@ public class ActiveContextBuilder {
 				importedContext = importedContext.asJsonObject().get(Keywords.CONTEXT);
 
 				// 5.2.6
-				try {
-					result = result
-								.create(importedContext, documentUrl.toURI())
-								.remoteContexts(new ArrayList<>(remoteContexts))
-								.validateScopedContext(validateScopedContext)
-								.build();
+				result = result
+							.create(importedContext, documentUrl)
+							.remoteContexts(new ArrayList<>(remoteContexts))
+							.validateScopedContext(validateScopedContext)
+							.build();
 
-				} catch (URISyntaxException/* TODO ? | JsonLdError */ e) {
-					throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
-				}
+//				} catch (/* TODO ? | JsonLdError */ e) {
+//					throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
+//				}
 
 				// 5.2.7
 				continue;
@@ -302,7 +298,7 @@ public class ActiveContextBuilder {
 				JsonStructure importedStructure = null;
 
 				try {
-					RemoteDocument remoteImport = options.getDocumentLoader().loadDocument(new URL(contextImportUri), loaderOptions);
+					RemoteDocument remoteImport = options.getDocumentLoader().loadDocument(URI.create(contextImportUri), loaderOptions);
 
 					importedStructure = remoteImport.getDocument().asJsonStructure();
 
@@ -310,8 +306,8 @@ public class ActiveContextBuilder {
 						throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE);
 					}
 
-					// 5.6.5
-				} catch (MalformedURLException | JsonLdError e) {
+				// 5.6.5
+				} catch (JsonLdError e) {
 					throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE, e);
 				}
 

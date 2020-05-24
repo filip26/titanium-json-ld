@@ -1,6 +1,0 @@
-{
-  "@context": {
-    "term5": {"@id": "http://example.com/term", "@direction": null},
-    "@direction": "ltr"
-  }
-}

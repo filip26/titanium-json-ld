@@ -1,7 +1,8 @@
 package com.apicatalog.jsonld.loader;
 
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 
 import com.apicatalog.jsonld.api.JsonLdError;
@@ -11,25 +12,26 @@ import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.document.RemoteDocumentImpl;
 
-public class FileDocumentLoader implements LoadDocumentCallback {
+public class JavaResourceLoader implements LoadDocumentCallback {
 
 	@Override
-	public RemoteDocument loadDocument(final URI uri, final LoadDocumentOptions options) throws JsonLdError {
-
-		if (!"file".equalsIgnoreCase(uri.getScheme())) {
+	public RemoteDocument loadDocument(URI url, LoadDocumentOptions options) throws JsonLdError {
+		
+		
+		if (!"classpath".equals(url.getScheme())) {
 			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
 		}
 
-		try {
-			
-			Document document = JsonDocument.parse(new FileReader(uri.toURL().getFile()));
+		try (InputStream is = getClass().getResourceAsStream(url.toString().substring("classpath:".length()))) {
 
+			Document document = JsonDocument.parse(new InputStreamReader(is));
 			RemoteDocumentImpl remoteDocument = new RemoteDocumentImpl();
 			remoteDocument.setDocument(document);
-			remoteDocument.setDocumentUrl(uri);
+			remoteDocument.setDocumentUrl(url);	//TODO set final URL 
 
 			return remoteDocument;
-
+			
+			
 		} catch (IOException e) {
 			throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
 		}

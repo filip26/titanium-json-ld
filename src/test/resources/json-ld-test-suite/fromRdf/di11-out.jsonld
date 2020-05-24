@@ -1,4 +1,0 @@
-[{
-  "@id": "http://example.com/a",
-  "http://example.org/label": [{"@value": "no language", "@direction": "rtl"}]
-}]
