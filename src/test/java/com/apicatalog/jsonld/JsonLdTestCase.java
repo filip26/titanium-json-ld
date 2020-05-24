@@ -1,11 +1,19 @@
 package com.apicatalog.jsonld;
 
-import javax.json.JsonObject;
+import java.net.URI;
 
+import javax.json.JsonObject;
+import javax.json.JsonValue;
+
+import org.junit.Assert;
+
+import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.loader.JavaResourceLoader;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
+import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.loader.UrlRewriteLoader;
 
 public class JsonLdTestCase {
@@ -39,6 +47,35 @@ public class JsonLdTestCase {
         testCase.baseUri = baseUri;
                                 
         return testCase;
+    }
+    
+    public void execute(JsonLdTestCaseMethod method) throws JsonLdError {
+
+        Assert.assertNotNull(input);
+        
+        JsonValue result = null;
+
+        try {
+  
+            result = method.invoke();
+            
+            Assert.assertNotNull(result);
+            
+        } catch (JsonLdError e) {
+            Assert.assertEquals(expectErrorCode, e.getCode());
+            return;
+        }
+        
+        Assert.assertNull(expectErrorCode);
+        Assert.assertNotNull(expect);
+        
+        RemoteDocument expectedDocument = getOptions().getDocumentLoader().loadDocument(URI.create(baseUri + expect), new LoadDocumentOptions());
+                    
+        Assert.assertNotNull(expectedDocument);
+        Assert.assertNotNull(expectedDocument.getDocument());
+        
+        // compare expected with the result        
+        Assert.assertEquals(expectedDocument.getDocument().asJsonStructure(), result);
     }
     
     public JsonLdOptions getOptions() {
