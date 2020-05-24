@@ -10,7 +10,6 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.document.RemoteDocumentImpl;
 
 public class UrlConnectionLoader implements LoadDocumentCallback {
 
@@ -32,7 +31,7 @@ public class UrlConnectionLoader implements LoadDocumentCallback {
 			//TODO check response headers
 			
 			Document document = JsonDocument.parse(new InputStreamReader(connection.getInputStream()));
-			RemoteDocumentImpl remoteDocument = new RemoteDocumentImpl();
+			RemoteDocument remoteDocument = new RemoteDocument();
 			remoteDocument.setDocument(document);
 			remoteDocument.setDocumentUrl(url);	//TODO set final URL 
 

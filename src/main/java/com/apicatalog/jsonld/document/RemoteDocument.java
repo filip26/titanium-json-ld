@@ -13,7 +13,15 @@ import com.apicatalog.jsonld.loader.LoadDocumentCallback;
  *      Specification</a>
  *
  */
-public interface RemoteDocument {
+public class RemoteDocument {
+
+	private String contextType;
+	private URI contextUrl;
+
+	private Document document;
+
+	private URI documentUrl;
+	private String profile;
 
 	/**
 	 * The <a href="https://tools.ietf.org/html/rfc2045#section-5">Content-Type</a>
@@ -21,13 +29,17 @@ public interface RemoteDocument {
 	 * 
 	 * @return
 	 */
-	String getContextType();
+	public String getContextType() {
+		return contextType;
+	}
 
 	/**
 	 * 
 	 * @return
 	 */
-	URI getContextUrl();
+	public URI getContextUrl() {
+		return contextUrl;
+	}
 
 	/**
 	 * The final URL of the loaded document. This is important to handle HTTP
@@ -35,7 +47,13 @@ public interface RemoteDocument {
 	 * 
 	 * @return
 	 */
-	URI getDocumentUrl();
+	public URI getDocumentUrl() {
+		return documentUrl;
+	}
+	
+	public void setDocumentUrl(URI documentUrl) {
+		this.documentUrl = documentUrl;
+	}
 
 	/**
 	 * The value of any <code>profile</code> parameter retrieved as part of the
@@ -43,7 +61,9 @@ public interface RemoteDocument {
 	 * 
 	 * @return
 	 */
-	String getProfile();
+	public String getProfile() {
+		return profile;
+	}
 
 	/**
 	 * The retrieved document. This can either be the raw payload or the already
@@ -51,8 +71,11 @@ public interface RemoteDocument {
 	 * 
 	 * @return
 	 */
-	Document getDocument();
-	
-	void setDocumentUrl(URI documentUrl);
-	
+	public Document getDocument() {
+		return document;
+	}
+
+	public void setDocument(Document document) {
+		this.document = document;
+	}	
 }

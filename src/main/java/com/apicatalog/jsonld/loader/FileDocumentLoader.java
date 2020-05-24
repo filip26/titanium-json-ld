@@ -9,7 +9,6 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.document.RemoteDocumentImpl;
 
 public class FileDocumentLoader implements LoadDocumentCallback {
 
@@ -24,7 +23,7 @@ public class FileDocumentLoader implements LoadDocumentCallback {
 			
 			Document document = JsonDocument.parse(new FileReader(uri.toURL().getFile()));
 
-			RemoteDocumentImpl remoteDocument = new RemoteDocumentImpl();
+			RemoteDocument remoteDocument = new RemoteDocument();
 			remoteDocument.setDocument(document);
 			remoteDocument.setDocumentUrl(uri);
 

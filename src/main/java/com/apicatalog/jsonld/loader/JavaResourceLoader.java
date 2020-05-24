@@ -10,7 +10,6 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.document.RemoteDocumentImpl;
 
 public class JavaResourceLoader implements LoadDocumentCallback {
 
@@ -24,8 +23,12 @@ public class JavaResourceLoader implements LoadDocumentCallback {
 
 		try (InputStream is = getClass().getResourceAsStream(url.toString().substring("classpath:".length()))) {
 
+			if (is == null) {
+				throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+			}
+			
 			Document document = JsonDocument.parse(new InputStreamReader(is));
-			RemoteDocumentImpl remoteDocument = new RemoteDocumentImpl();
+			RemoteDocument remoteDocument = new RemoteDocument();
 			remoteDocument.setDocument(document);
 			remoteDocument.setDocumentUrl(url);	//TODO set final URL 
 
