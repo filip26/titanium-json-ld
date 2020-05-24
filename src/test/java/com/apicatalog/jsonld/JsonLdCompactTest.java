@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -26,7 +27,7 @@ public class JsonLdCompactTest {
     public String baseUri;
     
     @Test
-    public void testExpand() throws IOException, JsonLdError {
+    public void testExpand() {
 
         // skip specVersion == 1.0
         //assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
@@ -34,10 +35,15 @@ public class JsonLdCompactTest {
         // skip normative == false
         //assumeTrue(testCase.options.normative == null || testCase.options.normative);
         
-        testCase.execute(() -> {
-            return null;
-//            return JsonLd.createProcessor().compact(URI.create(testCase.baseUri + testCase.input), testCase.getOptions());
-        });
+        try {
+            testCase.execute(options -> {
+                return null;
+    //            return JsonLd.createProcessor().compact(URI.create(testCase.baseUri + testCase.input), options);
+            });
+            
+        } catch (JsonLdError e) {
+            Assert.fail(e.getMessage());
+        }            
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")

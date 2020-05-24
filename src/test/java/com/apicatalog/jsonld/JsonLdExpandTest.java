@@ -8,6 +8,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -31,7 +32,7 @@ public class JsonLdExpandTest {
     public String baseUri;
     
     @Test
-    public void testExpand() throws IOException, JsonLdError {
+    public void testExpand() {
 
         // skip specVersion == 1.0
         assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
@@ -39,9 +40,14 @@ public class JsonLdExpandTest {
         // skip normative == false
         assumeTrue(testCase.options.normative == null || testCase.options.normative);
 
-        testCase.execute(() -> {
-            return JsonLd.createProcessor().expand(URI.create(testCase.baseUri + testCase.input), testCase.getOptions());
-        });
+        try {
+            testCase.execute(options -> {        
+                return JsonLd.createProcessor().expand(URI.create(testCase.baseUri + testCase.input), options);
+            });
+            
+        } catch (JsonLdError e) {
+            Assert.fail(e.getMessage());
+        }
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")

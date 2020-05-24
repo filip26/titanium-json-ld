@@ -51,13 +51,19 @@ public class JsonLdTestCase {
     
     public void execute(JsonLdTestCaseMethod method) throws JsonLdError {
 
+        Assert.assertNotNull(baseUri);
         Assert.assertNotNull(input);
+
+        JsonLdOptions options = getOptions();
+        
+        Assert.assertNotNull(options);
+        Assert.assertNotNull(options.getDocumentLoader());
         
         JsonValue result = null;
-
+        
         try {
   
-            result = method.invoke();
+            result = method.invoke(options);
             
             Assert.assertNotNull(result);
             
@@ -69,7 +75,7 @@ public class JsonLdTestCase {
         Assert.assertNull(expectErrorCode);
         Assert.assertNotNull(expect);
         
-        RemoteDocument expectedDocument = getOptions().getDocumentLoader().loadDocument(URI.create(baseUri + expect), new LoadDocumentOptions());
+        RemoteDocument expectedDocument = options.getDocumentLoader().loadDocument(URI.create(baseUri + expect), new LoadDocumentOptions());
                     
         Assert.assertNotNull(expectedDocument);
         Assert.assertNotNull(expectedDocument.getDocument());
@@ -78,7 +84,8 @@ public class JsonLdTestCase {
         Assert.assertEquals(expectedDocument.getDocument().asJsonStructure(), result);
     }
     
-    public JsonLdOptions getOptions() {
+    JsonLdOptions getOptions() {
+        
         final LoadDocumentCallback loader = 
                 new UrlRewriteLoader(
                             baseUri, 
@@ -117,7 +124,6 @@ public class JsonLdTestCase {
             return JsonLdErrorCode.UNSPECIFIED;
         }
 
-        
         return JsonLdErrorCode.valueOf(errorCode.strip().toUpperCase().replace(" ", "_").replace("-", "_").replaceAll("\\_\\@", "_KEYWORD_" )); 
     }
     

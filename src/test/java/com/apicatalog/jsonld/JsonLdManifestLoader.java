@@ -22,7 +22,6 @@ public final class JsonLdManifestLoader {
         this.path = path;
     }
     
-    
     public static JsonLdManifestLoader load(String path) {
         return new JsonLdManifestLoader(RESOURCES_BASE + path);
     }
