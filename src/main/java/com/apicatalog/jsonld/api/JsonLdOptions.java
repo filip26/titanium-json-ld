@@ -19,8 +19,6 @@ import com.apicatalog.jsonld.loader.UrlConnectionLoader;
  */
 public final class JsonLdOptions {
 
-    public static final JsonLdOptions DEFAULT = new JsonLdOptions();
-
     /**
      * The base IRI to use when expanding or compacting the document. 
      * If set, this overrides the input document's IRI.

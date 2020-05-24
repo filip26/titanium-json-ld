@@ -33,8 +33,9 @@ public final class JsonUtils {
     }
 
     public static final boolean isScalar(final JsonValue value) {
-        return value != null && !ValueType.ARRAY.equals(value.getValueType())
-                && !ValueType.OBJECT.equals(value.getValueType());
+        return value != null 
+                    && !ValueType.ARRAY.equals(value.getValueType())
+                    && !ValueType.OBJECT.equals(value.getValueType());
     }
 
     public static final boolean isNotScalar(final JsonValue value) {
@@ -79,7 +80,8 @@ public final class JsonUtils {
 
     public static boolean isNotBoolean(JsonValue value) {
         return value == null
-                || (!ValueType.TRUE.equals(value.getValueType()) && !ValueType.FALSE.equals(value.getValueType()));
+                || (!ValueType.TRUE.equals(value.getValueType()) 
+                        && !ValueType.FALSE.equals(value.getValueType()));
     }
 
     public static boolean isTrue(JsonValue value) {

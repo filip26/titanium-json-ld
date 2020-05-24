@@ -24,7 +24,7 @@ public final class UriResolver {
 
         //FIXME hack
         if (relative.endsWith(":")) {
-            relative = relative + ".";
+            relative += ".";
         }
         
         URI components = URI.create(relative);

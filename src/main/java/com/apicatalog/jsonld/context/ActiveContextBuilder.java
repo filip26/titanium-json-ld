@@ -394,8 +394,7 @@ public class ActiveContextBuilder {
 
                     String valueString = ((JsonString) value).getString();
 
-                    //FIXME hack -  ex: prefixes paas
-                    if (valueString.indexOf(':', 1) != -1 || UriUtils.isURI(valueString) || valueString.isBlank() || CompactUri.isBlankNode(valueString)) {
+                    if (UriUtils.isURI(valueString) || valueString.isBlank() || CompactUri.isBlankNode(valueString)) {
 
                         String vocabularyMapping =
                                     result
@@ -404,8 +403,7 @@ public class ActiveContextBuilder {
                                         .documentRelative(true)
                                         .build();
 
-                        //FIXME hack -  ex: prefixes paas
-                        if (valueString.indexOf(':', 1) != -1 || UriUtils.isURI(vocabularyMapping) || CompactUri.isBlankNode(valueString)) {
+                        if (UriUtils.isURI(vocabularyMapping) || CompactUri.isBlankNode(valueString)) {
                             result.vocabularyMapping = vocabularyMapping;
 
                         } else {

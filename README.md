@@ -1,4 +1,4 @@
-# JSON-LD 1.1 Processor
+# JSON-LD 1.1 Processor & API
 
 An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) specification in Java utilizing [JSONP](https://javaee.github.io/jsonp/) (Java API for JSON Processing).
 
@@ -24,13 +24,13 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 
 ## Roadmap
 
-- [x] 0.1 - Expansion
-- [ ] 0.2 - Compaction
-- [ ] 0.3 - Flattening
-- [ ] 0.4 - RDF serialization
-- [ ] 0.5 - RDF deserialization
-- [ ] 0.6 - Framing
-- [ ] 0.7 - API
+- [x] 0.1 - [Expansion Algorithms](https://www.w3.org/TR/json-ld11-api/#expansion-algorithms)
+- [ ] 0.2 - [Compaction Algorithms](https://www.w3.org/TR/json-ld11-api/#compaction-algorithms)
+- [ ] 0.3 - [Flattening Algorithms](https://www.w3.org/TR/json-ld11-api/#flattening-algorithms)
+- [ ] 0.4 - [RDF Algorithms](https://www.w3.org/TR/json-ld11-api/#rdf-serialization-deserialization-algorithms)
+- [ ] 0.5 - [JSON-LD API](https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface)
+- [ ] 0.6 - Issues, code cleaning and optimization
+- [ ] 0.7 - [Framing](https://www.w3.org/TR/json-ld11-framing/)
 - [ ] 0.8 - Issues, code cleaning and optimization
 - [ ] 1.0 - GA
 

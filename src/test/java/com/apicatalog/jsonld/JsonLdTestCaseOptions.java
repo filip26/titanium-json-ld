@@ -23,6 +23,7 @@ public class JsonLdTestCaseOptions {
         if (o.containsKey("specVersion")) {
             options.specVersion = Version.of(o.getString("specVersion"));
         }
+        
         options.base = o.getString("base", null);
         options.processingMode = o.getString("processingMode", null);
 

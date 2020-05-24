@@ -21,12 +21,12 @@ final class JsonLd11Processor implements JsonLdProcessor {
 
     @Override
     public JsonObject compact(JsonLdInput input) throws JsonLdError {
-        return compact(input, JsonLdOptions.DEFAULT);
+        return compact(input, new JsonLdOptions());
     }
 
     @Override
     public JsonObject compact(JsonLdInput input, JsonLdContext context) throws JsonLdError {
-        return compact(input, context, JsonLdOptions.DEFAULT);
+        return compact(input, context, new JsonLdOptions());
     }
 
     @Override
@@ -57,20 +57,17 @@ final class JsonLd11Processor implements JsonLdProcessor {
 
     @Override
     public JsonObject flatten(JsonLdInput input) {
-        // TODO Auto-generated method stub
-        return null;
+        return flatten(input, null, new JsonLdOptions());
     }
 
     @Override
     public JsonObject flatten(JsonLdInput input, JsonLdContext context) {
-        // TODO Auto-generated method stub
-        return null;
+        return flatten(input, context, new JsonLdOptions());
     }
 
     @Override
     public JsonObject flatten(JsonLdInput input, JsonLdOptions options) {
-        // TODO Auto-generated method stub
-        return null;
+        return flatten(input, null, options);
     }
 
     @Override
@@ -81,8 +78,7 @@ final class JsonLd11Processor implements JsonLdProcessor {
 
     @Override
     public Collection<JsonObject> fromRdf(RdfDataset input) {
-        // TODO Auto-generated method stub
-        return Collections.emptyList();
+        return fromRdf(input, new JsonLdOptions());
     }
 
     @Override
@@ -93,8 +89,7 @@ final class JsonLd11Processor implements JsonLdProcessor {
 
     @Override
     public RdfDataset toRdf(JsonLdInput input) {
-        // TODO Auto-generated method stub
-        return null;
+        return toRdf(input, new JsonLdOptions());
     }
 
     @Override
