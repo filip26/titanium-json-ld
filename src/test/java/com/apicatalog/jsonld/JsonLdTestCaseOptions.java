@@ -6,6 +6,7 @@ import javax.json.JsonObject;
 
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.grammar.Version;
+import com.apicatalog.jsonld.utils.UriResolver;
 
 public class JsonLdTestCaseOptions {
 
@@ -15,7 +16,7 @@ public class JsonLdTestCaseOptions {
 	public Boolean normative;
 	public String expandContext;
 	
-	public static final JsonLdTestCaseOptions of(JsonObject o) {
+	public static final JsonLdTestCaseOptions of(JsonObject o, String baseUri) {
 		
 		final JsonLdTestCaseOptions options = new JsonLdTestCaseOptions();
 		
@@ -29,7 +30,9 @@ public class JsonLdTestCaseOptions {
 			options.normative = o.getBoolean("normative");
 		}
 
-		options.expandContext = o.getString("expandContext", null);
+		if (o.containsKey("expandContext")) {
+			options.expandContext = UriResolver.resolve(URI.create(baseUri), o.getString("expandContext"));
+		}
 		
 		return options;
 	}

@@ -22,7 +22,7 @@ public class JsonLdTestCase {
 		return this;
 	}
 	
-	public static final JsonLdTestCase of(JsonObject o) {
+	public static final JsonLdTestCase of(JsonObject o, String baseUri) {
 		final JsonLdTestCase testDefinition = new JsonLdTestCase();
 		testDefinition.id = o.getString("@id");
 		testDefinition.name = o.getString("name");
@@ -32,7 +32,7 @@ public class JsonLdTestCase {
 		
 		testDefinition.options =
 							o.containsKey("option")
-								? JsonLdTestCaseOptions.of(o.get("option").asJsonObject())
+								? JsonLdTestCaseOptions.of(o.getJsonObject("option"), baseUri)
 								: new JsonLdTestCaseOptions();
 		
 		return testDefinition;

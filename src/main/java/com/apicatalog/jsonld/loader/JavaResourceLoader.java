@@ -28,9 +28,10 @@ public class JavaResourceLoader implements LoadDocumentCallback {
 			}
 			
 			Document document = JsonDocument.parse(new InputStreamReader(is));
+			
 			RemoteDocument remoteDocument = new RemoteDocument();
 			remoteDocument.setDocument(document);
-			remoteDocument.setDocumentUrl(url);	//TODO set final URL 
+			remoteDocument.setDocumentUrl(url); 
 
 			return remoteDocument;
 			

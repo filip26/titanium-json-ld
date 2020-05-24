@@ -144,14 +144,13 @@ public class ActiveContextBuilder {
 			if (JsonUtils.isString(itemContext)) {
 
 				String contextUri = itemContext.toString();
-
+		
 				// 5.2.1
 				if (baseUrl != null) {
-					
 					contextUri = UriResolver.resolve(baseUrl, ((JsonString) itemContext).getString());
 					
 				} else if (UriUtils.isNotURI(contextUri)) {
-					throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+					throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED);
 				}
 
 				if (UriUtils.isNotAbsoluteURI(contextUri)) {
@@ -298,7 +297,10 @@ public class ActiveContextBuilder {
 				JsonStructure importedStructure = null;
 
 				try {
-					RemoteDocument remoteImport = options.getDocumentLoader().loadDocument(URI.create(contextImportUri), loaderOptions);
+					RemoteDocument remoteImport = options
+													.getDocumentLoader()
+													.loadDocument(URI.create(contextImportUri), loaderOptions)
+													;
 
 					importedStructure = remoteImport.getDocument().asJsonStructure();
 

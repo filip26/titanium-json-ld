@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import javax.json.Json;
 import javax.json.JsonObject;
-import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 
@@ -122,12 +121,14 @@ public class JsonLdExpandTest {
 				
 				final JsonObject manifest = parser.getObject();
 				
+				String baseUri = manifest.getString("baseIri");
+				
 				return manifest
 						.getJsonArray("sequence")
 							.stream()
 								.map(JsonValue::asJsonObject)
-								.map(JsonLdTestCase::of)
-								.map(o -> new Object[] {o, o.id, o.name, ((JsonString)(manifest.get("baseIri"))).getString()})
+								.map(o -> JsonLdTestCase.of(o, baseUri))
+								.map(o -> new Object[] {o, o.id, o.name, baseUri})
 								.collect(Collectors.toList());
 			}
 		}		
