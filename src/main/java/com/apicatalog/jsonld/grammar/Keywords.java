@@ -6,6 +6,8 @@ import java.util.stream.IntStream;
 
 public final class Keywords {
 
+    public static final String ANY = "@any";
+    
     public static final String BASE = "@base";
 
     public static final String CONTAINER = "@container";
@@ -54,7 +56,7 @@ public final class Keywords {
 
     public static final String VOCAB = "@vocab";
 
-    static final Collection<String> ALL_KEYWORDS = Arrays.asList(BASE, CONTAINER, CONTEXT, DEFAULT, DIRECTION, GRAPH,
+    static final Collection<String> ALL_KEYWORDS = Arrays.asList(ANY, BASE, CONTAINER, CONTEXT, DEFAULT, DIRECTION, GRAPH,
             ID, IMPORT, INCLUDED, INDEX, JSON, LANGUAGE, LIST, NEST, NONE, PREFIX, PROPAGATE, PROTECTED, REVERSE, SET,
             TYPE, VALUE, VERSION, VOCAB);
 

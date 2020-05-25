@@ -39,7 +39,7 @@ public final class TermSelector {
         //    set inverse context in active context to the result of calling 
         //    the Inverse Context Creation algorithm using active context.
         if (activeContext.getInverseContext() == null) {
-            activeContext.createInverse();
+            activeContext.createInverseContext();
         }
 
         // 2. Initialize inverse context to the value of inverse context in active context.

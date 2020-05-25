@@ -1,17 +1,27 @@
 package com.apicatalog.jsonld.context;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class InverseContext {
 
+    //TODO get rid of all maps
+    Map<String, Map<String, Map<String, String>>> context;
+    
+    public InverseContext() {
+        this.context = new LinkedHashMap<>();
+    }
+    
     public boolean contains(String variable) {
-        // TODO Auto-generated method stub
-        return false;
+        return context.containsKey(variable);
     }
 
     public Map getValue(String variable) {
-        // TODO Auto-generated method stub
-        return null;
+        return context.get(variable);
+    }
+
+    public void add(String variable, Map containerMap) {
+        context.put(variable, containerMap);
     }
 
 }

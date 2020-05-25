@@ -64,7 +64,7 @@ public final class UriCompactionBuilder {
         
         // 2.
         if (activeContext.getInverseContext() == null) {
-            activeContext.createInverse();
+            activeContext.createInverseContext();
         }
 
         // 3.

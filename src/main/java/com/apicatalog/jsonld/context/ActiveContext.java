@@ -148,6 +148,10 @@ public final class ActiveContext {
     public Map<String, TermDefinition> getTermsMapping() {
         return terms;
     }
+    
+    public Collection<String> getTerms() {
+        return terms.keySet();
+    }
 
     public ValueExpansionBuilder expandValue(final JsonValue element, final String activeProperty) throws JsonLdError {
         return ValueExpansionBuilder.with(this, element, activeProperty);
@@ -169,11 +173,12 @@ public final class ActiveContext {
         return UriCompactionBuilder.with(this, value);
     }
     
-    public void createInverse() {
+    public void createInverseContext() {
          this.inverseContext = InverseContextBuilder.with(this).build();
     }
     
     public TermSelector selectTerm(String variable, Collection<String> containerMapping, String typeLanguage, Collection<String> preferredValues) {
         return TermSelector.with(this, variable, containerMapping, typeLanguage, preferredValues);
     }
+    
 }
