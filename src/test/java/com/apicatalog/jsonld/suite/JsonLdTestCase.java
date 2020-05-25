@@ -11,10 +11,10 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.loader.JavaResourceLoader;
+import com.apicatalog.jsonld.loader.ClassPathLoader;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
-import com.apicatalog.jsonld.loader.UrlRewriteLoader;
+import com.apicatalog.jsonld.loader.UrlRewrite;
 
 public class JsonLdTestCase {
 
@@ -105,10 +105,10 @@ public class JsonLdTestCase {
     JsonLdOptions getOptions() {
         
         final LoadDocumentCallback loader = 
-                new UrlRewriteLoader(
+                new UrlRewrite(
                             baseUri, 
                             "classpath:" + JsonLdManifestLoader.RESOURCES_BASE,
-                            new JavaResourceLoader()
+                            new ClassPathLoader()
                         );
         
         JsonLdOptions jsonLdOptions = new JsonLdOptions();
