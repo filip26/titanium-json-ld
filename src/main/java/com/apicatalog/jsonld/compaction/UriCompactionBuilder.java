@@ -45,12 +45,12 @@ public final class UriCompactionBuilder {
         return this;
     }
 
-    public UriCompactionBuilder setValue(JsonValue value) {
-        this.value = value;
+    public UriCompactionBuilder vocab(boolean vocab) {
+        this.vocab = vocab;
         return this;
     }
     
-    public UriCompactionBuilder setReverse(boolean reverse) {
+    public UriCompactionBuilder reverse(boolean reverse) {
         this.reverse = reverse;
         return this;
     }

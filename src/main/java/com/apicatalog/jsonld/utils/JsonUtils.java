@@ -123,4 +123,11 @@ public final class JsonUtils {
     public static boolean isBlankString(JsonValue value) {
         return isString(value) && ((JsonString) value).getString().isBlank();
     }
+
+    public static JsonValue toValue(String value) {
+        return value != null && !value.isBlank() 
+                    ? Json.createValue(value)
+                    : JsonValue.NULL
+                    ;
+    }
 }
