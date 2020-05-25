@@ -76,6 +76,10 @@ public class TermDefinition {
         return prefixFlag;
     }
 
+    public boolean isNotPrefix() {
+        return !prefixFlag;
+    }
+
     public void setLanguageMapping(JsonValue languageMapping) {
         this.languageMapping = languageMapping;
     }

@@ -32,7 +32,7 @@ public final class ActiveContext {
     // the original base URL
     URI baseUrl;
 
-    Object inverseContext; // TODO
+    ActiveContext inverseContext;
 
     // an optional previous context, used when a non-propagated context is defined.
     ActiveContext previousContext;
@@ -139,6 +139,18 @@ public final class ActiveContext {
         this.baseUri = baseUri;
     }
 
+    public ActiveContext getInverseContext() {
+        return inverseContext;
+    }
+    
+    public void setInverseContext(ActiveContext inverseContext) {
+        this.inverseContext = inverseContext;
+    }
+    
+    public Map<String, TermDefinition> getTermsMapping() {
+        return terms;
+    }
+
     public ValueExpansionBuilder expandValue(final JsonValue element, final String activeProperty) throws JsonLdError {
         return ValueExpansionBuilder.with(this, element, activeProperty);
     }
@@ -158,5 +170,8 @@ public final class ActiveContext {
     public UriCompactionBuilder compacttUri(final String value) {
         return UriCompactionBuilder.with(this, value);
     }
-
+    
+    public InverseContextBuilder createInverse() {
+        return InverseContextBuilder.with(this);
+    }
 }
