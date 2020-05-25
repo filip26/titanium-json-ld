@@ -5,7 +5,6 @@ import java.net.URI;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
-import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdContext;
@@ -93,8 +92,8 @@ public final class CompactionProcessor {
         }
         
         // 9.
-        JsonStructure compactedOutput = CompactionBuilder
-                                        .create(activeContext, null, expandedInput)
+        JsonValue compactedOutput = CompactionBuilder
+                                        .with(activeContext, null, expandedInput)
                                         .compactArrays(options.isCompactArrays())
                                         .ordered(options.isOrdered())
                                         .build();
@@ -115,11 +114,16 @@ public final class CompactionProcessor {
         
         // 9.3.
         if (JsonUtils.isNotNull(contextValue)) {
-            compactedOutput = Json.createObjectBuilder(compactedOutput.asJsonObject())
-                                    .add(Keywords.CONTEXT, contextValue)
-                                    .build();
+//            compactedOutput = Json.createObjectBuilder(compactedOutput.asJsonObject())
+//                                    .add(Keywords.CONTEXT, contextValue)
+//                                    .build();
+//FIXME            
         }
 
-        return compactedOutput.asJsonObject();
+        if (JsonUtils.isObject(compactedOutput)) {
+            return compactedOutput.asJsonObject();            
+        }
+        
+        return null;    //FIXME
     }
 }

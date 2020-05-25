@@ -131,4 +131,9 @@ public class TermDefinition {
 //        JsonValue languageMapping;
 
     }
+    
+    public boolean hasContainerMapping(String value) {
+        return containerMapping != null && containerMapping.contains(value);
+    }
+    
 }
