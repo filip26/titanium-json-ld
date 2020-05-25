@@ -95,13 +95,33 @@ public final class InverseContextBuilder {
 
             // 3.10.
             if (termDefinition.isReverseProperty()) {
-                //TODO
+
+                // 3.10.1
+                if (!typeMap.containsKey(Keywords.REVERSE)) {
+                    typeMap.put(Keywords.REVERSE, term);
+                }
             
             // 3.11.
             } else if (Keywords.NONE.equals(termDefinition.getTypeMapping()) ) {
                 
+                // 3.11.1.
+                if (!languageMap.containsKey(Keywords.ANY)) {
+                    languageMap.put(Keywords.ANY, term);
+                }
+
+                // 3.11.2.
+                if (!typeMap.containsKey(Keywords.ANY)) {
+                    typeMap.put(Keywords.ANY, term);
+                }
+
             // 3.12.
             } else if (termDefinition.getTypeMapping() != null) {
+
+                // 3.12.1
+                if (!typeMap.containsKey(termDefinition.getTypeMapping())) {
+                    typeMap.put(termDefinition.getTypeMapping(), term);
+                }
+
                 
             // 3.13.
             } else if (termDefinition.getLanguageMapping() != null && termDefinition.getDirectionMapping() != null) {
@@ -129,6 +149,7 @@ public final class InverseContextBuilder {
             }
         }
         
+        // 4.
         return result;
     }
     

@@ -171,7 +171,7 @@ public final class ActiveContext {
         return ActiveContextBuilder.with(this, localContext, base, options);
     }
 
-    public UriCompactionBuilder compacttUri(final String value) {
+    public UriCompactionBuilder compactUri(final String value) {
         return UriCompactionBuilder.with(this, value);
     }
     

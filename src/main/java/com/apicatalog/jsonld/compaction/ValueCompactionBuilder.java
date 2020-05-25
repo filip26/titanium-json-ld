@@ -83,13 +83,13 @@ public final class ValueCompactionBuilder {
             // 6.1.
             if (activePropertyDefinition != null && Keywords.ID.equals(activePropertyDefinition.getTypeMapping())) {
                 result = JsonUtils.toJsonValue(activeContext
-                                                .compacttUri(value.getString(Keywords.ID))
+                                                .compactUri(value.getString(Keywords.ID))
                                                 .build());
 
             // 6.2.
             } else if (activePropertyDefinition != null && Keywords.VOCAB.equals(activePropertyDefinition.getTypeMapping())) {
                 result = JsonUtils.toJsonValue(activeContext
-                                                .compacttUri(value.getString(Keywords.ID))
+                                                .compactUri(value.getString(Keywords.ID))
                                                 .vocab(true)
                                                 .build());                
             }
@@ -129,7 +129,7 @@ public final class ValueCompactionBuilder {
             for (Entry<String, JsonValue> entry : result.asJsonObject().entrySet()) {
                 resultBuilder.add(
                                 activeContext
-                                        .compacttUri(entry.getKey())
+                                        .compactUri(entry.getKey())
                                         .vocab(true)
                                         .build(), 
                                 entry.getValue()

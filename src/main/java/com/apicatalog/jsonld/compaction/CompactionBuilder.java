@@ -2,7 +2,9 @@ package com.apicatalog.jsonld.compaction;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -163,7 +165,7 @@ public final class CompactionBuilder {
         boolean insideReverse = Keywords.REVERSE.equals(activeProperty);
         
         // 10.
-        JsonObject result = JsonValue.EMPTY_JSON_OBJECT;
+        Map<String, JsonValue> result = new LinkedHashMap<>();
 
         // 11.
         if (elementObject.containsKey(Keywords.TYPE)) {
@@ -172,7 +174,7 @@ public final class CompactionBuilder {
             
             for (JsonValue type : JsonUtils.toJsonArray(elementObject.get(Keywords.TYPE))) {
                 
-                compactedTypes.add(activeContext.compacttUri(((JsonString)type).getString()).vocab(true).build());
+                compactedTypes.add(activeContext.compactUri(((JsonString)type).getString()).vocab(true).build());
                 
             }
 
@@ -195,10 +197,81 @@ public final class CompactionBuilder {
         }
         
         // 12.
-        //TODO
+        List<String> expandedProperties = new ArrayList<>(elementObject.keySet());
+        
+        if (ordered) {
+            Collections.sort(expandedProperties);
+        }
+        
+        for (String expandedProperty : expandedProperties) {
+            
+            JsonValue expandedValue = elementObject.get(expandedProperty);
+            
+            // 12.1.
+            if (Keywords.ID.equals(expandedProperty)) {
+                
+                JsonValue compactedValue = JsonValue.NULL;
+                
+                // 12.1.1.
+                if (JsonUtils.isString(expandedValue)) {
+                    compactedValue = JsonUtils.toJsonValue(activeContext.compactUri(((JsonString)expandedValue).getString()).build());
+                }
+                
+                // 12.1.2.
+                String alias = activeContext.compactUri(expandedProperty).vocab(true).build();
+                
+                // 12.1.3.
+                result.put(alias, compactedValue);
+                
+                continue;
+            }
+            
+            // 12.2.
+            if (Keywords.TYPE.equals(expandedProperty)) {
+
+                JsonValue compactedValue = JsonValue.NULL;
+
+                // 12.2.1.
+                if (JsonUtils.isString(expandedValue)) {
+                    compactedValue = JsonUtils.toJsonValue(typeContext.compactUri(((JsonString)expandedValue).getString()).build());
+                    
+                // 12.2.2.
+                } else if (JsonUtils.isArray(expandedValue)) {
+                    
+                    //TODO                    
+                    
+                } else {
+                    //TODO error
+                }
+
+                // 12.2.3.
+                String alias = activeContext.compactUri(expandedProperty).vocab(true).build();
+                
+                //TODO
+                
+                // 12.2.6
+                continue;
+                
+            }
+            
+            // 12.3.
+            if (Keywords.REVERSE.equals(expandedProperty)) {
+                //TODO
+                
+                continue;
+            }
+
+            // 12.4.
+            if (Keywords.PRESERVE.equals(expandedProperty)) {
+                //TODO
+            }
+            
+            //TODO
+
+        }
         
         // 13.
-        return result;
+        return JsonUtils.toJsonObject(result);
     }
     
 }

@@ -87,8 +87,6 @@ public final class CompactionProcessor {
         } else if (options.isCompactToRelative()) {
             activeContext.setBaseUri(input.getDocumentUrl());
             
-        } else {
-            activeContext.setBaseUri(null);
         }
         
         // 9.
@@ -103,27 +101,26 @@ public final class CompactionProcessor {
             compactedOutput = JsonValue.EMPTY_JSON_OBJECT;
             
         // 9.2.
-        } else if (JsonUtils.isArray(contextValue)) {
+        } else if (JsonUtils.isArray(compactedOutput)) {
             compactedOutput = Json.createObjectBuilder()
                                     .add(
-                                        activeContext.compacttUri(Keywords.GRAPH).build(),
+                                        activeContext.compactUri(Keywords.GRAPH).vocab(true).build(),
                                         compactedOutput
                                         )
                                     .build();
         }
+
+        if (compactedOutput.asJsonObject().isEmpty()) {
+            return compactedOutput.asJsonObject();
+        }
         
         // 9.3.
         if (JsonUtils.isNotNull(contextValue)) {
-//            compactedOutput = Json.createObjectBuilder(compactedOutput.asJsonObject())
-//                                    .add(Keywords.CONTEXT, contextValue)
-//                                    .build();
-//FIXME            
+            compactedOutput = Json.createObjectBuilder(compactedOutput.asJsonObject())
+                                    .add(Keywords.CONTEXT, contextValue)
+                                    .build();            
         }
 
-        if (JsonUtils.isObject(compactedOutput)) {
-            return compactedOutput.asJsonObject();            
-        }
-        
-        return null;    //FIXME
+        return compactedOutput.asJsonObject();            
     }
 }

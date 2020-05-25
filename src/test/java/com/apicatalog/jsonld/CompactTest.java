@@ -1,5 +1,8 @@
 package com.apicatalog.jsonld;
 
+import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeTrue;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -11,6 +14,7 @@ import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdContext;
 import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.grammar.Version;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 
@@ -33,10 +37,10 @@ public class CompactTest {
     public void testCompact() {
 
         // skip specVersion == 1.0
-        //assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
+        assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
         
         // skip normative == false
-        //assumeTrue(testCase.options.normative == null || testCase.options.normative);
+        assumeTrue(testCase.options.normative == null || testCase.options.normative);
         
         Assert.assertNotNull(testCase.context);
         

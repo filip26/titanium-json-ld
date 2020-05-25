@@ -40,6 +40,8 @@ public final class Keywords {
 
     public static final String PREFIX = "@prefix";
 
+    public static final String PRESERVE = "@preserve";
+    
     public static final String PROPAGATE = "@propagate";
 
     public static final String PROTECTED = "@protected";
@@ -57,7 +59,7 @@ public final class Keywords {
     public static final String VOCAB = "@vocab";
 
     static final Collection<String> ALL_KEYWORDS = Arrays.asList(ANY, BASE, CONTAINER, CONTEXT, DEFAULT, DIRECTION, GRAPH,
-            ID, IMPORT, INCLUDED, INDEX, JSON, LANGUAGE, LIST, NEST, NONE, PREFIX, PROPAGATE, PROTECTED, REVERSE, SET,
+            ID, IMPORT, INCLUDED, INDEX, JSON, LANGUAGE, LIST, NEST, NONE, PREFIX, PRESERVE, PROPAGATE, PROTECTED, REVERSE, SET,
             TYPE, VALUE, VERSION, VOCAB);
 
     protected Keywords() {
