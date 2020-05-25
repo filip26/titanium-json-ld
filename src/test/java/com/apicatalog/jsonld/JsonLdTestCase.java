@@ -22,11 +22,11 @@ public class JsonLdTestCase {
     
     public String name;
     
-    public String input;
+    public URI input;
     
-    public String context;
+    public URI context;
     
-    public String expect;
+    public URI expect;
     
     public JsonLdErrorCode expectErrorCode;
     
@@ -39,17 +39,26 @@ public class JsonLdTestCase {
         final JsonLdTestCase testCase = new JsonLdTestCase();
         
         testCase.id = o.getString("@id");
+        
         testCase.name = o.getString("name");
-        testCase.input = o.getString("input");
-        testCase.context = o.getString("context", null);
-        testCase.expect = o.getString("expect", null);
+        
+        testCase.input = o.containsKey("input")
+                            ? URI.create(baseUri + o.getString("input"))
+                            : null;
+        
+        testCase.context = o.containsKey("context")
+                                ? URI.create(baseUri + o.getString("context"))
+                                : null;
+                                
+        testCase.expect = o.containsKey("expect")
+                                ? URI.create(baseUri + o.getString("expect"))
+                                : null;
         
         testCase.expectErrorCode = o.containsKey("expectErrorCode")
                                             ? errorCode((o.getString("expectErrorCode")))
                                             : null;
         
-        testCase.options =
-                            o.containsKey("option")
+        testCase.options = o.containsKey("option")
                                 ? JsonLdTestCaseOptions.of(o.getJsonObject("option"), baseUri)
                                 : new JsonLdTestCaseOptions();
                                 
@@ -84,7 +93,7 @@ public class JsonLdTestCase {
         Assert.assertNull(expectErrorCode);
         Assert.assertNotNull(expect);
         
-        RemoteDocument expectedDocument = options.getDocumentLoader().loadDocument(URI.create(baseUri + expect), new LoadDocumentOptions());
+        RemoteDocument expectedDocument = options.getDocumentLoader().loadDocument(expect, new LoadDocumentOptions());
                     
         Assert.assertNotNull(expectedDocument);
         Assert.assertNotNull(expectedDocument.getDocument());

@@ -1,7 +1,6 @@
 package com.apicatalog.jsonld;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -44,8 +43,8 @@ public class JsonLdCompactTest {
                 return JsonLd
                             .createProcessor()
                             .compact(
-                                    URI.create(testCase.baseUri + testCase.input), 
-                                    JsonLdContext.of(URI.create(testCase.baseUri + testCase.context)),
+                                    testCase.input, 
+                                    JsonLdContext.of(testCase.context),
                                     options
                                     );
             });

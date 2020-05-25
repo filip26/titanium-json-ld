@@ -4,7 +4,6 @@ import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -42,7 +41,7 @@ public class JsonLdExpandTest {
 
         try {
             testCase.execute(options -> {        
-                return JsonLd.createProcessor().expand(URI.create(testCase.baseUri + testCase.input), options);
+                return JsonLd.createProcessor().expand(testCase.input, options);
             });
             
         } catch (JsonLdError e) {
