@@ -96,6 +96,10 @@ public final class JsonUtils {
         return isObject(value) && value.asJsonObject().isEmpty();
     }
 
+    public static boolean isEmptyArray(JsonValue value) {
+        return isArray(value) && value.asJsonArray().isEmpty();
+    }
+
     public static JsonObject toObject(Map<String, JsonValue> map) {
         final JsonObjectBuilder builder = Json.createObjectBuilder();
 

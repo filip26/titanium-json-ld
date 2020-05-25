@@ -9,6 +9,7 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.compaction.UriCompactionBuilder;
 import com.apicatalog.jsonld.expansion.UriExpansionBuilder;
 import com.apicatalog.jsonld.expansion.ValueExpansionBuilder;
 import com.apicatalog.jsonld.grammar.DirectionType;
@@ -133,6 +134,10 @@ public final class ActiveContext {
     public URI getBaseUrl() {
         return baseUrl;
     }
+    
+    public void setBaseUri(URI baseUri) {
+        this.baseUri = baseUri;
+    }
 
     public ValueExpansionBuilder expandValue(final JsonValue element, final String activeProperty) throws JsonLdError {
         return ValueExpansionBuilder.with(this, element, activeProperty);
@@ -148,6 +153,10 @@ public final class ActiveContext {
 
     public ActiveContextBuilder create(final JsonValue localContext, final URI base) {
         return ActiveContextBuilder.with(this, localContext, base, options);
+    }
+
+    public UriCompactionBuilder compacttUri(final String value) {
+        return UriCompactionBuilder.with(this, value);
     }
 
 }

@@ -30,7 +30,7 @@ public class CompactTest {
     public String baseUri;
     
     @Test
-    public void testExpand() {
+    public void testCompact() {
 
         // skip specVersion == 1.0
         //assumeFalse(Version.V1_0.equals(testCase.options.specVersion));

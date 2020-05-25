@@ -1,5 +1,7 @@
 package com.apicatalog.jsonld.compaction;
 
+import javax.json.JsonObject;
+import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
@@ -45,9 +47,9 @@ public final class CompactionBuilder {
         return this;
     }
     
-    public JsonValue build() throws JsonLdError {
+    public JsonStructure build() throws JsonLdError {
         //TODO
-        return JsonValue.NULL;
+        return JsonObject.EMPTY_JSON_OBJECT;
     }
     
 }
