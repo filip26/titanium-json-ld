@@ -19,11 +19,19 @@ import com.apicatalog.jsonld.loader.UrlRewriteLoader;
 public class JsonLdTestCase {
 
     public String id;
+    
     public String name;
+    
     public String input;
+    
+    public String context;
+    
     public String expect;
+    
     public JsonLdErrorCode expectErrorCode;
+    
     public String baseUri;
+    
     public JsonLdTestCaseOptions options;
     
     public static final JsonLdTestCase of(JsonObject o, String baseUri) {
@@ -33,6 +41,7 @@ public class JsonLdTestCase {
         testCase.id = o.getString("@id");
         testCase.name = o.getString("name");
         testCase.input = o.getString("input");
+        testCase.context = o.getString("context", null);
         testCase.expect = o.getString("expect", null);
         
         testCase.expectErrorCode = o.containsKey("expectErrorCode")

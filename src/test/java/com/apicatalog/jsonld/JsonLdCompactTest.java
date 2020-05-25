@@ -1,6 +1,7 @@
 package com.apicatalog.jsonld;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -9,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import com.apicatalog.jsonld.api.JsonLdContext;
 import com.apicatalog.jsonld.api.JsonLdError;
 
 @RunWith(Parameterized.class)
@@ -35,10 +37,17 @@ public class JsonLdCompactTest {
         // skip normative == false
         //assumeTrue(testCase.options.normative == null || testCase.options.normative);
         
+        Assert.assertNotNull(testCase.context);
+        
         try {
             testCase.execute(options -> {
-                return null;
-    //            return JsonLd.createProcessor().compact(URI.create(testCase.baseUri + testCase.input), options);
+                return JsonLd
+                            .createProcessor()
+                            .compact(
+                                    URI.create(testCase.baseUri + testCase.input), 
+                                    JsonLdContext.of(URI.create(testCase.baseUri + testCase.context)),
+                                    options
+                                    );
             });
             
         } catch (JsonLdError e) {

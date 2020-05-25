@@ -19,17 +19,12 @@ import com.apicatalog.jsonld.utils.JsonUtils;
 
 /**
  * 
- * @see <a href="https://www.w3.org/TR/json-ld11-api/#dom-jsonldprocessor-expand">JsonLdProcessor.expand</a>
+ * @see <a href="https://www.w3.org/TR/json-ld11-api/#dom-jsonldprocessor-expand">JsonLdProcessor.expand()</a>
  *
  */
-public class ExpansionProcessor {
+public final class ExpansionProcessor {
 
     ExpansionProcessor() {
-    }
-
-    public static JsonArray expand(JsonStructure input, JsonLdOptions options) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     public static final JsonArray expand(final URI input, final JsonLdOptions options) throws JsonLdError {
