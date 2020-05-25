@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld;
+package com.apicatalog.jsonld.suite;
 
 import javax.json.JsonValue;
 

@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld;
+package com.apicatalog.jsonld.suite;
 
 import java.io.IOException;
 import java.io.InputStream;

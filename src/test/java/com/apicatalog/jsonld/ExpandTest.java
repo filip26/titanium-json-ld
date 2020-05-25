@@ -14,9 +14,11 @@ import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.grammar.Version;
+import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
+import com.apicatalog.jsonld.suite.JsonLdTestCase;
 
 @RunWith(Parameterized.class)
-public class JsonLdExpandTest {
+public class ExpandTest {
     
     @Parameterized.Parameter(0)
     public JsonLdTestCase testCase;
