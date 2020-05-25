@@ -100,7 +100,7 @@ public final class JsonUtils {
         return isArray(value) && value.asJsonArray().isEmpty();
     }
 
-    public static JsonObject toObject(Map<String, JsonValue> map) {
+    public static JsonObject toJsonObject(Map<String, JsonValue> map) {
         final JsonObjectBuilder builder = Json.createObjectBuilder();
 
         map.entrySet().stream().forEach(e -> builder.add(e.getKey(), e.getValue()));
@@ -113,10 +113,10 @@ public final class JsonUtils {
 
         source.forEach(targetMap::put);
 
-        return toObject(targetMap);
+        return toJsonObject(targetMap);
     }
 
-    public static JsonArray asArray(JsonValue value) {
+    public static JsonArray toJsonArray(JsonValue value) {
         return JsonUtils.isArray(value) ? value.asJsonArray() : Json.createArrayBuilder().add(value).build();
     }
 
@@ -124,10 +124,11 @@ public final class JsonUtils {
         return isString(value) && ((JsonString) value).getString().isBlank();
     }
 
-    public static JsonValue toValue(String value) {
+    public static JsonValue toJsonValue(String value) {
         return value != null && !value.isBlank() 
                     ? Json.createValue(value)
                     : JsonValue.NULL
                     ;
-    }
+    }    
+    
 }

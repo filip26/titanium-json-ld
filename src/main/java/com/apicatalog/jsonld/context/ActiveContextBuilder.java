@@ -114,7 +114,7 @@ public class ActiveContextBuilder {
         // 4. If local context is not an array, set local context to an array containing
         // only local context.
         // 5. For each item context in local context:
-        for (JsonValue itemContext : JsonUtils.asArray(localContext)) {
+        for (JsonValue itemContext : JsonUtils.toJsonArray(localContext)) {
 
             // 5.1. If context is null:
             if (JsonUtils.isNull(itemContext)) {

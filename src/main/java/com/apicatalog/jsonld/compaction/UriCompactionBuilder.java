@@ -8,7 +8,6 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.InverseContext;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.grammar.CompactUri;
 
 /**
  * 
@@ -101,7 +100,7 @@ public final class UriCompactionBuilder {
             String compacttUriCandidate = 
                             termEntry.getKey()
                                     .concat(":")
-                                    .concat(termDefinition.getUriMapping().substring(variable.length()));
+                                    .concat(variable.substring(termDefinition.getUriMapping().length()));
 
             // 7.3.
             if (compactUri == null 

@@ -261,7 +261,7 @@ final class MapExpansion1314 {
                 // 13.4.5
                 if (Keywords.GRAPH.equals(expandedProperty)) {
 
-                    expandedValue = JsonUtils.asArray(Expansion
+                    expandedValue = JsonUtils.toJsonArray(Expansion
                                         .with(typeContext, value, Keywords.GRAPH, baseUrl)
                                         .frameExpansion(frameExpansion)
                                         .ordered(ordered)
@@ -481,7 +481,7 @@ final class MapExpansion1314 {
                             }
 
                             if (!reverseMap.isEmpty()) {
-                                result.put(Keywords.REVERSE, JsonUtils.toObject(reverseMap));
+                                result.put(Keywords.REVERSE, JsonUtils.toJsonObject(reverseMap));
                             }
 
                         }
@@ -802,7 +802,7 @@ final class MapExpansion1314 {
                     && !containerMapping.contains(Keywords.INDEX)) {
 
 
-                expandedValue = JsonUtils.asArray(expandedValue);
+                expandedValue = JsonUtils.toJsonArray(expandedValue);
 
                 JsonArrayBuilder array = Json.createArrayBuilder();
 
@@ -830,7 +830,7 @@ final class MapExpansion1314 {
                 }
 
                 // 13.13.3.
-                expandedValue = JsonUtils.asArray(expandedValue);
+                expandedValue = JsonUtils.toJsonArray(expandedValue);
 
                 // 13.13.4.
                 for (JsonValue item : expandedValue.asJsonArray()) {
@@ -849,7 +849,7 @@ final class MapExpansion1314 {
                     MapExpansion.addValue(reverseMap, expandedProperty, item, true);
                 }
  
-                result.put(Keywords.REVERSE, JsonUtils.toObject(reverseMap));
+                result.put(Keywords.REVERSE, JsonUtils.toJsonObject(reverseMap));
 
             // 13.14
             } else {

@@ -441,7 +441,7 @@ public final class TermDefinitionBuilder {
             }
 
             // 19.3.
-            for (JsonValue item : JsonUtils.asArray(containerValue)) {
+            for (JsonValue item : JsonUtils.toJsonArray(containerValue)) {
                     definition.addContainerMapping(((JsonString)item).getString());
             }
 

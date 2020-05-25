@@ -76,7 +76,7 @@ public final class CompactionProcessor {
         }
         
         // 7.
-        ActiveContext activeContext = new ActiveContext(null, null, options);
+        ActiveContext activeContext = new ActiveContext(options);
         
         activeContext = activeContext.create(contextValue, contextBase).build();
         

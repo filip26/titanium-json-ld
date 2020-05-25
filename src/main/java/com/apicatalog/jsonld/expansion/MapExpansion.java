@@ -161,7 +161,7 @@ public final class MapExpansion {
             }
 
             // 11.1
-            JsonValue value = JsonUtils.asArray(element.get(key));
+            JsonValue value = JsonUtils.toJsonArray(element.get(key));
 
             // 11.2
             List<String> terms = value
@@ -335,7 +335,7 @@ public final class MapExpansion {
 
         }
 
-        return JsonUtils.toObject(result);
+        return JsonUtils.toJsonObject(result);
     }
 
     // TODO don't use this algorithm, easy reduce complexity

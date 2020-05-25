@@ -5,12 +5,14 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.UriCompactionBuilder;
+import com.apicatalog.jsonld.compaction.ValueCompactionBuilder;
 import com.apicatalog.jsonld.expansion.UriExpansionBuilder;
 import com.apicatalog.jsonld.expansion.ValueExpansionBuilder;
 import com.apicatalog.jsonld.grammar.DirectionType;
@@ -179,6 +181,10 @@ public final class ActiveContext {
     
     public TermSelector selectTerm(String variable, Collection<String> containerMapping, String typeLanguage, Collection<String> preferredValues) {
         return TermSelector.with(this, variable, containerMapping, typeLanguage, preferredValues);
+    }
+
+    public ValueCompactionBuilder compactValue(final JsonObject element, final String activeProperty) {
+        return ValueCompactionBuilder.with(this, activeProperty, element);
     }
     
 }

@@ -54,8 +54,13 @@ public final class ValueCompactionBuilder {
         TermDefinition activePropertyDefinition = activeContext.getTerm(activeProperty);
         
         // 4. - 5.
-        JsonValue language = activePropertyDefinition.getLanguageMapping(); 
-        DirectionType direction = activePropertyDefinition.getDirectionMapping();
+        JsonValue language = null; 
+        DirectionType direction = null;
+
+        if (activePropertyDefinition != null) {
+            language = activePropertyDefinition.getLanguageMapping(); 
+            direction = activePropertyDefinition.getDirectionMapping();
+        }
         
         if (language == null) {
             language = activeContext.getDefaultLanguage() != null
@@ -76,28 +81,31 @@ public final class ValueCompactionBuilder {
                 ) {
             
             // 6.1.
-            if (Keywords.ID.equals(activePropertyDefinition.getTypeMapping())) {
-                result = JsonUtils.toValue(activeContext
+            if (activePropertyDefinition != null && Keywords.ID.equals(activePropertyDefinition.getTypeMapping())) {
+                result = JsonUtils.toJsonValue(activeContext
                                                 .compacttUri(value.getString(Keywords.ID))
                                                 .build());
 
             // 6.2.
-            } else if (Keywords.VOCAB.equals(activePropertyDefinition.getTypeMapping())) {
-                result = JsonUtils.toValue(activeContext
+            } else if (activePropertyDefinition != null && Keywords.VOCAB.equals(activePropertyDefinition.getTypeMapping())) {
+                result = JsonUtils.toJsonValue(activeContext
                                                 .compacttUri(value.getString(Keywords.ID))
                                                 .vocab(true)
                                                 .build());                
             }
         // 7.
-        } else if (value.containsKey(Keywords.TYPE)
-                    && Objects.equals(value.getString(Keywords.TYPE), activePropertyDefinition.getTypeMapping())) {
+        } else if (false /*FIXME value.containsKey(Keywords.TYPE)
+                    && Objects.equals(value.getString(Keywords.TYPE), activePropertyDefinition.getTypeMapping())
+                    */
+                    ) {
             
             result = value.get(Keywords.VALUE);
         
         // 8.
-        } else if (Keywords.NONE.equals(activePropertyDefinition.getTypeMapping())
+        } else if (false /*FIXME activePropertyDefinition != null && Keywords.NONE.equals(activePropertyDefinition.getTypeMapping())
                     || (value.containsKey(Keywords.TYPE)
                             && !Objects.equals(value.getString(Keywords.TYPE), activePropertyDefinition.getTypeMapping()))
+                            */
                 ) {
             
             // 8.1.
