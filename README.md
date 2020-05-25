@@ -32,6 +32,7 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 - [ ] 0.6 - Issues, code cleaning and optimization
 - [ ] 0.7 - [Framing](https://www.w3.org/TR/json-ld11-framing/)
 - [ ] 0.8 - Issues, code cleaning and optimization
+- [ ] 0.8 - Documented, bugs free, A+ code
 - [ ] 1.0 - GA
 
 ## Examples
