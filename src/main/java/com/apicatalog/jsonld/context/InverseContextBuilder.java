@@ -17,10 +17,10 @@ public final class InverseContextBuilder {
         return new InverseContextBuilder(activeContext);  
     }
     
-    public ActiveContext build() {
+    public InverseContext build() {
         
         //TODO
-        return activeContext;
+        return new InverseContext();
     }
     
 }

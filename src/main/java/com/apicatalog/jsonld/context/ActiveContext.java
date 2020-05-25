@@ -1,6 +1,7 @@
 package com.apicatalog.jsonld.context;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -32,7 +33,7 @@ public final class ActiveContext {
     // the original base URL
     URI baseUrl;
 
-    ActiveContext inverseContext;
+    InverseContext inverseContext;
 
     // an optional previous context, used when a non-propagated context is defined.
     ActiveContext previousContext;
@@ -47,12 +48,13 @@ public final class ActiveContext {
     DirectionType defaultBaseDirection;
 
     final JsonLdOptions options;
+    
+    public ActiveContext(JsonLdOptions options) {
+        this(null, null, null, options);
+    }
 
     public ActiveContext(final URI baseUri, final URI baseUrl, JsonLdOptions options) {
-        this.baseUri = baseUri;
-        this.baseUrl = baseUrl;
-        this.terms = new LinkedHashMap<>();
-        this.options = options;
+        this(baseUri, baseUrl, null, options);
     }
 
     public ActiveContext(final URI baseUri, final URI baseUrl, final ActiveContext previousContext, final JsonLdOptions options) {
@@ -139,14 +141,10 @@ public final class ActiveContext {
         this.baseUri = baseUri;
     }
 
-    public ActiveContext getInverseContext() {
+    public InverseContext getInverseContext() {
         return inverseContext;
     }
-    
-    public void setInverseContext(ActiveContext inverseContext) {
-        this.inverseContext = inverseContext;
-    }
-    
+        
     public Map<String, TermDefinition> getTermsMapping() {
         return terms;
     }
@@ -171,7 +169,11 @@ public final class ActiveContext {
         return UriCompactionBuilder.with(this, value);
     }
     
-    public InverseContextBuilder createInverse() {
-        return InverseContextBuilder.with(this);
+    public void createInverse() {
+         this.inverseContext = InverseContextBuilder.with(this).build();
+    }
+    
+    public TermSelector selectTerm(String variable, Collection<String> containerMapping, String typeLanguage, Collection<String> preferredValues) {
+        return TermSelector.with(this, variable, containerMapping, typeLanguage, preferredValues);
     }
 }

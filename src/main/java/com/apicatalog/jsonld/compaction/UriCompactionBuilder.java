@@ -6,6 +6,7 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.context.InverseContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.grammar.CompactUri;
 
@@ -63,14 +64,14 @@ public final class UriCompactionBuilder {
         
         // 2.
         if (activeContext.getInverseContext() == null) {
-            activeContext.setInverseContext(activeContext.createInverse().build());     //TODO
+            activeContext.createInverse();
         }
 
         // 3.
-        ActiveContext inverseContext = activeContext.getInverseContext();
+        InverseContext inverseContext = activeContext.getInverseContext();
         
         // 4.
-        if (vocab && inverseContext.containsTerm(variable)) {
+        if (vocab && inverseContext.contains(variable)) {
             //TODO
         }
         
