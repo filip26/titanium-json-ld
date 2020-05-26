@@ -16,6 +16,7 @@ import javax.json.JsonString;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.expansion.MapExpansion;
@@ -212,6 +213,8 @@ public final class CompactionBuilder {
             
             JsonValue expandedValue = elementObject.get(expandedProperty);
             
+            Map<String, JsonValue> nestResult = new LinkedHashMap<>();
+            
             // 12.1.
             if (Keywords.ID.equals(expandedProperty)) {
                 
@@ -324,7 +327,26 @@ public final class CompactionBuilder {
                                                     .reverse(insideReverse)
                                                     .build();
                 // 12.7.2.
-                //TODO
+                TermDefinition activeItemTermDefinition = activeContext.getTerm(itemActiveProperty);
+                
+                if (activeItemTermDefinition != null
+                        && activeItemTermDefinition.getNestValue() != null) {
+
+                    if (!Keywords.NEST.equals(activeItemTermDefinition.getNestValue())) {
+                        throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
+                    }
+                    
+
+                    
+                    //TODO
+                    
+                // 12.7.3.
+                } else {
+                    // 12.7.4.
+                    MapExpansion.addValue(nestResult, itemActiveProperty, JsonValue.EMPTY_JSON_ARRAY, true);
+                }
+                
+
             }
             
             // 12.8.
@@ -399,12 +421,9 @@ public final class CompactionBuilder {
                     
                 // 12.8.10.                    
                 } else {
-                    MapExpansion.addValue(result, itemActiveProperty,compactedItem, asArray);
+                    MapExpansion.addValue(nestResult, itemActiveProperty,compactedItem, asArray);
                 }
-            }
-            
-            //TODO
-
+            }            
         }
         
         // 13.

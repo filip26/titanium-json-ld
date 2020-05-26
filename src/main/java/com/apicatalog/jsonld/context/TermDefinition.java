@@ -115,6 +115,14 @@ public class TermDefinition {
     public void setIndexMapping(String indexMapping) {
         this.indexMapping = indexMapping;
     }
+    
+    public String getNestValue() {
+        return nestValue;
+    }
+    
+    public void setNestValue(String nestValue) {
+        this.nestValue = nestValue;
+    }
 
     public boolean isNotSameExcept(TermDefinition ref) {
 
