@@ -94,18 +94,24 @@ public final class ValueCompactionBuilder {
                                                 .build());                
             }
         // 7.
-        } else if (false /*FIXME value.containsKey(Keywords.TYPE)
-                    && Objects.equals(value.getString(Keywords.TYPE), activePropertyDefinition.getTypeMapping())
-                    */
+        } else if (value.containsKey(Keywords.TYPE)
+                    && activePropertyDefinition != null
+                    && JsonUtils.contains(
+                                    activePropertyDefinition.getTypeMapping(),
+                                    value.get(Keywords.TYPE)
+                                        )
                     ) {
-            
             result = value.get(Keywords.VALUE);
         
         // 8.
-        } else if (false /*FIXME activePropertyDefinition != null && Keywords.NONE.equals(activePropertyDefinition.getTypeMapping())
+        } else if (activePropertyDefinition != null && Keywords.NONE.equals(activePropertyDefinition.getTypeMapping())
                     || (value.containsKey(Keywords.TYPE)
-                            && !Objects.equals(value.getString(Keywords.TYPE), activePropertyDefinition.getTypeMapping()))
-                            */
+                            && activePropertyDefinition != null
+                                    && !JsonUtils.contains(
+                                            activePropertyDefinition.getTypeMapping(),
+                                            value.get(Keywords.TYPE)
+                                            )
+                                    )
                 ) {
             
             // 8.1.
