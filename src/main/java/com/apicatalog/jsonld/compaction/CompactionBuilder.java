@@ -16,8 +16,10 @@ import javax.json.JsonValue;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.expansion.MapExpansion;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.ListObject;
+import com.apicatalog.jsonld.grammar.Version;
 import com.apicatalog.jsonld.utils.JsonUtils;
 
 /**
@@ -237,21 +239,40 @@ public final class CompactionBuilder {
                     
                 // 12.2.2.
                 } else if (JsonUtils.isArray(expandedValue)) {
+
+                    // 12.2.2.1.
+                    JsonArrayBuilder compactedArray = Json.createArrayBuilder();
                     
-                    //TODO                    
+                    // 12.2.2.2.
+                    for (JsonValue expandedType : expandedValue.asJsonArray()) {
+
+                        // 12.2.2.2.1.
+                        String term = typeContext.compactUri(((JsonString)expandedType).getString()).vocab(true).build();
+
+                        // 12.2.2.2.2.
+                        compactedArray.add(term);
+                    }
                     
+                    compactedValue = compactedArray.build();
+                                        
                 } else {
                     //TODO error
                 }
 
                 // 12.2.3.
                 String alias = activeContext.compactUri(expandedProperty).vocab(true).build();
-                
-                //TODO
-                
-                // 12.2.6
-                continue;
-                
+
+                // 12.2.4.
+                boolean asArray = (activeContext.inMode(Version.V1_1)
+                                        && activeContext.containsTerm(alias)
+                                        && activeContext.getTerm(alias).hasContainerMapping(Keywords.SET))
+                                    || !compactArrays; 
+            
+                // 12.2.5.
+                MapExpansion.addValue(result, alias, compactedValue, asArray);
+
+                // 12.2.6.
+                continue;                
             }
             
             // 12.3.

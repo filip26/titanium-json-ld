@@ -33,9 +33,9 @@ public class TermDefinition {
 
     String typeMapping;
 
-    DirectionType directionMapping;
+    DirectionType directionMapping; //TODO deal with defined as null vs unset
 
-    JsonValue languageMapping;
+    JsonValue languageMapping;  //TODO deal with defined as null vs unset
     
     public TermDefinition(boolean prefixFlag, boolean protectedFlag, boolean reversePropertyFlag) {
         this.prefixFlag = prefixFlag;
