@@ -1,8 +1,10 @@
 package com.apicatalog.jsonld.compaction;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +19,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.expansion.MapExpansion;
+import com.apicatalog.jsonld.grammar.GraphObject;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.ListObject;
 import com.apicatalog.jsonld.grammar.Version;
@@ -285,6 +288,119 @@ public final class CompactionBuilder {
             // 12.4.
             if (Keywords.PRESERVE.equals(expandedProperty)) {
                 //TODO
+            }
+            
+            // 12.5.
+            if (Keywords.INDEX.equals(expandedProperty)
+                    && activePropertyDefinition != null
+                    && activePropertyDefinition.hasContainerMapping(Keywords.INDEX)
+                    ) {
+                continue;
+                
+            // 12.6.
+            } else if (Keywords.isOneOf(expandedProperty,
+                                            Keywords.DIRECTION,
+                                            Keywords.INDEX,
+                                            Keywords.LANGUAGE,
+                                            Keywords.VALUE
+                                            )) {
+                // 12.6.1.
+                String alias = activeContext.compactUri(expandedProperty).vocab(true).build();
+                
+                // 12.6.2.
+                result.put(alias, expandedValue);
+                
+                continue;
+            }
+            
+            // 12.7.
+            if (JsonUtils.isEmptyArray(expandedValue)) {
+                
+                // 12.7.1.
+                String itemActiveProperty = activeContext
+                                                    .compactUri(expandedProperty)
+                                                    .value(expandedValue)
+                                                    .vocab(true)
+                                                    .reverse(insideReverse)
+                                                    .build();
+                // 12.7.2.
+                //TODO
+            }
+            
+            // 12.8.
+            for (JsonValue expandedItem : expandedValue.asJsonArray()) {
+               
+                // 12.8.1.
+                String itemActiveProperty = activeContext
+                                                .compactUri(expandedProperty)
+                                                .value(expandedItem)
+                                                .vocab(true)
+                                                .reverse(insideReverse)
+                                                .build();
+                // 12.8.2.
+                if (false) {
+                    //TODO
+                    
+                // 12.8.3.                    
+                } else {
+                    
+                }
+                
+                // 12.8.4.
+                Collection<String> container = activePropertyDefinition != null
+                                                    ? activePropertyDefinition.getContainerMapping()
+                                                    : null;
+                
+                if (container == null) {
+                    container = new LinkedList<>();
+                }
+                
+                // 12.8.5.
+                boolean asArray = container.contains(Keywords.SET) 
+                                        || Keywords.GRAPH.equals(itemActiveProperty)
+                                        || Keywords.LIST.equals(itemActiveProperty)
+                                        || !compactArrays;
+                
+                // 12.8.6.
+                JsonValue expandedItemValue = expandedItem;
+                
+                if (ListObject.isListObject(expandedItem)) {
+                    expandedItemValue = expandedItem.asJsonObject().get(Keywords.LIST);
+                }
+
+                if (GraphObject.isGraphObject(expandedItem)) {
+                    expandedItemValue = expandedItem.asJsonObject().get(Keywords.GRAPH);
+                }
+
+                JsonValue compactedItem = CompactionBuilder
+                                                .with(typeContext, itemActiveProperty, expandedItemValue)
+                                                .compactArrays(compactArrays)
+                                                .ordered(ordered)
+                                                .build();
+                        
+                // 12.8.7.
+                if (ListObject.isListObject(expandedItem)) {
+
+                    //TODO
+                    
+                // 12.8.8.
+                } else if (GraphObject.isGraphObject(expandedItem)) {
+                    
+                    //TODO
+                // 12.8.9.                    
+                } else if (container.contains(Keywords.LANGUAGE)
+                            || container.contains(Keywords.INDEX)
+                            || container.contains(Keywords.ID)
+                            || container.contains(Keywords.TYPE)
+                            || !container.contains(Keywords.GRAPH)
+                        ) {
+                    
+                    //TODO
+                    
+                // 12.8.10.                    
+                } else {
+                    MapExpansion.addValue(result, itemActiveProperty,compactedItem, asArray);
+                }
             }
             
             //TODO

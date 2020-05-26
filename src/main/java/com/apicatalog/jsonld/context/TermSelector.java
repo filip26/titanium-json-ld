@@ -76,11 +76,8 @@ public final class TermSelector {
                 
                 return valueMap.get(item);
             }
-        }
-        
+        }   
         // 5.
         return null;
-    }
-    
-    
+    } 
 }

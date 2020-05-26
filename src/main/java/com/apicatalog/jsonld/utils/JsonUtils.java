@@ -18,6 +18,10 @@ public final class JsonUtils {
 
     public static final boolean contains(String text, JsonValue value) {
 
+        if (text == null) {
+            return value == null;
+        }
+        
         if (value == null) {
             return false;
         }

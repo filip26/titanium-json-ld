@@ -119,10 +119,14 @@ public final class ValueCompactionBuilder {
             // 8.1.
             JsonArrayBuilder types = Json.createArrayBuilder();
             
-            for (JsonValue type : JsonUtils.toJsonArray(result.asJsonObject().get(Keywords.TYPE))) {
-
-                types.add(activeContext.compactUri(((JsonString)type).getString()).vocab(true).build());
-                
+            JsonValue resultTypes = result.asJsonObject().get(Keywords.TYPE);
+            
+            if (JsonUtils.isNotNull(resultTypes)) {
+                for (JsonValue type : JsonUtils.toJsonArray(resultTypes)) {
+    
+                    types.add(activeContext.compactUri(((JsonString)type).getString()).vocab(true).build());
+                    
+                }
             }
 
             //TODO
