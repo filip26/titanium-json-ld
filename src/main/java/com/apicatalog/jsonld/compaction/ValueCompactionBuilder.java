@@ -1,9 +1,10 @@
 package com.apicatalog.jsonld.compaction;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.json.Json;
-import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -41,7 +42,7 @@ public final class ValueCompactionBuilder {
     }
     
     public JsonValue build() throws JsonLdError {
-        
+     
         // 1.
         JsonValue result = value;
         
@@ -127,9 +128,12 @@ public final class ValueCompactionBuilder {
                     types.add(activeContext.compactUri(((JsonString)type).getString()).vocab(true).build());
                     
                 }
+                
+                Map<String, JsonValue> resultMap = new LinkedHashMap<>(result.asJsonObject());
+                resultMap.put(Keywords.TYPE, types.build());
+                
+                result = JsonUtils.toJsonObject(resultMap);
             }
-
-            //TODO
             
         // 9.
         } else if (JsonUtils.isNotString(value.get(Keywords.VALUE))) {
@@ -171,7 +175,7 @@ public final class ValueCompactionBuilder {
             
             result = resultBuilder.build();
         }
-        
+
         // 12.
         return result;
     }

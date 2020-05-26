@@ -79,7 +79,7 @@ public final class CompactionBuilder {
         
         // 3. 
         if (JsonUtils.isArray(element)) {
-            
+
             // 3.1.
             JsonArrayBuilder resultBuilder = Json.createArrayBuilder();
             
@@ -99,7 +99,6 @@ public final class CompactionBuilder {
             }
             
             JsonArray result = resultBuilder.build();
-            
             
             // 3.3.
             if (result.isEmpty() 
@@ -149,6 +148,7 @@ public final class CompactionBuilder {
             JsonValue result = activeContext.compactValue(elementObject, activeProperty).build();
             
             if (JsonUtils.isScalar(result) || activePropertyDefinition != null && Keywords.JSON.equals(activePropertyDefinition.getTypeMapping())) {
+                
                 return result;
             }
         }
@@ -432,7 +432,7 @@ public final class CompactionBuilder {
                                                 .compactArrays(compactArrays)
                                                 .ordered(ordered)
                                                 .build();
-                
+
                 // 12.8.7.
                 if (ListObject.isListObject(expandedItem)) {
 
@@ -468,7 +468,7 @@ public final class CompactionBuilder {
                     
                 // 12.8.8.
                 } else if (GraphObject.isGraphObject(expandedItem)) {
-                    
+                  
                     //TODO
                 // 12.8.9.                    
                 } else if ((container.contains(Keywords.LANGUAGE)
@@ -555,10 +555,10 @@ public final class CompactionBuilder {
                             
                             mapKey = compactedItem.asJsonObject().getString(containerKey);
                             
-                            Map<String, Object> compactedItemMap = new LinkedHashMap<>(compactedItem.asJsonObject());
+                            Map<String, JsonValue> compactedItemMap = new LinkedHashMap<>(compactedItem.asJsonObject());
                             compactedItemMap.remove(containerKey);
                             
-                            compactedItem = Json.createObjectBuilder(compactedItemMap).build();
+                            compactedItem = JsonUtils.toJsonObject(compactedItemMap);
                             
                         } else {
                            // mapKey = null;  //TODO needs to be revised, removal candidate
@@ -589,8 +589,8 @@ public final class CompactionBuilder {
                     JsonUtils.addValue(mapObject, mapKey, compactedItem, asArray);
                     
                 // 12.8.10.                    
-                } else {
-                    JsonUtils.addValue(nestResult, itemActiveProperty,compactedItem, asArray);
+                } else {  
+                    JsonUtils.addValue(nestResult, itemActiveProperty, compactedItem, asArray);
                 }
             }            
         }

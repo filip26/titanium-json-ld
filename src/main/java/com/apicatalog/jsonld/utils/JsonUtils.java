@@ -181,7 +181,7 @@ public final class JsonUtils {
 
                 // 3.2.1
                 if (JsonUtils.isNotArray(original)) {
-                    object.put(key, Json.createArrayBuilder().add(original).build());
+                    object.put(key, Json.createArrayBuilder().add(original).add(value).build());
 
                 // 3.2.2
                 } else {
