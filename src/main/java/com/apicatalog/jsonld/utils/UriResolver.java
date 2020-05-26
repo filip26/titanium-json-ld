@@ -201,4 +201,9 @@ public final class UriResolver {
     static boolean isNotDefined(String value) {
         return value == null || value.isBlank();
     }
+
+    public static String makeRelative(URI baseUri, String target) {
+        //TODO
+        return target;
+    }
 }

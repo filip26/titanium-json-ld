@@ -22,13 +22,17 @@ public final class JsonUtils {
             return false;
         }
 
-        if (ValueType.STRING.equals(value.getValueType())) {
+        if (JsonUtils.isString(value)) {
             return text.equals(((JsonString) value).getString());
         }
 
-        if (ValueType.ARRAY.equals(value.getValueType())) {
+        if (JsonUtils.isArray(value)) {
             return value.asJsonArray().contains(Json.createValue(text));
         }
+        if (JsonUtils.isObject(value)) {
+            return value.asJsonObject().containsKey(text);
+        }
+        
         return false;
     }
 

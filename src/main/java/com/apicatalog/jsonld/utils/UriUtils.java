@@ -50,4 +50,12 @@ public final class UriUtils {
             return true;
         }
     }
+
+    public static boolean isAbsoluteUri(String uri) {
+        try {
+            return URI.create(uri).isAbsolute();
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
 }

@@ -235,7 +235,7 @@ public final class CompactionBuilder {
 
                 // 12.2.1.
                 if (JsonUtils.isString(expandedValue)) {
-                    compactedValue = JsonUtils.toJsonValue(typeContext.compactUri(((JsonString)expandedValue).getString()).build());
+                    compactedValue = JsonUtils.toJsonValue(typeContext.compactUri(((JsonString)expandedValue).getString()).vocab(true).build());
                     
                 // 12.2.2.
                 } else if (JsonUtils.isArray(expandedValue)) {
