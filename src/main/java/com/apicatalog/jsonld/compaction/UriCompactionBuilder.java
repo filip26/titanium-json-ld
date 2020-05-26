@@ -5,8 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map.Entry;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
+import javax.json.JsonString;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
@@ -107,16 +106,32 @@ public final class UriCompactionBuilder {
             // 4.3.
             Collection<String> containers = new ArrayList<>();
             
-            String typeLanguage = Keywords.LANGUAGE;    //FIXME 
+            // 4.4.
+            String typeLanguage = Keywords.LANGUAGE;
+            String typeLanguageValue = Keywords.NONE;
             
-            //TODO
+            // 4.5.
+            if (JsonUtils.isObject(value)
+                    && value.asJsonObject().containsKey(Keywords.INDEX)
+                    && !GraphObject.isGraphObject(value)
+                    ) {
+                
+                containers.add(Keywords.INDEX);
+                containers.add(Keywords.INDEX.concat(Keywords.SET));
+            }
             
             // 4.6.
             if (reverse) {
-                //TODO
+                
+                typeLanguage = Keywords.TYPE;
+                typeLanguageValue = Keywords.REVERSE;
+
+                containers.add(Keywords.SET);
                 
             // 4.7.
             } else if (ListObject.isListObject(value)) {
+                
+                
                 //TODO
                 
             // 4.8.
@@ -128,10 +143,66 @@ public final class UriCompactionBuilder {
                 
                 // 4.9.1.
                 if (ValueObject.isValueObject(value)) {
-                    
+                
+                    // 4.9.1.1.
+                    if (JsonUtils.contains(Keywords.DIRECTION, value)
+                            && !JsonUtils.contains(Keywords.INDEX, value)
+                            ) {
+                        
+                        typeLanguageValue = "";
+                        
+                        if (JsonUtils.contains(Keywords.LANGUAGE, value)) {
+                            
+                            JsonValue language = value.asJsonObject().get(Keywords.LANGUAGE);
+                            
+                            if (JsonUtils.isString(language)) {
+                                typeLanguageValue = ((JsonString)language).getString().toLowerCase();
+                            }
+                        }
+                        
+                        JsonValue direction = value.asJsonObject().get(Keywords.DIRECTION);
+                        if (JsonUtils.isString(direction)) {
+                            typeLanguageValue += "_".concat(((JsonString)direction).getString().toLowerCase());
+                        }
+
+                        containers.add(Keywords.LANGUAGE);
+                        containers.add(Keywords.LANGUAGE.concat(Keywords.SET));
+
+                    // 4.9.1.2.
+                    } else if (JsonUtils.contains(Keywords.LANGUAGE, value)
+                            && !JsonUtils.contains(Keywords.INDEX, value)
+                            ) {
+                        
+                        if (JsonUtils.contains(Keywords.LANGUAGE, value)) {
+                            
+                            JsonValue language = value.asJsonObject().get(Keywords.LANGUAGE);
+                            
+                            if (JsonUtils.isString(language)) {
+                                typeLanguageValue = ((JsonString)language).getString().toLowerCase();
+                            }
+                        }
+                        
+                        containers.add(Keywords.LANGUAGE);
+                        containers.add(Keywords.LANGUAGE.concat(Keywords.SET));
+                        
+                    // 4.9.1.3.
+                    } else if (JsonUtils.contains(Keywords.TYPE, value)) {
+
+                        typeLanguage = Keywords.TYPE;
+                        typeLanguageValue = value.asJsonObject().getString(Keywords.TYPE);
+                        
+                    }
+
                 // 4.9.2.                    
                 } else {
-                    //TODO
+                    
+                    typeLanguage = Keywords.TYPE;
+                    typeLanguageValue = Keywords.ID;
+                    
+                    containers.add(Keywords.ID);
+                    containers.add(Keywords.ID.concat(Keywords.SET));
+                    containers.add(Keywords.TYPE);
+                    containers.add(Keywords.SET.concat(Keywords.TYPE));
                 }
                 
                 // 4.9.3.
@@ -141,6 +212,13 @@ public final class UriCompactionBuilder {
             // 4.10.
             containers.add(Keywords.NONE);
             
+            // 4.11.
+            //TODO
+            
+            // 4.12.
+            //TODO
+            
+            // 4.13.
             //TODO
             
             // 4.14.
