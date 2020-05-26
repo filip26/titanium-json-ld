@@ -217,7 +217,7 @@ public final class CompactionBuilder {
             
             // 12.1.
             if (Keywords.ID.equals(expandedProperty)) {
-                
+
                 JsonValue compactedValue = JsonValue.NULL;
                 
                 // 12.1.1.
@@ -360,12 +360,29 @@ public final class CompactionBuilder {
                                                 .reverse(insideReverse)
                                                 .build();
                 // 12.8.2.
-                if (false) {
+                if (activeContext.containsTerm(itemActiveProperty)
+                        && activeContext.getTerm(itemActiveProperty).getNestValue() != null
+                        ) {
+                    
+                    String nestTerm = activeContext.getTerm(itemActiveProperty).getNestValue(); 
+                    
+                    // 12.8.2.1.
+                    if (!Keywords.NEST.equals(nestTerm)) {
+                        throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
+                    }
                     //TODO
+                    
+                    // 12.8.2.2.
+                    if (!result.containsKey(nestTerm)) {
+                        result.put(nestTerm, JsonValue.EMPTY_JSON_OBJECT);
+                    }
+                    
+                    // 12.8.2.3.
+                    nestResult = result.get(nestTerm).asJsonObject();
                     
                 // 12.8.3.                    
                 } else {
-                    
+                    nestResult = result;
                 }
                 
                 // 12.8.4.
@@ -399,11 +416,39 @@ public final class CompactionBuilder {
                                                 .compactArrays(compactArrays)
                                                 .ordered(ordered)
                                                 .build();
-                        
+
                 // 12.8.7.
                 if (ListObject.isListObject(expandedItem)) {
 
-                    //TODO
+                    // 12.8.7.1.
+                    compactedItem = JsonUtils.toJsonArray(compactedItem);
+                    
+                    // 12.8.7.2.
+                    if (!container.contains(Keywords.LIST)) {
+
+                        // 12.8.7.2.1.
+                        String key = activeContext.compactUri(Keywords.LIST).vocab(true).build();
+                        
+                        compactedItem = Json.createObjectBuilder().add(key, compactedItem).build();
+                        
+                        // 12.8.7.2.2.
+                        if (JsonUtils.isObject(expandedItem) 
+                                && expandedItem.asJsonObject().containsKey(Keywords.INDEX)) {
+
+                            String indexKey = activeContext.compactUri(Keywords.INDEX).vocab(true).build();
+
+                            compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject())
+                                                .add(indexKey, expandedItem.asJsonObject().get(Keywords.INDEX))
+                                                .build();    
+                        }
+                        
+                        // 12.8.7.2.3.
+                        MapExpansion.addValue(nestResult, itemActiveProperty, compactedItem, asArray);
+                        
+                    // 12.8.7.3.
+                    } else {
+                        nestResult.put(itemActiveProperty, compactedItem);
+                    }
                     
                 // 12.8.8.
                 } else if (GraphObject.isGraphObject(expandedItem)) {
@@ -425,7 +470,7 @@ public final class CompactionBuilder {
                 }
             }            
         }
-        
+
         // 13.
         return JsonUtils.toJsonObject(result);
     }

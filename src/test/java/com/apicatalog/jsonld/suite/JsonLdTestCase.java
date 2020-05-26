@@ -1,9 +1,15 @@
 package com.apicatalog.jsonld.suite;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
+import javax.json.JsonWriter;
+import javax.json.JsonWriterFactory;
+import javax.json.stream.JsonGenerator;
 
 import org.junit.Assert;
 
@@ -84,6 +90,15 @@ public class JsonLdTestCase {
             result = method.invoke(options);
             
             Assert.assertNotNull(result);
+        
+//            Map<String, Object> properties = new HashMap<>(1);
+//            properties.put(JsonGenerator.PRETTY_PRINTING, true);
+//
+//            JsonWriterFactory writerFactory = Json.createWriterFactory(properties);
+//
+//            JsonWriter jsonWriter2 = writerFactory.createWriter(System.out);
+//            jsonWriter2.write(result);
+//            jsonWriter2.close();
             
         } catch (JsonLdError e) {
             Assert.assertEquals(expectErrorCode, e.getCode());
