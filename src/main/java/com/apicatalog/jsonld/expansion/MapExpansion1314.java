@@ -437,7 +437,7 @@ final class MapExpansion1314 {
 
                             for (Entry<String, JsonValue> entry : expandedValue.asJsonObject().get(Keywords.REVERSE).asJsonObject().entrySet()) {
                                 // 13.4.13.3.1.
-                                MapExpansion.addValue(result, entry.getKey(), entry.getValue(), true);
+                                JsonUtils.addValue(result, entry.getKey(), entry.getValue(), true);
                             }
                         }
 
@@ -475,7 +475,7 @@ final class MapExpansion1314 {
                                         }
 
                                         // 13.4.13.4.2.1.1
-                                        MapExpansion.addValue(reverseMap, entry.getKey(), item, true);
+                                        JsonUtils.addValue(reverseMap, entry.getKey(), item, true);
                                     }
                                 }
                             }
@@ -846,14 +846,14 @@ final class MapExpansion1314 {
                     }
 
                     // 13.13.4.3.
-                    MapExpansion.addValue(reverseMap, expandedProperty, item, true);
+                    JsonUtils.addValue(reverseMap, expandedProperty, item, true);
                 }
  
                 result.put(Keywords.REVERSE, JsonUtils.toJsonObject(reverseMap));
 
             // 13.14
             } else {
-                MapExpansion.addValue(result, expandedProperty, expandedValue, true);
+                JsonUtils.addValue(result, expandedProperty, expandedValue, true);
             }
         }
 

@@ -19,7 +19,6 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.expansion.MapExpansion;
 import com.apicatalog.jsonld.grammar.GraphObject;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.ListObject;
@@ -275,7 +274,7 @@ public final class CompactionBuilder {
                                     || !compactArrays; 
             
                 // 12.2.5.
-                MapExpansion.addValue(result, alias, compactedValue, asArray);
+                JsonUtils.addValue(result, alias, compactedValue, asArray);
 
                 // 12.2.6.
                 continue;                
@@ -363,7 +362,7 @@ public final class CompactionBuilder {
                     nestResult = result;
                 }
                 
-                MapExpansion.addValue(nestResult, itemActiveProperty, JsonValue.EMPTY_JSON_ARRAY, true);
+                JsonUtils.addValue(nestResult, itemActiveProperty, JsonValue.EMPTY_JSON_ARRAY, true);
             }
             
             // 12.8.
@@ -460,7 +459,7 @@ public final class CompactionBuilder {
                         }
                         
                         // 12.8.7.2.3.
-                        MapExpansion.addValue(nestResult, itemActiveProperty, compactedItem, asArray);
+                        JsonUtils.addValue(nestResult, itemActiveProperty, compactedItem, asArray);
                         
                     // 12.8.7.3.
                     } else {
@@ -483,7 +482,7 @@ public final class CompactionBuilder {
                     
                 // 12.8.10.                    
                 } else {
-                    MapExpansion.addValue(nestResult, itemActiveProperty,compactedItem, asArray);
+                    JsonUtils.addValue(nestResult, itemActiveProperty,compactedItem, asArray);
                 }
             }            
         }
