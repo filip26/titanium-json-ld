@@ -223,8 +223,66 @@ public final class UriCompactionBuilder {
             
             // 4.14.
             Collection<String> preferredValues = new ArrayList<>();
+
+            // 4.15.
+            if (Keywords.REVERSE.equals(typeLanguageValue)) {
+                preferredValues.add(Keywords.REVERSE);
+            }
             
-            //TODO
+            // 4.16.
+            if ((Keywords.REVERSE.equals(typeLanguageValue) || Keywords.ID.equals(typeLanguageValue))
+                   && JsonUtils.isObject(value)
+                   && value.asJsonObject().containsKey(Keywords.ID)
+                   ) {
+            
+                // 4.16.1.
+                String idValue = value.asJsonObject().getString(Keywords.ID);
+                
+                String compactedIdValue = activeContext.compactUri(idValue).vocab(true).build();
+                
+                TermDefinition compactedIdValueTermDefinition = activeContext.getTerm(compactedIdValue);
+                
+                if (compactedIdValueTermDefinition != null
+                        && idValue.equals(compactedIdValueTermDefinition.getUriMapping())
+                        ) {
+                    preferredValues.add(Keywords.VOCAB);
+                    preferredValues.add(Keywords.ID);
+                    
+                // 4.16.2.                    
+                } else {
+                    
+                    preferredValues.add(Keywords.ID);
+                    preferredValues.add(Keywords.VOCAB);
+
+                }
+                preferredValues.add(Keywords.NONE);
+
+            // 4.17.
+            } else {
+                preferredValues.add(typeLanguageValue);
+                preferredValues.add(Keywords.NONE);
+                
+                if (ListObject.isListObject(value) 
+                        && JsonUtils.isEmptyArray(value.asJsonObject().get(Keywords.LIST))) {
+                 
+                    typeLanguage = Keywords.ANY;
+                }
+            }
+            
+            // 4.18.
+            preferredValues.add(Keywords.ANY);
+            
+            // 4.19.
+            for (String preferredValue : new ArrayList<>(preferredValues)) {
+                
+                int index = preferredValue.indexOf('_');
+                
+                if (index == -1) {
+                    continue;
+                }
+
+                preferredValues.add(preferredValue.substring(index));
+            }            
             
             // 4.20.
             String term = activeContext.selectTerm(variable, containers, typeLanguage, preferredValues).select();
