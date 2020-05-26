@@ -1,11 +1,13 @@
 package com.apicatalog.jsonld.compaction;
 
 import java.util.Map.Entry;
-import java.util.Objects;
 
 import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonString;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
@@ -115,16 +117,37 @@ public final class ValueCompactionBuilder {
                 ) {
             
             // 8.1.
+            JsonArrayBuilder types = Json.createArrayBuilder();
+            
+            for (JsonValue type : JsonUtils.toJsonArray(result.asJsonObject().get(Keywords.TYPE))) {
+
+                types.add(activeContext.compactUri(((JsonString)type).getString()).vocab(true).build());
+                
+            }
+
             //TODO
             
         // 9.
         } else if (JsonUtils.isNotString(value.get(Keywords.VALUE))) {
             
-            //TODO
-            
+            if (!value.containsKey(Keywords.INDEX) 
+                    || (activePropertyDefinition != null
+                            && activePropertyDefinition.hasContainerMapping(Keywords.INDEX)
+                    )
+                ) {
+                result = value.get(Keywords.VALUE);
+            }
+
         // 10.
-        } else {
-            //TODO            
+        } else if ((!value.containsKey(Keywords.LANGUAGE) && JsonUtils.isNotNull(language)) //FIXME
+                        || (value.containsKey(Keywords.LANGUAGE)
+                                && JsonUtils.isString(value.get(Keywords.LANGUAGE))
+                                && JsonUtils.isString(language)
+                                && (((JsonString)language).getString().equalsIgnoreCase(value.getString(Keywords.LANGUAGE)))
+                                )
+                        ){
+
+            
         }
         
         // 11.
