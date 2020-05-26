@@ -290,7 +290,18 @@ public final class CompactionBuilder {
 
             // 12.4.
             if (Keywords.PRESERVE.equals(expandedProperty)) {
-                //TODO
+
+                // 12.4.1.
+                JsonValue compactedValue = CompactionBuilder
+                                                .with(typeContext, activeProperty, expandedValue)
+                                                .compactArrays(compactArrays)
+                                                .ordered(ordered)
+                                                .build();
+                
+                // 12.4.2.
+                if (!JsonUtils.isEmptyArray(compactedValue)) {
+                    result.put(Keywords.PRESERVE, compactedValue);
+                }
             }
             
             // 12.5.
@@ -327,26 +338,32 @@ public final class CompactionBuilder {
                                                     .reverse(insideReverse)
                                                     .build();
                 // 12.7.2.
-                TermDefinition activeItemTermDefinition = activeContext.getTerm(itemActiveProperty);
-                
-                if (activeItemTermDefinition != null
-                        && activeItemTermDefinition.getNestValue() != null) {
-
-                    if (!Keywords.NEST.equals(activeItemTermDefinition.getNestValue())) {
+                if (activeContext.containsTerm(itemActiveProperty)
+                        && activeContext.getTerm(itemActiveProperty).getNestValue() != null
+                        ) {
+                    
+                    String nestTerm = activeContext.getTerm(itemActiveProperty).getNestValue(); 
+                    
+                    // 12.7.2.1.
+                    if (!Keywords.NEST.equals(nestTerm)) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
-                    
-
-                    
                     //TODO
+
+                    // 12.7.2.2.
+                    if (!result.containsKey(nestTerm)) {
+                        result.put(nestTerm, JsonValue.EMPTY_JSON_OBJECT);
+                    }
                     
-                // 12.7.3.
+                    // 12.7.2.3.
+                    nestResult = result.get(nestTerm).asJsonObject();
+                    
+                // 12.7.3.                    
                 } else {
-                    // 12.7.4.
-                    MapExpansion.addValue(nestResult, itemActiveProperty, JsonValue.EMPTY_JSON_ARRAY, true);
+                    nestResult = result;
                 }
                 
-
+                MapExpansion.addValue(nestResult, itemActiveProperty, JsonValue.EMPTY_JSON_ARRAY, true);
             }
             
             // 12.8.
