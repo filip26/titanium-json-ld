@@ -432,7 +432,7 @@ public final class CompactionBuilder {
                                                 .compactArrays(compactArrays)
                                                 .ordered(ordered)
                                                 .build();
-
+                
                 // 12.8.7.
                 if (ListObject.isListObject(expandedItem)) {
 
@@ -517,23 +517,69 @@ public final class CompactionBuilder {
                     if (container.contains(Keywords.LANGUAGE)
                             && expandedItem.asJsonObject().containsKey(Keywords.VALUE)
                             ) {
-                        //TODO
                         
+                        compactedItem = compactedItem.asJsonObject().get(Keywords.VALUE);
+                        
+                        if (expandedItem.asJsonObject().containsKey(Keywords.LANGUAGE)) {
+                            
+                            mapKey = expandedItem.asJsonObject().getString(Keywords.LANGUAGE);
+                        }
+
                     // 12.8.9.5.                        
                     } else if (container.contains(Keywords.INDEX)
                                 && Keywords.INDEX.equals(indexKey)) {
 
+                        if (expandedItem.asJsonObject().containsKey(Keywords.INDEX)) {
+                            
+                            mapKey = expandedItem.asJsonObject().getString(Keywords.INDEX);
+                        }
+                        
                     // 12.8.9.6.                        
                     } else if (container.contains(Keywords.INDEX)
                                 && !Keywords.INDEX.equals(indexKey)) {
 
+                        // 12.8.9.6.1.
+                        containerKey = activeContext
+                                                .compactUri(indexKey)
+                                                .vocab(true)
+                                                .build();
+                        // 12.8.9.6.2.
+                        //TODO
+                        
+                        // 12.8.9.6.3.
+
                     // 12.8.9.7.                        
                     } else if (container.contains(Keywords.ID)) {
+                        
+                        if (compactedItem.asJsonObject().containsKey(containerKey)) {
+                            
+                            mapKey = compactedItem.asJsonObject().getString(containerKey);
+                            
+                            Map<String, Object> compactedItemMap = new LinkedHashMap<>(compactedItem.asJsonObject());
+                            compactedItemMap.remove(containerKey);
+                            
+                            compactedItem = Json.createObjectBuilder(compactedItemMap).build();
+                            
+                        } else {
+                           // mapKey = null;  //TODO needs to be revised, removal candidate
+                        }
 
                     // 12.8.9.8.
                     } else if (container.contains(Keywords.TYPE)) {
 
+                        // 12.8.9.8.1.
+                        //TODO
+
+                        // 12.8.9.8.2.
+                        //TODO
+                        
+                        // 12.8.9.8.3.
+                        //TODO
+                        
+                        // 12.8.9.8.4.
+                        //TODO
                     }
+                    
                     // 12.8.9.9.
                     if (mapKey == null) {
                         mapKey = activeContext.compactUri(Keywords.NONE).vocab(true).build();
