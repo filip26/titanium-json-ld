@@ -4,7 +4,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.json.JsonString;
+
+import com.apicatalog.jsonld.grammar.DirectionType;
 import com.apicatalog.jsonld.grammar.Keywords;
+import com.apicatalog.jsonld.utils.JsonUtils;
 
 /**
  * 
@@ -126,9 +130,94 @@ public final class InverseContextBuilder {
             // 3.13.
             } else if (termDefinition.getLanguageMapping() != null && termDefinition.getDirectionMapping() != null) {
                 
+                // 3.13.1.
+                String langDir = Keywords.NULL;
+                
+                // 3.13.2.
+                if (JsonUtils.isString(termDefinition.getLanguageMapping())
+                        && termDefinition.getDirectionMapping() != DirectionType.NULL
+                        ) {
+                    
+                    langDir = ((JsonString)termDefinition.getLanguageMapping())
+                                    .getString()
+                                    .concat("_")
+                                    .concat(termDefinition.getDirectionMapping().name())
+                                    .toLowerCase();
+
+                // 3.13.3.
+                } else if (JsonUtils.isString(termDefinition.getLanguageMapping())) {
+                    
+                    langDir = ((JsonString)termDefinition.getLanguageMapping()).getString().toLowerCase();
+                    
+                // 3.13.4.
+                } else if (termDefinition.getDirectionMapping() != DirectionType.NULL) {
+                    
+                    langDir = "_".concat(termDefinition.getDirectionMapping().name().toLowerCase());
+                }
+                
+                // 3.13.5.
+                if (!languageMap.containsKey(langDir)) {
+                    languageMap.put(langDir, term);
+                }
+                
             // 3.14.
-                //TODO
-            
+            } else if (termDefinition.getLanguageMapping() != null) {
+
+                /// 3.14.1.
+                String language = Keywords.NULL;
+                
+                if (JsonUtils.isString(termDefinition.getLanguageMapping())) {
+                    language = ((JsonString)termDefinition.getLanguageMapping()).getString().toLowerCase();
+                }
+                
+                // 3.14.2.
+                if (!languageMap.containsKey(language)) {
+                    languageMap.put(language, term);
+                }
+
+                
+            // 3.15.
+            } else if (termDefinition.getDirectionMapping() != null) {
+
+                // 3.15.1.
+                String direction = Keywords.NONE;
+                
+                if (termDefinition.getDirectionMapping() != DirectionType.NULL) {
+                    direction = "_".concat(termDefinition.getDirectionMapping().name().toLowerCase());
+                }
+
+                // 3.15.2.
+                if (!languageMap.containsKey(direction)) {
+                    languageMap.put(direction, term);
+                }
+
+            // 3.16.
+            } else if (activeContext.getDefaultBaseDirection() != null) {
+                
+                // 3.16.1.
+                String langDir = (activeContext.getDefaultLanguage() != null 
+                                    ? activeContext.getDefaultLanguage()
+                                    : ""
+                                    )
+                                    .concat("_")
+                                    .concat(activeContext.getDefaultBaseDirection().name())
+                                    .toLowerCase();
+                
+                // 3.16.2.
+                if (!languageMap.containsKey(langDir)) {
+                    languageMap.put(langDir, term);
+                }
+
+                // 3.16.3.
+                if (!languageMap.containsKey(Keywords.NONE)) {
+                    languageMap.put(Keywords.NONE, term);
+                }
+                
+                // 3.16.4.
+                if (!typeMap.containsKey(Keywords.NONE)) {
+                    typeMap.put(Keywords.NONE, term);
+                }
+                
             // 3.17.
             } else {
                 

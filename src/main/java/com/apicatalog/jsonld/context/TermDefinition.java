@@ -27,16 +27,16 @@ public class TermDefinition {
 
     Collection<String> containerMapping;
 
-    DirectionType directionMapping;
-
     String indexMapping;
-
-    JsonValue languageMapping;
 
     String nestValue;
 
     String typeMapping;
 
+    DirectionType directionMapping;
+
+    JsonValue languageMapping;
+    
     public TermDefinition(boolean prefixFlag, boolean protectedFlag, boolean reversePropertyFlag) {
         this.prefixFlag = prefixFlag;
         this.protectedFlag = protectedFlag;
