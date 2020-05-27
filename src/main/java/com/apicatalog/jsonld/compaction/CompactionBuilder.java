@@ -532,12 +532,60 @@ public final class CompactionBuilder {
                             && GraphObject.isSimpleGraphObject(expandedItem)
                                     ) {
 
+                        // 12.8.8.3.1.
+                        if (JsonUtils.isArray(compactedItem) && compactedItem.asJsonArray().size() > 1) {
+                            compactedItem = Json.createObjectBuilder().add(
+                                                        activeContext
+                                                            .compactUri(Keywords.INCLUDED)
+                                                            .vocab(true)
+                                                            .build(),
+                                                        compactedItem
+                                                    ).build();
+                        }
 
-                        //TODO
+                        // 12.8.8.3.2.
+                        JsonUtils.addValue(nestResult, itemActiveProperty, compactedItem, asArray);
                         
                     // 12.8.8.4.                        
                     } else if (!container.contains(Keywords.GRAPH)) {
-                        //TODO
+                        
+                        // 12.8.8.4.1.
+                        compactedItem = Json.createObjectBuilder().add(
+                                activeContext
+                                    .compactUri(Keywords.GRAPH)
+                                    .vocab(true)
+                                    .build(),
+                                compactedItem
+                            ).build(); 
+                        
+                        // 12.8.8.4.2.
+                        if (expandedItem.asJsonObject().containsKey(Keywords.ID)) {
+
+                            compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).add(
+                                    activeContext
+                                        .compactUri(Keywords.ID)
+                                        .vocab(true)
+                                        .build(),
+                                    activeContext
+                                        .compactUri(expandedItem.asJsonObject().getString(Keywords.ID))
+                                        .build()
+                                ).build(); 
+                        }
+                                                
+                        // 12.8.8.4.3.
+                        if (expandedItem.asJsonObject().containsKey(Keywords.INDEX)) {
+                            
+                            compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).add(
+                                    activeContext
+                                        .compactUri(Keywords.INDEX)
+                                        .vocab(true)
+                                        .build(),
+                                    expandedItem.asJsonObject().getString(Keywords.INDEX)
+                                ).build(); 
+                        }
+                        
+                        // 12.8.8.4.4.
+                        JsonUtils.addValue(nestResult, itemActiveProperty, compactedItem, asArray);
                     }  
 
                 // 12.8.9.                    
