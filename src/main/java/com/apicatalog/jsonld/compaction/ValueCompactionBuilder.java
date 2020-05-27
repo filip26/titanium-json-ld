@@ -13,7 +13,6 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
-import com.apicatalog.jsonld.context.InverseContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.grammar.DirectionType;
 import com.apicatalog.jsonld.grammar.Keywords;
@@ -52,7 +51,7 @@ public final class ValueCompactionBuilder {
         }
         
         // 3.
-        InverseContext inverseContext = activeContext.getInverseContext();
+        //TODO ?!? InverseContext inverseContext = activeContext.getInverseContext();
      
         TermDefinition activePropertyDefinition = activeContext.getTerm(activeProperty);
         

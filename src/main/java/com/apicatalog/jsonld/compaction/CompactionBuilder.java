@@ -470,8 +470,54 @@ public final class CompactionBuilder {
                     
                 // 12.8.8.
                 } else if (GraphObject.isGraphObject(expandedItem)) {
-                    System.out.println("TODO: 12.8.8.");  
-                    //TODO
+                    
+                    // 12.8.8.1.
+                    if (container.contains(Keywords.GRAPH) && container.contains(Keywords.ID)) {
+
+                        // 12.8.8.1.1.
+                        Map<String, JsonValue> mapObject = nestResult.containsKey(itemActiveProperty) 
+                                                    ? new LinkedHashMap<>(nestResult.get(itemActiveProperty).asJsonObject())
+                                                    : null;
+                        
+                        if (mapObject == null) {
+                            mapObject = new LinkedHashMap<>();
+                        }
+
+                        // 12.8.8.1.2.
+                        String mapKey = null;
+                        
+                        if (expandedItem.asJsonObject().containsKey(Keywords.ID)) {
+                            String id = expandedItem.asJsonObject().getString(Keywords.ID);
+                            mapKey = activeContext.compactUri(id).build();
+                            
+                        } else {
+                            mapKey = activeContext.compactUri(Keywords.NONE).vocab(true).build();   //TODO vocab == true ?
+                        }
+                                                
+                        // 12.8.8.1.3.
+                        JsonUtils.addValue(mapObject, mapKey, compactedItem, asArray);
+
+                      nestResult.put(itemActiveProperty, JsonUtils.toJsonObject(mapObject));
+                        
+                    // 12.8.8.2.
+                    } else if (container.contains(Keywords.GRAPH) 
+                                    && container.contains(Keywords.INDEX)
+                                    && GraphObject.isSimpleGraphObject(compactedItem)
+                                            ) {
+                        //TODO
+                        
+                    // 12.8.8.3.                        
+                    } else if (container.contains(Keywords.GRAPH) 
+                            && GraphObject.isSimpleGraphObject(compactedItem)
+                                    ) {
+                        
+                        //TODO
+                        
+                    // 12.8.8.4.                        
+                    } else if (!container.contains(Keywords.GRAPH)) {
+                        //TODO
+                    }  
+
                 // 12.8.9.                    
                 } else if ((container.contains(Keywords.LANGUAGE)
                             || container.contains(Keywords.INDEX)
