@@ -551,7 +551,9 @@ public final class CompactionBuilder {
                     // 12.8.9.7.                        
                     } else if (container.contains(Keywords.ID)) {
                         
-                        if (compactedItem.asJsonObject().containsKey(containerKey)) {
+                        
+                        if (JsonUtils.isObject(compactedItem)
+                                && compactedItem.asJsonObject().containsKey(containerKey)) {
                             
                             mapKey = compactedItem.asJsonObject().getString(containerKey);
                             

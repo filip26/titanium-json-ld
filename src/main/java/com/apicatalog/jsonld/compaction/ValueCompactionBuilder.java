@@ -42,7 +42,7 @@ public final class ValueCompactionBuilder {
     }
     
     public JsonValue build() throws JsonLdError {
-     
+
         // 1.
         JsonValue result = value;
         
@@ -53,9 +53,9 @@ public final class ValueCompactionBuilder {
         
         // 3.
         InverseContext inverseContext = activeContext.getInverseContext();
-        
+     
         TermDefinition activePropertyDefinition = activeContext.getTerm(activeProperty);
-        
+
         // 4. - 5.
         JsonValue language = null; 
         DirectionType direction = null;
@@ -104,6 +104,7 @@ public final class ValueCompactionBuilder {
                                     value.get(Keywords.TYPE)
                                         )
                     ) {
+
             result = value.get(Keywords.VALUE);
         
         // 8.
@@ -147,15 +148,30 @@ public final class ValueCompactionBuilder {
             }
 
         // 10.
-        } else if ((!value.containsKey(Keywords.LANGUAGE) && JsonUtils.isNotNull(language)) //FIXME
-                        || (value.containsKey(Keywords.LANGUAGE)
+        } else if ((value.containsKey(Keywords.LANGUAGE)
                                 && JsonUtils.isString(value.get(Keywords.LANGUAGE))
                                 && JsonUtils.isString(language)
                                 && (((JsonString)language).getString().equalsIgnoreCase(value.getString(Keywords.LANGUAGE)))
                                 )
+                        || (JsonUtils.isNull(language)
+                                && direction != null && direction != DirectionType.NULL
+                                && value.containsKey(Keywords.DIRECTION)
+                                && JsonUtils.isString(value.get(Keywords.DIRECTION))
+                                && direction == DirectionType.valueOf(value.getString(Keywords.DIRECTION).toUpperCase())
+                                )
+                        || direction == null || direction == DirectionType.NULL
                         ){
 
-            
+            // 10.1.
+            if ((value.containsKey(Keywords.INDEX)
+                    && activePropertyDefinition != null
+                    && activePropertyDefinition.hasContainerMapping(Keywords.INDEX))
+                || !value.containsKey(Keywords.INDEX)
+                    ) {
+                
+                
+                result = value.get(Keywords.VALUE);
+            }
         }
         
         // 11.
