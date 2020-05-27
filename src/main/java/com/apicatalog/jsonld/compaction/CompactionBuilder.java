@@ -574,16 +574,49 @@ public final class CompactionBuilder {
                     } else if (container.contains(Keywords.TYPE)) {
 
                         // 12.8.9.8.1.
-                        //TODO
+                        if (JsonUtils.isObject(compactedItem) 
+                                && compactedItem.asJsonObject().containsKey(containerKey)) {
+                            
+                            JsonValue compactedKeyValue = compactedItem.asJsonObject().get(containerKey);
+                            
+                            if (JsonUtils.isNotNull(compactedKeyValue)) {
+                                
+                                JsonArray compactedKeyArray = JsonUtils.toJsonArray(compactedKeyValue);
+                                
+                                mapKey = compactedKeyArray.getString(0);
 
-                        // 12.8.9.8.2.
-                        //TODO
-                        
-                        // 12.8.9.8.3.
-                        //TODO
-                        
+                                if (compactedKeyArray.size() > 1) {
+
+                                    compactedKeyArray = Json.createArrayBuilder(compactedKeyArray).remove(0).build();
+                                    compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject())
+                                            .remove(containerKey).add(containerKey, compactedKeyArray).build();
+                                    
+                                    
+                                } else {
+                                    compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();
+                                }
+                                
+                                
+                            } else {
+                                compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();
+                            }
+                        }
+                                                
                         // 12.8.9.8.4.
-                        //TODO
+                        if (JsonUtils.isObject(compactedItem) && compactedItem.asJsonObject().size() == 1) {
+                            
+                            String epandedKey = activeContext.expandUri(compactedItem.asJsonObject().keySet().iterator().next()).vocab(true).build();
+                            
+                            if (Keywords.ID.equals(epandedKey)) {
+
+                                JsonObject map = Json.createObjectBuilder().add(Keywords.ID, expandedItem.asJsonObject().get(Keywords.ID)).build();
+                                
+                                compactedItem = CompactionBuilder.with(typeContext, itemActiveProperty, map).build();
+                                
+                            }
+                            
+                        }
+
                     }
                     
                     // 12.8.9.9.
