@@ -158,9 +158,32 @@ public final class UriCompactionBuilder {
                     // 4.7.4.2.
                     if (JsonUtils.isObject(item)
                             && item.asJsonObject().containsKey(Keywords.VALUE)) {
-                        
-                        System.out.println("TODO: Uri 4.7.4.2.");
-                        //TODO
+
+                        // 4.7.4.2.1.
+                        if (item.asJsonObject().containsKey(Keywords.DIRECTION)) {
+                            
+                            itemLanguage = "";
+                            
+                            if (item.asJsonObject().containsKey(Keywords.LANGUAGE)) {
+                                itemLanguage = item.asJsonObject().getString(Keywords.LANGUAGE).toLowerCase();
+                            }
+                            
+                            itemLanguage += "_".concat(item.asJsonObject().getString(Keywords.DIRECTION).toLowerCase());
+                            
+                        // 4.7.4.2.2.
+                        } else if (item.asJsonObject().containsKey(Keywords.LANGUAGE)) {
+
+                            itemLanguage = item.asJsonObject().getString(Keywords.LANGUAGE).toLowerCase(); 
+                            
+                        // 4.7.4.2.3.
+                        } else if (item.asJsonObject().containsKey(Keywords.TYPE)) {
+
+                            itemType = item.asJsonObject().getString(Keywords.TYPE);                            
+                            
+                        // 4.7.4.2.4.
+                        } else {
+                            itemLanguage = Keywords.NULL;
+                        }
                         
                     // 4.7.4.3.                        
                     } else {
