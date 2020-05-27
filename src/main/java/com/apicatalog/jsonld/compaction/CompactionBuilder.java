@@ -635,11 +635,10 @@ public final class CompactionBuilder {
                     if (container.contains(Keywords.LANGUAGE)
                             && expandedItem.asJsonObject().containsKey(Keywords.VALUE)
                             ) {
-                        System.out.println("TODO: 12.8.9.4.");
-//                        if (JsonUtils.isObject(compactedItem)) {
-                        
-  //FIXME                          compactedItem = compactedItem.asJsonObject().get(Keywords.VALUE);
-//                        }
+
+                        if (JsonUtils.isObject(compactedItem)) {
+                            compactedItem = compactedItem.asJsonObject().get(Keywords.VALUE);
+                        }
                         
                         if (expandedItem.asJsonObject().containsKey(Keywords.LANGUAGE)) {
                             
@@ -665,9 +664,35 @@ public final class CompactionBuilder {
                                                 .vocab(true)
                                                 .build();
                         // 12.8.9.6.2.
-                        //TODO
-                        System.out.println("TODO: 12.8.9.6.2.");
-                        // 12.8.9.6.3.
+                        if (JsonUtils.isObject(compactedItem) && compactedItem.asJsonObject().containsKey(containerKey)) {
+
+                            JsonValue containerValue = compactedItem.asJsonObject().get(containerKey);
+                            
+                            if (JsonUtils.isString(containerValue)) {
+                                mapKey = ((JsonString)containerValue).getString();
+                                
+                                // 12.8.9.6.3.
+                                compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();
+                                
+                            } else if (JsonUtils.isArray(containerValue) && !JsonUtils.isEmptyArray(containerValue)) {
+                                
+                                mapKey = containerValue.asJsonArray().getString(0);
+
+                                // 12.8.9.6.3.
+                                if (containerValue.asJsonArray().size() > 1) {
+                                    
+                                    compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject())
+                                                        .remove(containerKey).add(containerKey, Json.createArrayBuilder(containerValue.asJsonArray()).remove(0)).build();
+                                    
+                                } else {
+                                    compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();                                    
+                                }
+                            } else {
+                                compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();
+                            }
+                        }
+                        
+
 
                     // 12.8.9.7.                        
                     } else if (container.contains(Keywords.ID)) {
