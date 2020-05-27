@@ -23,7 +23,7 @@ import com.apicatalog.jsonld.grammar.GraphObject;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.ListObject;
 import com.apicatalog.jsonld.grammar.Version;
-import com.apicatalog.jsonld.utils.JsonUtils;
+import com.apicatalog.jsonld.json.JsonUtils;
 
 /**
  * 

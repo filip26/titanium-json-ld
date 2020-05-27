@@ -2,7 +2,7 @@ package com.apicatalog.jsonld.grammar;
 
 import javax.json.JsonValue;
 
-import com.apicatalog.jsonld.utils.JsonUtils;
+import com.apicatalog.jsonld.json.JsonUtils;
 
 public class NodeObject {
 

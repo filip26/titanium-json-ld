@@ -8,7 +8,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
-import com.apicatalog.jsonld.utils.JsonUtils;
+import com.apicatalog.jsonld.json.JsonUtils;
 
 /**
  * 

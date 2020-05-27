@@ -18,8 +18,8 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.grammar.Keywords;
-import com.apicatalog.jsonld.utils.JsonUtils;
-import com.apicatalog.jsonld.utils.UriUtils;
+import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.uri.UriUtils;
 
 /**
  * 

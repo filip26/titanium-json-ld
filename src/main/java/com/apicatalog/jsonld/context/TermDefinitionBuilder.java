@@ -16,8 +16,8 @@ import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.DirectionType;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.Version;
-import com.apicatalog.jsonld.utils.JsonUtils;
-import com.apicatalog.jsonld.utils.UriUtils;
+import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.uri.UriUtils;
 
 /**
  * 

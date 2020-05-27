@@ -12,7 +12,7 @@ import javax.json.JsonObject;
 import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
-import com.apicatalog.jsonld.utils.JsonUtils;
+import com.apicatalog.jsonld.json.JsonUtils;
 
 /**
  * The {@link JsonLdContext} interface is used to refer to a value that may be a

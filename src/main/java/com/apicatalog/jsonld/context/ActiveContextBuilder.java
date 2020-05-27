@@ -20,10 +20,10 @@ import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.DirectionType;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.Version;
+import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
-import com.apicatalog.jsonld.utils.JsonUtils;
-import com.apicatalog.jsonld.utils.UriResolver;
-import com.apicatalog.jsonld.utils.UriUtils;
+import com.apicatalog.jsonld.uri.UriResolver;
+import com.apicatalog.jsonld.uri.UriUtils;
 
 /**
  * @see <a href=

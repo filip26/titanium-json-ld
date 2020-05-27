@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.utils;
+package com.apicatalog.jsonld.uri;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -29,6 +29,17 @@ public final class UriResolver {
         
         URI components = URI.create(relative);
 
+        String basePath = base.getPath();
+        String componentPath = components.getPath();
+        
+        // hack
+        if (basePath == null && base.getSchemeSpecificPart() != null) {
+            basePath = base.getSchemeSpecificPart();
+        }
+        if (componentPath == null && components.getSchemeSpecificPart() != null) {
+            componentPath = components.getSchemeSpecificPart();
+        }
+        
         String scheme = null;
         String authority = null;
         String path = null;
@@ -37,20 +48,20 @@ public final class UriResolver {
         if (isDefined(components.getScheme())) {
             scheme = components.getScheme();
             authority = components.getAuthority();
-            path = removeDotSegments(components.getPath());
+            path = removeDotSegments(componentPath);
             query = components.getQuery();
 
         } else {
-
+            
             if (isDefined(components.getAuthority())) {
                 authority = components.getAuthority();
-                path = removeDotSegments(components.getPath());
+                path = removeDotSegments(componentPath);
                 query = components.getQuery();
 
             } else {
 
-                if (isNotDefined(components.getPath())) {
-                    path = base.getPath();
+                if (isNotDefined(componentPath)) {
+                    path = basePath;
 
                     if (isDefined(components.getQuery())) {
                         query = components.getQuery();
@@ -60,20 +71,20 @@ public final class UriResolver {
                     }
 
                 } else {
-                    if (components.getPath().startsWith("/")) {
-                        path = removeDotSegments(components.getPath());
+                    if (componentPath.startsWith("/")) {
+                        path = removeDotSegments(componentPath);
 
                     } else {
-                        path = removeDotSegments(merge(base.getPath(), components.getPath()));
+                        path = removeDotSegments(merge(basePath, componentPath));
                     }
                     query = components.getQuery();
                 }
                 authority = base.getAuthority();
             }
-            scheme = base.getScheme();
+            scheme = base.getScheme();            
         }
 
-        return toString(scheme, authority, path, query, components.getFragment());
+        return recomposition(scheme, authority, path, query, components.getFragment());
     }
 
     /**
@@ -168,7 +179,7 @@ public final class UriResolver {
         return basePath.substring(0, rightMostSlash + 1).concat(path);
     }
 
-    static String toString(String scheme, String authority, String path, String query, String fragment) {
+    static String recomposition(String scheme, String authority, String path, String query, String fragment) {
 
         StringBuilder builder = new StringBuilder();
 
@@ -200,10 +211,5 @@ public final class UriResolver {
 
     static boolean isNotDefined(String value) {
         return value == null || value.isBlank();
-    }
-
-    public static String makeRelative(URI baseUri, String target) {
-        //TODO
-        return target;
     }
 }

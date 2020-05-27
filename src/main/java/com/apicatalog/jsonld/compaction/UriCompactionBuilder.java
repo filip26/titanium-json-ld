@@ -20,9 +20,9 @@ import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.ListObject;
 import com.apicatalog.jsonld.grammar.ValueObject;
 import com.apicatalog.jsonld.grammar.Version;
-import com.apicatalog.jsonld.utils.JsonUtils;
-import com.apicatalog.jsonld.utils.UriResolver;
-import com.apicatalog.jsonld.utils.UriUtils;
+import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.uri.UriRelativizer;
+import com.apicatalog.jsonld.uri.UriUtils;
 
 /**
  * 
@@ -520,7 +520,7 @@ public final class UriCompactionBuilder {
         
         // 10.
         if (!vocab && activeContext.getBaseUri() != null) {
-            return UriResolver.makeRelative(activeContext.getBaseUri(), variable);
+            return UriRelativizer.relativize(activeContext.getBaseUri(), variable);
         }
 
         // 11.

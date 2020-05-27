@@ -28,7 +28,7 @@ import com.apicatalog.jsonld.grammar.ListObject;
 import com.apicatalog.jsonld.grammar.NodeObject;
 import com.apicatalog.jsonld.grammar.ValueObject;
 import com.apicatalog.jsonld.grammar.Version;
-import com.apicatalog.jsonld.utils.JsonUtils;
+import com.apicatalog.jsonld.json.JsonUtils;
 
 /**
  * 
