@@ -55,7 +55,7 @@ public final class ValueCompactionBuilder {
         InverseContext inverseContext = activeContext.getInverseContext();
      
         TermDefinition activePropertyDefinition = activeContext.getTerm(activeProperty);
-
+        
         // 4. - 5.
         JsonValue language = null; 
         DirectionType direction = null;
@@ -64,7 +64,7 @@ public final class ValueCompactionBuilder {
             language = activePropertyDefinition.getLanguageMapping(); 
             direction = activePropertyDefinition.getDirectionMapping();
         }
-        
+
         if (language == null) {
             language = activeContext.getDefaultLanguage() != null
                             ? Json.createValue(activeContext.getDefaultLanguage())
@@ -110,12 +110,12 @@ public final class ValueCompactionBuilder {
         // 8.
         } else if (activePropertyDefinition != null && Keywords.NONE.equals(activePropertyDefinition.getTypeMapping())
                     || (value.containsKey(Keywords.TYPE)
-                            && activePropertyDefinition != null
-                                    && !JsonUtils.contains(
+                            && (activePropertyDefinition == null
+                                    || !JsonUtils.contains(
                                             activePropertyDefinition.getTypeMapping(),
                                             value.get(Keywords.TYPE)
                                             )
-                                    )
+                                    ))
                 ) {
             
             // 8.1.
@@ -126,8 +126,7 @@ public final class ValueCompactionBuilder {
             if (JsonUtils.isNotNull(resultTypes)) {
                 for (JsonValue type : JsonUtils.toJsonArray(resultTypes)) {
     
-                    types.add(activeContext.compactUri(((JsonString)type).getString()).vocab(true).build());
-                    
+                    types.add(activeContext.compactUri(((JsonString)type).getString()).vocab(true).build());                    
                 }
                 
                 Map<String, JsonValue> resultMap = new LinkedHashMap<>(result.asJsonObject());
@@ -159,7 +158,13 @@ public final class ValueCompactionBuilder {
                                 && JsonUtils.isString(value.get(Keywords.DIRECTION))
                                 && direction == DirectionType.valueOf(value.getString(Keywords.DIRECTION).toUpperCase())
                                 )
-                        || direction == null || direction == DirectionType.NULL
+                        || ((direction == null || direction == DirectionType.NULL)
+                                && value.containsKey(Keywords.DIRECTION)
+                                )
+                        || (JsonUtils.isNull(language)
+                                && (!value.containsKey(Keywords.LANGUAGE) || JsonUtils.isNull(value.get(Keywords.LANGUAGE)))
+                                )
+                        
                         ){
 
             // 10.1.
@@ -173,7 +178,7 @@ public final class ValueCompactionBuilder {
                 result = value.get(Keywords.VALUE);
             }
         }
-        
+
         // 11.
         if (JsonUtils.isObject(result)) {
             
