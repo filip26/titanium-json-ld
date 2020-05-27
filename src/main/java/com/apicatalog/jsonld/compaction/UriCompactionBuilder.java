@@ -11,6 +11,7 @@ import javax.json.JsonString;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.InverseContext;
 import com.apicatalog.jsonld.context.TermDefinition;
@@ -74,7 +75,7 @@ public final class UriCompactionBuilder {
         if (variable == null) {
             return null;
         }
-        
+
         // 2.
         if (activeContext.getInverseContext() == null) {
             activeContext.createInverseContext();
@@ -509,23 +510,16 @@ public final class UriCompactionBuilder {
             
             URI uri = URI.create(variable);
             
-            if (uri.getScheme() != null) {
+            if (uri.getScheme() != null && activeContext.containsTerm(uri.getScheme())) {
 
-                //FIXME
-                TermDefinition uriTermDefinition = activeContext.getTerm(uri.getScheme());
-                
-                if (uriTermDefinition != null && uriTermDefinition.isPrefix()) {
-                    //TODO
-
-                }
-                            
+                if (activeContext.getTerm(uri.getScheme()).isPrefix() && uri.getAuthority() == null) {
+                    throw new JsonLdError(JsonLdErrorCode.IRI_CONFUSED_WITH_PREFIX);
+                }               
             }
-            
         }
         
         // 10.
         if (!vocab && activeContext.getBaseUri() != null) {
-
             return UriResolver.makeRelative(activeContext.getBaseUri(), variable);
         }
 

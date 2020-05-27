@@ -283,7 +283,7 @@ public final class CompactionBuilder {
             // 12.3.
             if (Keywords.REVERSE.equals(expandedProperty)) {
                 //TODO
-                System.out.println("TODO: 12.3.");
+                //System.out.println("TODO: 12.3.");
                 continue;
             }
 
