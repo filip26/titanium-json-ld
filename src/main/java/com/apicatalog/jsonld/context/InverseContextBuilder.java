@@ -41,7 +41,7 @@ public final class InverseContextBuilder {
         for (String term : activeContext.getTerms().stream().sorted().collect(Collectors.toList())) {
         
             TermDefinition termDefinition = activeContext.getTerm(term);
-            
+
             // 3.1.
             if (termDefinition == null) {   //TODO does active context contain null values??
                 continue;
@@ -128,7 +128,9 @@ public final class InverseContextBuilder {
 
                 
             // 3.13.
-            } else if (termDefinition.getLanguageMapping() != null && termDefinition.getDirectionMapping() != null) {
+            } else if (termDefinition.getLanguageMapping() != null
+                        && termDefinition.getDirectionMapping() != null
+                    ) {
                 
                 // 3.13.1.
                 String langDir = Keywords.NULL;
@@ -169,9 +171,10 @@ public final class InverseContextBuilder {
                 if (JsonUtils.isString(termDefinition.getLanguageMapping())) {
                     language = ((JsonString)termDefinition.getLanguageMapping()).getString().toLowerCase();
                 }
-                
+                              
                 // 3.14.2.
                 if (!languageMap.containsKey(language)) {
+                    
                     languageMap.put(language, term);
                 }
 

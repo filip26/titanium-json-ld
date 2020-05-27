@@ -61,11 +61,11 @@ public final class TermSelector {
             // 4.2. Initialize type/language map to the value associated 
             //      with the container entry in container map.
             Map<String, Map<String, String>> typeLanguageMap = containerMap.get(container);
-            
+
             // 4.3. Initialize value map to the value associated with 
             //      type/language entry in type/language map.
             Map<String, String> valueMap = typeLanguageMap.get(typeLanguage);
-            
+
             // 4.4.
             for (final String item : preferredValues) {
                 

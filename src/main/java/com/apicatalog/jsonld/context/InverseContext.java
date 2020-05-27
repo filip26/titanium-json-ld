@@ -6,7 +6,7 @@ import java.util.Map;
 public class InverseContext {
 
     //TODO get rid of all maps
-    Map<String, Map<String, Map<String, String>>> context;
+    Map<String ,Map<String, Map<String, Map<String, String>>>> context;
     
     public InverseContext() {
         this.context = new LinkedHashMap<>();
@@ -16,11 +16,11 @@ public class InverseContext {
         return context.containsKey(variable);
     }
 
-    public Map getValue(String variable) {
+    public Map<String, Map<String, Map<String, String>>> getValue(String variable) {
         return context.get(variable);
     }
 
-    public void add(String variable, Map containerMap) {
+    public void add(String variable, Map<String, Map<String, Map<String, String>>> containerMap) {
         context.put(variable, containerMap);
     }
 

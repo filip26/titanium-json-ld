@@ -82,7 +82,7 @@ public final class UriCompactionBuilder {
 
         // 3.
         InverseContext inverseContext = activeContext.getInverseContext();
-        
+
         // 4.
         if (vocab && inverseContext.contains(variable)) {
             
@@ -112,7 +112,7 @@ public final class UriCompactionBuilder {
             
             // 4.4.
             String typeLanguage = Keywords.LANGUAGE;
-            String typeLanguageValue = Keywords.NONE;
+            String typeLanguageValue = Keywords.NULL;
             
             // 4.5.
             if (JsonUtils.isObject(value)
@@ -158,6 +158,9 @@ public final class UriCompactionBuilder {
                     // 4.7.4.2.
                     if (JsonUtils.isObject(item)
                             && item.asJsonObject().containsKey(Keywords.VALUE)) {
+                        
+                        System.out.println("TODO: Uri 4.7.4.2.");
+                        //TODO
                         
                     // 4.7.4.3.                        
                     } else {
@@ -253,7 +256,7 @@ public final class UriCompactionBuilder {
                 
             // 4.9.
             } else {
-                
+
                 // 4.9.1.
                 if (ValueObject.isValueObject(value)) {
                 
@@ -317,7 +320,7 @@ public final class UriCompactionBuilder {
                     containers.add(Keywords.TYPE);
                     containers.add(Keywords.SET.concat(Keywords.TYPE));
                 }
-                
+
                 // 4.9.3.
                 containers.add(Keywords.SET);
             }
@@ -340,6 +343,7 @@ public final class UriCompactionBuilder {
                     && value.asJsonObject().containsKey(Keywords.VALUE)
                     && value.asJsonObject().size() == 1
                     ) {
+
                 containers.add(Keywords.LANGUAGE);
                 containers.add(Keywords.LANGUAGE.concat(Keywords.SET));                
             }
@@ -348,7 +352,7 @@ public final class UriCompactionBuilder {
             if (typeLanguageValue == null) {
                 typeLanguageValue = Keywords.NULL;
             }
-            
+ 
             // 4.14.
             Collection<String> preferredValues = new ArrayList<>();
 
@@ -411,7 +415,7 @@ public final class UriCompactionBuilder {
 
                 preferredValues.add(preferredValue.substring(index));
             }            
-            
+
             // 4.20.
             String term = activeContext.selectTerm(variable, containers, typeLanguage, preferredValues).select();
             
@@ -423,7 +427,7 @@ public final class UriCompactionBuilder {
         
         // 5.
         if (vocab && activeContext.getVocabularyMapping() != null) {
-            
+     
             // 5.1.
             if (variable.startsWith(activeContext.getVocabularyMapping()) 
                     && variable.length() > activeContext.getVocabularyMapping().length()) {
@@ -442,7 +446,7 @@ public final class UriCompactionBuilder {
         
         // 7.
         for (Entry<String, TermDefinition> termEntry : activeContext.getTermsMapping().entrySet()) {
-            
+      
             TermDefinition termDefinition = termEntry.getValue();
             
             // 7.1.
@@ -471,7 +475,7 @@ public final class UriCompactionBuilder {
                 compactUri = compacttUriCandidate;
             }
         }
-        
+
         /// 8.
         if (compactUri != null) {
             return compactUri;

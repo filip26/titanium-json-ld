@@ -283,7 +283,7 @@ public final class CompactionBuilder {
             // 12.3.
             if (Keywords.REVERSE.equals(expandedProperty)) {
                 //TODO
-                
+                System.out.println("TODO: 12.3.");
                 continue;
             }
 
@@ -367,7 +367,7 @@ public final class CompactionBuilder {
             
             // 12.8.
             for (JsonValue expandedItem : expandedValue.asJsonArray()) {
-               
+     
                 // 12.8.1.
                 String itemActiveProperty = activeContext
                                                 .compactUri(expandedProperty)
@@ -375,6 +375,7 @@ public final class CompactionBuilder {
                                                 .vocab(true)
                                                 .reverse(insideReverse)
                                                 .build();
+
                 // 12.8.2.
                 if (activeContext.containsTerm(itemActiveProperty)
                         && activeContext.getTerm(itemActiveProperty).getNestValue() != null
@@ -433,7 +434,7 @@ public final class CompactionBuilder {
                                                 .compactArrays(compactArrays)
                                                 .ordered(ordered)
                                                 .build();
-
+                
                 // 12.8.7.
                 if (ListObject.isListObject(expandedItem)) {
 
@@ -469,7 +470,7 @@ public final class CompactionBuilder {
                     
                 // 12.8.8.
                 } else if (GraphObject.isGraphObject(expandedItem)) {
-                  
+                    System.out.println("TODO: 12.8.8.");  
                     //TODO
                 // 12.8.9.                    
                 } else if ((container.contains(Keywords.LANGUAGE)
@@ -518,7 +519,7 @@ public final class CompactionBuilder {
                     if (container.contains(Keywords.LANGUAGE)
                             && expandedItem.asJsonObject().containsKey(Keywords.VALUE)
                             ) {
-                        
+                        System.out.println("TODO: 12.8.9.4.");
 //                        if (JsonUtils.isObject(compactedItem)) {
                         
   //FIXME                          compactedItem = compactedItem.asJsonObject().get(Keywords.VALUE);
@@ -549,7 +550,7 @@ public final class CompactionBuilder {
                                                 .build();
                         // 12.8.9.6.2.
                         //TODO
-                        
+                        System.out.println("TODO: 12.8.9.6.2.");
                         // 12.8.9.6.3.
 
                     // 12.8.9.7.                        
@@ -629,6 +630,7 @@ public final class CompactionBuilder {
                     
                 // 12.8.10.                    
                 } else {  
+
                     JsonUtils.addValue(nestResult, itemActiveProperty, compactedItem, asArray);
                 }
             }            

@@ -42,7 +42,7 @@ public final class ValueCompactionBuilder {
     }
     
     public JsonValue build() throws JsonLdError {
-
+//System.out.println("0 > " + activeProperty + ", " + value);
         // 1.
         JsonValue result = value;
         
@@ -196,7 +196,7 @@ public final class ValueCompactionBuilder {
             
             result = resultBuilder.build();
         }
-
+//        System.out.println("1 < " + result);
         // 12.
         return result;
     }
