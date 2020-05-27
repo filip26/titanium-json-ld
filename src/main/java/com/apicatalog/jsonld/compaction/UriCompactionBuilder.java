@@ -69,7 +69,7 @@ public final class UriCompactionBuilder {
     }
     
     public String build() throws JsonLdError {
-        
+ 
         // 1.
         if (variable == null) {
             return null;
@@ -103,6 +103,7 @@ public final class UriCompactionBuilder {
             
             // 4.2.
             if (JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.PRESERVE)) {
+
                 //TODO
             }
             
@@ -460,11 +461,10 @@ public final class UriCompactionBuilder {
                                     .concat(variable.substring(termDefinition.getUriMapping().length()));
 
             // 7.3.
-            if (compactUri == null 
-                    || (compacttUriCandidate.compareTo(compactUri) < 0
+            if (((compactUri == null || (compacttUriCandidate.compareTo(compactUri) < 0))
                             && !activeContext.containsTerm(compacttUriCandidate))
                     || (activeContext.containsTerm(compacttUriCandidate) 
-                            && variable.equals(activeContext.getTerm(compacttUriCandidate))
+                            && variable.equals(activeContext.getTerm(compacttUriCandidate).getUriMapping())
                             && value == null
                             )
                     ) {
@@ -498,9 +498,10 @@ public final class UriCompactionBuilder {
         
         // 10.
         if (!vocab && activeContext.getBaseUri() != null) {
+
             return UriResolver.makeRelative(activeContext.getBaseUri(), variable);
         }
-        
+
         // 11.
         return variable;
     }
