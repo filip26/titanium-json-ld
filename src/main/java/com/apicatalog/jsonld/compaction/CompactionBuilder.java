@@ -158,7 +158,7 @@ public final class CompactionBuilder {
                 && activePropertyDefinition != null
                 && activePropertyDefinition.hasContainerMapping(Keywords.LIST)
                 ) {
-            
+
             return CompactionBuilder
                         .with(typeContext, activeProperty, elementObject.get(Keywords.LIST))
                         .compactArrays(compactArrays)
@@ -402,10 +402,11 @@ public final class CompactionBuilder {
                 }
                 
                 // 12.8.4.
-                Collection<String> container = activePropertyDefinition != null
-                                                    ? activePropertyDefinition.getContainerMapping()
+                Collection<String> container = activeContext.containsTerm(itemActiveProperty)
+                                                ? activeContext.getTerm(itemActiveProperty).getContainerMapping()
                                                     : null;
-                
+                                                    
+                                                    
                 if (container == null) {
                     container = new LinkedList<>();
                 }
@@ -438,7 +439,7 @@ public final class CompactionBuilder {
 
                     // 12.8.7.1.
                     compactedItem = JsonUtils.toJsonArray(compactedItem);
-                    
+
                     // 12.8.7.2.
                     if (!container.contains(Keywords.LIST)) {
 
@@ -518,7 +519,10 @@ public final class CompactionBuilder {
                             && expandedItem.asJsonObject().containsKey(Keywords.VALUE)
                             ) {
                         
-                        compactedItem = compactedItem.asJsonObject().get(Keywords.VALUE);
+//                        if (JsonUtils.isObject(compactedItem)) {
+                        
+  //FIXME                          compactedItem = compactedItem.asJsonObject().get(Keywords.VALUE);
+//                        }
                         
                         if (expandedItem.asJsonObject().containsKey(Keywords.LANGUAGE)) {
                             
