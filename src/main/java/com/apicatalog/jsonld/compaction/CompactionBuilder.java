@@ -163,7 +163,7 @@ public final class CompactionBuilder {
                 ) {
 
             return CompactionBuilder
-                        .with(typeContext, activeProperty, elementObject.get(Keywords.LIST))
+                        .with(activeContext, activeProperty, elementObject.get(Keywords.LIST))
                         .compactArrays(compactArrays)
                         .ordered(ordered)
                         .build();
@@ -797,7 +797,7 @@ public final class CompactionBuilder {
 
                                 JsonObject map = Json.createObjectBuilder().add(Keywords.ID, expandedItem.asJsonObject().get(Keywords.ID)).build();
                                 
-                                compactedItem = CompactionBuilder.with(typeContext, itemActiveProperty, map).build();
+                                compactedItem = CompactionBuilder.with(activeContext, itemActiveProperty, map).build();
                                 
                             }
                             

@@ -370,7 +370,7 @@ public class ActiveContextBuilder {
 
                         } else {
                             throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);
-                        }
+                        }                       
                     }
                 }
             }

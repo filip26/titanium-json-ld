@@ -79,14 +79,13 @@ public final class CompactionProcessor {
         ActiveContext activeContext = new ActiveContext(options);
         
         activeContext = activeContext.create(contextValue, contextBase).build();
-        
+     
         // 8.
         if (options.getBase() != null) {
             activeContext.setBaseUri(options.getBase());
             
-        } else if (options.isCompactToRelative()) {
-            activeContext.setBaseUri(input.getDocumentUrl());
-            
+        } else if (activeContext.getBaseUri() == null && options.isCompactToRelative()) {
+            activeContext.setBaseUri(input.getDocumentUrl());            
         }
         
         // 9.
