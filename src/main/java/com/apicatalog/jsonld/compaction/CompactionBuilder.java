@@ -66,7 +66,7 @@ public final class CompactionBuilder {
     }
     
     public JsonValue build() throws JsonLdError {
-        
+
         // 1.
         ActiveContext typeContext = activeContext;
         
@@ -82,13 +82,13 @@ public final class CompactionBuilder {
 
             // 3.1.
             JsonArrayBuilder resultBuilder = Json.createArrayBuilder();
-            
+
             // 3.2.
             for (JsonValue item : element.asJsonArray()) {
                 
                 // 3.2.1.
                 JsonValue compactedItem = CompactionBuilder
-                                                .with(typeContext, activeProperty, item)
+                                                .with(activeContext, activeProperty, item)
                                                 .compactArrays(compactArrays)
                                                 .ordered(ordered)
                                                 .build();
@@ -99,7 +99,7 @@ public final class CompactionBuilder {
             }
             
             JsonArray result = resultBuilder.build();
-            
+
             // 3.3.
             if (result.isEmpty() 
                     || result.size() > 1
@@ -111,7 +111,7 @@ public final class CompactionBuilder {
                                 || activePropertyDefinition.hasContainerMapping(Keywords.SET))
                             )
                     ) {
-                
+
                 return result;
             }
             
@@ -151,6 +151,7 @@ public final class CompactionBuilder {
                 
                 return result;
             }
+
         }
         
         // 8.
@@ -209,7 +210,7 @@ public final class CompactionBuilder {
         }
         
         for (String expandedProperty : expandedProperties) {
-            
+
             JsonValue expandedValue = elementObject.get(expandedProperty);
             
             Map<String, JsonValue> nestResult = new LinkedHashMap<>();
@@ -316,13 +317,13 @@ public final class CompactionBuilder {
                                             Keywords.INDEX,
                                             Keywords.LANGUAGE,
                                             Keywords.VALUE
-                                            )) {
+                                            )) {                
                 // 12.6.1.
                 String alias = activeContext.compactUri(expandedProperty).vocab(true).build();
                 
                 // 12.6.2.
                 result.put(alias, expandedValue);
-                
+
                 continue;
             }
             
@@ -375,6 +376,7 @@ public final class CompactionBuilder {
                                                 .vocab(true)
                                                 .reverse(insideReverse)
                                                 .build();
+
 
                 // 12.8.2.
                 if (activeContext.containsTerm(itemActiveProperty)
@@ -616,9 +618,9 @@ public final class CompactionBuilder {
                     } else if (container.contains(Keywords.TYPE)) {
                         keyToCompact = Keywords.TYPE;
                     }
-                                                            
+
                     String containerKey = activeContext.compactUri(keyToCompact).vocab(true).build();
-                    
+
                     // 12.8.9.3.
                     String indexKey = null;
                     if (activeContext.containsTerm(itemActiveProperty)) {
@@ -765,10 +767,11 @@ public final class CompactionBuilder {
                     if (mapKey == null) {
                         mapKey = activeContext.compactUri(Keywords.NONE).vocab(true).build();
                     }
-                    
                     // 12.8.9.10.
                     JsonUtils.addValue(mapObject, mapKey, compactedItem, asArray);
-                    
+
+                    nestResult.put(itemActiveProperty, JsonUtils.toJsonObject(mapObject));                    
+
                 // 12.8.10.                    
                 } else {  
 
@@ -776,7 +779,7 @@ public final class CompactionBuilder {
                 }
             }            
         }
-
+        
         // 13.
         return JsonUtils.toJsonObject(result);
     }
