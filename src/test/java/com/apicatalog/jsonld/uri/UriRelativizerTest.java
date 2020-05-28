@@ -52,7 +52,7 @@ public class UriRelativizerTest {
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "g", "http://a/b/c/g"});
         data.add(new Object[] {URI.create("http://a/b/c/?q"), "g", "http://a/b/c/g"});
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "g/", "http://a/b/c/g/"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "/g", "http://a/g"});
+        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "../../g", "http://a/g"});
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "//g", "http://g"});
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "?y", "http://a/b/c/d;p?y"});
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "g?y", "http://a/b/c/g?y"});
@@ -63,12 +63,10 @@ public class UriRelativizerTest {
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "g;x", "http://a/b/c/g;x"});
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "g;x?y#s", "http://a/b/c/g;x?y#s"});
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "", "http://a/b/c/d;p?q"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), ".", "http://a/b/c/"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "./", "http://a/b/c/"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "..", "http://a/b/"});
+        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "../", "http://a/b/"});
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "../", "http://a/b/"});
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "../g", "http://a/b/g"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "../..", "http://a/"});
+        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "../../", "http://a/"});
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "../../", "http://a/"});
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "../../g", "http://a/g"});
         

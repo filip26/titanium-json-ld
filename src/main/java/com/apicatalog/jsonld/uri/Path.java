@@ -56,9 +56,6 @@ public final class Path {
         if (base.isEmpty()) {
             return this;
         }
-        if (segments.isEmpty()) {
-            return new Path(EMPTY.segments, last, false);
-        }
         
         int leftIndex = 0;
         
@@ -75,30 +72,28 @@ public final class Path {
             return new Path(EMPTY.segments, last, segments.size() > 0);
         }
 
-        if (leftIndex == 0) {
-            return this;
-        }
-
         if (leftIndex >= base.segments.size()) {
             return new Path(segments.subList(leftIndex, segments.size()), last, true);
         }
         
-//        if (leftIndex == segments.size()) {
-//            return new Path(segments, last, false);
-//        }
-//        
         int rightIndex = 0;
+        
+        List<String> diff = new ArrayList<>();
         
         for (; rightIndex < Math.min(segments.size(), base.segments.size()) - leftIndex; rightIndex++) {
             if (!segments.get(segments.size() - rightIndex - 1).equals(base.segments.get(base.segments.size() - rightIndex - 1))) {
                 break;
             }
+            diff.add("..");
         }
-
-        //TODO
-        //System.out.println("2 > " + leftIndex + ", " + rightIndex);
-
-        return EMPTY;
+        for (int i=0; i < (base.segments.size() - leftIndex - rightIndex); i++) {
+            diff.add("..");
+        }
+        for (int i=0; i < (segments.size() - leftIndex - rightIndex); i++) {
+            diff.add(segments.get(i + leftIndex));
+        }
+        
+        return new Path(diff, Objects.equals(last, base.last) ? null : last, true);
     }
     
     public boolean isEmpty() {
