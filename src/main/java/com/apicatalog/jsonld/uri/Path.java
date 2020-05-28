@@ -50,7 +50,7 @@ public final class Path {
             if (Objects.equals(last, base.last)) {
                 return new Path(EMPTY.segments, null, !base.relative);
             } 
-            return new Path(EMPTY.segments, last, false);
+            return new Path(EMPTY.segments, last, !relative && !base.relative);
         }
 
         if (base.isEmpty()) {
