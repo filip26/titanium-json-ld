@@ -37,27 +37,30 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 
 ## Examples
 
-JSONP-LD implements the [JsonLdProcessor](https://www.w3.org/TR/json-ld11-api/#the-jsonldprocessor-interface) interface.
+JSONP-LD implements the [JsonLdProcessor](https://www.w3.org/TR/json-ld11-api/#the-jsonldprocessor-interface) interface and custom interface based on the builder design pattern.
 
 #### Expansion 
 
 ```javascript
-JsonValue result = JsonLd
-                     .createProcessor()
-                     .expand(URI.create("https://w3c.github.io/json-ld-api/tests/expand/0001-in.jsonld"));
+JsonLd.createProcessor()
+      .expand("https://w3c.github.io/json-ld-api/tests/expand/0001-in.jsonld")
+      .build();
 ```
 
 ```javascript
 
-JsonLdOptions options = new JsonLdOptions();
-// external context
-options.setExpandContext(URI.create(...));
-
-JsonValue result = JsonLd
-                     .createProcessor()
-                     .expand(URI.create(...), options);
+JsonLd.createProcessor()
+       .expand("https://example.com/document.json")
+       .context("https://example.com/context.jsonld")  // external context
+       .build();
 ```
 
-## Notes
-* uses `java.net.URI`
+#### Compaction
+
+```javascript
+JsonLd.createProcessor()
+      .compact("https://example.com/expanded.jsonld", "https://example.com/context.jsonld")
+      .build();
+```
+
 
