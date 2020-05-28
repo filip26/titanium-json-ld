@@ -15,6 +15,7 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.InverseContext;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.GraphObject;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.ListObject;
@@ -519,7 +520,7 @@ public final class UriCompactionBuilder {
         }
         
         // 10.
-        if (!vocab && activeContext.getBaseUri() != null) {
+        if (!vocab && activeContext.getBaseUri() != null && !CompactUri.isBlankNode(variable)) {
             return UriRelativizer.relativize(activeContext.getBaseUri(), variable);
         }
 

@@ -45,7 +45,7 @@ public final class UriResolver {
         String path = null;
         String query = null;
 
-        if (isDefined(components.getScheme())) {
+        if (components.getScheme() != null && !components.getScheme().isBlank()) {
             scheme = components.getScheme();
             authority = components.getAuthority();
             path = removeDotSegments(componentPath);
@@ -53,38 +53,43 @@ public final class UriResolver {
 
         } else {
             
-            if (isDefined(components.getAuthority())) {
+            if (components.getAuthority() != null && !components.getAuthority().isBlank()) {
                 authority = components.getAuthority();
                 path = removeDotSegments(componentPath);
                 query = components.getQuery();
 
             } else {
 
-                if (isNotDefined(componentPath)) {
+                if (componentPath != null && !componentPath.isBlank()) {
+                    if (componentPath.startsWith("/")) {
+                        path = removeDotSegments(componentPath);
+
+                    } else if (basePath != null && !basePath.isBlank()) {
+                        
+                        path = removeDotSegments(merge(basePath, componentPath));
+                    } else {
+                        path = "/".concat(removeDotSegments(componentPath));
+                        
+                    }
+                    query = components.getQuery();
+
+                } else {
                     path = basePath;
 
-                    if (isDefined(components.getQuery())) {
+                    if (UriUtils.isDefined(components.getQuery())) {
                         query = components.getQuery();
 
                     } else {
                         query = base.getQuery();
                     }
-
-                } else {
-                    if (componentPath.startsWith("/")) {
-                        path = removeDotSegments(componentPath);
-
-                    } else {
-                        path = removeDotSegments(merge(basePath, componentPath));
-                    }
-                    query = components.getQuery();
+                    
                 }
                 authority = base.getAuthority();
             }
             scheme = base.getScheme();            
         }
 
-        return recomposition(scheme, authority, path, query, components.getFragment());
+        return UriUtils.recompose(scheme, authority, path, query, components.getFragment());
     }
 
     /**
@@ -98,7 +103,7 @@ public final class UriResolver {
      */
     static String removeDotSegments(final String path) {
 
-        if (isNotDefined(path)) {
+        if (UriUtils.isNotDefined(path)) {
             return "";
         }
 
@@ -114,14 +119,14 @@ public final class UriResolver {
             } else if (input.startsWith("./")) {
                 input = input.substring(2);
 
-                // B.
+            // B.
             } else if (input.startsWith("/./")) {
                 input = "/".concat(input.substring(3));
 
             } else if (input.equals("/.")) {
                 input = "/";
 
-                // C.
+            // C.
             } else if (input.startsWith("/../")) {
                 input = "/".concat(input.substring(4));
                 if (!output.isEmpty()) {
@@ -134,11 +139,11 @@ public final class UriResolver {
                     output.remove(output.size() - 1);
                 }
 
-                // D.
+            // D.
             } else if (input.equals("..") || input.equals(".")) {
                 input = "";
 
-                // E.
+            // E.
             } else {
                 int nextSlashIndex = input.indexOf('/', 1);
 
@@ -166,7 +171,8 @@ public final class UriResolver {
      * @return
      */
     static String merge(String basePath, String path) {
-        if (isNotDefined(basePath)) {
+        
+        if (UriUtils.isNotDefined(basePath)) {
             return "/".concat(path);
         }
 
@@ -177,39 +183,5 @@ public final class UriResolver {
         }
 
         return basePath.substring(0, rightMostSlash + 1).concat(path);
-    }
-
-    static String recomposition(String scheme, String authority, String path, String query, String fragment) {
-
-        StringBuilder builder = new StringBuilder();
-
-        if (isDefined(scheme)) {
-            builder.append(scheme);
-            builder.append(":");
-        }
-        if (isDefined(authority)) {
-            builder.append("//");
-            builder.append(authority);
-        }
-        if (isDefined(path)) {
-            builder.append(path);
-        }
-        if (isDefined(query)) {
-            builder.append('?');
-            builder.append(query);
-        }
-        if (isDefined(fragment)) {
-            builder.append('#');
-            builder.append(fragment);
-        }
-        return builder.toString();
-    }
-
-    static boolean isDefined(String value) {
-        return value != null && !value.isBlank();
-    }
-
-    static boolean isNotDefined(String value) {
-        return value == null || value.isBlank();
     }
 }

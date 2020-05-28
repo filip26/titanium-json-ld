@@ -6,10 +6,10 @@ import com.apicatalog.jsonld.grammar.Keywords;
 
 public final class UriUtils {
 
-    UriUtils() {
+    private UriUtils() {
     }
 
-    public static boolean isURI(String value) {
+    public static final boolean isURI(String value) {
 
         //FIXME hack
         if (value.endsWith(":")) {
@@ -34,16 +34,16 @@ public final class UriUtils {
      * @param uri
      * @return
      */
-    public static boolean endsWithGenDelim(String uri) {
+    public static final boolean endsWithGenDelim(final String uri) {
         return uri.endsWith(":") || uri.endsWith("/") || uri.endsWith("?") || uri.endsWith("#") || uri.endsWith("[")
                 || uri.endsWith("]") || uri.endsWith("@");
     }
 
-    public static boolean isNotURI(String expandedTypeString) {
+    public static final boolean isNotURI(final String expandedTypeString) {
         return !isURI(expandedTypeString);
     }
 
-    public static boolean isNotAbsoluteURI(String uri) {
+    public static final boolean isNotAbsoluteURI(final String uri) {
         try {
             return !URI.create(uri).isAbsolute();
         } catch (IllegalArgumentException e) {
@@ -51,11 +51,46 @@ public final class UriUtils {
         }
     }
 
-    public static boolean isAbsoluteUri(String uri) {
+    public static final boolean isAbsoluteUri(final String uri) {
         try {
             return URI.create(uri).isAbsolute();
         } catch (IllegalArgumentException e) {
             return false;
         }
     }
+    
+    static final String recompose(final String scheme, final String authority, final String path, final String query, final String fragment) {
+
+        StringBuilder builder = new StringBuilder();
+
+        if (isDefined(scheme)) {
+            builder.append(scheme);
+            builder.append(":");
+        }
+        if (isDefined(authority)) {
+            builder.append("//");
+            builder.append(authority);
+        }
+        if (isDefined(path)) {
+            builder.append(path);
+        }
+        if (isDefined(query)) {
+            builder.append('?');
+            builder.append(query);
+        }
+        if (isDefined(fragment)) {
+            builder.append('#');
+            builder.append(fragment);
+        }
+        return builder.toString();
+    }
+    
+    static final boolean isDefined(final String value) {
+        return value != null && !value.isBlank();
+    }
+
+    static final boolean isNotDefined(final String value) {
+        return value == null || value.isBlank();
+    }
+
 }

@@ -28,8 +28,7 @@ public class UriResolverTest {
     }
     
     @Parameterized.Parameters(name = "resolve({0}, {1}) to {2}")
-    public static Collection<Object[]> data() {
-        
+    public static Collection<Object[]> data() {        
         List<Object[]> data = new ArrayList<>();
         
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "g:h", "g:h"});
@@ -55,7 +54,10 @@ public class UriResolverTest {
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "../..", "http://a/"});
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "../../", "http://a/"});
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "../../g", "http://a/g"});
+        data.add(new Object[] {URI.create("http://a/"), "", "http://a/"});
+        data.add(new Object[] {URI.create("http://a/b/c"), "/b", "http://a/b"});
         
         return data;
+
     }
 }

@@ -5,67 +5,46 @@ import java.util.Objects;
 
 public final class UriRelativizer {
 
-    UriRelativizer() {
+    private UriRelativizer() {
     }
 
-    public static String relativize(URI base, String uri) {
+    public static final String relativize(final URI base, final String uri) {
 
         if (base == null) {
             return uri;
         }
         
-//        URI target = URI.create(uri);
-//        
-//        // compare a scheme and an authority
-//        if (!Objects.equals(base.getScheme(), target.getScheme())
-//                || !Objects.equals(base.getAuthority(), target.getAuthority())
-//                ) {
-//            
-//            return uri;
-//        }
-        // uri is relative to the base at this point
-        
-        return uri;
-        
-//        //base = base.normalize();
-//        URI target = URI.create(uri);//.normalize();
-//
-//        // Split paths into segments
-//        String[] bParts = base.getPath().split("\\/");
-//        String[] cParts = target.getPath().split("\\/");
-//
-//        // Discard trailing segment of base path
-//        if (bParts.length > 0 && !base.getPath().endsWith("/")) {
-//          bParts = Arrays.copyOf(bParts, bParts.length - 1);
-//        }
-//
-//        // Remove common prefix segments
-//        int i = 0;
-//        while (i < bParts.length && i < cParts.length && bParts[i].equals(cParts[i])) {
-//          i++;
-//        }
-//
-//        // Construct the relative path
-//        StringBuilder sb = new StringBuilder();
-//        for (int j = 0; j < (bParts.length - i); j++) {
-//          sb.append("../");
-//        }
-//        for (int j = i; j < cParts.length; j++) {
-//          if (j != i) {
-//            sb.append("/");
-//          }
-//          sb.append(cParts[j]);
-//        }
+        return relativize(base, URI.create(uri));
+    }
+    
+    public static final String relativize(final URI base, final URI uri) {
 
-//        return URI.create(sb.toString()).toString();
+        if (base == null || !base.isAbsolute() || !uri.isAbsolute()) {
+            return uri.toString();
+        }
         
-//        return baseUri.relativize(URI.create(target)).toString();
-//        
-//        //TODO better
-//        if (target.startsWith(baseUri.toString())) {
-//            return target.substring(baseUri.toString().length());
-//        }
-//        
-//        return target;
+        if (!Objects.equals(base.getScheme(), uri.getScheme())) {
+            return uri.toString();
+        }
+        
+        if (!Objects.equals(base.getAuthority(), uri.getAuthority())) {
+            return UriUtils.recompose(null, uri.getAuthority(), uri.getPath() , uri.getQuery(), uri.getFragment());
+        }
+        
+        final Path path = Path.of(uri.getPath()).relativize(base.getPath());
+        
+        if (path.isNotEmpty()) {
+            return UriUtils.recompose(null, null, path.toString() , uri.getQuery(), uri.getFragment());
+        }
+        
+        if (!Objects.equals(base.getQuery(), uri.getQuery())) {
+            return UriUtils.recompose(null, null, null , uri.getQuery(), uri.getFragment());
+        }
+                
+        if (!Objects.equals(base.getFragment(), uri.getFragment())) {
+            return UriUtils.recompose(null, null, null , null, uri.getFragment());            
+        }
+
+        return "";
     }
 }
