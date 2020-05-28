@@ -87,7 +87,7 @@ public final class UriCompactionBuilder {
 
         // 4.
         if (vocab && inverseContext.contains(variable)) {
-            
+
             // 4.1.
             String defaultLanguage = Keywords.NONE;
 
@@ -106,7 +106,11 @@ public final class UriCompactionBuilder {
             // 4.2.
             if (JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.PRESERVE)) {
 
-                //TODO
+                JsonValue preserve = value.asJsonObject().get(Keywords.PRESERVE);
+                
+                if (JsonUtils.isNotNull(preserve)) {
+                    value = JsonUtils.toJsonArray(preserve).get(0);
+                }                
             }
             
             // 4.3.
