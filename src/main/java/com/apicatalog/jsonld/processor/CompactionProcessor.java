@@ -57,7 +57,7 @@ public final class CompactionProcessor {
         expansionOptions.setBase(options.getBase());
         
         JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions);
-        
+
         // 5.
         URI contextBase = input.getDocumentUrl();
         

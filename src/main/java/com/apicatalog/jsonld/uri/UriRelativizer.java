@@ -13,7 +13,7 @@ public final class UriRelativizer {
         if (base == null) {
             return uri;
         }
-        
+
         return relativize(base, URI.create(uri));
     }
     
@@ -31,7 +31,10 @@ public final class UriRelativizer {
             return UriUtils.recompose(null, uri.getAuthority(), uri.getPath() , uri.getQuery(), uri.getFragment());
         }
         
-        final Path path = Path.of(uri.getPath()).relativize(base.getPath());
+        final Path uriPath = Path.of(uri.getPath());
+        final Path basePath = Path.of(base.getPath());
+        
+        final Path path = uriPath.relativize(basePath);
         
         if (path.isNotEmpty()) {
             return UriUtils.recompose(null, null, path.toString() , uri.getQuery(), uri.getFragment());
@@ -45,6 +48,8 @@ public final class UriRelativizer {
             return UriUtils.recompose(null, null, null , null, uri.getFragment());            
         }
 
-        return "";
+        return uriPath.getLeaf() != null
+                    ? uriPath.getLeaf()
+                    : "./";
     }
 }

@@ -84,7 +84,7 @@ public final class Path {
             if (!segments.get(segments.size() - rightIndex - 1).equals(base.segments.get(base.segments.size() - rightIndex - 1))) {
                 break;
             }
-            diff.add("..");
+            diff.add("..");     //TOD ?!?
         }
         for (int i=0; i < (base.segments.size() - leftIndex - rightIndex); i++) {
             diff.add("..");
@@ -117,5 +117,9 @@ public final class Path {
                     .concat(segments.isEmpty() ? "" : "/")
                     .concat(last != null ? last : "")
                 ;
+    }
+
+    public String getLeaf() {
+        return last;
     }    
 }

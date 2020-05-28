@@ -525,7 +525,6 @@ public final class UriCompactionBuilder {
         
         // 10.
         if (!vocab && activeContext.getBaseUri() != null && !CompactUri.isBlankNode(variable)) {
-            
             return UriRelativizer.relativize(activeContext.getBaseUri(), variable);
         }
 
