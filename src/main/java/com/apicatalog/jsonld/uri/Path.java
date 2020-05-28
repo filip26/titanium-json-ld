@@ -34,10 +34,10 @@ public final class Path {
                                                 )
                                         );
         final String last = (path.length() > 1 && path.endsWith("/"))
-                                ?  ""
+                                ?  null
                                 : segments.remove(segments.size() - 1);
     
-        return new Path(segments, last, relative);
+        return new Path(segments, (last == null || last.isBlank()) ? null : last, relative);
     }
     
     public Path relativize(final String base) {
@@ -46,9 +46,13 @@ public final class Path {
     
     public Path relativize(final Path base) {
 
-//        System.out.println("0 > " + segments + ", " + base.segments);
-//        System.out.println("0 > " + last + ", " + base.last);
-        
+        if (segments.isEmpty() && base.segments.isEmpty()) {
+            if (Objects.equals(last, base.last)) {
+                return new Path(EMPTY.segments, null, !base.relative);
+            } 
+            return new Path(EMPTY.segments, last, false);
+        }
+
         if (base.isEmpty()) {
             return this;
         }
@@ -60,18 +64,16 @@ public final class Path {
                 break;
             }
         }
-        //System.out.println("1 > " + leftIndex);
         
-        if (leftIndex == 0) {
-            return this;
-        }
-
         if (leftIndex == segments.size() && leftIndex == base.segments.size()) {
             if (Objects.equals(last, base.last)) {
                 return EMPTY;
             }
-            
-            return new Path(EMPTY.segments, last, true);
+            return new Path(EMPTY.segments, last, segments.size() > 0);
+        }
+
+        if (leftIndex == 0) {
+            return this;
         }
 
         if (leftIndex >= base.segments.size()) {
@@ -87,17 +89,17 @@ public final class Path {
         }
 
         //TODO
-        //System.out.println("1 > " + leftIndex + ", " + rightIndex);
+        //System.out.println("2 > " + leftIndex + ", " + rightIndex);
 
         return EMPTY;
     }
     
     public boolean isEmpty() {
-        return segments.isEmpty() && last == null;
+        return segments.isEmpty() && last == null && !relative;
     }
     
     public boolean isNotEmpty() {
-        return !segments.isEmpty() || last != null;
+        return !segments.isEmpty() || last != null || !relative;
     }
     
     public boolean isRelative() {
@@ -110,6 +112,7 @@ public final class Path {
                     ? ""
                     : "/")
                     .concat(segments.stream().collect(Collectors.joining("/")))
+                    .concat(segments.isEmpty() ? "" : "/")
                     .concat(last != null ? last : "")
                 ;
     }    
