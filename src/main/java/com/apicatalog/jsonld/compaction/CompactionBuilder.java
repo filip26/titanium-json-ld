@@ -3,10 +3,12 @@ package com.apicatalog.jsonld.compaction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -201,7 +203,7 @@ public final class CompactionBuilder {
                 }
             }
         }
-        
+
         // 12.
         List<String> expandedProperties = new ArrayList<>(elementObject.keySet());
         
@@ -213,7 +215,7 @@ public final class CompactionBuilder {
 
             JsonValue expandedValue = elementObject.get(expandedProperty);
             
-            Map<String, JsonValue> nestResult = new LinkedHashMap<>();
+            Map<String, JsonValue> nestResult = null;
             
             // 12.1.
             if (Keywords.ID.equals(expandedProperty)) {
@@ -283,8 +285,45 @@ public final class CompactionBuilder {
             
             // 12.3.
             if (Keywords.REVERSE.equals(expandedProperty)) {
-                //TODO
-                //System.out.println("TODO: 12.3.");
+                
+                // 12.3.1.
+                Map<String, JsonValue> compactedMap = new LinkedHashMap<>(CompactionBuilder
+                                                .with(activeContext, Keywords.REVERSE, expandedValue)
+                                                .compactArrays(compactArrays)
+                                                .ordered(ordered)
+                                                .build().asJsonObject());
+                // 12.3.2.
+                for (Entry<String, JsonValue> entry : new HashSet<>(compactedMap.entrySet())) {
+                    
+                    // 12.3.2.1.
+                    if (activeContext.containsTerm(entry.getKey())
+                            && activeContext.getTerm(entry.getKey()).isReverseProperty()
+                            ) {
+
+                        // 12.3.2.1.1
+                        boolean asArray = activeContext.getTerm(entry.getKey()).hasContainerMapping(Keywords.SET)
+                                            || !compactArrays;
+                        
+                        // 12.3.2.1.2.
+                        JsonUtils.addValue(result, entry.getKey(), entry.getValue(), asArray);
+                        
+                        // 12.3.2.1.3.
+                        compactedMap.remove(entry.getKey());
+                    }
+                    
+                }
+                
+                // 12.8.3.
+                if (!compactedMap.isEmpty()) {
+
+                    // 12.8.3.1.
+                    String alias = activeContext.compactUri(Keywords.REVERSE).vocab(true).build();
+                    
+                    // 12.8.3.2.                    
+                    result.put(alias, JsonUtils.toJsonObject(compactedMap));
+                }
+                
+                // 12.8.4.
                 continue;
             }
 
@@ -293,7 +332,7 @@ public final class CompactionBuilder {
 
                 // 12.4.1.
                 JsonValue compactedValue = CompactionBuilder
-                                                .with(typeContext, activeProperty, expandedValue)
+                                                .with(activeContext, activeProperty, expandedValue)
                                                 .compactArrays(compactArrays)
                                                 .ordered(ordered)
                                                 .build();
