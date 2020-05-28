@@ -122,7 +122,7 @@ public class ActiveContextBuilder {
                 // 5.1.1. If override protected is false and active context contains any
                 // protected term definitions,
                 // an invalid context nullification has been detected and processing is aborted.
-                if (!overrideProtected && activeContext.containsProtectedTerm()) {
+                if (!overrideProtected && result.containsProtectedTerm()) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_CONTEXT_NULLIFICATION);
                 }
 

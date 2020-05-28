@@ -99,7 +99,7 @@ public class JsonLdTestCase {
 //            JsonWriter jsonWriter2 = writerFactory.createWriter(System.out);
 //            jsonWriter2.write(result);
 //            jsonWriter2.close();
-            
+
         } catch (JsonLdError e) {
             Assert.assertEquals(expectErrorCode, e.getCode());
             return;

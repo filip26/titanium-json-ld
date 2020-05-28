@@ -191,7 +191,6 @@ public final class TermDefinitionBuilder {
 
         // 11.
         if (valueObject.containsKey(Keywords.PROTECTED)) {
-
             if (activeContext.inMode(Version.V1_0)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
