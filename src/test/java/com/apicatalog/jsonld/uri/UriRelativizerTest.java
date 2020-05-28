@@ -32,6 +32,19 @@ public class UriRelativizerTest {
     public static Collection<Object[]> data() {
         List<Object[]> data = new ArrayList<>();
         
+        data.add(new Object[] {URI.create("https://w3c.github.io/json-ld-api/tests/compact/0066-in.jsonld"), "link", "https://w3c.github.io/json-ld-api/tests/compact/link"});
+        data.add(new Object[] {URI.create("https://w3c.github.io/json-ld-api/tests/compact/0066-in.jsonld"), "#fragment-works", "https://w3c.github.io/json-ld-api/tests/compact/0066-in.jsonld#fragment-works"});
+        data.add(new Object[] {URI.create("https://w3c.github.io/json-ld-api/tests/compact/0066-in.jsonld"), "?query=works", "https://w3c.github.io/json-ld-api/tests/compact/0066-in.jsonld?query=works"});
+        data.add(new Object[] {URI.create("https://w3c.github.io/json-ld-api/tests/compact/0066-in.jsonld"), "../", "https://w3c.github.io/json-ld-api/tests/"});
+        data.add(new Object[] {URI.create("https://w3c.github.io/json-ld-api/tests/compact/0066-in.jsonld"), "../../", "https://w3c.github.io/json-ld-api/"});
+        data.add(new Object[] {URI.create("https://w3c.github.io/json-ld-api/tests/compact/0066-in.jsonld"), "../../parent", "https://w3c.github.io/json-ld-api/parent"});
+        data.add(new Object[] {URI.create("https://w3c.github.io/json-ld-api/tests/compact/0066-in.jsonld"), "../../parent#fragment", "https://w3c.github.io/json-ld-api/parent#fragment"});
+        data.add(new Object[] {URI.create("https://w3c.github.io/json-ld-api/tests/compact/0066-in.jsonld"), "../../../parent-parent-eq-root", "https://w3c.github.io/parent-parent-eq-root"});
+        data.add(new Object[] {URI.create("https://w3c.github.io/json-ld-api/tests/compact/0066-in.jsonld"), "../../../still-root", "https://w3c.github.io/still-root"});
+        data.add(new Object[] {URI.create("https://w3c.github.io/json-ld-api/tests/compact/0066-in.jsonld"), "../../../too-many-dots", "https://w3c.github.io/too-many-dots"});
+        data.add(new Object[] {URI.create("https://w3c.github.io/json-ld-api/tests/compact/0066-in.jsonld"), "../../../absolute", "https://w3c.github.io/absolute"});
+        data.add(new Object[] {URI.create("https://w3c.github.io/json-ld-api/tests/compact/0066-in.jsonld"), "http://example.org/scheme-relative", "http://example.org/scheme-relative"});
+        
         data.add(new Object[] {URI.create("http://a"), "/b", "http://a/b"});
         data.add(new Object[] {URI.create("http://a/"), "", "http://a/"});
         data.add(new Object[] {URI.create("http://a"), "/", "http://a/"});

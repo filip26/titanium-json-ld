@@ -56,6 +56,9 @@ public final class Path {
         if (base.isEmpty()) {
             return this;
         }
+        if (segments.isEmpty()) {
+            return new Path(EMPTY.segments, last, false);
+        }
         
         int leftIndex = 0;
         
@@ -80,6 +83,10 @@ public final class Path {
             return new Path(segments.subList(leftIndex, segments.size()), last, true);
         }
         
+//        if (leftIndex == segments.size()) {
+//            return new Path(segments, last, false);
+//        }
+//        
         int rightIndex = 0;
         
         for (; rightIndex < Math.min(segments.size(), base.segments.size()) - leftIndex; rightIndex++) {
