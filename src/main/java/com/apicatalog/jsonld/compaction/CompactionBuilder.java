@@ -387,8 +387,11 @@ public final class CompactionBuilder {
                     if (!Keywords.NEST.equals(nestTerm)) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
-                    //TODO
-
+                    
+                    if (!Keywords.NEST.equals(activeContext.expandUri(nestTerm).vocab(true).build())) {
+                        throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
+                    }
+                    
                     // 12.7.2.2.
                     if (!result.containsKey(nestTerm)) {
                         result.put(nestTerm, JsonValue.EMPTY_JSON_OBJECT);
@@ -428,7 +431,9 @@ public final class CompactionBuilder {
                     if (!Keywords.NEST.equals(nestTerm)) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
-                    //TODO
+                    if (!Keywords.NEST.equals(activeContext.expandUri(nestTerm).vocab(true).build())) {
+                        throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
+                    }
                     
                     // 12.8.2.2.
                     if (!result.containsKey(nestTerm)) {
@@ -464,14 +469,13 @@ public final class CompactionBuilder {
                 
                 if (ListObject.isListObject(expandedItem)) {
                     expandedItemValue = expandedItem.asJsonObject().get(Keywords.LIST);
-                }
-
-                if (GraphObject.isGraphObject(expandedItem)) {
+                    
+                } else if (GraphObject.isGraphObject(expandedItem)) {
                     expandedItemValue = expandedItem.asJsonObject().get(Keywords.GRAPH);
                 }
 
                 JsonValue compactedItem = CompactionBuilder
-                                                .with(typeContext, itemActiveProperty, expandedItemValue)
+                                                .with(activeContext, itemActiveProperty, expandedItemValue)
                                                 .compactArrays(compactArrays)
                                                 .ordered(ordered)
                                                 .build();
@@ -738,10 +742,9 @@ public final class CompactionBuilder {
                     // 12.8.9.7.                        
                     } else if (container.contains(Keywords.ID)) {
                         
-                        
                         if (JsonUtils.isObject(compactedItem)
                                 && compactedItem.asJsonObject().containsKey(containerKey)) {
-                            
+
                             mapKey = compactedItem.asJsonObject().getString(containerKey);
                             
                             Map<String, JsonValue> compactedItemMap = new LinkedHashMap<>(compactedItem.asJsonObject());
