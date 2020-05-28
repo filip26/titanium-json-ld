@@ -349,7 +349,7 @@ public final class TermDefinitionBuilder {
                 }
 
                 // 14.2.4
-                if (term.indexOf(':', 1) != -1 || term.contains("/")) { // TODO : except last char
+                if (term.substring(0, term.length()-1).indexOf(':', 1) != -1 || term.contains("/")) {
 
                     // 14.2.4.1
                     defined.put(term, Boolean.TRUE);
