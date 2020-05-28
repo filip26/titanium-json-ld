@@ -486,7 +486,7 @@ public final class UriCompactionBuilder {
                     ) {
                 continue;
             }
-            
+
             // 7.2.
             String compacttUriCandidate = 
                             termEntry.getKey()
@@ -509,7 +509,7 @@ public final class UriCompactionBuilder {
         if (compactUri != null) {
             return compactUri;
         }
-        
+
         // 9.
         if (UriUtils.isAbsoluteUri(variable)) {
             
@@ -522,12 +522,9 @@ public final class UriCompactionBuilder {
                 }               
             }
         }
-
+        
         // 10.
         if (!vocab && activeContext.getBaseUri() != null && !CompactUri.isBlankNode(variable)) {
-            
-
-
             
             return UriRelativizer.relativize(activeContext.getBaseUri(), variable);
         }

@@ -173,6 +173,7 @@ public final class UriExpansionBuilder {
 
         // 8.
         } else if (documentRelative) {
+
             value = UriResolver.resolve(activeContext.getBaseUri(), value);
         }
 

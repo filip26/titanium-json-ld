@@ -16,6 +16,7 @@ public class JsonLdTestCaseOptions {
     public Boolean normative;
     public String expandContext;
     public Boolean compactArrays;
+    public Boolean compactToRelative;
     
     public static final JsonLdTestCaseOptions of(JsonObject o, String baseUri) {
         
@@ -40,6 +41,9 @@ public class JsonLdTestCaseOptions {
             options.compactArrays = o.getBoolean("compactArrays");
         }
 
+        if (o.containsKey("compactToRelative")) {
+            options.compactToRelative = o.getBoolean("compactToRelative");
+        }
         
         return options;
     }
@@ -60,6 +64,10 @@ public class JsonLdTestCaseOptions {
         
         if (compactArrays != null) {
             options.setCompactArrays(compactArrays);
+        }
+        
+        if (compactToRelative != null) {
+            options.setCompactToRelative(compactToRelative);
         }
     }
 }

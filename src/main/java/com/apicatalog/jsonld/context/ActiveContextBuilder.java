@@ -144,7 +144,7 @@ public class ActiveContextBuilder {
             if (JsonUtils.isString(itemContext)) {
 
                 String contextUri = itemContext.toString();
-        
+
                 // 5.2.1
                 if (baseUrl != null) {
                     contextUri = UriResolver.resolve(baseUrl, ((JsonString) itemContext).getString());

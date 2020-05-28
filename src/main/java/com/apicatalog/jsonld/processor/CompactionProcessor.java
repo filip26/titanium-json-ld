@@ -54,6 +54,7 @@ public final class CompactionProcessor {
         JsonLdOptions expansionOptions = new JsonLdOptions();
         expansionOptions.setOrdered(false);
         expansionOptions.setExtractAllScripts(false);
+        expansionOptions.setBase(options.getBase());
         
         JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions);
         
@@ -79,7 +80,7 @@ public final class CompactionProcessor {
         ActiveContext activeContext = new ActiveContext(options);
         
         activeContext = activeContext.create(contextValue, contextBase).build();
-     
+
         // 8.
         if (options.getBase() != null) {
             activeContext.setBaseUri(options.getBase());
