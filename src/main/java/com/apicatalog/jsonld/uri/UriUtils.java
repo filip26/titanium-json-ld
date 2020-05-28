@@ -15,7 +15,9 @@ public final class UriUtils {
         if (value.endsWith(":")) {
             value += ".";
         }
- 
+        if (value.endsWith("[") || value.endsWith("]")) {
+            value = value.substring(0, value.length() - 1);
+        }
         try {
 
             
@@ -24,6 +26,7 @@ public final class UriUtils {
                     && URI.create(value) != null;
 
         } catch (IllegalArgumentException e) {
+//            e.printStackTrace();
             return false;
         }
     }

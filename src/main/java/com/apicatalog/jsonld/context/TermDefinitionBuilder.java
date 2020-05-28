@@ -344,6 +344,7 @@ public final class TermDefinitionBuilder {
 
                 if (!Keywords.contains(definition.uriMapping) && !UriUtils.isURI(definition.uriMapping)
                         && !CompactUri.isBlankNode(definition.uriMapping)) {
+
                     throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
                 }
 
