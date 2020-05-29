@@ -1,6 +1,7 @@
 package com.apicatalog.jsonld.context;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -9,6 +10,8 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.compaction.UriCompactionBuilder;
+import com.apicatalog.jsonld.compaction.ValueCompactionBuilder;
 import com.apicatalog.jsonld.expansion.UriExpansionBuilder;
 import com.apicatalog.jsonld.expansion.ValueExpansionBuilder;
 import com.apicatalog.jsonld.grammar.DirectionType;
@@ -31,7 +34,7 @@ public final class ActiveContext {
     // the original base URL
     URI baseUrl;
 
-    Object inverseContext; // TODO
+    InverseContext inverseContext;
 
     // an optional previous context, used when a non-propagated context is defined.
     ActiveContext previousContext;
@@ -46,12 +49,13 @@ public final class ActiveContext {
     DirectionType defaultBaseDirection;
 
     final JsonLdOptions options;
+    
+    public ActiveContext(JsonLdOptions options) {
+        this(null, null, null, options);
+    }
 
     public ActiveContext(final URI baseUri, final URI baseUrl, JsonLdOptions options) {
-        this.baseUri = baseUri;
-        this.baseUrl = baseUrl;
-        this.terms = new LinkedHashMap<>();
-        this.options = options;
+        this(baseUri, baseUrl, null, options);
     }
 
     public ActiveContext(final URI baseUri, final URI baseUrl, final ActiveContext previousContext, final JsonLdOptions options) {
@@ -133,6 +137,22 @@ public final class ActiveContext {
     public URI getBaseUrl() {
         return baseUrl;
     }
+    
+    public void setBaseUri(URI baseUri) {
+        this.baseUri = baseUri;
+    }
+
+    public InverseContext getInverseContext() {
+        return inverseContext;
+    }
+        
+    public Map<String, TermDefinition> getTermsMapping() {
+        return terms;
+    }
+    
+    public Collection<String> getTerms() {
+        return terms.keySet();
+    }
 
     public ValueExpansionBuilder expandValue(final JsonValue element, final String activeProperty) throws JsonLdError {
         return ValueExpansionBuilder.with(this, element, activeProperty);
@@ -150,4 +170,20 @@ public final class ActiveContext {
         return ActiveContextBuilder.with(this, localContext, base, options);
     }
 
+    public UriCompactionBuilder compactUri(final String value) {
+        return UriCompactionBuilder.with(this, value);
+    }
+    
+    public void createInverseContext() {
+         this.inverseContext = InverseContextBuilder.with(this).build();
+    }
+    
+    public TermSelector selectTerm(String variable, Collection<String> containerMapping, String typeLanguage, Collection<String> preferredValues) {
+        return TermSelector.with(this, variable, containerMapping, typeLanguage, preferredValues);
+    }
+
+    public ValueCompactionBuilder compactValue(final JsonObject element, final String activeProperty) {
+        return ValueCompactionBuilder.with(this, activeProperty, element);
+    }
+    
 }

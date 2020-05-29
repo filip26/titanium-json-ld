@@ -1,12 +1,14 @@
 package com.apicatalog.jsonld.api;
 
 import java.net.URI;
+import java.util.Arrays;
 
+import javax.json.Json;
+import javax.json.JsonObject;
 import javax.json.JsonStructure;
 
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.input.JsonStructureInput;
-import com.apicatalog.jsonld.input.RemoteLocation;
 
 /**
  * The {@link JsonLdInput} interface is used to refer to an input value that
@@ -19,18 +21,32 @@ import com.apicatalog.jsonld.input.RemoteLocation;
  *      IDL</a>
  *
  */
-public interface JsonLdInput {
-
-    public static JsonLdInput of(JsonStructure jsonStructure) {
-        return new JsonStructureInput(jsonStructure);
+public final class JsonLdInput {
+    
+    private final RemoteDocument document;
+    
+    public JsonLdInput(final RemoteDocument document) {
+        this.document = document;
+    }
+    
+    public static JsonLdInput of(final JsonObject...objects) {
+        RemoteDocument document = new RemoteDocument();        
+        document.setDocument(new JsonDocument(Json.createArrayBuilder(Arrays.asList(objects)).build()));
+        return new JsonLdInput(document);
     }
 
-    public static JsonLdInput of(URI documentUri) {
-        return new RemoteLocation(documentUri);
+    public static JsonLdInput of(final URI documentUrl) {
+        RemoteDocument document = new RemoteDocument();
+        document.setDocumentUrl(documentUrl);
+        return new JsonLdInput(document);
     }
 
-    public static JsonLdInput of(RemoteDocument remoteDocument) {
-        return null;
+    public static JsonLdInput of(final RemoteDocument remoteDocument) {
+        return new JsonLdInput(remoteDocument);
     }
 
+    public RemoteDocument asDocument() {
+        return document;
+    }
+    
 }

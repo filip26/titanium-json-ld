@@ -14,22 +14,17 @@ import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.expansion.Expansion;
 import com.apicatalog.jsonld.grammar.Keywords;
+import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
-import com.apicatalog.jsonld.utils.JsonUtils;
 
 /**
  * 
- * @see <a href="https://www.w3.org/TR/json-ld11-api/#dom-jsonldprocessor-expand">JsonLdProcessor.expand</a>
+ * @see <a href="https://www.w3.org/TR/json-ld11-api/#dom-jsonldprocessor-expand">JsonLdProcessor.expand()</a>
  *
  */
-public class ExpansionProcessor {
+public final class ExpansionProcessor {
 
     ExpansionProcessor() {
-    }
-
-    public static JsonArray expand(JsonStructure input, JsonLdOptions options) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     public static final JsonArray expand(final URI input, final JsonLdOptions options) throws JsonLdError {
@@ -115,6 +110,6 @@ public class ExpansionProcessor {
         }
 
         // 8.3
-        return JsonUtils.asArray(expanded);
+        return JsonUtils.toJsonArray(expanded);
     }
 }

@@ -11,9 +11,9 @@ import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.Keywords;
-import com.apicatalog.jsonld.utils.JsonUtils;
-import com.apicatalog.jsonld.utils.UriResolver;
-import com.apicatalog.jsonld.utils.UriUtils;
+import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.uri.UriResolver;
+import com.apicatalog.jsonld.uri.UriUtils;
 
 /**
  * 
@@ -154,14 +154,14 @@ public final class UriExpansionBuilder {
 
                 if (prefixDefinition != null && prefixDefinition.getUriMapping() != null
                         && prefixDefinition.isPrefix()) {
-
+                    
                     value = prefixDefinition.getUriMapping().concat(split[1]);
                 }
 
             }
 
             // 6.5
-            if (CompactUri.create(value) != null && (UriUtils.isURI(value) || CompactUri.isBlankNode(value))) {
+            if (UriUtils.isAbsoluteUri(value) || CompactUri.isBlankNode(value)) {
                 return value;
             }
         }
@@ -169,10 +169,12 @@ public final class UriExpansionBuilder {
         // 7. If vocab is true, and active context has a vocabulary mapping,
         // return the result of concatenating the vocabulary mapping with value.
         if (vocab && activeContext.getVocabularyMapping() != null) {
+            
             return activeContext.getVocabularyMapping().concat(value);
 
         // 8.
         } else if (documentRelative) {
+
             value = UriResolver.resolve(activeContext.getBaseUri(), value);
         }
 

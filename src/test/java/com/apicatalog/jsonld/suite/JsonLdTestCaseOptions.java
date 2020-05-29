@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld;
+package com.apicatalog.jsonld.suite;
 
 import java.net.URI;
 
@@ -6,7 +6,7 @@ import javax.json.JsonObject;
 
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.grammar.Version;
-import com.apicatalog.jsonld.utils.UriResolver;
+import com.apicatalog.jsonld.uri.UriResolver;
 
 public class JsonLdTestCaseOptions {
 
@@ -15,6 +15,8 @@ public class JsonLdTestCaseOptions {
     public String processingMode;
     public Boolean normative;
     public String expandContext;
+    public Boolean compactArrays;
+    public Boolean compactToRelative;
     
     public static final JsonLdTestCaseOptions of(JsonObject o, String baseUri) {
         
@@ -35,6 +37,14 @@ public class JsonLdTestCaseOptions {
             options.expandContext = UriResolver.resolve(URI.create(baseUri), o.getString("expandContext"));
         }
 
+        if (o.containsKey("compactArrays")) {
+            options.compactArrays = o.getBoolean("compactArrays");
+        }
+
+        if (o.containsKey("compactToRelative")) {
+            options.compactToRelative = o.getBoolean("compactToRelative");
+        }
+        
         return options;
     }
 
@@ -50,6 +60,14 @@ public class JsonLdTestCaseOptions {
         
         if (expandContext != null) {
             options.setExpandContext(URI.create(expandContext));
+        }
+        
+        if (compactArrays != null) {
+            options.setCompactArrays(compactArrays);
+        }
+        
+        if (compactToRelative != null) {
+            options.setCompactToRelative(compactToRelative);
         }
     }
 }

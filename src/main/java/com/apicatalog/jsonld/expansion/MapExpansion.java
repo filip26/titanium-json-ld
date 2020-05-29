@@ -18,8 +18,8 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.grammar.Keywords;
-import com.apicatalog.jsonld.utils.JsonUtils;
-import com.apicatalog.jsonld.utils.UriUtils;
+import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.uri.UriUtils;
 
 /**
  * 
@@ -161,7 +161,7 @@ public final class MapExpansion {
             }
 
             // 11.1
-            JsonValue value = JsonUtils.asArray(element.get(key));
+            JsonValue value = JsonUtils.toJsonArray(element.get(key));
 
             // 11.2
             List<String> terms = value
@@ -335,58 +335,6 @@ public final class MapExpansion {
 
         }
 
-        return JsonUtils.toObject(result);
-    }
-
-    // TODO don't use this algorithm, easy reduce complexity
-    public static void addValue(Map<String, JsonValue> object, String key, JsonValue value, boolean asArray) {
-        
-        // 1. If as array is true and the value of key in object does not exist or is
-        // not an array,
-        // set it to a new array containing any original value.
-        if (asArray) {
-
-            if (!object.containsKey(key)) {
-                object.put(key, Json.createArrayBuilder().build());
-
-            } else {
-
-                JsonValue original = object.get(key);
-
-                if (JsonUtils.isNotArray(original)) {
-                    object.put(key, Json.createArrayBuilder().add(original).build());
-                }
-            }
-        }
-
-        // 2. If value is an array, then for each element v in value, use add value
-        // recursively to add v to key in entry.
-        if (JsonUtils.isArray(value)) {
-
-            for (JsonValue v : value.asJsonArray()) {
-                addValue(object, key, v, asArray);
-            }
-
-        // 3.
-        } else {
-            // 3.1
-            if (!object.containsKey(key)) {
-                object.put(key, value);
-
-            // 3.2
-            } else {
-
-                JsonValue original = object.get(key);
-
-                // 3.2.1
-                if (JsonUtils.isNotArray(original)) {
-                    object.put(key, Json.createArrayBuilder().add(original).build());
-
-                // 3.2.2
-                } else {
-                    object.put(key, Json.createArrayBuilder(original.asJsonArray()).add(value).build());
-                }
-            }
-        }
+        return JsonUtils.toJsonObject(result);
     }
 }

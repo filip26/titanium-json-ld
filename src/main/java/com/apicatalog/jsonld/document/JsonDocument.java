@@ -10,7 +10,7 @@ import javax.json.stream.JsonParser;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
-import com.apicatalog.jsonld.utils.JsonUtils;
+import com.apicatalog.jsonld.json.JsonUtils;
 
 public final class JsonDocument implements Document {
 

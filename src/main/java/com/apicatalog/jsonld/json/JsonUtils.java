@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.utils;
+package com.apicatalog.jsonld.json;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -18,17 +18,25 @@ public final class JsonUtils {
 
     public static final boolean contains(String text, JsonValue value) {
 
+        if (text == null) {
+            return value == null;
+        }
+        
         if (value == null) {
             return false;
         }
 
-        if (ValueType.STRING.equals(value.getValueType())) {
+        if (JsonUtils.isString(value)) {
             return text.equals(((JsonString) value).getString());
         }
 
-        if (ValueType.ARRAY.equals(value.getValueType())) {
+        if (JsonUtils.isArray(value)) {
             return value.asJsonArray().contains(Json.createValue(text));
         }
+        if (JsonUtils.isObject(value)) {
+            return value.asJsonObject().containsKey(text);
+        }
+        
         return false;
     }
 
@@ -96,7 +104,11 @@ public final class JsonUtils {
         return isObject(value) && value.asJsonObject().isEmpty();
     }
 
-    public static JsonObject toObject(Map<String, JsonValue> map) {
+    public static boolean isEmptyArray(JsonValue value) {
+        return isArray(value) && value.asJsonArray().isEmpty();
+    }
+
+    public static JsonObject toJsonObject(Map<String, JsonValue> map) {
         final JsonObjectBuilder builder = Json.createObjectBuilder();
 
         map.entrySet().stream().forEach(e -> builder.add(e.getKey(), e.getValue()));
@@ -109,14 +121,83 @@ public final class JsonUtils {
 
         source.forEach(targetMap::put);
 
-        return toObject(targetMap);
+        return toJsonObject(targetMap);
     }
 
-    public static JsonArray asArray(JsonValue value) {
+    public static JsonArray toJsonArray(JsonValue value) {
         return JsonUtils.isArray(value) ? value.asJsonArray() : Json.createArrayBuilder().add(value).build();
     }
 
     public static boolean isBlankString(JsonValue value) {
         return isString(value) && ((JsonString) value).getString().isBlank();
     }
+
+    public static JsonValue toJsonValue(String value) {
+        return value != null && !value.isBlank() 
+                    ? Json.createValue(value)
+                    : JsonValue.NULL
+                    ;
+    }    
+    
+    // TODO don't use this algorithm, easy reduce complexity
+    public static void addValue(Map<String, JsonValue> object, String key, JsonValue value, boolean asArray) {
+
+        // 1. If as array is true and the value of key in object does not exist or is
+        // not an array,
+        // set it to a new array containing any original value.
+        if (asArray) {
+
+            if (!object.containsKey(key)) {
+                object.put(key, Json.createArrayBuilder().build());
+
+            } else {
+
+                JsonValue original = object.get(key);
+
+                if (JsonUtils.isNotArray(original)) {
+                    object.put(key, Json.createArrayBuilder().add(original).build());
+                }
+            }
+        }
+
+        // 2. If value is an array, then for each element v in value, use add value
+        // recursively to add v to key in entry.
+        if (JsonUtils.isArray(value)) {
+
+            for (JsonValue v : value.asJsonArray()) {
+                addValue(object, key, v, asArray);
+            }
+
+        // 3.
+        } else {
+            
+            // 3.1
+            if (!object.containsKey(key)) {                                
+                object.put(key, value);
+
+            // 3.2
+            } else {
+
+                JsonValue original = object.get(key);
+
+                // 3.2.1
+                if (JsonUtils.isNotArray(original)) {
+                    object.put(key, Json.createArrayBuilder().add(original).add(value).build());
+
+                // 3.2.2
+                } else {
+                    object.put(key, Json.createArrayBuilder(original.asJsonArray()).add(value).build());
+                }
+            }
+        }
+    }
+
+    public static boolean isNotEmptyArray(JsonValue value) {
+        return isNotArray(value) || !value.asJsonArray().isEmpty();
+    }
+    
+    public static boolean isNotEmptyObject(JsonValue value) {
+        return isNotObject(value) || !value.asJsonObject().isEmpty();
+    }
+
 }

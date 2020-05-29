@@ -20,10 +20,10 @@ import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.DirectionType;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.Version;
+import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
-import com.apicatalog.jsonld.utils.JsonUtils;
-import com.apicatalog.jsonld.utils.UriResolver;
-import com.apicatalog.jsonld.utils.UriUtils;
+import com.apicatalog.jsonld.uri.UriResolver;
+import com.apicatalog.jsonld.uri.UriUtils;
 
 /**
  * @see <a href=
@@ -114,7 +114,7 @@ public class ActiveContextBuilder {
         // 4. If local context is not an array, set local context to an array containing
         // only local context.
         // 5. For each item context in local context:
-        for (JsonValue itemContext : JsonUtils.asArray(localContext)) {
+        for (JsonValue itemContext : JsonUtils.toJsonArray(localContext)) {
 
             // 5.1. If context is null:
             if (JsonUtils.isNull(itemContext)) {
@@ -122,7 +122,7 @@ public class ActiveContextBuilder {
                 // 5.1.1. If override protected is false and active context contains any
                 // protected term definitions,
                 // an invalid context nullification has been detected and processing is aborted.
-                if (!overrideProtected && activeContext.containsProtectedTerm()) {
+                if (!overrideProtected && result.containsProtectedTerm()) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_CONTEXT_NULLIFICATION);
                 }
 
@@ -144,7 +144,7 @@ public class ActiveContextBuilder {
             if (JsonUtils.isString(itemContext)) {
 
                 String contextUri = itemContext.toString();
-        
+
                 // 5.2.1
                 if (baseUrl != null) {
                     contextUri = UriResolver.resolve(baseUrl, ((JsonString) itemContext).getString());
@@ -370,7 +370,7 @@ public class ActiveContextBuilder {
 
                         } else {
                             throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);
-                        }
+                        }                       
                     }
                 }
             }

@@ -98,6 +98,7 @@ public enum JsonLdErrorCode {
      * definitions.
      */
     INVALID_CONTEXT_NULLIFICATION,
+
     /**
      * The value of the default language is not a string or <code>null</code> and
      * thus invalid.
@@ -233,5 +234,8 @@ public enum JsonLdErrorCode {
     /**
      * An attempt was made to redefine a protected term.
      */
-    PROTECTED_TERM_REDEFINITION
+    PROTECTED_TERM_REDEFINITION, 
+    
+    UNSPECIFIED
 }
+

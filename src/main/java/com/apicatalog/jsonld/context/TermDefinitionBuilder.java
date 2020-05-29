@@ -16,8 +16,8 @@ import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.DirectionType;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.Version;
-import com.apicatalog.jsonld.utils.JsonUtils;
-import com.apicatalog.jsonld.utils.UriUtils;
+import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.uri.UriUtils;
 
 /**
  * 
@@ -191,7 +191,6 @@ public final class TermDefinitionBuilder {
 
         // 11.
         if (valueObject.containsKey(Keywords.PROTECTED)) {
-
             if (activeContext.inMode(Version.V1_0)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
@@ -326,7 +325,7 @@ public final class TermDefinitionBuilder {
 
                 // 14.2.2
                 if (!Keywords.contains(idValueString) && Keywords.hasForm(idValueString)) {
-                    // TODO generate warning
+                    //TODO generate warning
                     return;
                 }
 
@@ -345,11 +344,12 @@ public final class TermDefinitionBuilder {
 
                 if (!Keywords.contains(definition.uriMapping) && !UriUtils.isURI(definition.uriMapping)
                         && !CompactUri.isBlankNode(definition.uriMapping)) {
+
                     throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
                 }
 
                 // 14.2.4
-                if (term.indexOf(':', 1) != -1 || term.contains("/")) { // TODO : except last char
+                if (term.substring(0, term.length()-1).indexOf(':', 1) != -1 || term.contains("/")) {
 
                     // 14.2.4.1
                     defined.put(term, Boolean.TRUE);
@@ -441,7 +441,7 @@ public final class TermDefinitionBuilder {
             }
 
             // 19.3.
-            for (JsonValue item : JsonUtils.asArray(containerValue)) {
+            for (JsonValue item : JsonUtils.toJsonArray(containerValue)) {
                     definition.addContainerMapping(((JsonString)item).getString());
             }
 
@@ -579,7 +579,6 @@ public final class TermDefinitionBuilder {
             if (Keywords.contains(nestString) && !Keywords.NEST.equals(nestString)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
             }
-
             definition.nestValue = nestString;
         }
 

@@ -9,7 +9,7 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.grammar.DirectionType;
 
-public class TermDefinition {
+public final class TermDefinition {
 
     // mandatory
     String uriMapping;
@@ -27,16 +27,16 @@ public class TermDefinition {
 
     Collection<String> containerMapping;
 
-    DirectionType directionMapping;
-
     String indexMapping;
-
-    JsonValue languageMapping;
 
     String nestValue;
 
     String typeMapping;
 
+    DirectionType directionMapping; //TODO deal with defined as null vs unset
+
+    JsonValue languageMapping;  //TODO deal with defined as null vs unset
+    
     public TermDefinition(boolean prefixFlag, boolean protectedFlag, boolean reversePropertyFlag) {
         this.prefixFlag = prefixFlag;
         this.protectedFlag = protectedFlag;
@@ -76,6 +76,10 @@ public class TermDefinition {
         return prefixFlag;
     }
 
+    public boolean isNotPrefix() {
+        return !prefixFlag;
+    }
+
     public void setLanguageMapping(JsonValue languageMapping) {
         this.languageMapping = languageMapping;
     }
@@ -111,6 +115,14 @@ public class TermDefinition {
     public void setIndexMapping(String indexMapping) {
         this.indexMapping = indexMapping;
     }
+    
+    public String getNestValue() {
+        return nestValue;
+    }
+    
+    public void setNestValue(String nestValue) {
+        this.nestValue = nestValue;
+    }
 
     public boolean isNotSameExcept(TermDefinition ref) {
 
@@ -127,4 +139,9 @@ public class TermDefinition {
 //        JsonValue languageMapping;
 
     }
+    
+    public boolean hasContainerMapping(String value) {
+        return containerMapping != null && containerMapping.contains(value);
+    }
+    
 }
