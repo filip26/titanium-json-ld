@@ -718,7 +718,7 @@ public final class CompactionBuilder {
                                 
                                 // 12.8.9.6.3.
                                 compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();
-                                
+
                             } else if (JsonUtils.isArray(containerValue) && !JsonUtils.isEmptyArray(containerValue)) {
                                 
                                 mapKey = containerValue.asJsonArray().getString(0);
@@ -734,21 +734,17 @@ public final class CompactionBuilder {
                                     } else {
                                         containerKeyValue = Json.createArrayBuilder(containerValue.asJsonArray()).remove(0).build();
                                     }
-                                    
+
                                     compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject())
                                                         .remove(containerKey)
                                                         .add(containerKey, containerKeyValue)
                                                         .build();
-                                    
+
                                 } else {
-                                    compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();                                    
+                                    compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();
                                 }
-                            } else {
-                                compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();
                             }
                         }
-                        
-
 
                     // 12.8.9.7.                        
                     } else if (container.contains(Keywords.ID)) {
@@ -823,10 +819,11 @@ public final class CompactionBuilder {
                     // 12.8.9.10.
                     JsonUtils.addValue(mapObject, mapKey, compactedItem, asArray);
 
-                    nestResult.put(itemActiveProperty, JsonUtils.toJsonObject(mapObject));                    
+
+                    nestResult.put(itemActiveProperty, JsonUtils.toJsonObject(mapObject));
 
                 // 12.8.10.                    
-                } else {  
+                } else {
                     JsonUtils.addValue(nestResult, itemActiveProperty, compactedItem, asArray);
                 }
             }
