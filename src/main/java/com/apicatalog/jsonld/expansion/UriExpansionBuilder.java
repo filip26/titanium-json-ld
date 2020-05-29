@@ -1,5 +1,6 @@
 package com.apicatalog.jsonld.expansion;
 
+import java.net.URI;
 import java.util.Map;
 
 import javax.json.JsonObject;
@@ -154,14 +155,14 @@ public final class UriExpansionBuilder {
 
                 if (prefixDefinition != null && prefixDefinition.getUriMapping() != null
                         && prefixDefinition.isPrefix()) {
-
+                    
                     value = prefixDefinition.getUriMapping().concat(split[1]);
                 }
 
             }
 
             // 6.5
-            if (CompactUri.create(value) != null && (UriUtils.isURI(value) || CompactUri.isBlankNode(value))) {
+            if (UriUtils.isAbsoluteUri(value) || CompactUri.isBlankNode(value)) {
                 return value;
             }
         }
@@ -169,6 +170,7 @@ public final class UriExpansionBuilder {
         // 7. If vocab is true, and active context has a vocabulary mapping,
         // return the result of concatenating the vocabulary mapping with value.
         if (vocab && activeContext.getVocabularyMapping() != null) {
+            
             return activeContext.getVocabularyMapping().concat(value);
 
         // 8.

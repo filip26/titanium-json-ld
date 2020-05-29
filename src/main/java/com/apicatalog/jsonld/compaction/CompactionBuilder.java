@@ -644,7 +644,7 @@ public final class CompactionBuilder {
                             || container.contains(Keywords.TYPE))
                             && !container.contains(Keywords.GRAPH)
                         ) {
-            
+
                     // 12.8.9.1
                     Map<String, JsonValue> mapObject = nestResult.containsKey(itemActiveProperty)
                                                             ? new LinkedHashMap<>(nestResult.get(itemActiveProperty).asJsonObject())

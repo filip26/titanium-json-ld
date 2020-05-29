@@ -293,7 +293,7 @@ public final class UriCompactionBuilder {
                     if (JsonUtils.contains(Keywords.DIRECTION, value)
                             && !JsonUtils.contains(Keywords.INDEX, value)
                             ) {
-                        
+
                         typeLanguageValue = "";
                         
                         if (JsonUtils.contains(Keywords.LANGUAGE, value)) {
@@ -335,7 +335,7 @@ public final class UriCompactionBuilder {
 
                         typeLanguage = Keywords.TYPE;
                         typeLanguageValue = value.asJsonObject().getString(Keywords.TYPE);
-                        
+
                     }
 
                 // 4.9.2.                    
@@ -454,18 +454,17 @@ public final class UriCompactionBuilder {
                 return term;
             }
         }
-        
+
         // 5.
         if (vocab && activeContext.getVocabularyMapping() != null) {
-     
+
             // 5.1.
             if (variable.startsWith(activeContext.getVocabularyMapping()) 
                     && variable.length() > activeContext.getVocabularyMapping().length()) {
                 
                 String suffix = variable.substring(activeContext.getVocabularyMapping().length());
-
-                if (!activeContext.containsTerm(suffix)) {
-                    
+                
+                if (!activeContext.containsTerm(suffix)) {                    
                     return suffix;
                 }
                 

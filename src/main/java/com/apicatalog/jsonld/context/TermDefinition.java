@@ -9,7 +9,7 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.grammar.DirectionType;
 
-public class TermDefinition {
+public final class TermDefinition {
 
     // mandatory
     String uriMapping;

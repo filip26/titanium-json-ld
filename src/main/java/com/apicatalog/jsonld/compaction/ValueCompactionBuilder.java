@@ -75,7 +75,7 @@ public final class ValueCompactionBuilder {
                     ? activeContext.getDefaultBaseDirection()
                     : null;            
         }
-
+        
         // 6.
         if (value.containsKey(Keywords.ID) && 
                 ((value.size() == 1)
@@ -105,7 +105,7 @@ public final class ValueCompactionBuilder {
                     ) {
 
             result = value.get(Keywords.VALUE);
-        
+
         // 8.
         } else if (activePropertyDefinition != null && Keywords.NONE.equals(activePropertyDefinition.getTypeMapping())
                     || (value.containsKey(Keywords.TYPE)
@@ -116,7 +116,7 @@ public final class ValueCompactionBuilder {
                                             )
                                     ))
                 ) {
-            
+
             // 8.1.
             JsonArrayBuilder types = Json.createArrayBuilder();
             
