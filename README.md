@@ -25,7 +25,7 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 ## Roadmap
 
 - [x] 0.1 - [Expansion Algorithms](https://www.w3.org/TR/json-ld11-api/#expansion-algorithms)
-- [ ] 0.2 - [Compaction Algorithms](https://www.w3.org/TR/json-ld11-api/#compaction-algorithms)
+- [x] 0.2 - [Compaction Algorithms](https://www.w3.org/TR/json-ld11-api/#compaction-algorithms)
 - [ ] 0.3 - [Flattening Algorithms](https://www.w3.org/TR/json-ld11-api/#flattening-algorithms)
 - [ ] 0.4 - [RDF Algorithms](https://www.w3.org/TR/json-ld11-api/#rdf-serialization-deserialization-algorithms)
 - [ ] 0.5 - [JSON-LD API](https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface)
