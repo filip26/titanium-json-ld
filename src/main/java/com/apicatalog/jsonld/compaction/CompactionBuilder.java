@@ -395,8 +395,8 @@ public final class CompactionBuilder {
                     // 12.7.2.2.
                     if (!result.containsKey(nestTerm)) {
                         result.put(nestTerm, JsonValue.EMPTY_JSON_OBJECT);
-                    }
-                    
+                    }                    
+
                     // 12.7.2.3.
                     nestResult = new LinkedHashMap<>(result.get(nestTerm).asJsonObject());
                     
@@ -431,6 +431,7 @@ public final class CompactionBuilder {
                     if (!Keywords.NEST.equals(nestTerm)) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
+                    
                     if (!Keywords.NEST.equals(activeContext.expandUri(nestTerm).vocab(true).build())) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
@@ -439,7 +440,7 @@ public final class CompactionBuilder {
                     if (!result.containsKey(nestTerm)) {
                         result.put(nestTerm, JsonValue.EMPTY_JSON_OBJECT);
                     }
-                    
+
                     // 12.8.2.3.
                     nestResult = new LinkedHashMap<>(result.get(nestTerm).asJsonObject());
                     
@@ -520,7 +521,7 @@ public final class CompactionBuilder {
                     if (container.contains(Keywords.GRAPH) && container.contains(Keywords.ID)) {
 
                         // 12.8.8.1.1.
-                        Map<String, JsonValue> mapObject = nestResult.containsKey(itemActiveProperty) 
+                        Map<String, JsonValue> mapObject =  nestResult.containsKey(itemActiveProperty) 
                                                     ? new LinkedHashMap<>(nestResult.get(itemActiveProperty).asJsonObject())
                                                     : null;
                         
@@ -708,6 +709,7 @@ public final class CompactionBuilder {
                                                 .compactUri(indexKey)
                                                 .vocab(true)
                                                 .build();
+                        
                         // 12.8.9.6.2.
                         if (JsonUtils.isObject(compactedItem) && compactedItem.asJsonObject().containsKey(containerKey)) {
 
@@ -806,10 +808,8 @@ public final class CompactionBuilder {
                                 
                                 compactedItem = CompactionBuilder.with(activeContext, itemActiveProperty, map).build();
                                 
-                            }
-                            
+                            }   
                         }
-
                     }
                     
                     // 12.8.9.9.
@@ -825,6 +825,11 @@ public final class CompactionBuilder {
                 // 12.8.10.                    
                 } else {
                     JsonUtils.addValue(nestResult, itemActiveProperty, compactedItem, asArray);
+                    
+                    if (result.containsKey(Keywords.NEST)) {
+                        result.put(Keywords.NEST, JsonUtils.toJsonObject(nestResult));
+                    }
+                
                 }
             }
         }
