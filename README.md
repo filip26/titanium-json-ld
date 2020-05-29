@@ -27,8 +27,8 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 - [x] 0.1 - [Expansion Algorithms](https://www.w3.org/TR/json-ld11-api/#expansion-algorithms)
 - [x] 0.2 - [Compaction Algorithms](https://www.w3.org/TR/json-ld11-api/#compaction-algorithms)
 - [ ] 0.3 - [Flattening Algorithms](https://www.w3.org/TR/json-ld11-api/#flattening-algorithms)
-- [ ] 0.4 - [RDF Algorithms](https://www.w3.org/TR/json-ld11-api/#rdf-serialization-deserialization-algorithms)
-- [ ] 0.5 - Issues, code cleaning and optimization
+- [ ] 0.4 - [RDF to JSON-LD](https://www.w3.org/TR/json-ld11-api/#serialize-rdf-as-json-ld-algorithm)
+- [ ] 0.5 - [JSON-LD to RDF](https://www.w3.org/TR/json-ld11-api/#deserialize-json-ld-to-rdf-algorithm)
 - [ ] 0.6 - Remote document and context retrieval
 - [ ] 0.7 - [JSON-LD API](https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface)
 - [ ] 0.8 - [Framing](https://www.w3.org/TR/json-ld11-framing/)
