@@ -73,10 +73,11 @@ public final class TermSelector {
                 if (!valueMap.containsKey(item)) {
                     continue;
                 }
-                
+        
                 return valueMap.get(item);
             }
         }   
+
         // 5.
         return null;
     } 

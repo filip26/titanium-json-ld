@@ -75,7 +75,7 @@ public final class ValueCompactionBuilder {
                     ? activeContext.getDefaultBaseDirection()
                     : null;            
         }
- 
+
         // 6.
         if (value.containsKey(Keywords.ID) && 
                 ((value.size() == 1)
@@ -146,22 +146,23 @@ public final class ValueCompactionBuilder {
             }
 
         // 10.
-        } else if ((value.containsKey(Keywords.LANGUAGE)
+        } else if (((value.containsKey(Keywords.LANGUAGE)
                                 && JsonUtils.isString(value.get(Keywords.LANGUAGE))
                                 && JsonUtils.isString(language)
                                 && (((JsonString)language).getString().equalsIgnoreCase(value.getString(Keywords.LANGUAGE)))
                                 )
                         || (JsonUtils.isNull(language)
-                                && direction != null && direction != DirectionType.NULL
+                                && (!value.containsKey(Keywords.LANGUAGE) || JsonUtils.isNull(value.get(Keywords.LANGUAGE))))
+                        )
+                        && ((direction != null && direction != DirectionType.NULL
                                 && value.containsKey(Keywords.DIRECTION)
                                 && JsonUtils.isString(value.get(Keywords.DIRECTION))
                                 && direction == DirectionType.valueOf(value.getString(Keywords.DIRECTION).toUpperCase())
                                 )
-                        || ((direction == null || direction == DirectionType.NULL)
-                                && value.containsKey(Keywords.DIRECTION)
-                                )
-                        || (JsonUtils.isNull(language)
-                                && (!value.containsKey(Keywords.LANGUAGE) || JsonUtils.isNull(value.get(Keywords.LANGUAGE)))
+                                || ((direction == null || direction == DirectionType.NULL)
+                                    && (!value.containsKey(Keywords.DIRECTION)
+                                    || DirectionType.NULL == DirectionType.valueOf(value.getString(Keywords.DIRECTION).toUpperCase())
+                                ))
                                 )
                         
                         ){
@@ -180,7 +181,7 @@ public final class ValueCompactionBuilder {
 
         // 11.
         if (JsonUtils.isObject(result)) {
-            
+
             JsonObjectBuilder resultBuilder = Json.createObjectBuilder();
             
             for (Entry<String, JsonValue> entry : result.asJsonObject().entrySet()) {

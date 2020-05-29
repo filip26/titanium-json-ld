@@ -131,7 +131,7 @@ public final class InverseContextBuilder {
             } else if (termDefinition.getLanguageMapping() != null
                         && termDefinition.getDirectionMapping() != null
                     ) {
-                
+         
                 // 3.13.1.
                 String langDir = Keywords.NULL;
                 
