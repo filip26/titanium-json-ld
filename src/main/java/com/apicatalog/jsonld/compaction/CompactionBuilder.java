@@ -777,11 +777,20 @@ public final class CompactionBuilder {
 
                                 if (compactedKeyArray.size() > 1) {
 
-                                    compactedKeyArray = Json.createArrayBuilder(compactedKeyArray).remove(0).build();
+                                    JsonValue compactedKeyArrayValue = null;
+                                    if (compactedKeyArray.size() == 2) {
+
+                                        compactedKeyArrayValue = compactedKeyArray.get(1);
+                                        
+                                    } else {
+                                        compactedKeyArrayValue = Json.createArrayBuilder(compactedKeyArray).remove(0).build();   
+                                    }
+                                                                         
                                     compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject())
-                                            .remove(containerKey).add(containerKey, compactedKeyArray).build();
-                                    
-                                    
+                                                        .remove(containerKey)
+                                                        .add(containerKey, compactedKeyArrayValue)
+                                                        .build();
+
                                 } else {
                                     compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();
                                 }
