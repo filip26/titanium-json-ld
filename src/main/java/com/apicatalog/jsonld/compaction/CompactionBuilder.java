@@ -514,6 +514,8 @@ public final class CompactionBuilder {
                 // 12.8.8.
                 } else if (GraphObject.isGraphObject(expandedItem)) {
                     
+                    boolean followup = false;
+                    
                     // 12.8.8.1.
                     if (container.contains(Keywords.GRAPH) && container.contains(Keywords.ID)) {
 
@@ -589,9 +591,13 @@ public final class CompactionBuilder {
                         // 12.8.8.3.2.
                         JsonUtils.addValue(nestResult, itemActiveProperty, compactedItem, asArray);
                         
-                    // 12.8.8.4.                        
+                        
                     } else {
-          
+                        followup = true;
+                    }
+
+                    // 12.8.8.4.
+                    if (!container.contains(Keywords.GRAPH) || followup) {
                         // 12.8.8.4.1.
                         compactedItem = Json.createObjectBuilder().add(
                                 activeContext

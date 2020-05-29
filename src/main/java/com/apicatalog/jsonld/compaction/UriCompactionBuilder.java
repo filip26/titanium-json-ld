@@ -207,14 +207,14 @@ public final class UriCompactionBuilder {
                             ) {
                         commonLanguage = Keywords.NONE;
                     }
-                    
+
                     // 4.7.4.6.
                     if (commonType == null) {
                         commonType = itemType;
 
                     // 4.7.4.7.
                     } else if (!Objects.equals(itemType, commonType)) {
-                        commonLanguage = Keywords.NONE;
+                        commonType = Keywords.NONE;
                     }
 
                     // 4.7.4.8.
@@ -420,6 +420,7 @@ public final class UriCompactionBuilder {
 
             // 4.17.
             } else {
+                
                 preferredValues.add(typeLanguageValue);
                 preferredValues.add(Keywords.NONE);
                 
@@ -462,8 +463,9 @@ public final class UriCompactionBuilder {
                     && variable.length() > activeContext.getVocabularyMapping().length()) {
                 
                 String suffix = variable.substring(activeContext.getVocabularyMapping().length());
-                
+
                 if (!activeContext.containsTerm(suffix)) {
+                    
                     return suffix;
                 }
                 
@@ -498,7 +500,7 @@ public final class UriCompactionBuilder {
                             && !activeContext.containsTerm(compacttUriCandidate))
                     || (activeContext.containsTerm(compacttUriCandidate) 
                             && variable.equals(activeContext.getTerm(compacttUriCandidate).getUriMapping())
-                            && value == null
+                            && JsonUtils.isNull(value)
                             )
                     ) {
                 compactUri = compacttUriCandidate;
@@ -522,7 +524,7 @@ public final class UriCompactionBuilder {
                 }               
             }
         }
-        
+
         // 10.
         if (!vocab && activeContext.getBaseUri() != null && !CompactUri.isBlankNode(variable)) {
             return UriRelativizer.relativize(activeContext.getBaseUri(), variable);

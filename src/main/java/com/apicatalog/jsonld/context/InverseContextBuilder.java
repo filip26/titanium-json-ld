@@ -36,7 +36,7 @@ public final class InverseContextBuilder {
         String defaultLanguage = activeContext.getDefaultLanguage() != null
                                     ? activeContext.getDefaultLanguage().toLowerCase()
                                     : Keywords.NONE;
-        
+                                    
         // 3
         for (String term : activeContext.getTerms().stream().sorted().collect(Collectors.toList())) {
         

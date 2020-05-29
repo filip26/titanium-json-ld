@@ -34,7 +34,7 @@ public final class TermSelector {
     }
     
     public String select() {
-        
+
         // 1. If the active context has a null inverse context, 
         //    set inverse context in active context to the result of calling 
         //    the Inverse Context Creation algorithm using active context.
@@ -73,7 +73,7 @@ public final class TermSelector {
                 if (!valueMap.containsKey(item)) {
                     continue;
                 }
-        
+
                 return valueMap.get(item);
             }
         }   
