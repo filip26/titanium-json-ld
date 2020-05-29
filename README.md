@@ -16,8 +16,8 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 
  Feature | Tests | Pass | Status | Notes
  --- | ---: | ---: | ---: | ---
-[Expansion](https://www.w3.org/TR/json-ld/#expanded-document-form) | 378 |  369 | 97.6% | JSON-LD 1.0 (8) and non-normative (1) tests do no pass 
-[Compaction](https://www.w3.org/TR/json-ld/#compacted-document-form) | | | TBD |
+[Expansion](https://www.w3.org/TR/json-ld/#expanded-document-form) | 378 |  369 | 97.6% | JSON-LD 1.0 (8) and non-normative (1) tests do not pass 
+[Compaction](https://www.w3.org/TR/json-ld/#compacted-document-form) | 241 | 208 | 86.3% |  JSON-LD 1.0 (2) tests do not pass 
 [Flattening](https://www.w3.org/TR/json-ld/#flattened-document-form) | | | TBD |
 [Framing](https://www.w3.org/TR/json-ld11-framing/#framing) | | | TBD |
 [RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | | | TBD |
@@ -32,32 +32,32 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 - [ ] 0.6 - Issues, code cleaning and optimization
 - [ ] 0.7 - [Framing](https://www.w3.org/TR/json-ld11-framing/)
 - [ ] 0.8 - Issues, code cleaning and optimization
-- [ ] 0.9 - Documented, bugs free, A+ code
+- [ ] 0.9 - Documented, A+ code
 - [ ] 1.0 - GA
 
 ## Examples
 
-JSONP-LD implements the [JsonLdProcessor](https://www.w3.org/TR/json-ld11-api/#the-jsonldprocessor-interface) interface.
+JSONP-LD implements the [JsonLdProcessor](https://www.w3.org/TR/json-ld11-api/#the-jsonldprocessor-interface) interface and custom interface based on the builder design pattern.
 
 #### Expansion 
 
 ```javascript
-JsonValue result = JsonLd
-                     .createProcessor()
-                     .expand(URI.create("https://w3c.github.io/json-ld-api/tests/expand/0001-in.jsonld"));
+JsonLd.expand("https://w3c.github.io/json-ld-api/tests/expand/0001-in.jsonld")
+      .build();
 ```
 
 ```javascript
 
-JsonLdOptions options = new JsonLdOptions();
-// external context
-options.setExpandContext(URI.create(...));
-
-JsonValue result = JsonLd
-                     .createProcessor()
-                     .expand(URI.create(...), options);
+JsonLd.expand("https://example.com/document.json")
+      .context("https://example.com/context.jsonld")  // external context
+      .build();
 ```
 
-## Notes
-* uses `java.net.URI`
+#### Compaction
+
+```javascript
+JsonLd.compact("https://example.com/expanded.jsonld", "https://example.com/context.jsonld")
+      .build();
+```
+
 
