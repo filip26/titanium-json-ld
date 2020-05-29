@@ -110,8 +110,8 @@ public final class CompactionProcessor {
                                     .build();
         }
 
-        if (compactedOutput.asJsonObject().isEmpty()) {
-            return compactedOutput.asJsonObject();
+        if (JsonUtils.isNull(compactedOutput) || compactedOutput.asJsonObject().isEmpty()) {
+            return JsonValue.EMPTY_JSON_OBJECT;
         }
         
         // 9.3.

@@ -30,6 +30,7 @@ public class GraphObject {
     }
     
     public static final boolean isSimpleGraphObject(JsonValue value) {
+
         return isGraphObject(value) && !value.asJsonObject().containsKey(Keywords.ID);        
     }
     

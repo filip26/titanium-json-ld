@@ -116,7 +116,7 @@ public final class CompactionBuilder {
 
                 return result;
             }
-            
+
             // 3.4.
             return result.get(0);
         }
@@ -214,9 +214,6 @@ public final class CompactionBuilder {
         for (String expandedProperty : expandedProperties) {
 
             JsonValue expandedValue = elementObject.get(expandedProperty);
-            
-            Map<String, JsonValue> nestResult = null;
-            String nestResultKey = null;
             
             // 12.1.
             if (Keywords.ID.equals(expandedProperty)) {
@@ -395,15 +392,18 @@ public final class CompactionBuilder {
                     }                    
 
                     // 12.7.2.3.
-                    nestResult = new LinkedHashMap<>(result.get(nestTerm).asJsonObject());
-                    nestResultKey = nestTerm;
+                    Map<String, JsonValue> nestResult = new LinkedHashMap<>(result.get(nestTerm).asJsonObject());
+                    String nestResultKey = nestTerm;
                     
+                    JsonUtils.addValue(nestResult, itemActiveProperty, JsonValue.EMPTY_JSON_ARRAY, true);
+                    result.put(nestResultKey, JsonUtils.toJsonObject(nestResult));
+
                 // 12.7.3.                    
                 } else {
-                    nestResult = result;
+                    Map<String, JsonValue> nestResult = result;
+                    JsonUtils.addValue(nestResult, itemActiveProperty, JsonValue.EMPTY_JSON_ARRAY, true);
                 }
 
-                JsonUtils.addValue(nestResult, itemActiveProperty, JsonValue.EMPTY_JSON_ARRAY, true);
             }
             
             // 12.8.
@@ -417,6 +417,8 @@ public final class CompactionBuilder {
                                                 .reverse(insideReverse)
                                                 .build();
 
+                Map<String, JsonValue> nestResult = null;
+                String nestResultKey = null;
 
                 // 12.8.2.
                 if (activeContext.containsTerm(itemActiveProperty)
@@ -438,7 +440,7 @@ public final class CompactionBuilder {
                     // 12.8.2.3.
                     nestResult = new LinkedHashMap<>(result.get(nestTerm).asJsonObject());
                     nestResultKey = nestTerm;
-                    
+
                 // 12.8.3.                    
                 } else {
                     nestResult = result;
@@ -459,7 +461,7 @@ public final class CompactionBuilder {
                                         || Keywords.GRAPH.equals(itemActiveProperty)
                                         || Keywords.LIST.equals(itemActiveProperty)
                                         || !compactArrays;
-                
+
                 // 12.8.6.
                 JsonValue expandedItemValue = expandedItem;
                 
@@ -503,7 +505,7 @@ public final class CompactionBuilder {
 
                         // 12.8.7.2.3.
                         JsonUtils.addValue(nestResult, itemActiveProperty, compactedItem, asArray);
-                        
+
                     // 12.8.7.3.
                     } else {
                         nestResult.put(itemActiveProperty, compactedItem);
@@ -549,7 +551,7 @@ public final class CompactionBuilder {
                         Map<String, JsonValue> mapObject = nestResult.containsKey(itemActiveProperty) 
                                                     ? new LinkedHashMap<>(nestResult.get(itemActiveProperty).asJsonObject())
                                                     : null;
-                        
+        
                         if (mapObject == null) {
                             mapObject = new LinkedHashMap<>();
                         }
@@ -588,7 +590,7 @@ public final class CompactionBuilder {
                         JsonUtils.addValue(nestResult, itemActiveProperty, compactedItem, asArray);
                         
                     // 12.8.8.4.                        
-                    } else if (!container.contains(Keywords.GRAPH)) {
+                    } else {
           
                         // 12.8.8.4.1.
                         compactedItem = Json.createObjectBuilder().add(
@@ -627,8 +629,8 @@ public final class CompactionBuilder {
 
                         // 12.8.8.4.4.
                         JsonUtils.addValue(nestResult, itemActiveProperty, compactedItem, asArray);
-                    }  
-
+                    }
+                    
                 // 12.8.9.                    
                 } else if ((container.contains(Keywords.LANGUAGE)
                             || container.contains(Keywords.INDEX)
@@ -810,8 +812,9 @@ public final class CompactionBuilder {
 
                                 JsonObject map = Json.createObjectBuilder().add(Keywords.ID, expandedItem.asJsonObject().get(Keywords.ID)).build();
                                 
-                                compactedItem = CompactionBuilder.with(activeContext, itemActiveProperty, map).build();
-                                
+                                compactedItem = CompactionBuilder
+                                                    .with(activeContext, itemActiveProperty, map)
+                                                    .build();
                             }   
                         }
                     }
@@ -831,12 +834,13 @@ public final class CompactionBuilder {
                     JsonUtils.addValue(nestResult, itemActiveProperty, compactedItem, asArray);
                     
                 }
-                if (nestResult != null && nestResultKey != null && result.containsKey(nestResultKey)) {
+
+                if (nestResult != null && nestResultKey != null) {
                     result.put(nestResultKey, JsonUtils.toJsonObject(nestResult));
                 }
             }
         }
-        
+
         // 13.
         return JsonUtils.toJsonObject(result);
     }
