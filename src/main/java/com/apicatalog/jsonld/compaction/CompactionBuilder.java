@@ -589,7 +589,7 @@ public final class CompactionBuilder {
                         
                     // 12.8.8.4.                        
                     } else if (!container.contains(Keywords.GRAPH)) {
-                        
+          
                         // 12.8.8.4.1.
                         compactedItem = Json.createObjectBuilder().add(
                                 activeContext

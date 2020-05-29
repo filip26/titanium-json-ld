@@ -77,7 +77,7 @@ public final class JsonLdOptions {
         this.extractAllScripts = false;
         this.frameExpansion = false;
         this.ordered = false;
-        this.processingMode = null;
+        this.processingMode = Version.V1_1;
         this.produceGeneralizedRdf = true;
         this.rdfDirection = null;
         this.useNativeTypes = false;
