@@ -216,6 +216,7 @@ public final class CompactionBuilder {
             JsonValue expandedValue = elementObject.get(expandedProperty);
             
             Map<String, JsonValue> nestResult = null;
+            String nestResultKey = null;
             
             // 12.1.
             if (Keywords.ID.equals(expandedProperty)) {
@@ -382,13 +383,9 @@ public final class CompactionBuilder {
                         ) {
                     
                     String nestTerm = activeContext.getTerm(itemActiveProperty).getNestValue(); 
-                    
+                  
                     // 12.7.2.1.
-                    if (!Keywords.NEST.equals(nestTerm)) {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
-                    }
-                    
-                    if (!Keywords.NEST.equals(activeContext.expandUri(nestTerm).vocab(true).build())) {
+                    if (!Keywords.NEST.equals(nestTerm) && !Keywords.NEST.equals(activeContext.expandUri(nestTerm).vocab(true).build())) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
                     
@@ -399,6 +396,7 @@ public final class CompactionBuilder {
 
                     // 12.7.2.3.
                     nestResult = new LinkedHashMap<>(result.get(nestTerm).asJsonObject());
+                    nestResultKey = nestTerm;
                     
                 // 12.7.3.                    
                 } else {
@@ -428,11 +426,7 @@ public final class CompactionBuilder {
                     String nestTerm = activeContext.getTerm(itemActiveProperty).getNestValue(); 
                     
                     // 12.8.2.1.
-                    if (!Keywords.NEST.equals(nestTerm)) {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
-                    }
-                    
-                    if (!Keywords.NEST.equals(activeContext.expandUri(nestTerm).vocab(true).build())) {
+                    if (!Keywords.NEST.equals(nestTerm) && !Keywords.NEST.equals(activeContext.expandUri(nestTerm).vocab(true).build())) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
                     
@@ -443,6 +437,7 @@ public final class CompactionBuilder {
 
                     // 12.8.2.3.
                     nestResult = new LinkedHashMap<>(result.get(nestTerm).asJsonObject());
+                    nestResultKey = nestTerm;
                     
                 // 12.8.3.                    
                 } else {
@@ -826,10 +821,9 @@ public final class CompactionBuilder {
                 } else {
                     JsonUtils.addValue(nestResult, itemActiveProperty, compactedItem, asArray);
                     
-                    if (result.containsKey(Keywords.NEST)) {
-                        result.put(Keywords.NEST, JsonUtils.toJsonObject(nestResult));
-                    }
-                
+                }
+                if (nestResult != null && nestResultKey != null && result.containsKey(nestResultKey)) {
+                    result.put(nestResultKey, JsonUtils.toJsonObject(nestResult));
                 }
             }
         }

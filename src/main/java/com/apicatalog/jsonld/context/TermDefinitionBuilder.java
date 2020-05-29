@@ -579,7 +579,6 @@ public final class TermDefinitionBuilder {
             if (Keywords.contains(nestString) && !Keywords.NEST.equals(nestString)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
             }
-
             definition.nestValue = nestString;
         }
 
