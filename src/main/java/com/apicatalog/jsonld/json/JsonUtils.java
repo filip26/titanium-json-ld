@@ -141,7 +141,7 @@ public final class JsonUtils {
     
     // TODO don't use this algorithm, easy reduce complexity
     public static void addValue(Map<String, JsonValue> object, String key, JsonValue value, boolean asArray) {
-        
+
         // 1. If as array is true and the value of key in object does not exist or is
         // not an array,
         // set it to a new array containing any original value.
@@ -170,8 +170,9 @@ public final class JsonUtils {
 
         // 3.
         } else {
+            
             // 3.1
-            if (!object.containsKey(key)) {
+            if (!object.containsKey(key)) {                                
                 object.put(key, value);
 
             // 3.2

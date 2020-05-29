@@ -275,7 +275,7 @@ public final class CompactionBuilder {
                                         && activeContext.containsTerm(alias)
                                         && activeContext.getTerm(alias).hasContainerMapping(Keywords.SET))
                                     || !compactArrays; 
-            
+
                 // 12.2.5.
                 JsonUtils.addValue(result, alias, compactedValue, asArray);
 
@@ -303,7 +303,7 @@ public final class CompactionBuilder {
                         // 12.3.2.1.1
                         boolean asArray = activeContext.getTerm(entry.getKey()).hasContainerMapping(Keywords.SET)
                                             || !compactArrays;
-                        
+
                         // 12.3.2.1.2.
                         JsonUtils.addValue(result, entry.getKey(), entry.getValue(), asArray);
                         
@@ -404,7 +404,7 @@ public final class CompactionBuilder {
                 } else {
                     nestResult = result;
                 }
-                
+
                 JsonUtils.addValue(nestResult, itemActiveProperty, JsonValue.EMPTY_JSON_ARRAY, true);
             }
             
@@ -504,7 +504,7 @@ public final class CompactionBuilder {
                                                 .add(indexKey, expandedItem.asJsonObject().get(Keywords.INDEX))
                                                 .build();    
                         }
-                        
+
                         // 12.8.7.2.3.
                         JsonUtils.addValue(nestResult, itemActiveProperty, compactedItem, asArray);
                         
@@ -538,7 +538,7 @@ public final class CompactionBuilder {
                         } else {
                             mapKey = activeContext.compactUri(Keywords.NONE).vocab(true).build();
                         }
-                                                
+   
                         // 12.8.8.1.3.
                         JsonUtils.addValue(mapObject, mapKey, compactedItem, asArray);
 
@@ -566,7 +566,7 @@ public final class CompactionBuilder {
                         if (mapKey == null) {
                             mapKey = Keywords.NONE;
                         }
-                        
+   
                         // 12.8.8.2.3.
                         JsonUtils.addValue(mapObject, mapKey, compactedItem, asArray);
 
@@ -628,7 +628,7 @@ public final class CompactionBuilder {
                                     expandedItem.asJsonObject().getString(Keywords.INDEX)
                                 ).build(); 
                         }
-                        
+
                         // 12.8.8.4.4.
                         JsonUtils.addValue(nestResult, itemActiveProperty, compactedItem, asArray);
                     }  
@@ -725,9 +725,20 @@ public final class CompactionBuilder {
 
                                 // 12.8.9.6.3.
                                 if (containerValue.asJsonArray().size() > 1) {
+
+                                    JsonValue containerKeyValue = null;
+
+                                    if (containerValue.asJsonArray().size() == 2) {
+                                        containerKeyValue = containerValue.asJsonArray().get(1);
+                                        
+                                    } else {
+                                        containerKeyValue = Json.createArrayBuilder(containerValue.asJsonArray()).remove(0).build();
+                                    }
                                     
                                     compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject())
-                                                        .remove(containerKey).add(containerKey, Json.createArrayBuilder(containerValue.asJsonArray()).remove(0)).build();
+                                                        .remove(containerKey)
+                                                        .add(containerKey, containerKeyValue)
+                                                        .build();
                                     
                                 } else {
                                     compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();                                    
@@ -808,7 +819,7 @@ public final class CompactionBuilder {
                     // 12.8.9.9.
                     if (mapKey == null) {
                         mapKey = activeContext.compactUri(Keywords.NONE).vocab(true).build();
-                    }
+                    } 
                     // 12.8.9.10.
                     JsonUtils.addValue(mapObject, mapKey, compactedItem, asArray);
 
@@ -816,7 +827,6 @@ public final class CompactionBuilder {
 
                 // 12.8.10.                    
                 } else {  
-
                     JsonUtils.addValue(nestResult, itemActiveProperty, compactedItem, asArray);
                 }
             }
