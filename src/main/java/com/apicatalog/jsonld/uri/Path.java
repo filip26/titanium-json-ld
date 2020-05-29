@@ -53,10 +53,10 @@ public final class Path {
             return new Path(EMPTY.segments, last, !relative && !base.relative);
         }
 
-        if (base.isEmpty()) {
-            return this;
+        if (base.segments.isEmpty() && base.last == null) {
+            return new Path(segments, last, !base.relative && !relative);
         }
-        
+
         int leftIndex = 0;
         
         for (; leftIndex < Math.min(segments.size(), base.segments.size()); leftIndex++) {            
@@ -89,10 +89,11 @@ public final class Path {
         for (int i=0; i < (base.segments.size() - leftIndex - rightIndex); i++) {
             diff.add("..");
         }
-        for (int i=0; i < (segments.size() - leftIndex - rightIndex); i++) {
+        
+        for (int i=0; i < (segments.size() - leftIndex - rightIndex ); i++) {
             diff.add(segments.get(i + leftIndex));
         }
-        
+
         return new Path(diff, Objects.equals(last, base.last) ? null : last, true);
     }
     

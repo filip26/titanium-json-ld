@@ -32,6 +32,9 @@ public class UriRelativizerTest {
     public static Collection<Object[]> data() {
         List<Object[]> data = new ArrayList<>();
         
+    
+        data.add(new Object[] {URI.create("http://example.com/"), "person/1", "http://example.com/person/1"});
+        data.add(new Object[] {URI.create("http://example.com"), "/person/1", "http://example.com/person/1"});
         data.add(new Object[] {URI.create("https://example.com/"), "relative-url", "https://example.com/relative-url"});
         data.add(new Object[] {URI.create("https://w3c.github.io/json-ld-api/tests/compact/0066-in.jsonld"), "link", "https://w3c.github.io/json-ld-api/tests/compact/link"});
         data.add(new Object[] {URI.create("https://w3c.github.io/json-ld-api/tests/compact/0066-in.jsonld"), "#fragment-works", "https://w3c.github.io/json-ld-api/tests/compact/0066-in.jsonld#fragment-works"});
