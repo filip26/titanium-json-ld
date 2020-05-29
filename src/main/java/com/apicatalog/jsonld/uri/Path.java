@@ -69,10 +69,15 @@ public final class Path {
             if (Objects.equals(last, base.last)) {
                 return EMPTY;
             }
-            return new Path(EMPTY.segments, last, segments.size() > 0);
+            return new Path(EMPTY.segments, last, !segments.isEmpty());
         }
 
         if (leftIndex >= base.segments.size()) {
+            
+            if ((segments.size() - leftIndex == 1) && segments.get(leftIndex).equals(base.last)) {
+                return new Path(Arrays.asList("."), last, true);
+            }
+            
             return new Path(segments.subList(leftIndex, segments.size()), last, true);
         }
         
@@ -89,7 +94,7 @@ public final class Path {
         for (int i=0; i < (base.segments.size() - leftIndex - rightIndex); i++) {
             diff.add("..");
         }
-        
+
         for (int i=0; i < (segments.size() - leftIndex - rightIndex ); i++) {
             diff.add(segments.get(i + leftIndex));
         }

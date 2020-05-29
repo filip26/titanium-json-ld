@@ -1,6 +1,5 @@
 package com.apicatalog.jsonld.expansion;
 
-import java.net.URI;
 import java.util.Map;
 
 import javax.json.JsonObject;

@@ -325,7 +325,7 @@ public final class TermDefinitionBuilder {
 
                 // 14.2.2
                 if (!Keywords.contains(idValueString) && Keywords.hasForm(idValueString)) {
-                    // TODO generate warning
+                    //TODO generate warning
                     return;
                 }
 
