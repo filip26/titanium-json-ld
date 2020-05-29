@@ -192,4 +192,13 @@ public final class JsonUtils {
         }
 //        System.out.println("addValue: < "  + object);
     }
+
+    public static boolean isNotEmptyArray(JsonValue value) {
+        return isNotArray(value) || !value.asJsonArray().isEmpty();
+    }
+    
+    public static boolean isNotEmptyObject(JsonValue value) {
+        return isNotObject(value) || !value.asJsonObject().isEmpty();
+    }
+
 }

@@ -115,7 +115,7 @@ public final class CompactionProcessor {
         }
         
         // 9.3.
-        if (JsonUtils.isNotNull(contextValue)) {
+        if (JsonUtils.isNotNull(contextValue) && JsonUtils.isNotEmptyArray(contextValue) && JsonUtils.isNotEmptyObject(contextValue)) {
             compactedOutput = Json.createObjectBuilder(compactedOutput.asJsonObject())
                                     .add(Keywords.CONTEXT, contextValue)
                                     .build();            
