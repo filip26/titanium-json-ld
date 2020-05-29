@@ -17,7 +17,7 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
  Feature | Tests | Pass | Status | Notes
  --- | ---: | ---: | ---: | ---
 [Expansion](https://www.w3.org/TR/json-ld/#expanded-document-form) | 378 |  369 | 97.6% | JSON-LD 1.0 (8) and non-normative (1) tests do not pass 
-[Compaction](https://www.w3.org/TR/json-ld/#compacted-document-form) | 241 | 240 | 99.5% |  JSON-LD 1.0 (2) tests do not pass 
+[Compaction](https://www.w3.org/TR/json-ld/#compacted-document-form) | 241 | 239 | 99.1% |  JSON-LD 1.0 (2) tests do not pass 
 [Flattening](https://www.w3.org/TR/json-ld/#flattened-document-form) | | | TBD |
 [Framing](https://www.w3.org/TR/json-ld11-framing/#framing) | | | TBD |
 [RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | | | TBD |
@@ -28,10 +28,10 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 - [x] 0.2 - [Compaction Algorithms](https://www.w3.org/TR/json-ld11-api/#compaction-algorithms)
 - [ ] 0.3 - [Flattening Algorithms](https://www.w3.org/TR/json-ld11-api/#flattening-algorithms)
 - [ ] 0.4 - [RDF Algorithms](https://www.w3.org/TR/json-ld11-api/#rdf-serialization-deserialization-algorithms)
-- [ ] 0.5 - [JSON-LD API](https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface)
-- [ ] 0.6 - Issues, code cleaning and optimization
-- [ ] 0.7 - [Framing](https://www.w3.org/TR/json-ld11-framing/)
-- [ ] 0.8 - Issues, code cleaning and optimization
+- [ ] 0.5 - Issues, code cleaning and optimization
+- [ ] 0.6 - Remote document and context retrieval
+- [ ] 0.7 - [JSON-LD API](https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface)
+- [ ] 0.8 - [Framing](https://www.w3.org/TR/json-ld11-framing/)
 - [ ] 0.9 - Documented, A+ code
 - [ ] 1.0 - GA
 
