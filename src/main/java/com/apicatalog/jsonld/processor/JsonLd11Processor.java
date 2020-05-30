@@ -18,12 +18,12 @@ public final class JsonLd11Processor implements JsonLdProcessor {
 
     @Override
     public JsonObject compact(final URI documentUri, final JsonLdContext context, final JsonLdOptions options) throws JsonLdError {
-        return CompactionProcessor.compact(documentUri, context, options);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public JsonObject compact(final RemoteDocument remoteDocument, final JsonLdContext context, final JsonLdOptions options) throws JsonLdError {
-        return CompactionProcessor.compact(remoteDocument, context, options);
+        throw new UnsupportedOperationException();
     }
 
     @Override
