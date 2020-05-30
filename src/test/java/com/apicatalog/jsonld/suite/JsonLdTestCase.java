@@ -3,20 +3,14 @@ package com.apicatalog.jsonld.suite;
 import java.net.URI;
 
 import javax.json.JsonObject;
-import javax.json.JsonValue;
 
-import org.junit.Assert;
-
-import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.loader.ClassPathLoader;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.loader.UrlRewrite;
 
-public class JsonLdTestCase {
+public final class JsonLdTestCase {
 
     public String id;
     
@@ -32,13 +26,17 @@ public class JsonLdTestCase {
     
     public String baseUri;
     
+    public String uri;
+    
     public JsonLdTestCaseOptions options;
     
-    public static final JsonLdTestCase of(JsonObject o, String baseUri) {
+    public static final JsonLdTestCase of(JsonObject o, String manifestUri, String baseUri) {
         
         final JsonLdTestCase testCase = new JsonLdTestCase();
         
         testCase.id = o.getString("@id");
+        
+        testCase.uri = baseUri + manifestUri + testCase.id;
         
         testCase.name = o.getString("name");
         
@@ -66,52 +64,8 @@ public class JsonLdTestCase {
                                 
         return testCase;
     }
-    
-    public void execute(JsonLdTestCaseMethod method) throws JsonLdError {
-
-        Assert.assertNotNull(baseUri);
-        Assert.assertNotNull(input);
-
-        JsonLdOptions options = getOptions();
         
-        Assert.assertNotNull(options);
-        Assert.assertNotNull(options.getDocumentLoader());
-        
-        JsonValue result = null;
-        
-        try {
-  
-            result = method.invoke(options);
-            
-            Assert.assertNotNull("A result is expected but got null", result);
-        
-//            Map<String, Object> properties = new HashMap<>(1);
-//            properties.put(JsonGenerator.PRETTY_PRINTING, true);
-//
-//            JsonWriterFactory writerFactory = Json.createWriterFactory(properties);
-//
-//            JsonWriter jsonWriter2 = writerFactory.createWriter(System.out);
-//            jsonWriter2.write(result);
-//            jsonWriter2.close();
-
-        } catch (JsonLdError e) {
-            Assert.assertEquals(expectErrorCode, e.getCode());
-            return;
-        }
-        
-        Assert.assertNull(expectErrorCode);
-        Assert.assertNotNull(expect);
-        
-        RemoteDocument expectedDocument = options.getDocumentLoader().loadDocument(expect, new LoadDocumentOptions());
-                    
-        Assert.assertNotNull(expectedDocument);
-        Assert.assertNotNull(expectedDocument.getDocument());
-        
-        // compare expected with the result        
-        Assert.assertEquals(expectedDocument.getDocument().asJsonStructure(), result);
-    }
-    
-    JsonLdOptions getOptions() {
+    public JsonLdOptions getOptions() {
         
         final LoadDocumentCallback loader = 
                 new UrlRewrite(
@@ -129,7 +83,7 @@ public class JsonLdTestCase {
         return jsonLdOptions;
     }
     
-    static final JsonLdErrorCode errorCode(String errorCode) {
+    public static final JsonLdErrorCode errorCode(String errorCode) {
         
         if (errorCode == null || errorCode.isBlank()) {
             return null;

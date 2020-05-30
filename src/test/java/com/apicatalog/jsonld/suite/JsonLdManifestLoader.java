@@ -16,19 +16,19 @@ public final class JsonLdManifestLoader {
 
     public static final String RESOURCES_BASE = "/com/github/w3c/json-ld-api/tests/"; 
         
-    private final String path;
+    private final String manifestName;
     
-    public JsonLdManifestLoader(String path) {
-        this.path = path;
+    public JsonLdManifestLoader(String manifest) {
+        this.manifestName = manifest;
     }
     
-    public static JsonLdManifestLoader load(String path) {
-        return new JsonLdManifestLoader(RESOURCES_BASE + path);
+    public static JsonLdManifestLoader load(String manifest) {
+        return new JsonLdManifestLoader(manifest);
     }
     
     public Stream<JsonLdTestCase> stream() throws IOException {
         
-        try (InputStream is = JsonLdManifestLoader.class.getResourceAsStream(path)) {
+        try (InputStream is = JsonLdManifestLoader.class.getResourceAsStream(RESOURCES_BASE + manifestName)) {
 
             Assert.assertNotNull(is);
     
@@ -48,7 +48,7 @@ public final class JsonLdManifestLoader {
                         .getJsonArray("sequence")
                             .stream()
                                 .map(JsonValue::asJsonObject)
-                                .map(o -> JsonLdTestCase.of(o, baseUri));
+                                .map(o -> JsonLdTestCase.of(o, manifestName, baseUri));
             }
         }        
     }

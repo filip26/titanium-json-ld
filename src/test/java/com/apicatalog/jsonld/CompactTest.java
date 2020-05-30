@@ -18,6 +18,7 @@ import com.apicatalog.jsonld.grammar.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
+import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
 
 @RunWith(Parameterized.class)
 public class CompactTest {
@@ -46,7 +47,7 @@ public class CompactTest {
         Assert.assertNotNull(testCase.context);
         
         try {
-            testCase.execute(options -> {
+            (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
                 
                 //pre-load context
                 RemoteDocument jsonContext = options.getDocumentLoader().loadDocument(testCase.context, new LoadDocumentOptions());
