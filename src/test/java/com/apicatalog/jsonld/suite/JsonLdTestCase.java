@@ -36,7 +36,7 @@ public final class JsonLdTestCase {
         
         testCase.id = o.getString("@id");
         
-        testCase.uri = baseUri + manifestUri + testCase.id;
+        testCase.uri = baseUri + manifestUri.substring(0, manifestUri.length() - ".jsonld".length()) + testCase.id;
         
         testCase.name = o.getString("name");
         
