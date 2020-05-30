@@ -75,14 +75,13 @@
             <version>${json-p.version}</version>
         </dependency>
         
-        <dependency>
+        <!--  Tests -->
+       <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.json</artifactId>
             <version>${json-p.version}</version>
             <scope>test</scope>
-        </dependency>
-
-        <!--  Tests -->        
+        </dependency>        
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

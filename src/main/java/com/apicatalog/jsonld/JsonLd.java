@@ -1,12 +1,24 @@
 package com.apicatalog.jsonld;
 
 import com.apicatalog.jsonld.api.JsonLdProcessor;
-import com.apicatalog.jsonld.processor.JsonLd11Processor;
+import com.apicatalog.jsonld.api.builder.CompactionApi;
+import com.apicatalog.jsonld.api.builder.ExpansionApi;
 
-public interface JsonLd {
+public final class JsonLd {
 
-    public static JsonLdProcessor createProcessor() {
-        return new JsonLd11Processor();
+    private JsonLd() {
+    }
+    
+    public static final ExpansionApi expand(String documentUri) {
+        return new ExpansionApi();
+    }
+
+    public static final CompactionApi compact(String documentUri, String contextUri) {
+        return new CompactionApi();
+    }
+
+    public static final JsonLdProcessor createProcessor() {
+        throw new UnsupportedOperationException();
     }
     
 }
