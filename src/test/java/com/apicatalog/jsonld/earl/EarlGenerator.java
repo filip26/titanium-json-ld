@@ -7,22 +7,17 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.junit.Assert;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
-import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerEarl;
 
 public class EarlGenerator {
 
     public static void main(String[] args) throws IOException {
-        (new EarlGenerator()).generate(Paths.get("jsonp-ld-earl.ttl"));
+        (new EarlGenerator()).generate(Paths.get("java-jsonp-ld-earl.ttl"));
     }
 
     public void generate(final Path path) throws IOException {
@@ -37,47 +32,40 @@ public class EarlGenerator {
     
     public void testExpand(PrintWriter writer) throws IOException {
 
-        List<JsonLdTestCase> testCases = JsonLdManifestLoader
-                                              .load("expand-manifest.jsonld")
-                                              .stream()            
-                                              .collect(Collectors.toList());
-
-        for (JsonLdTestCase testCase : testCases) {
-            
-            boolean passed = (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
-                return JsonLd.expand(testCase.input).options(options).get();
-            });            
-
-            printResult(writer, testCase.uri, passed);
-        }
-
+        JsonLdManifestLoader
+            .load("expand-manifest.jsonld")
+            .stream()
+            .forEach(testCase ->                
+                        printResult(writer, testCase.uri,           
+                                (new JsonLdTestRunnerEarl(testCase)).execute(options ->
+                                
+                                    JsonLd.expand(testCase.input).options(options).get()
+                                )
+                         )
+                    );
     }
 
-    public void testCompact(PrintWriter writer) throws IOException {
+    public void testCompact(final PrintWriter writer) throws IOException {
 
-        List<JsonLdTestCase> testCases = JsonLdManifestLoader
-                                              .load("compact-manifest.jsonld")
-                                              .stream()            
-                                              .collect(Collectors.toList());
-
-        for (JsonLdTestCase testCase : testCases) {
-            
-            boolean passed = (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
-                
-                //pre-load context
-                RemoteDocument jsonContext = options.getDocumentLoader().loadDocument(testCase.context, new LoadDocumentOptions());
-                                                
-                return JsonLd.compact(
-                                    testCase.input, 
-                                    jsonContext.getDocument().asJsonStructure()
-                                    )
-                                .options(options)
-                                .get();
-            });            
-
-            printResult(writer, testCase.uri, passed);
-        }
-
+        JsonLdManifestLoader
+            .load("compact-manifest.jsonld")
+            .stream()
+            .forEach(testCase ->                
+                        printResult(writer, testCase.uri,           
+                             (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
+                            
+                                    //pre-load context
+                                    RemoteDocument jsonContext = options.getDocumentLoader().loadDocument(testCase.context, new LoadDocumentOptions());
+                                                                    
+                                    return JsonLd.compact(
+                                                        testCase.input, 
+                                                        jsonContext.getDocument().asJsonStructure()
+                                                        )
+                                                    .options(options)
+                                                    .get();
+                                 })
+                         )
+                    );
     }
     
     void printResult(PrintWriter writer, String testUri, boolean passed) {

@@ -43,9 +43,11 @@ public class ExpandTest {
         assumeTrue(testCase.options.normative == null || testCase.options.normative);
 
         try {
-            (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
-                return JsonLd.expand(testCase.input).options(options).get();
-            });
+            (new JsonLdTestRunnerJunit(testCase)).execute(options ->
+            
+                        JsonLd.expand(testCase.input).options(options).get()
+                        
+            );
             
         } catch (JsonLdError e) {
             Assert.fail(e.getMessage());
