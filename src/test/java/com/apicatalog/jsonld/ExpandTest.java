@@ -42,8 +42,8 @@ public class ExpandTest {
         assumeTrue(testCase.options.normative == null || testCase.options.normative);
 
         try {
-            testCase.execute(options -> {        
-                return JsonLd.createProcessor().expand(testCase.input, options);
+            testCase.execute(options -> {
+                return JsonLd.expand(testCase.input).options(options).get();
             });
             
         } catch (JsonLdError e) {

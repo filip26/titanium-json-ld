@@ -50,9 +50,6 @@ public final class ValueCompactionBuilder {
             activeContext.createInverseContext();
         }
         
-        // 3.
-        //TODO ?!? InverseContext inverseContext = activeContext.getInverseContext();
-     
         TermDefinition activePropertyDefinition = activeContext.getTerm(activeProperty);
         
         // 4. - 5.

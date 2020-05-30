@@ -2,7 +2,6 @@ package com.apicatalog.jsonld.processor;
 
 import java.net.URI;
 import java.util.Collection;
-import java.util.Collections;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -19,24 +18,22 @@ public final class JsonLd11Processor implements JsonLdProcessor {
 
     @Override
     public JsonObject compact(final URI documentUri, final JsonLdContext context, final JsonLdOptions options) throws JsonLdError {
-        return CompactionProcessor.compact(documentUri, context, options);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public JsonObject compact(final RemoteDocument remoteDocument, final JsonLdContext context, final JsonLdOptions options) throws JsonLdError {
-        return CompactionProcessor.compact(remoteDocument, context, options);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public JsonObject compact(final JsonObject object, final JsonLdContext context, final JsonLdOptions options) throws JsonLdError {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public JsonObject compact(final Collection<JsonObject> objects, final JsonLdContext context, final JsonLdOptions options)  throws JsonLdError {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -51,14 +48,12 @@ public final class JsonLd11Processor implements JsonLdProcessor {
 
     @Override
     public JsonArray expand(final JsonObject object, final JsonLdOptions options) throws JsonLdError {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public JsonArray expand(final Collection<JsonObject> objects, final JsonLdOptions options) throws JsonLdError {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -78,8 +73,7 @@ public final class JsonLd11Processor implements JsonLdProcessor {
 
     @Override
     public JsonObject flatten(JsonLdInput input, JsonLdContext context, JsonLdOptions options) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -89,8 +83,7 @@ public final class JsonLd11Processor implements JsonLdProcessor {
 
     @Override
     public Collection<JsonObject> fromRdf(RdfDataset input, JsonLdOptions options) {
-        // TODO Auto-generated method stub
-        return Collections.emptyList();
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -100,7 +93,6 @@ public final class JsonLd11Processor implements JsonLdProcessor {
 
     @Override
     public RdfDataset toRdf(JsonLdInput input, JsonLdOptions options) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

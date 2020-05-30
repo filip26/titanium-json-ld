@@ -83,7 +83,7 @@ public class JsonLdTestCase {
   
             result = method.invoke(options);
             
-            Assert.assertNotNull(result);
+            Assert.assertNotNull("A result is expected but got null", result);
         
 //            Map<String, Object> properties = new HashMap<>(1);
 //            properties.put(JsonGenerator.PRETTY_PRINTING, true);

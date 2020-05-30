@@ -5,9 +5,9 @@ import java.net.URI;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
-import com.apicatalog.jsonld.api.JsonLdContext;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
@@ -25,10 +25,17 @@ import com.apicatalog.jsonld.loader.LoadDocumentOptions;
  */
 public final class CompactionProcessor {
 
-    CompactionProcessor() {
+    private CompactionProcessor() {
     }
-
-    public static final JsonObject compact(final URI input, final JsonLdContext context, final JsonLdOptions options) throws JsonLdError {
+    
+    public static final JsonObject compact(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError {
+        
+        RemoteDocument jsonContext = options.getDocumentLoader().loadDocument(context, new LoadDocumentOptions());
+        
+        return compact(input, jsonContext.getDocument().asJsonStructure(), options);        
+    }
+    
+    public static final JsonObject compact(final URI input, final JsonStructure context, final JsonLdOptions options) throws JsonLdError {
         
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
@@ -48,7 +55,7 @@ public final class CompactionProcessor {
         return compact(remoteDocument, context, options);
     }
 
-    public static final JsonObject compact(final RemoteDocument input, final JsonLdContext context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonObject compact(final RemoteDocument input, final JsonStructure context, final JsonLdOptions options) throws JsonLdError {
         
         // 4.
         JsonLdOptions expansionOptions = new JsonLdOptions();
@@ -65,10 +72,11 @@ public final class CompactionProcessor {
             contextBase = options.getBase();
         }
         
-        // 6.
-        JsonValue contextValue = context.asJsonArray();
+        // 6.        
         
-        if (contextValue.asJsonArray().size() == 1) {
+        JsonValue contextValue = context;
+        
+        if (JsonUtils.isArray(contextValue) && contextValue.asJsonArray().size() == 1) {
             contextValue = contextValue.asJsonArray().get(0);
         }
         
