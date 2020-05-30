@@ -43,21 +43,21 @@ JSONP-LD implements the [JsonLdProcessor](https://www.w3.org/TR/json-ld11-api/#t
 
 ```javascript
 JsonLd.expand("https://w3c.github.io/json-ld-api/tests/expand/0001-in.jsonld")
-      .build();
+      .get();
 ```
 
 ```javascript
 
 JsonLd.expand("https://example.com/document.json")
       .context("https://example.com/context.jsonld")  // external context
-      .build();
+      .get();
 ```
 
 #### Compaction
 
 ```javascript
 JsonLd.compact("https://example.com/expanded.jsonld", "https://example.com/context.jsonld")
-      .build();
+      .get();
 ```
 
 
