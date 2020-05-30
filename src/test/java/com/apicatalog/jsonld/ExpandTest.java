@@ -16,6 +16,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.grammar.Version;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
+import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
 
 @RunWith(Parameterized.class)
 public class ExpandTest {
@@ -42,7 +43,7 @@ public class ExpandTest {
         assumeTrue(testCase.options.normative == null || testCase.options.normative);
 
         try {
-            testCase.execute(options -> {
+            (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
                 return JsonLd.expand(testCase.input).options(options).get();
             });
             
