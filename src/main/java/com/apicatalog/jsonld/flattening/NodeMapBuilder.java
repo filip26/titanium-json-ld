@@ -16,7 +16,7 @@ public final class NodeMapBuilder {
 
     // required
     private JsonStructure element;
-    private Map nodeMap;    //TODO
+    private Map<String, JsonValue> nodeMap;
     
     
     // optional
@@ -26,7 +26,7 @@ public final class NodeMapBuilder {
     private Map list;   //TODO
     
     
-    private NodeMapBuilder(JsonStructure element, Map nodeMap) {
+    private NodeMapBuilder(final JsonStructure element, final Map<String, JsonValue> nodeMap) {
         this.element = element;
         this.nodeMap = nodeMap;
         
@@ -35,6 +35,10 @@ public final class NodeMapBuilder {
         this.activeSubject = null;
         this.activeProperty = null;
         this.list = null;
+    }
+    
+    public static final NodeMapBuilder with(final JsonStructure element, final Map<String, JsonValue> nodeMap) {
+        return new NodeMapBuilder(element, nodeMap);
     }
     
     public void build() throws JsonLdError {
