@@ -48,29 +48,22 @@ public final class FlatteningBuilder {
     public JsonArray build() throws JsonLdError {
         
         // 1.
-        Map<String, JsonValue> nodeMap = new LinkedHashMap<>();
-        nodeMap.put(Keywords.DEFAULT, JsonValue.EMPTY_JSON_OBJECT);
+        NodeMap nodeMap = new NodeMap();
         
         // 2.
         NodeMapBuilder.with(element, nodeMap, idGenerator).build();
         
         // 3.
-        JsonObject defaultGraph = nodeMap.get(Keywords.DEFAULT).asJsonObject();
+        JsonObject defaultGraph = nodeMap.get(Keywords.DEFAULT);
 
         // 4.
-        List<String> keys = new ArrayList<>(nodeMap.keySet());
-        
-        if (ordered) {
-            Collections.sort(keys);
-        }
-        
-        for (String graphName : keys) {
+        for (String graphName : nodeMap.keys(ordered)) {
             
             if (Keywords.DEFAULT.equals(graphName)) {
                 continue;
             }
             
-            JsonObject graph = nodeMap.get(graphName).asJsonObject();
+            JsonObject graph = nodeMap.get(graphName);
             
             // 4.1.
             if (!defaultGraph.containsKey(graphName)) {
@@ -109,7 +102,7 @@ public final class FlatteningBuilder {
         Collection<JsonValue> flattened = new LinkedList<>();
         
         // 6.
-        keys = new ArrayList<>(defaultGraph.keySet());
+        List<String> keys = new ArrayList<>(defaultGraph.keySet());
         
         if (ordered) {
             Collections.sort(keys);

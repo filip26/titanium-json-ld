@@ -4,9 +4,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonString;
 import javax.json.JsonStructure;
 import javax.json.JsonValue;
@@ -21,9 +23,8 @@ public final class NodeMapBuilder {
 
     // required
     private JsonStructure element;
-    private Map<String, JsonValue> nodeMap;
+    private NodeMap nodeMap;
     private final BlankNodeIdGenerator idGenerator;
-    
     
     // optional
     private String activeGraph;
@@ -32,7 +33,7 @@ public final class NodeMapBuilder {
     private Map list;   //TODO
     
     
-    private NodeMapBuilder(final JsonStructure element, final Map<String, JsonValue> nodeMap, final BlankNodeIdGenerator idGenerator) {
+    private NodeMapBuilder(final JsonStructure element, final NodeMap nodeMap, final BlankNodeIdGenerator idGenerator) {
         this.element = element;
         this.nodeMap = nodeMap;
         this.idGenerator = idGenerator;
@@ -44,7 +45,7 @@ public final class NodeMapBuilder {
         this.list = null;
     }
     
-    public static final NodeMapBuilder with(final JsonStructure element, final Map<String, JsonValue> nodeMap, final BlankNodeIdGenerator idGenerator) {
+    public static final NodeMapBuilder with(final JsonStructure element, final NodeMap nodeMap, final BlankNodeIdGenerator idGenerator) {
         return new NodeMapBuilder(element, nodeMap, idGenerator);
     }
     
@@ -85,7 +86,6 @@ public final class NodeMapBuilder {
                     itemValue = item.asJsonArray();
                     
                 } else {
-                    System.out.println(">>> " + item);
                     throw new IllegalStateException();
                 }
                 
@@ -101,15 +101,7 @@ public final class NodeMapBuilder {
             return;
         }
         
-        // 2.
-        Map<String, JsonValue> graph = new LinkedHashMap<>(nodeMap.get(activeGraph).asJsonObject());
-        
-        Map<String, JsonValue> subjectNode = null;
-        
-        if (activeSubject != null && graph.containsKey(activeSubject)) {
-            subjectNode = new LinkedHashMap<>(graph.get(activeSubject).asJsonObject());
-        }
-        
+        // 2.        
         Map<String, JsonValue> elementObject = new LinkedHashMap<>(element.asJsonObject());
         
         // 3.
@@ -131,17 +123,22 @@ public final class NodeMapBuilder {
             if (list == null) {
                 
                 // 4.1.1.
-                if (subjectNode != null && !subjectNode.containsKey(activeProperty)) {
-                    subjectNode.put(activeProperty, Json.createArrayBuilder().add(JsonUtils.toJsonObject(elementObject)).build());
+                if (nodeMap.doesNotContain(activeGraph, activeSubject, activeProperty)) {
+                    nodeMap.set(activeGraph, activeSubject, activeProperty, Json.createArrayBuilder().add(JsonUtils.toJsonObject(elementObject)).build());
                     
                 // 4.1.2.
                 } else {
-                    //TODO
+
+                    JsonArray activePropertyValue = nodeMap.get(activeGraph, activeSubject, activeProperty).asJsonArray();
+                    
+                    if (activePropertyValue.stream().noneMatch(e -> Objects.equals(e, element))) {
+                        nodeMap.set(activeGraph, activeSubject, activeProperty, Json.createArrayBuilder(activePropertyValue).add(element).build());
+                    }                    
                 }
 
             // 4.2.
             } else {
-                
+
                 //TODO
                 
             }
@@ -187,12 +184,12 @@ public final class NodeMapBuilder {
             }
             
             // 6.3.
-            if (!graph.containsKey(id)) {
-                graph.put(id, Json.createObjectBuilder().add(Keywords.ID, id).build());
+            if (nodeMap.doesNotContain(activeGraph, id)) {
+                nodeMap.set(activeGraph, id, Keywords.ID, Json.createValue(id));
             }
             
             // 6.4.
-            Map<String, JsonValue> node = new LinkedHashMap<>(graph.get(id).asJsonObject());
+//            Map<String, JsonValue> node = new LinkedHashMap<>(nodeMap.get());
             
             // 6.5.
             //TODO
@@ -202,17 +199,19 @@ public final class NodeMapBuilder {
             
             // 6.7.
             if (elementObject.containsKey(Keywords.TYPE)) {
-                
+
                 List<JsonValue> nodeType = null;
                 
-                JsonValue nodeTypeValue = node.get(Keywords.TYPE);
+                JsonValue nodeTypeValue = nodeMap.get(activeGraph, id, Keywords.TYPE);
                 
                 if (JsonUtils.isArray(nodeTypeValue)) {
                     nodeType = new LinkedList<>(nodeTypeValue.asJsonArray());
                     
                 } else if (JsonUtils.isNotNull(nodeTypeValue)) {
+                    
                     nodeType = new LinkedList<>();
                     nodeType.add(nodeTypeValue);
+                    
                 } else {
                     nodeType = new LinkedList<>();
                 }
@@ -221,7 +220,8 @@ public final class NodeMapBuilder {
                     nodeType.add(item);
                 }
 
-                node.put(Keywords.TYPE, JsonUtils.toJsonArray(nodeType));
+                nodeMap.set(activeGraph, id, Keywords.TYPE, JsonUtils.toJsonArray(nodeType));
+                
                 elementObject.remove(Keywords.TYPE);
             }
 
@@ -261,10 +261,10 @@ public final class NodeMapBuilder {
                 }
                 
                 // 6.12.2.
-                if (!node.containsKey(property)) {
-                    node.put(property, JsonValue.EMPTY_JSON_ARRAY);
+                if (nodeMap.doesNotContain(activeGraph, id, property)) {
+                    nodeMap.set(activeGraph, id, property, JsonValue.EMPTY_JSON_ARRAY);
                 }
-                
+
                 // 6.12.3.
                 NodeMapBuilder
                         .with(value, nodeMap, idGenerator)
@@ -275,15 +275,7 @@ public final class NodeMapBuilder {
 
             }
             
-            graph.put(id, JsonUtils.toJsonObject(node));
-        }
-        
-        if (subjectNode != null) {
-            graph.put(activeSubject, JsonUtils.toJsonObject(subjectNode));
-        }
-        
-        nodeMap.put(activeGraph, JsonUtils.toJsonObject(graph));
-
+        }        
     }
     
 }
