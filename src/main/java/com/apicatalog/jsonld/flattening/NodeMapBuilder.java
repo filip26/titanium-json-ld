@@ -16,6 +16,7 @@ import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.NodeObject;
@@ -288,8 +289,15 @@ public final class NodeMapBuilder {
 
             // 6.8.
             if (elementObject.containsKey(Keywords.INDEX)) {
-                //TODO
-                elementObject.remove(Keywords.INDEX);
+                
+                if (nodeMap.doesNotContain(activeGraph, id, Keywords.INDEX)) {
+                    nodeMap.set(activeGraph, id, Keywords.INDEX, elementObject.get(Keywords.INDEX));
+
+                    elementObject.remove(Keywords.INDEX);
+                    
+                } else {
+                    throw new JsonLdError(JsonLdErrorCode.CONFLICTING_INDEXES);
+                }
             }
 
             // 6.9.
@@ -334,7 +342,6 @@ public final class NodeMapBuilder {
                         .activeProperty(property)
                         .referencedNode(referencedNode)
                         .build();
-
             }
             
         }    
