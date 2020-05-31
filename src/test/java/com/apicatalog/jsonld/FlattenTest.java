@@ -1,7 +1,6 @@
 package com.apicatalog.jsonld;
 
 import static org.junit.Assume.assumeFalse;
-import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -36,13 +35,10 @@ public class FlattenTest {
     public String baseUri;
     
     @Test
-    public void testCompact() {
+    public void testFlatten() {
 
         // skip specVersion == 1.0
         assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
-        
-        // skip normative == false
-        //assumeTrue(testCase.options.normative == null || testCase.options.normative);
         
         try {
             (new JsonLdTestRunnerJunit(testCase)).execute(options -> {

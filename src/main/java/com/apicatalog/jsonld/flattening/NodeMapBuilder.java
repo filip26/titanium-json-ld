@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonStructure;
 import javax.json.JsonValue;
@@ -30,6 +32,7 @@ public final class NodeMapBuilder {
     private String activeGraph;
     private String activeSubject;
     private String activeProperty;
+    private Map<String, JsonValue> referencedNode;
     private Map list;   //TODO
     
     
@@ -107,13 +110,20 @@ public final class NodeMapBuilder {
         // 3.
         if (elementObject.containsKey(Keywords.TYPE)) {
             
+            JsonArrayBuilder types = Json.createArrayBuilder();
+            
             // 3.1.
             for (JsonValue item : JsonUtils.toJsonArray(elementObject.get(Keywords.TYPE))) {
                 
                 if (JsonUtils.isString(item) && CompactUri.isBlankNode(((JsonString)item).getString())) {
-                    //TODO
+                    types.add(Json.createValue(idGenerator.createIdentifier(((JsonString)item).getString())));
+                    
+                } else {
+                    types.add(item);
                 }
             }
+            
+            elementObject.put(Keywords.TYPE, types.build());
         }
         
         // 4.
@@ -175,7 +185,6 @@ public final class NodeMapBuilder {
                     id = idGenerator.createIdentifier(id);
                 }
                 
-                //TODO
                 elementObject.remove(Keywords.ID);
 
             // 6.2.
@@ -189,13 +198,41 @@ public final class NodeMapBuilder {
             }
             
             // 6.4.
-//            Map<String, JsonValue> node = new LinkedHashMap<>(nodeMap.get());
             
             // 6.5.
-            //TODO
-            
+            if (referencedNode != null) {
+                //TODO
+                
             // 6.6.
-            //TODO
+            } else if (activeProperty != null) {
+                
+                // 6.6.1.
+                Map<String, JsonValue> reference = new LinkedHashMap<>();
+                reference.put(Keywords.ID, Json.createValue(id));
+                
+                // 6.6.2.
+                if (list == null) {
+
+                    // 6.6.2.1.
+                    if (nodeMap.doesNotContain(activeGraph, activeSubject, activeProperty)) {
+                        nodeMap.set(activeGraph, activeSubject, activeProperty, Json.createArrayBuilder().add(JsonUtils.toJsonObject(reference)).build());
+                        
+                    // 6.6.2.2.                        
+                    } else {
+                        JsonArray activePropertyValue = nodeMap.get(activeGraph, activeSubject, activeProperty).asJsonArray();
+
+                        JsonObject referenceObject = JsonUtils.toJsonObject(reference);
+                        
+                        if (activePropertyValue.stream().noneMatch(e -> Objects.equals(e, referenceObject))) {
+                            nodeMap.set(activeGraph, activeSubject, activeProperty, Json.createArrayBuilder(activePropertyValue).add(referenceObject).build());
+                        }                        
+                    }
+                    
+                // 6.6.3.                    
+                } else {
+                    //TODO   
+                }
+            }
             
             // 6.7.
             if (elementObject.containsKey(Keywords.TYPE)) {
