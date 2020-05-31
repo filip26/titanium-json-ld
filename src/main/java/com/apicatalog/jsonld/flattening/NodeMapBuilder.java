@@ -3,6 +3,7 @@ package com.apicatalog.jsonld.flattening;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
 import javax.json.JsonValue;
@@ -43,17 +44,66 @@ public final class NodeMapBuilder {
         return new NodeMapBuilder(element, nodeMap, idGenerator);
     }
     
+    public NodeMapBuilder activeGraph(String activeGraph) {
+        this.activeGraph = activeGraph;
+        return this;
+    }
+    
+    public NodeMapBuilder activeProperty(String activeProperty) {
+        this.activeProperty = activeProperty;
+        return this;
+    }
+    
+    public NodeMapBuilder activeSubject(String activeSubject) {
+        this.activeSubject = activeSubject;
+        return this;
+    }
+    
+    public NodeMapBuilder list(Map list) {
+        this.list = list;
+        return this;
+    }
+    
     public void build() throws JsonLdError {
         
         // 1.
         if (JsonUtils.isArray(element)) {
+            
             // 1.1.
-            //TODO
+            for (JsonValue item : element.asJsonArray()) {
+                
+                JsonStructure itemValue;
+                
+                if (JsonUtils.isObject(item)) {
+                    itemValue = item.asJsonObject();
+                                    
+                } else if (JsonUtils.isArray(item)) {
+                    itemValue = item.asJsonArray();
+                    
+                } else {
+                    throw new IllegalStateException();
+                }
+                
+                NodeMapBuilder
+                    .with(itemValue, nodeMap, idGenerator)
+                    .activeGraph(activeGraph)
+                    .activeProperty(activeProperty)
+                    .activeSubject(activeSubject)
+                    .list(list)
+                    .build();
+
+            }
             return;
         }
         
         // 2.
-        //TODO
+        Map<String, JsonValue> graph = nodeMap.get(activeGraph).asJsonObject();
+        
+        Map<String, JsonValue> subjectNode = null;
+        
+        if (activeSubject != null) {
+            subjectNode = graph.get(activeSubject).asJsonObject();
+        }
         
         JsonObject elementObject = element.asJsonObject();
         
@@ -73,7 +123,13 @@ public final class NodeMapBuilder {
             // 4.1.
             if (list == null) {
                 
-                //TODO
+                // 4.1.1.
+                if (!subjectNode.containsKey(activeProperty)) {
+                    subjectNode.put(activeProperty, Json.createArrayBuilder().add(elementObject).build());
+                }
+                
+                // 3.
+                
                 
             // 4.2.
             } else {

@@ -27,6 +27,10 @@ public final class FlatteningProcessor {
     
     public static final JsonStructure flatten(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError {
         
+        if (context == null) {
+            return flatten(input, (JsonStructure)null, options);
+        }
+        
         RemoteDocument jsonContext = options.getDocumentLoader().loadDocument(context, new LoadDocumentOptions());
         
         return flatten(input, jsonContext.getDocument().asJsonStructure(), options);        

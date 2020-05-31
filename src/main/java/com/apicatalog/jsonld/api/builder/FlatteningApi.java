@@ -84,6 +84,6 @@ public final class FlatteningApi {
         if (contextUri != null) {
             return FlatteningProcessor.flatten(document, jsonContext, options);
         }
-        throw new IllegalStateException();
+        return FlatteningProcessor.flatten(document, (JsonStructure)null, options);
     }
 }

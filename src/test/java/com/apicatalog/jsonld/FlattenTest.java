@@ -44,21 +44,23 @@ public class FlattenTest {
         // skip normative == false
         //assumeTrue(testCase.options.normative == null || testCase.options.normative);
         
-        Assert.assertNotNull(testCase.context);
-        
         try {
             (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
                 
-                //pre-load context
-                RemoteDocument jsonContext = options.getDocumentLoader().loadDocument(testCase.context, new LoadDocumentOptions());
+                RemoteDocument jsonContext = null;
                 
-                Assert.assertNotNull(jsonContext);
-                Assert.assertNotNull(jsonContext.getDocument());
-                Assert.assertNotNull(jsonContext.getDocument().asJsonStructure());
+                //pre-load context
+                if (testCase.context != null) {
+                    jsonContext = options.getDocumentLoader().loadDocument(testCase.context, new LoadDocumentOptions());
+                    
+                    Assert.assertNotNull(jsonContext);
+                    Assert.assertNotNull(jsonContext.getDocument());
+                    Assert.assertNotNull(jsonContext.getDocument().asJsonStructure());
+                }
                                 
                 return JsonLd.flatten(
                                     testCase.input, 
-                                    jsonContext.getDocument().asJsonStructure()
+                                    jsonContext != null ?  jsonContext.getDocument().asJsonStructure() : null
                                     )
                                 .options(options)
                                 .get();
