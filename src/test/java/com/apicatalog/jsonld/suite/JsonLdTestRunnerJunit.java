@@ -42,14 +42,14 @@ public class JsonLdTestRunnerJunit {
             
             Assert.assertNotNull("A result is expected but got null", result);
         
-            Map<String, Object> properties = new HashMap<>(1);
-            properties.put(JsonGenerator.PRETTY_PRINTING, true);
-
-            JsonWriterFactory writerFactory = Json.createWriterFactory(properties);
-
-            JsonWriter jsonWriter2 = writerFactory.createWriter(System.out);
-            jsonWriter2.write(result);
-            jsonWriter2.close();
+//            Map<String, Object> properties = new HashMap<>(1);
+//            properties.put(JsonGenerator.PRETTY_PRINTING, true);
+//
+//            JsonWriterFactory writerFactory = Json.createWriterFactory(properties);
+//
+//            JsonWriter jsonWriter2 = writerFactory.createWriter(System.out);
+//            jsonWriter2.write(result);
+//            jsonWriter2.close();
 
         } catch (JsonLdError e) {
             Assert.assertEquals(testCase.expectErrorCode, e.getCode());

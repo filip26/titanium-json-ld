@@ -80,7 +80,7 @@ public final class NodeMapBuilder {
     }
     
     public void build() throws JsonLdError {
-    
+
         // 1.
         if (JsonUtils.isArray(element)) {
             
@@ -224,12 +224,21 @@ public final class NodeMapBuilder {
             if (nodeMap.doesNotContain(activeGraph, id)) {
                 nodeMap.set(activeGraph, id, Keywords.ID, Json.createValue(id));
             }
-            
+
             // 6.4.
             
             // 6.5.
             if (referencedNode != null) {
-                //TODO
+                
+                // 6.5.1.
+                if (nodeMap.doesNotContain(activeGraph, id, activeProperty)) {
+                    
+                    nodeMap.set(activeGraph, id, activeProperty, Json.createArrayBuilder().add(JsonUtils.toJsonObject(referencedNode)).build());
+                    
+                // 6.5.2.
+                } else {
+                    //TODO
+                }
                 
             // 6.6.
             } else if (activeProperty != null) {
@@ -308,14 +317,25 @@ public final class NodeMapBuilder {
 
             // 6.10.
             if (elementObject.containsKey(Keywords.GRAPH)) {
-                //TODO
-                
+
+                NodeMapBuilder
+                    .with((JsonStructure)elementObject.get(Keywords.GRAPH), nodeMap, idGenerator)
+                    .activeGraph(id)
+                    .build();
+                    ;
+
                 elementObject.remove(Keywords.GRAPH);
             }
 
             // 6.11.
             if (elementObject.containsKey(Keywords.INCLUDED)) {
-                //TODO
+                
+                NodeMapBuilder
+                    .with((JsonStructure)elementObject.get(Keywords.INCLUDED), nodeMap, idGenerator)
+                    .activeGraph(activeGraph)
+                    .build();
+                    ;
+
                 elementObject.remove(Keywords.INCLUDED);
             }
 
@@ -343,11 +363,6 @@ public final class NodeMapBuilder {
                         .referencedNode(referencedNode)
                         .build();
             }
-            
-        }    
-        System.out.println(list);
-    }
-    
+        }
+    }   
 }
-
-

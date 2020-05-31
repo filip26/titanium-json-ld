@@ -54,11 +54,11 @@ public final class FlatteningBuilder {
         NodeMapBuilder.with(element, nodeMap, idGenerator).build();
         
         // 3.
-        JsonObject defaultGraph = nodeMap.get(Keywords.DEFAULT);
+        Map<String, JsonValue> defaultGraph = new LinkedHashMap<>(nodeMap.get(Keywords.DEFAULT));
 
         // 4.
         for (String graphName : nodeMap.keys(ordered)) {
-            
+
             if (Keywords.DEFAULT.equals(graphName)) {
                 continue;
             }
@@ -94,7 +94,7 @@ public final class FlatteningBuilder {
             }
 
             entry.put(Keywords.GRAPH, graphArray.build());
-            
+ 
             defaultGraph.put(graphName, JsonUtils.toJsonObject(entry));
         }
         
