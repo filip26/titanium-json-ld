@@ -59,20 +59,19 @@ public final class NodeMap {
                 ;
     }
 
-    public JsonObject get(String activeGraph) {
+    public Map<String, JsonObject> get(String activeGraph) {
         
         if (!nodeMap.containsKey(activeGraph)) {
             return null;
         }
 
-        return JsonUtils.toJsonObject( 
-                nodeMap
+        return nodeMap
                     .get(activeGraph)
                     .entrySet()
                     .stream()
                     .map(e -> new Object[] {e.getKey(), JsonUtils.toJsonObject(e.getValue())})
-                    .collect(Collectors.toMap(e -> (String)e[0], e -> (JsonValue)e[1]))                    
-                );
+                    .collect(Collectors.toMap(e -> (String)e[0], e -> (JsonObject)e[1]))                    
+                    ;
     }
 
     public Collection<String> keys(boolean ordered) {
