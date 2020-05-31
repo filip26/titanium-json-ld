@@ -19,7 +19,7 @@ public final class BlankNodeIdGenerator {
     }
 
     public String createIdentifier() {
-        return "_:x".concat(Integer.toString(counter++));
+        return "_:b".concat(Integer.toString(counter++));
     }
 
     public String createIdentifier(String identifier) {
