@@ -2,13 +2,15 @@ package com.apicatalog.jsonld.flattening;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.json.Json;
-import javax.json.JsonObject;
+import javax.json.JsonString;
 import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.grammar.CompactUri;
 import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.grammar.NodeObject;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -97,15 +99,15 @@ public final class NodeMapBuilder {
         }
         
         // 2.
-        Map<String, JsonValue> graph = nodeMap.get(activeGraph).asJsonObject();
+        Map<String, JsonValue> graph = new LinkedHashMap<>(nodeMap.get(activeGraph).asJsonObject());
         
         Map<String, JsonValue> subjectNode = null;
         
         if (activeSubject != null) {
-            subjectNode = graph.get(activeSubject).asJsonObject();
+            subjectNode = new LinkedHashMap<>(graph.get(activeSubject).asJsonObject());
         }
         
-        JsonObject elementObject = element.asJsonObject();
+        Map<String, JsonValue> elementObject = new LinkedHashMap<>(element.asJsonObject());
         
         // 3.
         if (elementObject.containsKey(Keywords.TYPE)) {
@@ -119,18 +121,19 @@ public final class NodeMapBuilder {
         
         // 4.
         if (elementObject.containsKey(Keywords.VALUE)) {
-            
+
             // 4.1.
             if (list == null) {
                 
                 // 4.1.1.
                 if (!subjectNode.containsKey(activeProperty)) {
-                    subjectNode.put(activeProperty, Json.createArrayBuilder().add(elementObject).build());
+                    subjectNode.put(activeProperty, Json.createArrayBuilder().add(JsonUtils.toJsonObject(elementObject)).build());
+                    
+                // 4.1.2.
+                } else {
+                    //TODO
                 }
-                
-                // 3.
-                
-                
+
             // 4.2.
             } else {
                 
@@ -157,9 +160,82 @@ public final class NodeMapBuilder {
             }
             
         // 6.
-        } else if (NodeObject.isNodeObject(elementObject)) {
+        } else if (NodeObject.isNodeObject(element)) {
+
+            String id = null;
             
+            // 6.1.
+            if (elementObject.containsKey(Keywords.ID)) {
+                
+                id = ((JsonString)elementObject.get(Keywords.ID)).getString();
+                
+                if (CompactUri.isBlankNode(id)) {
+                    id = idGenerator.createIdentifier(id);
+                }
+                
+                //TODO
+                elementObject.remove(Keywords.ID);
+
+            // 6.2.
+            } else {                
+                id = idGenerator.createIdentifier();
+            }
+            
+            // 6.3.
+            if (!graph.containsKey(id)) {
+                graph.put(id, Json.createObjectBuilder().add(Keywords.ID, id).build());
+            }
+            
+            // 6.4.
+            Map<String, JsonValue> node = new LinkedHashMap<>(graph.get(id).asJsonObject());
+            
+            // 6.5.
+            //TODO
+            
+            // 6.6.
+            //TODO
+            
+            // 6.7.
+            if (elementObject.containsKey(Keywords.TYPE)) {
+                //TODO
+            }
+
+            // 6.8.
+            if (elementObject.containsKey(Keywords.INDEX)) {
+                //TODO
+            }
+
+            // 6.9.
+            if (elementObject.containsKey(Keywords.REVERSE)) {
+                //TODO
+            }
+
+            // 6.10.
+            if (elementObject.containsKey(Keywords.GRAPH)) {
+                //TODO
+            }
+
+            // 6.11.
+            if (elementObject.containsKey(Keywords.INCLUDED)) {
+                //TODO
+            }
+
+            // 6.12.
+            for (String property : elementObject.keySet().stream().sorted().collect(Collectors.toList())) {
+                
+                JsonValue value = elementObject.get(property);
+                
+                //TODO
+            }
+            
+            graph.put(id, JsonUtils.toJsonObject(node));
         }
+        
+        if (subjectNode != null) {
+            graph.put(activeSubject, JsonUtils.toJsonObject(subjectNode));
+        }
+        
+        nodeMap.put(activeGraph, JsonUtils.toJsonObject(graph));
     }
     
 }

@@ -56,7 +56,7 @@ public final class FlatteningBuilder {
         
         // 3.
         JsonObject defaultGraph = nodeMap.get(Keywords.DEFAULT).asJsonObject();
-        
+
         // 4.
         List<String> keys = new ArrayList<>(nodeMap.keySet());
         
