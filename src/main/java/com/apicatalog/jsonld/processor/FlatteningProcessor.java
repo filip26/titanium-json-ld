@@ -8,8 +8,11 @@ import javax.json.JsonStructure;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.flattening.BlankNodeIdGenerator;
 import com.apicatalog.jsonld.flattening.FlatteningBuilder;
+import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 
 /**
@@ -22,14 +25,14 @@ public final class FlatteningProcessor {
     private FlatteningProcessor() {
     }
     
-    public static final JsonArray flatten(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonStructure flatten(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError {
         
         RemoteDocument jsonContext = options.getDocumentLoader().loadDocument(context, new LoadDocumentOptions());
         
         return flatten(input, jsonContext.getDocument().asJsonStructure(), options);        
     }
     
-    public static final JsonArray flatten(final URI input, final JsonStructure context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonStructure flatten(final URI input, final JsonStructure context, final JsonLdOptions options) throws JsonLdError {
         
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
@@ -49,7 +52,7 @@ public final class FlatteningProcessor {
         return flatten(remoteDocument, context, options);
     }
 
-    public static final JsonArray flatten(final RemoteDocument input, final JsonStructure context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonStructure flatten(final RemoteDocument input, final JsonStructure context, final JsonLdOptions options) throws JsonLdError {
         
         // 4.
         JsonLdOptions expansionOptions = new JsonLdOptions();
@@ -59,13 +62,20 @@ public final class FlatteningProcessor {
         JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions);
 
         // 5.
-        //TODO
+        BlankNodeIdGenerator idGenerator = new BlankNodeIdGenerator();
         
         // 6.
-        JsonArray flattenedOutput = FlatteningBuilder.with(expandedInput).ordered(options.isOrdered()).build();
+        JsonStructure flattenedOutput = FlatteningBuilder.with(expandedInput, idGenerator).ordered(options.isOrdered()).build();
         
         // 6.1.
-        //TODO
+        if (JsonUtils.isNotNull(context)) {
+         
+            RemoteDocument document = new RemoteDocument();
+            document.setDocument(JsonDocument.of(flattenedOutput));
+            
+            flattenedOutput = CompactionProcessor.compact(document, context, options);
+            //TODO            
+        }
         
         return flattenedOutput;            
     }

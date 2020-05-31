@@ -1,11 +1,17 @@
 package com.apicatalog.jsonld.flattening;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
+import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
 import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
@@ -17,19 +23,21 @@ public final class FlatteningBuilder {
 
     // required
     private JsonStructure element;
+    private final BlankNodeIdGenerator idGenerator;
     
     // optional
     private boolean ordered;
     
-    private FlatteningBuilder(final JsonStructure element) {
+    private FlatteningBuilder(final JsonStructure element, final BlankNodeIdGenerator idGenerator) {
         this.element = element;
+        this.idGenerator = idGenerator;
         
         // default values
         this.ordered = false;
     }
     
-    public static final FlatteningBuilder with(final JsonStructure element) {
-        return new FlatteningBuilder(element);
+    public static final FlatteningBuilder with(final JsonStructure element, final BlankNodeIdGenerator idGenerator) {
+        return new FlatteningBuilder(element, idGenerator);
     }
     
     public FlatteningBuilder ordered(boolean ordered) {
@@ -44,19 +52,79 @@ public final class FlatteningBuilder {
         nodeMap.put(Keywords.DEFAULT, JsonValue.EMPTY_JSON_OBJECT);
         
         // 2.
-        NodeMapBuilder.with(element, nodeMap).build();
+        NodeMapBuilder.with(element, nodeMap, idGenerator).build();
         
         // 3.
-        //TODO
+        JsonObject defaultGraph = nodeMap.get(Keywords.DEFAULT).asJsonObject();
         
         // 4.
-        //TODO
+        List<String> keys = new ArrayList<>(nodeMap.keySet());
+        
+        if (ordered) {
+            Collections.sort(keys);
+        }
+        
+        for (String graphName : keys) {
+            
+            if (Keywords.DEFAULT.equals(graphName)) {
+                continue;
+            }
+            
+            JsonObject graph = nodeMap.get(graphName).asJsonObject();
+            
+            // 4.1.
+            if (!defaultGraph.containsKey(graphName)) {
+                defaultGraph.put(graphName, Json.createObjectBuilder().add(Keywords.ID, graphName).build());
+            }
+            
+            // 4.2.
+            Map<String, JsonValue> entry = new LinkedHashMap<>(defaultGraph.get(graphName).asJsonObject());
+            
+            // 4.3.
+            JsonArrayBuilder graphArray =  Json.createArrayBuilder();
+            
+            // 4.4.
+            List<String> ids = new ArrayList<>(graph.keySet());
+            
+            if (ordered) {
+                Collections.sort(ids);
+            }
+            
+            for (String id : ids) {
+                JsonValue node = graph.get(id);
+
+                if (JsonUtils.isObject(node) && node.asJsonObject().size() == 1 && node.asJsonObject().containsKey(Keywords.ID)) {
+                    continue;
+                }
+
+                graphArray.add(node);
+            }
+
+            entry.put(Keywords.GRAPH, graphArray.build());
+            
+            defaultGraph.put(graphName, JsonUtils.toJsonObject(entry));
+        }
         
         // 5.
         Collection<JsonValue> flattened = new LinkedList<>();
         
         // 6.
-        //TODO
+        keys = new ArrayList<>(defaultGraph.keySet());
+        
+        if (ordered) {
+            Collections.sort(keys);
+        }
+
+        for (String id : keys) {
+            
+            JsonValue node = defaultGraph.get(id);
+            
+            if (JsonUtils.isObject(node) && node.asJsonObject().size() == 1 && node.asJsonObject().containsKey(Keywords.ID)) {
+                continue;
+            }
+            
+            flattened.add(node);
+        }
         
         // 7.
         return JsonUtils.toJsonArray(flattened);

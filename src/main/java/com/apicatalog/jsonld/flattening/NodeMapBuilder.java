@@ -17,6 +17,7 @@ public final class NodeMapBuilder {
     // required
     private JsonStructure element;
     private Map<String, JsonValue> nodeMap;
+    private final BlankNodeIdGenerator idGenerator;
     
     
     // optional
@@ -26,9 +27,10 @@ public final class NodeMapBuilder {
     private Map list;   //TODO
     
     
-    private NodeMapBuilder(final JsonStructure element, final Map<String, JsonValue> nodeMap) {
+    private NodeMapBuilder(final JsonStructure element, final Map<String, JsonValue> nodeMap, final BlankNodeIdGenerator idGenerator) {
         this.element = element;
         this.nodeMap = nodeMap;
+        this.idGenerator = idGenerator;
         
         // default values
         this.activeGraph = Keywords.DEFAULT;
@@ -37,8 +39,8 @@ public final class NodeMapBuilder {
         this.list = null;
     }
     
-    public static final NodeMapBuilder with(final JsonStructure element, final Map<String, JsonValue> nodeMap) {
-        return new NodeMapBuilder(element, nodeMap);
+    public static final NodeMapBuilder with(final JsonStructure element, final Map<String, JsonValue> nodeMap, final BlankNodeIdGenerator idGenerator) {
+        return new NodeMapBuilder(element, nodeMap, idGenerator);
     }
     
     public void build() throws JsonLdError {

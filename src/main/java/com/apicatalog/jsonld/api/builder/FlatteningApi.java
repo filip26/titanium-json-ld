@@ -2,7 +2,6 @@ package com.apicatalog.jsonld.api.builder;
 
 import java.net.URI;
 
-import javax.json.JsonArray;
 import javax.json.JsonStructure;
 
 import com.apicatalog.jsonld.api.JsonLdError;
@@ -77,7 +76,7 @@ public final class FlatteningApi {
         return ordered(true);
     }
 
-    public JsonArray get() throws JsonLdError {
+    public JsonStructure get() throws JsonLdError {
 
         if (jsonContext != null) {
             return FlatteningProcessor.flatten(document, jsonContext, options);

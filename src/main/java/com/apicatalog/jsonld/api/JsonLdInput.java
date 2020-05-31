@@ -31,7 +31,7 @@ public final class JsonLdInput {
     
     public static JsonLdInput of(final JsonObject...objects) {
         RemoteDocument document = new RemoteDocument();        
-        document.setDocument(new JsonDocument(Json.createArrayBuilder(Arrays.asList(objects)).build()));
+        document.setDocument(JsonDocument.of(Json.createArrayBuilder(Arrays.asList(objects)).build()));
         return new JsonLdInput(document);
     }
 
