@@ -20,5 +20,5 @@ public class NodeObject {
         ;
         // TODO https://www.w3.org/TR/json-ld11/#dfn-node-object
     }
-
+    
 }
