@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -237,7 +238,11 @@ public final class NodeMapBuilder {
                     
                 // 6.5.2.
                 } else {
-                    //TODO
+                    JsonArray activePropertyValue = nodeMap.get(activeGraph, id, activeProperty).asJsonArray();
+
+                    if (activePropertyValue.stream().noneMatch(e -> Objects.equals(e,  JsonUtils.toJsonObject(referencedNode)))) {
+                        nodeMap.set(activeGraph, id, activeProperty, Json.createArrayBuilder(activePropertyValue).add(JsonUtils.toJsonObject(referencedNode)).build());
+                    }                        
                 }
                 
             // 6.6.
@@ -311,7 +316,32 @@ public final class NodeMapBuilder {
 
             // 6.9.
             if (elementObject.containsKey(Keywords.REVERSE)) {
-                //TODO
+                
+                // 6.9.1.
+                Map<String, JsonValue> referenced = new LinkedHashMap<>();
+                referenced.put(Keywords.ID, Json.createValue(id));
+                
+                // 6.9.2.
+                JsonValue reverseMap = elementObject.get(Keywords.REVERSE);
+
+                // 6.9.3.
+                for (Entry<String, JsonValue> entry : reverseMap.asJsonObject().entrySet()) {
+                    
+                    // 6.9.3.1.
+                    for (JsonValue value : entry.getValue().asJsonArray()) {
+                        
+                        // 6.9.3.1.1.
+                        NodeMapBuilder
+                            .with((JsonStructure)value, nodeMap, idGenerator)
+                            .activeGraph(activeGraph)
+                            .referencedNode(referenced)
+                            .activeProperty(entry.getKey())
+                            .build();
+
+                    }
+                }
+                
+                // 6.9.4.
                 elementObject.remove(Keywords.REVERSE);
             }
 
