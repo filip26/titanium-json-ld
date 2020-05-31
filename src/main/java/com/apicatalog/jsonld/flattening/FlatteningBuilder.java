@@ -32,7 +32,7 @@ public final class FlatteningBuilder {
         return new FlatteningBuilder(element);
     }
     
-    public FlatteningBuilder setOrdered(boolean ordered) {
+    public FlatteningBuilder ordered(boolean ordered) {
         this.ordered = ordered;
         return this;
     }

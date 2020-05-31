@@ -2,14 +2,14 @@ package com.apicatalog.jsonld.api.builder;
 
 import java.net.URI;
 
-import javax.json.JsonObject;
+import javax.json.JsonArray;
 import javax.json.JsonStructure;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.grammar.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
-import com.apicatalog.jsonld.processor.CompactionProcessor;
+import com.apicatalog.jsonld.processor.FlatteningProcessor;
 
 public final class FlatteningApi {
 
@@ -77,14 +77,14 @@ public final class FlatteningApi {
         return ordered(true);
     }
 
-    public JsonObject get() throws JsonLdError {
-        throw new UnsupportedOperationException();
-//        if (jsonContext != null) {
-//            return CompactionProcessor.compact(document, jsonContext, options);
-//        }
-//        if (contextUri != null) {
-//            return CompactionProcessor.compact(document, jsonContext, options);
-//        }
-//        throw new IllegalStateException();
+    public JsonArray get() throws JsonLdError {
+
+        if (jsonContext != null) {
+            return FlatteningProcessor.flatten(document, jsonContext, options);
+        }
+        if (contextUri != null) {
+            return FlatteningProcessor.flatten(document, jsonContext, options);
+        }
+        throw new IllegalStateException();
     }
 }
