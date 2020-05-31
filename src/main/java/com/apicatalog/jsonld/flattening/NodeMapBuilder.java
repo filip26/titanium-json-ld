@@ -1,11 +1,11 @@
 package com.apicatalog.jsonld.flattening;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.json.Json;
@@ -120,7 +120,7 @@ public final class NodeMapBuilder {
         if (elementObject.containsKey(Keywords.TYPE)) {
             
             JsonArrayBuilder types = Json.createArrayBuilder();
-            
+ 
             // 3.1.
             for (JsonValue item : JsonUtils.toJsonArray(elementObject.get(Keywords.TYPE))) {
                 
@@ -276,26 +276,21 @@ public final class NodeMapBuilder {
             // 6.7.
             if (elementObject.containsKey(Keywords.TYPE)) {
 
-                List<JsonValue> nodeType = null;
+                Set<JsonValue> nodeType = new LinkedHashSet<>();
                 
                 JsonValue nodeTypeValue = nodeMap.get(activeGraph, id, Keywords.TYPE);
                 
                 if (JsonUtils.isArray(nodeTypeValue)) {
-                    nodeType = new LinkedList<>(nodeTypeValue.asJsonArray());
                     
+                    nodeTypeValue.asJsonArray().forEach(nodeType::add);
+
                 } else if (JsonUtils.isNotNull(nodeTypeValue)) {
                     
-                    nodeType = new LinkedList<>();
-                    nodeType.add(nodeTypeValue);
-                    
-                } else {
-                    nodeType = new LinkedList<>();
+                    nodeType.add(nodeTypeValue);    
                 }
                 
-                for (JsonValue item : JsonUtils.toJsonArray(elementObject.get(Keywords.TYPE))) {
-                    nodeType.add(item);
-                }
-
+                JsonUtils.toJsonArray(elementObject.get(Keywords.TYPE)).forEach(nodeType::add);
+                
                 nodeMap.set(activeGraph, id, Keywords.TYPE, JsonUtils.toJsonArray(nodeType));
                 
                 elementObject.remove(Keywords.TYPE);
@@ -371,9 +366,9 @@ public final class NodeMapBuilder {
 
             // 6.12.
             for (String property : elementObject.keySet().stream().sorted().collect(Collectors.toList())) {
-                
+     
                 JsonStructure value = (JsonStructure)elementObject.get(property);
-                
+           
                 // 6.12.1.
                 if (CompactUri.isBlankNode(property)) {
                     property = idGenerator.createIdentifier(property);
