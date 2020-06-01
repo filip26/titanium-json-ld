@@ -13,17 +13,17 @@ import com.apicatalog.jsonld.lang.Keywords;
 
 public final class NodeMap {
 
-    private final Map<String, Map<String, Map<String, JsonValue>>> nodeMap;
+    private final Map<String, Map<String, Map<String, JsonValue>>> index;
     
     public NodeMap() {
-        this.nodeMap = new LinkedHashMap<>();
-        this.nodeMap.put(Keywords.DEFAULT, new LinkedHashMap<>());
+        this.index = new LinkedHashMap<>();
+        this.index.put(Keywords.DEFAULT, new LinkedHashMap<>());
     }
     
     public boolean doesNotContain(String activeGraph, String activeSubject, String activeProperty) {
-        return !nodeMap.containsKey(activeGraph) 
-                    || !nodeMap.get(activeGraph).containsKey(activeSubject)
-                    || !nodeMap.get(activeGraph).get(activeSubject).containsKey(activeProperty)
+        return !index.containsKey(activeGraph) 
+                    || !index.get(activeGraph).containsKey(activeSubject)
+                    || !index.get(activeGraph).get(activeSubject).containsKey(activeProperty)
                     ;
     }
 
@@ -33,39 +33,39 @@ public final class NodeMap {
             return;
         }
 
-        if (!nodeMap.containsKey(activeGraph)) {
-            nodeMap.put(activeGraph, new LinkedHashMap<>());
+        if (!index.containsKey(activeGraph)) {
+            index.put(activeGraph, new LinkedHashMap<>());
         }
         
-        if (!nodeMap.get(activeGraph).containsKey(activeSubject)) {
-            nodeMap.get(activeGraph).put(activeSubject, new LinkedHashMap<>());
+        if (!index.get(activeGraph).containsKey(activeSubject)) {
+            index.get(activeGraph).put(activeSubject, new LinkedHashMap<>());
         }
         
-        nodeMap.get(activeGraph).get(activeSubject).put(activeProperty, value);
+        index.get(activeGraph).get(activeSubject).put(activeProperty, value);
     }
 
     public JsonValue get(String activeGraph, String activeSubject, String activeProperty) {
         
-        if (nodeMap.containsKey(activeGraph) && nodeMap.get(activeGraph).containsKey(activeSubject)) {
-            return nodeMap.get(activeGraph).get(activeSubject).get(activeProperty);
+        if (index.containsKey(activeGraph) && index.get(activeGraph).containsKey(activeSubject)) {
+            return index.get(activeGraph).get(activeSubject).get(activeProperty);
         }
         
         return null;
     }
 
     public boolean doesNotContain(String activeGraph, String activeSubject) {
-        return !nodeMap.containsKey(activeGraph) 
-                || !nodeMap.get(activeGraph).containsKey(activeSubject)
+        return !index.containsKey(activeGraph) 
+                || !index.get(activeGraph).containsKey(activeSubject)
                 ;
     }
 
     public Map<String, JsonObject> get(String activeGraph) {
         
-        if (!nodeMap.containsKey(activeGraph)) {
+        if (!index.containsKey(activeGraph)) {
             return null;
         }
 
-        return nodeMap
+        return index
                     .get(activeGraph)
                     .entrySet()
                     .stream()
@@ -76,8 +76,8 @@ public final class NodeMap {
 
     public Collection<String> keys(boolean ordered) {
         return ordered 
-                    ? nodeMap.keySet().stream().sorted().collect(Collectors.toList())
-                    : nodeMap.keySet()
+                    ? index.keySet().stream().sorted().collect(Collectors.toList())
+                    : index.keySet()
                     ;
     }
     

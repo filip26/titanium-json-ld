@@ -91,10 +91,6 @@ public final class FlatteningProcessor {
             }
             
             flattenedOutput = CompactionProcessor.compact(document, context, compactionOptions);
-            
-            
-//            System.out.println(">>> " + expansionOptions.isOrdered() + ", " + options.isOrdered());
-            //TODO            
         }
         
         return flattenedOutput;            

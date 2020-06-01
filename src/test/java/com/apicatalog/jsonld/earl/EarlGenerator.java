@@ -139,9 +139,9 @@ public class EarlGenerator {
         writer.println("  doap:homepage <https://github.com/filip26/jsonp-ld>;");
         writer.println("  doap:license <https://github.com/filip26/jsonp-ld/blob/master/LICENSE>;");
         writer.println("  doap:release [");
-        writer.println("    doap:name \"JSONP-LD 0.2.2\";");
-        writer.println("    doap:revision \"0.2.2\";");
-        writer.println("    doap:created \"2020-05-30\"^^xsd:date;");
+        writer.println("    doap:name \"JSONP-LD 0.3\";");
+        writer.println("    doap:revision \"0.3\";");
+        writer.println("    doap:created \"2020-06-01\"^^xsd:date;");
         writer.println("  ] ;");
         writer.println("  doap:programming-language \"Java\".");
         writer.println();

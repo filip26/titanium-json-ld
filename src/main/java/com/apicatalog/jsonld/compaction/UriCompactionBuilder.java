@@ -455,20 +455,16 @@ public final class UriCompactionBuilder {
             }
         }
 
-        // 5.
-        if (vocab && activeContext.getVocabularyMapping() != null) {
-
-            // 5.1.
-            if (variable.startsWith(activeContext.getVocabularyMapping()) 
-                    && variable.length() > activeContext.getVocabularyMapping().length()) {
+        // 5., 5.1.
+        if ((vocab && activeContext.getVocabularyMapping() != null) 
+                && (variable.startsWith(activeContext.getVocabularyMapping()) 
+                    && variable.length() > activeContext.getVocabularyMapping().length())) {
                 
-                String suffix = variable.substring(activeContext.getVocabularyMapping().length());
-                
-                if (!activeContext.containsTerm(suffix)) {                    
-                    return suffix;
-                }
-                
-            }
+            String suffix = variable.substring(activeContext.getVocabularyMapping().length());
+            
+            if (!activeContext.containsTerm(suffix)) {                    
+                return suffix;
+            }            
         }
         
         // 6.
@@ -516,11 +512,9 @@ public final class UriCompactionBuilder {
             
             URI uri = URI.create(variable);
             
-            if (uri.getScheme() != null && activeContext.containsTerm(uri.getScheme())) {
-
-                if (activeContext.getTerm(uri.getScheme()).isPrefix() && uri.getAuthority() == null) {
-                    throw new JsonLdError(JsonLdErrorCode.IRI_CONFUSED_WITH_PREFIX);
-                }               
+            if ((uri.getScheme() != null && activeContext.containsTerm(uri.getScheme()))
+                && (activeContext.getTerm(uri.getScheme()).isPrefix() && uri.getAuthority() == null)) {
+                throw new JsonLdError(JsonLdErrorCode.IRI_CONFUSED_WITH_PREFIX);
             }
         }
 
