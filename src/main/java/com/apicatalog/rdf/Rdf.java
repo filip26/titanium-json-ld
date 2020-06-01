@@ -26,12 +26,12 @@ public final class Rdf {
 //        return RdfProvider.provider().createGraph();
 //    }
 
-    public static final RdfReader createReader(Reader reader) {
-        return RdfProvider.provider().createReader(reader);
+    public static final RdfReader createReader(Reader reader, RdfFormat format) {
+        return RdfProvider.provider().createReader(reader, format);
     }
 
-    public static final RdfWriter createWriter(Writer writer) {
-        return RdfProvider.provider().createWriter(writer);
+    public static final RdfWriter createWriter(Writer writer, RdfFormat format) {
+        return RdfProvider.provider().createWriter(writer, format);
     }
 
     public static final Dataset createDataset() {

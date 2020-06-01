@@ -20,6 +20,7 @@ import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.rdf.Rdf;
+import com.apicatalog.rdf.RdfFormat;
 
 @RunWith(Parameterized.class)
 public class ToRdfTest {
@@ -73,7 +74,7 @@ public class ToRdfTest {
 
         try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.RESOURCES_BASE + testCase.expect.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
 
-            Dataset expected = Rdf.createReader(new InputStreamReader(is)).getDataset();
+            Dataset expected = Rdf.createReader(new InputStreamReader(is), RdfFormat.NQuads).getDataset();
 
             Assert.assertNotNull(expected);
 

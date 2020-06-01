@@ -13,6 +13,7 @@ import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
+import com.apicatalog.jsonld.rdf.ToRdfBuilder;
 import com.apicatalog.rdf.Rdf;
 
 /**
@@ -48,24 +49,18 @@ public final class ToRdfProcessor {
     public static final Dataset toRdf(RemoteDocument input, final JsonLdOptions options) throws JsonLdError {
 
         // 2.
-        JsonLdOptions expansionOptions = new JsonLdOptions();
+        final JsonLdOptions expansionOptions = new JsonLdOptions();
         expansionOptions.setBase(options.getBase());
 //FIXME        expansionOptions.setExpandContext(options.getExpandContext());
         
-        JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions);
-       
-        // 3.
-        Dataset dataset = Rdf.createDataset();
-        
-        // 4.
-        NodeMap nodeMap = new NodeMap();
-        
-        // 5.
-        NodeMapBuilder.with(expandedInput, nodeMap).build();
-        
-        // 6.
-        
-        // 7.
-        return dataset;
+        final JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions);
+
+        return ToRdfBuilder
+                        .with(
+                            NodeMapBuilder.with(expandedInput, new NodeMap()).build(),
+                            Rdf.createDataset()
+                            )
+                        .produceGeneralizedRdf(options.isProduceGeneralizedRdf())
+                        .build();     
     }
 }

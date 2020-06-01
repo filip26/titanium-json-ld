@@ -1,4 +1,4 @@
-package com.apicatalog.mini.rdf;
+package com.apicatalog.rdf.mini;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -10,8 +10,12 @@ import org.apache.commons.rdf.api.IRI;
 import org.apache.commons.rdf.api.Quad;
 import org.apache.commons.rdf.api.RDFTerm;
 
-public class MiniRdfDataset implements Dataset {
+class MiniRdfDataset implements Dataset {
 
+    protected MiniRdfDataset() {
+        // TODO Auto-generated constructor stub
+    }
+    
     @Override
     public void add(Quad quad) {
         throw new UnsupportedOperationException();

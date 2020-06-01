@@ -1,4 +1,4 @@
-package com.apicatalog.mini.rdf.io;
+package com.apicatalog.rdf.mini;
 
 import java.io.Reader;
 
@@ -6,11 +6,11 @@ import org.apache.commons.rdf.api.Dataset;
 
 import com.apicatalog.rdf.io.RdfReader;
 
-public final class MiniRdfReader implements RdfReader {
+final class RdfNQuadsReader implements RdfReader {
 
     private final Reader reader;
     
-    public MiniRdfReader(final Reader reader) {
+    protected RdfNQuadsReader(final Reader reader) {
         this.reader = reader;
     }
     

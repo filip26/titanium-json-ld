@@ -27,7 +27,7 @@ public final class NodeMapBuilder {
 
     // required
     private JsonStructure element;
-    private NodeMap nodeMap;
+    private final NodeMap nodeMap;
     
     // optional
     private String activeGraph;
@@ -78,7 +78,7 @@ public final class NodeMapBuilder {
         return this;
     }
     
-    public void build() throws JsonLdError {
+    public NodeMap build() throws JsonLdError {
 
         // 1.
         if (JsonUtils.isArray(element)) {
@@ -108,7 +108,7 @@ public final class NodeMapBuilder {
                     .build();
 
             }
-            return;
+            return nodeMap;
         }
         
         // 2.        
@@ -385,5 +385,6 @@ public final class NodeMapBuilder {
                         .build();
             }
         }
+        return nodeMap;
     }   
 }
