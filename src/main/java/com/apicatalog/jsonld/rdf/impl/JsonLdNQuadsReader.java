@@ -1,15 +1,15 @@
-package com.apicatalog.jsonld.rdf.io.impl;
+package com.apicatalog.jsonld.rdf.impl;
 
 import java.io.Reader;
 
 import com.apicatalog.jsonld.rdf.RdfDataset;
 import com.apicatalog.jsonld.rdf.io.RdfReader;
 
-public final class RdfNQuadsReader implements RdfReader {
+final class JsonLdNQuadsReader implements RdfReader {
 
     private final Reader reader;
     
-    public RdfNQuadsReader(final Reader reader) {
+    protected JsonLdNQuadsReader(final Reader reader) {
         this.reader = reader;
     }
     

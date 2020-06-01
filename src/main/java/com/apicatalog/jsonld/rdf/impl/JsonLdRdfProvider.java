@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.rdf.spi;
+package com.apicatalog.jsonld.rdf.impl;
 
 import java.io.Reader;
 import java.io.Writer;
@@ -6,25 +6,24 @@ import java.io.Writer;
 import com.apicatalog.jsonld.rdf.RdfDataset;
 import com.apicatalog.jsonld.rdf.RdfFormat;
 import com.apicatalog.jsonld.rdf.RdfGraph;
-import com.apicatalog.jsonld.rdf.impl.RdfDatasetImpl;
 import com.apicatalog.jsonld.rdf.io.RdfReader;
 import com.apicatalog.jsonld.rdf.io.RdfWriter;
-import com.apicatalog.jsonld.rdf.io.impl.RdfNQuadsReader;
+import com.apicatalog.jsonld.rdf.spi.RdfProvider;
 
 public final class JsonLdRdfProvider extends RdfProvider {
 
-    public static final RdfProvider DEFAULT = new JsonLdRdfProvider(); 
+    public static final RdfProvider INSTANCE = new JsonLdRdfProvider(); 
     
     @Override
     public RdfDataset createDataset() {
-        return new RdfDatasetImpl();
+        return new JsonLdRdfDataset();
     }
 
     @Override
     public RdfReader createReader(Reader reader, RdfFormat format) {
         
         if (RdfFormat.NQuads.equals(format)) {
-            return new RdfNQuadsReader(reader);            
+            return new JsonLdNQuadsReader(reader);            
         }
         //TODO
         return null;
@@ -38,8 +37,7 @@ public final class JsonLdRdfProvider extends RdfProvider {
 
     @Override
     public RdfGraph createGraph() {
-        // TODO Auto-generated method stub
-        return null;
+        return new JsonLdRdfGraph();
     }
 
 }

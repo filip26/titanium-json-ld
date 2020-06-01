@@ -13,7 +13,7 @@ import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.rdf.Rdf;
 import com.apicatalog.jsonld.rdf.RdfDataset;
-import com.apicatalog.jsonld.rdf.out.ToRdfBuilder;
+import com.apicatalog.jsonld.rdf.builder.out.ToRdfBuilder;
 
 /**
  * 

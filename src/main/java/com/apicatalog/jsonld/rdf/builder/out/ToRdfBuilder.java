@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.rdf.out;
+package com.apicatalog.jsonld.rdf.builder.out;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.flattening.NodeMap;

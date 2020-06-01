@@ -6,6 +6,7 @@ import java.io.Writer;
 import com.apicatalog.jsonld.rdf.RdfDataset;
 import com.apicatalog.jsonld.rdf.RdfFormat;
 import com.apicatalog.jsonld.rdf.RdfGraph;
+import com.apicatalog.jsonld.rdf.impl.JsonLdRdfProvider;
 import com.apicatalog.jsonld.rdf.io.RdfReader;
 import com.apicatalog.jsonld.rdf.io.RdfWriter;
 
@@ -17,7 +18,7 @@ public abstract class RdfProvider {
     
     public static RdfProvider provider() {
         //TODO
-        return JsonLdRdfProvider.DEFAULT;
+        return JsonLdRdfProvider.INSTANCE;
     }
 
     public abstract RdfDataset createDataset();

@@ -1,22 +1,29 @@
 package com.apicatalog.jsonld.rdf.impl;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import com.apicatalog.jsonld.rdf.RdfDataset;
 import com.apicatalog.jsonld.rdf.RdfGraph;
 
-public final class RdfDatasetImpl implements RdfDataset {
+final class JsonLdRdfDataset implements RdfDataset {
 
+    private final Map<String, RdfGraph> graphs;
+    private String defaultGraph;
+    
+    protected JsonLdRdfDataset() {
+        this.graphs = new HashMap<>();
+    }
+    
     @Override
     public RdfGraph getDefaultGraph() {
-        // TODO Auto-generated method stub
-        return null;
+        return defaultGraph != null ? graphs.get(defaultGraph) : null;
     }
 
     @Override
     public void add(String graphName, RdfGraph graph) {
-        // TODO Auto-generated method stub
-        
+        graphs.put(graphName, graph);
     }
 
     @Override
