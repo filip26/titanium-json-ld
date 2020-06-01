@@ -7,6 +7,7 @@ import javax.json.JsonValue;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.lang.JsonLdComparison;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 
 public class JsonLdTestRunnerEarl {
@@ -34,8 +35,7 @@ public class JsonLdTestRunnerEarl {
             RemoteDocument expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new LoadDocumentOptions());
                                     
             // compare expected with the result
-            return Objects.equals(expectedDocument.getDocument().asJsonStructure(), result);
-
+            return JsonLdComparison.equals(expectedDocument.getDocument().asJsonStructure(), result);
             
         } catch (JsonLdError e) {
             
