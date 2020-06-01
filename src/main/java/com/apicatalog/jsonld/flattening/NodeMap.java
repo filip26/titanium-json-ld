@@ -15,6 +15,8 @@ public final class NodeMap {
 
     private final Map<String, Map<String, Map<String, JsonValue>>> index;
     
+    private final BlankNodeIdGenerator generator = new BlankNodeIdGenerator();
+    
     public NodeMap() {
         this.index = new LinkedHashMap<>();
         this.index.put(Keywords.DEFAULT, new LinkedHashMap<>());
@@ -79,6 +81,14 @@ public final class NodeMap {
                     ? index.keySet().stream().sorted().collect(Collectors.toList())
                     : index.keySet()
                     ;
+    }
+
+    public String createIdentifier(String name) {
+        return generator.createIdentifier(name);
+    }
+
+    public String createIdentifier() {
+        return generator.createIdentifier();
     }
     
 }

@@ -10,7 +10,6 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.flattening.BlankNodeIdGenerator;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
@@ -60,10 +59,9 @@ public final class ToRdfProcessor {
         
         // 4.
         NodeMap nodeMap = new NodeMap();
-        BlankNodeIdGenerator idGenerator = new BlankNodeIdGenerator();
         
         // 5.
-        NodeMapBuilder.with(expandedInput, nodeMap, idGenerator).build();
+        NodeMapBuilder.with(expandedInput, nodeMap).build();
         
         // 6.
         

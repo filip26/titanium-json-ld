@@ -28,7 +28,6 @@ public final class NodeMapBuilder {
     // required
     private JsonStructure element;
     private NodeMap nodeMap;
-    private final BlankNodeIdGenerator idGenerator;
     
     // optional
     private String activeGraph;
@@ -38,10 +37,9 @@ public final class NodeMapBuilder {
     private Map<String, JsonValue> list;
     
     
-    private NodeMapBuilder(final JsonStructure element, final NodeMap nodeMap, final BlankNodeIdGenerator idGenerator) {
+    private NodeMapBuilder(final JsonStructure element, final NodeMap nodeMap) {
         this.element = element;
         this.nodeMap = nodeMap;
-        this.idGenerator = idGenerator;
         
         // default values
         this.activeGraph = Keywords.DEFAULT;
@@ -51,8 +49,8 @@ public final class NodeMapBuilder {
         this.referencedNode = null;
     }
     
-    public static final NodeMapBuilder with(final JsonStructure element, final NodeMap nodeMap, final BlankNodeIdGenerator idGenerator) {
-        return new NodeMapBuilder(element, nodeMap, idGenerator);
+    public static final NodeMapBuilder with(final JsonStructure element, final NodeMap nodeMap) {
+        return new NodeMapBuilder(element, nodeMap);
     }
     
     public NodeMapBuilder activeGraph(String activeGraph) {
@@ -101,7 +99,7 @@ public final class NodeMapBuilder {
                 }
                 
                 NodeMapBuilder
-                    .with(itemValue, nodeMap, idGenerator)
+                    .with(itemValue, nodeMap)
                     .activeGraph(activeGraph)
                     .activeProperty(activeProperty)
                     .activeSubject(activeSubject)
@@ -125,7 +123,7 @@ public final class NodeMapBuilder {
             for (JsonValue item : JsonUtils.toJsonArray(elementObject.get(Keywords.TYPE))) {
                 
                 if (JsonUtils.isString(item) && CompactUri.isBlankNode(((JsonString)item).getString())) {
-                    types.add(Json.createValue(idGenerator.createIdentifier(((JsonString)item).getString())));
+                    types.add(Json.createValue(nodeMap.createIdentifier(((JsonString)item).getString())));
                     
                 } else {
                     types.add(item);
@@ -169,7 +167,7 @@ public final class NodeMapBuilder {
             
             // 5.2.
             NodeMapBuilder
-                    .with((JsonStructure)elementObject.get(Keywords.LIST), nodeMap, idGenerator)
+                    .with((JsonStructure)elementObject.get(Keywords.LIST), nodeMap)
                     .activeGraph(activeGraph)
                     .activeSubject(activeSubject)
                     .activeProperty(activeProperty)
@@ -211,14 +209,14 @@ public final class NodeMapBuilder {
                 id = ((JsonString)elementObject.get(Keywords.ID)).getString();
                 
                 if (CompactUri.isBlankNode(id)) {
-                    id = idGenerator.createIdentifier(id);
+                    id = nodeMap.createIdentifier(id);
                 }
                 
                 elementObject.remove(Keywords.ID);
 
             // 6.2.
             } else {                
-                id = idGenerator.createIdentifier();
+                id = nodeMap.createIdentifier();
             }
             
             // 6.3.
@@ -327,7 +325,7 @@ public final class NodeMapBuilder {
                         
                         // 6.9.3.1.1.
                         NodeMapBuilder
-                            .with((JsonStructure)value, nodeMap, idGenerator)
+                            .with((JsonStructure)value, nodeMap)
                             .activeGraph(activeGraph)
                             .referencedNode(referenced)
                             .activeProperty(entry.getKey())
@@ -344,7 +342,7 @@ public final class NodeMapBuilder {
             if (elementObject.containsKey(Keywords.GRAPH)) {
 
                 NodeMapBuilder
-                    .with((JsonStructure)elementObject.get(Keywords.GRAPH), nodeMap, idGenerator)
+                    .with((JsonStructure)elementObject.get(Keywords.GRAPH), nodeMap)
                     .activeGraph(id)
                     .build();
 
@@ -355,7 +353,7 @@ public final class NodeMapBuilder {
             if (elementObject.containsKey(Keywords.INCLUDED)) {
                 
                 NodeMapBuilder
-                    .with((JsonStructure)elementObject.get(Keywords.INCLUDED), nodeMap, idGenerator)
+                    .with((JsonStructure)elementObject.get(Keywords.INCLUDED), nodeMap)
                     .activeGraph(activeGraph)
                     .build();
 
@@ -369,7 +367,7 @@ public final class NodeMapBuilder {
            
                 // 6.12.1.
                 if (CompactUri.isBlankNode(property)) {
-                    property = idGenerator.createIdentifier(property);
+                    property = nodeMap.createIdentifier(property);
                 }
                 
                 // 6.12.2.
@@ -379,7 +377,7 @@ public final class NodeMapBuilder {
 
                 // 6.12.3.
                 NodeMapBuilder
-                        .with(value, nodeMap, idGenerator)
+                        .with(value, nodeMap)
                         .activeGraph(activeGraph)
                         .activeSubject(id)
                         .activeProperty(property)
