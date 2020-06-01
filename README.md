@@ -18,17 +18,17 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
  --- | ---: | ---: | ---: | ---
 [Expansion](https://www.w3.org/TR/json-ld/#expanded-document-form) | 369 |  368 | 99.7% | [non-normative test 0122](https://w3c.github.io/json-ld-api/tests/expand-manifest#t0122) does not pass 
 [Compaction](https://www.w3.org/TR/json-ld/#compacted-document-form) | 239 | 239 | 100% |
-[Flattening](https://www.w3.org/TR/json-ld/#flattened-document-form) | 55 | 53 | 96.3% | 
+[Flattening](https://www.w3.org/TR/json-ld/#flattened-document-form) | 55 | 55 | 100% |
+[RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | | | TBD | 
 [Framing](https://www.w3.org/TR/json-ld11-framing/#framing) | | | TBD |
-[RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | | | TBD |
 
 See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld-api/reports/#subj_JSONP_LD_Java) for more details.
 
 ## Roadmap
 
-- [x] 0.1 - [Expansion Algorithms](https://www.w3.org/TR/json-ld11-api/#expansion-algorithms)
-- [x] 0.2 - [Compaction Algorithms](https://www.w3.org/TR/json-ld11-api/#compaction-algorithms)
-- [ ] 0.3 - [Flattening Algorithms](https://www.w3.org/TR/json-ld11-api/#flattening-algorithms)
+- [x] 0.1 - ~~[Expansion Algorithms](https://www.w3.org/TR/json-ld11-api/#expansion-algorithms)~~
+- [x] 0.2 - ~~[Compaction Algorithms](https://www.w3.org/TR/json-ld11-api/#compaction-algorithms)~~
+- [x] 0.3 - ~~[Flattening Algorithms](https://www.w3.org/TR/json-ld11-api/#flattening-algorithms)~~
 - [ ] 0.4 - [RDF to JSON-LD](https://www.w3.org/TR/json-ld11-api/#serialize-rdf-as-json-ld-algorithm)
 - [ ] 0.5 - [JSON-LD to RDF](https://www.w3.org/TR/json-ld11-api/#deserialize-json-ld-to-rdf-algorithm)
 - [ ] 0.6 - [JSON-LD API](https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface)
@@ -60,6 +60,12 @@ JsonLd.expand("https://example.com/document.json")
 
 ```javascript
 JsonLd.compact("https://example.com/expanded.jsonld", "https://example.com/context.jsonld").get();
+```
+
+#### Flattening
+
+```javascript
+JsonLd.flatten("https://example.com/document.jsonld").get();
 ```
 
 

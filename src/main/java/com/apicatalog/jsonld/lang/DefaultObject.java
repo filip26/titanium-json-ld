@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.grammar;
+package com.apicatalog.jsonld.lang;
 
 import javax.json.JsonValue;
 

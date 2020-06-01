@@ -1,10 +1,12 @@
 package com.apicatalog.jsonld.json;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
@@ -112,6 +114,15 @@ public final class JsonUtils {
         final JsonObjectBuilder builder = Json.createObjectBuilder();
 
         map.entrySet().stream().forEach(e -> builder.add(e.getKey(), e.getValue()));
+
+        return builder.build();
+    }
+
+    public static JsonArray toJsonArray(Collection<JsonValue> collection) {
+        
+        final JsonArrayBuilder builder = Json.createArrayBuilder();
+
+        collection.stream().forEach(builder::add);
 
         return builder.build();
     }

@@ -16,8 +16,12 @@ public final class JsonDocument implements Document {
 
     private JsonStructure structure;
 
-    public JsonDocument(final JsonStructure structue) {
+    private JsonDocument(final JsonStructure structue) {
         this.structure = structue;
+    }
+    
+    public static final Document of(JsonStructure structure) {
+        return new JsonDocument(structure);
     }
 
     public static final Document parse(final Reader reader)  throws JsonLdError {

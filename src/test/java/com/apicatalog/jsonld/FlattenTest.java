@@ -1,7 +1,6 @@
 package com.apicatalog.jsonld;
 
 import static org.junit.Assume.assumeFalse;
-import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -21,7 +20,7 @@ import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
 
 @RunWith(Parameterized.class)
-public class CompactTest {
+public class FlattenTest {
 
     @Parameterized.Parameter(0)
     public JsonLdTestCase testCase;
@@ -36,29 +35,28 @@ public class CompactTest {
     public String baseUri;
     
     @Test
-    public void testCompact() {
+    public void testFlatten() {
 
         // skip specVersion == 1.0
         assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
         
-        // skip normative == false
-        assumeTrue(testCase.options.normative == null || testCase.options.normative);
-        
-        Assert.assertNotNull(testCase.context);
-        
         try {
             (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
                 
-                //pre-load context
-                RemoteDocument jsonContext = options.getDocumentLoader().loadDocument(testCase.context, new LoadDocumentOptions());
+                RemoteDocument jsonContext = null;
                 
-                Assert.assertNotNull(jsonContext);
-                Assert.assertNotNull(jsonContext.getDocument());
-                Assert.assertNotNull(jsonContext.getDocument().asJsonStructure());
+                //pre-load context
+                if (testCase.context != null) {
+                    jsonContext = options.getDocumentLoader().loadDocument(testCase.context, new LoadDocumentOptions());
+                    
+                    Assert.assertNotNull(jsonContext);
+                    Assert.assertNotNull(jsonContext.getDocument());
+                    Assert.assertNotNull(jsonContext.getDocument().asJsonStructure());
+                }
                                 
-                return JsonLd.compact(
+                return JsonLd.flatten(
                                     testCase.input, 
-                                    jsonContext.getDocument().asJsonStructure()
+                                    jsonContext != null ?  jsonContext.getDocument().asJsonStructure() : null
                                     )
                                 .options(options)
                                 .get();
@@ -72,7 +70,7 @@ public class CompactTest {
     @Parameterized.Parameters(name = "{1}: {2}")
     public static Collection<Object[]> data() throws IOException {        
         return JsonLdManifestLoader
-                .load("compact-manifest.jsonld")
+                .load("flatten-manifest.jsonld")
                 .stream()            
                 .map(o -> new Object[] {o, o.id, o.name, o.baseUri})
                 .collect(Collectors.toList());

@@ -7,6 +7,7 @@ import org.junit.Assert;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.lang.JsonLdComparison;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 
 public class JsonLdTestRunnerJunit {
@@ -57,7 +58,10 @@ public class JsonLdTestRunnerJunit {
         Assert.assertNotNull(expectedDocument);
         Assert.assertNotNull(expectedDocument.getDocument());
         
-        // compare expected with the result        
-        Assert.assertEquals(expectedDocument.getDocument().asJsonStructure(), result);
+        // compare expected with the result       
+        Assert.assertTrue(
+                        "Expected " + expectedDocument.getDocument().asJsonStructure() + ", but was" + result,
+                        JsonLdComparison.equals(expectedDocument.getDocument().asJsonStructure(), result)
+                        );
     }    
 }

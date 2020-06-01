@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 
 import javax.json.JsonString;
 
-import com.apicatalog.jsonld.grammar.DirectionType;
-import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.DirectionType;
+import com.apicatalog.jsonld.lang.Keywords;
 
 /**
  * 

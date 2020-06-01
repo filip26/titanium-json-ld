@@ -14,8 +14,8 @@ import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.CompactionBuilder;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 
 /**
@@ -62,6 +62,7 @@ public final class CompactionProcessor {
         expansionOptions.setOrdered(false);
         expansionOptions.setExtractAllScripts(false);
         expansionOptions.setBase(options.getBase());
+        expansionOptions.setProcessingMode(options.getProcessingMode());
         
         JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions);
 

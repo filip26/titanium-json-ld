@@ -25,8 +25,9 @@ public class EarlGenerator {
         try (PrintWriter writer = new PrintWriter(path.toFile())) {
             
             printHeader(writer);
-            testExpand(writer);
             testCompact(writer);
+            testExpand(writer);
+            testFlatten(writer);
         };
     }
     
@@ -67,7 +68,39 @@ public class EarlGenerator {
                          )
                     );
     }
-    
+
+    public void testFlatten(final PrintWriter writer) throws IOException {
+
+        JsonLdManifestLoader
+            .load("flatten-manifest.jsonld")
+            .stream()
+            .forEach(testCase ->                
+                        printResult(writer, testCase.uri,           
+                             (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
+                            
+                                 RemoteDocument jsonContext = null;
+                                 
+                                 //pre-load context
+                                 if (testCase.context != null) {
+                                     jsonContext = options.getDocumentLoader().loadDocument(testCase.context, new LoadDocumentOptions());
+                                     
+                                     if (jsonContext == null || jsonContext.getDocument() == null || jsonContext.getDocument().asJsonStructure() == null) {
+                                         throw new IllegalStateException();
+                                     }
+
+                                 }
+                                                 
+                                 return JsonLd.flatten(
+                                                     testCase.input, 
+                                                     jsonContext != null ?  jsonContext.getDocument().asJsonStructure() : null
+                                                     )
+                                                 .options(options)
+                                                 .get();
+                                 })
+                         )
+                    );
+    }
+
     void printResult(PrintWriter writer, String testUri, boolean passed) {
         writer.println();
         writer.println("[ a earl:Assertion;");

@@ -5,7 +5,7 @@ import javax.json.JsonValue;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.grammar.Keywords;
+import com.apicatalog.jsonld.lang.Keywords;
 
 /**
  * Steps 4.1 - 4.3
