@@ -8,6 +8,7 @@ import com.apicatalog.jsonld.api.JsonLdProcessor;
 import com.apicatalog.jsonld.api.builder.CompactionApi;
 import com.apicatalog.jsonld.api.builder.ExpansionApi;
 import com.apicatalog.jsonld.api.builder.FlatteningApi;
+import com.apicatalog.rdf.RdfDataset;
 
 public final class JsonLd {
 
@@ -43,13 +44,21 @@ public final class JsonLd {
     }
 
     public static final FlatteningApi flatten(String documentUri) {
-        return flatten(documentUri);
+        return flatten(URI.create(documentUri));
     }
     
     public static final FlatteningApi flatten(URI documentUri) {
         return new FlatteningApi(documentUri);
     }
+
+    public static final RdfDataset toRdf(String documentUri) {
+        return toRdf(URI.create(documentUri));
+    }
     
+    public static final RdfDataset toRdf(URI documentUri) {
+        throw new UnsupportedOperationException();
+    }
+
     public static final JsonLdProcessor createProcessor() {
         throw new UnsupportedOperationException();
     }
