@@ -6,13 +6,14 @@ import java.util.Collection;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 
+import org.apache.commons.rdf.api.Dataset;
+
 import com.apicatalog.jsonld.api.JsonLdContext;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdInput;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.api.JsonLdProcessor;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.rdf.RdfDataset;
 
 public final class JsonLd11Processor implements JsonLdProcessor {
 
@@ -77,22 +78,22 @@ public final class JsonLd11Processor implements JsonLdProcessor {
     }
 
     @Override
-    public Collection<JsonObject> fromRdf(RdfDataset input) {
+    public Collection<JsonObject> fromRdf(Dataset input) {
         return fromRdf(input, new JsonLdOptions());
     }
 
     @Override
-    public Collection<JsonObject> fromRdf(RdfDataset input, JsonLdOptions options) {
+    public Collection<JsonObject> fromRdf(Dataset input, JsonLdOptions options) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public RdfDataset toRdf(JsonLdInput input) {
+    public Dataset toRdf(JsonLdInput input) {
         return toRdf(input, new JsonLdOptions());
     }
 
     @Override
-    public RdfDataset toRdf(JsonLdInput input, JsonLdOptions options) {
+    public Dataset toRdf(JsonLdInput input, JsonLdOptions options) {
         throw new UnsupportedOperationException();
     }
 }

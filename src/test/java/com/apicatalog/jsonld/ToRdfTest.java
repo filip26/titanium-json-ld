@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import org.apache.commons.rdf.api.Dataset;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +17,6 @@ import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
-import com.apicatalog.rdf.RdfDataset;
 
 @RunWith(Parameterized.class)
 public class ToRdfTest {
@@ -51,7 +51,7 @@ public class ToRdfTest {
         Assert.assertNotNull(options);
         Assert.assertNotNull(options.getDocumentLoader());
         
-        RdfDataset result = null;
+        Dataset result = null;
         
         try {
   

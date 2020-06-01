@@ -2,12 +2,13 @@ package com.apicatalog.jsonld.api.builder;
 
 import java.net.URI;
 
+import org.apache.commons.rdf.api.Dataset;
+
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.processor.ToRdfProcessor;
-import com.apicatalog.rdf.RdfDataset;
 
 public final class ToRdfApi {
 
@@ -73,7 +74,7 @@ public final class ToRdfApi {
         return ordered(true);
     }
     
-    public RdfDataset get() throws JsonLdError {
+    public Dataset get() throws JsonLdError {
         return ToRdfProcessor.toRdf(document, options);
     }
 }
