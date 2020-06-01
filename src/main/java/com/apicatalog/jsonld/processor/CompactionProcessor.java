@@ -14,8 +14,8 @@ import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.CompactionBuilder;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 
 /**

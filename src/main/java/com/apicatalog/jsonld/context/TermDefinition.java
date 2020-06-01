@@ -7,7 +7,7 @@ import java.util.Objects;
 
 import javax.json.JsonValue;
 
-import com.apicatalog.jsonld.grammar.DirectionType;
+import com.apicatalog.jsonld.lang.DirectionType;
 
 public final class TermDefinition {
 

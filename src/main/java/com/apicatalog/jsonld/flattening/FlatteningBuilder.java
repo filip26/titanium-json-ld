@@ -16,8 +16,8 @@ import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.Keywords;
 
 public final class FlatteningBuilder {
 

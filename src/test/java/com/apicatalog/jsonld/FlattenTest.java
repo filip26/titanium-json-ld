@@ -15,7 +15,7 @@ import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.grammar.Version;
+import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;

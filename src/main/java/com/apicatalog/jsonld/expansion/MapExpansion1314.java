@@ -20,15 +20,15 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.grammar.DefaultObject;
-import com.apicatalog.jsonld.grammar.DirectionType;
-import com.apicatalog.jsonld.grammar.GraphObject;
-import com.apicatalog.jsonld.grammar.Keywords;
-import com.apicatalog.jsonld.grammar.ListObject;
-import com.apicatalog.jsonld.grammar.NodeObject;
-import com.apicatalog.jsonld.grammar.ValueObject;
-import com.apicatalog.jsonld.grammar.Version;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.DefaultObject;
+import com.apicatalog.jsonld.lang.DirectionType;
+import com.apicatalog.jsonld.lang.GraphObject;
+import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.ListObject;
+import com.apicatalog.jsonld.lang.NodeObject;
+import com.apicatalog.jsonld.lang.ValueObject;
+import com.apicatalog.jsonld.lang.Version;
 
 /**
  * 

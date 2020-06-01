@@ -12,11 +12,11 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
-import com.apicatalog.jsonld.grammar.CompactUri;
-import com.apicatalog.jsonld.grammar.DirectionType;
-import com.apicatalog.jsonld.grammar.Keywords;
-import com.apicatalog.jsonld.grammar.Version;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.CompactUri;
+import com.apicatalog.jsonld.lang.DirectionType;
+import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.uri.UriUtils;
 
 /**

@@ -18,10 +18,10 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
-import com.apicatalog.jsonld.grammar.CompactUri;
-import com.apicatalog.jsonld.grammar.Keywords;
-import com.apicatalog.jsonld.grammar.NodeObject;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.CompactUri;
+import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.NodeObject;
 
 public final class NodeMapBuilder {
 

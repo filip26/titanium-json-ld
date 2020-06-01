@@ -2,7 +2,7 @@ package com.apicatalog.jsonld.uri;
 
 import java.net.URI;
 
-import com.apicatalog.jsonld.grammar.Keywords;
+import com.apicatalog.jsonld.lang.Keywords;
 
 public final class UriUtils {
 

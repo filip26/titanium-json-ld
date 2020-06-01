@@ -14,8 +14,8 @@ import com.apicatalog.jsonld.compaction.UriCompactionBuilder;
 import com.apicatalog.jsonld.compaction.ValueCompactionBuilder;
 import com.apicatalog.jsonld.expansion.UriExpansionBuilder;
 import com.apicatalog.jsonld.expansion.ValueExpansionBuilder;
-import com.apicatalog.jsonld.grammar.DirectionType;
-import com.apicatalog.jsonld.grammar.Version;
+import com.apicatalog.jsonld.lang.DirectionType;
+import com.apicatalog.jsonld.lang.Version;
 
 /**
  * A context that is used to resolve terms while the processing algorithm is

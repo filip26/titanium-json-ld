@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
-import com.apicatalog.jsonld.grammar.Keywords;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.Keywords;
 
 public final class NodeMap {
 

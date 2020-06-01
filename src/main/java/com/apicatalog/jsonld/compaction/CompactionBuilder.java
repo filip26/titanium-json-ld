@@ -21,11 +21,11 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.grammar.GraphObject;
-import com.apicatalog.jsonld.grammar.Keywords;
-import com.apicatalog.jsonld.grammar.ListObject;
-import com.apicatalog.jsonld.grammar.Version;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.GraphObject;
+import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.ListObject;
+import com.apicatalog.jsonld.lang.Version;
 
 /**
  * 

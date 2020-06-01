@@ -5,7 +5,7 @@ import java.net.URI;
 import javax.json.JsonObject;
 
 import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.grammar.Version;
+import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.uri.UriResolver;
 
 public class JsonLdTestCaseOptions {
