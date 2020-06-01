@@ -1,13 +1,6 @@
 package com.apicatalog.jsonld.suite;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.json.Json;
 import javax.json.JsonValue;
-import javax.json.JsonWriter;
-import javax.json.JsonWriterFactory;
-import javax.json.stream.JsonGenerator;
 
 import org.junit.Assert;
 

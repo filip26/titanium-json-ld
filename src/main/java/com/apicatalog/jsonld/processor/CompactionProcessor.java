@@ -62,6 +62,7 @@ public final class CompactionProcessor {
         expansionOptions.setOrdered(false);
         expansionOptions.setExtractAllScripts(false);
         expansionOptions.setBase(options.getBase());
+        expansionOptions.setProcessingMode(options.getProcessingMode());
         
         JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions);
 

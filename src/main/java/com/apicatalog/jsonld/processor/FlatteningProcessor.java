@@ -62,22 +62,38 @@ public final class FlatteningProcessor {
         JsonLdOptions expansionOptions = new JsonLdOptions();
         expansionOptions.setOrdered(false);
         expansionOptions.setBase(options.getBase());
+        expansionOptions.setProcessingMode(options.getProcessingMode());
         
         JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions);
-
+        
         // 5.
         BlankNodeIdGenerator idGenerator = new BlankNodeIdGenerator();
         
         // 6.
         JsonStructure flattenedOutput = FlatteningBuilder.with(expandedInput, idGenerator).ordered(options.isOrdered()).build();
-        
+
         // 6.1.
         if (JsonUtils.isNotNull(context)) {
          
             RemoteDocument document = new RemoteDocument();
             document.setDocument(JsonDocument.of(flattenedOutput));
             
-            flattenedOutput = CompactionProcessor.compact(document, context, options);
+            JsonLdOptions compactionOptions = new JsonLdOptions();
+            compactionOptions.setOrdered(options.isOrdered());
+            compactionOptions.setProcessingMode(options.getProcessingMode());
+            compactionOptions.setCompactArrays(options.isCompactArrays());
+            
+            if (options.getBase() != null) {
+                compactionOptions.setBase(options.getBase());
+                
+            } else if (options.isCompactArrays()) {
+                compactionOptions.setBase(input.getDocumentUrl());
+            }
+            
+            flattenedOutput = CompactionProcessor.compact(document, context, compactionOptions);
+            
+            
+//            System.out.println(">>> " + expansionOptions.isOrdered() + ", " + options.isOrdered());
             //TODO            
         }
         

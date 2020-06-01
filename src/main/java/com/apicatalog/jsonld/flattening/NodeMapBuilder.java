@@ -176,7 +176,7 @@ public final class NodeMapBuilder {
                     .referencedNode(referencedNode)
                     .list(result)
                     .build();
-                    ;
+                    
 
             // 5.3.
             if (list == null) {
@@ -186,13 +186,13 @@ public final class NodeMapBuilder {
                     
                 } else {
                     
-                    JsonArray list = Json.createArrayBuilder(
+                    nodeMap.set(activeGraph, activeSubject, activeProperty,
+                                Json.createArrayBuilder(
                                         nodeMap.get(activeGraph, activeSubject, activeProperty)
                                             .asJsonArray())
                                             .add(JsonUtils.toJsonObject(result))
                                             .build()
-                                            ;
-                    nodeMap.set(activeGraph, activeSubject, activeProperty, list);
+                                );
                 }
 
             // 5.4.
@@ -347,7 +347,6 @@ public final class NodeMapBuilder {
                     .with((JsonStructure)elementObject.get(Keywords.GRAPH), nodeMap, idGenerator)
                     .activeGraph(id)
                     .build();
-                    ;
 
                 elementObject.remove(Keywords.GRAPH);
             }
@@ -359,7 +358,6 @@ public final class NodeMapBuilder {
                     .with((JsonStructure)elementObject.get(Keywords.INCLUDED), nodeMap, idGenerator)
                     .activeGraph(activeGraph)
                     .build();
-                    ;
 
                 elementObject.remove(Keywords.INCLUDED);
             }

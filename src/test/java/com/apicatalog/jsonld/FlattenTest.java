@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import javax.json.JsonStructure;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
