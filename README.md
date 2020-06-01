@@ -29,8 +29,8 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 - [x] 0.1 - ~~[Expansion Algorithms](https://www.w3.org/TR/json-ld11-api/#expansion-algorithms)~~
 - [x] 0.2 - ~~[Compaction Algorithms](https://www.w3.org/TR/json-ld11-api/#compaction-algorithms)~~
 - [x] 0.3 - ~~[Flattening Algorithms](https://www.w3.org/TR/json-ld11-api/#flattening-algorithms)~~
-- [ ] 0.4 - [RDF to JSON-LD](https://www.w3.org/TR/json-ld11-api/#serialize-rdf-as-json-ld-algorithm)
-- [ ] 0.5 - [JSON-LD to RDF](https://www.w3.org/TR/json-ld11-api/#deserialize-json-ld-to-rdf-algorithm)
+- [ ] 0.4 - [JSON-LD to RDF](https://www.w3.org/TR/json-ld11-api/#deserialize-json-ld-to-rdf-algorithm)
+- [ ] 0.5 - [RDF to JSON-LD](https://www.w3.org/TR/json-ld11-api/#serialize-rdf-as-json-ld-algorithm)
 - [ ] 0.6 - [JSON-LD API](https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface)
 - [ ] 0.7 - Document & Context loaders
 - [ ] 0.8 - [Framing](https://www.w3.org/TR/json-ld11-framing/)
