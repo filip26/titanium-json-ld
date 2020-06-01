@@ -88,7 +88,11 @@ public final class JsonLdComparison {
             return true;
         }
         
-        // JSON arrays are generally compared without regard to order
+        return setEquals(array1, array2);
+    }
+    
+    static final boolean setEquals(JsonArray array1, JsonArray array2) {
+     // JSON arrays are generally compared without regard to order
         final List<JsonValue> remaining = new ArrayList<>(array2);
         
         for (final JsonValue item1 : array1) {
@@ -109,6 +113,7 @@ public final class JsonLdComparison {
             }
         }
         
-        return remaining.isEmpty();
-    }    
+        return remaining.isEmpty();        
+    }
+
 }
