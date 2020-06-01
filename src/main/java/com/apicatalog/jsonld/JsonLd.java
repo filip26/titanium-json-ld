@@ -56,7 +56,7 @@ public final class JsonLd {
     }
     
     public static final ToRdfApi toRdf(URI documentUri) {
-        throw new UnsupportedOperationException();
+        return new ToRdfApi(documentUri);
     }
 
     public static final JsonLdProcessor createProcessor() {
