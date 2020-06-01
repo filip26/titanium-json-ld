@@ -1,22 +1,23 @@
-package com.apicatalog.rdf.mini;
+package com.apicatalog.rdf.spi;
 
 import java.io.Reader;
 import java.io.Writer;
 
-import org.apache.commons.rdf.api.Dataset;
-
+import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfFormat;
+import com.apicatalog.rdf.RdfGraph;
+import com.apicatalog.rdf.impl.RdfDatasetImpl;
 import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.RdfWriter;
-import com.apicatalog.rdf.spi.RdfProvider;
+import com.apicatalog.rdf.io.impl.RdfNQuadsReader;
 
-public final class MiniRdfProvider extends RdfProvider {
+public final class DefaultRdfProvider extends RdfProvider {
 
-    public static final RdfProvider DEFAULT = new MiniRdfProvider(); 
+    public static final RdfProvider DEFAULT = new DefaultRdfProvider(); 
     
     @Override
-    public Dataset createDataset() {
-        return new MiniRdfDataset();
+    public RdfDataset createDataset() {
+        return new RdfDatasetImpl();
     }
 
     @Override
@@ -31,6 +32,12 @@ public final class MiniRdfProvider extends RdfProvider {
 
     @Override
     public RdfWriter createWriter(Writer writer, RdfFormat format) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public RdfGraph createGraph() {
         // TODO Auto-generated method stub
         return null;
     }

@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import org.apache.commons.rdf.api.Dataset;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +19,7 @@ import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.rdf.Rdf;
+import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfFormat;
 
 @RunWith(Parameterized.class)
@@ -55,7 +55,7 @@ public class ToRdfTest {
         Assert.assertNotNull(options);
         Assert.assertNotNull(options.getDocumentLoader());
         
-        Dataset result = null;
+        RdfDataset result = null;
         
         try {
   
@@ -74,7 +74,7 @@ public class ToRdfTest {
 
         try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.RESOURCES_BASE + testCase.expect.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
 
-            Dataset expected = Rdf.createReader(new InputStreamReader(is), RdfFormat.NQuads).getDataset();
+            RdfDataset expected = Rdf.createReader(new InputStreamReader(is), RdfFormat.NQuads).getDataset();
 
             Assert.assertNotNull(expected);
 

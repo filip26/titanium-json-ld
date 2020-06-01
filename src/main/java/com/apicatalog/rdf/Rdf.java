@@ -3,8 +3,6 @@ package com.apicatalog.rdf;
 import java.io.Reader;
 import java.io.Writer;
 
-import org.apache.commons.rdf.api.Dataset;
-
 import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.RdfWriter;
 import com.apicatalog.rdf.spi.RdfProvider;
@@ -22,9 +20,9 @@ public final class Rdf {
 //        return RdfProvider.provider().createBlankNode(name);
 //    }
 //
-//    public static final Graph createGraph() {
-//        return RdfProvider.provider().createGraph();
-//    }
+    public static final RdfGraph createGraph() {
+        return RdfProvider.provider().createGraph();
+    }
 
     public static final RdfReader createReader(Reader reader, RdfFormat format) {
         return RdfProvider.provider().createReader(reader, format);
@@ -34,7 +32,7 @@ public final class Rdf {
         return RdfProvider.provider().createWriter(writer, format);
     }
 
-    public static final Dataset createDataset() {
+    public static final RdfDataset createDataset() {
         return RdfProvider.provider().createDataset();
     }
 //TODO

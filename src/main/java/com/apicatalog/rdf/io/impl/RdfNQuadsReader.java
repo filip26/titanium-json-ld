@@ -1,21 +1,20 @@
-package com.apicatalog.rdf.mini;
+package com.apicatalog.rdf.io.impl;
 
 import java.io.Reader;
 
-import org.apache.commons.rdf.api.Dataset;
-
+import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.io.RdfReader;
 
-final class RdfNQuadsReader implements RdfReader {
+public final class RdfNQuadsReader implements RdfReader {
 
     private final Reader reader;
     
-    protected RdfNQuadsReader(final Reader reader) {
+    public RdfNQuadsReader(final Reader reader) {
         this.reader = reader;
     }
     
     @Override
-    public Dataset getDataset() {
+    public RdfDataset getDataset() {
         // TODO Auto-generated method stub
         return null;
     }

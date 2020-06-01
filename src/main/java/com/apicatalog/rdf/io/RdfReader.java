@@ -1,9 +1,9 @@
 package com.apicatalog.rdf.io;
 
-import org.apache.commons.rdf.api.Dataset;
+import com.apicatalog.rdf.RdfDataset;
 
 public interface RdfReader {
     
-    Dataset getDataset();
+    RdfDataset getDataset();
     
 }

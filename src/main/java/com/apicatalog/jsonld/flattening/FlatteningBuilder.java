@@ -55,7 +55,7 @@ public final class FlatteningBuilder {
         Map<String, JsonObject> defaultGraph = nodeMap.get(Keywords.DEFAULT);
 
         // 4.
-        for (String graphName : nodeMap.keys(ordered)) {
+        for (String graphName : nodeMap.graphs(ordered)) {
 
             if (Keywords.DEFAULT.equals(graphName)) {
                 continue;

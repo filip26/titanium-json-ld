@@ -4,8 +4,6 @@ import java.net.URI;
 
 import javax.json.JsonArray;
 
-import org.apache.commons.rdf.api.Dataset;
-
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
@@ -15,6 +13,7 @@ import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.rdf.ToRdfBuilder;
 import com.apicatalog.rdf.Rdf;
+import com.apicatalog.rdf.RdfDataset;
 
 /**
  * 
@@ -26,7 +25,7 @@ public final class ToRdfProcessor {
     ToRdfProcessor() {
     }
 
-    public static final Dataset toRdf(final URI input, final JsonLdOptions options) throws JsonLdError {
+    public static final RdfDataset toRdf(final URI input, final JsonLdOptions options) throws JsonLdError {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
@@ -46,9 +45,8 @@ public final class ToRdfProcessor {
         return toRdf(remoteDocument, options);
     }
 
-    public static final Dataset toRdf(RemoteDocument input, final JsonLdOptions options) throws JsonLdError {
+    public static final RdfDataset toRdf(RemoteDocument input, final JsonLdOptions options) throws JsonLdError {
 
-        // 2.
         final JsonLdOptions expansionOptions = new JsonLdOptions();
         expansionOptions.setBase(options.getBase());
 //FIXME        expansionOptions.setExpandContext(options.getExpandContext());

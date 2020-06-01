@@ -22,64 +22,57 @@ public final class NodeMap {
         this.index.put(Keywords.DEFAULT, new LinkedHashMap<>());
     }
     
-    public boolean doesNotContain(String activeGraph, String activeSubject, String activeProperty) {
-        return !index.containsKey(activeGraph) 
-                    || !index.get(activeGraph).containsKey(activeSubject)
-                    || !index.get(activeGraph).get(activeSubject).containsKey(activeProperty)
+    public boolean doesNotContain(String graphName, String subject, String property) {
+        return !index.containsKey(graphName) 
+                    || !index.get(graphName).containsKey(subject)
+                    || !index.get(graphName).get(subject).containsKey(property)
                     ;
     }
 
-    public void set(String activeGraph, String activeSubject, String activeProperty, JsonValue value) {
+    public void set(String graphName, String subject, String property, JsonValue value) {
 
-        if (activeSubject == null) {
+        if (subject == null) {
             return;
         }
 
-        if (!index.containsKey(activeGraph)) {
-            index.put(activeGraph, new LinkedHashMap<>());
+        if (!index.containsKey(graphName)) {
+            index.put(graphName, new LinkedHashMap<>());
         }
         
-        if (!index.get(activeGraph).containsKey(activeSubject)) {
-            index.get(activeGraph).put(activeSubject, new LinkedHashMap<>());
+        if (!index.get(graphName).containsKey(subject)) {
+            index.get(graphName).put(subject, new LinkedHashMap<>());
         }
         
-        index.get(activeGraph).get(activeSubject).put(activeProperty, value);
+        index.get(graphName).get(subject).put(property, value);
     }
 
-    public JsonValue get(String activeGraph, String activeSubject, String activeProperty) {
+    public JsonValue get(String graphName, String subject, String property) {
         
-        if (index.containsKey(activeGraph) && index.get(activeGraph).containsKey(activeSubject)) {
-            return index.get(activeGraph).get(activeSubject).get(activeProperty);
+        if (index.containsKey(graphName) && index.get(graphName).containsKey(subject)) {
+            return index.get(graphName).get(subject).get(property);
         }
         
         return null;
     }
 
-    public boolean doesNotContain(String activeGraph, String activeSubject) {
-        return !index.containsKey(activeGraph) 
-                || !index.get(activeGraph).containsKey(activeSubject)
+    public boolean doesNotContain(String graphName, String subject) {
+        return !index.containsKey(graphName) 
+                || !index.get(graphName).containsKey(subject)
                 ;
     }
 
-    public Map<String, JsonObject> get(String activeGraph) {
+    public Map<String, JsonObject> get(String graphName) {
         
-        if (!index.containsKey(activeGraph)) {
+        if (!index.containsKey(graphName)) {
             return null;
         }
 
         return index
-                    .get(activeGraph)
+                    .get(graphName)
                     .entrySet()
                     .stream()
                     .map(e -> new Object[] {e.getKey(), JsonUtils.toJsonObject(e.getValue())})
                     .collect(Collectors.toMap(e -> (String)e[0], e -> (JsonObject)e[1]))                    
-                    ;
-    }
-
-    public Collection<String> keys(boolean ordered) {
-        return ordered 
-                    ? index.keySet().stream().sorted().collect(Collectors.toList())
-                    : index.keySet()
                     ;
     }
 
@@ -89,6 +82,27 @@ public final class NodeMap {
 
     public String createIdentifier() {
         return generator.createIdentifier();
+    }
+
+    public Collection<String> graphs(boolean sorted) {
+        return sorted 
+                    ? index.keySet().stream().sorted().collect(Collectors.toList())
+                    : index.keySet()
+                    ;
+    }
+
+    public Collection<String> subjects(String graphName, boolean sorted) {
+        return sorted 
+                ? index.get(graphName).keySet().stream().sorted().collect(Collectors.toList())
+                : index.get(graphName).keySet()
+                ;
+    }
+
+    public Collection<String> properties(String graphName, String subject, boolean sorted) {
+        return sorted 
+                ? index.get(graphName).get(subject).keySet().stream().sorted().collect(Collectors.toList())
+                : index.get(graphName).get(subject).keySet()
+                ;
     }
     
 }
