@@ -8,7 +8,7 @@ import com.apicatalog.jsonld.api.JsonLdProcessor;
 import com.apicatalog.jsonld.api.builder.CompactionApi;
 import com.apicatalog.jsonld.api.builder.ExpansionApi;
 import com.apicatalog.jsonld.api.builder.FlatteningApi;
-import com.apicatalog.rdf.RdfDataset;
+import com.apicatalog.jsonld.api.builder.ToRdfApi;
 
 public final class JsonLd {
 
@@ -51,11 +51,11 @@ public final class JsonLd {
         return new FlatteningApi(documentUri);
     }
 
-    public static final RdfDataset toRdf(String documentUri) {
+    public static final ToRdfApi toRdf(String documentUri) {
         return toRdf(URI.create(documentUri));
     }
     
-    public static final RdfDataset toRdf(URI documentUri) {
+    public static final ToRdfApi toRdf(URI documentUri) {
         throw new UnsupportedOperationException();
     }
 
