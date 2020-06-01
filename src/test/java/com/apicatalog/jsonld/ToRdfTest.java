@@ -3,6 +3,8 @@ package com.apicatalog.jsonld;
 import static org.junit.Assume.assumeFalse;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -17,6 +19,7 @@ import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
+import com.apicatalog.rdf.Rdf;
 
 @RunWith(Parameterized.class)
 public class ToRdfTest {
@@ -34,7 +37,7 @@ public class ToRdfTest {
     public String baseUri;
     
     @Test
-    public void testToRdf() {
+    public void testToRdf() throws IOException {
 
         // skip specVersion == 1.0
         assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
@@ -68,18 +71,16 @@ public class ToRdfTest {
         Assert.assertNull(testCase.expectErrorCode);
         Assert.assertNotNull(testCase.expect);
         
-//        RemoteDocument expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new LoadDocumentOptions());
-//                    
-//        Assert.assertNotNull(expectedDocument);
-//        Assert.assertNotNull(expectedDocument.getDocument());
+        try (InputStream is = getClass().getResourceAsStream(testCase.expect.toString().substring("classpath:".length()))) {
 
-        //TODO compare expected with result
-        
-        // compare expected with the result       
-//        Assert.assertTrue(
-//                        "Expected " + expectedDocument.getDocument().asJsonStructure() + ", but was" + result,
-//                        expectedDocument.getDocument().asJsonStructure(), result)
-//                        );        
+            Dataset expected = Rdf.createParser(new InputStreamReader(is)).getDataset();
+
+            Assert.assertNotNull(expected);
+
+            //TODO compare expected with result with
+            // https://www.w3.org/TR/rdf11-concepts/#dfn-dataset-isomorphism
+            Assert.assertEquals(expected, result);
+        }
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")

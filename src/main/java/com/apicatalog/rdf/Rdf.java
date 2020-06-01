@@ -1,70 +1,60 @@
 package com.apicatalog.rdf;
 
-import org.apache.commons.rdf.api.BlankNode;
-import org.apache.commons.rdf.api.BlankNodeOrIRI;
+import java.io.Reader;
+import java.io.Writer;
+
 import org.apache.commons.rdf.api.Dataset;
-import org.apache.commons.rdf.api.Graph;
-import org.apache.commons.rdf.api.IRI;
-import org.apache.commons.rdf.api.Literal;
-import org.apache.commons.rdf.api.Quad;
-import org.apache.commons.rdf.api.RDFTerm;
-import org.apache.commons.rdf.api.Triple;
+
+import com.apicatalog.rdf.io.RdfParser;
+import com.apicatalog.rdf.io.RdfWriter;
+import com.apicatalog.rdf.spi.RdfProvider;
 
 public final class Rdf {
 
     private Rdf() {
-        
     }
     
-    public static final BlankNode createBlankNode() {
-        // TODO Auto-generated method stub
-        return null;
+//    public static final BlankNode createBlankNode() {
+//        return RdfProvider.provider().createBlankNode();
+//    }
+//
+//    public static final BlankNode createBlankNode(String name) {
+//        return RdfProvider.provider().createBlankNode(name);
+//    }
+//
+//    public static final Graph createGraph() {
+//        return RdfProvider.provider().createGraph();
+//    }
+
+    public static final RdfParser createParser(Reader reader) {
+        return RdfProvider.provider().createParser(reader);
     }
 
-    public static final BlankNode createBlankNode(String name) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public static final Graph createGraph() {
-        // TODO Auto-generated method stub
-        return null;
+    public static final RdfWriter createWriter(Writer writer) {
+        return RdfProvider.provider().createWriter(writer);
     }
 
     public static final Dataset createDataset() {
-        // TODO Auto-generated method stub
-        return null;
+        return RdfProvider.provider().createDataset();
     }
-
-    public static final IRI createIRI(String iri) throws IllegalArgumentException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public static final Literal createLiteral(String lexicalForm) throws IllegalArgumentException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-
-    public static final Literal createLiteral(String lexicalForm, IRI dataType) throws IllegalArgumentException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public static final Literal createLiteral(String lexicalForm, String languageTag) throws IllegalArgumentException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public static final Triple createTriple(BlankNodeOrIRI subject, IRI predicate, RDFTerm object) throws IllegalArgumentException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public static final Quad createQuad(BlankNodeOrIRI graphName, BlankNodeOrIRI subject, IRI predicate, RDFTerm object)
-            throws IllegalArgumentException {
-        // TODO Auto-generated method stub
-        return null;
-    }
+//TODO
+//    public static final Literal createLiteral(String lexicalForm) throws IllegalArgumentException {
+//        return RdfProvider.provider().createLiteral(lexicalForm);
+//    }
+//
+//
+//    public static final Literal createLiteral(String lexicalForm, IRI dataType) throws IllegalArgumentException {
+//        // TODO Auto-generated method stub
+//        return null;
+//    }
+//
+//    public static final Literal createLiteral(String lexicalForm, String languageTag) throws IllegalArgumentException {
+//        // TODO Auto-generated method stub
+//        return null;
+//    }
+//
+//    public static final Triple createTriple(BlankNodeOrIRI subject, IRI predicate, RDFTerm object) throws IllegalArgumentException {
+//        // TODO Auto-generated method stub
+//        return null;
+//    }
 }
