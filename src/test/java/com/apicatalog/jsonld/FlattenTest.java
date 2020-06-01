@@ -54,12 +54,12 @@ public class FlattenTest {
                     Assert.assertNotNull(jsonContext.getDocument().asJsonStructure());
                 }
                                 
-                return JsonLd.flatten(
-                                    testCase.input, 
-                                    jsonContext != null ?  jsonContext.getDocument().asJsonStructure() : null
-                                    )
-                                .options(options)
-                                .get();
+                return JsonLd
+                        .flatten(testCase.input) 
+                        .context(jsonContext != null ?  jsonContext.getDocument().asJsonStructure() : null)
+                        .options(options)
+                        .get();
+
             });
             
         } catch (JsonLdError e) {

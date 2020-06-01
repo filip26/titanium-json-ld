@@ -90,12 +90,11 @@ public class EarlGenerator {
 
                                  }
                                                  
-                                 return JsonLd.flatten(
-                                                     testCase.input, 
-                                                     jsonContext != null ?  jsonContext.getDocument().asJsonStructure() : null
-                                                     )
-                                                 .options(options)
-                                                 .get();
+                                 return JsonLd
+                                             .flatten(testCase.input) 
+                                             .context(jsonContext != null ?  jsonContext.getDocument().asJsonStructure() : null)
+                                             .options(options)
+                                             .get();
                                  })
                          )
                     );

@@ -42,24 +42,12 @@ public final class JsonLd {
         return new CompactionApi(documentUri, context);
     }
 
-    public static final FlatteningApi flatten(String documentUri, String contextUri) {
-        return flatten(documentUri, URI.create(contextUri));
+    public static final FlatteningApi flatten(String documentUri) {
+        return flatten(documentUri);
     }
     
-    public static final FlatteningApi flatten(String documentUri, URI contextUri) {
-        return flatten(URI.create(documentUri), contextUri);
-    }
-    
-    public static final FlatteningApi flatten(URI documentUri, URI contextUri) {
-        return new FlatteningApi(documentUri, contextUri);
-    }
-
-    public static final FlatteningApi flatten(String documentUri, JsonStructure context) {
-        return flatten(URI.create(documentUri), context);
-    }
-
-    public static final FlatteningApi flatten(URI documentUri, JsonStructure context) {
-        return new FlatteningApi(documentUri, context);
+    public static final FlatteningApi flatten(URI documentUri) {
+        return new FlatteningApi(documentUri);
     }
     
     public static final JsonLdProcessor createProcessor() {
