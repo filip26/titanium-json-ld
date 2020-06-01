@@ -1,11 +1,19 @@
 package com.apicatalog.jsonld.rdf.builder.out;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.json.JsonValue;
+
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.flattening.NodeMap;
+import com.apicatalog.jsonld.lang.CompactUri;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.rdf.Rdf;
 import com.apicatalog.jsonld.rdf.RdfDataset;
 import com.apicatalog.jsonld.rdf.RdfGraph;
+import com.apicatalog.jsonld.rdf.RdfTriple;
+import com.apicatalog.jsonld.uri.UriUtils;
 
 public final class ToRdfBuilder {
 
@@ -38,15 +46,15 @@ public final class ToRdfBuilder {
             //TODO
             
             // 1.2.
-            RdfGraph tripples = null;
+            RdfGraph triples = null;
             
             if (Keywords.DEFAULT.equals(graphName)) {
-                tripples = dataset.getDefaultGraph();
+                triples = dataset.getDefaultGraph();
                 
             } else {
                 
-                tripples = Rdf.createGraph();
-                dataset.add(graphName, tripples);
+                triples = Rdf.createGraph();
+                dataset.add(graphName, triples);
             }
             
             // 1.3.
@@ -64,8 +72,28 @@ public final class ToRdfBuilder {
                         //TODO
 
                     // 1.3.2.2.
-                    } else if (Keywords.contains(property)) {
+                    } else if (Keywords.contains(property)
+                            // 1.3.2.3.
+                            || (CompactUri.isBlankNode(property) && !produceGeneralizedRdf)
+                            // 1.3.2.4.
+                            //TODO
+                            ) {
                         continue;
+                        
+                    // 1.3.2.5.
+                    } else if (CompactUri.isBlankNode(property) || UriUtils.isURI(property)) {
+
+                        for (JsonValue item : nodeMap.get(graphName, subject, property).asJsonArray()) {
+                        
+                            // 1.3.2.5.1.
+                            List<RdfTriple> listTriples = new LinkedList<>();
+                            
+                            // 1.3.2.5.2.
+                            //TODO
+                            
+                            // 1.3.2.5.3.
+                            listTriples.forEach(triples::add);
+                        }
                     }
                     
                 }

@@ -10,15 +10,16 @@ import com.apicatalog.jsonld.rdf.RdfGraph;
 final class JsonLdRdfDataset implements RdfDataset {
 
     private final Map<String, RdfGraph> graphs;
-    private String defaultGraph;
+    private RdfGraph defaultGraph;
     
     protected JsonLdRdfDataset() {
         this.graphs = new HashMap<>();
+        this.defaultGraph = new JsonLdRdfGraph();
     }
     
     @Override
     public RdfGraph getDefaultGraph() {
-        return defaultGraph != null ? graphs.get(defaultGraph) : null;
+        return defaultGraph;
     }
 
     @Override
