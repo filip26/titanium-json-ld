@@ -5,7 +5,8 @@ import java.io.Writer;
 
 import org.apache.commons.rdf.api.Dataset;
 
-import com.apicatalog.rdf.io.RdfParser;
+import com.apicatalog.mini.rdf.spi.MiniRdfProvider;
+import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.RdfWriter;
 
 public abstract class RdfProvider {
@@ -16,12 +17,12 @@ public abstract class RdfProvider {
     
     public static RdfProvider provider() {
         //TODO
-        return null;
+        return MiniRdfProvider.DEFAULT;
     }
 
     public abstract Dataset createDataset();
 
-    public abstract RdfParser createParser(Reader reader);
+    public abstract RdfReader createReader(Reader reader);
 
     public abstract RdfWriter createWriter(Writer writer);
     

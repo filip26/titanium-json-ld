@@ -70,10 +70,10 @@ public class ToRdfTest {
         
         Assert.assertNull(testCase.expectErrorCode);
         Assert.assertNotNull(testCase.expect);
-        
-        try (InputStream is = getClass().getResourceAsStream(testCase.expect.toString().substring("classpath:".length()))) {
 
-            Dataset expected = Rdf.createParser(new InputStreamReader(is)).getDataset();
+        try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.RESOURCES_BASE + testCase.expect.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
+
+            Dataset expected = Rdf.createReader(new InputStreamReader(is)).getDataset();
 
             Assert.assertNotNull(expected);
 

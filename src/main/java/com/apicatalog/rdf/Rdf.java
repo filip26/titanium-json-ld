@@ -5,7 +5,7 @@ import java.io.Writer;
 
 import org.apache.commons.rdf.api.Dataset;
 
-import com.apicatalog.rdf.io.RdfParser;
+import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.RdfWriter;
 import com.apicatalog.rdf.spi.RdfProvider;
 
@@ -26,8 +26,8 @@ public final class Rdf {
 //        return RdfProvider.provider().createGraph();
 //    }
 
-    public static final RdfParser createParser(Reader reader) {
-        return RdfProvider.provider().createParser(reader);
+    public static final RdfReader createReader(Reader reader) {
+        return RdfProvider.provider().createReader(reader);
     }
 
     public static final RdfWriter createWriter(Writer writer) {
