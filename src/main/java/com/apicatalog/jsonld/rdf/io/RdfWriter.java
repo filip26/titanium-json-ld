@@ -1,4 +1,4 @@
-package com.apicatalog.rdf.io;
+package com.apicatalog.jsonld.rdf.io;
 
 import org.apache.commons.rdf.api.Dataset;
 

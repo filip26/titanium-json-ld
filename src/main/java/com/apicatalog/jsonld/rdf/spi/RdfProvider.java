@@ -1,13 +1,13 @@
-package com.apicatalog.rdf.spi;
+package com.apicatalog.jsonld.rdf.spi;
 
 import java.io.Reader;
 import java.io.Writer;
 
-import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfFormat;
-import com.apicatalog.rdf.RdfGraph;
-import com.apicatalog.rdf.io.RdfReader;
-import com.apicatalog.rdf.io.RdfWriter;
+import com.apicatalog.jsonld.rdf.RdfDataset;
+import com.apicatalog.jsonld.rdf.RdfFormat;
+import com.apicatalog.jsonld.rdf.RdfGraph;
+import com.apicatalog.jsonld.rdf.io.RdfReader;
+import com.apicatalog.jsonld.rdf.io.RdfWriter;
 
 public abstract class RdfProvider {
 
@@ -17,7 +17,7 @@ public abstract class RdfProvider {
     
     public static RdfProvider provider() {
         //TODO
-        return DefaultRdfProvider.DEFAULT;
+        return JsonLdRdfProvider.DEFAULT;
     }
 
     public abstract RdfDataset createDataset();

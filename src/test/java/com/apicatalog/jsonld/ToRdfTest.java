@@ -16,11 +16,11 @@ import org.junit.runners.Parameterized;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.lang.Version;
+import com.apicatalog.jsonld.rdf.Rdf;
+import com.apicatalog.jsonld.rdf.RdfDataset;
+import com.apicatalog.jsonld.rdf.RdfFormat;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
-import com.apicatalog.rdf.Rdf;
-import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfFormat;
 
 @RunWith(Parameterized.class)
 public class ToRdfTest {

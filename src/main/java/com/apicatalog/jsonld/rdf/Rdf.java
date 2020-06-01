@@ -1,11 +1,11 @@
-package com.apicatalog.rdf;
+package com.apicatalog.jsonld.rdf;
 
 import java.io.Reader;
 import java.io.Writer;
 
-import com.apicatalog.rdf.io.RdfReader;
-import com.apicatalog.rdf.io.RdfWriter;
-import com.apicatalog.rdf.spi.RdfProvider;
+import com.apicatalog.jsonld.rdf.io.RdfReader;
+import com.apicatalog.jsonld.rdf.io.RdfWriter;
+import com.apicatalog.jsonld.rdf.spi.RdfProvider;
 
 public final class Rdf {
 

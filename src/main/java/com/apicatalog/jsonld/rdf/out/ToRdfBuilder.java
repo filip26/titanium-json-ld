@@ -1,11 +1,11 @@
-package com.apicatalog.jsonld.rdf;
+package com.apicatalog.jsonld.rdf.out;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.rdf.Rdf;
-import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfGraph;
+import com.apicatalog.jsonld.rdf.Rdf;
+import com.apicatalog.jsonld.rdf.RdfDataset;
+import com.apicatalog.jsonld.rdf.RdfGraph;
 
 public final class ToRdfBuilder {
 
@@ -58,9 +58,14 @@ public final class ToRdfBuilder {
                 // 1.3.2.
                 for (final String property : nodeMap.properties(graphName, subject, true)) {
                     
-                    // 1.3.2.1
+                    // 1.3.2.1.
                     if (Keywords.TYPE.equals(property)) {
                         
+                        //TODO
+
+                    // 1.3.2.2.
+                    } else if (Keywords.contains(property)) {
+                        continue;
                     }
                     
                 }

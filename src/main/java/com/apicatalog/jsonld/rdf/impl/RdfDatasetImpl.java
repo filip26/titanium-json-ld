@@ -1,9 +1,9 @@
-package com.apicatalog.rdf.impl;
+package com.apicatalog.jsonld.rdf.impl;
 
 import java.util.stream.Stream;
 
-import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfGraph;
+import com.apicatalog.jsonld.rdf.RdfDataset;
+import com.apicatalog.jsonld.rdf.RdfGraph;
 
 public final class RdfDatasetImpl implements RdfDataset {
 

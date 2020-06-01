@@ -1,4 +1,4 @@
-package com.apicatalog.rdf;
+package com.apicatalog.jsonld.rdf;
 
 /**
  * The {@link RdfTriple} interface describes an triple.

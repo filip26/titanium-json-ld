@@ -1,9 +1,9 @@
-package com.apicatalog.rdf.io.impl;
+package com.apicatalog.jsonld.rdf.io.impl;
 
 import java.io.Reader;
 
-import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.io.RdfReader;
+import com.apicatalog.jsonld.rdf.RdfDataset;
+import com.apicatalog.jsonld.rdf.io.RdfReader;
 
 public final class RdfNQuadsReader implements RdfReader {
 

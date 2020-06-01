@@ -11,9 +11,9 @@ import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
-import com.apicatalog.jsonld.rdf.ToRdfBuilder;
-import com.apicatalog.rdf.Rdf;
-import com.apicatalog.rdf.RdfDataset;
+import com.apicatalog.jsonld.rdf.Rdf;
+import com.apicatalog.jsonld.rdf.RdfDataset;
+import com.apicatalog.jsonld.rdf.out.ToRdfBuilder;
 
 /**
  * 

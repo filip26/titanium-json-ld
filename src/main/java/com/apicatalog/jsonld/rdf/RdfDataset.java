@@ -1,4 +1,4 @@
-package com.apicatalog.rdf;
+package com.apicatalog.jsonld.rdf;
 
 import java.util.stream.Stream;
 
