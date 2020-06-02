@@ -35,6 +35,12 @@ public final class Rdf {
     public static final RdfDataset createDataset() {
         return RdfProvider.provider().createDataset();
     }
+
+    public static RdfTriple createTriple(String subject, String predicate, String object) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
 //TODO
 //    public static final Literal createLiteral(String lexicalForm) throws IllegalArgumentException {
 //        return RdfProvider.provider().createLiteral(lexicalForm);

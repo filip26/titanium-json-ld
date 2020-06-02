@@ -3,10 +3,13 @@ package com.apicatalog.jsonld.rdf.builder.out;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.json.JsonString;
+import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.flattening.NodeMap;
+import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.CompactUri;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.rdf.Rdf;
@@ -69,7 +72,12 @@ public final class ToRdfBuilder {
                     // 1.3.2.1.
                     if (Keywords.TYPE.equals(property)) {
                         
-                        //TODO
+                        for (JsonValue type : nodeMap.get(graphName, subject, property).asJsonArray()) { 
+                        
+                            //TODO skip not well-formed type
+                            
+                            triples.add(Rdf.createTriple(subject, "rdf:type", ((JsonString)type).getString()));
+                        }
 
                     // 1.3.2.2.
                     } else if (Keywords.contains(property)

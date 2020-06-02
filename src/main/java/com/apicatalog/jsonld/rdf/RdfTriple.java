@@ -16,5 +16,9 @@ public interface RdfTriple {
      * @return
      */
     String getSubject();
+
+    String getPredicate();
+    
+    RdfObject getObject();
     
 }

@@ -6,6 +6,8 @@ import java.io.Writer;
 import com.apicatalog.jsonld.rdf.RdfDataset;
 import com.apicatalog.jsonld.rdf.RdfFormat;
 import com.apicatalog.jsonld.rdf.RdfGraph;
+import com.apicatalog.jsonld.rdf.RdfLiteral;
+import com.apicatalog.jsonld.rdf.RdfTriple;
 import com.apicatalog.jsonld.rdf.io.RdfReader;
 import com.apicatalog.jsonld.rdf.io.RdfWriter;
 import com.apicatalog.jsonld.rdf.spi.RdfProvider;
@@ -39,5 +41,17 @@ public final class JsonLdRdfProvider extends RdfProvider {
     public RdfGraph createGraph() {
         return new JsonLdRdfGraph();
     }
+
+    @Override
+    public RdfTriple createTriple(String subject, String predicate, String object) {
+        return JsonLdRdfTriple.of(subject, predicate, object);
+    }
+
+    @Override
+    public RdfTriple createTriple(String subject, String predicate, RdfLiteral object) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 
 }
