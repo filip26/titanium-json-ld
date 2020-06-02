@@ -11,26 +11,31 @@ import com.apicatalog.jsonld.rdf.RdfNQuad;
 import com.apicatalog.jsonld.rdf.RdfObject;
 import com.apicatalog.jsonld.rdf.RdfSubject;
 import com.apicatalog.jsonld.rdf.io.RdfReader;
+import com.apicatalog.jsonld.rdf.nq.impl.Tokenizer.Token;
+import com.apicatalog.jsonld.rdf.nq.impl.Tokenizer.TokenType;
 
 public final class NQuadsReader implements RdfReader {
 
-    private final NQuadsScanner scanner;
+    private final Tokenizer tokenizer;
     
     public NQuadsReader(final Reader reader) {
-        this.scanner = new NQuadsScanner(reader);
+        this.tokenizer = new Tokenizer(reader);
     }
     
     @Override
-    public RdfDataset readDataset() throws IOException, NQuadsReaderError {
+    public RdfDataset readDataset() throws NQuadsReaderError {
 
         //TODO cache
         
         RdfDataset dataset = Rdf.createDataset();
-
-        while (scanner.hasNext()) {
+        
+        while (tokenizer.hasNext()) {
 
             // skip EOL and whitespace
-            if (scanner.accept(NQuadsTokenType.END_OF_LINE, NQuadsTokenType.WHITE_SPACE)) {
+            if (tokenizer.accept(Tokenizer.TokenType.END_OF_LINE)
+                    || tokenizer.accept(Tokenizer.TokenType.WHITE_SPACE)
+                    ) {
+
                 continue;
             }
             
@@ -40,76 +45,127 @@ public final class NQuadsReader implements RdfReader {
         return dataset;
     }
     
-    public RdfNQuad reaStatement() throws IOException, NQuadsReaderError {
-        
+    public RdfNQuad reaStatement() throws NQuadsReaderError {
+  
         RdfSubject subject = readSubject();
-        
-        skipWs();
-        
+  
+        skipWhitespace(1);
+  
         IRI predicate = readIri();
 
-        skipWs();
-        
+        skipWhitespace(1);
+  
         RdfObject object = readObject();
         
-        skipWs();
-        
-        if (!scanner.accept(NQuadsTokenType.END_OF_STATEMENT)) {
-            //TODO read graph name
-        }
+        skipWhitespace(0);
+  
+//        if (!scanner.accept(NQuadsTokenType.END_OF_STATEMENT)) {
+//            //TODO read graph name
+//        }
 
-        scanner.expect(NQuadsTokenType.END_OF_STATEMENT);
-        scanner.next();
+        if (TokenType.END_OF_STATEMENT != tokenizer.token().getType()) {
+            unexpected(tokenizer.token());
+        }
+        
+        tokenizer.next();
 
         return Rdf.createNQuad(subject, predicate, object, null);
     }
     
-    public RdfSubject readSubject()  throws IOException, NQuadsReaderError {
+    private RdfSubject readSubject()  throws NQuadsReaderError {
+
+        final Token token = tokenizer.token();
         
-        if (scanner.accept(NQuadsTokenType.IRI_REF)) {
-            return Rdf.createSubject(IRI.create(scanner.next()));
+        if (TokenType.IRI_REF == token.getType()) {
+            
+            tokenizer.next();
+            
+            return Rdf.createSubject(IRI.create(token.getValue()));
         } 
-        
-        if (scanner.accept(NQuadsTokenType.BLANK_NODE_LABEL)) {
-            return Rdf.createSubject(BlankNode.create(scanner.next()));            
+
+        if (TokenType.BLANK_NODE_LABEL == token.getType()) {
+            
+            tokenizer.next();
+            
+            return Rdf.createSubject(BlankNode.create("_:".concat(token.getValue())));            
         }
-        
-        throw new NQuadsReaderError();
+  
+        return unexpected(token);
     }
     
-    public IRI readIri()  throws IOException, NQuadsReaderError {        
-        scanner.expect(NQuadsTokenType.IRI_REF);
-        return IRI.create(scanner.next());
-    }
-    
-    public RdfObject readObject()  throws IOException, NQuadsReaderError {
-        if (scanner.accept(NQuadsTokenType.IRI_REF)) {
-            return Rdf.createObject(IRI.create(scanner.next()));
+    private RdfObject readObject()  throws NQuadsReaderError {
+        
+        Token token = tokenizer.token();
+        
+        if (TokenType.IRI_REF == token.getType()) {
+            tokenizer.next();
+            
+            return Rdf.createObject(IRI.create(token.getValue()));
         } 
-        
-        if (scanner.accept(NQuadsTokenType.BLANK_NODE_LABEL)) {
-            return Rdf.createObject(BlankNode.create(scanner.next()));
+
+        if (TokenType.BLANK_NODE_LABEL == token.getType()) {
+            
+            tokenizer.next();
+            
+            return Rdf.createObject(BlankNode.create("_:".concat(token.getValue())));            
         }
-        
+  
         return readLiteral();
     }
     
-    public RdfObject readLiteral()  throws IOException, NQuadsReaderError {
+    public RdfObject readLiteral()  throws NQuadsReaderError {
+  
+        Token value = tokenizer.token();
         
-        scanner.expect(NQuadsTokenType.STRING_LITERAL_QUOTE);
+        if (TokenType.STRING_LITERAL_QUOTE != value.getType()) {
+            unexpected(value);
+        }
+
+        tokenizer.next();
         
-        String text = scanner.next();
+        skipWhitespace(0);
         
-        //TODO lang etc.
-        
-        return Rdf.createObject(Rdf.createLitteral(text));
-    }
-    
-    private void skipWs() throws IOException, NQuadsReaderError {
-        
-        while (scanner.hasNext() && scanner.accept(NQuadsTokenType.WHITE_SPACE)) {
-            scanner.next();
+        if (TokenType.LITERAL_ATTR == tokenizer.token().getType()) {
+            
         }
         
+        return Rdf.createObject(Rdf.createLitteral(value.getValue()));
     }
+
+    
+    private <T> T unexpected(Token token) throws NQuadsReaderError {
+        throw new NQuadsReaderError("Unexpected token '" + token.getValue() + "'.");
+    }
+    
+    private IRI readIri()  throws NQuadsReaderError {
+        
+        Token token = tokenizer.token();
+        
+        if (TokenType.IRI_REF != token.getType()) {
+            unexpected(token);
+        }
+        
+        tokenizer.next();
+        
+        return IRI.create(token.getValue());
+    }
+
+
+    private void skipWhitespace(int min) throws NQuadsReaderError {
+  
+        Token token = tokenizer.token();
+        
+        int count = 0;
+        
+        while (TokenType.WHITE_SPACE ==  token.getType()) {
+            token = tokenizer.next();
+            count++;
+        }
+  
+        if (count < min) {
+            unexpected(token);
+        }        
+    }
+
+
 }

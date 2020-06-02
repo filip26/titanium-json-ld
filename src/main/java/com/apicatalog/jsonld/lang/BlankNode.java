@@ -17,14 +17,13 @@ public final class BlankNode {
     }
 
     public static BlankNode create(String value) {
-        
-        if (value.startsWith("_:")) {
+        if (value != null && value.startsWith("_:")) {
             final String suffix = value.substring("_:".length());
 
             return new BlankNode(suffix);            
         }
 
-        return null;
+        throw new IllegalArgumentException();
     }
 
     public String getSuffix() {

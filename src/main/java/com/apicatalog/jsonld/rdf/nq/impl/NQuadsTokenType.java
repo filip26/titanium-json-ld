@@ -11,5 +11,6 @@ package com.apicatalog.jsonld.rdf.nq.impl;
     END_OF_INPUT, 
     END_OF_STATEMENT, 
     WHITE_SPACE,
+    LITERAL_ATTR
     
 }
