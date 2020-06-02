@@ -4,11 +4,12 @@ package com.apicatalog.jsonld.rdf.nq.impl;
 
     // terminals
     LANGTAG,
-    EOL,
-    IRIREF,
+    END_OF_LINE,
+    IRI_REF,
     STRING_LITERAL_QUOTE,
     BLANK_NODE_LABEL,
-    EOF, 
-    STATEMENT_END, WS,
+    END_OF_INPUT, 
+    END_OF_STATEMENT, 
+    WHITE_SPACE,
     
 }

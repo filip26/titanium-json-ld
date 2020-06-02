@@ -45,9 +45,8 @@ public final class Rdf {
         return RdfProvider.provider().createTriple(subject, predicate, object);
     }
 
-    public static RdfNQuad createNQuad(Object object, String predicate, RdfObject subject, String graphName) {
-        // TODO Auto-generated method stub
-        return null;
+    public static RdfNQuad createNQuad(String object, String predicate, RdfObject subject, String graphName) {
+        return RdfProvider.provider().createNQuad(object, predicate, subject, graphName);
     }
 
     public static RdfObject createObject(String uriOrBlank) {

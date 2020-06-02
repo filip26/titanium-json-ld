@@ -7,6 +7,7 @@ import com.apicatalog.jsonld.rdf.RdfDataset;
 import com.apicatalog.jsonld.rdf.RdfFormat;
 import com.apicatalog.jsonld.rdf.RdfGraph;
 import com.apicatalog.jsonld.rdf.RdfLiteral;
+import com.apicatalog.jsonld.rdf.RdfNQuad;
 import com.apicatalog.jsonld.rdf.RdfObject;
 import com.apicatalog.jsonld.rdf.RdfTriple;
 import com.apicatalog.jsonld.rdf.io.RdfReader;
@@ -58,6 +59,11 @@ public final class JsonLdRdfProvider extends RdfProvider {
     @Override
     public RdfTriple createTriple(String subject, String predicate, RdfObject object) {
         return new RdfTripleImpl(subject, predicate, object);
+    }
+
+    @Override
+    public RdfNQuad createNQuad(String subject, String predicate, RdfObject object, String graphName) {
+        return new RdfNQuadImpl(subject, predicate, object, graphName);
     }
 
 

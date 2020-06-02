@@ -85,6 +85,7 @@ public class ToRdfTest {
             Assert.assertEquals(expected, result);
             
         } catch (NQuadsReaderError e ) {
+            e.printStackTrace();
             Assert.fail(e.getMessage());
         }
     }

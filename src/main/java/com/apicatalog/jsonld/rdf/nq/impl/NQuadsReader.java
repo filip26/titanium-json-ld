@@ -27,7 +27,7 @@ public final class NQuadsReader implements RdfReader {
         while (scanner.hasNext()) {
 
             // skip EOL and whitespace
-            if (scanner.accept(NQuadsTokenType.EOL, NQuadsTokenType.WS)) {
+            if (scanner.accept(NQuadsTokenType.END_OF_LINE, NQuadsTokenType.WHITE_SPACE)) {
                 continue;
             }
             
@@ -41,22 +41,28 @@ public final class NQuadsReader implements RdfReader {
         
         String subject = readSubject();
         
+        skipWs();
+        
         String predicate = readPredicate();
+
+        skipWs();
         
         RdfObject object = readObject();
         
-        if (!scanner.accept(NQuadsTokenType.STATEMENT_END)) {
+        skipWs();
+        
+        if (!scanner.accept(NQuadsTokenType.END_OF_STATEMENT)) {
             //TODO read graph name
         }
-        
-        scanner.expect(NQuadsTokenType.STATEMENT_END);
-        
+
+        scanner.expect(NQuadsTokenType.END_OF_STATEMENT);
+
         return Rdf.createNQuad(null, predicate, object, null);
     }
     
     public String readSubject()  throws IOException, NQuadsReaderError {
         
-        if (scanner.accept(NQuadsTokenType.IRIREF)) {
+        if (scanner.accept(NQuadsTokenType.IRI_REF)) {
             return scanner.next();
         } 
         
@@ -68,12 +74,12 @@ public final class NQuadsReader implements RdfReader {
     }
     
     public String readPredicate()  throws IOException, NQuadsReaderError {        
-        scanner.expect(NQuadsTokenType.IRIREF);
+        scanner.expect(NQuadsTokenType.IRI_REF);
         return scanner.next();
     }
     
     public RdfObject readObject()  throws IOException, NQuadsReaderError {
-        if (scanner.accept(NQuadsTokenType.IRIREF)) {
+        if (scanner.accept(NQuadsTokenType.IRI_REF)) {
             return Rdf.createObject(scanner.next());
         } 
         
@@ -93,5 +99,13 @@ public final class NQuadsReader implements RdfReader {
         //TODO lang etc.
         
         return null;
+    }
+    
+    private void skipWs() throws IOException, NQuadsReaderError {
+        
+        while (scanner.hasNext() && scanner.accept(NQuadsTokenType.WHITE_SPACE)) {
+            scanner.next();
+        }
+        
     }
 }
