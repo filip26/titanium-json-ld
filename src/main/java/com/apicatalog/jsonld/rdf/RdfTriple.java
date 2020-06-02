@@ -1,5 +1,7 @@
 package com.apicatalog.jsonld.rdf;
 
+import com.apicatalog.jsonld.iri.IRI;
+
 /**
  * The {@link RdfTriple} interface describes an triple.
  * 
@@ -15,9 +17,9 @@ public interface RdfTriple {
      * 
      * @return
      */
-    String getSubject();
+    RdfSubject getSubject();
 
-    String getPredicate();
+    IRI getPredicate();
     
     RdfObject getObject();
     

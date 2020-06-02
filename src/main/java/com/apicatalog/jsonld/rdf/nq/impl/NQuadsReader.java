@@ -3,10 +3,13 @@ package com.apicatalog.jsonld.rdf.nq.impl;
 import java.io.IOException;
 import java.io.Reader;
 
+import com.apicatalog.jsonld.iri.IRI;
+import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.rdf.Rdf;
 import com.apicatalog.jsonld.rdf.RdfDataset;
 import com.apicatalog.jsonld.rdf.RdfNQuad;
 import com.apicatalog.jsonld.rdf.RdfObject;
+import com.apicatalog.jsonld.rdf.RdfSubject;
 import com.apicatalog.jsonld.rdf.io.RdfReader;
 
 public final class NQuadsReader implements RdfReader {
@@ -39,11 +42,11 @@ public final class NQuadsReader implements RdfReader {
     
     public RdfNQuad reaStatement() throws IOException, NQuadsReaderError {
         
-        String subject = readSubject();
+        RdfSubject subject = readSubject();
         
         skipWs();
         
-        String predicate = readPredicate();
+        IRI predicate = readIri();
 
         skipWs();
         
@@ -56,35 +59,36 @@ public final class NQuadsReader implements RdfReader {
         }
 
         scanner.expect(NQuadsTokenType.END_OF_STATEMENT);
+        scanner.next();
 
-        return Rdf.createNQuad(null, predicate, object, null);
+        return Rdf.createNQuad(subject, predicate, object, null);
     }
     
-    public String readSubject()  throws IOException, NQuadsReaderError {
+    public RdfSubject readSubject()  throws IOException, NQuadsReaderError {
         
         if (scanner.accept(NQuadsTokenType.IRI_REF)) {
-            return scanner.next();
+            return Rdf.createSubject(IRI.create(scanner.next()));
         } 
         
         if (scanner.accept(NQuadsTokenType.BLANK_NODE_LABEL)) {
-            return scanner.next();            
+            return Rdf.createSubject(BlankNode.create(scanner.next()));            
         }
         
         throw new NQuadsReaderError();
     }
     
-    public String readPredicate()  throws IOException, NQuadsReaderError {        
+    public IRI readIri()  throws IOException, NQuadsReaderError {        
         scanner.expect(NQuadsTokenType.IRI_REF);
-        return scanner.next();
+        return IRI.create(scanner.next());
     }
     
     public RdfObject readObject()  throws IOException, NQuadsReaderError {
         if (scanner.accept(NQuadsTokenType.IRI_REF)) {
-            return Rdf.createObject(scanner.next());
+            return Rdf.createObject(IRI.create(scanner.next()));
         } 
         
         if (scanner.accept(NQuadsTokenType.BLANK_NODE_LABEL)) {
-            return Rdf.createObject(scanner.next());
+            return Rdf.createObject(BlankNode.create(scanner.next()));
         }
         
         return readLiteral();
@@ -98,7 +102,7 @@ public final class NQuadsReader implements RdfReader {
         
         //TODO lang etc.
         
-        return null;
+        return Rdf.createObject(Rdf.createLitteral(text));
     }
     
     private void skipWs() throws IOException, NQuadsReaderError {

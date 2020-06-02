@@ -47,7 +47,6 @@ class NQuadsScanner {
         if (Arrays.asList(types).stream().noneMatch(lastType::equals)) {
             throw new NQuadsReaderError();
         }
-        next();
     }
 
     public String next() throws NQuadsReaderError {
@@ -221,7 +220,9 @@ class NQuadsScanner {
                 
                 escape = ch ==  '\\' && !escape;
                 
-                builder.append((char)ch);
+                if (!escape) {
+                    builder.append((char)ch);
+                }
                 ch = reader.read();
             }
             throw new NQuadsReaderError();

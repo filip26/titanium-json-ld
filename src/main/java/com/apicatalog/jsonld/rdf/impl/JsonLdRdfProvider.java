@@ -3,16 +3,20 @@ package com.apicatalog.jsonld.rdf.impl;
 import java.io.Reader;
 import java.io.Writer;
 
+import com.apicatalog.jsonld.iri.IRI;
+import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.rdf.RdfDataset;
 import com.apicatalog.jsonld.rdf.RdfFormat;
 import com.apicatalog.jsonld.rdf.RdfGraph;
 import com.apicatalog.jsonld.rdf.RdfLiteral;
 import com.apicatalog.jsonld.rdf.RdfNQuad;
 import com.apicatalog.jsonld.rdf.RdfObject;
+import com.apicatalog.jsonld.rdf.RdfSubject;
 import com.apicatalog.jsonld.rdf.RdfTriple;
 import com.apicatalog.jsonld.rdf.io.RdfReader;
 import com.apicatalog.jsonld.rdf.io.RdfWriter;
 import com.apicatalog.jsonld.rdf.nq.impl.NQuadsReader;
+import com.apicatalog.jsonld.rdf.nq.impl.NQuadsWriter;
 import com.apicatalog.jsonld.rdf.spi.RdfProvider;
 
 public final class JsonLdRdfProvider extends RdfProvider {
@@ -36,8 +40,13 @@ public final class JsonLdRdfProvider extends RdfProvider {
 
     @Override
     public RdfWriter createWriter(Writer writer, RdfFormat format) {
-        // TODO Auto-generated method stub
+
+        if (RdfFormat.NQuads.equals(format)) {
+            return new NQuadsWriter(writer);            
+        }
+        //TODO
         return null;
+
     }
 
     @Override
@@ -46,25 +55,53 @@ public final class JsonLdRdfProvider extends RdfProvider {
     }
 
     @Override
-    public RdfTriple createTriple(String subject, String predicate, String object) {
-        return RdfTripleImpl.of(subject, predicate, object);
+    public RdfTriple createTriple(IRI subject, IRI predicate, IRI object) {
+        return RdfTripleImpl.create(subject, predicate, object);
     }
 
     @Override
-    public RdfTriple createTriple(String subject, String predicate, RdfLiteral object) {
-        // TODO Auto-generated method stub
-        return null;
+    public RdfTriple createTriple(IRI subject, IRI predicate, RdfObject object) {
+        return RdfTripleImpl.create(subject, predicate, object);
     }
 
     @Override
-    public RdfTriple createTriple(String subject, String predicate, RdfObject object) {
-        return new RdfTripleImpl(subject, predicate, object);
-    }
-
-    @Override
-    public RdfNQuad createNQuad(String subject, String predicate, RdfObject object, String graphName) {
+    public RdfNQuad createNQuad(RdfSubject subject, IRI predicate, RdfObject object, String graphName) {
         return new RdfNQuadImpl(subject, predicate, object, graphName);
     }
 
+    @Override
+    public RdfSubject createSubject(IRI iri) {
+        return new RdfSubjectImpl(iri);
+    }
 
+    @Override
+    public RdfSubject createSubject(BlankNode blankNode) {
+        return new RdfSubjectImpl(blankNode);
+    }
+
+    @Override
+    public RdfLiteral createLiteral(String lexicalForm) {
+        
+        if (lexicalForm == null) {
+            throw new IllegalArgumentException();
+        }
+        
+        return new RdfLiteralImpl(lexicalForm);
+    }
+
+    @Override
+    public RdfObject createObject(IRI iri) {
+        return new RdfObjectImpl(iri);
+    }
+
+    @Override
+    public RdfObject createObject(RdfLiteral literal) {
+        return new RdfObjectImpl(literal);
+    }
+
+    @Override
+    public RdfObject createObject(BlankNode blankNode) {
+        return new RdfObjectImpl(blankNode);
+    }
+    
 }

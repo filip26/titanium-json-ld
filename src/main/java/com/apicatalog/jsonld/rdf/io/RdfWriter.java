@@ -1,9 +1,11 @@
 package com.apicatalog.jsonld.rdf.io;
 
-import org.apache.commons.rdf.api.Dataset;
+import java.io.IOException;
+
+import com.apicatalog.jsonld.rdf.RdfDataset;
 
 public interface RdfWriter {
 
-    void writeDataset(Dataset dataset);
+    void write(RdfDataset dataset) throws IOException;
     
 }

@@ -1,16 +1,18 @@
 package com.apicatalog.jsonld.rdf.impl;
 
+import com.apicatalog.jsonld.iri.IRI;
 import com.apicatalog.jsonld.rdf.RdfNQuad;
 import com.apicatalog.jsonld.rdf.RdfObject;
+import com.apicatalog.jsonld.rdf.RdfSubject;
 
 final class RdfNQuadImpl implements RdfNQuad {
 
-    private final String subject;
-    private final String predicate;
+    private final RdfSubject subject;
+    private final IRI predicate;
     private final RdfObject object;
     private final String graphName;
     
-    protected RdfNQuadImpl(String subject, String predicate, RdfObject object, String graphName) {
+    protected RdfNQuadImpl(RdfSubject subject, IRI predicate, RdfObject object, String graphName) {
         this.subject = subject;
         this.predicate = predicate;
         this.object = object;
@@ -18,12 +20,12 @@ final class RdfNQuadImpl implements RdfNQuad {
     }
     
     @Override
-    public String getSubject() {
+    public RdfSubject getSubject() {
         return subject;
     }
 
     @Override
-    public String getPredicate() {
+    public IRI getPredicate() {
         return predicate;
     }
 

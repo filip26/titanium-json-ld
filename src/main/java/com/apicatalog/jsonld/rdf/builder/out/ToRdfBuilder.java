@@ -8,6 +8,7 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.flattening.NodeMap;
+import com.apicatalog.jsonld.iri.IRI;
 import com.apicatalog.jsonld.lang.CompactUri;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.rdf.Rdf;
@@ -75,7 +76,11 @@ public final class ToRdfBuilder {
                         
                             //TODO skip not well-formed type
                             
-                            triples.add(Rdf.createTriple(subject, "rdf:type", ((JsonString)type).getString()));
+                            triples.add(Rdf.createTriple(
+                                                IRI.create(subject),
+                                                IRI.create("rdf:type"),
+                                                IRI.create(((JsonString)type).getString())
+                                            ));
                         }
 
                     // 1.3.2.2.
@@ -100,7 +105,11 @@ public final class ToRdfBuilder {
                             RdfObject object = ObjectToRdf.with(item.asJsonObject(), listTriples).build();
                             
                             if (object != null) {
-                                triples.add(Rdf.createTriple(subject, property, object));
+                                triples.add(Rdf.createTriple(
+                                                        IRI.create(subject),
+                                                        IRI.create(property),
+                                                        object
+                                                    ));
                             }
                             
                             // 1.3.2.5.3.

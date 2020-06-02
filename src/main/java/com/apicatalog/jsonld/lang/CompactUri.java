@@ -44,6 +44,7 @@ public final class CompactUri {
         return suffix;
     }
 
+    @Deprecated
     public boolean isBlank() {
         return blank;
     }
@@ -77,6 +78,7 @@ public final class CompactUri {
         return Objects.equals(prefix, other.prefix) && Objects.equals(suffix, other.suffix);
     }
 
+    @Deprecated
     public static boolean isBlankNode(final String value) {
         return value.startsWith("_:");
     }

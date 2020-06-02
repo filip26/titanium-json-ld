@@ -80,6 +80,12 @@ public class ToRdfTest {
 
             Assert.assertNotNull(expected);
 
+            Rdf.createWriter(System.out, RdfFormat.NQuads).write(result);
+
+            
+            Rdf.createWriter(System.out, RdfFormat.NQuads).write(expected);
+            
+
             //TODO compare expected with result with
             // https://www.w3.org/TR/rdf11-concepts/#dfn-dataset-isomorphism
             Assert.assertEquals(expected, result);

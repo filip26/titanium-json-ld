@@ -1,12 +1,19 @@
 package com.apicatalog.jsonld.rdf;
 
+import com.apicatalog.jsonld.iri.IRI;
+import com.apicatalog.jsonld.lang.BlankNode;
+
 public interface RdfObject {
 
     boolean isLiteral();
     
-    boolean isString();
+    boolean isIRI();
+    
+    boolean isBlankNode();
     
     RdfLiteral asLiteral();
     
-    String asString();
+    IRI asIRI();
+    
+    BlankNode asBlankNode();
 }

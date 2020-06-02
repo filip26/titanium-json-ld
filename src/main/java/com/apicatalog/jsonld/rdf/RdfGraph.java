@@ -1,5 +1,6 @@
 package com.apicatalog.jsonld.rdf;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import com.apicatalog.jsonld.api.JsonLdProcessor;
@@ -27,5 +28,7 @@ public interface RdfGraph {
     void add(RdfTriple triple);
 
     Stream<? extends RdfTriple> stream();
+
+    List<? extends RdfTriple> getList();
 
 }

@@ -25,4 +25,9 @@ final class RdfGraphImpl implements RdfGraph {
         return triples.stream();
     }
 
+    @Override
+    public List<? extends RdfTriple> getList() {
+        return triples;
+    }
+
 }
