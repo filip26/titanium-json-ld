@@ -74,7 +74,8 @@ public class ToRdfTest {
 
         try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.RESOURCES_BASE + testCase.expect.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
 
-            RdfDataset expected = Rdf.createReader(new InputStreamReader(is), RdfFormat.NQuads).getDataset();
+
+            RdfDataset expected = Rdf.createReader(new InputStreamReader(is), RdfFormat.NQuads).readDataset();
 
             Assert.assertNotNull(expected);
 

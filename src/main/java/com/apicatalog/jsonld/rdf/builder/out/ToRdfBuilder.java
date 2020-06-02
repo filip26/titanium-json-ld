@@ -4,17 +4,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.json.JsonString;
-import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.flattening.NodeMap;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.CompactUri;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.rdf.Rdf;
 import com.apicatalog.jsonld.rdf.RdfDataset;
 import com.apicatalog.jsonld.rdf.RdfGraph;
+import com.apicatalog.jsonld.rdf.RdfObject;
 import com.apicatalog.jsonld.rdf.RdfTriple;
 import com.apicatalog.jsonld.uri.UriUtils;
 
@@ -97,7 +96,12 @@ public final class ToRdfBuilder {
                             List<RdfTriple> listTriples = new LinkedList<>();
                             
                             // 1.3.2.5.2.
-                            //TODO
+                            
+                            RdfObject object = ObjectToRdf.with(item.asJsonObject(), listTriples).build();
+                            
+                            if (object != null) {
+                                triples.add(Rdf.createTriple(subject, property, object));
+                            }
                             
                             // 1.3.2.5.3.
                             listTriples.forEach(triples::add);

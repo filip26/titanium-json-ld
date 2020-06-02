@@ -7,14 +7,14 @@ import java.util.stream.Stream;
 import com.apicatalog.jsonld.rdf.RdfDataset;
 import com.apicatalog.jsonld.rdf.RdfGraph;
 
-final class JsonLdRdfDataset implements RdfDataset {
+final class RdfDatasetImpl implements RdfDataset {
 
     private final Map<String, RdfGraph> graphs;
     private RdfGraph defaultGraph;
     
-    protected JsonLdRdfDataset() {
+    protected RdfDatasetImpl() {
         this.graphs = new HashMap<>();
-        this.defaultGraph = new JsonLdRdfGraph();
+        this.defaultGraph = new RdfGraphImpl();
     }
     
     @Override

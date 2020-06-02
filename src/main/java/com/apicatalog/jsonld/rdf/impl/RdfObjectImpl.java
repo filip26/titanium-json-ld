@@ -3,17 +3,17 @@ package com.apicatalog.jsonld.rdf.impl;
 import com.apicatalog.jsonld.rdf.RdfLiteral;
 import com.apicatalog.jsonld.rdf.RdfObject;
 
-final class JsonLdRdfObject implements RdfObject {
+final class RdfObjectImpl implements RdfObject {
 
     private final RdfLiteral literal;
     private final String string;
     
-    protected JsonLdRdfObject(RdfLiteral literal) {
+    protected RdfObjectImpl(RdfLiteral literal) {
         this.literal = literal;
         this.string = null;
     }
 
-    protected JsonLdRdfObject(String string) {
+    protected RdfObjectImpl(String string) {
         this.string = string;
         this.literal = null;
     }

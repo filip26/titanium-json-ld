@@ -40,7 +40,11 @@ public final class Rdf {
         // TODO Auto-generated method stub
         return null;
     }
-    
+
+    public static RdfTriple createTriple(String subject, String predicate, RdfObject object) {
+        return RdfProvider.provider().createTriple(subject, predicate, object);
+    }
+
 //TODO
 //    public static final Literal createLiteral(String lexicalForm) throws IllegalArgumentException {
 //        return RdfProvider.provider().createLiteral(lexicalForm);
