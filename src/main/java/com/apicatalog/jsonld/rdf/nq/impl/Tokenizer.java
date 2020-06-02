@@ -3,6 +3,7 @@ package com.apicatalog.jsonld.rdf.nq.impl;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Arrays;
 
 /**
  * 
@@ -41,8 +42,7 @@ class Tokenizer {
             return true;
         }
         return false;
-    }
-            
+    }     
     
     private Token doRead() throws NQuadsReaderError {
         
@@ -55,8 +55,7 @@ class Tokenizer {
             
             // WS
             if (Terminal.isWhitespace(ch)) {                
-                return skipWhitespaces();
-                
+                return skipWhitespaces();  
             }
             
             if (ch == '<') {
@@ -82,25 +81,18 @@ class Tokenizer {
             if (ch == '_') {
                 return readBlankNode();
             }
+            
+            if (ch == '^') {
+                
+                ch = reader.read();
+                
+                if ('^' != ch) {
+                    unexpected(ch, "^");
+                }
+                return Token.LITERAL_DATA_TYPE;
+            }
 
-            unexpected(ch);
-//
-//            } else if (ch == '@') {
-//                
-//                readLangTag();
-//
-//            } else if (ch == '^') {
-//
-//                if ('^' != reader.read()) {
-//                    throw new NQuadsReaderError();
-//                }
-//                
-//                lastType = NQuadsTokenType.LITERAL_ATTR;
-//                
-//            } else if (ch == '_') {
-//                
-//                readBlankNode();
-//
+            unexpected(ch, "\\\t", "\\\n", "\\\r", "^", "@", "SPACE", ".", "<", "_", "\"");
             
         } catch (IOException e) {
             throw new NQuadsReaderError(e);
@@ -109,8 +101,12 @@ class Tokenizer {
         throw new IllegalStateException();
     }
     
-    private void unexpected(int ch) throws NQuadsReaderError {
-        throw new NQuadsReaderError(ch != -1 ? "Unexpected character '" + (char)ch + "'." : "Unexpected end of input.");
+    private void unexpected(int actual, String ...expected) throws NQuadsReaderError {
+        throw new NQuadsReaderError(
+                        actual != -1 
+                            ? "Unexpected character [" + (char)actual  + "] expected " +  Arrays.toString(expected) + "." 
+                            : "Unexpected end of input, expected " + Arrays.toString(expected) + "."
+                            );
     }
     
     private Token skipWhitespaces() throws NQuadsReaderError {
@@ -172,7 +168,7 @@ class Tokenizer {
                      || ch == '^'
                      || ch == '`'
                         ) {
-                    unexpected(ch);
+                    unexpected(ch, ">");
                 }
                 
                 if (ch == '\\') {
@@ -202,12 +198,9 @@ class Tokenizer {
             
             int ch = reader.read();
             
-            boolean escape = false;
-            
-            while ((escape || ch != '"')  && ch != -1) {
+            while (ch != '"' && ch != -1) {
                 
                 if (ch == 0x22
-                     || ch == 0x5c
                      || ch == 0xa
                      || ch == 0xd
                         ) {
@@ -215,8 +208,21 @@ class Tokenizer {
                 }
                 
                 if (ch == '\\') {
-                    //TODO unicode & escape
-                    unexpected(ch);
+
+                    value.append((char)ch);
+                    ch = reader.read();
+                    
+                    if (ch == 't' || ch == 'b' || ch == 'n' || ch == 'r' || ch == 'f' || ch == '\'' || ch =='"' || ch == '\\') {
+                        
+                    } else if (ch == 'u') {
+                        //TODO unicode
+                        
+                    } else if (ch == 'U') {
+                        //TODO unicode
+                        
+                    } else {
+                        unexpected(ch);
+                    }
                 }
                 
                 value.append((char)ch);
@@ -241,7 +247,7 @@ class Tokenizer {
             
             int ch = reader.read();
             
-            if (!Terminal.isAsciiAlpha(ch)) {
+            if (!Terminal.isAsciiAlpha(ch) || ch == -1) {
                 unexpected(ch);
             }
             value.append((char)ch);
@@ -293,24 +299,20 @@ class Tokenizer {
             
             int ch = reader.read();
             
-            if (ch != ':') {
+            if (ch != ':' || ch == -1) {
                 unexpected(ch);
             }
+            
+            ch = reader.read();
+            
+            if (!Terminal.isPnCharsU(ch) && !Terminal.isDigit(ch) || ch == -1) {
+                unexpected(ch);
+            }
+            
+            value.append((char)ch);
             
             reader.mark(1);
             ch = reader.read();
-            
-            while (Terminal.isPnCharsU(ch) || Terminal.isDigit(ch)) {
-                
-                value.append((char)ch);
-                
-                reader.mark(1);
-                ch = reader.read();
-            }
-            
-            if (ch == -1) {
-                unexpected(ch);
-            }
             
             boolean delim = false;
             
@@ -327,6 +329,8 @@ class Tokenizer {
             if (ch == -1 || delim) {
                 unexpected(ch);
             }
+            
+            reader.reset();
 
             return new Token(TokenType.BLANK_NODE_LABEL, value.toString());
             
@@ -349,6 +353,7 @@ class Tokenizer {
         static final Token EOS = new Token(TokenType.END_OF_STATEMENT, null);
         static final Token EOL = new Token(TokenType.END_OF_LINE, null);
         static final Token WS = new Token(TokenType.WHITE_SPACE, null);
+        static final Token LITERAL_DATA_TYPE = new Token(TokenType.LITERAL_DATA_TYPE, null);
         
         final TokenType type;
         final String value;
@@ -373,7 +378,7 @@ class Tokenizer {
         STRING_LITERAL_QUOTE,
         BLANK_NODE_LABEL,
         WHITE_SPACE,
-        LITERAL_ATTR,
+        LITERAL_DATA_TYPE,
         END_OF_STATEMENT,
         END_OF_LINE,
         END_OF_INPUT,

@@ -91,17 +91,27 @@ public final class JsonLdRdfProvider extends RdfProvider {
 
     @Override
     public RdfObject createObject(IRI iri) {
-        return new RdfObjectImpl(iri);
+        return RdfObjectImpl.of(iri);
     }
 
     @Override
     public RdfObject createObject(RdfLiteral literal) {
-        return new RdfObjectImpl(literal);
+        return RdfObjectImpl.of(literal);
     }
 
     @Override
     public RdfObject createObject(BlankNode blankNode) {
-        return new RdfObjectImpl(blankNode);
+        return RdfObjectImpl.of(blankNode);
+    }
+
+    @Override
+    public RdfLiteral createLiteral(String lexicalForm, IRI dataType) {
+        return new RdfLiteralImpl(lexicalForm, dataType);
+    }
+
+    @Override
+    public RdfLiteral createLiteral(String lexicalForm, String langTag) {
+        return new RdfLiteralImpl(lexicalForm, langTag);
     }
     
 }

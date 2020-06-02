@@ -2,6 +2,8 @@ package com.apicatalog.jsonld.rdf;
 
 import java.util.Optional;
 
+import com.apicatalog.jsonld.iri.IRI;
+
 /**
  * The {@link RdfLiteral} interface describes an <code>RDF Literal</code>.
  * 
@@ -25,7 +27,7 @@ public interface RdfLiteral {
      * 
      * @return
      */
-    String getDatatype();
+    IRI getDatatype();
 
     /**
      * An optional language tag as defined by [BCP47]. If this value is specified,

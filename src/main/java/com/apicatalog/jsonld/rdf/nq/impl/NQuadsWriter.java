@@ -58,8 +58,9 @@ public class NQuadsWriter implements RdfWriter {
         
         if (object.isBlankNode()) {
             write(object.asBlankNode());
+            return;
         }
-        
+
         throw new IllegalStateException();
     }
 
@@ -71,6 +72,15 @@ public class NQuadsWriter implements RdfWriter {
         writer.write('"');
         writer.write(literal.getValue().replaceAll("\"", "\\\""));
         writer.write('"');
+        
+        if (literal.getLanguage().isPresent()) {
+            writer.write("@");
+            writer.write(literal.getLanguage().get());
+            
+        } else if (literal.getDatatype() != null) {
+            writer.write("^^");
+            write(literal.getDatatype());
+        }
     }
 
     public void write(IRI iri) throws IOException {

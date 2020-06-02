@@ -11,24 +11,33 @@ final class RdfObjectImpl implements RdfObject {
     private final IRI iri;
     private final BlankNode blankNode;
     
-    protected RdfObjectImpl(RdfLiteral literal) {
+    private RdfObjectImpl(RdfLiteral literal, IRI iri, BlankNode blankNode) {
         this.literal = literal;
-        this.iri = null;
-        this.blankNode = null;
-    }
-
-    protected RdfObjectImpl(IRI iri) {
         this.iri = iri;
-        this.literal = null;
-        this.blankNode = null;
-    }
-
-    protected RdfObjectImpl(BlankNode blankNode) {
-        this.iri = null;
-        this.literal = null;
         this.blankNode = blankNode;
     }
-    
+
+    protected static final RdfObject of(RdfLiteral literal) {
+        if (literal == null) {
+            throw new IllegalArgumentException();
+        }
+        return new RdfObjectImpl(literal, null, null);
+    }
+
+    protected static final RdfObject of(IRI iri) {
+        if (iri == null) {
+            throw new IllegalArgumentException();
+        }
+        return new RdfObjectImpl(null, iri, null);
+    }
+
+    protected static final RdfObject of(BlankNode blankNode) {
+        if (blankNode == null) {
+            throw new IllegalArgumentException();
+        }
+        return new RdfObjectImpl(null, null, blankNode);
+    }
+
     @Override
     public boolean isLiteral() {
         return literal != null;

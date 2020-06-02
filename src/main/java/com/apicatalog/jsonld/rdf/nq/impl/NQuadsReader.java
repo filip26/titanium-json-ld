@@ -1,7 +1,7 @@
 package com.apicatalog.jsonld.rdf.nq.impl;
 
-import java.io.IOException;
 import java.io.Reader;
+import java.util.Arrays;
 
 import com.apicatalog.jsonld.iri.IRI;
 import com.apicatalog.jsonld.lang.BlankNode;
@@ -58,10 +58,19 @@ public final class NQuadsReader implements RdfReader {
         RdfObject object = readObject();
         
         skipWhitespace(0);
-  
-//        if (!scanner.accept(NQuadsTokenType.END_OF_STATEMENT)) {
-//            //TODO read graph name
-//        }
+        
+        if (TokenType.IRI_REF == tokenizer.token().getType()) {
+            //TODO
+            tokenizer.next();
+            skipWhitespace(0);
+        }
+
+        if (TokenType.BLANK_NODE_LABEL == tokenizer.token().getType()) {
+            //TODO
+            tokenizer.next();
+            skipWhitespace(0);
+        }
+
 
         if (TokenType.END_OF_STATEMENT != tokenizer.token().getType()) {
             unexpected(tokenizer.token());
@@ -125,16 +134,38 @@ public final class NQuadsReader implements RdfReader {
         
         skipWhitespace(0);
         
-        if (TokenType.LITERAL_ATTR == tokenizer.token().getType()) {
+        if (TokenType.LANGTAG == tokenizer.token().getType()) {
             
+            String langTag = tokenizer.token().getValue();
+            
+            tokenizer.next();
+            
+            return Rdf.createObject(Rdf.createLitteral(value.getValue(), langTag));
+            
+        } else if (TokenType.LITERAL_DATA_TYPE == tokenizer.token().getType()) {
+            
+            tokenizer.next();
+            skipWhitespace(0);
+            
+            Token attr = tokenizer.token();
+                        
+            if (TokenType.IRI_REF == attr.getType()) {
+                tokenizer.next();
+                return Rdf.createObject(Rdf.createLitteral(value.getValue(), IRI.create(attr.getValue())));
+            }
+                
+            unexpected(attr);
         }
         
         return Rdf.createObject(Rdf.createLitteral(value.getValue()));
     }
 
     
-    private <T> T unexpected(Token token) throws NQuadsReaderError {
-        throw new NQuadsReaderError("Unexpected token '" + token.getValue() + "'.");
+    private <T> T unexpected(Token token, TokenType ...types) throws NQuadsReaderError {
+        throw new NQuadsReaderError(
+                    "Unexpected token " + token.getType() + "(" + token.getValue() + "). "
+                    + "Expected one of " + Arrays.toString(types) + "."
+                    );
     }
     
     private IRI readIri()  throws NQuadsReaderError {
@@ -142,7 +173,7 @@ public final class NQuadsReader implements RdfReader {
         Token token = tokenizer.token();
         
         if (TokenType.IRI_REF != token.getType()) {
-            unexpected(token);
+            unexpected(token, TokenType.IRI_REF);
         }
         
         tokenizer.next();
@@ -162,9 +193,9 @@ public final class NQuadsReader implements RdfReader {
             count++;
         }
   
-        if (count < min) {
-            unexpected(token);
-        }        
+//        if (count < min) {
+//            unexpected(token);
+//        }        
     }
 
 

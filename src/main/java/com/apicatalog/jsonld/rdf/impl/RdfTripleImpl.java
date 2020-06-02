@@ -27,7 +27,7 @@ final class RdfTripleImpl implements RdfTriple {
 
     
     public static RdfTriple create(IRI subject, IRI predicate, IRI object) {
-        return create(new RdfSubjectImpl(subject), predicate, new RdfObjectImpl(object));   //FIXME
+        return create(new RdfSubjectImpl(subject), predicate, RdfObjectImpl.of(object));   //FIXME
     }
 
 

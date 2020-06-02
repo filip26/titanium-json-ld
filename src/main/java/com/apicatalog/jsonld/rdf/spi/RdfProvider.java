@@ -48,6 +48,10 @@ public abstract class RdfProvider {
 
     public abstract RdfLiteral createLiteral(String lexicalForm);
 
+    public abstract RdfLiteral createLiteral(String lexicalForm, IRI dataType);
+    
+    public abstract RdfLiteral createLiteral(String lexicalForm, String langTag);
+
     public abstract RdfObject createObject(IRI iri);
 
     public abstract RdfObject createObject(RdfLiteral literal);

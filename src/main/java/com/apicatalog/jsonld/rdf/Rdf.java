@@ -68,6 +68,15 @@ public final class Rdf {
         return RdfProvider.provider().createLiteral(lexicalForm);
     }
 
+    public static final RdfLiteral createLitteral(String lexicalForm, IRI dataType) {
+        return RdfProvider.provider().createLiteral(lexicalForm, dataType);
+    }
+    
+    public static final RdfLiteral createLitteral(String lexicalForm, String langTag) {
+        return RdfProvider.provider().createLiteral(lexicalForm, langTag);
+    }
+
+
     public static final RdfObject createObject(BlankNode blankNode) {
         return RdfProvider.provider().createObject(blankNode);
     }
