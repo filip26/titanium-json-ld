@@ -19,6 +19,7 @@ import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.rdf.Rdf;
 import com.apicatalog.jsonld.rdf.RdfDataset;
 import com.apicatalog.jsonld.rdf.RdfFormat;
+import com.apicatalog.jsonld.rdf.nq.impl.NQuadsReaderError;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 
@@ -82,6 +83,9 @@ public class ToRdfTest {
             //TODO compare expected with result with
             // https://www.w3.org/TR/rdf11-concepts/#dfn-dataset-isomorphism
             Assert.assertEquals(expected, result);
+            
+        } catch (NQuadsReaderError e ) {
+            Assert.fail(e.getMessage());
         }
     }
 

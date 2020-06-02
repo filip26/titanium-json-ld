@@ -11,6 +11,7 @@ import com.apicatalog.jsonld.rdf.RdfObject;
 import com.apicatalog.jsonld.rdf.RdfTriple;
 import com.apicatalog.jsonld.rdf.io.RdfReader;
 import com.apicatalog.jsonld.rdf.io.RdfWriter;
+import com.apicatalog.jsonld.rdf.nq.impl.NQuadsReader;
 import com.apicatalog.jsonld.rdf.spi.RdfProvider;
 
 public final class JsonLdRdfProvider extends RdfProvider {

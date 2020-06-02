@@ -45,6 +45,16 @@ public final class Rdf {
         return RdfProvider.provider().createTriple(subject, predicate, object);
     }
 
+    public static RdfNQuad createNQuad(Object object, String predicate, RdfObject subject, String graphName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public static RdfObject createObject(String uriOrBlank) {
+
+        return null;
+    }
+
 //TODO
 //    public static final Literal createLiteral(String lexicalForm) throws IllegalArgumentException {
 //        return RdfProvider.provider().createLiteral(lexicalForm);
