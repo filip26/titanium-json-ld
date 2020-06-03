@@ -3,6 +3,7 @@ package com.apicatalog.jsonld.rdf;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -78,13 +79,11 @@ public final class RdfComparison {
                                 .filter(HAS_BLANKS.negate())
                                 .collect(Collectors.toList());
 
-        //TODO sort
-
         if (triples1.size() != triples2.size()) {
             return false;
         }
 
-        if (!compareTriples(triples1, triples2)) {
+        if (!compareTriples(triples1, triples2, null)) {
             return false;
         }
 
@@ -105,17 +104,19 @@ public final class RdfComparison {
             return false;
         }
 
-        if (compareTriples(b1, b2)) {
-            return true;
+        RdfBlankNodeMapper mapper = RdfBlankNodeMapper.create(b2, b1);
+        
+        for (int i = 0; i < mapper.mappings(); i++) {
+
+            if (compareTriples(b1, b2, mapper.mapping(i))) {
+                return true;
+            }
+
         }
-        
-        System.out.println("TODO 2");
-        
-        // TODO Auto-generated method stub
         return false;
     }
     
-    private static final boolean compareTriples(final List<RdfTriple> triples1, final List<RdfTriple> triples2) {
+    private static final boolean compareTriples(final List<RdfTriple> triples1, final List<RdfTriple> triples2, final Map<String, String> mapping) {
 
         final LinkedList<RdfTriple> remaining = new LinkedList<>(triples2);
         
@@ -125,7 +126,7 @@ public final class RdfComparison {
             
             for (final RdfTriple triple2 : remaining) {
                 
-                found = compareTriple(triple1, triple2);
+                found = compareTriple(triple1, triple2, mapping);
                 
                 if (found) {
                     remaining.remove(triple2);
@@ -133,20 +134,64 @@ public final class RdfComparison {
                 }
             }
         }
-        
-        
+                
         return remaining.isEmpty();
     }
 
-    private static final boolean compareTriple(final RdfTriple triple1, final RdfTriple triple2) {
+    private static final boolean compareTriple(final RdfTriple triple1, final RdfTriple triple2, final Map<String, String> mapping) {
 
-        return Objects.equals(triple1.getSubject(), triple2.getSubject())
-                && Objects.equals(triple1.getPredicate(), triple2.getPredicate())
-                && Objects.equals(triple1.getObject(), triple2.getObject())
-                ;
+        if (!compareSubject(triple1.getSubject(), triple2.getSubject(), mapping)) {
+            return false;
+        }
         
+        if (!Objects.equals(triple1.getPredicate(), triple2.getPredicate())) {
+            return false;
+        }
+
+        return compareObject(triple1.getObject(), triple2.getObject(), mapping);
+    }
+    
+    private static final boolean compareSubject(RdfSubject subject1, RdfSubject subject2, Map<String, String> mapping) {
+
+        if (subject1.isBlankNode() && subject2.isBlankNode()) { 
+            
+            return Objects.equals(
+                            subject1.asBlankNode().getLabel(), 
+                            mapping != null
+                                ? mapping.get(subject2.asBlankNode().getLabel())
+                                : subject2.asBlankNode().getLabel()
+                                        );
+            
+        } else if (subject1.isIRI() && subject2.isIRI()) {
+            return Objects.equals(subject1.asIRI(), subject2.asIRI());
+        }
+
+        return false;
     }
 
+    private static final boolean compareObject(RdfObject object1, RdfObject object2, Map<String, String> mapping) {
+        
+        if (object1.isBlankNode() && object2.isBlankNode()) {
+
+            return Objects.equals(
+                    object1.asBlankNode().getLabel(), 
+                    mapping != null
+                        ? mapping.get(object2.asBlankNode().getLabel())
+                        : object2.asBlankNode().getLabel()
+                                );
+
+        } else if (object1.isIRI() && object2.isIRI()) {
+
+            return Objects.equals(object1.asIRI(), object2.asIRI());
+            
+        } else if (object1.isLiteral() && object2.isLiteral()) {
+            
+            return Objects.equals(object1.asLiteral(), object2.asLiteral());
+        }
+        return false;
+    }
+
+    
     private static final Predicate<RdfTriple> HAS_BLANKS  = t -> t.getObject().isBlankNode() || t.getSubject().isBlankNode(); 
     
 }
