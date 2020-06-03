@@ -14,6 +14,26 @@ public interface RdfDataset {
 
     class NamedGraph {
 
+        RdfGraph graph;
+        String graphName;
+        
+        public NamedGraph(String graphName, RdfGraph graph) {
+            this.graphName = graphName;
+            this.graph = graph;
+        }
+        
+        public RdfGraph getGraph() {
+            return graph;
+        }
+        
+        
     }
+
+    /**
+     * 
+     * @return total number of n-quads in the dataset 
+     */
+    
+    int size();
 
 }

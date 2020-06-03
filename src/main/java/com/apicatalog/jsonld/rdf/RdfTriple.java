@@ -23,4 +23,10 @@ public interface RdfTriple {
     
     RdfObject getObject();
     
+    @Override
+    int hashCode();
+
+    @Override
+    boolean equals(Object triple);
+
 }

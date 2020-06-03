@@ -39,7 +39,7 @@ public final class BlankNode {
 
     @Override
     public int hashCode() {
-        return label.hashCode();
+        return Objects.hash(label);
     }
 
     @Override
@@ -90,4 +90,6 @@ public final class BlankNode {
         
         return IntStream.range(3, chars.length).map(i -> chars[i]).allMatch(RdfGrammar.IS_PN_CHARS.or(ch -> ch == '.'));        
     }    
+    
+    
 }

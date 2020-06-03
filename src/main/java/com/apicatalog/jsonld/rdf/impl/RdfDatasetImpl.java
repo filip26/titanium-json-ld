@@ -11,6 +11,7 @@ import com.apicatalog.jsonld.rdf.RdfNQuad;
 final class RdfDatasetImpl implements RdfDataset {
 
     private final Map<String, RdfGraph> graphs;
+    
     private RdfGraph defaultGraph;
     
     protected RdfDatasetImpl() {
@@ -30,8 +31,7 @@ final class RdfDatasetImpl implements RdfDataset {
 
     @Override
     public Stream<NamedGraph> stream() {
-        // TODO Auto-generated method stub
-        return null;
+        return graphs.entrySet().stream().map(e -> new NamedGraph(e.getKey(), e.getValue()));
     }
 
     public void add(RdfNQuad nquad) {
@@ -49,6 +49,11 @@ final class RdfDatasetImpl implements RdfDataset {
         }
         
         graph.add(nquad);
+    }
+
+    @Override
+    public int size() {
+        return graphs.values().stream().map(RdfGraph::size).reduce(getDefaultGraph().size(), Integer::sum);           
     }
     
 }

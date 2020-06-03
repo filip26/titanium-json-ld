@@ -1,5 +1,7 @@
 package com.apicatalog.jsonld.rdf.impl;
 
+import java.util.Objects;
+
 import com.apicatalog.jsonld.iri.IRI;
 import com.apicatalog.jsonld.rdf.RdfObject;
 import com.apicatalog.jsonld.rdf.RdfSubject;
@@ -44,5 +46,26 @@ final class RdfTripleImpl implements RdfTriple {
     @Override
     public RdfObject getObject() {
         return object;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(object, predicate, subject);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        RdfTripleImpl other = (RdfTripleImpl) obj;
+        return Objects.equals(object, other.object) && Objects.equals(predicate, other.predicate)
+                && Objects.equals(subject, other.subject);
     }
 }

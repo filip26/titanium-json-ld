@@ -1,5 +1,7 @@
 package com.apicatalog.jsonld.rdf.impl;
 
+import java.util.Objects;
+
 import com.apicatalog.jsonld.iri.IRI;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.rdf.RdfSubject;
@@ -43,5 +45,24 @@ class RdfSubjectImpl implements RdfSubject {
     public String toString() {
         return isIRI() ? iri.toString() : blankNode.toString();
     }
-    
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(blankNode, iri);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        RdfSubjectImpl other = (RdfSubjectImpl) obj;
+        return Objects.equals(blankNode, other.blankNode) && Objects.equals(iri, other.iri);
+    }
 }

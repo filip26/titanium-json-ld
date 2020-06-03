@@ -30,4 +30,9 @@ final class RdfGraphImpl implements RdfGraph {
         return triples;
     }
 
+    @Override
+    public int size() {
+        return triples.size();
+    }
+
 }

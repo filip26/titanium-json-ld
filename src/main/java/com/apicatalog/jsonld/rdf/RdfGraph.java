@@ -31,4 +31,6 @@ public interface RdfGraph {
 
     List<? extends RdfTriple> getList();
 
+    int size();
+    
 }

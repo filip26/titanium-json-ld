@@ -1,5 +1,7 @@
 package com.apicatalog.jsonld.iri;
 
+import java.util.Objects;
+
 import com.apicatalog.jsonld.uri.UriUtils;
 
 public final class IRI {
@@ -32,5 +34,25 @@ public final class IRI {
     public static boolean isWellFormed(String iri) {
         //TODO        
         return UriUtils.isURI(iri);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        IRI other = (IRI) obj;
+        return Objects.equals(value, other.value);
     }
 }

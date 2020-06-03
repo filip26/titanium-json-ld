@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collection;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
@@ -18,6 +17,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.rdf.Rdf;
+import com.apicatalog.jsonld.rdf.RdfComparison;
 import com.apicatalog.jsonld.rdf.RdfDataset;
 import com.apicatalog.jsonld.rdf.RdfFormat;
 import com.apicatalog.jsonld.rdf.nq.impl.NQuadsReaderError;
@@ -81,9 +81,7 @@ public class ToRdfTest {
 
             Assert.assertNotNull(expected);
 
-            //TODO compare expected with result with
-            // https://www.w3.org/TR/rdf11-concepts/#dfn-dataset-isomorphism
-            boolean match = Objects.equals(expected, result);
+            boolean match = RdfComparison.equals(expected, result);
             
             if (!match) {
                 System.out.println("Test Case " + testCase.id + ": " + testCase.name);

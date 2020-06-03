@@ -16,4 +16,11 @@ public interface RdfObject {
     IRI asIRI();
     
     BlankNode asBlankNode();
+    
+    @Override
+    boolean equals(Object object);
+    
+    @Override
+    int hashCode();
+
 }

@@ -12,4 +12,9 @@ public interface RdfSubject {
     
     BlankNode asBlankNode();
     
+    @Override
+    boolean equals(Object subject);
+    
+    @Override
+    int hashCode();
 }
