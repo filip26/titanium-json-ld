@@ -47,25 +47,4 @@ final class RdfTripleImpl implements RdfTriple {
     public RdfObject getObject() {
         return object;
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(object, predicate, subject);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        RdfTripleImpl other = (RdfTripleImpl) obj;
-        return Objects.equals(object, other.object) && Objects.equals(predicate, other.predicate)
-                && Objects.equals(subject, other.subject);
-    }
 }

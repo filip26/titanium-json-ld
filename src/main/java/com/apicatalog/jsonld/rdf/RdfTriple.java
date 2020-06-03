@@ -22,11 +22,5 @@ public interface RdfTriple {
     IRI getPredicate();
     
     RdfObject getObject();
-    
-    @Override
-    int hashCode();
-
-    @Override
-    boolean equals(Object triple);
 
 }

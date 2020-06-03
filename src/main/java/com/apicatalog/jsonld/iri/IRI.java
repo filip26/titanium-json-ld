@@ -6,10 +6,10 @@ import com.apicatalog.jsonld.uri.UriUtils;
 
 public final class IRI {
 
-    private final String value;
+    private final String stringValue;
     
     private IRI(String value) {
-        this.value = value;
+        this.stringValue = value;
     }
     
     public static final IRI create(String iri) {
@@ -23,9 +23,8 @@ public final class IRI {
 
     @Override
     public String toString() {
-        return value;
+        return stringValue;
     }
-
 
     /**
      * 
@@ -38,7 +37,7 @@ public final class IRI {
 
     @Override
     public int hashCode() {
-        return Objects.hash(value);
+        return Objects.hash(stringValue);
     }
 
     @Override
@@ -53,6 +52,6 @@ public final class IRI {
             return false;
         }
         IRI other = (IRI) obj;
-        return Objects.equals(value, other.value);
+        return Objects.equals(stringValue, other.stringValue);
     }
 }

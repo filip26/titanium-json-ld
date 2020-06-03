@@ -11,10 +11,5 @@ public interface RdfSubject {
     IRI asIRI();
     
     BlankNode asBlankNode();
-    
-    @Override
-    boolean equals(Object subject);
-    
-    @Override
-    int hashCode();
+
 }
