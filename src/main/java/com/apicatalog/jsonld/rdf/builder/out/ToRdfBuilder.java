@@ -111,7 +111,7 @@ public final class ToRdfBuilder {
                                                         
                             triples.add(Rdf.createTriple(
                                                 rdfSubject,
-                                                IRI.create("rdf:type"),
+                                                IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
                                                 rdfObject
                                             ));
                         }

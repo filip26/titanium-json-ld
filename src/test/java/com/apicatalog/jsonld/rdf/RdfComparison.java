@@ -64,11 +64,11 @@ public final class RdfComparison {
         }
         
         // compare triples with no blank node label
-        RdfTriple[] triples1 = graph1.stream()
+        final RdfTriple[] triples1 = graph1.stream()
                                 .filter(HAS_BLANKS.negate())
                                 .toArray(RdfTriple[]::new);
         
-        RdfTriple[] triples2 = graph2.stream()
+        final RdfTriple[] triples2 = graph2.stream()
                                 .filter(HAS_BLANKS.negate())
                                 .toArray(RdfTriple[]::new);
 
@@ -85,6 +85,21 @@ public final class RdfComparison {
         if (triples1.length == graph2.size()) {
             return true;
         }
+
+        // try plain comparison
+        RdfTriple[] b1 = graph1.stream()
+                .filter(HAS_BLANKS)
+                .toArray(RdfTriple[]::new);
+
+        RdfTriple[] b2 = graph2.stream()
+                .filter(HAS_BLANKS)
+                .toArray(RdfTriple[]::new);
+
+        if (IntStream.range(0, triples1.length).allMatch(i -> compareTriple(b1[i], b2[i]))) {
+            return true;
+        }
+
+        
         System.out.println("TODO 2");
 
 
