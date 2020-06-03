@@ -65,6 +65,11 @@ public final class JsonLdRdfProvider extends RdfProvider {
     }
 
     @Override
+    public RdfTriple createTriple(RdfSubject subject, IRI predicate, RdfObject object) {
+        return RdfTripleImpl.create(subject, predicate, object);
+    }
+
+    @Override
     public RdfNQuad createNQuad(RdfSubject subject, IRI predicate, RdfObject object, String graphName) {
         return new RdfNQuadImpl(subject, predicate, object, graphName);
     }

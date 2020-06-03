@@ -40,6 +40,8 @@ public abstract class RdfProvider {
     
     public abstract RdfTriple createTriple(IRI subject, IRI predicate, RdfObject object);
     
+    public abstract RdfTriple createTriple(RdfSubject subject, IRI predicate, RdfObject object);
+    
     public abstract RdfNQuad createNQuad(RdfSubject subject, IRI predicate, RdfObject object, String graphName);
 
     public abstract RdfSubject createSubject(IRI iri);

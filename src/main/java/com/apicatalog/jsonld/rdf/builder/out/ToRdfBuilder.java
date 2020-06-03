@@ -9,6 +9,7 @@ import javax.json.JsonValue;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.iri.IRI;
+import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.CompactUri;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -87,12 +88,32 @@ public final class ToRdfBuilder {
                         
                         for (JsonValue type : nodeMap.get(graphName, subject, property).asJsonArray()) { 
                         
-                            //TODO skip not well-formed type
+                            if (JsonUtils.isNotString(type)) {
+                                continue;
+                            }
                             
+                            final String typeString = ((JsonString)type).getString();
+
+                            RdfObject rdfObject = null;
+                            
+                            if (BlankNode.isWellFormed(typeString)) {
+                                rdfObject = Rdf.createObject(BlankNode.create(typeString));
+                                
+                            } else if (IRI.isWellFormed(typeString)) {
+                                rdfObject = Rdf.createObject(IRI.create(typeString));
+                                
+                            } else {
+                                //TODO literal
+                            }
+                            
+                            if (rdfObject == null) {
+                                continue;
+                            }
+                                                        
                             triples.add(Rdf.createTriple(
-                                                IRI.create(subject),
+                                                rdfSubject,
                                                 IRI.create("rdf:type"),
-                                                IRI.create(((JsonString)type).getString())
+                                                rdfObject
                                             ));
                         }
 
@@ -115,13 +136,13 @@ public final class ToRdfBuilder {
                             
                             // 1.3.2.5.2.
                             
-                            RdfObject object = ObjectToRdf.with(item.asJsonObject(), listTriples).build();
+                            RdfObject rdfObject = ObjectToRdf.with(item.asJsonObject(), listTriples).build();
                             
-                            if (object != null) {
+                            if (rdfObject != null) {
                                 triples.add(Rdf.createTriple(
-                                                        IRI.create(subject),
+                                                        rdfSubject,
                                                         IRI.create(property),
-                                                        object
+                                                        rdfObject
                                                     ));
                             }
                             

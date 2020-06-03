@@ -13,34 +13,33 @@ import com.apicatalog.jsonld.rdf.nq.impl.RdfGrammar;
  */
 public final class BlankNode {
 
-    private final String suffix;
+    private final String label;
 
-    private BlankNode(final String suffix) {
-        this.suffix = suffix;
+    private BlankNode(final String label) {
+        this.label = label;
     }
 
     public static BlankNode create(String value) {
-        if (value != null && value.startsWith("_:")) {
-            final String suffix = value.substring("_:".length());
 
-            return new BlankNode(suffix);            
+        if (value != null && value.startsWith("_:")) {
+            return new BlankNode(value.substring("_:".length()));            
         }
 
         throw new IllegalArgumentException();
     }
 
-    public String getSuffix() {
-        return suffix;
+    public String getLabel() {
+        return label;
     }
 
     @Override
     public String toString() {
-        return "_:".concat(suffix);
+        return "_:".concat(label);
     }
 
     @Override
     public int hashCode() {
-        return suffix.hashCode();
+        return label.hashCode();
     }
 
     @Override
@@ -55,7 +54,7 @@ public final class BlankNode {
             return false;
         }
         BlankNode other = (BlankNode) obj;
-        return Objects.equals(suffix, other.suffix);
+        return Objects.equals(label, other.label);
     }
 
     /**

@@ -40,6 +40,10 @@ public final class Rdf {
         return RdfProvider.provider().createTriple(subject, predicate, object);
     }
 
+    public static final RdfTriple createTriple(RdfSubject subject, IRI predicate, RdfObject object) {
+        return RdfProvider.provider().createTriple(subject, predicate, object);
+    }
+
     public static final RdfNQuad createNQuad(RdfSubject object, IRI predicate, RdfObject subject, String graphName) {
         return RdfProvider.provider().createNQuad(object, predicate, subject, graphName);
     }
