@@ -10,6 +10,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import com.apicatalog.uri.UriResolver;
+
 @RunWith(Parameterized.class)
 public class UriResolverTest {
 

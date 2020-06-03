@@ -12,8 +12,8 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.CompactUri;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.uri.UriResolver;
-import com.apicatalog.jsonld.uri.UriUtils;
+import com.apicatalog.uri.UriResolver;
+import com.apicatalog.uri.UriUtils;
 
 /**
  * 

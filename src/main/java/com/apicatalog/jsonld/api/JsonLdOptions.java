@@ -1,7 +1,6 @@
 package com.apicatalog.jsonld.api;
 
 import java.net.URI;
-import java.util.Optional;
 
 import javax.json.JsonObject;
 
@@ -198,8 +197,8 @@ public final class JsonLdOptions {
         return produceGeneralizedRdf;
     }
 
-    public Optional<String> getRdfDirection() {
-        return Optional.ofNullable(rdfDirection);
+    public String getRdfDirection() {
+        return rdfDirection;
     }
 
     public boolean isUseNativeTypes() {

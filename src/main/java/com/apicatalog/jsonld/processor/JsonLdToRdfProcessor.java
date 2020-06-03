@@ -59,6 +59,7 @@ public final class JsonLdToRdfProcessor {
                             Rdf.createDataset()
                             )
                         .produceGeneralizedRdf(options.isProduceGeneralizedRdf())
+                        .rdfDirection(options.getRdfDirection())
                         .build();     
     }
 }

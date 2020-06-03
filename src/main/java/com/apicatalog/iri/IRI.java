@@ -2,7 +2,7 @@ package com.apicatalog.iri;
 
 import java.util.Objects;
 
-import com.apicatalog.jsonld.uri.UriUtils;
+import com.apicatalog.uri.UriUtils;
 
 public final class IRI {
 

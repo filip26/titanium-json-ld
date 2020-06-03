@@ -22,8 +22,8 @@ import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
-import com.apicatalog.jsonld.uri.UriResolver;
-import com.apicatalog.jsonld.uri.UriUtils;
+import com.apicatalog.uri.UriResolver;
+import com.apicatalog.uri.UriUtils;
 
 /**
  * @see <a href=
