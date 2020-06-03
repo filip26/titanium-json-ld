@@ -20,11 +20,9 @@ public final class RdfComparison {
         this.dataset2 = dataset2;
     }
     
-
     public static final boolean equals(final RdfDataset dataset1, final RdfDataset dataset2) {
         return new RdfComparison(dataset1, dataset2).areIsomorphic();
     }
-
 
     // https://www.w3.org/TR/rdf11-concepts/#dfn-dataset-isomorphism
     private boolean areIsomorphic() {
@@ -51,13 +49,11 @@ public final class RdfComparison {
             return false;
         }
 
-        
-        System.out.println("TODO 1");
+        System.out.println("TODO: compare other graphs");
         
         // TODO Auto-generated method stub
         return false;
     }
-
 
     private static final boolean compareGraphs(final RdfGraph graph1, final RdfGraph graph2) {
                 
@@ -91,7 +87,7 @@ public final class RdfComparison {
             return true;
         }
 
-        // try plain comparison
+        // triples with one or two blank nodes comparison
         final List<RdfTriple> b1 = graph1.stream()
                 .filter(HAS_BLANKS)
                 .collect(Collectors.toList());
@@ -104,7 +100,7 @@ public final class RdfComparison {
             return false;
         }
 
-        RdfBlankNodeMapper mapper = RdfBlankNodeMapper.create(b2, b1);
+        final RdfBlankNodeMapper mapper = RdfBlankNodeMapper.create(b2, b1);
         
         for (int i = 0; i < mapper.mappings(); i++) {
 
@@ -163,6 +159,7 @@ public final class RdfComparison {
                                         );
             
         } else if (subject1.isIRI() && subject2.isIRI()) {
+            
             return Objects.equals(subject1.asIRI(), subject2.asIRI());
         }
 
@@ -191,7 +188,6 @@ public final class RdfComparison {
         return false;
     }
 
-    
     private static final Predicate<RdfTriple> HAS_BLANKS  = t -> t.getObject().isBlankNode() || t.getSubject().isBlankNode(); 
     
 }

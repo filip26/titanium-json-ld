@@ -128,7 +128,12 @@ public final class ObjectToRdf {
             
         // 14.
         } else {
-            if ("xsd:string".equals(datatypeString)) {
+            if (item.containsKey(Keywords.LANGUAGE) && JsonUtils.isString(item.get(Keywords.LANGUAGE))) {  
+            
+                rdfLiteral = Rdf.createLitteral(valueString, item.getString(Keywords.LANGUAGE));
+                
+            } else if ("xsd:string".equals(datatypeString)) {
+                
                 rdfLiteral = Rdf.createLitteral(valueString);
                 
             } else {

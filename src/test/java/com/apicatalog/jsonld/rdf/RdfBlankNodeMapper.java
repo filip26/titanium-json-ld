@@ -3,23 +3,23 @@ package com.apicatalog.jsonld.rdf;
 import java.util.List;
 import java.util.Map;
 
-public class RdfBlankNodeMapper {
+final class RdfBlankNodeMapper {
 
 //    private final Map<String, MapGroup> set1;
 //    private final Map<String, MapGroup> set2;
 //    
-    public RdfBlankNodeMapper() {
+    private RdfBlankNodeMapper() {
 //        this.set1 = new HashMap<>();
 //        this.set2 = new HashMap<>();
     }
     
-    public static RdfBlankNodeMapper create(List<RdfTriple> from, List<RdfTriple> to) {
+    protected static RdfBlankNodeMapper create(List<RdfTriple> from, List<RdfTriple> to) {
         // TODO Auto-generated method stub
-        return null;
+        return new RdfBlankNodeMapper();
     }
 
     public int mappings() {
-        return 0;
+        return 1;
     }
 
 
