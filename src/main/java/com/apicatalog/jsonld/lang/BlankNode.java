@@ -3,7 +3,7 @@ package com.apicatalog.jsonld.lang;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
-import com.apicatalog.jsonld.rdf.nq.impl.RdfGrammar;
+import com.apicatalog.rdf.RdfGrammar;
 
 /**
  * 
