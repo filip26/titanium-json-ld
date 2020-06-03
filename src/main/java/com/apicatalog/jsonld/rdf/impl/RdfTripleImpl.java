@@ -1,7 +1,5 @@
 package com.apicatalog.jsonld.rdf.impl;
 
-import java.util.Objects;
-
 import com.apicatalog.jsonld.iri.IRI;
 import com.apicatalog.jsonld.rdf.RdfObject;
 import com.apicatalog.jsonld.rdf.RdfSubject;
@@ -20,18 +18,16 @@ final class RdfTripleImpl implements RdfTriple {
     }
 
     public static RdfTriple create(RdfSubject subject, IRI predicate, RdfObject object) {
-        return new RdfTripleImpl(subject, predicate, object);   //FIXME
+        return new RdfTripleImpl(subject, predicate, object);
     }
 
     public static RdfTriple create(IRI subject, IRI predicate, RdfObject object) {
-        return new RdfTripleImpl(new RdfSubjectImpl(subject), predicate, object);   //FIXME
+        return new RdfTripleImpl(new RdfSubjectImpl(subject), predicate, object);
     }
-
     
     public static RdfTriple create(IRI subject, IRI predicate, IRI object) {
-        return create(new RdfSubjectImpl(subject), predicate, RdfObjectImpl.of(object));   //FIXME
+        return create(new RdfSubjectImpl(subject), predicate, RdfObjectImpl.of(object));
     }
-
 
     @Override
     public RdfSubject getSubject() {

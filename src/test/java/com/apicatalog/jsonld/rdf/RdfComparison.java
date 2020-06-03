@@ -79,10 +79,12 @@ public final class RdfComparison {
             return false;
         }
 
+        // non-blank triples are not the same
         if (!compareTriples(triples1, triples2, null)) {
             return false;
         }
 
+        // graphs have no blank nodes
         if (triples1.size() == graph2.size()) {
             return true;
         }
@@ -96,19 +98,23 @@ public final class RdfComparison {
                 .filter(HAS_BLANKS)
                 .collect(Collectors.toList());
 
+        // blank node triples count does not match
         if (b1.size() != b2.size()) {
             return false;
         }
 
-        final RdfBlankNodeMapper mapper = RdfBlankNodeMapper.create(b2, b1);
+        // create mappings from b2 to b1
+        final NodeMapper mapper = NodeMapper.create(b2, b1);
         
-        for (int i = 0; i < mapper.mappings(); i++) {
-
-            if (compareTriples(b1, b2, mapper.mapping(i))) {
+        //TODO check and stop after permutations limit - set the limit
+        
+        while (mapper.hasNext()) {
+            
+            if (compareTriples(b1, b2, mapper.next())) {
                 return true;
             }
-
         }
+
         return false;
     }
     
