@@ -1,9 +1,11 @@
 package com.apicatalog.jsonld.rdf;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
+import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.rdf.RdfDataset.NamedGraph;
 
@@ -63,55 +65,77 @@ public final class RdfComparison {
             return false;
         }
         
-        // compare triples with no blank node label
-        final RdfTriple[] triples1 = graph1.stream()
-                                .filter(HAS_BLANKS.negate())
-                                .toArray(RdfTriple[]::new);
+        if (graph1.size() == 0 && graph2.size() == 0) {
+            return true;
+        }
         
-        final RdfTriple[] triples2 = graph2.stream()
+        // compare triples with no blank node label
+        final List<RdfTriple> triples1 = graph1.stream()
                                 .filter(HAS_BLANKS.negate())
-                                .toArray(RdfTriple[]::new);
+                                .collect(Collectors.toList());
+        
+        final List<RdfTriple> triples2 = graph2.stream()
+                                .filter(HAS_BLANKS.negate())
+                                .collect(Collectors.toList());
 
         //TODO sort
 
-        if (triples1.length != triples2.length) {
-            return false;
-        }
-        
-        if (!IntStream.range(0, triples1.length).allMatch(i -> compareTriple(triples1[i], triples2[i]))) {
+        if (triples1.size() != triples2.size()) {
             return false;
         }
 
-        if (triples1.length == graph2.size()) {
+        if (!compareTriples(triples1, triples2)) {
+            return false;
+        }
+
+        if (triples1.size() == graph2.size()) {
             return true;
         }
 
         // try plain comparison
-        RdfTriple[] b1 = graph1.stream()
+        final List<RdfTriple> b1 = graph1.stream()
                 .filter(HAS_BLANKS)
-                .toArray(RdfTriple[]::new);
+                .collect(Collectors.toList());
 
-        RdfTriple[] b2 = graph2.stream()
+        final List<RdfTriple> b2 = graph2.stream()
                 .filter(HAS_BLANKS)
-                .toArray(RdfTriple[]::new);
+                .collect(Collectors.toList());
 
-        if (IntStream.range(0, triples1.length).allMatch(i -> compareTriple(b1[i], b2[i]))) {
-            return true;
+        if (b1.size() != b2.size()) {
+            return false;
         }
 
+        if (compareTriples(b1, b2)) {
+            return true;
+        }
         
         System.out.println("TODO 2");
-
-
-//        if (triples1.length != triples2.length) {
-//            return false;
-//        }
-
-
-        
         
         // TODO Auto-generated method stub
         return false;
+    }
+    
+    private static final boolean compareTriples(final List<RdfTriple> triples1, final List<RdfTriple> triples2) {
+
+        final LinkedList<RdfTriple> remaining = new LinkedList<>(triples2);
+        
+        for (final RdfTriple triple1 : triples1) {
+            
+            boolean found = false;
+            
+            for (final RdfTriple triple2 : remaining) {
+                
+                found = compareTriple(triple1, triple2);
+                
+                if (found) {
+                    remaining.remove(triple2);
+                    break;
+                }
+            }
+        }
+        
+        
+        return remaining.isEmpty();
     }
 
     private static final boolean compareTriple(final RdfTriple triple1, final RdfTriple triple2) {
