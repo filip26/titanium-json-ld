@@ -78,6 +78,12 @@ public class NQuadsWriter implements RdfWriter {
             writer.write(literal.getLanguage().get());
             
         } else if (literal.getDatatype() != null) {
+            if ("http://www.w3.org/2001/XMLSchema#langString".equals(literal.getDatatype().toString())
+                    || "http://www.w3.org/2001/XMLSchema#string".equals(literal.getDatatype().toString())
+                    ) {
+                return;
+            }
+            
             writer.write("^^");
             write(literal.getDatatype());
         }

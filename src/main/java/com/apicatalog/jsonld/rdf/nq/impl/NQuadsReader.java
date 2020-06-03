@@ -157,7 +157,7 @@ public final class NQuadsReader implements RdfReader {
             unexpected(attr);
         }
         
-        return Rdf.createObject(Rdf.createLitteral(value.getValue()));
+        return Rdf.createObject(Rdf.createLitteral(value.getValue(), IRI.create("http://www.w3.org/2001/XMLSchema#string")));
     }
 
     

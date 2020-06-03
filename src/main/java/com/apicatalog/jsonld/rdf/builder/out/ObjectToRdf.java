@@ -105,12 +105,17 @@ public final class ObjectToRdf {
         } else if (JsonUtils.isNull(datatype)) {
             
             datatypeString = item.containsKey(Keywords.LANGUAGE)
-                                ? "rdf:langString"
-                                : "xsd:string"
+                                ? "http://www.w3.org/2001/XMLSchema#langString"
+                                : "http://www.w3.org/2001/XMLSchema#string"
                                 ;
         }
         
         if (valueString == null) {
+            
+            if (JsonUtils.isNotString(value)) {
+                return null;
+            }
+            
             valueString = ((JsonString)value).getString();
         }
         
@@ -131,11 +136,7 @@ public final class ObjectToRdf {
             if (item.containsKey(Keywords.LANGUAGE) && JsonUtils.isString(item.get(Keywords.LANGUAGE))) {  
             
                 rdfLiteral = Rdf.createLitteral(valueString, item.getString(Keywords.LANGUAGE));
-                
-            } else if ("xsd:string".equals(datatypeString)) {
-                
-                rdfLiteral = Rdf.createLitteral(valueString);
-                
+                                
             } else {
                 rdfLiteral = Rdf.createLitteral(valueString, IRI.create(datatypeString));
             }
