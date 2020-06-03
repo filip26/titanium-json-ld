@@ -11,7 +11,6 @@ import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.iri.IRI;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
-import com.apicatalog.jsonld.lang.CompactUri;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.rdf.Rdf;
 import com.apicatalog.jsonld.rdf.RdfDataset;
@@ -134,10 +133,9 @@ public final class ToRdfBuilder {
                             // 1.3.2.5.1.
                             List<RdfTriple> listTriples = new LinkedList<>();
                             
-                            // 1.3.2.5.2.
-                            
+                            // 1.3.2.5.2.                            
                             RdfObject rdfObject = ObjectToRdf.with(item.asJsonObject(), listTriples).build();
-                            
+
                             if (rdfObject != null) {
                                 triples.add(Rdf.createTriple(
                                                         rdfSubject,
