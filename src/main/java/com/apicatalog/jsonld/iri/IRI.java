@@ -16,4 +16,9 @@ public final class IRI {
     public String toString() {
         return value == null ? "null" : value;
     }
+
+    public static boolean isWellFormed(String subject) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

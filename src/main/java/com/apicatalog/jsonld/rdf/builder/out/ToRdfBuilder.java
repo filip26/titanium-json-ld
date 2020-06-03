@@ -9,12 +9,14 @@ import javax.json.JsonValue;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.iri.IRI;
+import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.CompactUri;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.rdf.Rdf;
 import com.apicatalog.jsonld.rdf.RdfDataset;
 import com.apicatalog.jsonld.rdf.RdfGraph;
 import com.apicatalog.jsonld.rdf.RdfObject;
+import com.apicatalog.jsonld.rdf.RdfSubject;
 import com.apicatalog.jsonld.rdf.RdfTriple;
 import com.apicatalog.jsonld.uri.UriUtils;
 
@@ -63,8 +65,19 @@ public final class ToRdfBuilder {
             // 1.3.
             for (final String subject : nodeMap.subjects(graphName, true)) {
                 
+                RdfSubject rdfSubject = null;
+                
                 // 1.3.1.
-                //TODO
+                if (BlankNode.isWellFormed(subject)) {
+                    rdfSubject = Rdf.createSubject(BlankNode.create(subject));
+                    
+                } else if (IRI.isWellFormed(subject)) {
+                    rdfSubject = Rdf.createSubject(IRI.create(subject));
+                }
+                
+                if (rdfSubject == null) {
+                    continue;
+                }
                 
                 // 1.3.2.
                 for (final String property : nodeMap.properties(graphName, subject, true)) {
@@ -86,14 +99,14 @@ public final class ToRdfBuilder {
                     // 1.3.2.2.
                     } else if (Keywords.contains(property)
                             // 1.3.2.3.
-                            || (CompactUri.isBlankNode(property) && !produceGeneralizedRdf)
+                            || (BlankNode.isWellFormed(property) && !produceGeneralizedRdf)
                             // 1.3.2.4.
                             //TODO
                             ) {
                         continue;
                         
                     // 1.3.2.5.
-                    } else if (CompactUri.isBlankNode(property) || UriUtils.isURI(property)) {
+                    } else if (BlankNode.isWellFormed(property) || UriUtils.isURI(property)) {
 
                         for (JsonValue item : nodeMap.get(graphName, subject, property).asJsonArray()) {
                         

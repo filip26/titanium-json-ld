@@ -79,7 +79,7 @@ public final class CompactUri {
     }
 
     @Deprecated
-    public static boolean isBlankNode(final String value) {
+    public static boolean isBlankNode(final String value) {        
         return value.startsWith("_:");
     }
 }

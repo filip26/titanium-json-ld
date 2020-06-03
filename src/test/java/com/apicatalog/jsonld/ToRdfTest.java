@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
@@ -80,15 +81,25 @@ public class ToRdfTest {
 
             Assert.assertNotNull(expected);
 
-            Rdf.createWriter(System.out, RdfFormat.NQuads).write(result);
-
-            
-            Rdf.createWriter(System.out, RdfFormat.NQuads).write(expected);
-            
-
             //TODO compare expected with result with
             // https://www.w3.org/TR/rdf11-concepts/#dfn-dataset-isomorphism
-            Assert.assertEquals(expected, result);
+            boolean match = Objects.equals(expected, result);
+            
+            if (!match) {
+                System.out.println("Test Case " + testCase.id + ": " + testCase.name);
+                System.out.println("Expected:");
+                
+                Rdf.createWriter(System.out, RdfFormat.NQuads).write(expected);
+    
+                System.out.println();
+                System.out.println("Actual:");
+            
+                Rdf.createWriter(System.out, RdfFormat.NQuads).write(result);
+                
+                System.out.println();
+            }
+
+            Assert.assertTrue(match);
             
         } catch (NQuadsReaderError e ) {
             e.printStackTrace();

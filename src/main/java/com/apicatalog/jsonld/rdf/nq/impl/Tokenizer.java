@@ -54,7 +54,7 @@ class Tokenizer {
             }
             
             // WS
-            if (Terminal.isWhitespace(ch)) {                
+            if (RdfGrammar.isWhitespace(ch)) {                
                 return skipWhitespaces();  
             }
             
@@ -70,7 +70,7 @@ class Tokenizer {
                 return Token.EOS;
             }
             
-            if (Terminal.isEol(ch)) {
+            if (RdfGrammar.isEol(ch)) {
                 return skipEol();
             }
             
@@ -115,7 +115,7 @@ class Tokenizer {
             reader.mark(1);
             int ch = reader.read();
             
-            while (Terminal.isWhitespace(ch)) {
+            while (RdfGrammar.isWhitespace(ch)) {
                 reader.mark(1);
                 ch = reader.read();
             }
@@ -135,7 +135,7 @@ class Tokenizer {
             reader.mark(1);
             int ch = reader.read();
             
-            while (Terminal.isEol(ch)) {
+            while (RdfGrammar.isEol(ch)) {
                 reader.mark(1);
                 ch = reader.read();
             }
@@ -247,7 +247,7 @@ class Tokenizer {
             
             int ch = reader.read();
             
-            if (!Terminal.isAsciiAlpha(ch) || ch == -1) {
+            if (!RdfGrammar.isAsciiAlpha(ch) || ch == -1) {
                 unexpected(ch);
             }
             value.append((char)ch);
@@ -255,7 +255,7 @@ class Tokenizer {
             reader.mark(1);
             ch = reader.read();
             
-            while (Terminal.isAsciiAlpha(ch)) {
+            while (RdfGrammar.isAsciiAlpha(ch)) {
                 
                 value.append((char)ch);
                 
@@ -269,7 +269,7 @@ class Tokenizer {
             
             boolean delim = false;
             
-            while (Terminal.isAsciiAlphaNum(ch) || ch == '-') {
+            while (RdfGrammar.isAsciiAlphaNum(ch) || ch == '-') {
 
                 value.append((char)ch);
                 
@@ -305,7 +305,7 @@ class Tokenizer {
             
             ch = reader.read();
             
-            if (!Terminal.isPnCharsU(ch) && !Terminal.isDigit(ch) || ch == -1) {
+            if (RdfGrammar.IS_PN_CHARS_U.negate().and(RdfGrammar.IS_DIGIT.negate()).test(ch) || ch == -1) {
                 unexpected(ch);
             }
             
@@ -316,7 +316,7 @@ class Tokenizer {
             
             boolean delim = false;
             
-            while (Terminal.isPnChars(ch) || ch == '.') {
+            while (RdfGrammar.IS_PN_CHARS.test(ch) || ch == '.') {
 
                 value.append((char)ch);
                 

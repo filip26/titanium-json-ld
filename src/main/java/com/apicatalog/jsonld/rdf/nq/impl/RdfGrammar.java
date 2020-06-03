@@ -1,8 +1,10 @@
 package com.apicatalog.jsonld.rdf.nq.impl;
 
-final class Terminal {
+import java.util.function.IntPredicate;
 
-    private Terminal() {
+public final class RdfGrammar {
+
+    private RdfGrammar() {
     }
 
     static final boolean isAsciiAlpha(int ch) {
@@ -10,37 +12,34 @@ final class Terminal {
     }
 
     static final boolean isAsciiAlphaNum(int ch) {
-        return isDigit(ch) || isAsciiAlpha(ch);  
+        return IS_DIGIT.test(ch) || isAsciiAlpha(ch);  
     }
     
     static final boolean isWhitespace(int ch) {
         return ch == 0x0009 || ch == 0x0020;
     }
-    
-    static final boolean isDigit(int ch) {
-        return '0' <= ch && ch <= '9';
-    }
 
     static final boolean isEol(int ch) {
         return ch == 0x0A || ch == 0x0D;
     }
-
-    static final boolean isPnCharsU(int ch) {
-        return isPnCharsBase(ch)
-                    || '_' == ch
-                    || ':' == ch
-                    ;
-    }
     
-    static final boolean isPnChars(int ch) {
-        return isPnCharsU(ch)
-                    || '-' == ch
-                    || isDigit(ch)
-                    || 0x00B7 == ch
-                    || (0x0300 <= ch && ch <= 0x036F)
-                    || (0x203F <= ch && ch <= 0x2040)
-                    ;
-    }    
+    public static final IntPredicate IS_DIGIT = ch -> '0' <= ch && ch <= '9';
+
+    public static final IntPredicate IS_PN_CHARS_U =
+                    ch -> isPnCharsBase(ch)
+                        || '_' == ch
+                        || ':' == ch
+                        ;
+ 
+    
+    public static final IntPredicate IS_PN_CHARS = 
+                    ch -> IS_PN_CHARS_U.test(ch)
+                        || '-' == ch
+                        || IS_DIGIT.test(ch)
+                        || 0x00B7 == ch
+                        || (0x0300 <= ch && ch <= 0x036F)
+                        || (0x203F <= ch && ch <= 0x2040)
+                        ;  
     
     static final boolean isPnCharsBase(int ch) {
         return isAsciiAlpha(ch)
