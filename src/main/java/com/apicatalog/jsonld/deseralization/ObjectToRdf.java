@@ -10,6 +10,7 @@ import javax.json.JsonValue;
 import com.apicatalog.iri.IRI;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.flattening.NodeMap;
+import com.apicatalog.jsonld.json.JsonCanonicalizer;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -70,8 +71,8 @@ final class ObjectToRdf {
      
             if (BlankNode.isWellFormed(idString)) {
                 return Rdf.createObject(BlankNode.create(idString));
-            }
-            if (IRI.isWellFormed(idString)) {
+                
+            } else if (IRI.isWellFormed(idString)) {
                 return Rdf.createObject(IRI.create(idString));
             }
             return null;
@@ -114,7 +115,7 @@ final class ObjectToRdf {
         
         // 8.
         if (Keywords.JSON.equals(datatype)) {
-            valueString = value.toString();
+            valueString = (new JsonCanonicalizer(value)).canonicalize();
             datatype = "http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON";
         }
 

@@ -63,7 +63,7 @@ public final class BlankNode {
      * 
      */
     public static boolean isWellFormed(final String label) {
-        
+
         if (label == null) {
             throw new IllegalArgumentException();
         }

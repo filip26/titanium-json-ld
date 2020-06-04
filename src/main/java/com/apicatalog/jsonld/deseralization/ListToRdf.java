@@ -73,7 +73,7 @@ final class ListToRdf {
                                         .with(item.asJsonObject(), embeddedTriples, nodeMap)
                                         .rdfDirection(rdfDirection)
                                         .build();
-                                            
+                                           
             // 3.3.
             if (object != null) {
                 triples.add(Rdf.createTriple(Rdf.createSubject(BlankNode.create(subject)), IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"), object));

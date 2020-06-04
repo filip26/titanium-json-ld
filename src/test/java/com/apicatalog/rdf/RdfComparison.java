@@ -73,10 +73,11 @@ public final class RdfComparison {
 
         // create mappings from b2 to b1
         final NodeMapper mapper = NodeMapper.create(b2, b1);
-  
+
         int iteration = 0;
         
         while (mapper.hasNext()) {
+            
             if (compareNQuads(b1, b2, mapper.next())) {
                 return true;
             }
@@ -93,7 +94,7 @@ public final class RdfComparison {
     }
 
     private static final boolean compareNQuads(final List<RdfNQuad> nquads1, final List<RdfNQuad> nquads2, final Map<String, String> mapping) {
-
+        
         final LinkedList<RdfNQuad> remaining = new LinkedList<>(nquads2);
         
         for (final RdfNQuad nquad1 : nquads1) {
@@ -102,12 +103,16 @@ public final class RdfComparison {
             
             for (final RdfNQuad nquad2 : remaining) {
                 
-                found = compareNQuad(nquad1, nquad2, mapping);
-                
+                found = compareNQuad(nquad2, nquad1, mapping);
+
                 if (found) {
                     remaining.remove(nquad2);
                     break;
                 }
+            }
+            
+            if (!found) {
+                return false;
             }
         }                
         return remaining.isEmpty();
@@ -128,9 +133,8 @@ public final class RdfComparison {
     }
     
     private static final boolean compareSubject(RdfSubject subject1, RdfSubject subject2, Map<String, String> mapping) {
-
         if (subject1.isBlankNode() && subject2.isBlankNode()) { 
-            
+
             return Objects.equals(
                             subject1.asBlankNode().getLabel(), 
                             mapping != null
@@ -139,14 +143,13 @@ public final class RdfComparison {
                                         );
             
         } else if (subject1.isIRI() && subject2.isIRI()) {
-            
             return Objects.equals(subject1.asIRI(), subject2.asIRI());
         }
         return false;
     }
 
     private static final boolean compareObject(RdfObject object1, RdfObject object2, Map<String, String> mapping) {
-        
+
         if (object1.isBlankNode() && object2.isBlankNode()) {
 
             return Objects.equals(

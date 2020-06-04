@@ -83,10 +83,10 @@ public final class JsonLdToRdfBuilder {
             for (final String subject : nodeMap.subjects(graphName, true)) {
                 
                 RdfSubject rdfSubject = null;
-                
+
                 // 1.3.1.
                 if (BlankNode.isWellFormed(subject)) {
-                    
+     
                     rdfSubject = Rdf.createSubject(BlankNode.create(subject));
                     
                 } else if (IRI.isWellFormed(subject)) {
