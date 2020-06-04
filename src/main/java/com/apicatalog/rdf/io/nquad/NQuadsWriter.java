@@ -121,7 +121,11 @@ public class NQuadsWriter implements RdfWriter {
                 
             } else if (ch == '\\') {
                 escaped.append("\\\\");
+                
+            } else {
+                escaped.append((char)ch);
             }
+            
         }        
         return escaped.toString();
     }

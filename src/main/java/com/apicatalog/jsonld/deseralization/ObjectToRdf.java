@@ -2,6 +2,7 @@ package com.apicatalog.jsonld.deseralization;
 
 import java.util.List;
 
+import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
@@ -129,13 +130,23 @@ final class ObjectToRdf {
         // 10. - 11.
         } else if (JsonUtils.isNumber(value)) {
             
-            //TODO
-
-            if (datatype == null) {
-                datatype = "http://www.w3.org/2001/XMLSchema#integer";
-            }
-
+            JsonNumber number = ((JsonNumber)value);
             
+            // 11.
+            if (number.isIntegral()) {
+                
+                valueString = Long.toString(number.longValueExact());
+                
+                if (datatype == null) {
+                    datatype = "http://www.w3.org/2001/XMLSchema#integer";
+                }
+
+                
+            // 10.
+            } else {
+                                
+            }
+                    
         // 12.
         } else if (datatype == null) {
             
