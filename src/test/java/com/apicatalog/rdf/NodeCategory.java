@@ -6,10 +6,12 @@ final class NodeCategory {
 
     int objectOccurence;
     int subjectOccurence;
+    int graphOccurence;
     
     public NodeCategory() {
         this.objectOccurence = 0;
         this.subjectOccurence = 0;
+        this.graphOccurence = 0;
     }
         
     public void addObject() {
@@ -19,10 +21,15 @@ final class NodeCategory {
     public void addSubject() {
         this.subjectOccurence++;
     }
+    
+    public void addGraph() {
+        this.graphOccurence++;
+    }
+
 
     @Override
     public int hashCode() {
-        return Objects.hash(objectOccurence, subjectOccurence);
+        return Objects.hash(objectOccurence, subjectOccurence, graphOccurence);
     }
 
     @Override
@@ -37,6 +44,9 @@ final class NodeCategory {
             return false;
         }
         NodeCategory other = (NodeCategory) obj;
-        return objectOccurence == other.objectOccurence && subjectOccurence == other.subjectOccurence;
+        return objectOccurence == other.objectOccurence 
+                && subjectOccurence == other.subjectOccurence
+                && graphOccurence == other.graphOccurence
+                ;
     }  
 }

@@ -13,14 +13,17 @@ final class NodeClassifier {
     protected NodeClassifier() {
     }
         
-    protected final void add(RdfTriple triple) {
+    protected final void add(RdfNQuad nquad) {
     
-        if (triple.getSubject().isBlankNode()) {
-            addSubject(triple.getSubject().asBlankNode().getLabel());
+        if (nquad.getSubject().isBlankNode()) {
+            addSubject(nquad.getSubject().asBlankNode().getLabel());
         } 
-        if (triple.getObject().isBlankNode()) {
-            addObject(triple.getObject().asBlankNode().getLabel());
+        if (nquad.getObject().isBlankNode()) {
+            addObject(nquad.getObject().asBlankNode().getLabel());
         }                    
+        if (nquad.getGraphName() != null && nquad.getGraphName().isBlankNode()) {
+            addGraph(nquad.getGraphName().asBlankNode().getLabel());
+        }
     }
     
     private final void addSubject(String label) {
@@ -41,6 +44,16 @@ final class NodeClassifier {
             categories.put(label, cluster);
         }
         cluster.addObject();
+    }
+    
+    private final void addGraph(String label) {
+        NodeCategory cluster = categories.get(label);
+        
+        if (cluster == null) {
+            cluster = new NodeCategory();
+            categories.put(label, cluster);
+        }
+        cluster.addGraph();
     }    
     
     public int size() {

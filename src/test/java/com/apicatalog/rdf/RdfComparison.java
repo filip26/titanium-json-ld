@@ -1,14 +1,11 @@
 package com.apicatalog.rdf;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import com.apicatalog.rdf.RdfDataset.NamedGraph;
 
 public final class RdfComparison {
 
@@ -32,125 +29,95 @@ public final class RdfComparison {
             return false;
         }
 
-        // compare default graphs
-        if (!compareGraphs(dataset1.getDefaultGraph(), dataset2.getDefaultGraph())) {
-            return false;
-        }
-
-        // compare total number of named graphs and triples
-        Integer[] triples1 = dataset1.getNamedGraphs().map(NamedGraph::getGraph).map(RdfGraph::size).sorted().toArray(Integer[]::new);
-        Integer[] triples2 = dataset2.getNamedGraphs().map(NamedGraph::getGraph).map(RdfGraph::size).sorted().toArray(Integer[]::new);
-
-        if (triples1.length == 0 && triples2.length == 0) {
+        // if datasets are empty
+        if (dataset1.size() == 0 && dataset2.size() == 0) {
             return true;
         }
-        
-        if (!Arrays.equals(triples1, triples2)) {
-            return false;
-        }
 
-        System.out.println("TODO: compare other graphs");
-        
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    private static final boolean compareGraphs(final RdfGraph graph1, final RdfGraph graph2) {
-                
-        // compare total number of triples in graphs
-        if (graph1.size() != graph2.size()) {
-            return false;
-        }
-        
-        if (graph1.size() == 0 && graph2.size() == 0) {
-            return true;
-        }
-        
-        // compare triples with no blank node label
-        final List<RdfTriple> triples1 = graph1.stream()
+        // compare n-quads with no blank node label
+        final List<RdfNQuad> nquads1 = dataset1.stream()
                                 .filter(HAS_BLANKS.negate())
                                 .collect(Collectors.toList());
         
-        final List<RdfTriple> triples2 = graph2.stream()
+        final List<RdfNQuad> nquads2 = dataset2.stream()
                                 .filter(HAS_BLANKS.negate())
                                 .collect(Collectors.toList());
 
-        if (triples1.size() != triples2.size()) {
+        if (nquads1.size() != nquads2.size()) {
             return false;
         }
 
         // non-blank triples are not the same
-        if (!compareTriples(triples1, triples2, null)) {
+        if (!compareNQuads(nquads1, nquads2, null)) {
             return false;
         }
 
-        // graphs have no blank nodes
-        if (triples1.size() == graph2.size()) {
+        // datasets have no blank nodes
+        if (nquads1.size() == dataset2.size()) {
             return true;
         }
 
-        // triples with one or two blank nodes comparison
-        final List<RdfTriple> b1 = graph1.stream()
-                .filter(HAS_BLANKS)
-                .collect(Collectors.toList());
+        // n-quads with one or two blank nodes comparison
+        final List<RdfNQuad> b1 = dataset1.stream()
+                                        .filter(HAS_BLANKS)
+                                        .collect(Collectors.toList());
 
-        final List<RdfTriple> b2 = graph2.stream()
-                .filter(HAS_BLANKS)
-                .collect(Collectors.toList());
+        final List<RdfNQuad> b2 = dataset1.stream()
+                                          .filter(HAS_BLANKS)
+                                          .collect(Collectors.toList());
 
-        // blank node triples count does not match
+        // blank node n-quads count does not match
         if (b1.size() != b2.size()) {
             return false;
         }
 
         // create mappings from b2 to b1
         final NodeMapper mapper = NodeMapper.create(b2, b1);
-        
+  
         //TODO check and stop after permutations limit - set the limit
-        
+  
         while (mapper.hasNext()) {
-            
-            if (compareTriples(b1, b2, mapper.next())) {
+            if (compareNQuads(b1, b2, mapper.next())) {
                 return true;
             }
         }
 
         return false;
     }
-    
-    private static final boolean compareTriples(final List<RdfTriple> triples1, final List<RdfTriple> triples2, final Map<String, String> mapping) {
 
-        final LinkedList<RdfTriple> remaining = new LinkedList<>(triples2);
+    private static final boolean compareNQuads(final List<RdfNQuad> nquads1, final List<RdfNQuad> nquads2, final Map<String, String> mapping) {
+
+        final LinkedList<RdfNQuad> remaining = new LinkedList<>(nquads2);
         
-        for (final RdfTriple triple1 : triples1) {
+        for (final RdfNQuad nquad1 : nquads1) {
             
             boolean found = false;
             
-            for (final RdfTriple triple2 : remaining) {
+            for (final RdfNQuad nquad2 : remaining) {
                 
-                found = compareTriple(triple1, triple2, mapping);
+                found = compareNQuad(nquad1, nquad2, mapping);
                 
                 if (found) {
-                    remaining.remove(triple2);
+                    remaining.remove(nquad2);
                     break;
                 }
             }
-        }
-                
+        }                
         return remaining.isEmpty();
     }
-
+    
     private static final boolean compareTriple(final RdfTriple triple1, final RdfTriple triple2, final Map<String, String> mapping) {
 
-        if (!compareSubject(triple1.getSubject(), triple2.getSubject(), mapping)) {
-            return false;
-        }
-        
-        if (!Objects.equals(triple1.getPredicate(), triple2.getPredicate())) {
-            return false;
-        }
-
-        return compareObject(triple1.getObject(), triple2.getObject(), mapping);
+        return compareSubject(triple1.getSubject(), triple2.getSubject(), mapping)
+                && Objects.equals(triple1.getPredicate(), triple2.getPredicate())
+                && compareObject(triple1.getObject(), triple2.getObject(), mapping)
+                ;
+    }
+    
+    private static final boolean compareNQuad(final RdfNQuad nquad1, final RdfNQuad nquad2, final Map<String, String> mapping) {
+        return compareTriple(nquad1, nquad2, mapping)
+                && compareGraphName(nquad1.getGraphName(), nquad2.getGraphName(), mapping)
+                ;        
     }
     
     private static final boolean compareSubject(RdfSubject subject1, RdfSubject subject2, Map<String, String> mapping) {
@@ -168,7 +135,6 @@ public final class RdfComparison {
             
             return Objects.equals(subject1.asIRI(), subject2.asIRI());
         }
-
         return false;
     }
 
@@ -194,6 +160,31 @@ public final class RdfComparison {
         return false;
     }
 
-    private static final Predicate<RdfTriple> HAS_BLANKS  = t -> t.getObject().isBlankNode() || t.getSubject().isBlankNode(); 
+    private static final boolean compareGraphName(RdfGraphName name1, RdfGraphName name2, Map<String, String> mapping) {
+
+        if (name1 == null || name2 == null) {
+            return name1 == name2;            
+        }
+        
+        if (name1.isBlankNode() && name2.isBlankNode()) { 
+            
+            return Objects.equals(
+                            name1.asBlankNode().getLabel(), 
+                            mapping != null
+                                ? mapping.get(name2.asBlankNode().getLabel())
+                                : name2.asBlankNode().getLabel()
+                                        );
+            
+        } else if (name1.isIRI() && name2.isIRI()) {
+            
+            return Objects.equals(name1.asIRI(), name2.asIRI());
+        }
+        return false;
+    }
+    private static final Predicate<RdfNQuad> HAS_BLANKS  = 
+                            t -> t.getObject().isBlankNode() 
+                                    || t.getSubject().isBlankNode()
+                                    || t.getGraphName() != null && t.getGraphName().isBlankNode()
+                                    ; 
     
 }

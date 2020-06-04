@@ -19,7 +19,7 @@ final class NodeMapper {
         this.iterator = 0;
     }
     
-    public static final NodeMapper create(List<RdfTriple> from, List<RdfTriple> to) {
+    public static final NodeMapper create(List<RdfNQuad> from, List<RdfNQuad> to) {
         
         NodeClassifier sourceClassifier = new NodeClassifier();
         to.stream().forEach(sourceClassifier::add);

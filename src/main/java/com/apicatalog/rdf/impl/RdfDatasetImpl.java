@@ -48,10 +48,7 @@ final class RdfDatasetImpl implements RdfDataset {
 
         if (nquad.getGraphName() != null) {
 
-            RdfGraphImpl graph = defaultGraph;
-            
-
-            graph = graphs.get(nquad.getGraphName());
+            RdfGraphImpl graph = graphs.get(nquad.getGraphName());
             
             if (graph == null) {
                 graph = new RdfGraphImpl();
@@ -60,12 +57,12 @@ final class RdfDatasetImpl implements RdfDataset {
             graph.add(nquad);
     
         } else {
+            
             // add to default graph
             defaultGraph.add(nquad);
         }
         
         nquads.add(nquad);
-
     }
     
     @Override
@@ -80,6 +77,6 @@ final class RdfDatasetImpl implements RdfDataset {
 
     @Override
     public int size() {
-        return graphs.values().stream().map(RdfGraph::size).reduce(getDefaultGraph().size(), Integer::sum);           
+        return nquads.size();           
     }
 }
