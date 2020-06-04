@@ -6,6 +6,7 @@ import java.util.Arrays;
 import com.apicatalog.iri.IRI;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.rdf.RdfDataset;
+import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfSubject;
@@ -57,20 +58,23 @@ public final class NQuadsReader implements RdfReader {
   
         RdfObject object = readObject();
         
+        RdfGraphName graphName = null;
+        
         skipWhitespace(0);
         
         if (TokenType.IRI_REF == tokenizer.token().getType()) {
-            //TODO
+
+            graphName = Rdf.createGraphName(IRI.create(tokenizer.token().getValue()));
             tokenizer.next();
             skipWhitespace(0);
         }
 
         if (TokenType.BLANK_NODE_LABEL == tokenizer.token().getType()) {
-            //TODO
+            
+            graphName = Rdf.createGraphName(BlankNode.create(tokenizer.token().getValue()));
             tokenizer.next();
             skipWhitespace(0);
         }
-
 
         if (TokenType.END_OF_STATEMENT != tokenizer.token().getType()) {
             unexpected(tokenizer.token());
@@ -78,7 +82,7 @@ public final class NQuadsReader implements RdfReader {
         
         tokenizer.next();
 
-        return Rdf.createNQuad(subject, predicate, object, null);
+        return Rdf.createNQuad(subject, predicate, object, graphName);
     }
     
     private RdfSubject readSubject()  throws NQuadsReaderError {
