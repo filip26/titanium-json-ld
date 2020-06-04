@@ -73,19 +73,11 @@ public class JsonLdToRdfTest {
 
         Assert.assertNull(testCase.expectErrorCode);
         
-        if (testCase.expect == null) {
-            System.out.println("Test " + testCase.id + ": " + testCase.name);
-        System.out.println("Actual:");
+        // A PositiveSyntaxTest succeeds when no error is found when processing.
+        if (testCase.expect == null && testCase.type.contains("jld:PositiveSyntaxTest")) {
+            return;
+        }
         
-        try {
-            Rdf.createWriter(System.out, RdfFormat.N_QUADS).write(result);
-        } catch (IOException | NQuadsWriterError e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-        }
-
-
         Assert.assertNotNull(testCase.expect);
 
         try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.RESOURCES_BASE + testCase.expect.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
@@ -98,22 +90,22 @@ public class JsonLdToRdfTest {
             boolean match = RdfComparison.equals(expected, result);
             
             if (!match) {
-//                System.out.println("Test " + testCase.id + ": " + testCase.name);
-//                System.out.println("Expected:");
-//                
-//                Rdf.createWriter(System.out, RdfFormat.N_QUADS).write(expected);
-//    
-//                System.out.println();
-//                System.out.println("Actual:");
-//            
-//                Rdf.createWriter(System.out, RdfFormat.N_QUADS).write(result);
-//                
-//                System.out.println();
+                System.out.println("Test " + testCase.id + ": " + testCase.name);
+                System.out.println("Expected:");
+                
+                Rdf.createWriter(System.out, RdfFormat.N_QUADS).write(expected);
+    
+                System.out.println();
+                System.out.println("Actual:");
+            
+                Rdf.createWriter(System.out, RdfFormat.N_QUADS).write(result);
+                
+                System.out.println();
             }
 
             Assert.assertTrue(match);
             
-        } catch (NQuadsReaderError /*| NQuadsWriterError*/ e ) {
+        } catch (NQuadsReaderError | NQuadsWriterError e ) {
             e.printStackTrace();
             Assert.fail(e.getMessage());
         }
