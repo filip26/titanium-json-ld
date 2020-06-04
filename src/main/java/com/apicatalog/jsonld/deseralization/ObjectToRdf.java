@@ -146,13 +146,13 @@ final class ObjectToRdf {
             // 10.
             } else {
                 //TODO conversion
-                
+
                 double  doubleValue = number.doubleValue();
                 int decimalValue = (int)doubleValue;
                 
                 if ((doubleValue - decimalValue) > 0) {
                    
-                    valueString = Double.toString(doubleValue);
+                    valueString =  String.format("%.1E", doubleValue).replace("+00", "0").replace("+", "");
                     
                     if (datatype == null) {
                         datatype = "http://www.w3.org/2001/XMLSchema#double";
