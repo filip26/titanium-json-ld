@@ -8,11 +8,6 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfGraph;
-import com.apicatalog.rdf.RdfObject;
-import com.apicatalog.rdf.RdfSubject;
-import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.RdfDataset.NamedGraph;
 
 public final class RdfComparison {

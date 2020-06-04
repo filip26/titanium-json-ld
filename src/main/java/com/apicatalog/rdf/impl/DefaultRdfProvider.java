@@ -19,9 +19,9 @@ import com.apicatalog.rdf.io.nquad.NQuadsReader;
 import com.apicatalog.rdf.io.nquad.NQuadsWriter;
 import com.apicatalog.rdf.spi.RdfProvider;
 
-public final class JsonLdRdfProvider extends RdfProvider {
+public final class DefaultRdfProvider extends RdfProvider {
 
-    public static final RdfProvider INSTANCE = new JsonLdRdfProvider(); 
+    public static final RdfProvider INSTANCE = new DefaultRdfProvider(); 
     
     @Override
     public RdfDataset createDataset() {
@@ -55,16 +55,6 @@ public final class JsonLdRdfProvider extends RdfProvider {
     }
 
     @Override
-    public RdfTriple createTriple(IRI subject, IRI predicate, IRI object) {
-        return RdfTripleImpl.create(subject, predicate, object);
-    }
-
-    @Override
-    public RdfTriple createTriple(IRI subject, IRI predicate, RdfObject object) {
-        return RdfTripleImpl.create(subject, predicate, object);
-    }
-
-    @Override
     public RdfTriple createTriple(RdfSubject subject, IRI predicate, RdfObject object) {
         return RdfTripleImpl.create(subject, predicate, object);
     }
@@ -85,16 +75,6 @@ public final class JsonLdRdfProvider extends RdfProvider {
     }
 
     @Override
-    public RdfLiteral createLiteral(String lexicalForm) {
-        
-        if (lexicalForm == null) {
-            throw new IllegalArgumentException();
-        }
-        
-        return new RdfLiteralImpl(lexicalForm);
-    }
-
-    @Override
     public RdfObject createObject(IRI iri) {
         return RdfObjectImpl.of(iri);
     }
@@ -107,6 +87,11 @@ public final class JsonLdRdfProvider extends RdfProvider {
     @Override
     public RdfObject createObject(BlankNode blankNode) {
         return RdfObjectImpl.of(blankNode);
+    }
+
+    @Override
+    public RdfLiteral createLiteral(String lexicalForm) {
+        return new RdfLiteralImpl(lexicalForm);
     }
 
     @Override

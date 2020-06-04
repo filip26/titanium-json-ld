@@ -1,5 +1,7 @@
-package com.apicatalog.rdf;
+package com.apicatalog.rdf.api;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
@@ -7,6 +9,14 @@ import java.io.Writer;
 
 import com.apicatalog.iri.IRI;
 import com.apicatalog.jsonld.lang.BlankNode;
+import com.apicatalog.rdf.RdfDataset;
+import com.apicatalog.rdf.RdfFormat;
+import com.apicatalog.rdf.RdfGraph;
+import com.apicatalog.rdf.RdfLiteral;
+import com.apicatalog.rdf.RdfNQuad;
+import com.apicatalog.rdf.RdfObject;
+import com.apicatalog.rdf.RdfSubject;
+import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.RdfWriter;
 import com.apicatalog.rdf.spi.RdfProvider;
@@ -23,23 +33,27 @@ public final class Rdf {
     public static final RdfReader createReader(Reader reader, RdfFormat format) {
         return RdfProvider.provider().createReader(reader, format);
     }
+    
+    public static final RdfReader createReader(InputStream is, RdfFormat format) {
+        return createReader(new InputStreamReader(is), format);
+    }
 
     public static final RdfWriter createWriter(Writer writer, RdfFormat format) {
         return RdfProvider.provider().createWriter(writer, format);
+    }
+
+    public static final RdfWriter createWriter(OutputStream os, RdfFormat format) {
+        return createWriter(new OutputStreamWriter(os), format);
     }
 
     public static final RdfDataset createDataset() {
         return RdfProvider.provider().createDataset();
     }
 
-    public static final RdfTriple createTriple(IRI subject, IRI predicate, IRI object) {
-        return RdfProvider.provider().createTriple(subject, predicate, object);
+    public static final StatementBuilder createStatementBuilder() {
+        return new StatementBuilder();
     }
     
-    public static final RdfTriple createTriple(IRI subject, IRI predicate, RdfObject object) {
-        return RdfProvider.provider().createTriple(subject, predicate, object);
-    }
-
     public static final RdfTriple createTriple(RdfSubject subject, IRI predicate, RdfObject object) {
         return RdfProvider.provider().createTriple(subject, predicate, object);
     }
@@ -54,10 +68,6 @@ public final class Rdf {
 
     public static final RdfObject createObject(RdfLiteral literal) {
         return RdfProvider.provider().createObject(literal);
-    }
-
-    public static final RdfWriter createWriter(OutputStream os, RdfFormat format) {
-        return RdfProvider.provider().createWriter(new OutputStreamWriter(os), format);
     }
 
     public static final RdfSubject createSubject(IRI iri) {
@@ -80,24 +90,7 @@ public final class Rdf {
         return RdfProvider.provider().createLiteral(lexicalForm, langTag);
     }
 
-
     public static final RdfObject createObject(BlankNode blankNode) {
         return RdfProvider.provider().createObject(blankNode);
     }
-
-//
-//    public static final Literal createLiteral(String lexicalForm, IRI dataType) throws IllegalArgumentException {
-//        // TODO Auto-generated method stub
-//        return null;
-//    }
-//
-//    public static final Literal createLiteral(String lexicalForm, String languageTag) throws IllegalArgumentException {
-//        // TODO Auto-generated method stub
-//        return null;
-//    }
-//
-//    public static final Triple createTriple(BlankNodeOrIRI subject, IRI predicate, RDFTerm object) throws IllegalArgumentException {
-//        // TODO Auto-generated method stub
-//        return null;
-//    }
 }

@@ -5,11 +5,11 @@ import java.util.Arrays;
 
 import com.apicatalog.iri.IRI;
 import com.apicatalog.jsonld.lang.BlankNode;
-import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfSubject;
+import com.apicatalog.rdf.api.Rdf;
 import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.nquad.Tokenizer.Token;
 import com.apicatalog.rdf.io.nquad.Tokenizer.TokenType;
@@ -157,7 +157,7 @@ public final class NQuadsReader implements RdfReader {
             unexpected(attr);
         }
         
-        return Rdf.createObject(Rdf.createLitteral(value.getValue(), IRI.create("http://www.w3.org/2001/XMLSchema#string")));
+        return Rdf.createObject(Rdf.createLitteral(value.getValue()));
     }
 
     

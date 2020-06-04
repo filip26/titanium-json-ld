@@ -1,7 +1,5 @@
 package com.apicatalog.rdf.impl;
 
-import java.util.Objects;
-
 import com.apicatalog.iri.IRI;
 import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfObject;

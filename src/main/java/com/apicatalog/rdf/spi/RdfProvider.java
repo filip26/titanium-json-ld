@@ -13,7 +13,7 @@ import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.RdfTriple;
-import com.apicatalog.rdf.impl.JsonLdRdfProvider;
+import com.apicatalog.rdf.impl.DefaultRdfProvider;
 import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.RdfWriter;
 
@@ -25,7 +25,7 @@ public abstract class RdfProvider {
     
     public static RdfProvider provider() {
         //TODO
-        return JsonLdRdfProvider.INSTANCE;
+        return DefaultRdfProvider.INSTANCE;
     }
 
     public abstract RdfDataset createDataset();
@@ -35,10 +35,6 @@ public abstract class RdfProvider {
     public abstract RdfWriter createWriter(Writer writer, RdfFormat format);
 
     public abstract RdfGraph createGraph();
-
-    public abstract RdfTriple createTriple(IRI subject, IRI predicate, IRI object);
-    
-    public abstract RdfTriple createTriple(IRI subject, IRI predicate, RdfObject object);
     
     public abstract RdfTriple createTriple(RdfSubject subject, IRI predicate, RdfObject object);
     
@@ -46,7 +42,7 @@ public abstract class RdfProvider {
 
     public abstract RdfSubject createSubject(IRI iri);
     
-    public abstract RdfSubject createSubject(BlankNode blankNode);
+    public abstract RdfSubject createSubject(BlankNode label);
 
     public abstract RdfLiteral createLiteral(String lexicalForm);
 

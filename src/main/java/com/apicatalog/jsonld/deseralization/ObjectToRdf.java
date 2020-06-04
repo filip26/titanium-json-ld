@@ -14,10 +14,10 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.ValueObject;
-import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfTriple;
+import com.apicatalog.rdf.api.Rdf;
 
 /**
  * 

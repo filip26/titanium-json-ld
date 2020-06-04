@@ -14,7 +14,7 @@ final class RdfLiteralImpl implements RdfLiteral {
     
     protected RdfLiteralImpl(String value) {
         this.value = value;
-        this.dataType = null;
+        this.dataType = IRI.create("http://www.w3.org/2001/XMLSchema#string");  //TODO use constant
         this.langTag = null; 
     }
 
@@ -27,7 +27,7 @@ final class RdfLiteralImpl implements RdfLiteral {
     protected RdfLiteralImpl(String value, String langTag) {
         this.value = value;
         this.langTag = langTag;
-        this.dataType = IRI.create("rdf:langString");
+        this.dataType = IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#langString");  //TODO use constant
     }
 
     @Override

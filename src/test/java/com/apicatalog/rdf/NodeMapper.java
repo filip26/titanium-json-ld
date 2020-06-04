@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.apicatalog.rdf.RdfTriple;
-
 final class NodeMapper {
 
     private final Map<String, NodeCluster> clusters;

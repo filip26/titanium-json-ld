@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.apicatalog.rdf.RdfTriple;
-
 final class NodeClassifier {
 
     Map<String, NodeCategory> categories = new HashMap<>();
