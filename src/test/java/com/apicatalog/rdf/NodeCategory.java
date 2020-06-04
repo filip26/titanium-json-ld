@@ -26,7 +26,6 @@ final class NodeCategory {
         this.graphOccurence++;
     }
 
-
     @Override
     public int hashCode() {
         return Objects.hash(objectOccurence, subjectOccurence, graphOccurence);

@@ -28,6 +28,10 @@ final class NodeCluster {
         reset();
     }
     
+    public String[] target() {
+        return target;
+    }
+    
     public static final NodeCluster create(Collection<String> source, Collection<String> target) {
         
         if (source.size() != target.size()) {
