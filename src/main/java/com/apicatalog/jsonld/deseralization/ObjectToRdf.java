@@ -108,7 +108,7 @@ final class ObjectToRdf {
         
         // 8.
         //TODO
-        
+
         // 9.
         if (JsonUtils.isTrue(value)) {
             
@@ -132,19 +132,39 @@ final class ObjectToRdf {
             
             JsonNumber number = ((JsonNumber)value);
             
+            
+            
             // 11.
             if (number.isIntegral()) {
-                
+                //TODO conversion
                 valueString = Long.toString(number.longValueExact());
                 
                 if (datatype == null) {
                     datatype = "http://www.w3.org/2001/XMLSchema#integer";
                 }
-
                 
             // 10.
             } else {
-                                
+                //TODO conversion
+                
+                double  doubleValue = number.doubleValue();
+                int decimalValue = (int)doubleValue;
+                
+                if ((doubleValue - decimalValue) > 0) {
+                   
+                    valueString = Double.toString(doubleValue);
+                    
+                    if (datatype == null) {
+                        datatype = "http://www.w3.org/2001/XMLSchema#double";
+                    }
+                } else {
+                    
+                    valueString = Long.toString(decimalValue);
+                    
+                    if (datatype == null) {
+                        datatype = "http://www.w3.org/2001/XMLSchema#integer";
+                    }
+                }
             }
                     
         // 12.
