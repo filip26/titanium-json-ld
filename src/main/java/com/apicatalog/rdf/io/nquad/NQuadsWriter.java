@@ -92,9 +92,11 @@ public class NQuadsWriter implements RdfWriter {
         
         final StringBuilder escaped = new StringBuilder();
         
-        for (int i=0; i < value.length(); i++) {
+        int[] codePoints = value.codePoints().toArray();
+        
+        for (int i=0; i < codePoints.length; i++) {
             
-            char ch = value.charAt(i);
+            int ch = codePoints[i]; 
             
             if (ch == 0x9) {
                 escaped.append("\t");
