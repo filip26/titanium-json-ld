@@ -56,9 +56,6 @@ public final class JsonLdToRdfBuilder {
         // 1.
         for (final String graphName : nodeMap.graphs(true)) {
 
-            // 1.1.
-            //TODO
-            
             // 1.2.
             RdfGraph triples = null;
             
@@ -66,7 +63,12 @@ public final class JsonLdToRdfBuilder {
                 triples = dataset.getDefaultGraph();
                 
             } else {
-                
+
+                // 1.1.
+                if (!BlankNode.isWellFormed(graphName) && !IRI.isWellFormed(graphName)) {
+                    continue;
+                }
+
                 triples = Rdf.createGraph();
                 dataset.add(graphName, triples);
             }
@@ -111,7 +113,8 @@ public final class JsonLdToRdfBuilder {
                                 rdfObject = Rdf.createObject(IRI.create(typeString));
                                 
                             } else {
-                                //TODO literal
+                                rdfObject = Rdf.createObject(Rdf.createLitteral(typeString));
+                                //TODO lang? dtatype? well-formed
                             }
                             
                             if (rdfObject == null) {
@@ -129,14 +132,15 @@ public final class JsonLdToRdfBuilder {
                     } else if (Keywords.contains(property)
                             // 1.3.2.3.
                             || (BlankNode.isWellFormed(property) && !produceGeneralizedRdf)
-                            // 1.3.2.4.
-                            //TODO
+
+
                             ) {
                         continue;
                         
-                    // 1.3.2.5.
+                    // 1.3.2.4.
                     } else if (BlankNode.isWellFormed(property) || UriUtils.isURI(property)) {
 
+                        // 1.3.2.5.
                         for (JsonValue item : nodeMap.get(graphName, subject, property).asJsonArray()) {
                         
                             // 1.3.2.5.1.
@@ -156,12 +160,9 @@ public final class JsonLdToRdfBuilder {
                             // 1.3.2.5.3.
                             listTriples.forEach(triples::add);
                         }
-                    }
-                    
-                }
-                
+                    }   
+                }   
             }
-
         }
         
         return dataset;
