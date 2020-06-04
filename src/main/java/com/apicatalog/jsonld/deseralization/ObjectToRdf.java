@@ -113,7 +113,10 @@ final class ObjectToRdf {
         }
         
         // 8.
-        //TODO
+        if (Keywords.JSON.equals(datatype)) {
+            valueString = value.toString();
+            datatype = "http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON";
+        }
 
         // 9.
         if (JsonUtils.isTrue(value)) {

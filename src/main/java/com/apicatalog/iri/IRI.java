@@ -32,7 +32,7 @@ public final class IRI {
      */
     public static boolean isWellFormed(String iri) {
         //TODO        
-        return UriUtils.isURI(iri);
+        return UriUtils.isAbsoluteUri(iri);
     }
 
     @Override
