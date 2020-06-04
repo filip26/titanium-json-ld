@@ -56,7 +56,7 @@ final class ObjectToRdf {
     }
     
     public RdfObject build() throws JsonLdError {
-        
+
         // 1. - 2.
         if (NodeObject.isNodeObject(item)) {
             
@@ -67,7 +67,7 @@ final class ObjectToRdf {
             }
             
             String idString = ((JsonString)id).getString();
-            
+     
             if (BlankNode.isWellFormed(idString)) {
                 return Rdf.createObject(BlankNode.create(idString));
             }

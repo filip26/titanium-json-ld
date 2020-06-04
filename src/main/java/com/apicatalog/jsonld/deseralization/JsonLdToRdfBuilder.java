@@ -57,17 +57,14 @@ public final class JsonLdToRdfBuilder {
         for (final String graphName : nodeMap.graphs(true)) {
 
             // 1.2.
-//            RdfGraph triples = null;
             final RdfGraphName rdfGraphName;
             
             if (Keywords.DEFAULT.equals(graphName)) {
-//                triples = dataset.getDefaultGraph();
+
                 rdfGraphName = null;
                 
             } else {
 
-  //              RdfGraphName rdfGraphName = null;
-                
                 // 1.1.
                 if (BlankNode.isWellFormed(graphName)) {
                     
@@ -80,10 +77,6 @@ public final class JsonLdToRdfBuilder {
                 } else {
                     continue;
                 }
-
-//                triples = Rdf.createGraph();
-
-//                dataset.add(rdfGraphName, triples);
             }
             
             // 1.3.
@@ -127,11 +120,6 @@ public final class JsonLdToRdfBuilder {
                                 rdfObject = Rdf.createObject(IRI.create(typeString));
                                 
                             } else {
-                                rdfObject = Rdf.createObject(Rdf.createLitteral(typeString));
-                                //TODO lang? dtatype? well-formed
-                            }
-                            
-                            if (rdfObject == null) {
                                 continue;
                             }
 
