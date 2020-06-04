@@ -15,9 +15,8 @@ import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerEarl;
 
 public class EarlGenerator {
-
     public static void main(String[] args) throws IOException {
-        (new EarlGenerator()).generate(Paths.get("java-jsonp-ld-earl.ttl"));
+        (new EarlGenerator()).generate(Paths.get("java-titanium-json-ld-earl.ttl"));
     }
 
     public void generate(final Path path) throws IOException {
@@ -104,7 +103,7 @@ public class EarlGenerator {
         writer.println();
         writer.println("[ a earl:Assertion;");
         writer.println("  earl:assertedBy <https://github.com/filip26>;");
-        writer.println("  earl:subject <https://github.com/filip26/jsonp-ld>;");
+        writer.println("  earl:subject <https://github.com/filip26/titanium-json-ld>;");
         writer.println("  earl:test <" + testUri + ">;");
         writer.println("  earl:result [");
         writer.println("    a earl:TestResult;");
@@ -124,22 +123,22 @@ public class EarlGenerator {
         writer.println("@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .");
         writer.println("@prefix earl: <http://www.w3.org/ns/earl#> .");
         writer.println();
-        writer.println("<> foaf:primaryTopic <https://github.com/filip26/jsonp-ld>;");
+        writer.println("<> foaf:primaryTopic <https://github.com/filip26/titanium-json-ld>;");
         writer.println("  dc:issued \"" + DateTimeFormatter.ISO_INSTANT.format(Instant.now().truncatedTo(ChronoUnit.SECONDS)) + "\"^^xsd:dateTime;");
         writer.println("  foaf:maker <https://github.com/filip26>.");
         writer.println();
-        writer.println("<https://github.com/filip26/jsonp-ld> a earl:TestSubject,");
+        writer.println("<https://github.com/filip26/titanium-json-ld> a earl:TestSubject,");
         writer.println("    doap:Project,");
         writer.println("    earl:Software;");
-        writer.println("  dc:title \"JSONP-LD\" ;");
+        writer.println("  dc:title \"Titanium JSON-LD\" ;");
         writer.println("  dc:creator <https://github.com/filip26>;");
-        writer.println("  doap:name \"JSONP-LD\";");
+        writer.println("  doap:name \"Titanium JSON-LD\";");
         writer.println("  doap:description \"A JSON-LD 1.1 Processor & API for Java\";");
         writer.println("  doap:developer <https://github.com/filip26>;");
-        writer.println("  doap:homepage <https://github.com/filip26/jsonp-ld>;");
-        writer.println("  doap:license <https://github.com/filip26/jsonp-ld/blob/master/LICENSE>;");
+        writer.println("  doap:homepage <https://github.com/filip26/titanium-json-ld>;");
+        writer.println("  doap:license <https://github.com/filip26/titanium-json-ld/blob/master/LICENSE>;");
         writer.println("  doap:release [");
-        writer.println("    doap:name \"JSONP-LD 0.3\";");
+        writer.println("    doap:name \"Titanium JSON-LD 0.3\";");
         writer.println("    doap:revision \"0.3\";");
         writer.println("    doap:created \"2020-06-01\"^^xsd:date;");
         writer.println("  ] ;");
@@ -149,5 +148,5 @@ public class EarlGenerator {
         writer.println("  foaf:name \"Filip Kolarik\";");
         writer.println("  foaf:homepage <https://github.com/filip26>.");
     }
-    
+        
 }
