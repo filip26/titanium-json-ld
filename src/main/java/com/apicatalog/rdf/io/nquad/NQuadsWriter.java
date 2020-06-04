@@ -70,7 +70,7 @@ public class NQuadsWriter implements RdfWriter {
 
     private void write(RdfLiteral literal) throws IOException {
         writer.write('"');
-        writer.write(literal.getValue().replaceAll("\"", "\\\""));
+        writer.write(escape(literal.getValue()));   //TODO unicode escape
         writer.write('"');
         
         if (literal.getLanguage() != null) {
@@ -86,6 +86,42 @@ public class NQuadsWriter implements RdfWriter {
             writer.write("^^");
             write(literal.getDatatype());
         }
+    }
+    
+    private static final String escape(String value) {
+        
+        final StringBuilder escaped = new StringBuilder();
+        
+        for (int i=0; i < value.length(); i++) {
+            
+            char ch = value.charAt(i);
+            
+            if (ch == 0x9) {
+                escaped.append("\t");
+                
+            } else if (ch == 0x8) {
+                escaped.append("\b");
+                
+            } else if (ch == 0xa) {
+                escaped.append("\n");
+                
+            } else if (ch == 0xd) {
+                escaped.append("\r");
+                
+            } else if (ch == 0xc) {
+                escaped.append("\f");
+                
+            } else if (ch == '\'') {
+                escaped.append("\'");
+                
+            } else if (ch == '"') {
+                escaped.append("\\\"");
+                
+            } else if (ch == '\\') {
+                escaped.append("\\\\");
+            }
+        }        
+        return escaped.toString();
     }
 
     public void write(IRI iri) throws IOException {

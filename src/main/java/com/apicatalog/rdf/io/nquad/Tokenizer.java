@@ -183,14 +183,14 @@ final class Tokenizer {
                      
                         value.append((char)ch);
 
-                        readUnicode4(value);
+                        readUtf8(value);
 
                     } else if (ch == 'U') {
                         
                         value.append((char)ch);
                         
-                        readUnicode4(value);
-                        readUnicode4(value);
+                        readUtf8(value);
+                        readUtf8(value);
 
                     } else {
                         unexpected(ch);
@@ -233,27 +233,24 @@ final class Tokenizer {
 
                     ch = reader.read();
                     
-                    if (ch == 't' || ch == 'b' || ch == 'n' || ch == 'r' || ch == 'f' || ch == '\'' || ch == '\\') {
+                    if (ch == 't' || ch == 'b' || ch == 'n' || ch == 'r' || ch == 'f' || ch == '\'' || ch == '\\' || ch =='"') {
 
-                        value.append('\\');
-                        value.append((char)ch);
-
-                    } else if (ch =='"') {
-                        
-                        value.append((char)ch);
+                        value.append(unescape((char)ch));
 
                     } else if (ch == 'u') {
 
+                        //TODO unescape
                         value.append('\\');
                         value.append((char)ch);
-                        readUnicode4(value);
+                        readUtf8(value);
                         
                     } else if (ch == 'U') {
                         
+                        //TODO unescape                        
                         value.append('\\');
                         value.append((char)ch);
-                        readUnicode4(value);
-                        readUnicode4(value);
+                        readUtf8(value);
+                        readUtf8(value);
                         
                     } else {
                         unexpected(ch);
@@ -375,7 +372,7 @@ final class Tokenizer {
         }    
     }
 
-    private void readUnicode4(StringBuilder builder) throws NQuadsReaderError, IOException {
+    private void readUtf8(StringBuilder builder) throws NQuadsReaderError, IOException {
         readHex(builder);
         readHex(builder);
         readHex(builder);
@@ -387,9 +384,28 @@ final class Tokenizer {
         int hex = reader.read();
         
         if (RdfGrammar.IS_HEX.negate().test(hex)) {
-            unexpected(hex, "[0-9][a-f][A-F]");
+            unexpected(hex, "0-9", "a-f", "A-F");
         }
         builder.append((char)hex);
+    }
+    
+    private static final char unescape(char symbol) {
+        if (symbol == 't') {
+            return (char)0x9;
+            
+        } else if (symbol == 'b') {
+            return (char)0x8;
+            
+        } else if (symbol == 'n') {
+            return (char)0xa;
+            
+        } else if (symbol == 'r') {
+            return (char)0xd;
+            
+        } else if (symbol == 'f') {
+            return (char)0xc;
+        }
+        return symbol;        
     }
 
     public boolean hasNext() throws NQuadsReaderError {
@@ -405,6 +421,7 @@ final class Tokenizer {
         static final Token EOS = new Token(TokenType.END_OF_STATEMENT, null);
         static final Token EOL = new Token(TokenType.END_OF_LINE, null);
         static final Token WS = new Token(TokenType.WHITE_SPACE, null);
+        
         static final Token LITERAL_DATA_TYPE = new Token(TokenType.LITERAL_DATA_TYPE, null);
         
         final TokenType type;
