@@ -70,7 +70,7 @@ public class JsonLdToRdfTest {
             return;
         }
 
-        Assert.assertNull("An error code is expected but not execption has been thrown.", testCase.expectErrorCode);
+        Assert.assertTrue("Error code [" + testCase.expectErrorCode + "] is expected but no execption has been thrown. ", testCase.expectErrorCode == null);
         
         // A PositiveSyntaxTest succeeds when no error is found when processing.
         if (testCase.expect == null && testCase.type.contains("jld:PositiveSyntaxTest")) {
