@@ -34,5 +34,11 @@ public interface RdfLiteral {
      * @return
      */
     String getLanguage();
+    
+    @Override
+    boolean equals(Object o);
 
+    @Override
+    int hashCode();
+    
 }

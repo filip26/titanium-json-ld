@@ -71,7 +71,7 @@ final class ListToRdf {
             // 3.2.
             RdfObject object = ObjectToRdf
                                         .with(item.asJsonObject(), embeddedTriples, nodeMap)
-                                        .rdfDirection(subject)
+                                        .rdfDirection(rdfDirection)
                                         .build();
                                             
             // 3.3.

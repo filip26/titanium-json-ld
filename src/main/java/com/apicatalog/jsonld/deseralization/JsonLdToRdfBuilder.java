@@ -154,7 +154,7 @@ public final class JsonLdToRdfBuilder {
                                                     .with(item.asJsonObject(), listTriples, nodeMap)
                                                     .rdfDirection(rdfDirection)
                                                     .build();
-
+                            
                             if (rdfObject != null) {
                                 dataset.add(Rdf.createNQuad(
                                                         rdfSubject,

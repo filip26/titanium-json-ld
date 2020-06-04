@@ -65,4 +65,22 @@ final class RdfLiteralImpl implements RdfLiteral {
                 && Objects.equals(value, other.value);
     }
     
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        
+        builder.append(value);
+        
+        if (langTag != null) {
+            builder.append('@');
+            builder.append(langTag);
+            
+        } else if (dataType != null) {
+            builder.append("^^");
+            builder.append(dataType);
+        }
+        
+        return builder.toString();
+    }
+    
 }

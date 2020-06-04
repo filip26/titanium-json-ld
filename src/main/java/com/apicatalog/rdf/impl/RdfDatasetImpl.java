@@ -53,16 +53,21 @@ final class RdfDatasetImpl implements RdfDataset {
             if (graph == null) {
                 graph = new RdfGraphImpl();
                 graphs.put(nquad.getGraphName(), graph);
+                graph.add(nquad);
+                nquads.add(nquad);
+                
+            } else if (!graph.contains(nquad)) {
+                graph.add(nquad);
+                nquads.add(nquad);
             }
-            graph.add(nquad);
     
         } else {
-            
             // add to default graph
-            defaultGraph.add(nquad);
+            if (!defaultGraph.contains(nquad)) {
+                defaultGraph.add(nquad);
+                nquads.add(nquad);
+            }
         }
-        
-        nquads.add(nquad);
     }
     
     @Override
