@@ -62,23 +62,22 @@ public class JsonLdToRdfTest {
         try {
   
             result = JsonLd.toRdf(testCase.input).options(options).get();
-
             
-            Assert.assertNotNull("A result is expected but got null", result);
+            Assert.assertNotNull("A result is expected but got null.", result);
         
         } catch (JsonLdError e) {
             Assert.assertEquals(testCase.expectErrorCode, e.getCode());
             return;
         }
 
-        Assert.assertNull(testCase.expectErrorCode);
+        Assert.assertNull("An error code is expected but not execption has been thrown.", testCase.expectErrorCode);
         
         // A PositiveSyntaxTest succeeds when no error is found when processing.
         if (testCase.expect == null && testCase.type.contains("jld:PositiveSyntaxTest")) {
             return;
         }
         
-        Assert.assertNotNull(testCase.expect);
+        Assert.assertNotNull("Test case does not define expected output nor expected error code.", testCase.expect);
 
         try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.RESOURCES_BASE + testCase.expect.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
 
@@ -103,7 +102,7 @@ public class JsonLdToRdfTest {
                 System.out.println();
             }
 
-            Assert.assertTrue(match);
+            Assert.assertTrue("The result does not match expected output.", match);
             
         } catch (NQuadsReaderError | NQuadsWriterError e ) {
             e.printStackTrace();

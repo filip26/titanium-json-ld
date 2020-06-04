@@ -163,7 +163,7 @@ public final class JsonLdToRdfBuilder {
                             
                             // 1.3.2.5.2.                            
                             RdfObject rdfObject = ObjectToRdf
-                                                    .with(item.asJsonObject(), listTriples)
+                                                    .with(item.asJsonObject(), listTriples, nodeMap)
                                                     .rdfDirection(rdfDirection)
                                                     .build();
 

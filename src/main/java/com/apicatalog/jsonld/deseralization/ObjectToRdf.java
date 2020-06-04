@@ -9,6 +9,7 @@ import javax.json.JsonValue;
 
 import com.apicatalog.iri.IRI;
 import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -31,20 +32,22 @@ final class ObjectToRdf {
     // required
     private JsonObject item;
     private List<RdfTriple> triples;
+    private NodeMap nodeMap;
     
     // optional
     private String rdfDirection;
     
-    private ObjectToRdf(JsonObject item, List<RdfTriple> triples) {
+    private ObjectToRdf(JsonObject item, List<RdfTriple> triples, NodeMap nodeMap) {
         this.item = item;
         this.triples = triples;
+        this.nodeMap = nodeMap;
         
         // default values
         this.rdfDirection = null;
     }
     
-    public static final ObjectToRdf with(JsonObject item, List<RdfTriple> triples) {
-        return  new ObjectToRdf(item, triples);
+    public static final ObjectToRdf with(JsonObject item, List<RdfTriple> triples, NodeMap nodeMap) {
+        return  new ObjectToRdf(item, triples, nodeMap);
     }
     
     public ObjectToRdf rdfDirection(String rdfDirection) {
@@ -76,7 +79,10 @@ final class ObjectToRdf {
         
         // 3.
         if (ListObject.isListObject(item)) {
-            return ListToRdf.with(item.get(Keywords.LIST).asJsonArray(), triples).rdfDirection(rdfDirection).build();
+            return ListToRdf
+                        .with(item.get(Keywords.LIST).asJsonArray(), triples, nodeMap)
+                        .rdfDirection(rdfDirection)
+                        .build();
         }
 
         // 4.
