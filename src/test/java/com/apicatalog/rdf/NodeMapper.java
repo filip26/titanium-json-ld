@@ -50,9 +50,9 @@ final class NodeMapper {
         }
 
         List<NodeCluster> clusters = new LinkedList<>();
-        
+
         Map<String, NodeCluster> mapping = merge(reducedSource, reducedTarget, clusters);
-        
+           
         if (mapping == null) {
             return new NodeMapper();
         }
@@ -121,6 +121,10 @@ final class NodeMapper {
         iterator++;
         
         return result;
-    }    
+    }  
+    
+    public int permutations() {
+        return permutations;
+    }
     
 }

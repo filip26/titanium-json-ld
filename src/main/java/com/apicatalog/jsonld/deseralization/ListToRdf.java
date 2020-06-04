@@ -81,7 +81,7 @@ final class ListToRdf {
 
             // 3.4.
             RdfObject rest = (index < bnodes.length) ? Rdf.createObject(BlankNode.create(bnodes[index])) 
-                                        : Rdf.createObject(IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"))
+                                        : Rdf.createObject(IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"))
                                         ;
             
             triples.add(Rdf.createTriple(Rdf.createSubject(BlankNode.create(subject)), IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#rest"), rest));

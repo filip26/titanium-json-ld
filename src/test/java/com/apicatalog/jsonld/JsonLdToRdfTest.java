@@ -87,7 +87,7 @@ public class JsonLdToRdfTest {
             Assert.assertNotNull(expected);
 
             boolean match = RdfComparison.equals(expected, result);
-            
+
             if (!match) {
                 System.out.println("Test " + testCase.id + ": " + testCase.name);
                 System.out.println("Expected:");

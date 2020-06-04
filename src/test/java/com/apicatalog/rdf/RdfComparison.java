@@ -62,7 +62,7 @@ public final class RdfComparison {
                                         .filter(HAS_BLANKS)
                                         .collect(Collectors.toList());
 
-        final List<RdfNQuad> b2 = dataset1.stream()
+        final List<RdfNQuad> b2 = dataset2.stream()
                                           .filter(HAS_BLANKS)
                                           .collect(Collectors.toList());
 
@@ -74,11 +74,18 @@ public final class RdfComparison {
         // create mappings from b2 to b1
         final NodeMapper mapper = NodeMapper.create(b2, b1);
   
-        //TODO check and stop after permutations limit - set the limit
-  
+        int iteration = 0;
+        
         while (mapper.hasNext()) {
             if (compareNQuads(b1, b2, mapper.next())) {
                 return true;
+            }
+            
+            iteration++;
+            
+            if (iteration >= 100000) {
+                System.out.println("Too many permutations [" + mapper.permutations() + "]");
+                return false;
             }
         }
 
@@ -154,7 +161,6 @@ public final class RdfComparison {
             return Objects.equals(object1.asIRI(), object2.asIRI());
             
         } else if (object1.isLiteral() && object2.isLiteral()) {
-            
             return Objects.equals(object1.asLiteral(), object2.asLiteral());
         }
         return false;

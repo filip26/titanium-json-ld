@@ -78,6 +78,7 @@ public class NQuadsWriter implements RdfWriter {
     }
 
     private void write(RdfLiteral literal) throws IOException {
+        
         writer.write('"');
         writer.write(escape(literal.getValue()));   //TODO unicode escape
         writer.write('"');
