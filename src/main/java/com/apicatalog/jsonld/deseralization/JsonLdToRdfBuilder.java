@@ -14,6 +14,7 @@ import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
+import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.RdfTriple;
@@ -64,13 +65,24 @@ public final class JsonLdToRdfBuilder {
                 
             } else {
 
+                RdfGraphName rdfGraphName = null;
+                
                 // 1.1.
-                if (!BlankNode.isWellFormed(graphName) && !IRI.isWellFormed(graphName)) {
+                if (BlankNode.isWellFormed(graphName)) {
+                    
+                    rdfGraphName = Rdf.createGraphName(BlankNode.create(graphName));
+                    
+                } else if (IRI.isWellFormed(graphName)) {
+                 
+                    rdfGraphName = Rdf.createGraphName(IRI.create(graphName));
+                    
+                } else {
                     continue;
                 }
 
                 triples = Rdf.createGraph();
-                dataset.add(graphName, triples);
+
+                dataset.add(rdfGraphName, triples);
             }
             
             // 1.3.

@@ -8,8 +8,6 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.apicatalog.rdf.RdfDataset.NamedGraph;
-
 public final class RdfComparison {
 
     final RdfDataset dataset1;
@@ -38,8 +36,8 @@ public final class RdfComparison {
         }
 
         // compare total number of named graphs and triples
-        Integer[] triples1 = dataset1.stream().map(NamedGraph::getGraph).map(RdfGraph::size).sorted().toArray(Integer[]::new);
-        Integer[] triples2 = dataset2.stream().map(NamedGraph::getGraph).map(RdfGraph::size).sorted().toArray(Integer[]::new);
+        Integer[] triples1 = dataset1.stream().map(RdfNamedGraph::getGraph).map(RdfGraph::size).sorted().toArray(Integer[]::new);
+        Integer[] triples2 = dataset2.stream().map(RdfNamedGraph::getGraph).map(RdfGraph::size).sorted().toArray(Integer[]::new);
 
         if (triples1.length == 0 && triples2.length == 0) {
             return true;

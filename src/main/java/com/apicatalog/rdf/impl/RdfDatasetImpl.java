@@ -6,11 +6,13 @@ import java.util.stream.Stream;
 
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
+import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfNQuad;
+import com.apicatalog.rdf.RdfNamedGraph;
 
 final class RdfDatasetImpl implements RdfDataset {
 
-    private final Map<String, RdfGraph> graphs;
+    private final Map<RdfGraphName, RdfGraph> graphs;
     
     private RdfGraph defaultGraph;
     
@@ -25,13 +27,19 @@ final class RdfDatasetImpl implements RdfDataset {
     }
 
     @Override
-    public void add(String graphName, RdfGraph graph) {
+    public void add(RdfGraphName graphName, RdfGraph graph) {
         graphs.put(graphName, graph);
     }
-
+    
     @Override
-    public Stream<NamedGraph> stream() {
-        return graphs.entrySet().stream().map(e -> new NamedGraph(e.getKey(), e.getValue()));
+    public void add(RdfNamedGraph namedGraph) {
+        graphs.put(namedGraph.getGraphName(), namedGraph.getGraph());
+    }
+
+    
+    @Override
+    public Stream<RdfNamedGraph> stream() {
+        return graphs.entrySet().stream().map(e -> new RdfNamedGraphImpl(e.getKey(), e.getValue()));
     }
 
     public void add(RdfNQuad nquad) {

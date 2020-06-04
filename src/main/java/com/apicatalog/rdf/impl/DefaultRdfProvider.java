@@ -7,6 +7,7 @@ import com.apicatalog.iri.IRI;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
+import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfObject;
@@ -46,7 +47,6 @@ public final class DefaultRdfProvider extends RdfProvider {
         }
         //TODO
         return null;
-
     }
 
     @Override
@@ -60,7 +60,7 @@ public final class DefaultRdfProvider extends RdfProvider {
     }
 
     @Override
-    public RdfNQuad createNQuad(RdfSubject subject, IRI predicate, RdfObject object, String graphName) {
+    public RdfNQuad createNQuad(RdfSubject subject, IRI predicate, RdfObject object, RdfGraphName graphName) {
         return new RdfNQuadImpl(subject, predicate, object, graphName);
     }
 
@@ -103,5 +103,14 @@ public final class DefaultRdfProvider extends RdfProvider {
     public RdfLiteral createLiteral(String lexicalForm, String langTag) {
         return new RdfLiteralImpl(lexicalForm, langTag);
     }
-    
+
+    @Override
+    public RdfGraphName createGraphName(IRI graphName) {
+        return new RdfGraphNameImpl(graphName);
+    }
+
+    @Override
+    public RdfGraphName createGraphName(BlankNode graphName) {
+        return new RdfGraphNameImpl(graphName);
+    }
 }

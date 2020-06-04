@@ -7,6 +7,7 @@ import com.apicatalog.iri.IRI;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
+import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfObject;
@@ -38,7 +39,7 @@ public abstract class RdfProvider {
     
     public abstract RdfTriple createTriple(RdfSubject subject, IRI predicate, RdfObject object);
     
-    public abstract RdfNQuad createNQuad(RdfSubject subject, IRI predicate, RdfObject object, String graphName);
+    public abstract RdfNQuad createNQuad(RdfSubject subject, IRI predicate, RdfObject object, RdfGraphName graphName);
 
     public abstract RdfSubject createSubject(IRI iri);
     
@@ -55,4 +56,9 @@ public abstract class RdfProvider {
     public abstract RdfObject createObject(RdfLiteral literal);
 
     public abstract RdfObject createObject(BlankNode blankNode);
+    
+    public abstract RdfGraphName createGraphName(IRI graphName);
+    
+    public abstract RdfGraphName createGraphName(BlankNode graphName);
+
 }

@@ -11,6 +11,7 @@ import com.apicatalog.iri.IRI;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
+import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfObject;
@@ -58,7 +59,7 @@ public final class Rdf {
         return RdfProvider.provider().createTriple(subject, predicate, object);
     }
 
-    public static final RdfNQuad createNQuad(RdfSubject object, IRI predicate, RdfObject subject, String graphName) {
+    public static final RdfNQuad createNQuad(RdfSubject object, IRI predicate, RdfObject subject, RdfGraphName graphName) {
         return RdfProvider.provider().createNQuad(object, predicate, subject, graphName);
     }
 
@@ -93,4 +94,13 @@ public final class Rdf {
     public static final RdfObject createObject(BlankNode blankNode) {
         return RdfProvider.provider().createObject(blankNode);
     }
+    
+    public static final RdfGraphName createGraphName(IRI graphName) {
+        return RdfProvider.provider().createGraphName(graphName);
+    }
+
+    public static final RdfGraphName createGraphName(BlankNode graphName) {
+        return RdfProvider.provider().createGraphName(graphName);
+    }
+
 }

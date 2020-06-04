@@ -1,6 +1,7 @@
 package com.apicatalog.rdf.impl;
 
 import com.apicatalog.iri.IRI;
+import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfSubject;
@@ -10,9 +11,9 @@ final class RdfNQuadImpl implements RdfNQuad {
     private final RdfSubject subject;
     private final IRI predicate;
     private final RdfObject object;
-    private final String graphName;
+    private final RdfGraphName graphName;
     
-    protected RdfNQuadImpl(RdfSubject subject, IRI predicate, RdfObject object, String graphName) {
+    protected RdfNQuadImpl(RdfSubject subject, IRI predicate, RdfObject object, RdfGraphName graphName) {
         this.subject = subject;
         this.predicate = predicate;
         this.object = object;
@@ -35,7 +36,7 @@ final class RdfNQuadImpl implements RdfNQuad {
     }
 
     @Override
-    public String getGraphName() {
+    public RdfGraphName getGraphName() {
         return graphName;
     }
 }

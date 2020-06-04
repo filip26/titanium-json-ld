@@ -1,7 +1,8 @@
 package com.apicatalog.rdf;
 
-public interface RdfNQuad extends RdfTriple {
+public interface RdfNamedGraph {
 
+    RdfGraph getGraph();
+    
     RdfGraphName getGraphName();
-
 }
