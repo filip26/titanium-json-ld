@@ -74,8 +74,7 @@ final class ObjectToRdf {
         
         // 3.
         if (ListObject.isListObject(item)) {
-            //TODO
-            return null;
+            return ListToRdf.with(item.get(Keywords.LIST), triples).rdfDirection(rdfDirection).build();
         }
 
         // 4.
