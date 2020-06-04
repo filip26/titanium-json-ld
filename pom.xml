@@ -7,17 +7,17 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.apicatalog</groupId>
-    <artifactId>jsonp-ld</artifactId>
+    <artifactId>titanium-json-ld</artifactId>
     <version>0.3.1</version>
     <packaging>jar</packaging>
 
-    <name>JSONP-LD 1.1</name>
+    <name>Titanium JSON-LD 1.1</name>
     
     <description>
         A JSON-LD 1.1 Processor &amp; API
     </description>
     
-    <url>https://github.com/filip26/jsonp-ld</url>
+    <url>https://github.com/filip26/titanium-json-ld</url>
     
     <licenses>
         <license>
@@ -30,19 +30,19 @@
         <repository>
             <id>github</id>
             <name>GitHub filip26 Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/filip26/jsonp-ld</url>
+            <url>https://maven.pkg.github.com/filip26/titanium-json-ld</url>
         </repository>
     </distributionManagement>
 
     <issueManagement>
         <system>github</system>
-        <url>https://github.com/filip26/jsonp-ld/issues</url>
+        <url>https://github.com/filip26/titanium-json-ld/issues</url>
     </issueManagement>
     
     <scm>
-        <connection>scm:git:git://github.com/filip26/jsonp-ld.git</connection>
-        <developerConnection>scm:git:git://github.com/filip26/jsonp-ld.git</developerConnection>
-        <url>https://github.com/filip26/jsonp-ld</url>
+        <connection>scm:git:git://github.com/filip26/titanium-json-ld.git</connection>
+        <developerConnection>scm:git:git://github.com/filip26/titanium-json-ld.git</developerConnection>
+        <url>https://github.com/filip26/titanium-json-ld</url>
     </scm>
 
     <developers>
