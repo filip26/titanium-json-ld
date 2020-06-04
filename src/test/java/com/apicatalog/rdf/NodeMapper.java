@@ -101,6 +101,7 @@ final class NodeMapper {
             throw new IllegalArgumentException();
         }
 
+
         boolean overflow = true;
         
         for (NodeCluster cluster : clusters) {
@@ -119,7 +120,7 @@ final class NodeMapper {
         }
         
         iterator++;
-        
+
         return result;
     }  
     
