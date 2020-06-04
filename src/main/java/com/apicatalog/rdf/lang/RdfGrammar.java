@@ -17,6 +17,8 @@ public final class RdfGrammar {
     public static final IntPredicate IS_WHITESPACE = ch -> ch == 0x0009 || ch == 0x0020;
 
     public static final IntPredicate IS_EOL = ch -> ch == 0x0A || ch == 0x0D;
+    
+    public static final IntPredicate IS_HEX = IS_DIGIT.or(ch -> 'a' <= ch  && ch <= 'f' || 'A' <= ch  && ch <= 'F');
         
     public static final IntPredicate IS_PN_CHARS_BASE = 
                     IS_ASCII_ALPHA.or(ch -> 

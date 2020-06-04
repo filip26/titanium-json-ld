@@ -4,7 +4,6 @@ import static org.junit.Assume.assumeFalse;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -78,7 +77,7 @@ public class JsonLdToRdfTest {
         try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.RESOURCES_BASE + testCase.expect.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
 
 
-            RdfDataset expected = Rdf.createReader(new InputStreamReader(is), RdfFormat.N_QUADS).readDataset();
+            RdfDataset expected = Rdf.createReader(is, RdfFormat.N_QUADS).readDataset();
 
             Assert.assertNotNull(expected);
 
