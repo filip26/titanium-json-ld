@@ -231,20 +231,26 @@ final class Tokenizer {
                 
                 if (ch == '\\') {
 
-                    value.append((char)ch);
                     ch = reader.read();
                     
-                    if (ch == 't' || ch == 'b' || ch == 'n' || ch == 'r' || ch == 'f' || ch == '\'' || ch =='"' || ch == '\\') {
+                    if (ch == 't' || ch == 'b' || ch == 'n' || ch == 'r' || ch == 'f' || ch == '\'' || ch == '\\') {
 
+                        value.append('\\');
+                        value.append((char)ch);
+
+                    } else if (ch =='"') {
+                        
                         value.append((char)ch);
 
                     } else if (ch == 'u') {
-                        
+
+                        value.append('\\');
                         value.append((char)ch);
                         readUnicode4(value);
                         
                     } else if (ch == 'U') {
                         
+                        value.append('\\');
                         value.append((char)ch);
                         readUnicode4(value);
                         readUnicode4(value);
