@@ -1,4 +1,4 @@
-package com.apicatalog.rdf;
+package com.apicatalog.rdf.lang;
 
 import java.util.function.IntPredicate;
 

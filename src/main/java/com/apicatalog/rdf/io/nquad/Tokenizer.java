@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
 
-import com.apicatalog.rdf.RdfGrammar;
+import com.apicatalog.rdf.lang.RdfGrammar;
 
 /**
  * 

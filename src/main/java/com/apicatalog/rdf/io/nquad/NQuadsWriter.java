@@ -73,9 +73,9 @@ public class NQuadsWriter implements RdfWriter {
         writer.write(literal.getValue().replaceAll("\"", "\\\""));
         writer.write('"');
         
-        if (literal.getLanguage().isPresent()) {
+        if (literal.getLanguage() != null) {
             writer.write("@");
-            writer.write(literal.getLanguage().get());
+            writer.write(literal.getLanguage());
             
         } else if (literal.getDatatype() != null) {
             if ("http://www.w3.org/2001/XMLSchema#langString".equals(literal.getDatatype().toString())

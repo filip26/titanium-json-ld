@@ -1,7 +1,5 @@
 package com.apicatalog.rdf;
 
-import java.util.Optional;
-
 import com.apicatalog.iri.IRI;
 
 /**
@@ -35,6 +33,6 @@ public interface RdfLiteral {
      * 
      * @return
      */
-    Optional<String> getLanguage();
+    String getLanguage();
 
 }

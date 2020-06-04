@@ -1,7 +1,6 @@
 package com.apicatalog.rdf.impl;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import com.apicatalog.iri.IRI;
 import com.apicatalog.rdf.RdfLiteral;
@@ -41,8 +40,8 @@ final class RdfLiteralImpl implements RdfLiteral {
     }
 
     @Override
-    public Optional<String> getLanguage() {
-        return Optional.ofNullable(langTag);
+    public String getLanguage() {
+        return langTag;
     }
 
     @Override

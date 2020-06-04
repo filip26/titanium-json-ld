@@ -6,13 +6,13 @@ import java.io.Writer;
 import com.apicatalog.iri.IRI;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfFormat;
 import com.apicatalog.rdf.RdfGraph;
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.RdfTriple;
+import com.apicatalog.rdf.io.RdfFormat;
 import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.RdfWriter;
 import com.apicatalog.rdf.io.nquad.NQuadsReader;
@@ -31,7 +31,7 @@ public final class DefaultRdfProvider extends RdfProvider {
     @Override
     public RdfReader createReader(Reader reader, RdfFormat format) {
         
-        if (RdfFormat.NQuads.equals(format)) {
+        if (RdfFormat.N_QUADS.equals(format)) {
             return new NQuadsReader(reader);            
         }
         //TODO
@@ -41,7 +41,7 @@ public final class DefaultRdfProvider extends RdfProvider {
     @Override
     public RdfWriter createWriter(Writer writer, RdfFormat format) {
 
-        if (RdfFormat.NQuads.equals(format)) {
+        if (RdfFormat.N_QUADS.equals(format)) {
             return new NQuadsWriter(writer);            
         }
         //TODO

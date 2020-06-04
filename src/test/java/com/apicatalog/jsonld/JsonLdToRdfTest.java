@@ -20,9 +20,10 @@ import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfFormat;
 import com.apicatalog.rdf.api.Rdf;
+import com.apicatalog.rdf.io.RdfFormat;
 import com.apicatalog.rdf.io.nquad.NQuadsReaderError;
+import com.apicatalog.rdf.io.nquad.NQuadsWriterError;
 
 @RunWith(Parameterized.class)
 public class JsonLdToRdfTest {
@@ -77,29 +78,29 @@ public class JsonLdToRdfTest {
         try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.RESOURCES_BASE + testCase.expect.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
 
 
-            RdfDataset expected = Rdf.createReader(new InputStreamReader(is), RdfFormat.NQuads).readDataset();
+            RdfDataset expected = Rdf.createReader(new InputStreamReader(is), RdfFormat.N_QUADS).readDataset();
 
             Assert.assertNotNull(expected);
 
             boolean match = RdfComparison.equals(expected, result);
             
             if (!match) {
-                System.out.println("Test Case " + testCase.id + ": " + testCase.name);
+                System.out.println("Test " + testCase.id + ": " + testCase.name);
                 System.out.println("Expected:");
                 
-                Rdf.createWriter(System.out, RdfFormat.NQuads).write(expected);
+                Rdf.createWriter(System.out, RdfFormat.N_QUADS).write(expected);
     
                 System.out.println();
                 System.out.println("Actual:");
             
-                Rdf.createWriter(System.out, RdfFormat.NQuads).write(result);
+                Rdf.createWriter(System.out, RdfFormat.N_QUADS).write(result);
                 
                 System.out.println();
             }
 
             Assert.assertTrue(match);
             
-        } catch (NQuadsReaderError e ) {
+        } catch (NQuadsReaderError | NQuadsWriterError e ) {
             e.printStackTrace();
             Assert.fail(e.getMessage());
         }
