@@ -108,33 +108,33 @@ public class NQuadsWriter implements RdfWriter {
             int ch = codePoints[i]; 
             
             if (ch == 0x9) {
-                escaped.append("\t");
+                escaped.append("\\t");
                 
             } else if (ch == 0x8) {
-                escaped.append("\b");
+                escaped.append("\\b");
                 
             } else if (ch == 0xa) {
-                escaped.append("\n");
+                escaped.append("\\n");
                 
             } else if (ch == 0xd) {
-                escaped.append("\r");
+                escaped.append("\\r");
                 
             } else if (ch == 0xc) {
-                escaped.append("\f");
-                
-            } else if (ch == '\'') {
-                escaped.append("\'");
-                
+                escaped.append("\\f");
+          
             } else if (ch == '"') {
                 escaped.append("\\\"");
                 
             } else if (ch == '\\') {
                 escaped.append("\\\\");
                 
+            } else if (ch >= 0x0 && ch <= 0x1f || ch == 0x7f  /*|| Character.UnicodeBlock.of(ch) != Character.UnicodeBlock.BASIC_LATIN*/) {
+     
+                escaped.append(String.format ("\\u%04x", ch));
+               
             } else {
                 escaped.append((char)ch);
             }
-            
         }        
         return escaped.toString();
     }
