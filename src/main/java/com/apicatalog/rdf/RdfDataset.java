@@ -7,17 +7,17 @@ public interface RdfDataset {
 
     RdfGraph getDefaultGraph();
 
-//    void add(RdfGraphName graphName, RdfGraph graph);
-
     void add(RdfNQuad nquad);
         
-    Stream<? extends RdfNQuad> stream();
+    Stream<RdfNQuad> stream();
     
-    List<? extends RdfNQuad> toList();
+    List<RdfNQuad> toList();
     
     Stream<RdfGraphName> getGraphNames();
     
     RdfGraph getGraph(RdfGraphName graphName);
+
+    Stream<NamedGraph> getNamedGraphs();
     
     /**
      * 
@@ -31,7 +31,7 @@ public interface RdfDataset {
         RdfGraph graph;
         RdfGraphName graphName;
         
-        protected NamedGraph(RdfGraphName graphName, RdfGraph graph) {
+        public NamedGraph(RdfGraphName graphName, RdfGraph graph) {
             this.graphName = graphName;
             this.graph = graph;
         }

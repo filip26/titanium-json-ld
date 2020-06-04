@@ -71,7 +71,7 @@ public final class NQuadsReader implements RdfReader {
 
         if (TokenType.BLANK_NODE_LABEL == tokenizer.token().getType()) {
             
-            graphName = Rdf.createGraphName(BlankNode.create(tokenizer.token().getValue()));
+            graphName = Rdf.createGraphName(BlankNode.create("_:".concat(tokenizer.token().getValue())));
             tokenizer.next();
             skipWhitespace(0);
         }

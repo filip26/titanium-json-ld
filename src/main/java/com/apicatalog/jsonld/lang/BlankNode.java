@@ -20,7 +20,6 @@ public final class BlankNode {
     }
 
     public static BlankNode create(String value) {
-
         if (value != null && value.startsWith("_:")) {
             return new BlankNode(value.substring("_:".length()));            
         }

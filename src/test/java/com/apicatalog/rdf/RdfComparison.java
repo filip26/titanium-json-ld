@@ -38,16 +38,16 @@ public final class RdfComparison {
         }
 
         // compare total number of named graphs and triples
-//        Integer[] triples1 = dataset1.stream().map(NamedGraph::getGraph).map(RdfGraph::size).sorted().toArray(Integer[]::new);
-//        Integer[] triples2 = dataset2.stream().map(NamedGraph::getGraph).map(RdfGraph::size).sorted().toArray(Integer[]::new);
-//
-//        if (triples1.length == 0 && triples2.length == 0) {
-//            return true;
-//        }
-//        
-//        if (!Arrays.equals(triples1, triples2)) {
-//            return false;
-//        }
+        Integer[] triples1 = dataset1.getNamedGraphs().map(NamedGraph::getGraph).map(RdfGraph::size).sorted().toArray(Integer[]::new);
+        Integer[] triples2 = dataset2.getNamedGraphs().map(NamedGraph::getGraph).map(RdfGraph::size).sorted().toArray(Integer[]::new);
+
+        if (triples1.length == 0 && triples2.length == 0) {
+            return true;
+        }
+        
+        if (!Arrays.equals(triples1, triples2)) {
+            return false;
+        }
 
         System.out.println("TODO: compare other graphs");
         

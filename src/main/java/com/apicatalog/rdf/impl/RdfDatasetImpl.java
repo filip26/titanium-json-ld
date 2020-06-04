@@ -28,11 +28,6 @@ final class RdfDatasetImpl implements RdfDataset {
     public RdfGraph getDefaultGraph() {
         return defaultGraph;
     }
-
-//    @Override
-//    public void add(RdfGraphName graphName, RdfGraph graph) {
-//        graphs.put(graphName, graph);
-//    }
         
     @Override
     public Stream<RdfNQuad> stream() {
@@ -40,25 +35,37 @@ final class RdfDatasetImpl implements RdfDataset {
     }
     
     @Override
-    public List<? extends RdfNQuad> toList() {
+    public List<RdfNQuad> toList() {
         return nquads;
+    }
+    
+    @Override
+    public Stream<NamedGraph> getNamedGraphs() {
+        return graphs.entrySet().stream().map(e -> new NamedGraph(e.getKey(), e.getValue()));
     }
 
     public void add(RdfNQuad nquad) {
 
-        RdfGraphImpl graph = defaultGraph;
-        
         if (nquad.getGraphName() != null) {
+
+            RdfGraphImpl graph = defaultGraph;
             
+
             graph = graphs.get(nquad.getGraphName());
             
             if (graph == null) {
                 graph = new RdfGraphImpl();
                 graphs.put(nquad.getGraphName(), graph);
             }
+            graph.add(nquad);
+    
+        } else {
+            // add to default graph
+            defaultGraph.add(nquad);
         }
+        
         nquads.add(nquad);
-        graph.add(nquad);
+
     }
     
     @Override
