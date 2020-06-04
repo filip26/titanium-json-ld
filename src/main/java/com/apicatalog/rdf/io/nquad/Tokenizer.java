@@ -338,7 +338,7 @@ final class Tokenizer {
             
             ch = reader.read();
             
-            if (RdfGrammar.IS_PN_CHARS_U.negate().and(RdfGrammar.IS_DIGIT.negate()).test(ch) || ch == -1) {
+            if (RdfGrammar.IS_PN_CHARS_U.negate().and(RdfGrammar.IS_ASCII_DIGIT.negate()).test(ch) || ch == -1) {
                 unexpected(ch);
             }
             

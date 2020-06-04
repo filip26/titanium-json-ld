@@ -123,7 +123,7 @@ public final class JsonLdToRdfBuilder {
                                                         
                             triples.add(Rdf.createTriple(
                                                 rdfSubject,
-                                                IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                                                IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),//TODO constant
                                                 rdfObject
                                             ));
                         }

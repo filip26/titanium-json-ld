@@ -10,15 +10,15 @@ public final class RdfGrammar {
     public static final IntPredicate IS_ASCII_ALPHA =
                     ch -> 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z'; 
 
-    public static final IntPredicate IS_DIGIT = ch -> '0' <= ch && ch <= '9';
+    public static final IntPredicate IS_ASCII_DIGIT = ch -> '0' <= ch && ch <= '9';
 
-    public static final IntPredicate IS_ASCII_ALPHA_NUM = IS_DIGIT.or(IS_ASCII_ALPHA);
+    public static final IntPredicate IS_ASCII_ALPHA_NUM = IS_ASCII_DIGIT.or(IS_ASCII_ALPHA);
     
     public static final IntPredicate IS_WHITESPACE = ch -> ch == 0x0009 || ch == 0x0020;
 
     public static final IntPredicate IS_EOL = ch -> ch == 0x0A || ch == 0x0D;
     
-    public static final IntPredicate IS_HEX = IS_DIGIT.or(ch -> 'a' <= ch  && ch <= 'f' || 'A' <= ch  && ch <= 'F');
+    public static final IntPredicate IS_HEX = IS_ASCII_DIGIT.or(ch -> 'a' <= ch  && ch <= 'f' || 'A' <= ch  && ch <= 'F');
         
     public static final IntPredicate IS_PN_CHARS_BASE = 
                     IS_ASCII_ALPHA.or(ch -> 
@@ -39,7 +39,7 @@ public final class RdfGrammar {
     public static final IntPredicate IS_PN_CHARS_U = IS_PN_CHARS_BASE.or(ch -> '_' == ch|| ':' == ch);
     
     public static final IntPredicate IS_PN_CHARS = 
-                    IS_PN_CHARS_U.or(IS_DIGIT).or(ch ->
+                    IS_PN_CHARS_U.or(IS_ASCII_DIGIT).or(ch ->
                         '-' == ch
                         || 0x00B7 == ch
                         || (0x0300 <= ch && ch <= 0x036F)

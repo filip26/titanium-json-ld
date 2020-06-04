@@ -11,6 +11,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.ValueObject;
@@ -74,7 +75,7 @@ final class ObjectToRdf {
         
         // 3.
         if (ListObject.isListObject(item)) {
-            return ListToRdf.with(item.get(Keywords.LIST), triples).rdfDirection(rdfDirection).build();
+            return ListToRdf.with(item.get(Keywords.LIST).asJsonArray(), triples).rdfDirection(rdfDirection).build();
         }
 
         // 4.
@@ -97,9 +98,15 @@ final class ObjectToRdf {
         }
         
         // 7.
-        //TODO
+        if (item.containsKey(Keywords.LANGUAGE) && (JsonUtils.isNotString(item.get(Keywords.LANGUAGE))
+                || !LanguageTag.isWellFormed(item.getString(Keywords.LANGUAGE)))
+                ) {
+            
+            return null;
+        }
         
         // 8.
+        //TODO
         
         // 9.
         if (JsonUtils.isTrue(value)) {
@@ -133,7 +140,7 @@ final class ObjectToRdf {
         } else if (datatype == null) {
             
             datatype = item.containsKey(Keywords.LANGUAGE)
-                                ? "rdf:langString" //TODO constants
+                                ? "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString" //TODO constants
                                 : "http://www.w3.org/2001/XMLSchema#string"
                                 ;
         }
