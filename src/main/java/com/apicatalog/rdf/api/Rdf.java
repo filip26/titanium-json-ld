@@ -51,8 +51,8 @@ public final class Rdf {
         return RdfProvider.provider().createDataset();
     }
 
-    public static final StatementBuilder createStatementBuilder() {
-        return new StatementBuilder();
+    public static final RdfStatementBuilder createStatementBuilder() {
+        return new RdfStatementBuilder();
     }
     
     public static final RdfTriple createTriple(RdfSubject subject, IRI predicate, RdfObject object) {

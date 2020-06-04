@@ -6,10 +6,11 @@ import java.io.Writer;
 import com.apicatalog.iri.IRI;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.rdf.RdfDataset;
+import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfLiteral;
+import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfSubject;
-import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.io.RdfWriter;
 
 public class NQuadsWriter implements RdfWriter {
@@ -22,23 +23,31 @@ public class NQuadsWriter implements RdfWriter {
 
     @Override
     public void write(RdfDataset dataset) throws IOException {
-        for (RdfTriple triple : dataset.getDefaultGraph().getList()) {
-            write(triple);
-        }
         
+        for (RdfNQuad nquad : dataset.toList()) {
+            write(nquad);
+        }
+
         writer.flush();
     }
     
-    public void write(RdfTriple triple) throws IOException {
+    public void write(RdfNQuad nquad) throws IOException {
         
-        write(triple.getSubject());
+        write(nquad.getSubject());
         writer.write(' ');
         
-        write(triple.getPredicate());
+        write(nquad.getPredicate());
         writer.write(' ');
         
-        write(triple.getObject());
-        writer.write(" .\n");
+        write(nquad.getObject());
+        writer.write(' ');
+        
+        if (nquad.getGraphName() != null) {
+            write(nquad.getGraphName());
+            writer.write(' ');            
+        }
+        
+        writer.write(".\n");
     }
 
     public void write(RdfObject object) throws IOException {
@@ -153,6 +162,25 @@ public class NQuadsWriter implements RdfWriter {
 
         if (subject.isBlankNode()) {
             writer.write(subject.asBlankNode().toString());
+            return;
+        }
+
+        throw new IllegalStateException();
+    }
+    
+    public void write(RdfGraphName graphName) throws IOException {
+
+        if (graphName == null) {
+            throw new IllegalArgumentException();
+        }
+            
+        if (graphName.isIRI()) {
+            write(graphName.asIRI());
+            return;
+        }
+
+        if (graphName.isBlankNode()) {
+            writer.write(graphName.asBlankNode().toString());
             return;
         }
 

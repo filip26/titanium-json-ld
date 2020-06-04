@@ -4,10 +4,10 @@ import com.apicatalog.iri.IRI;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.rdf.RdfSubject;
 
-public final class StatementBuilder {
+public final class RdfStatementBuilder {
 
     
-    protected StatementBuilder() {
+    protected RdfStatementBuilder() {
         
     }
 

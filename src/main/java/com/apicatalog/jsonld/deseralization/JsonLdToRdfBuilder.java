@@ -13,7 +13,6 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfGraph;
 import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfSubject;
@@ -58,14 +57,16 @@ public final class JsonLdToRdfBuilder {
         for (final String graphName : nodeMap.graphs(true)) {
 
             // 1.2.
-            RdfGraph triples = null;
+//            RdfGraph triples = null;
+            final RdfGraphName rdfGraphName;
             
             if (Keywords.DEFAULT.equals(graphName)) {
-                triples = dataset.getDefaultGraph();
+//                triples = dataset.getDefaultGraph();
+                rdfGraphName = null;
                 
             } else {
 
-                RdfGraphName rdfGraphName = null;
+  //              RdfGraphName rdfGraphName = null;
                 
                 // 1.1.
                 if (BlankNode.isWellFormed(graphName)) {
@@ -80,9 +81,9 @@ public final class JsonLdToRdfBuilder {
                     continue;
                 }
 
-                triples = Rdf.createGraph();
+//                triples = Rdf.createGraph();
 
-                dataset.add(rdfGraphName, triples);
+//                dataset.add(rdfGraphName, triples);
             }
             
             // 1.3.
@@ -92,6 +93,7 @@ public final class JsonLdToRdfBuilder {
                 
                 // 1.3.1.
                 if (BlankNode.isWellFormed(subject)) {
+                    
                     rdfSubject = Rdf.createSubject(BlankNode.create(subject));
                     
                 } else if (IRI.isWellFormed(subject)) {
@@ -132,11 +134,12 @@ public final class JsonLdToRdfBuilder {
                             if (rdfObject == null) {
                                 continue;
                             }
-                                                        
-                            triples.add(Rdf.createTriple(
+
+                            dataset.add(Rdf.createNQuad(
                                                 rdfSubject,
                                                 IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),//TODO constant
-                                                rdfObject
+                                                rdfObject,
+                                                rdfGraphName
                                             ));
                         }
 
@@ -159,18 +162,24 @@ public final class JsonLdToRdfBuilder {
                             List<RdfTriple> listTriples = new LinkedList<>();
                             
                             // 1.3.2.5.2.                            
-                            RdfObject rdfObject = ObjectToRdf.with(item.asJsonObject(), listTriples).rdfDirection(rdfDirection).build();
+                            RdfObject rdfObject = ObjectToRdf
+                                                    .with(item.asJsonObject(), listTriples)
+                                                    .rdfDirection(rdfDirection)
+                                                    .build();
 
                             if (rdfObject != null) {
-                                triples.add(Rdf.createTriple(
+                                dataset.add(Rdf.createNQuad(
                                                         rdfSubject,
                                                         IRI.create(property),
-                                                        rdfObject
+                                                        rdfObject,
+                                                        rdfGraphName
                                                     ));
                             }
                             
                             // 1.3.2.5.3.
-                            listTriples.forEach(triples::add);
+                            listTriples.stream()
+                                        .map(t -> Rdf.createNQuad(t.getSubject(), t.getPredicate(), t.getObject(), rdfGraphName))
+                                        .forEach(dataset::add);
                         }
                     }   
                 }   

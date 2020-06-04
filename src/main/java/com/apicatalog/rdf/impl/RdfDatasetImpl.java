@@ -1,6 +1,8 @@
 package com.apicatalog.rdf.impl;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -8,16 +10,17 @@ import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
 import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfNQuad;
-import com.apicatalog.rdf.RdfNamedGraph;
 
 final class RdfDatasetImpl implements RdfDataset {
 
-    private final Map<RdfGraphName, RdfGraph> graphs;
+    private final Map<RdfGraphName, RdfGraphImpl> graphs;
+    private final List<RdfNQuad> nquads;
     
-    private RdfGraph defaultGraph;
+    private RdfGraphImpl defaultGraph;
     
     protected RdfDatasetImpl() {
         this.graphs = new HashMap<>();
+        this.nquads = new LinkedList<>();
         this.defaultGraph = new RdfGraphImpl();
     }
     
@@ -26,25 +29,24 @@ final class RdfDatasetImpl implements RdfDataset {
         return defaultGraph;
     }
 
+//    @Override
+//    public void add(RdfGraphName graphName, RdfGraph graph) {
+//        graphs.put(graphName, graph);
+//    }
+        
     @Override
-    public void add(RdfGraphName graphName, RdfGraph graph) {
-        graphs.put(graphName, graph);
+    public Stream<RdfNQuad> stream() {
+        return nquads.stream();
     }
     
     @Override
-    public void add(RdfNamedGraph namedGraph) {
-        graphs.put(namedGraph.getGraphName(), namedGraph.getGraph());
-    }
-
-    
-    @Override
-    public Stream<RdfNamedGraph> stream() {
-        return graphs.entrySet().stream().map(e -> new RdfNamedGraphImpl(e.getKey(), e.getValue()));
+    public List<? extends RdfNQuad> toList() {
+        return nquads;
     }
 
     public void add(RdfNQuad nquad) {
 
-        RdfGraph graph = defaultGraph;
+        RdfGraphImpl graph = defaultGraph;
         
         if (nquad.getGraphName() != null) {
             
@@ -55,13 +57,22 @@ final class RdfDatasetImpl implements RdfDataset {
                 graphs.put(nquad.getGraphName(), graph);
             }
         }
-        
+        nquads.add(nquad);
         graph.add(nquad);
+    }
+    
+    @Override
+    public Stream<RdfGraphName> getGraphNames() {
+        return graphs.keySet().stream();
+    }
+
+    @Override
+    public RdfGraph getGraph(RdfGraphName graphName) {
+        return graphs.get(graphName);
     }
 
     @Override
     public int size() {
         return graphs.values().stream().map(RdfGraph::size).reduce(getDefaultGraph().size(), Integer::sum);           
     }
-    
 }

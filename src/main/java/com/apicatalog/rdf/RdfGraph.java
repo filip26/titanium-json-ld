@@ -19,17 +19,17 @@ import com.apicatalog.jsonld.api.JsonLdProcessor;
  */
 public interface RdfGraph {
 
-    /**
-     * Adds an RdfTriple to the RdfGraph. Used by the Deserialize JSON-LD to RDF
-     * Algorithm.
-     * 
-     * @param triple The RdfTriple to add to the RdfGraph
-     */
-    void add(RdfTriple triple);
+//    /**
+//     * Adds an RdfTriple to the RdfGraph. Used by the Deserialize JSON-LD to RDF
+//     * Algorithm.
+//     * 
+//     * @param triple The RdfTriple to add to the RdfGraph
+//     */
+//    void add(RdfTriple triple);
 
     Stream<? extends RdfTriple> stream();
 
-    List<? extends RdfTriple> getList();
+    List<? extends RdfTriple> toList();
 
     int size();
     

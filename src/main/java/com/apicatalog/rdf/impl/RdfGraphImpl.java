@@ -14,19 +14,18 @@ final class RdfGraphImpl implements RdfGraph {
     protected RdfGraphImpl() {
         this.triples = new LinkedList<>();
     }
-    
-    @Override
-    public void add(final RdfTriple triple) {
-        triples.add(triple);   
-    }
 
+    public void add(RdfTriple triple) {
+        triples.add(triple);
+    }
+    
     @Override
     public Stream<? extends RdfTriple> stream() {
         return triples.stream();
     }
 
     @Override
-    public List<? extends RdfTriple> getList() {
+    public List<? extends RdfTriple> toList() {
         return triples;
     }
 
