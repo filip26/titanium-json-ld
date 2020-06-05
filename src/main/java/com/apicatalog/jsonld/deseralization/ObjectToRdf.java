@@ -1,6 +1,8 @@
 package com.apicatalog.jsonld.deseralization;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DecimalFormat;
 import java.util.List;
 
 import javax.json.JsonNumber;
@@ -23,7 +25,6 @@ import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.api.Rdf;
-import com.apicatalog.xsd.XsdDouble;
 
 /**
  * 
@@ -119,10 +120,9 @@ final class ObjectToRdf {
         if (Keywords.JSON.equals(datatype)) {
             valueString = JsonCanonicalizer.canonicalize(value);
             datatype = "http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON";
-        }
-
+            
         // 9.
-        if (JsonUtils.isTrue(value)) {
+        } else if (JsonUtils.isTrue(value)) {
             
             valueString = "true";
             
@@ -151,7 +151,7 @@ final class ObjectToRdf {
                     || number.bigIntegerValue().compareTo(BigInteger.TEN.pow(21)) >= 0 
                     ) {
 
-                valueString =  XsdDouble.toString(number.bigDecimalValue());
+                valueString = toXsdDouble(number.bigDecimalValue());
                 
                 if (datatype == null) {
                     datatype = "http://www.w3.org/2001/XMLSchema#double";
@@ -186,15 +186,30 @@ final class ObjectToRdf {
             valueString = ((JsonString)value).getString();
         }
         
-//        if (datatype == null) {
-//            datatype = ((JsonString)datatype).getString();
-//        }
-        
         RdfLiteral rdfLiteral = null;
         
         // 13.
-        if (item.containsKey(Keywords.DIRECTION) /*TODO rdfDirection */) {
+        if (item.containsKey(Keywords.DIRECTION) && rdfDirection != null) {
 
+            // 13.1.
+            String language = item.containsKey(Keywords.LANGUAGE)   
+                                ? item.getString(Keywords.LANGUAGE).toLowerCase()
+                                : "";
+            // 13.2.
+            if ("i18n-datatype".equals(rdfDirection)) {
+                datatype = "https://www.w3.org/ns/i18n#"
+                                .concat(language)
+                                .concat("_")
+                                .concat(item.getString(Keywords.DIRECTION));
+                
+                rdfLiteral = Rdf.createLitteral(valueString, IRI.create(datatype));
+                
+            // 13.3.
+            } else if ("compound-literal".equals(rdfDirection)) {
+                
+            }
+            
+            // 13.3.
             //TODO
 
             
@@ -211,6 +226,15 @@ final class ObjectToRdf {
         
         // 15.
         return rdfLiteral != null ? Rdf.createObject(rdfLiteral) : null;
+    }
+    
+    private static final String toXsdDouble(BigDecimal bigDecimal) {
+        
+        if (bigDecimal.compareTo(BigDecimal.ZERO) == 0) {
+            return "0.0E0";
+        }
+        
+        return new DecimalFormat("0.0##############E0").format(bigDecimal);        
     }
     
 }

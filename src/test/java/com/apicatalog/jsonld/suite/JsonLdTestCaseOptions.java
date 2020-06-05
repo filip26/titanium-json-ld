@@ -17,6 +17,7 @@ public class JsonLdTestCaseOptions {
     public String expandContext;
     public Boolean compactArrays;
     public Boolean compactToRelative;
+    public String rdfDirection;
     
     public static final JsonLdTestCaseOptions of(JsonObject o, String baseUri) {
         
@@ -44,6 +45,7 @@ public class JsonLdTestCaseOptions {
         if (o.containsKey("compactToRelative")) {
             options.compactToRelative = o.getBoolean("compactToRelative");
         }
+        options.rdfDirection = o.getString("rdfDirection", null);
         
         return options;
     }
@@ -68,6 +70,9 @@ public class JsonLdTestCaseOptions {
         
         if (compactToRelative != null) {
             options.setCompactToRelative(compactToRelative);
+        }
+        if (rdfDirection != null) {
+            options.setRdfDirection(rdfDirection);
         }
     }
 }
