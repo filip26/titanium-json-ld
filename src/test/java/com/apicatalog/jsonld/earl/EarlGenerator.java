@@ -168,7 +168,7 @@ public class EarlGenerator {
         writer.println("  doap:homepage <https://github.com/filip26/titanium-json-ld>;");
         writer.println("  doap:license <https://github.com/filip26/titanium-json-ld/blob/master/LICENSE>;");
         writer.println("  doap:release [");
-        writer.println("    doap:name \"Titanium JSON-LD " + VERSION + "\";");
+        writer.println("    doap:name \"Titanium JSON-LD v" + VERSION + "\";");
         writer.println("    doap:revision \"" + VERSION + "\";");
         writer.println("    doap:created \"" + RELEASE_DATE + "\"^^xsd:date;");
         writer.println("  ] ;");
