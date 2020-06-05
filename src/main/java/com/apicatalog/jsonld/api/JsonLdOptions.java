@@ -268,4 +268,9 @@ public final class JsonLdOptions {
     public void setExpandContext(JsonObject contextObject) {
         this.expandContext = JsonLdContext.of(contextObject);
     }
+    
+    public void setExpandContext(JsonLdContext expandContext) {
+        this.expandContext = expandContext;
+    }
+
 }

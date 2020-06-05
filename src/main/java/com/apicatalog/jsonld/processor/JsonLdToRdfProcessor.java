@@ -50,7 +50,7 @@ public final class JsonLdToRdfProcessor {
         final JsonLdOptions expansionOptions = new JsonLdOptions();
         expansionOptions.setProcessingMode(options.getProcessingMode());
         expansionOptions.setBase(options.getBase());
-//FIXME        expansionOptions.setExpandContext(options.getExpandContext());
+        expansionOptions.setExpandContext(options.getExpandContext());
         
         final JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions);
 
