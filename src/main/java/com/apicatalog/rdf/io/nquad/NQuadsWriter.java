@@ -103,7 +103,7 @@ public class NQuadsWriter implements RdfWriter {
         }
     }
     
-    private static final String escape(String value) {
+    public static final String escape(String value) {
         
         final StringBuilder escaped = new StringBuilder();
         
@@ -137,9 +137,9 @@ public class NQuadsWriter implements RdfWriter {
             } else if (ch >= 0x0 && ch <= 0x1f || ch == 0x7f  /*|| Character.UnicodeBlock.of(ch) != Character.UnicodeBlock.BASIC_LATIN*/) {
      
                 escaped.append(String.format ("\\u%04x", ch));
-               
+                
             } else {
-                escaped.append((char)ch);
+                escaped.appendCodePoint(ch);
             }
         }        
         return escaped.toString();

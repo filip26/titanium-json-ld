@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import javax.json.JsonNumber;
 import javax.json.JsonValue;
 
+import com.apicatalog.rdf.io.nquad.NQuadsWriter;
+
 /**
  * 
  * @see <a href="https://tools.ietf.org/html/draft-rundgren-json-canonicalization-scheme-17">JSON Canonicalization Scheme (JCS)</a>
@@ -38,11 +40,7 @@ public final class JsonCanonicalizer {
             writer.write("null");
             
         } else if (JsonUtils.isScalar(value)) {
-            
-
-            
-            //TODO conversions
-            
+                        
             if (JsonUtils.isNumber(value)) {
                 
                 JsonNumber number = ((JsonNumber)value);
@@ -69,7 +67,7 @@ public final class JsonCanonicalizer {
                 writer.write(numberString);
                 
             } else {
-            //TODO escape string
+
                 writer.write(value.toString());
             }
             
@@ -105,7 +103,7 @@ public final class JsonCanonicalizer {
                 }
                 
                 writer.write("\"");
-                writer.write(propertyName);
+                writer.write(NQuadsWriter.escape(propertyName));
                 writer.write("\":");
                 
                 JsonValue propertyValue = value.asJsonObject().get(propertyName);
