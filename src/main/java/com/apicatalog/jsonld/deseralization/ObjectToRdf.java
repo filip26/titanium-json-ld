@@ -23,6 +23,7 @@ import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfObject;
+import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.api.Rdf;
 
@@ -206,12 +207,37 @@ final class ObjectToRdf {
                 
             // 13.3.
             } else if ("compound-literal".equals(rdfDirection)) {
-                
-            }
-            
-            // 13.3.
-            //TODO
 
+                // 13.3.1.
+                BlankNode blankNode = BlankNode.create(nodeMap.createIdentifier());
+                
+                RdfSubject subject = Rdf.createSubject(blankNode);
+                
+                // 13.3.2.
+                triples.add(Rdf.createTriple(
+                                    subject, 
+                                    IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#value"), 
+                                    Rdf.createObject(Rdf.createLitteral(valueString)))
+                                    );
+                
+                // 13.3.3.
+                if (item.containsKey(Keywords.LANGUAGE) && JsonUtils.isString(item.get(Keywords.LANGUAGE))) {
+                    triples.add(Rdf.createTriple(
+                                    subject, 
+                                    IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#language"), 
+                                    Rdf.createObject(Rdf.createLitteral(item.getString(Keywords.LANGUAGE).toLowerCase())))
+                                    );
+                }
+                
+                // 13.3.4.
+                triples.add(Rdf.createTriple(
+                                    subject, 
+                                    IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#direction"), 
+                                    Rdf.createObject(Rdf.createLitteral(item.getString(Keywords.DIRECTION))))
+                                    );
+                
+                return Rdf.createObject(blankNode);
+            }
             
         // 14.
         } else {

@@ -43,7 +43,7 @@ public final class JsonCanonicalizer {
                 writer.write(((JsonNumber)value).toString().toLowerCase());
                 
             } else {
-            
+            //TODO escape string
                 writer.write(value.toString());
             }
             
