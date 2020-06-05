@@ -8,6 +8,7 @@ import javax.json.JsonValue;
 
 import com.apicatalog.iri.IRI;
 import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
@@ -28,7 +29,7 @@ public final class JsonLdToRdfBuilder {
     
     // optional
     private boolean produceGeneralizedRdf;
-    private String rdfDirection;
+    private RdfDirection rdfDirection;
     
     private JsonLdToRdfBuilder(NodeMap nodeMap, RdfDataset dataset) {
         this.nodeMap = nodeMap;
@@ -47,7 +48,7 @@ public final class JsonLdToRdfBuilder {
         return this;
     }
 
-    public JsonLdToRdfBuilder rdfDirection(String rdfDirection) {
+    public JsonLdToRdfBuilder rdfDirection(RdfDirection rdfDirection) {
         this.rdfDirection = rdfDirection;
         return this;
     }

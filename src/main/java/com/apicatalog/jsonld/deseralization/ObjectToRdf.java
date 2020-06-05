@@ -11,6 +11,7 @@ import javax.json.JsonValue;
 
 import com.apicatalog.iri.IRI;
 import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.json.JsonCanonicalizer;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -39,7 +40,7 @@ final class ObjectToRdf {
     private NodeMap nodeMap;
     
     // optional
-    private String rdfDirection;
+    private RdfDirection rdfDirection;
     
     private ObjectToRdf(JsonObject item, List<RdfTriple> triples, NodeMap nodeMap) {
         this.item = item;
@@ -54,7 +55,7 @@ final class ObjectToRdf {
         return  new ObjectToRdf(item, triples, nodeMap);
     }
     
-    public ObjectToRdf rdfDirection(String rdfDirection) {
+    public ObjectToRdf rdfDirection(RdfDirection rdfDirection) {
         this.rdfDirection = rdfDirection;
         return this;
     }
@@ -196,7 +197,7 @@ final class ObjectToRdf {
                                 ? item.getString(Keywords.LANGUAGE).toLowerCase()
                                 : "";
             // 13.2.
-            if ("i18n-datatype".equals(rdfDirection)) {
+            if (RdfDirection.I18N_DATATYPE == rdfDirection) {
                 datatype = "https://www.w3.org/ns/i18n#"
                                 .concat(language)
                                 .concat("_")
@@ -205,7 +206,7 @@ final class ObjectToRdf {
                 rdfLiteral = Rdf.createLitteral(valueString, IRI.create(datatype));
                 
             // 13.3.
-            } else if ("compound-literal".equals(rdfDirection)) {
+            } else if (RdfDirection.COMPOUND_LITERAL == rdfDirection) {
 
                 // 13.3.1.
                 BlankNode blankNode = BlankNode.create(nodeMap.createIdentifier());

@@ -18,6 +18,8 @@ import com.apicatalog.jsonld.loader.UrlConnectionLoader;
  */
 public final class JsonLdOptions {
 
+    public enum RdfDirection { I18N_DATATYPE, COMPOUND_LITERAL }
+    
     /**
      * The base IRI to use when expanding or compacting the document. 
      * If set, this overrides the input document's IRI.
@@ -61,7 +63,7 @@ public final class JsonLdOptions {
     
     private boolean produceGeneralizedRdf;
     
-    private String rdfDirection;
+    private RdfDirection rdfDirection;
     
     private boolean useNativeTypes;
     
@@ -197,7 +199,7 @@ public final class JsonLdOptions {
         return produceGeneralizedRdf;
     }
 
-    public String getRdfDirection() {
+    public RdfDirection getRdfDirection() {
         return rdfDirection;
     }
 
@@ -249,7 +251,7 @@ public final class JsonLdOptions {
         this.produceGeneralizedRdf = produceGeneralizedRdf;
     }
 
-    public void setRdfDirection(String rdfDirection) {
+    public void setRdfDirection(RdfDirection rdfDirection) {
         this.rdfDirection = rdfDirection;
     }
 
