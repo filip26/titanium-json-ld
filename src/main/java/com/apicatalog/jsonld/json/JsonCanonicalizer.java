@@ -3,6 +3,8 @@ package com.apicatalog.jsonld.json;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.stream.Collectors;
 
 import javax.json.JsonNumber;
@@ -26,7 +28,7 @@ public final class JsonCanonicalizer {
         } catch (IOException e) {
             // ignore
         }
-        
+
         return writer.toString();
     }
 
@@ -37,10 +39,34 @@ public final class JsonCanonicalizer {
             
         } else if (JsonUtils.isScalar(value)) {
             
+
+            
             //TODO conversions
             
             if (JsonUtils.isNumber(value)) {
-                writer.write(((JsonNumber)value).toString().toLowerCase());
+                
+                JsonNumber number = ((JsonNumber)value);
+                
+                String numberString;
+                
+                if (number.bigDecimalValue().compareTo(BigDecimal.ZERO) == 0) {
+                    
+                    numberString = "0";
+                
+                } else if (number.bigDecimalValue().compareTo(BigDecimal.ONE.movePointRight(21)) >= 0) {
+                    
+                    numberString = (new DecimalFormat("0E00")).format(((JsonNumber)value).bigDecimalValue()).replace("E", "e+");
+                    
+                } else if (number.bigDecimalValue().compareTo(BigDecimal.ONE.movePointLeft(21)) <= 0) {
+                    
+                    numberString = (new DecimalFormat("0E00")).format(((JsonNumber)value).bigDecimalValue()).toLowerCase();
+                    
+                } else {
+                    
+                    numberString = (new DecimalFormat("0.#######")).format(((JsonNumber)value).bigDecimalValue());
+                }
+                
+                writer.write(numberString);
                 
             } else {
             //TODO escape string

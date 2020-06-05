@@ -89,23 +89,23 @@ public class JsonLdToRdfTest {
 
             boolean match = RdfComparison.equals(expected, result);
 
-//            if (!match) {
-//                System.out.println("Test " + testCase.id + ": " + testCase.name);
-//                System.out.println("Expected:");
-//                
-//                Rdf.createWriter(System.out, RdfFormat.N_QUADS).write(expected);
-//    
-//                System.out.println();
-//                System.out.println("Actual:");
-//            
-//                Rdf.createWriter(System.out, RdfFormat.N_QUADS).write(result);
-//                
-//                System.out.println();
-//            }
+            if (!match) {
+                System.out.println("Test " + testCase.id + ": " + testCase.name);
+                System.out.println("Expected:");
+                
+                Rdf.createWriter(System.out, RdfFormat.N_QUADS).write(expected);
+    
+                System.out.println();
+                System.out.println("Actual:");
+            
+                Rdf.createWriter(System.out, RdfFormat.N_QUADS).write(result);
+                
+                System.out.println();
+            }
 
             Assert.assertTrue("The result does not match expected output.", match);
             
-        } catch (NQuadsReaderError /*| NQuadsWriterError*/ e ) {
+        } catch (NQuadsReaderError | NQuadsWriterError e ) {
             e.printStackTrace();
             Assert.fail(e.getMessage());
         }

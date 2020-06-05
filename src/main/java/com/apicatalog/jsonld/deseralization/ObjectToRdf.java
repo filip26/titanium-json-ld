@@ -1,7 +1,6 @@
 package com.apicatalog.jsonld.deseralization;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -149,7 +148,7 @@ final class ObjectToRdf {
             // 11.
             if ((!number.isIntegral()  && number.doubleValue() % -1 != 0)
                     || "http://www.w3.org/2001/XMLSchema#double".equals(datatype)
-                    || number.bigIntegerValue().compareTo(BigInteger.TEN.pow(21)) >= 0 
+                    || number.bigDecimalValue().compareTo(BigDecimal.ONE.movePointRight(21)) >= 0
                     ) {
 
                 valueString = toXsdDouble(number.bigDecimalValue());
