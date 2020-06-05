@@ -31,6 +31,8 @@ public final class UriUtils {
         }
     }
 
+    
+    
     /**
      * @see <a href="https://tools.ietf.org/html/rfc3986#section-2.2">URI - Reserved
      *      Characters </a>

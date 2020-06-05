@@ -44,6 +44,9 @@ public class JsonLdToRdfTest {
 
         // skip specVersion == 1.0
         assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
+
+        // blank nodes as predicates are not supported
+        assumeFalse("#te075".equals(testCase.id));
         
         // skip normative == false
         //assumeTrue(testCase.options.normative == null || testCase.options.normative);
@@ -80,7 +83,6 @@ public class JsonLdToRdfTest {
         Assert.assertNotNull("Test case does not define expected output nor expected error code.", testCase.expect);
 
         try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.RESOURCES_BASE + testCase.expect.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
-
 
             RdfDataset expected = Rdf.createReader(is, RdfFormat.N_QUADS).readDataset();
 

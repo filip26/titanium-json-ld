@@ -18,6 +18,7 @@ public class JsonLdTestCaseOptions {
     public Boolean compactArrays;
     public Boolean compactToRelative;
     public String rdfDirection;
+    public Boolean produceGeneralizedRdf;
     
     public static final JsonLdTestCaseOptions of(JsonObject o, String baseUri) {
         
@@ -47,6 +48,10 @@ public class JsonLdTestCaseOptions {
         }
         options.rdfDirection = o.getString("rdfDirection", null);
         
+        if (o.containsKey("produceGeneralizedRdf")) {
+                options.produceGeneralizedRdf = o.getBoolean("produceGeneralizedRdf");
+        }
+        
         return options;
     }
 
@@ -73,6 +78,10 @@ public class JsonLdTestCaseOptions {
         }
         if (rdfDirection != null) {
             options.setRdfDirection(rdfDirection);
+        }
+        
+        if (produceGeneralizedRdf != null) {
+            options.setProduceGeneralizedRdf(produceGeneralizedRdf);
         }
     }
 }

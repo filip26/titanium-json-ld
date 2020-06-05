@@ -15,6 +15,11 @@ import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.nquad.Tokenizer.Token;
 import com.apicatalog.rdf.io.nquad.Tokenizer.TokenType;
 
+/**
+ * 
+ * @see <a href="https://www.w3.org/TR/n-quads/">RDF 1.1. N-Quads</a>
+ *
+ */
 public final class NQuadsReader implements RdfReader {
 
     private final Tokenizer tokenizer;

@@ -357,16 +357,22 @@ public class ActiveContextBuilder {
 
                     if (UriUtils.isURI(valueString)) {
 
-                        URI uri = URI.create(valueString);
-
                         // 5.7.3
-                        if (uri.isAbsolute()) {
-                            result.baseUri = uri;
+                        if (UriUtils.isAbsoluteUri(valueString)) {
+                            result.baseUri = URI.create(valueString);
 
                         // 5.7.4
                         } else if (result.baseUri != null) {
 
-                            result.baseUri = URI.create(UriResolver.resolve(result.baseUri, valueString));
+                            String resolved = UriResolver.resolve(result.baseUri, valueString);
+                            
+                            if (resolved.endsWith(":")) {   //TODO hack
+
+                                result.baseUri = URI.create(resolved + ".");
+                                
+                            } else {
+                                result.baseUri = URI.create(resolved);
+                            }
 
                         } else {
                             throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);

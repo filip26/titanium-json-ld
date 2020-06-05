@@ -13,6 +13,11 @@ import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.io.RdfWriter;
 
+/**
+ * 
+ * @see <a href="https://www.w3.org/TR/n-quads/">RDF 1.1. N-Quads</a>
+ *
+ */
 public class NQuadsWriter implements RdfWriter {
 
     private final Writer writer;
