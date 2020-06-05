@@ -17,7 +17,7 @@ public final class UriResolver {
     }
 
     public static String resolve(URI base, String relative) {
-
+        
         if (base == null) {
             return relative;
         }
@@ -29,17 +29,23 @@ public final class UriResolver {
         
         URI components = URI.create(relative);
 
-        String basePath = base.getPath();
+        String basePath = base.getPath();        
+        String baseAuthority = base.getAuthority();
+
         String componentPath = components.getPath();
         
-        // hack
+        // hacks
+        if (baseAuthority == null && base.getSchemeSpecificPart().startsWith("///")) {
+            baseAuthority = "";
+        }
         if (basePath == null && base.getSchemeSpecificPart() != null) {
             basePath = base.getSchemeSpecificPart();
-        }
+        } 
+
         if (componentPath == null && components.getSchemeSpecificPart() != null) {
             componentPath = components.getSchemeSpecificPart();
         }
-        
+
         String scheme = null;
         String authority = null;
         String path = null;
@@ -47,7 +53,7 @@ public final class UriResolver {
 
         if (components.getScheme() != null && !components.getScheme().isBlank()) {
             scheme = components.getScheme();
-            authority = components.getAuthority();
+            authority =  components.getAuthority();
             path = removeDotSegments(componentPath);
             query = components.getQuery();
 
@@ -84,7 +90,7 @@ public final class UriResolver {
                     }
                     
                 }
-                authority = base.getAuthority();
+                authority = baseAuthority;
             }
             scheme = base.getScheme();            
         }

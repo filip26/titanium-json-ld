@@ -72,7 +72,7 @@ public final class UriUtils {
             builder.append(scheme);
             builder.append(":");
         }
-        if (isDefined(authority)) {
+        if (authority != null) {
             builder.append("//");
             builder.append(authority);
         }
