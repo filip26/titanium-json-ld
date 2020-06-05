@@ -7,13 +7,19 @@ import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.serialization.RdfToJsonld;
 import com.apicatalog.rdf.RdfDataset;
 
-public class RdfToJsonLdProcessor {
+public final class RdfToJsonLdProcessor {
 
+    private RdfToJsonLdProcessor() {
+    }
     
     public static final JsonArray fromRdf(final RdfDataset dataset, final JsonLdOptions options) throws JsonLdError {
         
-        return RdfToJsonld.with(dataset)
-                //TODO set options
-                            .build();
+        return RdfToJsonld
+                    .with(dataset)
+                    .ordered(options.isOrdered())
+                    .rdfDirection(options.getRdfDirection())
+                    .useNativeTypes(options.isUseNativeTypes())
+                    .useRdfType(options.isUseRdfType())
+                    .build();
     }
 }
