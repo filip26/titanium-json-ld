@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.uri;
+package com.apicatalog.uri;
 
 import java.net.URI;
 
@@ -26,11 +26,13 @@ public final class UriUtils {
                     && URI.create(value) != null;
 
         } catch (IllegalArgumentException e) {
- //           e.printStackTrace();
+//           e.printStackTrace();
             return false;
         }
     }
 
+    
+    
     /**
      * @see <a href="https://tools.ietf.org/html/rfc3986#section-2.2">URI - Reserved
      *      Characters </a>
@@ -70,7 +72,7 @@ public final class UriUtils {
             builder.append(scheme);
             builder.append(":");
         }
-        if (isDefined(authority)) {
+        if (authority != null) {
             builder.append("//");
             builder.append(authority);
         }

@@ -1,7 +1,5 @@
 package com.apicatalog.rdf;
 
-import java.util.Iterator;
-
 import com.apicatalog.jsonld.api.JsonLdProcessor;
 
 /**
@@ -16,16 +14,8 @@ import com.apicatalog.jsonld.api.JsonLdProcessor;
  *      IDL</a>
  * 
  */
-public interface RdfGraph extends Iterable<RdfGraph> {
+public interface RdfGraph {
 
-    /**
-     * Adds an RdfTriple to the RdfGraph. Used by the Deserialize JSON-LD to RDF
-     * Algorithm.
-     * 
-     * @param triple The RdfTriple to add to the RdfGraph
-     */
-    void add(RdfTriple triple);
-
-    Iterator<RdfGraph> iterator();
-
+    boolean contains(RdfTriple triple);
+        
 }

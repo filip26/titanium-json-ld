@@ -1,11 +1,15 @@
 package com.apicatalog.jsonld.suite;
 
 import java.net.URI;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.json.JsonObject;
+import javax.json.JsonString;
 
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.ClassPathLoader;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.loader.UrlRewrite;
@@ -28,15 +32,22 @@ public final class JsonLdTestCase {
     
     public String uri;
     
+    public Set<String> type;
+    
     public JsonLdTestCaseOptions options;
     
     public static final JsonLdTestCase of(JsonObject o, String manifestUri, String baseUri) {
         
         final JsonLdTestCase testCase = new JsonLdTestCase();
         
-        testCase.id = o.getString("@id");
+        testCase.id = o.getString(Keywords.ID);
         
         testCase.uri = baseUri + manifestUri.substring(0, manifestUri.length() - ".jsonld".length()) + testCase.id;
+        
+        testCase.type = o.get(Keywords.TYPE).asJsonArray().stream()
+                            .map(JsonString.class::cast)
+                            .map(JsonString::getString)
+                            .collect(Collectors.toSet());
         
         testCase.name = o.getString("name");
         

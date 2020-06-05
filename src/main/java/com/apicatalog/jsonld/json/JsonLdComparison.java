@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.lang;
+package com.apicatalog.jsonld.json;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
-import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.Keywords;
 
 /**
  * 
@@ -19,7 +19,6 @@ import com.apicatalog.jsonld.json.JsonUtils;
 public final class JsonLdComparison {
 
     private JsonLdComparison() {
-        
     }
     
     public static final boolean equals(JsonValue value1, JsonValue value2) {
@@ -59,7 +58,7 @@ public final class JsonLdComparison {
                 return false;
             }
             
-            if (!JsonLdComparison.equals(entry1.getValue(), object2.get(entry1.getKey()), entry1.getKey())) {
+            if (!equals(entry1.getValue(), object2.get(entry1.getKey()), entry1.getKey())) {
                 return false;
             }
         }
@@ -80,7 +79,7 @@ public final class JsonLdComparison {
         if (Keywords.LIST.equals(parentProperty)) {
 
             for (int i=0; i < array1.size(); i++) {
-                if (!JsonLdComparison.equals(array1.get(i), array2.get(i))) {
+                if (!equals(array1.get(i), array2.get(i))) {
                     return false;
                 }
             }
@@ -88,12 +87,15 @@ public final class JsonLdComparison {
             return true;
         }
         
-        return setEquals(array1, array2);
+        return arraysEqualsUnordered(array1, array2);
     }
-    
-    static final boolean setEquals(JsonArray array1, JsonArray array2) {
-     // JSON arrays are generally compared without regard to order
+
+    // JSON arrays are generally compared without regard to order
+    static final boolean arraysEqualsUnordered(JsonArray array1, JsonArray array2) {
+
         final List<JsonValue> remaining = new ArrayList<>(array2);
+        
+        //TODO use sort
         
         for (final JsonValue item1 : array1) {
             
@@ -101,7 +103,7 @@ public final class JsonLdComparison {
             
             for (final JsonValue item2 : remaining) {
                 
-                found = JsonLdComparison.equals(item1, item2);
+                found = equals(item1, item2);
                 if (found) {
                     remaining.remove(item2);
                     break;
@@ -115,5 +117,4 @@ public final class JsonLdComparison {
         
         return remaining.isEmpty();        
     }
-
 }

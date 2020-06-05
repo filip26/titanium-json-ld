@@ -23,21 +23,19 @@ public final class FlatteningBuilder {
 
     // required
     private JsonStructure element;
-    private final BlankNodeIdGenerator idGenerator;
     
     // optional
     private boolean ordered;
     
-    private FlatteningBuilder(final JsonStructure element, final BlankNodeIdGenerator idGenerator) {
+    private FlatteningBuilder(final JsonStructure element) {
         this.element = element;
-        this.idGenerator = idGenerator;
         
         // default values
         this.ordered = false;
     }
     
-    public static final FlatteningBuilder with(final JsonStructure element, final BlankNodeIdGenerator idGenerator) {
-        return new FlatteningBuilder(element, idGenerator);
+    public static final FlatteningBuilder with(final JsonStructure element) {
+        return new FlatteningBuilder(element);
     }
     
     public FlatteningBuilder ordered(boolean ordered) {
@@ -51,13 +49,13 @@ public final class FlatteningBuilder {
         NodeMap nodeMap = new NodeMap();
         
         // 2.
-        NodeMapBuilder.with(element, nodeMap, idGenerator).build();
+        NodeMapBuilder.with(element, nodeMap).build();
         
         // 3.
         Map<String, JsonObject> defaultGraph = nodeMap.get(Keywords.DEFAULT);
 
         // 4.
-        for (String graphName : nodeMap.keys(ordered)) {
+        for (String graphName : nodeMap.graphs(ordered)) {
 
             if (Keywords.DEFAULT.equals(graphName)) {
                 continue;

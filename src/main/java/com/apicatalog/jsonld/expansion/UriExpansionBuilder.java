@@ -10,10 +10,10 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.lang.CompactUri;
+import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.uri.UriResolver;
-import com.apicatalog.jsonld.uri.UriUtils;
+import com.apicatalog.uri.UriResolver;
+import com.apicatalog.uri.UriUtils;
 
 /**
  * 
@@ -161,7 +161,7 @@ public final class UriExpansionBuilder {
             }
 
             // 6.5
-            if (UriUtils.isAbsoluteUri(value) || CompactUri.isBlankNode(value)) {
+            if (UriUtils.isAbsoluteUri(value) || BlankNode.hasPrefix(value)) {
                 return value;
             }
         }

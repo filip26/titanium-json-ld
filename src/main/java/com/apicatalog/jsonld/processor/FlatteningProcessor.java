@@ -10,7 +10,6 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.flattening.BlankNodeIdGenerator;
 import com.apicatalog.jsonld.flattening.FlatteningBuilder;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
@@ -67,10 +66,9 @@ public final class FlatteningProcessor {
         JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions);
         
         // 5.
-        BlankNodeIdGenerator idGenerator = new BlankNodeIdGenerator();
         
         // 6.
-        JsonStructure flattenedOutput = FlatteningBuilder.with(expandedInput, idGenerator).ordered(options.isOrdered()).build();
+        JsonStructure flattenedOutput = FlatteningBuilder.with(expandedInput).ordered(options.isOrdered()).build();
 
         // 6.1.
         if (JsonUtils.isNotNull(context)) {

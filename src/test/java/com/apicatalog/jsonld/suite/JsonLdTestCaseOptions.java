@@ -6,7 +6,7 @@ import javax.json.JsonObject;
 
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.jsonld.uri.UriResolver;
+import com.apicatalog.uri.UriResolver;
 
 public class JsonLdTestCaseOptions {
 
@@ -17,6 +17,8 @@ public class JsonLdTestCaseOptions {
     public String expandContext;
     public Boolean compactArrays;
     public Boolean compactToRelative;
+    public String rdfDirection;
+    public Boolean produceGeneralizedRdf;
     
     public static final JsonLdTestCaseOptions of(JsonObject o, String baseUri) {
         
@@ -44,6 +46,11 @@ public class JsonLdTestCaseOptions {
         if (o.containsKey("compactToRelative")) {
             options.compactToRelative = o.getBoolean("compactToRelative");
         }
+        options.rdfDirection = o.getString("rdfDirection", null);
+        
+        if (o.containsKey("produceGeneralizedRdf")) {
+                options.produceGeneralizedRdf = o.getBoolean("produceGeneralizedRdf");
+        }
         
         return options;
     }
@@ -68,6 +75,13 @@ public class JsonLdTestCaseOptions {
         
         if (compactToRelative != null) {
             options.setCompactToRelative(compactToRelative);
+        }
+        if (rdfDirection != null) {
+            options.setRdfDirection(rdfDirection);
+        }
+        
+        if (produceGeneralizedRdf != null) {
+            options.setProduceGeneralizedRdf(produceGeneralizedRdf);
         }
     }
 }

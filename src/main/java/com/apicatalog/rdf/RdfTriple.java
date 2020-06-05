@@ -1,5 +1,7 @@
 package com.apicatalog.rdf;
 
+import com.apicatalog.iri.IRI;
+
 /**
  * The {@link RdfTriple} interface describes an triple.
  * 
@@ -15,6 +17,10 @@ public interface RdfTriple {
      * 
      * @return
      */
-    String getSubject();
+    RdfSubject getSubject();
+
+    IRI getPredicate();
+    
+    RdfObject getObject();
 
 }

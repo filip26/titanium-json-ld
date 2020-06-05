@@ -10,6 +10,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import com.apicatalog.uri.UriResolver;
+
 @RunWith(Parameterized.class)
 public class UriResolverTest {
 
@@ -31,6 +33,8 @@ public class UriResolverTest {
     public static Collection<Object[]> data() {        
         List<Object[]> data = new ArrayList<>();
         
+        data.add(new Object[] {URI.create("file:///a/bb/ccc/d;p?q,"), "g", "file:///a/bb/ccc/g"});
+        data.add(new Object[] {URI.create("file:///a/bb/ccc/d;p?q,"), "/g", "file:///g"});
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "g:h", "g:h"});
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "g", "http://a/b/c/g"});
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "./g", "http://a/b/c/g"});

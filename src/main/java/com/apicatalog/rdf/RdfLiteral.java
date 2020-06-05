@@ -1,6 +1,6 @@
 package com.apicatalog.rdf;
 
-import java.util.Optional;
+import com.apicatalog.iri.IRI;
 
 /**
  * The {@link RdfLiteral} interface describes an <code>RDF Literal</code>.
@@ -25,7 +25,7 @@ public interface RdfLiteral {
      * 
      * @return
      */
-    String getDatatype();
+    IRI getDatatype();
 
     /**
      * An optional language tag as defined by [BCP47]. If this value is specified,
@@ -33,6 +33,12 @@ public interface RdfLiteral {
      * 
      * @return
      */
-    Optional<String> getLanguage();
+    String getLanguage();
+    
+    @Override
+    boolean equals(Object o);
 
+    @Override
+    int hashCode();
+    
 }

@@ -2,13 +2,12 @@ package com.apicatalog.jsonld.api.builder;
 
 import java.net.URI;
 
-import javax.json.JsonArray;
-
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
-import com.apicatalog.jsonld.processor.ExpansionProcessor;
+import com.apicatalog.jsonld.processor.JsonLdToRdfProcessor;
+import com.apicatalog.rdf.RdfDataset;
 
 public final class ToRdfApi {
 
@@ -36,6 +35,15 @@ public final class ToRdfApi {
 //    public ToRdfApi context(String contextUri) {
 //        return context(URI.create(contextUri));
 //    }
+
+    public ToRdfApi produceGeneralizedRdf() {
+        return produceGeneralizedRdf(true);
+    }
+
+    public ToRdfApi produceGeneralizedRdf(boolean enable) {
+        options.setProduceGeneralizedRdf(enable);
+        return this;
+    }
 
     public ToRdfApi mode(Version processingMode) {
         options.setProcessingMode(processingMode);
@@ -65,7 +73,7 @@ public final class ToRdfApi {
         return ordered(true);
     }
     
-    public JsonArray get() throws JsonLdError {
-        return ExpansionProcessor.expand(document, options);
+    public RdfDataset get() throws JsonLdError {
+        return JsonLdToRdfProcessor.toRdf(document, options);
     }
 }
