@@ -5,6 +5,7 @@ import java.net.URI;
 import javax.json.JsonObject;
 
 import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.uri.UriResolver;
 
@@ -76,8 +77,9 @@ public class JsonLdTestCaseOptions {
         if (compactToRelative != null) {
             options.setCompactToRelative(compactToRelative);
         }
+        
         if (rdfDirection != null) {
-            options.setRdfDirection(rdfDirection);
+            options.setRdfDirection(RdfDirection.valueOf(rdfDirection.toUpperCase().replace("-", "_")));
         }
         
         if (produceGeneralizedRdf != null) {

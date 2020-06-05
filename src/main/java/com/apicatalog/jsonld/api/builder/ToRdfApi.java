@@ -4,6 +4,7 @@ import java.net.URI;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.processor.JsonLdToRdfProcessor;
@@ -27,14 +28,19 @@ public final class ToRdfApi {
         return this;
     }
     
-//    public ToRdfApi context(URI contextUri) {
-//        options.setExpandContext(contextUri);
-//        return this;
-//    }
-//
-//    public ToRdfApi context(String contextUri) {
-//        return context(URI.create(contextUri));
-//    }
+    public ToRdfApi context(URI contextUri) {
+        options.setExpandContext(contextUri);
+        return this;
+    }
+
+    public ToRdfApi context(String contextUri) {
+        return context(URI.create(contextUri));
+    }
+
+    public ToRdfApi produceGeneralizedRdf(RdfDirection rdfDirection) {
+        options.setRdfDirection(rdfDirection);
+        return this;
+    }
 
     public ToRdfApi produceGeneralizedRdf() {
         return produceGeneralizedRdf(true);

@@ -9,6 +9,7 @@ import javax.json.JsonValue;
 
 import com.apicatalog.iri.IRI;
 import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
@@ -29,7 +30,7 @@ final class ListToRdf {
     private NodeMap nodeMap;
     
     // optional
-    private String rdfDirection;
+    private RdfDirection rdfDirection;
     
     private ListToRdf(final JsonArray list, final List<RdfTriple> triples, NodeMap nodeMap) {
         this.list = list;
@@ -41,7 +42,7 @@ final class ListToRdf {
         return new ListToRdf(list, triples, nodeMap);
     }
     
-    public ListToRdf rdfDirection(String rdfDirection) {
+    public ListToRdf rdfDirection(RdfDirection rdfDirection) {
         this.rdfDirection = rdfDirection;
         return this;
     }
