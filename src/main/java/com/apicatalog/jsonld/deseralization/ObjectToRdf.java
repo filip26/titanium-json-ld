@@ -115,7 +115,7 @@ final class ObjectToRdf {
         
         // 8.
         if (Keywords.JSON.equals(datatype)) {
-            valueString = (new JsonCanonicalizer(value)).canonicalize();
+            valueString = JsonCanonicalizer.canonicalize(value);
             datatype = "http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON";
         }
 
