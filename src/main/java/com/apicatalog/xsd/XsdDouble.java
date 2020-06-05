@@ -12,6 +12,6 @@ public final class XsdDouble {
             return "0.0E0";
         }
         
-        return new DecimalFormat("0.0E0").format(bigDecimal);        
+        return new DecimalFormat("0.0##############E0").format(bigDecimal);        
     }
 }
