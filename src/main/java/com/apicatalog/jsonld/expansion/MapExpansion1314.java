@@ -508,7 +508,7 @@ final class MapExpansion1314 {
                 }
 
                 // 13.4.16
-                if (JsonUtils.isNotNull(expandedValue)
+                if (/*JsonUtils.isNotNull(*/expandedValue != null
                         || (Keywords.VALUE.equals(expandedProperty) && Keywords.JSON.equals(inputType))) {
 
                     result.put(expandedProperty, expandedValue);

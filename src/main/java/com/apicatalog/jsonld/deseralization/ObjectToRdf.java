@@ -66,8 +66,8 @@ final class ObjectToRdf {
         if (NodeObject.isNodeObject(item)) {
             
             JsonValue id = item.get(Keywords.ID);
-            
-            if (JsonUtils.isNotString(id)) {
+
+            if (JsonUtils.isNotString(id) || JsonUtils.isNull(id)) {
                 return null;
             }
             

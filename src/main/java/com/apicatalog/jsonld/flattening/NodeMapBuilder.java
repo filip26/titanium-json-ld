@@ -205,13 +205,16 @@ public final class NodeMapBuilder {
             
             // 6.1.
             if (elementObject.containsKey(Keywords.ID)) {
-                
+
+                if (JsonUtils.isNotString(elementObject.get(Keywords.ID)) || JsonUtils.isNull(elementObject.get(Keywords.ID))) {
+                    return nodeMap;
+                }
+
                 id = ((JsonString)elementObject.get(Keywords.ID)).getString();
                 
                 if (CompactUri.isBlankNode(id)) {
                     id = nodeMap.createIdentifier(id);
                 }
-                
                 elementObject.remove(Keywords.ID);
 
             // 6.2.
@@ -220,7 +223,7 @@ public final class NodeMapBuilder {
             }
             
             // 6.3.
-            if (nodeMap.doesNotContain(activeGraph, id)) {
+            if (id != null && nodeMap.doesNotContain(activeGraph, id)) {
                 nodeMap.set(activeGraph, id, Keywords.ID, Json.createValue(id));
             }
 
