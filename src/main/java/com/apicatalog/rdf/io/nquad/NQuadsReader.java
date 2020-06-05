@@ -202,10 +202,8 @@ public final class NQuadsReader implements RdfReader {
             count++;
         }
   
-//        if (count < min) {
-//            unexpected(token);
-//        }        
+        if (count < min) {
+            unexpected(token);
+        }        
     }
-
-
 }

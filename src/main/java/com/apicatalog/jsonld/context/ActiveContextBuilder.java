@@ -17,7 +17,7 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.lang.CompactUri;
+import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Version;
@@ -403,7 +403,7 @@ public class ActiveContextBuilder {
 
                     String valueString = ((JsonString) value).getString();
 
-                    if (UriUtils.isURI(valueString) || valueString.isBlank() || CompactUri.isBlankNode(valueString)) {
+                    if (UriUtils.isURI(valueString) || valueString.isBlank() || BlankNode.hasPrefix(valueString)) {
 
                         String vocabularyMapping =
                                     result
@@ -412,7 +412,7 @@ public class ActiveContextBuilder {
                                         .documentRelative(true)
                                         .build();
 
-                        if (UriUtils.isURI(vocabularyMapping) || CompactUri.isBlankNode(valueString)) {
+                        if (UriUtils.isURI(vocabularyMapping) || BlankNode.hasPrefix(valueString)) {
                             result.vocabularyMapping = vocabularyMapping;
 
                         } else {

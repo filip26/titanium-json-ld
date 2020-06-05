@@ -19,7 +19,7 @@ import javax.json.JsonValue;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.lang.CompactUri;
+import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.NodeObject;
 
@@ -122,7 +122,7 @@ public final class NodeMapBuilder {
             // 3.1.
             for (JsonValue item : JsonUtils.toJsonArray(elementObject.get(Keywords.TYPE))) {
                 
-                if (JsonUtils.isString(item) && CompactUri.isBlankNode(((JsonString)item).getString())) {
+                if (JsonUtils.isString(item) && BlankNode.hasPrefix(((JsonString)item).getString())) {
                     types.add(Json.createValue(nodeMap.createIdentifier(((JsonString)item).getString())));
                     
                 } else {
@@ -212,7 +212,7 @@ public final class NodeMapBuilder {
 
                 id = ((JsonString)elementObject.get(Keywords.ID)).getString();
                 
-                if (CompactUri.isBlankNode(id)) {
+                if (BlankNode.hasPrefix(id)) {
                     id = nodeMap.createIdentifier(id);
                 }
                 elementObject.remove(Keywords.ID);
@@ -369,7 +369,7 @@ public final class NodeMapBuilder {
                 JsonStructure value = (JsonStructure)elementObject.get(property);
            
                 // 6.12.1.
-                if (CompactUri.isBlankNode(property)) {
+                if (BlankNode.hasPrefix(property)) {
                     property = nodeMap.createIdentifier(property);
                 }
                 

@@ -19,6 +19,9 @@ import com.apicatalog.rdf.io.nquad.NQuadsWriter;
  */
 public final class JsonCanonicalizer {
 
+    private JsonCanonicalizer() {
+    }
+    
     public static final String canonicalize(final JsonValue value) {
         
         final StringWriter writer = new StringWriter();

@@ -138,7 +138,6 @@ public final class JsonLdToRdfBuilder {
 
 
                             ) {
-                        continue;
                         
                     // 1.3.2.4.
                     } else if (UriUtils.isURI(property)) {

@@ -55,6 +55,10 @@ public final class BlankNode {
         BlankNode other = (BlankNode) obj;
         return Objects.equals(label, other.label);
     }
+    
+    public static boolean hasPrefix(final String value) {        
+        return value.startsWith("_:");
+    }
 
     /**
      * BLANK_NODE_LABEL ::= '_:' (PN_CHARS_U | [0-9]) ((PN_CHARS | '.')* PN_CHARS)?

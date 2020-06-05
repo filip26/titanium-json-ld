@@ -13,6 +13,7 @@ import javax.json.JsonValue;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.CompactUri;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -343,7 +344,7 @@ public final class TermDefinitionBuilder {
                 }
 
                 if (!Keywords.contains(definition.uriMapping) && !UriUtils.isURI(definition.uriMapping)
-                        && !CompactUri.isBlankNode(definition.uriMapping)) {
+                        && !BlankNode.hasPrefix(definition.uriMapping)) {
 
                     throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
                 }
@@ -372,7 +373,7 @@ public final class TermDefinitionBuilder {
                 if (!term.contains(":") && !term.contains("/") && Boolean.TRUE.equals(simpleTerm)
                         && (definition.uriMapping != null && ((UriUtils.isURI(definition.uriMapping)
                             && UriUtils.endsWithGenDelim(definition.uriMapping))
-                            || CompactUri.isBlankNode(definition.uriMapping)))) {
+                            || BlankNode.hasPrefix(definition.uriMapping)))) {
                     
                     definition.prefixFlag = true;
                 }
@@ -398,7 +399,7 @@ public final class TermDefinitionBuilder {
                 definition.uriMapping = prefixDefinition.uriMapping.concat(compactUri.getSuffix());
 
             // 15.3.
-            } else if (UriUtils.isURI(term) || CompactUri.isBlankNode(term)) {
+            } else if (UriUtils.isURI(term) || BlankNode.hasPrefix(term)) {
                 definition.uriMapping = term;
             }
 

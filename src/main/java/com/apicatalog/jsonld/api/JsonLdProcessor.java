@@ -6,9 +6,8 @@ import java.util.Collection;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 
-import org.apache.commons.rdf.api.Dataset;
-
 import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.rdf.RdfDataset;
 
 /**
  * The {@link JsonLdProcessor} interface is the high-level programming structure
@@ -54,13 +53,13 @@ public interface JsonLdProcessor {
 
     
     
-    Collection<JsonObject> fromRdf(Dataset input) throws JsonLdError;
+    Collection<JsonObject> fromRdf(RdfDataset input) throws JsonLdError;
 
-    Collection<JsonObject> fromRdf(Dataset input, JsonLdOptions options) throws JsonLdError;
+    Collection<JsonObject> fromRdf(RdfDataset input, JsonLdOptions options) throws JsonLdError;
 
     
     
-    Dataset toRdf(JsonLdInput input) throws JsonLdError;
+    RdfDataset toRdf(JsonLdInput input) throws JsonLdError;
 
-    Dataset toRdf(JsonLdInput input, JsonLdOptions options) throws JsonLdError;
+    RdfDataset toRdf(JsonLdInput input, JsonLdOptions options) throws JsonLdError;
 }

@@ -75,12 +75,6 @@
             <artifactId>javax.json-api</artifactId>
             <version>${json-p.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-rdf-api</artifactId>
-            <version>${commons-rdf-api.version}</version>
-        </dependency>
         
         <!--  Tests -->
        <dependency>
