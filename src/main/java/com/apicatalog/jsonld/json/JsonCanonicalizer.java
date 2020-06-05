@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.stream.Collectors;
 
+import javax.json.JsonNumber;
 import javax.json.JsonValue;
 
 /**
@@ -39,7 +40,7 @@ public final class JsonCanonicalizer {
             //TODO conversions
             
             if (JsonUtils.isNumber(value)) {
-                writer.write(value.toString().toLowerCase());
+                writer.write(((JsonNumber)value).toString().toLowerCase());
                 
             } else {
             

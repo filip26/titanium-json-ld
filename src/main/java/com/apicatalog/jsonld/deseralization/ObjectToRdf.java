@@ -1,5 +1,6 @@
 package com.apicatalog.jsonld.deseralization;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import javax.json.JsonNumber;
@@ -22,6 +23,7 @@ import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.api.Rdf;
+import com.apicatalog.xsd.XsdDouble;
 
 /**
  * 
@@ -141,40 +143,29 @@ final class ObjectToRdf {
         } else if (JsonUtils.isNumber(value)) {
             
             JsonNumber number = ((JsonNumber)value);
-            
-            
+                  
             
             // 11.
-            if (number.isIntegral()) {
-                //TODO conversion
-                valueString = Long.toString(number.longValueExact());
+            if ((!number.isIntegral()  && number.doubleValue() % -1 != 0)
+                    || "http://www.w3.org/2001/XMLSchema#double".equals(datatype)
+                    || number.bigIntegerValue().compareTo(BigInteger.TEN.pow(21)) >= 0 
+                    ) {
+
+                valueString =  XsdDouble.toString(number.bigDecimalValue());
                 
                 if (datatype == null) {
-                    datatype = "http://www.w3.org/2001/XMLSchema#integer";
+                    datatype = "http://www.w3.org/2001/XMLSchema#double";
                 }
                 
             // 10.
             } else {
-                //TODO conversion
 
-                double  doubleValue = number.doubleValue();
-                int decimalValue = (int)doubleValue;
+                valueString = number.bigIntegerValue().toString();
                 
-                if ((doubleValue - decimalValue) > 0) {
-                   
-                    valueString =  String.format("%.1E", doubleValue).replace("+00", "0").replace("+", "");
-                    
-                    if (datatype == null) {
-                        datatype = "http://www.w3.org/2001/XMLSchema#double";
-                    }
-                } else {
-                    
-                    valueString = Long.toString(decimalValue);
-                    
-                    if (datatype == null) {
-                        datatype = "http://www.w3.org/2001/XMLSchema#integer";
-                    }
+                if (datatype == null) {
+                    datatype = "http://www.w3.org/2001/XMLSchema#integer";
                 }
+
             }
                     
         // 12.
