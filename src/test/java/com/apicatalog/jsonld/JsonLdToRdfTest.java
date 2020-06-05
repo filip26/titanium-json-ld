@@ -45,8 +45,10 @@ public class JsonLdToRdfTest {
         // skip specVersion == 1.0
         assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
 
-        // blank nodes as predicates are not supported
+        // blank nodes as predicates are not supported - wont'fix
         assumeFalse("#te075".equals(testCase.id));
+        // invalid IRI/URI are not accepted - wont'fix
+        assumeFalse("#tli12".equals(testCase.id));
         
         // skip normative == false
         //assumeTrue(testCase.options.normative == null || testCase.options.normative);
@@ -61,7 +63,7 @@ public class JsonLdToRdfTest {
         Assert.assertNotNull(options.getDocumentLoader());
         
         RdfDataset result = null;
-        
+
         try {
   
             result = JsonLd.toRdf(testCase.input).options(options).get();

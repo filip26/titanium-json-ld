@@ -141,14 +141,14 @@ public final class JsonLdToRdfBuilder {
                         continue;
                         
                     // 1.3.2.4.
-                    } else if (BlankNode.isWellFormed(property) || UriUtils.isURI(property)) {
+                    } else if (UriUtils.isURI(property)) {
 
                         // 1.3.2.5.
                         for (JsonValue item : nodeMap.get(graphName, subject, property).asJsonArray()) {
                         
                             // 1.3.2.5.1.
                             List<RdfTriple> listTriples = new LinkedList<>();
-                            
+
                             // 1.3.2.5.2.                            
                             RdfObject rdfObject = ObjectToRdf
                                                     .with(item.asJsonObject(), listTriples, nodeMap)
