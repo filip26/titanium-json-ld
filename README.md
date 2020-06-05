@@ -19,7 +19,7 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 [Expansion](https://www.w3.org/TR/json-ld/#expanded-document-form) | 369 |  368 | 99.7% | [non-normative test 0122](https://w3c.github.io/json-ld-api/tests/expand-manifest#t0122) does not pass 
 [Compaction](https://www.w3.org/TR/json-ld/#compacted-document-form) | 239 | 239 | 100% |
 [Flattening](https://www.w3.org/TR/json-ld/#flattened-document-form) | 55 | 55 | 100% |
-[JSON-LD to RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 449 | 425 | 94.6% | 
+[JSON-LD to RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 449 | 438 | 97.5% | 
 [RDF to JSON-LD](https://www.w3.org/TR/json-ld/#relationship-to-rdf) |  |  | TBD | 
 [Framing](https://www.w3.org/TR/json-ld11-framing/#framing) | | | TBD |
 
@@ -42,31 +42,21 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 
 Titanium JSON-LD implements the [JsonLdProcessor](https://www.w3.org/TR/json-ld11-api/#the-jsonldprocessor-interface) interface and custom interface based on the builder design pattern.
 
-#### Expansion 
+#### JsonLd Builder API 
 
 ```javascript
 JsonLd.expand("https://w3c.github.io/json-ld-api/tests/expand/0001-in.jsonld")
       .ordered()
       .get();
-```
-
-```javascript
 
 JsonLd.expand("https://example.com/document.json")
       .context("https://example.com/context.jsonld")  // external context
       .get();
-```
 
-#### Compaction
-
-```javascript
 JsonLd.compact("https://example.com/expanded.jsonld", "https://example.com/context.jsonld").get();
-```
 
-#### Flattening
-
-```javascript
 JsonLd.flatten("https://example.com/document.jsonld").get();
+
 ```
 
 
