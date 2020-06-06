@@ -20,6 +20,7 @@ public final class RdfToJsonLdProcessor {
                     .rdfDirection(options.getRdfDirection())
                     .useNativeTypes(options.isUseNativeTypes())
                     .useRdfType(options.isUseRdfType())
+                    .processingMode(options.getProcessingMode())
                     .build();
     }
 }

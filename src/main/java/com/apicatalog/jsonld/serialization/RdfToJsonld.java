@@ -17,6 +17,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
 import com.apicatalog.rdf.RdfGraphName;
@@ -33,6 +34,8 @@ public final class RdfToJsonld {
     private RdfDirection rdfDirection;
     private boolean useNativeTypes;
     private boolean useRdfType;
+    
+    private Version processingMode;
     
     // runtime
     private Map<String, Map<String, JsonValue>> defaultGraph;
@@ -54,10 +57,6 @@ public final class RdfToJsonld {
         return new RdfToJsonld(dataset);
     }
     
-    public RdfToJsonld ordered() {
-        return ordered(true);
-    }
-    
     public RdfToJsonld ordered(boolean ordered) {
         this.ordered = ordered;
         return this;
@@ -68,21 +67,18 @@ public final class RdfToJsonld {
         return this;
     }
     
-    public RdfToJsonld useNativeTypes() {
-        return useNativeTypes(false);
-    }
-    
     public RdfToJsonld useNativeTypes(boolean useNativeTypes) {
         this.useNativeTypes = useNativeTypes;
         return this;
     }
     
-    public RdfToJsonld useRdfType() {
-        return useRdfType(true);
-    }
-    
     public RdfToJsonld useRdfType(boolean useRdfType) {
         this.useRdfType = useRdfType;
+        return this;
+    }
+    
+    public RdfToJsonld processingMode(Version processingMode) {
+        this.processingMode = processingMode;
         return this;
     }
     
@@ -223,7 +219,11 @@ public final class RdfToJsonld {
             }
             
             // 5.7.6.
-            final Map<String, JsonValue> value = RdfToObject.with(triple.getObject(), rdfDirection, useNativeTypes).build();
+            final Map<String, JsonValue> value = 
+                        RdfToObject
+                            .with(triple.getObject(), rdfDirection, useNativeTypes)
+                            .processingMode(processingMode)
+                            .build();
             
             // 5.7.7.
             if (!node.containsKey(predicate)) {
