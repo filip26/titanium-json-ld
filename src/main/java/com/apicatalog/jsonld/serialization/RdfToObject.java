@@ -14,6 +14,7 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfObject;
+import com.apicatalog.xml.XsdVocabulary;
 
 public final class RdfToObject {
 
@@ -81,8 +82,7 @@ public final class RdfToObject {
             result.put(Keywords.LANGUAGE, Json.createValue(literal.getLanguage()));
                      
         // 2.8.   
-        } else {
-            //TODO ignore xsd:string
+        } else if (!XsdVocabulary.STRING.equals(literal.getDatatype().toString())) {
             type = literal.getDatatype().toString();
         }        
         

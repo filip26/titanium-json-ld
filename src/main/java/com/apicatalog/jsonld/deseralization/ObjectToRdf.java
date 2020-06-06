@@ -27,6 +27,7 @@ import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.api.Rdf;
 import com.apicatalog.rdf.lang.RdfVocabulary;
+import com.apicatalog.xml.XsdVocabulary;
 
 /**
  * 
@@ -174,8 +175,8 @@ final class ObjectToRdf {
         } else if (datatype == null) {
             
             datatype = item.containsKey(Keywords.LANGUAGE)
-                                ? RdfVocabulary.LANG_STRING //TODO constants
-                                : "http://www.w3.org/2001/XMLSchema#string"
+                                ? RdfVocabulary.LANG_STRING
+                                : XsdVocabulary.STRING
                                 ;
         }
         
