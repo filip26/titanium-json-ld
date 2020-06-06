@@ -107,6 +107,13 @@ public final class RdfToJsonld {
             //TODO
             
             // 6.2.
+            if (!graphObject.containsKey("rdf:nil")) {
+                continue;
+            }
+            
+            // 6.3.
+            
+            
             //TODO            
         }
         //TODO
@@ -179,6 +186,7 @@ public final class RdfToJsonld {
             Map<String, JsonValue> node = nodeMap.get(triple.getSubject().toString());
             
             // 5.7.3.
+//            if (RdfDirection.COMPOUND_LITERAL == )
             
             //TODO
             

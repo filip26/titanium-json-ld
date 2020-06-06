@@ -19,6 +19,7 @@ import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.api.Rdf;
+import com.apicatalog.rdf.lang.RdfVocabulary;
 import com.apicatalog.uri.UriUtils;
 
 public final class JsonLdToRdf {
@@ -126,7 +127,7 @@ public final class JsonLdToRdf {
 
                             dataset.add(Rdf.createNQuad(
                                                 rdfSubject,
-                                                IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),//TODO constant
+                                                IRI.create(RdfVocabulary.TYPE),
                                                 rdfObject,
                                                 rdfGraphName
                                             ));

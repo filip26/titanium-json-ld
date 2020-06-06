@@ -16,6 +16,7 @@ import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.api.Rdf;
+import com.apicatalog.rdf.lang.RdfVocabulary;
 
 /**
  * 
@@ -51,7 +52,7 @@ final class ListToRdf {
         
         // 1.
         if (JsonUtils.isEmptyArray(list)) {
-            return Rdf.createObject(IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"));
+            return Rdf.createObject(IRI.create(RdfVocabulary.NIL));
         }
 
         // 2.
@@ -77,15 +78,15 @@ final class ListToRdf {
                                            
             // 3.3.
             if (object != null) {
-                triples.add(Rdf.createTriple(Rdf.createSubject(BlankNode.create(subject)), IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"), object));
+                triples.add(Rdf.createTriple(Rdf.createSubject(BlankNode.create(subject)), IRI.create(RdfVocabulary.FIRST), object));
             }
 
             // 3.4.
             RdfObject rest = (index < bnodes.length) ? Rdf.createObject(BlankNode.create(bnodes[index])) 
-                                        : Rdf.createObject(IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"))
+                                        : Rdf.createObject(IRI.create(RdfVocabulary.NIL))
                                         ;
             
-            triples.add(Rdf.createTriple(Rdf.createSubject(BlankNode.create(subject)), IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#rest"), rest));
+            triples.add(Rdf.createTriple(Rdf.createSubject(BlankNode.create(subject)), IRI.create(RdfVocabulary.REST), rest));
             
             // 3.5.
             triples.addAll(embeddedTriples);
