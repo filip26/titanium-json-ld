@@ -19,6 +19,7 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
 import com.apicatalog.rdf.RdfTriple;
+import com.apicatalog.rdf.lang.RdfVocabulary;
 
 public final class RdfToJsonld {
 
@@ -173,20 +174,38 @@ public final class RdfToJsonld {
         
         // 5.7.
         for (RdfTriple triple : graph.toList()) {
-         
+                     
+            String subject = triple.getSubject().toString();
+            
             // 5.7.1.
-            if (!nodeMap.containsKey(triple.getSubject().toString())) {
+            if (!nodeMap.containsKey(subject)) {
                 Map<String, JsonValue> map = new LinkedHashMap<>();
-                map.put(Keywords.ID, Json.createValue(triple.getSubject().toString()));
+                map.put(Keywords.ID, Json.createValue(subject));
                 
                 nodeMap.put(triple.getSubject().toString(), map);
             }
             
             // 5.7.2.
-            Map<String, JsonValue> node = nodeMap.get(triple.getSubject().toString());
+            Map<String, JsonValue> node = nodeMap.get(subject);
             
             // 5.7.3.
-//            if (RdfDirection.COMPOUND_LITERAL == )
+            if (RdfDirection.COMPOUND_LITERAL == rdfDirection 
+                    && RdfVocabulary.DIRECTION.equals(triple.getPredicate().toString())) {
+                
+                compoundMap.put(subject, JsonValue.TRUE);
+            }
+            
+            // 5.7.4.
+            if ((triple.getObject().isBlankNode() || triple.getObject().isIRI())
+                    && !nodeMap.containsKey(triple.getObject().toString())) {
+                
+                Map<String, JsonValue> map = new LinkedHashMap<>();
+                map.put(Keywords.ID, Json.createValue(triple.getObject().toString()));
+                nodeMap.put(triple.getObject().toString(), map);
+                
+            }
+            
+            // 5.7.5.
             
             //TODO
             
