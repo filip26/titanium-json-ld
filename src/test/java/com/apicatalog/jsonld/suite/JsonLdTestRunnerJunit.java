@@ -48,6 +48,9 @@ public class JsonLdTestRunnerJunit {
         } catch (JsonLdError e) {
             Assert.assertEquals(testCase.expectErrorCode, e.getCode());
             return;
+
+        } catch (Exception e) {            
+            Assert.fail(e.getMessage());
         }
         
         Assert.assertNull(testCase.expectErrorCode);
