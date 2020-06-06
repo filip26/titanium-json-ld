@@ -1,6 +1,14 @@
 package com.apicatalog.jsonld.suite;
 
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.json.Json;
 import javax.json.JsonValue;
+import javax.json.JsonWriter;
+import javax.json.JsonWriterFactory;
+import javax.json.stream.JsonGenerator;
 
 import org.junit.Assert;
 
@@ -36,21 +44,9 @@ public class JsonLdTestRunnerJunit {
             
             Assert.assertNotNull("A result is expected but got null", result);
         
-//            Map<String, Object> properties = new HashMap<>(1);
-//            properties.put(JsonGenerator.PRETTY_PRINTING, true);
-//
-//            JsonWriterFactory writerFactory = Json.createWriterFactory(properties);
-//
-//            JsonWriter jsonWriter2 = writerFactory.createWriter(System.out);
-//            jsonWriter2.write(result);
-//            jsonWriter2.close();
-
         } catch (JsonLdError e) {
             Assert.assertEquals(testCase.expectErrorCode, e.getCode());
             return;
-
-        } catch (Exception e) {            
-            Assert.fail(e.getMessage());
         }
         
         Assert.assertNull(testCase.expectErrorCode);
@@ -60,11 +56,40 @@ public class JsonLdTestRunnerJunit {
                     
         Assert.assertNotNull(expectedDocument);
         Assert.assertNotNull(expectedDocument.getDocument());
+
+        // compare expected with the result
+        boolean match = JsonLdComparison.equals(expectedDocument.getDocument().asJsonStructure(), result);
         
-        // compare expected with the result       
+        if (!match) {
+            System.out.println("Test " + testCase.id + ": " + testCase.name);
+            System.out.println("Expected:");
+
+            Map<String, Object> properties = new HashMap<>(1);
+            properties.put(JsonGenerator.PRETTY_PRINTING, true);
+    
+            JsonWriterFactory writerFactory = Json.createWriterFactory(properties);
+
+            StringWriter writer = new StringWriter();
+            
+            JsonWriter jsonWriter1 = writerFactory.createWriter(writer);
+            jsonWriter1.write(expectedDocument.getDocument().asJsonStructure());
+            jsonWriter1.close();
+
+            writer.append("\n\n");
+            writer.append("Actual:\n");
+
+            JsonWriter jsonWriter2 = writerFactory.createWriter(writer);
+            jsonWriter2.write(result);
+            jsonWriter2.close();
+
+            System.out.print(writer.toString());
+            System.out.println();
+            System.out.println();
+        }
+
         Assert.assertTrue(
                         "Expected " + expectedDocument.getDocument().asJsonStructure() + ", but was" + result,
-                        JsonLdComparison.equals(expectedDocument.getDocument().asJsonStructure(), result)
+                        match
                         );
     }    
 }
