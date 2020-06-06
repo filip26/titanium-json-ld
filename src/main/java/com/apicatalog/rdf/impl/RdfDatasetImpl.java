@@ -14,6 +14,7 @@ import com.apicatalog.rdf.RdfNQuad;
 final class RdfDatasetImpl implements RdfDataset {
 
     private final Map<RdfGraphName, RdfGraphImpl> graphs;
+    
     private final List<RdfNQuad> nquads;
     
     private RdfGraphImpl defaultGraph;
