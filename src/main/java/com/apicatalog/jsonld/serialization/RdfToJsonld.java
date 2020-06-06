@@ -161,7 +161,11 @@ public final class RdfToJsonld {
             
             // 8.2.
             //TODO usages?! 
-            result.add(JsonUtils.toJsonObject(node));
+            
+            if (node.size() > 1 || !node.containsKey(Keywords.ID)) {
+            
+                result.add(JsonUtils.toJsonObject(node));
+            }
             
         }
         //TODO
