@@ -10,9 +10,9 @@ import java.util.Map.Entry;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
 import javax.json.JsonValue;
 
-import com.apicatalog.iri.IRI;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -41,7 +41,7 @@ public final class RdfToJsonld {
     private Map<String, Map<String, JsonValue>> defaultGraph;
     private Map<String, Map<String, Map<String, JsonValue>>> graphMap;
     private Map<String, Map<String, JsonValue>> compoundLiteralSubjects;
-    private Map<IRI, Boolean> referenceOnce;
+    private Map<String, Reference> referenceOnce;
     
     private RdfToJsonld(final RdfDataset dataset) {
         this.dataset = dataset;
@@ -114,16 +114,16 @@ public final class RdfToJsonld {
             //TODO
             
             // 6.2.
-            if (!graphObject.containsKey("rdf:nil")) {
+            if (!graphObject.containsKey(RdfVocabulary.NIL)) {
                 continue;
             }
             
             // 6.3.
+            Map<String, JsonValue> nil = graphObject.get(RdfVocabulary.NIL);
             
-            
+            // 6.4.
             //TODO            
         }
-        //TODO
         
         // 7.
         final JsonArrayBuilder result = Json.createArrayBuilder();
@@ -135,12 +135,29 @@ public final class RdfToJsonld {
             Collections.sort(subjects);
         }
         
-        for (String subject : subjects) {
+        for (final String subject : subjects) {
             
             final Map<String, JsonValue> node = defaultGraph.get(subject);
         
             // 8.1.
-            //TODO
+            if (graphMap.containsKey(subject)) {
+
+                final Map<String, Map<String, JsonValue>> subjectGraphEntry = graphMap.get(subject);
+
+                final List<String> keys = new ArrayList<>(subjectGraphEntry.keySet());
+                if (ordered) {
+                    Collections.sort(keys);
+                }
+                
+                final JsonArrayBuilder array = Json.createArrayBuilder();
+                
+                for (final String key : keys) {
+                    //TODO usages, remaining
+                    array.add(JsonUtils.toJsonObject(subjectGraphEntry.get(key)));
+                }
+                
+                node.put(Keywords.GRAPH, array.build());                
+            }
             
             // 8.2.
             //TODO usages?! 
@@ -179,14 +196,15 @@ public final class RdfToJsonld {
         Map<String, JsonValue> compoundMap = compoundLiteralSubjects.get(name);
         
         // 5.7.
-        for (RdfTriple triple : graph.toList()) {
+        for (final RdfTriple triple : graph.toList()) {
                      
-            String subject = triple.getSubject().toString();
-            String predicate = triple.getPredicate().toString();
+            final String subject = triple.getSubject().toString();
+            final String predicate = triple.getPredicate().toString();
             
             // 5.7.1.
             if (!nodeMap.containsKey(subject)) {
-                Map<String, JsonValue> map = new LinkedHashMap<>();
+                
+                final Map<String, JsonValue> map = new LinkedHashMap<>();
                 map.put(Keywords.ID, Json.createValue(subject));
                 
                 nodeMap.put(triple.getSubject().toString(), map);
@@ -206,8 +224,9 @@ public final class RdfToJsonld {
             if ((triple.getObject().isBlankNode() || triple.getObject().isIRI())
                     && !nodeMap.containsKey(triple.getObject().toString())) {
                 
-                Map<String, JsonValue> map = new LinkedHashMap<>();
+                final Map<String, JsonValue> map = new LinkedHashMap<>();
                 map.put(Keywords.ID, Json.createValue(triple.getObject().toString()));
+                
                 nodeMap.put(triple.getObject().toString(), map);
                 
             }
@@ -219,7 +238,7 @@ public final class RdfToJsonld {
             }
             
             // 5.7.6.
-            final Map<String, JsonValue> value = 
+            final JsonObject value = 
                         RdfToObject
                             .with(triple.getObject(), rdfDirection, useNativeTypes)
                             .processingMode(processingMode)
@@ -227,30 +246,43 @@ public final class RdfToJsonld {
             
             // 5.7.7.
             if (!node.containsKey(predicate)) {
-                node.put(predicate, JsonValue.EMPTY_JSON_ARRAY);
-            }
-            
+                node.put(predicate, Json.createArrayBuilder().add(value).build());
+                                
             // 5.7.8.
-            //TODO
+            } else {
+                JsonArray array = node.get(predicate).asJsonArray();
+                if (!array.contains(value)) {
+                    node.put(predicate, Json.createArrayBuilder(array).add(value).build());
+                }
+            }
             
             // 5.7.9.
             if (triple.getObject().isIRI() && RdfVocabulary.NIL.equals(triple.getObject().asIRI().toString())) {
                 //TODO
                 
             // 5.7.10.
-            } else if (triple.getObject().isIRI() && referenceOnce.containsKey(triple.getObject().asIRI())) {
-                referenceOnce.put(triple.getObject().asIRI(), Boolean.FALSE);
+            } else if (referenceOnce.containsKey(triple.getObject().toString())) {
+                referenceOnce.put(triple.getObject().toString(), null);
 
             // 5.7.11.
             } else if (triple.getObject().isBlankNode()) {
                 
                 // 5.7.11.1.
+                Reference reference = new Reference();
+                reference.node = node;
+                reference.property = predicate;
+                reference.value = value;
                 
-                
+                referenceOnce.put(triple.getObject().toString(), reference);
             }
-            
-            //TODO
-            
         }        
+    }
+    
+    private static class Reference {
+        
+        Map<String, JsonValue> node;
+        String property;
+        JsonObject value;
+        
     }
 }

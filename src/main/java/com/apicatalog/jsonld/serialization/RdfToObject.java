@@ -1,14 +1,15 @@
 package com.apicatalog.jsonld.serialization;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.json.Json;
+import javax.json.JsonObject;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
+import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.rdf.RdfLiteral;
@@ -41,16 +42,14 @@ public final class RdfToObject {
         return this;
     }
     
-    public Map<String, JsonValue> build() throws JsonLdError {
-        
-        final Map<String, JsonValue> result = new LinkedHashMap<>();
+    public JsonObject build() throws JsonLdError {
         
         // 1.
         if (value.isIRI() || value.isBlankNode()) {
-            
-            result.put(Keywords.ID, Json.createValue(value.toString()));
-            return result;
+            return Json.createObjectBuilder().add(Keywords.ID, value.toString()).build();
         }
+
+        final Map<String, JsonValue> result = new LinkedHashMap<>();
         
         // 2.
         final RdfLiteral literal = value.asLiteral();
@@ -96,7 +95,7 @@ public final class RdfToObject {
         }
         
         // 2.11.
-        return result;
+        return JsonUtils.toJsonObject(result);
     }
     
 }
