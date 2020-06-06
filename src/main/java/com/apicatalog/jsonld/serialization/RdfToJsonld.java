@@ -236,7 +236,15 @@ public final class RdfToJsonld {
             }
             
             // 5.7.5.
-            if (!useRdfType && RdfVocabulary.TYPE.equals(predicate) && !triple.getObject().isBlankNode()) {
+            if (!useRdfType && RdfVocabulary.TYPE.equals(predicate) && !triple.getObject().isLiteral()) {
+                
+                if (node.containsKey(Keywords.TYPE)) {
+                    node.put(Keywords.TYPE, Json.createArrayBuilder(node.get(Keywords.TYPE).asJsonArray()).add(triple.getObject().toString()).build());
+                    
+                } else {
+                    node.put(Keywords.TYPE, Json.createArrayBuilder().add(triple.getObject().toString()).build());
+                }
+                
                 //TODO
                 continue;
             }
