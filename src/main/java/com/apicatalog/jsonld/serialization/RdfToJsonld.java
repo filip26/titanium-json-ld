@@ -12,6 +12,7 @@ import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonValue;
 
+import com.apicatalog.iri.IRI;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -37,6 +38,7 @@ public final class RdfToJsonld {
     private Map<String, Map<String, JsonValue>> defaultGraph;
     private Map<String, Map<String, Map<String, JsonValue>>> graphMap;
     private Map<String, Map<String, JsonValue>> compoundLiteralSubjects;
+    private Map<IRI, Boolean> referenceOnce;
     
     private RdfToJsonld(final RdfDataset dataset) {
         this.dataset = dataset;
@@ -94,7 +96,7 @@ public final class RdfToJsonld {
         graphMap.put(Keywords.DEFAULT, defaultGraph);
         
         // 3.
-        Map referenceOnce = new LinkedHashMap<>();
+        referenceOnce = new LinkedHashMap<>();
         
         // 4.
         compoundLiteralSubjects = new LinkedHashMap<>();
@@ -224,6 +226,28 @@ public final class RdfToJsonld {
             final Map<String, JsonValue> value = RdfToObject.with(triple.getObject(), rdfDirection, useNativeTypes).build();
             
             // 5.7.7.
+            if (!node.containsKey(predicate)) {
+                node.put(predicate, JsonValue.EMPTY_JSON_ARRAY);
+            }
+            
+            // 5.7.8.
+            //TODO
+            
+            // 5.7.9.
+            if (triple.getObject().isIRI() && RdfVocabulary.NIL.equals(triple.getObject().asIRI().toString())) {
+                //TODO
+                
+            // 5.7.10.
+            } else if (triple.getObject().isIRI() && referenceOnce.containsKey(triple.getObject().asIRI())) {
+                referenceOnce.put(triple.getObject().asIRI(), Boolean.FALSE);
+
+            // 5.7.11.
+            } else if (triple.getObject().isBlankNode()) {
+                
+                // 5.7.11.1.
+                
+                
+            }
             
             //TODO
             
