@@ -6,7 +6,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -19,6 +18,7 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
+import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.lang.RdfVocabulary;
 
@@ -32,6 +32,11 @@ public final class RdfToJsonld {
     private RdfDirection rdfDirection;
     private boolean useNativeTypes;
     private boolean useRdfType;
+    
+    // runtime
+    private Map<String, Map<String, JsonValue>> defaultGraph;
+    private Map<String, Map<String, Map<String, JsonValue>>> graphMap;
+    private Map<String, Map<String, JsonValue>> compoundLiteralSubjects;
     
     private RdfToJsonld(final RdfDataset dataset) {
         this.dataset = dataset;
@@ -82,25 +87,24 @@ public final class RdfToJsonld {
     public JsonArray build() throws JsonLdError {
         
         // 1.
-        Map<String, Map<String, JsonValue>> defaultGraph = new LinkedHashMap<>();
+        defaultGraph = new LinkedHashMap<>();
         
         // 2.
-        Map<String, Map<String, Map<String, JsonValue>>> graphMap = new LinkedHashMap<>();
+        graphMap = new LinkedHashMap<>();
         graphMap.put(Keywords.DEFAULT, defaultGraph);
         
         // 3.
         Map referenceOnce = new LinkedHashMap<>();
         
         // 4.
-        Map compoundLiteralSubjects = new LinkedHashMap<>();
+        compoundLiteralSubjects = new LinkedHashMap<>();
         
         // 5.
-        step5(Keywords.DEFAULT, dataset.getDefaultGraph(), defaultGraph, graphMap, compoundLiteralSubjects);
+        step5(Keywords.DEFAULT, dataset.getDefaultGraph());
         
-        for (RdfDataset.NamedGraph namedGraph : dataset.getNamedGraphs().collect(Collectors.toList())) {
-            step5(namedGraph.getGraphName().toString(), namedGraph.getGraph(), defaultGraph, graphMap, compoundLiteralSubjects);            
+        for (RdfGraphName graphName : dataset.getGraphNames()) {
+            step5(graphName.toString(), dataset.getGraph(graphName));            
         }
-
         
         // 6.
         for (Entry<String, Map<String, Map<String, JsonValue>>> entry : graphMap.entrySet()) {
@@ -151,7 +155,7 @@ public final class RdfToJsonld {
         return result.build();
     }
     
-    private void step5(String name, RdfGraph graph, Map<String, Map<String, JsonValue>> defaultGraph, Map<String, Map<String, Map<String, JsonValue>>> graphMap, Map<String, Map<String, JsonValue>> compoundLiteralSubjects) throws JsonLdError {
+    private void step5(String name, RdfGraph graph) throws JsonLdError {
         
         // 5.2.
         if (!graphMap.containsKey(name)) {
@@ -215,8 +219,11 @@ public final class RdfToJsonld {
                 //TODO
                 continue;
             }
+            
             // 5.7.6.
             final Map<String, JsonValue> value = RdfToObject.with(triple.getObject(), rdfDirection, useNativeTypes).build();
+            
+            // 5.7.7.
             
             //TODO
             

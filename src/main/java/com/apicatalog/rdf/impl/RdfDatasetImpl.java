@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import com.apicatalog.rdf.RdfDataset;
@@ -40,11 +41,6 @@ final class RdfDatasetImpl implements RdfDataset {
         return nquads;
     }
     
-    @Override
-    public Stream<NamedGraph> getNamedGraphs() {
-        return graphs.entrySet().stream().map(e -> new NamedGraph(e.getKey(), e.getValue()));
-    }
-
     public void add(RdfNQuad nquad) {
 
         if (nquad.getGraphName() != null) {
@@ -72,8 +68,8 @@ final class RdfDatasetImpl implements RdfDataset {
     }
     
     @Override
-    public Stream<RdfGraphName> getGraphNames() {
-        return graphs.keySet().stream();
+    public Set<RdfGraphName> getGraphNames() {
+        return graphs.keySet();
     }
 
     @Override
