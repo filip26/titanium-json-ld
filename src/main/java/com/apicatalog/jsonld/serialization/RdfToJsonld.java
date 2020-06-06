@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -96,7 +97,10 @@ public final class RdfToJsonld {
         // 5.
         step5(Keywords.DEFAULT, dataset.getDefaultGraph(), defaultGraph, graphMap, compoundLiteralSubjects);
         
-        dataset.getNamedGraphs().forEach(ng -> step5(ng.getGraphName().toString(), ng.getGraph(), defaultGraph, graphMap, compoundLiteralSubjects));
+        for (RdfDataset.NamedGraph namedGraph : dataset.getNamedGraphs().collect(Collectors.toList())) {
+            step5(namedGraph.getGraphName().toString(), namedGraph.getGraph(), defaultGraph, graphMap, compoundLiteralSubjects);            
+        }
+
         
         // 6.
         for (Entry<String, Map<String, Map<String, JsonValue>>> entry : graphMap.entrySet()) {
@@ -147,7 +151,7 @@ public final class RdfToJsonld {
         return result.build();
     }
     
-    private void step5(String name, RdfGraph graph, Map<String, Map<String, JsonValue>> defaultGraph, Map<String, Map<String, Map<String, JsonValue>>> graphMap, Map<String, Map<String, JsonValue>> compoundLiteralSubjects) {
+    private void step5(String name, RdfGraph graph, Map<String, Map<String, JsonValue>> defaultGraph, Map<String, Map<String, Map<String, JsonValue>>> graphMap, Map<String, Map<String, JsonValue>> compoundLiteralSubjects) throws JsonLdError {
         
         // 5.2.
         if (!graphMap.containsKey(name)) {
@@ -176,6 +180,7 @@ public final class RdfToJsonld {
         for (RdfTriple triple : graph.toList()) {
                      
             String subject = triple.getSubject().toString();
+            String predicate = triple.getPredicate().toString();
             
             // 5.7.1.
             if (!nodeMap.containsKey(subject)) {
@@ -190,7 +195,7 @@ public final class RdfToJsonld {
             
             // 5.7.3.
             if (RdfDirection.COMPOUND_LITERAL == rdfDirection 
-                    && RdfVocabulary.DIRECTION.equals(triple.getPredicate().toString())) {
+                    && RdfVocabulary.DIRECTION.equals(predicate)) {
                 
                 compoundMap.put(subject, JsonValue.TRUE);
             }
@@ -206,6 +211,12 @@ public final class RdfToJsonld {
             }
             
             // 5.7.5.
+            if (!useRdfType && RdfVocabulary.TYPE.equals(predicate) && !triple.getObject().isBlankNode()) {
+                //TODO
+                continue;
+            }
+            // 5.7.6.
+            final Map<String, JsonValue> value = RdfToObject.with(triple.getObject(), rdfDirection, useNativeTypes).build();
             
             //TODO
             
