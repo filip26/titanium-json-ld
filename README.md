@@ -20,7 +20,7 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 [Compaction](https://www.w3.org/TR/json-ld/#compacted-document-form) | 239 | 239 | 100% |
 [Flattening](https://www.w3.org/TR/json-ld/#flattened-document-form) | 55 | 55 | 100% |
 [JSON-LD to RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 449 | 447 | 99.5% |  won't fix: <ul><li>[te075](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#te075) - blank node as a predicate</li><li>[tli12](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#tli12) - an invalid IRI as @base</li></ul>
-[RDF to JSON-LD](https://www.w3.org/TR/json-ld/#relationship-to-rdf) |  |  | TBD | 
+[RDF to JSON-LD](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 52 | 32  | 61.5% | 
 [Framing](https://www.w3.org/TR/json-ld11-framing/#framing) | | | TBD |
 
 See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld-api/reports/#subj_JSONP_LD_Java) for more details.
@@ -32,9 +32,9 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 - [x] 0.3 - ~~[Flattening Algorithms](https://www.w3.org/TR/json-ld11-api/#flattening-algorithms)~~
 - [x] 0.4 - ~~[JSON-LD to RDF](https://www.w3.org/TR/json-ld11-api/#deserialize-json-ld-to-rdf-algorithm)~~
 - [ ] 0.5 - [RDF to JSON-LD](https://www.w3.org/TR/json-ld11-api/#serialize-rdf-as-json-ld-algorithm)
-- [ ] 0.6 - [JSON-LD API](https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface)
-- [ ] 0.7 - Document & Context loaders
-- [ ] 0.8 - [Framing](https://www.w3.org/TR/json-ld11-framing/)
+- [ ] 0.6 - [Framing](https://www.w3.org/TR/json-ld11-framing/)
+- [ ] 0.7 - [JSON-LD API](https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface)
+- [ ] 0.8 - Document & Context loaders
 - [ ] 0.9 - CLI
 - [ ] 1.0 - Documented, A+ code
 
