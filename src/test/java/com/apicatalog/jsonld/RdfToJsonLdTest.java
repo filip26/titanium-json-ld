@@ -1,7 +1,6 @@
 package com.apicatalog.jsonld;
 
 import static org.junit.Assume.assumeFalse;
-import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 import java.io.InputStream;

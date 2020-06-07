@@ -10,15 +10,18 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 
 import com.apicatalog.iri.IRI;
 import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
@@ -107,34 +110,102 @@ public final class RdfToJsonld {
             
             // 6.1.
             if (compoundLiteralSubjects.containsKey(graphName)) {
-         
-                for (String cl : compoundLiteralSubjects.get(graphName).keySet()) {
-                    System.out.println(">>>> CCCCC" );                           
+
+                for (final String cl : compoundLiteralSubjects.get(graphName).keySet()) {
+                           
                     // 6.1.1.
-                    Reference clEntry = referenceOnce.get(cl);
+                    final Reference clEntry = referenceOnce.get(cl);
+                    
                     if (clEntry == null) {
                         continue;
                     }
-                    
+                                        
                     // 6.1.5.
-//                    Object clNode = graphObject.get(cl);
-//                    graphObject.remove(cl);
-//                    
-//                    if (clNode == null) {
-//                        continue;
-//                    }
-
-
-                    // 6.1.6.
-//                    for (JsonValue clReference : clEntry.node.get(clEntry.property)) {
-//                        
-                        //TODO
-                        
-//                    }
+                    final Map<String, JsonValue> clNode = graphMap.get(graphName, cl);
                     
-                    //TODO                    
-                }
-                
+                    graphMap.remove(graphName, cl);
+                    
+                    if (clNode == null) {
+                        continue;
+                    }
+                    
+                    JsonArrayBuilder clArray = Json.createArrayBuilder();
+                    
+                    // 6.1.6.                    
+                    for (JsonValue clReference : graphMap.get(clEntry.graphName, clEntry.subject, clEntry.property).asJsonArray()) {
+                        
+                        if (JsonUtils.isObject(clReference) 
+                                && clReference.asJsonObject().containsKey(Keywords.ID)
+                                && cl.equals(clReference.asJsonObject().getString(Keywords.ID))
+                                ) {
+
+                            JsonObjectBuilder clObject = Json.createObjectBuilder(clReference.asJsonObject());
+                            
+                            // 6.1.6.1.
+                            clObject = clObject.remove(Keywords.ID);
+                            
+                            JsonValue value = clNode.get(RdfVocabulary.VALUE);
+                            
+                            // 6.1.6.2.
+                            if (JsonUtils.isArray(value) && value.asJsonArray().size() == 1) {
+                                value = value.asJsonArray().get(0);
+                            }
+                            
+                            if (JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.VALUE)) {
+                                value = value.asJsonObject().get(Keywords.VALUE);
+                            }
+
+                            clObject = clObject.add(Keywords.VALUE, value);
+
+                            // 6.1.6.3.
+                            if (clNode.containsKey(RdfVocabulary.LANGUAGE)) {
+                                
+                                JsonValue lang = clNode.get(RdfVocabulary.LANGUAGE);
+                                
+                                if (JsonUtils.isArray(lang)) {
+                                    lang = lang.asJsonArray().get(0);
+                                }
+                                
+                                if (JsonUtils.isObject(lang) && lang.asJsonObject().containsKey(Keywords.VALUE)) {
+                                    lang = lang.asJsonObject().get(Keywords.VALUE);
+                                }
+                                
+                                if (JsonUtils.isNotString(lang) || !LanguageTag.isWellFormed(((JsonString)lang).getString())) {
+                                    throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
+                                }
+                                
+                                clObject = clObject.add(Keywords.LANGUAGE, lang);
+                            }
+
+                            // 6.1.6.4.     
+                            if (clNode.containsKey(RdfVocabulary.DIRECTION)) {
+                                
+                                JsonValue direction = clNode.get(RdfVocabulary.DIRECTION);
+                                
+                                if (JsonUtils.isArray(direction)) {
+                                    direction = direction.asJsonArray().get(0);
+                                }
+                                
+                                if (JsonUtils.isObject(direction) && direction.asJsonObject().containsKey(Keywords.VALUE)) {
+                                    direction = direction.asJsonObject().get(Keywords.VALUE);
+                                }
+                                
+                                if (JsonUtils.isNotString(direction) 
+                                        || (!"ltr".equalsIgnoreCase(((JsonString)direction).getString())
+                                            && !"rtl".equalsIgnoreCase(((JsonString)direction).getString()))
+                                        ) {
+                                    throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
+                                }
+                                
+                                clObject = clObject.add(Keywords.DIRECTION, direction);
+                            }
+
+                            
+                            clArray = clArray.add(clObject);
+                        }
+                    }
+                    graphMap.set(clEntry.graphName, clEntry.subject, clEntry.property, clArray.build());
+                }                
             }
             
             // 6.2.
@@ -181,6 +252,10 @@ public final class RdfToJsonld {
                     // 6.4.3.4.
                     node = graphMap.get(usage.graphName, usage.subject);
 
+                    if (node == null || !node.containsKey(Keywords.ID)) {
+                        break;
+                    }
+                    
                     nodeId = ((JsonString)node.get(Keywords.ID)).getString();
    
                     // 6.4.3.5.
@@ -189,32 +264,36 @@ public final class RdfToJsonld {
                         break;
                     }                    
                 }
+                
 
                 Collections.reverse(list);
                 
-                JsonArray headArray = graphMap
-                                        .get(usage.graphName, usage.subject, usage.property)
-                                        .asJsonArray(); 
-
-                JsonObject head = headArray.getJsonObject(usage.valueIndex);
+                if (graphMap.contains(usage.graphName, usage.subject, usage.property)) {
                 
-                JsonArrayBuilder listArray;
-                
-                if (head.containsKey(Keywords.LIST)) {
-                    listArray = Json.createArrayBuilder(head.getJsonArray(Keywords.LIST));
+                    JsonArray headArray = graphMap
+                                            .get(usage.graphName, usage.subject, usage.property)
+                                            .asJsonArray(); 
+    
+                    JsonObject head = headArray.getJsonObject(usage.valueIndex);
                     
-                } else {
-                    listArray = Json.createArrayBuilder();
+                    JsonArrayBuilder listArray;
+                    
+                    if (head.containsKey(Keywords.LIST)) {
+                        listArray = Json.createArrayBuilder(head.getJsonArray(Keywords.LIST));
+                        
+                    } else {
+                        listArray = Json.createArrayBuilder();
+                    }
+                    
+                    list.forEach(listArray::add);
+                    
+                    headArray = Json.createArrayBuilder(headArray).set(usage.valueIndex, 
+                                        Json.createObjectBuilder(head).remove(Keywords.ID)
+                                        .add(Keywords.LIST, listArray)
+                                            ).build();
+                    
+                    graphMap.set(usage.graphName, usage.subject, usage.property, headArray);
                 }
-                
-                list.forEach(listArray::add);
-                
-                headArray = Json.createArrayBuilder(headArray).set(usage.valueIndex, 
-                                    Json.createObjectBuilder(head).remove(Keywords.ID)
-                                    .add(Keywords.LIST, listArray)
-                                        ).build();
-                
-                graphMap.set(usage.graphName, usage.subject, usage.property, headArray);
                 
                 // 6.4.7.
                 listNodes.forEach(nid -> graphMap.remove(graphName, nid));
@@ -305,7 +384,6 @@ public final class RdfToJsonld {
                     && !graphMap.contains(graphName, triple.getObject().toString())) {
                                 
                 graphMap.set(graphName, triple.getObject().toString(), Keywords.ID, Json.createValue(triple.getObject().toString()));
-                
             }
             
             // 5.7.5.
@@ -336,18 +414,19 @@ public final class RdfToJsonld {
             
             // 5.7.7.
             if (!graphMap.contains(graphName, subject, predicate)) {
+                
                 graphMap.set(graphName, subject, predicate, Json.createArrayBuilder().add(value).build());
                 valueIndex = 0;
                 
             // 5.7.8.
             } else {
+                
                 JsonArray array = graphMap.get(graphName, subject, predicate).asJsonArray();
                 valueIndex = array.size();
                 
                 if (!array.contains(value)) {
                     graphMap.set(graphName, subject, predicate, Json.createArrayBuilder(array).add(value).build());
                 }
-
             }
             
             // 5.7.9.
@@ -376,7 +455,6 @@ public final class RdfToJsonld {
                 reference.valueIndex = valueIndex;
                 
                 referenceOnce.put(triple.getObject().toString(), reference);
-//                graphMap.addUsage(graphName, triple.getObject().toString(), reference);
             }
         }        
     }
