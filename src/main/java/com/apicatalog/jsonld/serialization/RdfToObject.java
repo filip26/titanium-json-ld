@@ -63,6 +63,21 @@ public final class RdfToObject {
         
         // 2.4.
         if (useNativeTypes) {
+            
+            // 2.4.1.
+            if (XsdVocabulary.STRING.equals(literal.getDatatype().toString())) {
+                convertedValue = Json.createValue(literal.toString());  //TODO ?!
+
+            // 2.4.2.
+            } else if (XsdVocabulary.BOOLEAN.equals(literal.getDatatype().toString())) {
+                
+                convertedValue = "true".equalsIgnoreCase(literal.getValue()) ? JsonValue.TRUE : JsonValue.FALSE;
+                type = XsdVocabulary.BOOLEAN;
+            }
+            
+
+            
+            
             //TODO
 
         // 2.5.

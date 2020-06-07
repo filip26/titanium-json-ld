@@ -130,7 +130,7 @@ final class ObjectToRdf {
             valueString = "true";
             
             if (datatype == null) {
-                datatype = "http://www.w3.org/2001/XMLSchema#boolean";
+                datatype = XsdVocabulary.BOOLEAN;
             }
             
         } else if (JsonUtils.isFalse(value)) {
@@ -138,7 +138,7 @@ final class ObjectToRdf {
             valueString = "false";
             
             if (datatype == null) {
-                datatype = "http://www.w3.org/2001/XMLSchema#boolean";
+                datatype = XsdVocabulary.BOOLEAN;
             }
 
             
@@ -150,14 +150,14 @@ final class ObjectToRdf {
             
             // 11.
             if ((!number.isIntegral()  && number.doubleValue() % -1 != 0)
-                    || "http://www.w3.org/2001/XMLSchema#double".equals(datatype)
+                    || XsdVocabulary.DOUBLE.equals(datatype)
                     || number.bigDecimalValue().compareTo(BigDecimal.ONE.movePointRight(21)) >= 0
                     ) {
 
                 valueString = toXsdDouble(number.bigDecimalValue());
                 
                 if (datatype == null) {
-                    datatype = "http://www.w3.org/2001/XMLSchema#double";
+                    datatype = XsdVocabulary.DOUBLE;
                 }
                 
             // 10.
@@ -166,7 +166,7 @@ final class ObjectToRdf {
                 valueString = number.bigIntegerValue().toString();
                 
                 if (datatype == null) {
-                    datatype = "http://www.w3.org/2001/XMLSchema#integer";
+                    datatype = XsdVocabulary.INTEGER;
                 }
 
             }
