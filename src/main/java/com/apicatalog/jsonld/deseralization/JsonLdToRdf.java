@@ -19,9 +19,10 @@ import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.api.Rdf;
+import com.apicatalog.rdf.lang.RdfVocabulary;
 import com.apicatalog.uri.UriUtils;
 
-public final class JsonLdToRdfBuilder {
+public final class JsonLdToRdf {
 
     // required
     private final NodeMap nodeMap;
@@ -31,7 +32,7 @@ public final class JsonLdToRdfBuilder {
     private boolean produceGeneralizedRdf;
     private RdfDirection rdfDirection;
     
-    private JsonLdToRdfBuilder(NodeMap nodeMap, RdfDataset dataset) {
+    private JsonLdToRdf(NodeMap nodeMap, RdfDataset dataset) {
         this.nodeMap = nodeMap;
         this.dataset = dataset;
         
@@ -39,16 +40,16 @@ public final class JsonLdToRdfBuilder {
         this.rdfDirection = null;
     }
     
-    public static final JsonLdToRdfBuilder with(NodeMap nodeMap, RdfDataset dataset) {
-        return new JsonLdToRdfBuilder(nodeMap, dataset);
+    public static final JsonLdToRdf with(NodeMap nodeMap, RdfDataset dataset) {
+        return new JsonLdToRdf(nodeMap, dataset);
     }
     
-    public JsonLdToRdfBuilder produceGeneralizedRdf(boolean enable) {
+    public JsonLdToRdf produceGeneralizedRdf(boolean enable) {
         this.produceGeneralizedRdf = enable;
         return this;
     }
 
-    public JsonLdToRdfBuilder rdfDirection(RdfDirection rdfDirection) {
+    public JsonLdToRdf rdfDirection(RdfDirection rdfDirection) {
         this.rdfDirection = rdfDirection;
         return this;
     }
@@ -126,7 +127,7 @@ public final class JsonLdToRdfBuilder {
 
                             dataset.add(Rdf.createNQuad(
                                                 rdfSubject,
-                                                IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),//TODO constant
+                                                IRI.create(RdfVocabulary.TYPE),
                                                 rdfObject,
                                                 rdfGraphName
                                             ));

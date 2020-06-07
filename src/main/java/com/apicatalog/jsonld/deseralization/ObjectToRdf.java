@@ -26,6 +26,8 @@ import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.api.Rdf;
+import com.apicatalog.rdf.lang.RdfVocabulary;
+import com.apicatalog.xml.XsdVocabulary;
 
 /**
  * 
@@ -120,7 +122,7 @@ final class ObjectToRdf {
         // 8.
         if (Keywords.JSON.equals(datatype)) {
             valueString = JsonCanonicalizer.canonicalize(value);
-            datatype = "http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON";
+            datatype = RdfVocabulary.JSON;
             
         // 9.
         } else if (JsonUtils.isTrue(value)) {
@@ -128,7 +130,7 @@ final class ObjectToRdf {
             valueString = "true";
             
             if (datatype == null) {
-                datatype = "http://www.w3.org/2001/XMLSchema#boolean";
+                datatype = XsdVocabulary.BOOLEAN;
             }
             
         } else if (JsonUtils.isFalse(value)) {
@@ -136,7 +138,7 @@ final class ObjectToRdf {
             valueString = "false";
             
             if (datatype == null) {
-                datatype = "http://www.w3.org/2001/XMLSchema#boolean";
+                datatype = XsdVocabulary.BOOLEAN;
             }
 
             
@@ -148,14 +150,14 @@ final class ObjectToRdf {
             
             // 11.
             if ((!number.isIntegral()  && number.doubleValue() % -1 != 0)
-                    || "http://www.w3.org/2001/XMLSchema#double".equals(datatype)
+                    || XsdVocabulary.DOUBLE.equals(datatype)
                     || number.bigDecimalValue().compareTo(BigDecimal.ONE.movePointRight(21)) >= 0
                     ) {
 
                 valueString = toXsdDouble(number.bigDecimalValue());
                 
                 if (datatype == null) {
-                    datatype = "http://www.w3.org/2001/XMLSchema#double";
+                    datatype = XsdVocabulary.DOUBLE;
                 }
                 
             // 10.
@@ -164,7 +166,7 @@ final class ObjectToRdf {
                 valueString = number.bigIntegerValue().toString();
                 
                 if (datatype == null) {
-                    datatype = "http://www.w3.org/2001/XMLSchema#integer";
+                    datatype = XsdVocabulary.INTEGER;
                 }
 
             }
@@ -173,8 +175,8 @@ final class ObjectToRdf {
         } else if (datatype == null) {
             
             datatype = item.containsKey(Keywords.LANGUAGE)
-                                ? "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString" //TODO constants
-                                : "http://www.w3.org/2001/XMLSchema#string"
+                                ? RdfVocabulary.LANG_STRING
+                                : XsdVocabulary.STRING
                                 ;
         }
         
@@ -216,7 +218,7 @@ final class ObjectToRdf {
                 // 13.3.2.
                 triples.add(Rdf.createTriple(
                                     subject, 
-                                    IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#value"), 
+                                    IRI.create(RdfVocabulary.VALUE), 
                                     Rdf.createObject(Rdf.createLitteral(valueString)))
                                     );
                 
@@ -224,7 +226,7 @@ final class ObjectToRdf {
                 if (item.containsKey(Keywords.LANGUAGE) && JsonUtils.isString(item.get(Keywords.LANGUAGE))) {
                     triples.add(Rdf.createTriple(
                                     subject, 
-                                    IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#language"), 
+                                    IRI.create(RdfVocabulary.LANGUAGE), 
                                     Rdf.createObject(Rdf.createLitteral(item.getString(Keywords.LANGUAGE).toLowerCase())))
                                     );
                 }
@@ -232,7 +234,7 @@ final class ObjectToRdf {
                 // 13.3.4.
                 triples.add(Rdf.createTriple(
                                     subject, 
-                                    IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#direction"), 
+                                    IRI.create(RdfVocabulary.DIRECTION), 
                                     Rdf.createObject(Rdf.createLitteral(item.getString(Keywords.DIRECTION))))
                                     );
                 

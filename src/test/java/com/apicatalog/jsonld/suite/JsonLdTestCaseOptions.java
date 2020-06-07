@@ -20,6 +20,8 @@ public class JsonLdTestCaseOptions {
     public Boolean compactToRelative;
     public String rdfDirection;
     public Boolean produceGeneralizedRdf;
+    public Boolean useNativeTypes;
+    public Boolean useRdfType;
     
     public static final JsonLdTestCaseOptions of(JsonObject o, String baseUri) {
         
@@ -52,7 +54,15 @@ public class JsonLdTestCaseOptions {
         if (o.containsKey("produceGeneralizedRdf")) {
                 options.produceGeneralizedRdf = o.getBoolean("produceGeneralizedRdf");
         }
-        
+
+        if (o.containsKey("useNativeTypes")) {
+            options.useNativeTypes = o.getBoolean("useNativeTypes");
+        }
+
+        if (o.containsKey("useRdfType")) {
+            options.useRdfType = o.getBoolean("useRdfType");
+        }
+
         return options;
     }
 
@@ -85,5 +95,14 @@ public class JsonLdTestCaseOptions {
         if (produceGeneralizedRdf != null) {
             options.setProduceGeneralizedRdf(produceGeneralizedRdf);
         }
+        
+        if (useNativeTypes != null) {
+            options.setUseNativeTypes(useNativeTypes);
+        }
+        
+        if (useRdfType != null) {
+            options.setUseRdfType(useRdfType);
+        }
+        
     }
 }

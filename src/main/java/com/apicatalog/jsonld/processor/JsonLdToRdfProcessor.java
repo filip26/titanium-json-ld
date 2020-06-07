@@ -7,7 +7,7 @@ import javax.json.JsonArray;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.deseralization.JsonLdToRdfBuilder;
+import com.apicatalog.jsonld.deseralization.JsonLdToRdf;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
@@ -54,7 +54,7 @@ public final class JsonLdToRdfProcessor {
         
         final JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions);
 
-        return JsonLdToRdfBuilder
+        return JsonLdToRdf
                         .with(
                             NodeMapBuilder.with(expandedInput, new NodeMap()).build(),
                             Rdf.createDataset()

@@ -27,8 +27,8 @@ import com.apicatalog.rdf.io.nquad.NQuadsReaderError;
 public class EarlGenerator {
     
     public static final String FILE_NAME = "java-jsonp-ld-earl.ttl";
-    public static final String VERSION = "0.4";
-    public static final String RELEASE_DATE = "2020-06-06";
+    public static final String VERSION = "0.5";
+    public static final String RELEASE_DATE = "2020-06-08";
     
     public static void main(String[] args) throws IOException {
         (new EarlGenerator()).generate(Paths.get(FILE_NAME));
@@ -43,6 +43,7 @@ public class EarlGenerator {
             testExpand(writer);
             testFlatten(writer);
             testToRdf(writer);
+            testFromRdf(writer);
         };
     }
     
@@ -123,7 +124,35 @@ public class EarlGenerator {
             .forEach(testCase -> printResult(writer, testCase.uri, testToRdf(testCase)));
     }
 
-    
+
+    public void testFromRdf(PrintWriter writer) throws IOException {
+
+        JsonLdManifestLoader
+            .load("fromRdf-manifest.jsonld")
+            .stream()
+            .forEach(testCase ->                
+                        printResult(writer, testCase.uri,           
+                                (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
+                                
+                                    try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.RESOURCES_BASE + testCase.input.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
+                                       
+                                        if (is == null) {
+                                            throw new IllegalStateException();
+                                        }
+                                        
+                                        RdfDataset input = Rdf.createReader(is, RdfFormat.N_QUADS).readDataset();
+                                        
+                                        return JsonLd.fromRdf(input).options(options).get();
+                                    
+                                    } catch (IOException | NQuadsReaderError e) {
+                                        return null;
+                                    }
+                                    
+                                })
+                         )
+                    );
+    }
+
     void printResult(PrintWriter writer, String testUri, boolean passed) {
         
         if (!passed) {

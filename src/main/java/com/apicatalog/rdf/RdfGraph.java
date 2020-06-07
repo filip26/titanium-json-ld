@@ -1,5 +1,7 @@
 package com.apicatalog.rdf;
 
+import java.util.List;
+
 import com.apicatalog.jsonld.api.JsonLdProcessor;
 
 /**
@@ -17,5 +19,7 @@ import com.apicatalog.jsonld.api.JsonLdProcessor;
 public interface RdfGraph {
 
     boolean contains(RdfTriple triple);
-        
+    
+    List<RdfTriple> toList();
+
 }
