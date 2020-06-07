@@ -1,6 +1,7 @@
 package com.apicatalog.jsonld.serialization;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,11 +68,12 @@ final class GraphMap {
     }
 
     public List<Reference> getUsages(String graphName, String subject) {
-        return usages.get(graphName).get(subject);
+        return usages.containsKey(graphName) && usages.get(graphName).containsKey(subject)
+                    ? usages.get(graphName).get(subject) 
+                    : Collections.emptyList();
     }
 
     public void addUsage(String graphName, String subject, Reference reference) {
-        
         usages.computeIfAbsent(graphName, e -> new LinkedHashMap<>())
             .computeIfAbsent(subject, e -> new ArrayList<>())
             .add(reference)
@@ -81,7 +83,6 @@ final class GraphMap {
 
     public void remove(String graphName, String subject) {
         index.get(graphName).remove(subject);
-//        usages.get(graphName).remove(subject);
     }
     
 }

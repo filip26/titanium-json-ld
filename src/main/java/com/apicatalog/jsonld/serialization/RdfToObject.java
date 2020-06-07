@@ -68,28 +68,46 @@ final class RdfToObject {
         // 2.4.
         if (useNativeTypes) {
             
-            // 2.4.1.
-            if (XsdVocabulary.STRING.equals(literal.getDatatype().toString())) {
-                convertedValue = Json.createValue(literal.toString());
-
-            // 2.4.2.
-            } else if (XsdVocabulary.BOOLEAN.equals(literal.getDatatype().toString())) {
-                
-                convertedValue = "true".equalsIgnoreCase(literal.getValue()) ? JsonValue.TRUE : JsonValue.FALSE;
-                type = XsdVocabulary.BOOLEAN;
-                
-            // 2.4.3.                
-            } else if (XsdVocabulary.INTEGER.equals(literal.getDatatype().toString())) {
-                
-                convertedValue = Json.createValue(Long.valueOf(literal.getValue()));
-                
-            } else if (XsdVocabulary.DOUBLE.equals(literal.getDatatype().toString())) {
-                
-                convertedValue = Json.createValue(Double.valueOf(literal.getValue()));
+            if (literal.getDatatype() != null) {
+            
+                // 2.4.1.
+                if (XsdVocabulary.STRING.equals(literal.getDatatype().toString())) {
+                    convertedValue = Json.createValue(literal.toString());
+    
+                // 2.4.2.
+                } else if (XsdVocabulary.BOOLEAN.equals(literal.getDatatype().toString())) {
+                    
+                    if ("true".equalsIgnoreCase(literal.getValue())) {
+                    
+                        convertedValue = JsonValue.TRUE;
+                        
+                    } else if ("false".equalsIgnoreCase(literal.getValue())) {
+    
+                        convertedValue = JsonValue.FALSE;
+                        
+                    } else {
+    
+                        type = XsdVocabulary.BOOLEAN;
+                    }
+                    
+                // 2.4.3.                
+                } else if (XsdVocabulary.INTEGER.equals(literal.getDatatype().toString())) {
+                    
+                    convertedValue = Json.createValue(Long.valueOf(literal.getValue()));
+                    
+                } else if (XsdVocabulary.DOUBLE.equals(literal.getDatatype().toString())) {
+                    
+                    convertedValue = Json.createValue(Double.valueOf(literal.getValue()));
+                    
+                } else if (literal.getDatatype() != null) {
+                    
+                    type = literal.getDatatype().toString();
+                    
+                }
             }
 
         // 2.5.
-        } else if (processingMode != Version.V1_0 && RdfVocabulary.JSON.equals(literal.getDatatype().toString())) {
+        } else if (processingMode != Version.V1_0 && literal.getDatatype() != null && RdfVocabulary.JSON.equals(literal.getDatatype().toString())) {
 
             try (JsonParser parser = Json.createParser(new StringReader(literal.getValue()))) {
                 
@@ -112,11 +130,11 @@ final class RdfToObject {
             String langId = literal.getDatatype().toString().substring(RdfVocabulary.I18N_BASE.length());
             
             int directionIndex = langId.indexOf('_');
-            
-            if (directionIndex > 0) {
+
+            if (directionIndex > 1) {
                 
                 result.put(Keywords.LANGUAGE, Json.createValue(langId.substring(0, directionIndex)));
-                result.put(Keywords.DIRECTION, Json.createValue(langId.substring(directionIndex)));
+                result.put(Keywords.DIRECTION, Json.createValue(langId.substring(directionIndex + 1)));
                 
             } else if (directionIndex == 0) {
                 result.put(Keywords.DIRECTION, Json.createValue(langId.substring(1)));
@@ -130,13 +148,13 @@ final class RdfToObject {
             result.put(Keywords.LANGUAGE, Json.createValue(literal.getLanguage()));
                      
         // 2.8.   
-        } else if (!XsdVocabulary.STRING.equals(literal.getDatatype().toString())) {
+        } else if (literal.getDatatype() != null && !XsdVocabulary.STRING.equals(literal.getDatatype().toString())) {
             type = literal.getDatatype().toString();
         }        
-        
+
         // 2.9.
         result.put(Keywords.VALUE, convertedValue);
-        
+   
         // 2.10.
         if (type != null) {
             result.put(Keywords.TYPE, Json.createValue(type));
