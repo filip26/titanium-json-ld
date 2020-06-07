@@ -19,4 +19,8 @@ public interface RdfVocabulary {
     static final String VALUE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#value";
     
     static final String LANGUAGE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#language";
+    
+    static final String I18N_BASE = "https://www.w3.org/ns/i18n#";
+    
+    
 }
