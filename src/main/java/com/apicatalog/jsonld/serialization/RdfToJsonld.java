@@ -238,34 +238,31 @@ public final class RdfToJsonld {
             // 8.1.
             if (graphMap.contains(subject)) {
 
-//                final Map<String, Map<String, JsonValue>> subjectGraphEntry = graphMap.get(subject);
-//
-//                final List<String> keys = new ArrayList<>(subjectGraphEntry.keySet());
-//                if (ordered) {
-//                    Collections.sort(keys);
-//                }
-//                
-//                final JsonArrayBuilder array = Json.createArrayBuilder();
-//                
-//                for (final String key : keys) {
-//                    //TODO usages, remaining
-//                    array.add(JsonUtils.toJsonObject(subjectGraphEntry.get(key)));
-//                }
-//                
-//                node.put(Keywords.GRAPH, array.build());                
+                final List<String> keys = new ArrayList<>(graphMap.keys(subject));
+                
+                if (ordered) {
+                    Collections.sort(keys);
+                }
+                
+                final JsonArrayBuilder array = Json.createArrayBuilder();
+                
+                for (final String key : keys) {
+                    
+                    final Map<String, JsonValue> entry = graphMap.get(subject, key);
+                    
+                    if (entry.size() > 1 || !entry.containsKey(Keywords.ID)) {
+                        array.add(JsonUtils.toJsonObject(entry));                        
+                    }
+                }
+                
+                node.put(Keywords.GRAPH, array.build());                
             }
             
             // 8.2.
-            //TODO usages?! 
-            
-            if (node.size() > 1 || !node.containsKey(Keywords.ID)) {
-            
+            if (node.size() > 1 || !node.containsKey(Keywords.ID)) {            
                 result.add(JsonUtils.toJsonObject(node));
-            }
-            
+            }   
         }
-        //TODO
-        
         // 9.
         return result.build();
     }

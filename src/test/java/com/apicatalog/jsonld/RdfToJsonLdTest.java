@@ -42,7 +42,7 @@ public class RdfToJsonLdTest {
     public void testExpand() {
 
         // skip specVersion == 1.0
-        //assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
+        assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
         
         // skip normative == false
         //assumeTrue(testCase.options.normative == null || testCase.options.normative);
