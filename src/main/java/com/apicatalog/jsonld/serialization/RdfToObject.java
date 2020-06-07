@@ -93,7 +93,10 @@ final class RdfToObject {
 
             try (JsonParser parser = Json.createParser(new StringReader(literal.getValue()))) {
                 
+                parser.next();
+                
                 convertedValue = parser.getValue();
+                type = Keywords.JSON;
                 
             } catch (Exception e) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_JSON_LITERAL, e);
