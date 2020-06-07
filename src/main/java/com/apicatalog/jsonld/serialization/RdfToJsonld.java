@@ -13,6 +13,7 @@ import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 
+import com.apicatalog.iri.IRI;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -106,9 +107,9 @@ public final class RdfToJsonld {
             
             // 6.1.
             if (compoundLiteralSubjects.containsKey(graphName)) {
-            
+         
                 for (String cl : compoundLiteralSubjects.get(graphName).keySet()) {
-                        
+                    System.out.println(">>>> CCCCC" );                           
                     // 6.1.1.
                     Reference clEntry = referenceOnce.get(cl);
                     if (clEntry == null) {
@@ -123,7 +124,7 @@ public final class RdfToJsonld {
 //                        continue;
 //                    }
 
-                    System.out.println(">>>> CCCCC" );
+
                     // 6.1.6.
 //                    for (JsonValue clReference : clEntry.node.get(clEntry.property)) {
 //                        
@@ -140,7 +141,7 @@ public final class RdfToJsonld {
             if (!graphMap.contains(graphName, RdfVocabulary.NIL)) {
                 continue;
             }
-            
+
             // 6.4.
             for (Reference usage : graphMap.getUsages(graphName, RdfVocabulary.NIL)) {
 
@@ -152,9 +153,9 @@ public final class RdfToJsonld {
                 List<String> listNodes = new ArrayList<>();
                 
                 String nodeId = ((JsonString)node.get(Keywords.ID)).getString();
-      
+                
                 // 6.4.3.
-                if (RdfVocabulary.REST.equals(usage.property)
+                while (RdfVocabulary.REST.equals(usage.property)
                         && BlankNode.isWellFormed(nodeId)
                         && referenceOnce.get(nodeId) != null
                         && node.containsKey(RdfVocabulary.FIRST)
@@ -167,7 +168,7 @@ public final class RdfToJsonld {
                                     ))
                         //TODO TYPE check
                         ) {
-                    
+
                     // 6.4.3.1.
                     list.add(node.get(RdfVocabulary.FIRST).asJsonArray().get(0));
                     
@@ -181,9 +182,10 @@ public final class RdfToJsonld {
                     node = graphMap.get(usage.graphName, usage.subject);
 
                     nodeId = ((JsonString)node.get(Keywords.ID)).getString();
-                                        
+   
                     // 6.4.3.5.
-                    if (!BlankNode.isWellFormed(nodeId)) {
+                    if (IRI.isWellFormed(nodeId)) {
+
                         break;
                     }                    
                 }
@@ -196,17 +198,27 @@ public final class RdfToJsonld {
 
                 JsonObject head = headArray.getJsonObject(usage.valueIndex);
                 
+                JsonArrayBuilder listArray;
+                
+                if (head.containsKey(Keywords.LIST)) {
+                    listArray = Json.createArrayBuilder(head.getJsonArray(Keywords.LIST));
+                    
+                } else {
+                    listArray = Json.createArrayBuilder();
+                }
+                
+                list.forEach(listArray::add);
+                
                 headArray = Json.createArrayBuilder(headArray).set(usage.valueIndex, 
                                     Json.createObjectBuilder(head).remove(Keywords.ID)
-                                    .add(Keywords.LIST, JsonUtils.toJsonArray(list))
+                                    .add(Keywords.LIST, listArray)
                                         ).build();
                 
                 graphMap.set(usage.graphName, usage.subject, usage.property, headArray);
                 
                 // 6.4.7.
                 listNodes.forEach(nid -> graphMap.remove(graphName, nid));
-            }
-                
+            }    
         }
         
         // 7.
@@ -225,7 +237,7 @@ public final class RdfToJsonld {
         
             // 8.1.
             if (graphMap.contains(subject)) {
-System.out.println(">>>!!!!!");
+
 //                final Map<String, Map<String, JsonValue>> subjectGraphEntry = graphMap.get(subject);
 //
 //                final List<String> keys = new ArrayList<>(subjectGraphEntry.keySet());
@@ -270,16 +282,15 @@ System.out.println(">>>!!!!!");
             graphMap.set(Keywords.DEFAULT, graphName, Keywords.ID, Json.createValue(graphName));
         }
         
-        
         // 5.6.
-        Map<String, Boolean> compoundMap = compoundLiteralSubjects.get(graphName);
+        final Map<String, Boolean> compoundMap = compoundLiteralSubjects.get(graphName);
         
         // 5.7.
         for (final RdfTriple triple : graph.toList()) {
                      
             final String subject = triple.getSubject().toString();
             final String predicate = triple.getPredicate().toString();
-            
+
             // 5.7.1.
             if (!graphMap.contains(graphName, subject)) {
                 graphMap.set(graphName, subject, Keywords.ID, Json.createValue(subject));
@@ -334,16 +345,17 @@ System.out.println(">>>!!!!!");
             // 5.7.8.
             } else {
                 JsonArray array = graphMap.get(graphName, subject, predicate).asJsonArray();
+                valueIndex = array.size();
                 
                 if (!array.contains(value)) {
                     graphMap.set(graphName, subject, predicate, Json.createArrayBuilder(array).add(value).build());
                 }
-                valueIndex = array.size();
+
             }
             
             // 5.7.9.
-            if (triple.getObject().isIRI() && RdfVocabulary.NIL.equals(triple.getObject().asIRI().toString())) {
-                
+            if (triple.getObject().isIRI() && RdfVocabulary.NIL.equals(triple.getObject().toString())) {
+
                 Reference reference = new Reference();
                 reference.graphName = graphName;
                 reference.subject = subject;
@@ -351,17 +363,15 @@ System.out.println(">>>!!!!!");
                 reference.valueIndex = valueIndex;
 
                 graphMap.addUsage(graphName, triple.getObject().toString(), reference);
-                
+            
             // 5.7.10.
             } else if (referenceOnce.containsKey(triple.getObject().toString())) {
+                
                 referenceOnce.put(triple.getObject().toString(), null);
-
+                
             // 5.7.11.
             } else if (triple.getObject().isBlankNode()) {
 
-                // 5.7.11.1.
-                
-                
                 Reference reference = new Reference();
                 reference.graphName = graphName;
                 reference.subject = subject;
@@ -369,6 +379,7 @@ System.out.println(">>>!!!!!");
                 reference.valueIndex = valueIndex;
                 
                 referenceOnce.put(triple.getObject().toString(), reference);
+//                graphMap.addUsage(graphName, triple.getObject().toString(), reference);
             }
         }        
     }

@@ -20,7 +20,7 @@ import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.lang.RdfVocabulary;
 import com.apicatalog.xml.XsdVocabulary;
 
-public final class RdfToObject {
+final class RdfToObject {
 
     // required
     private RdfObject value;
@@ -70,7 +70,7 @@ public final class RdfToObject {
             
             // 2.4.1.
             if (XsdVocabulary.STRING.equals(literal.getDatatype().toString())) {
-                convertedValue = Json.createValue(literal.toString());  //TODO ?!
+                convertedValue = Json.createValue(literal.toString());
 
             // 2.4.2.
             } else if (XsdVocabulary.BOOLEAN.equals(literal.getDatatype().toString())) {
@@ -142,5 +142,4 @@ public final class RdfToObject {
         // 2.11.
         return JsonUtils.toJsonObject(result);
     }
-    
 }

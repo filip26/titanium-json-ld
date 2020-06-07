@@ -81,7 +81,7 @@ final class GraphMap {
 
     public void remove(String graphName, String subject) {
         index.get(graphName).remove(subject);
-        usages.get(graphName).remove(subject);
+//        usages.get(graphName).remove(subject);
     }
     
 }
