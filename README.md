@@ -20,7 +20,7 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 [Compaction](https://www.w3.org/TR/json-ld/#compacted-document-form) | 239 | 239 | 100% |
 [Flattening](https://www.w3.org/TR/json-ld/#flattened-document-form) | 55 | 55 | 100% |
 [JSON-LD to RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 449 | 447 | 99.5% |  won't fix: <ul><li>[te075](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#te075) - blank node as a predicate</li><li>[tli12](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#tli12) - an invalid IRI as @base</li></ul>
-[RDF to JSON-LD](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 51 | 49  | 96% | 
+[RDF to JSON-LD](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 51 | 51  | 100% | 
 [Framing](https://www.w3.org/TR/json-ld11-framing/#framing) | | | TBD |
 
 See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld-api/reports/#subj_JSONP_LD_Java) for more details.
@@ -31,7 +31,7 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 - [x] 0.2 - ~~[Compaction Algorithms](https://www.w3.org/TR/json-ld11-api/#compaction-algorithms)~~
 - [x] 0.3 - ~~[Flattening Algorithms](https://www.w3.org/TR/json-ld11-api/#flattening-algorithms)~~
 - [x] 0.4 - ~~[JSON-LD to RDF](https://www.w3.org/TR/json-ld11-api/#deserialize-json-ld-to-rdf-algorithm)~~
-- [ ] 0.5 - [RDF to JSON-LD](https://www.w3.org/TR/json-ld11-api/#serialize-rdf-as-json-ld-algorithm)
+- [x] 0.5 - ~~[RDF to JSON-LD](https://www.w3.org/TR/json-ld11-api/#serialize-rdf-as-json-ld-algorithm)~~
 - [ ] 0.6 - [Framing](https://www.w3.org/TR/json-ld11-framing/)
 - [ ] 0.7 - Document & Context loaders
 - [ ] 0.8 - [JSON-LD API](https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface)
@@ -58,6 +58,11 @@ JsonLd.compact("https://example.com/expanded.jsonld", "https://example.com/conte
 JsonLd.flatten("https://example.com/document.jsonld").get();
 
 JsonLd.toRdf("https://example.com/document.jsonld").get();
+
+RdfDataset dataset = Rdf.createReader(reader, RdfFormat.N_QUADS).readDataset();
+
+JsonLd.fromRdf(dataset).options(options).get();
+
 
 ```
 
