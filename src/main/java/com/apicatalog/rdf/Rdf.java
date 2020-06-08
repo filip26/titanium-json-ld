@@ -1,4 +1,4 @@
-package com.apicatalog.rdf.api;
+package com.apicatalog.rdf;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -7,18 +7,10 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 
-import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfGraph;
-import com.apicatalog.rdf.RdfGraphName;
-import com.apicatalog.rdf.RdfLiteral;
-import com.apicatalog.rdf.RdfNQuad;
-import com.apicatalog.rdf.RdfObject;
-import com.apicatalog.rdf.RdfPredicate;
-import com.apicatalog.rdf.RdfSubject;
-import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.io.RdfFormat;
 import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.RdfWriter;
+import com.apicatalog.rdf.lang.RdfVocabulary;
 import com.apicatalog.rdf.spi.RdfProvider;
 
 public final class Rdf {
@@ -50,10 +42,6 @@ public final class Rdf {
         return RdfProvider.provider().createDataset();
     }
 
-    public static final RdfStatementBuilder createStatementBuilder() {
-        return new RdfStatementBuilder();
-    }
-    
     public static final RdfTriple createTriple(RdfSubject subject, RdfPredicate predicate, RdfObject object) {
         return RdfProvider.provider().createTriple(subject, predicate, object);
     }
@@ -79,11 +67,11 @@ public final class Rdf {
     }
     
     public static RdfLiteral createTypedString(String lexicalForm, String dataType) {
-        return RdfProvider.provider().createTypedString(lexicalForm, dataType);
+        return RdfProvider.provider().createLiteral(lexicalForm, null, dataType);
     }
     
     public static RdfLiteral createLangString(String lexicalForm, String langTag) {
-        return RdfProvider.provider().createLangString(lexicalForm, langTag);
+        return RdfProvider.provider().createLiteral(lexicalForm, langTag, RdfVocabulary.LANG_STRING);
     }
 
     public static RdfGraphName createGraphName(RdfGraphName.Type type, String value) {

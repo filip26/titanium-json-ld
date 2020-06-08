@@ -21,12 +21,12 @@ import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.jsonld.uri.UriUtils;
+import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfPredicate;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.RdfTriple;
-import com.apicatalog.rdf.api.Rdf;
 import com.apicatalog.rdf.lang.RdfVocabulary;
 import com.apicatalog.xml.XsdVocabulary;
 
@@ -216,7 +216,7 @@ final class ObjectToRdf {
                 // 13.3.1.                
                 final RdfSubject subject = Rdf.createSubject(RdfSubject.Type.BLANK_NODE, blankNodeId);
                 
-                // 13.3.2. //TODO use statement builder
+                // 13.3.2.
                 triples.add(Rdf.createTriple(
                                     subject, 
                                     Rdf.createPredicate(RdfPredicate.Type.IRI, RdfVocabulary.VALUE), 

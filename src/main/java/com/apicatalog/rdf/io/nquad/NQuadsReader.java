@@ -3,13 +3,13 @@ package com.apicatalog.rdf.io.nquad;
 import java.io.Reader;
 import java.util.Arrays;
 
+import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfPredicate;
 import com.apicatalog.rdf.RdfSubject;
-import com.apicatalog.rdf.api.Rdf;
 import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.nquad.Tokenizer.Token;
 import com.apicatalog.rdf.io.nquad.Tokenizer.TokenType;

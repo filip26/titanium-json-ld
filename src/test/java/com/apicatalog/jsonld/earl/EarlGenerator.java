@@ -18,9 +18,9 @@ import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerEarl;
+import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.api.Rdf;
 import com.apicatalog.rdf.io.RdfFormat;
 import com.apicatalog.rdf.io.nquad.NQuadsReaderError;
 

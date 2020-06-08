@@ -19,12 +19,10 @@ import com.apicatalog.rdf.io.RdfWriter;
 
 public abstract class RdfProvider {
 
-    protected RdfProvider() {
-        
+    protected RdfProvider() {   
     }
-
+    
     public static RdfProvider provider() {
-        //TODO
         return DefaultRdfProvider.INSTANCE;
     }
 
@@ -48,10 +46,8 @@ public abstract class RdfProvider {
     
     public abstract RdfObject createObject(RdfLiteral literal);
     
-    public abstract RdfLiteral createTypedString(String lexicalForm, String dataType);
+    public abstract RdfLiteral createLiteral(String lexicalForm, String langTag, String dataType);
     
-    public abstract RdfLiteral createLangString(String lexicalForm, String langTag);
-
     public abstract RdfGraphName createGraphName(RdfGraphName.Type type, String value);
 
 }

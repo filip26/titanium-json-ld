@@ -13,17 +13,15 @@ final class RdfLiteralImpl implements RdfLiteral {
     private final String dataType;
 
     protected RdfLiteralImpl(String value) {
-        this(value, null, XsdVocabulary.STRING);
-    }
-
-    protected RdfLiteralImpl(String value, String langTag) {
-        this(value, langTag, RdfVocabulary.LANG_STRING);
+        this(value, null, null);
     }
 
     protected RdfLiteralImpl(String value, String langTag, String dataType) {
         this.value = value;
         this.langTag = langTag;
-        this.dataType = dataType;
+        this.dataType = dataType != null 
+                            ? dataType 
+                            : (langTag == null ? XsdVocabulary.STRING : RdfVocabulary.LANG_STRING);
     }
 
     @Override

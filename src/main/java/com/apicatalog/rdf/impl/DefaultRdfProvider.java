@@ -80,13 +80,8 @@ public final class DefaultRdfProvider extends RdfProvider {
     }
 
     @Override
-    public RdfLiteral createTypedString(String lexicalForm, String dataType) {
-        return new RdfLiteralImpl(lexicalForm, null, dataType);
-    }
-
-    @Override
-    public RdfLiteral createLangString(String lexicalForm, String langTag) {
-        return new RdfLiteralImpl(lexicalForm, langTag);
+    public RdfLiteral createLiteral(String lexicalForm, String langTag, String dataType) {
+        return new RdfLiteralImpl(lexicalForm, langTag, dataType);
     }
 
     @Override
