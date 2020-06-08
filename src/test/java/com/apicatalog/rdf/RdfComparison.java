@@ -35,19 +35,21 @@ public final class RdfComparison {
         }
 
         // compare n-quads with no blank node label
-        final List<RdfNQuad> nquads1 = dataset1.stream()
-                                .filter(HAS_BLANKS.negate())
-                                .collect(Collectors.toList());
+        final List<RdfNQuad> nquads1 = dataset1.toList()
+                                            .stream()
+                                            .filter(HAS_BLANKS.negate())
+                                            .collect(Collectors.toList());
         
-        final List<RdfNQuad> nquads2 = dataset2.stream()
-                                .filter(HAS_BLANKS.negate())
-                                .collect(Collectors.toList());
+        final List<RdfNQuad> nquads2 = dataset2.toList()
+                                            .stream()
+                                            .filter(HAS_BLANKS.negate())
+                                            .collect(Collectors.toList());
 
         if (nquads1.size() != nquads2.size()) {
             return false;
         }
 
-        // non-blank triples are not the same
+        // non-blank n-quads are not the same
         if (!compareNQuads(nquads1, nquads2, null)) {
             return false;
         }
@@ -57,14 +59,16 @@ public final class RdfComparison {
             return true;
         }
 
-        // n-quads with one or two blank nodes comparison
-        final List<RdfNQuad> b1 = dataset1.stream()
+        // n-quads with blank nodes comparison
+        final List<RdfNQuad> b1 = dataset1.toList()
+                                        .stream()
                                         .filter(HAS_BLANKS)
                                         .collect(Collectors.toList());
 
-        final List<RdfNQuad> b2 = dataset2.stream()
-                                          .filter(HAS_BLANKS)
-                                          .collect(Collectors.toList());
+        final List<RdfNQuad> b2 = dataset2.toList()
+                                        .stream()
+                                        .filter(HAS_BLANKS)
+                                        .collect(Collectors.toList());
 
         // blank node n-quads count does not match
         if (b1.size() != b2.size()) {
@@ -118,6 +122,12 @@ public final class RdfComparison {
         return remaining.isEmpty();
     }
     
+    private static final boolean compareNQuad(final RdfNQuad nquad1, final RdfNQuad nquad2, final Map<String, String> mapping) {
+        return compareTriple(nquad1, nquad2, mapping)
+                && compareGraphName(nquad1.getGraphName(), nquad2.getGraphName(), mapping)
+                ;        
+    }
+        
     private static final boolean compareTriple(final RdfTriple triple1, final RdfTriple triple2, final Map<String, String> mapping) {
         
         return compareSubject(triple1.getSubject(), triple2.getSubject(), mapping)
@@ -125,16 +135,9 @@ public final class RdfComparison {
                 && compareObject(triple1.getObject(), triple2.getObject(), mapping)
                 ;
     }
-    
-    private static final boolean compareNQuad(final RdfNQuad nquad1, final RdfNQuad nquad2, final Map<String, String> mapping) {
-        return compareTriple(nquad1, nquad2, mapping)
-                && compareGraphName(nquad1.getGraphName(), nquad2.getGraphName(), mapping)
-                ;        
-    }
-    
+
     private static final boolean compareSubject(RdfSubject subject1, RdfSubject subject2, Map<String, String> mapping) {
-        
-        
+         
         if (subject1.isBlankNode() && subject2.isBlankNode()) { 
             return Objects.equals(
                             subject1.toString(), 

@@ -8,16 +8,18 @@ import com.apicatalog.rdf.RdfObject;
 final class RdfObjectImpl implements RdfObject {
 
     private final RdfLiteral literal;
+    
     private final String value;
+    
     private final Type type;
     
-    protected RdfObjectImpl(RdfLiteral literal) {
+    protected RdfObjectImpl(final RdfLiteral literal) {
         this.literal = literal;
         this.value = null;
         this.type = Type.LITERAL;
     }
 
-    protected RdfObjectImpl(Type type, String value) {
+    protected RdfObjectImpl(final Type type, final String value) {
         this.literal = Type.LITERAL.equals(type) ? new RdfLiteralImpl(value) : null;
         this.value = Type.LITERAL.equals(type) ? null : value;
         this.type = type;

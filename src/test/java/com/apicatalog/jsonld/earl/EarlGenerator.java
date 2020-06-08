@@ -22,7 +22,8 @@ import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.io.RdfFormat;
-import com.apicatalog.rdf.io.nquad.NQuadsReaderError;
+import com.apicatalog.rdf.io.error.UnsupportedFormatException;
+import com.apicatalog.rdf.io.nquad.NQuadsReaderException;
 
 public class EarlGenerator {
     
@@ -144,7 +145,7 @@ public class EarlGenerator {
                                         
                                         return JsonLd.fromRdf(input).options(options).get();
                                     
-                                    } catch (IOException | NQuadsReaderError e) {
+                                    } catch (IOException | NQuadsReaderException | UnsupportedFormatException e) {
                                         return null;
                                     }
                                     
@@ -249,7 +250,7 @@ public class EarlGenerator {
 
             return RdfComparison.equals(expected, result);
 
-        } catch (NQuadsReaderError | IOException e ) {
+        } catch (NQuadsReaderException | IOException | UnsupportedFormatException e ) {
 
         }
         return false;

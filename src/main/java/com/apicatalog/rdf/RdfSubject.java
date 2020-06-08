@@ -7,6 +7,4 @@ public interface RdfSubject {
     boolean isIRI();
     boolean isBlankNode();
     
-    @Override
-    String toString();
 }

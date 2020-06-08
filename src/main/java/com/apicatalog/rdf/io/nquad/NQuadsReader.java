@@ -22,17 +22,21 @@ import com.apicatalog.rdf.io.nquad.Tokenizer.TokenType;
 public final class NQuadsReader implements RdfReader {
 
     private final Tokenizer tokenizer;
+    private RdfDataset dataset;
     
     public NQuadsReader(final Reader reader) {
         this.tokenizer = new Tokenizer(reader);
+        this.dataset = null;
     }
     
     @Override
-    public RdfDataset readDataset() throws NQuadsReaderError {
+    public RdfDataset readDataset() throws NQuadsReaderException {
 
-        //TODO cache
+        if (dataset != null) {
+            return dataset;
+        }
         
-        RdfDataset dataset = Rdf.createDataset();
+        dataset = Rdf.createDataset();
         
         while (tokenizer.hasNext()) {
 
@@ -50,7 +54,7 @@ public final class NQuadsReader implements RdfReader {
         return dataset;
     }
     
-    public RdfNQuad reaStatement() throws NQuadsReaderError {
+    public RdfNQuad reaStatement() throws NQuadsReaderException {
   
         RdfSubject subject = readSubject();
   
@@ -86,11 +90,10 @@ public final class NQuadsReader implements RdfReader {
         
         tokenizer.next();
 
-        //TODO use statementbuilder
         return Rdf.createNQuad(subject, Rdf.createPredicate(RdfPredicate.Type.IRI, predicate), object, graphName);
     }
     
-    private RdfSubject readSubject()  throws NQuadsReaderError {
+    private RdfSubject readSubject()  throws NQuadsReaderException {
 
         final Token token = tokenizer.token();
         
@@ -111,7 +114,7 @@ public final class NQuadsReader implements RdfReader {
         return unexpected(token);
     }
     
-    private RdfObject readObject()  throws NQuadsReaderError {
+    private RdfObject readObject()  throws NQuadsReaderException {
         
         Token token = tokenizer.token();
         
@@ -131,7 +134,7 @@ public final class NQuadsReader implements RdfReader {
         return readLiteral();
     }
     
-    public RdfObject readLiteral()  throws NQuadsReaderError {
+    public RdfObject readLiteral()  throws NQuadsReaderException {
   
         Token value = tokenizer.token();
         
@@ -170,14 +173,14 @@ public final class NQuadsReader implements RdfReader {
     }
 
     
-    private <T> T unexpected(Token token, TokenType ...types) throws NQuadsReaderError {
-        throw new NQuadsReaderError(
+    private <T> T unexpected(Token token, TokenType ...types) throws NQuadsReaderException {
+        throw new NQuadsReaderException(
                     "Unexpected token " + token.getType() + "(" + token.getValue() + "). "
                     + "Expected one of " + Arrays.toString(types) + "."
                     );
     }
     
-    private String readIri()  throws NQuadsReaderError {
+    private String readIri()  throws NQuadsReaderException {
         
         Token token = tokenizer.token();
         
@@ -191,7 +194,7 @@ public final class NQuadsReader implements RdfReader {
     }
 
 
-    private void skipWhitespace(int min) throws NQuadsReaderError {
+    private void skipWhitespace(int min) throws NQuadsReaderException {
   
         Token token = tokenizer.token();
         

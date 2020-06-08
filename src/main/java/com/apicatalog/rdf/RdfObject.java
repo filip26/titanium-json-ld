@@ -11,8 +11,5 @@ public interface RdfObject {
     boolean isBlankNode();
     
     RdfLiteral getLiteral();
-
-    @Override
-    String toString();
         
 }

@@ -7,6 +7,7 @@ import com.apicatalog.rdf.RdfGraphName;
 class RdfGraphNameImpl implements RdfGraphName {
 
     private final String value;
+    
     private final Type type;
     
     protected RdfGraphNameImpl(Type type, String value) {

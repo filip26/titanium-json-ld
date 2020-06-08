@@ -2,7 +2,6 @@ package com.apicatalog.rdf;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 public interface RdfDataset {
 
@@ -10,8 +9,6 @@ public interface RdfDataset {
 
     void add(RdfNQuad nquad);
         
-    Stream<RdfNQuad> stream();
-    
     List<RdfNQuad> toList();
     
     Set<RdfGraphName> getGraphNames();

@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 final class NodeClassifier {
 
-    Map<String, NodeCategory> categories = new HashMap<>();
+    private final Map<String, NodeCategory> categories = new HashMap<>();
 
     protected NodeClassifier() {
     }
@@ -26,34 +26,16 @@ final class NodeClassifier {
         }
     }
     
-    private final void addSubject(String label, String predicate) {
-        NodeCategory group = categories.get(label);
-        
-        if (group == null) {
-            group = new NodeCategory();
-            categories.put(label, group);
-        }
-        group.addSubject(predicate);
+    private final void addSubject(String label, String object) {
+        categories.computeIfAbsent(label, x -> new NodeCategory()).addSubject(object);
     }
     
-    private final void addObject(String label, String predicate) {
-        NodeCategory cluster = categories.get(label);
-        
-        if (cluster == null) {
-            cluster = new NodeCategory();
-            categories.put(label, cluster);
-        }
-        cluster.addObject(predicate);
+    private final void addObject(String label, String subject) {
+        categories.computeIfAbsent(label, x -> new NodeCategory()).addObject(subject);
     }
     
     private final void addGraph(String label) {
-        NodeCategory cluster = categories.get(label);
-        
-        if (cluster == null) {
-            cluster = new NodeCategory();
-            categories.put(label, cluster);
-        }
-        cluster.addGraph();
+        categories.computeIfAbsent(label, x -> new NodeCategory()).addGraph();
     }    
     
     public int size() {

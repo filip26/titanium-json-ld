@@ -1,13 +1,16 @@
 package com.apicatalog.rdf.lang;
 
-public interface XsdVocabulary {
-
-    static final String STRING = "http://www.w3.org/2001/XMLSchema#string";
+public final class XsdVocabulary {
     
-    static final String BOOLEAN = "http://www.w3.org/2001/XMLSchema#boolean";
+    private XsdVocabulary() {
+    }
 
-    static final String DOUBLE = "http://www.w3.org/2001/XMLSchema#double";
+    public static final String STRING = "http://www.w3.org/2001/XMLSchema#string";
+    
+    public static final String BOOLEAN = "http://www.w3.org/2001/XMLSchema#boolean";
 
-    static final String INTEGER = "http://www.w3.org/2001/XMLSchema#integer"; 
+    public static final String DOUBLE = "http://www.w3.org/2001/XMLSchema#double";
+
+    public static final String INTEGER = "http://www.w3.org/2001/XMLSchema#integer"; 
     
 }

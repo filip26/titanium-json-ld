@@ -27,7 +27,7 @@ public class NQuadsWriter implements RdfWriter {
     }
 
     @Override
-    public void write(RdfDataset dataset) throws IOException {
+    public void write(final RdfDataset dataset) throws IOException {
         
         for (RdfNQuad nquad : dataset.toList()) {
             write(nquad);
@@ -36,7 +36,7 @@ public class NQuadsWriter implements RdfWriter {
         writer.flush();
     }
     
-    public void write(RdfNQuad nquad) throws IOException {
+    public void write(final RdfNQuad nquad) throws IOException {
         
         write(nquad.getSubject());
         writer.write(' ');

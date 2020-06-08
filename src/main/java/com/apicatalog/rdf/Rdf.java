@@ -10,6 +10,7 @@ import java.io.Writer;
 import com.apicatalog.rdf.io.RdfFormat;
 import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.RdfWriter;
+import com.apicatalog.rdf.io.error.UnsupportedFormatException;
 import com.apicatalog.rdf.lang.RdfVocabulary;
 import com.apicatalog.rdf.spi.RdfProvider;
 
@@ -22,19 +23,39 @@ public final class Rdf {
         return RdfProvider.provider().createGraph();
     }
 
-    public static final RdfReader createReader(Reader reader, RdfFormat format) {
+    public static final RdfReader createReader(Reader reader, RdfFormat format) throws UnsupportedFormatException {
+
+        if (reader == null || format == null) {
+            throw new IllegalArgumentException();
+        }
+
         return RdfProvider.provider().createReader(reader, format);
     }
     
-    public static final RdfReader createReader(InputStream is, RdfFormat format) {
+    public static final RdfReader createReader(InputStream is, RdfFormat format) throws UnsupportedFormatException {
+        
+        if (is == null || format == null) {
+            throw new IllegalArgumentException();
+        }
+
         return createReader(new InputStreamReader(is), format);
     }
 
-    public static final RdfWriter createWriter(Writer writer, RdfFormat format) {
+    public static final RdfWriter createWriter(Writer writer, RdfFormat format) throws UnsupportedFormatException {
+        
+        if (writer == null || format == null) {
+            throw new IllegalArgumentException();
+        }
+
         return RdfProvider.provider().createWriter(writer, format);
     }
 
-    public static final RdfWriter createWriter(OutputStream os, RdfFormat format) {
+    public static final RdfWriter createWriter(OutputStream os, RdfFormat format) throws UnsupportedFormatException {
+        
+        if (os == null || format == null) {
+            throw new IllegalArgumentException();
+        }
+
         return createWriter(new OutputStreamWriter(os), format);
     }
 
@@ -43,38 +64,83 @@ public final class Rdf {
     }
 
     public static final RdfTriple createTriple(RdfSubject subject, RdfPredicate predicate, RdfObject object) {
+        
+        if (subject == null || predicate == null || object == null) {
+            throw new IllegalArgumentException();
+        }
+
         return RdfProvider.provider().createTriple(subject, predicate, object);
     }
 
     public static final RdfNQuad createNQuad(RdfSubject object, RdfPredicate predicate, RdfObject subject, RdfGraphName graphName) {
+        
+        if (subject == null || predicate == null || object == null) {
+            throw new IllegalArgumentException();
+        }
+
         return RdfProvider.provider().createNQuad(object, predicate, subject, graphName);
     }
 
     public static RdfSubject createSubject(RdfSubject.Type type, String value) {
+        
+        if (type == null || value == null || value.isBlank()) {
+            throw new IllegalArgumentException();
+        }
+        
         return RdfProvider.provider().createSubject(type, value);        
     }
     
     public static RdfPredicate createPredicate(RdfPredicate.Type type, String value) {
+        
+        if (type == null || value == null || value.isBlank()) {
+            throw new IllegalArgumentException();
+        }
+        
         return RdfProvider.provider().createPredicate(type, value);
     }
 
     public static RdfObject createObject(RdfObject.Type type, String value) {
+        
+        if (type == null || value == null || value.isBlank()) {
+            throw new IllegalArgumentException();
+        }
+        
         return RdfProvider.provider().createObject(type, value);
     }
     
     public static RdfObject createObject(RdfLiteral literal) {
+        
+        if (literal == null) {
+            throw new IllegalArgumentException();
+        }
+        
         return RdfProvider.provider().createObject(literal);
     }
     
     public static RdfLiteral createTypedString(String lexicalForm, String dataType) {
+        
+        if (lexicalForm == null) {
+            throw new IllegalArgumentException();
+        }
+        
         return RdfProvider.provider().createLiteral(lexicalForm, null, dataType);
     }
     
     public static RdfLiteral createLangString(String lexicalForm, String langTag) {
+        
+        if (lexicalForm == null) {
+            throw new IllegalArgumentException();
+        }
+        
         return RdfProvider.provider().createLiteral(lexicalForm, langTag, RdfVocabulary.LANG_STRING);
     }
 
     public static RdfGraphName createGraphName(RdfGraphName.Type type, String value) {
+        
+        if (type == null || value == null || value.isBlank()) {
+            throw new IllegalArgumentException();
+        }
+
         return RdfProvider.provider().createGraphName(type, value);
     }
 }

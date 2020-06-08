@@ -9,7 +9,9 @@ import com.apicatalog.rdf.lang.XsdVocabulary;
 final class RdfLiteralImpl implements RdfLiteral {
 
     private final String value;
+    
     private final String langTag;
+    
     private final String dataType;
 
     protected RdfLiteralImpl(String value) {

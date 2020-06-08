@@ -13,7 +13,7 @@ final class NodeCluster {
     int[] indices;
     int[] mapping;
     
-    int index;
+    int iterator;
 
     int permutations;
     
@@ -52,7 +52,7 @@ final class NodeCluster {
         int result = 1;
         
         for(int i=1; i <= number; i++){    
-            result=result*i;    
+            result = result * i;    
         }   
         return result;
     }
@@ -63,20 +63,20 @@ final class NodeCluster {
             return true;
         }
         
-        while (index < indices.length) {
-            if (indices[index] < index) {
-                swap(index % 2 == 0 ?  0 : indices[index], index);
-                indices[index]++;
-                index = 0;
+        while (iterator < indices.length) {
+            if (indices[iterator] < iterator) {
+                swap(iterator % 2 == 0 ?  0 : indices[iterator], iterator);
+                indices[iterator]++;
+                iterator = 0;
                 break;
             }
             else {
-                indices[index] = 0;
-                index++;
+                indices[iterator] = 0;
+                iterator++;
             }
         }
         
-        if (index >= indices.length) {
+        if (iterator >= indices.length) {
             reset(); 
             return true;
         }
@@ -95,7 +95,7 @@ final class NodeCluster {
             indices[i] = 0;
             mapping[i] = i;
         }
-        index = 0;
+        iterator = 0;
     }
     
     public String mapping(String label) {

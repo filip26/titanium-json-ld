@@ -24,7 +24,12 @@ final class RdfGraphImpl implements RdfGraph {
         this.triples = new LinkedList<>();
     }
 
-    public void add(RdfTriple triple) {
+    public void add(final RdfTriple triple) {
+        
+        if (triple == null) {
+            throw new IllegalArgumentException();
+        }
+        
         index
             .computeIfAbsent(triple.getSubject(), x -> new HashMap<>())
             .computeIfAbsent(triple.getPredicate(), x -> new HashSet<>())
@@ -34,7 +39,12 @@ final class RdfGraphImpl implements RdfGraph {
     }
     
     @Override
-    public boolean contains(RdfTriple triple) {
+    public boolean contains(final RdfTriple triple) {
+        
+        if (triple == null) {
+            throw new IllegalArgumentException();
+        }
+
         return index.containsKey(triple.getSubject()) 
                     && index.get(triple.getSubject()).containsKey(triple.getPredicate())
                     && index.get(triple.getSubject()).get(triple.getPredicate()).contains(triple.getObject())
