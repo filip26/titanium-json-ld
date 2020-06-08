@@ -174,24 +174,22 @@ final class Tokenizer {
                 }
                 
                 if (ch == '\\') {
-                    
-                    value.append((char)ch);
-                    
+                                        
                     ch = reader.read();
 
                     if (ch == 'u') {
                      
-                        value.append((char)ch);
-
-                        readUtf8(value);
+                        value.append(readUnicode());
 
                     } else if (ch == 'U') {
                         
-                        value.append((char)ch);
-                        
-                        readUtf8(value);
-                        readUtf8(value);
-
+                        //TODO unicode
+//                        value.append('\\');
+//                        value.append((char)ch);
+//                        
+//                        readUtf8(value);
+//                        readUtf8(value);
+                        unexpected(ch);
                     } else {
                         unexpected(ch);
                     }
@@ -235,29 +233,26 @@ final class Tokenizer {
                     
                     if (ch == 't' || ch == 'b' || ch == 'n' || ch == 'r' || ch == 'f' || ch == '\'' || ch == '\\' || ch =='"') {
 
-                        value.append(unescape((char)ch));
+                        value.appendCodePoint(unescape(ch));
 
                     } else if (ch == 'u') {
 
-                        //TODO unescape
-                        value.append('\\');
-                        value.append((char)ch);
-                        readUtf8(value);
+                        value.append(readUnicode());
                         
                     } else if (ch == 'U') {
                         
                         //TODO unescape                        
-                        value.append('\\');
-                        value.append((char)ch);
-                        readUtf8(value);
-                        readUtf8(value);
-                        
+//                        value.append('\\');
+//                        value.append((char)ch);
+//                        readUtf8(value);
+//                        readUtf8(value);
+                        unexpected(ch);
                     } else {
                         unexpected(ch);
                     }
                     
                 } else {
-                    value.append((char)ch);
+                    value.appendCodePoint(ch);
                 }
                 ch = reader.read();
             }
@@ -371,39 +366,44 @@ final class Tokenizer {
             throw new NQuadsReaderError(e);
         }    
     }
-
-    private void readUtf8(StringBuilder builder) throws NQuadsReaderError, IOException {
-        readHex(builder);
-        readHex(builder);
-        readHex(builder);
-        readHex(builder);
-    }
     
-    private void readHex(StringBuilder builder)  throws IOException, NQuadsReaderError {
+    private char[] readUnicode() throws NQuadsReaderError, IOException {
+        
+        char[] code = new char[4];
+        
+        code[0] = readHex8();
+        code[1] = readHex8();
+        code[2] = readHex8();
+        code[3] = readHex8();
+
+        return Character.toChars(Integer.parseInt(String.valueOf(code), 16));
+    }
+
+    private char readHex8()  throws IOException, NQuadsReaderError {
         
         int hex = reader.read();
         
         if (RdfGrammar.IS_HEX.negate().test(hex)) {
             unexpected(hex, "0-9", "a-f", "A-F");
         }
-        builder.append((char)hex);
+        return (char)hex;
     }
     
-    private static final char unescape(char symbol) {
+    private static final int unescape(int symbol) {
         if (symbol == 't') {
-            return (char)0x9;
+            return 0x9;
             
         } else if (symbol == 'b') {
-            return (char)0x8;
+            return 0x8;
             
         } else if (symbol == 'n') {
-            return (char)0xa;
+            return 0xa;
             
         } else if (symbol == 'r') {
-            return (char)0xd;
+            return 0xd;
             
         } else if (symbol == 'f') {
-            return (char)0xc;
+            return 0xc;
         }
         return symbol;        
     }

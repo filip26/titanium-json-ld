@@ -7,14 +7,13 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 
-import com.apicatalog.iri.IRI;
-import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
 import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfObject;
+import com.apicatalog.rdf.RdfPredicate;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.io.RdfFormat;
@@ -55,52 +54,39 @@ public final class Rdf {
         return new RdfStatementBuilder();
     }
     
-    public static final RdfTriple createTriple(RdfSubject subject, IRI predicate, RdfObject object) {
+    public static final RdfTriple createTriple(RdfSubject subject, RdfPredicate predicate, RdfObject object) {
         return RdfProvider.provider().createTriple(subject, predicate, object);
     }
 
-    public static final RdfNQuad createNQuad(RdfSubject object, IRI predicate, RdfObject subject, RdfGraphName graphName) {
+    public static final RdfNQuad createNQuad(RdfSubject object, RdfPredicate predicate, RdfObject subject, RdfGraphName graphName) {
         return RdfProvider.provider().createNQuad(object, predicate, subject, graphName);
     }
 
-    public static final RdfObject createObject(IRI iri) {
-        return RdfProvider.provider().createObject(iri);
+    public static RdfSubject createSubject(RdfSubject.Type type, String value) {
+        return RdfProvider.provider().createSubject(type, value);        
+    }
+    
+    public static RdfPredicate createPredicate(RdfPredicate.Type type, String value) {
+        return RdfProvider.provider().createPredicate(type, value);
     }
 
-    public static final RdfObject createObject(RdfLiteral literal) {
+    public static RdfObject createObject(RdfObject.Type type, String value) {
+        return RdfProvider.provider().createObject(type, value);
+    }
+    
+    public static RdfObject createObject(RdfLiteral literal) {
         return RdfProvider.provider().createObject(literal);
     }
-
-    public static final RdfSubject createSubject(IRI iri) {
-        return RdfProvider.provider().createSubject(iri);
-    }
-
-    public static final  RdfSubject createSubject(BlankNode blankNode) {
-        return RdfProvider.provider().createSubject(blankNode);
-    }
-
-    public static final RdfLiteral createLitteral(String lexicalForm) {
-        return RdfProvider.provider().createLiteral(lexicalForm);
-    }
-
-    public static final RdfLiteral createLitteral(String lexicalForm, IRI dataType) {
-        return RdfProvider.provider().createLiteral(lexicalForm, dataType);
+    
+    public static RdfLiteral createTypedString(String lexicalForm, String dataType) {
+        return RdfProvider.provider().createTypedString(lexicalForm, dataType);
     }
     
-    public static final RdfLiteral createLitteral(String lexicalForm, String langTag) {
-        return RdfProvider.provider().createLiteral(lexicalForm, langTag);
+    public static RdfLiteral createLangString(String lexicalForm, String langTag) {
+        return RdfProvider.provider().createLangString(lexicalForm, langTag);
     }
 
-    public static final RdfObject createObject(BlankNode blankNode) {
-        return RdfProvider.provider().createObject(blankNode);
+    public static RdfGraphName createGraphName(RdfGraphName.Type type, String value) {
+        return RdfProvider.provider().createGraphName(type, value);
     }
-    
-    public static final RdfGraphName createGraphName(IRI graphName) {
-        return RdfProvider.provider().createGraphName(graphName);
-    }
-
-    public static final RdfGraphName createGraphName(BlankNode graphName) {
-        return RdfProvider.provider().createGraphName(graphName);
-    }
-
 }

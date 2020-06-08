@@ -1,15 +1,12 @@
 package com.apicatalog.rdf;
 
-import com.apicatalog.iri.IRI;
-import com.apicatalog.jsonld.lang.BlankNode;
-
 public interface RdfSubject {
 
+    enum Type { IRI, BLANK_NODE };
+    
     boolean isIRI();
     boolean isBlankNode();
     
-    IRI asIRI();
-    
-    BlankNode asBlankNode();
-
+    @Override
+    String toString();
 }

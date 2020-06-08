@@ -18,7 +18,7 @@ import com.apicatalog.jsonld.lang.CompactUri;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.uri.UriUtils;
+import com.apicatalog.jsonld.uri.UriUtils;
 
 /**
  * 
@@ -371,8 +371,10 @@ public final class TermDefinitionBuilder {
 
                 // 14.2.5
                 if (!term.contains(":") && !term.contains("/") && Boolean.TRUE.equals(simpleTerm)
-                        && (definition.uriMapping != null && ((UriUtils.isURI(definition.uriMapping)
-                            && UriUtils.endsWithGenDelim(definition.uriMapping))
+                        && (definition.uriMapping != null && ((
+                            UriUtils.endsWithGenDelim(definition.uriMapping)
+                                && UriUtils.isURI(definition.uriMapping.substring(0, definition.uriMapping.length() - 1))
+                                    )
                             || BlankNode.hasPrefix(definition.uriMapping)))) {
                     
                     definition.prefixFlag = true;

@@ -1,23 +1,23 @@
 package com.apicatalog.rdf.impl;
 
-import com.apicatalog.iri.IRI;
 import com.apicatalog.rdf.RdfObject;
+import com.apicatalog.rdf.RdfPredicate;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.RdfTriple;
 
-final class RdfTripleImpl implements RdfTriple {
+class RdfTripleImpl implements RdfTriple {
 
     private final RdfSubject subject;
-    private final IRI predicate;
+    private final RdfPredicate predicate;
     private final RdfObject object;
     
-    protected RdfTripleImpl(RdfSubject subject, IRI predicate, RdfObject object) {
+    protected RdfTripleImpl(RdfSubject subject, RdfPredicate predicate, RdfObject object) {
         this.subject = subject;
         this.predicate = predicate; 
         this.object = object;
     }
 
-    public static RdfTriple create(RdfSubject subject, IRI predicate, RdfObject object) {
+    public static RdfTriple create(RdfSubject subject, RdfPredicate predicate, RdfObject object) {
         return new RdfTripleImpl(subject, predicate, object);
     }
 
@@ -27,7 +27,7 @@ final class RdfTripleImpl implements RdfTriple {
     }
 
     @Override
-    public IRI getPredicate() {
+    public RdfPredicate getPredicate() {
         return predicate;
     }
 

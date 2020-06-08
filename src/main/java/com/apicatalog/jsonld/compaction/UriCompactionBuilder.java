@@ -22,8 +22,8 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.uri.UriRelativizer;
-import com.apicatalog.uri.UriUtils;
+import com.apicatalog.jsonld.uri.UriRelativizer;
+import com.apicatalog.jsonld.uri.UriUtils;
 
 /**
  * 

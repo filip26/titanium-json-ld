@@ -16,34 +16,34 @@ final class NodeClassifier {
     protected final void add(RdfNQuad nquad) {
     
         if (nquad.getSubject().isBlankNode()) {
-            addSubject(nquad.getSubject().asBlankNode().getLabel());
+            addSubject(nquad.getSubject().toString(), nquad.getObject().isIRI() ? nquad.getObject().toString() : null);
         } 
         if (nquad.getObject().isBlankNode()) {
-            addObject(nquad.getObject().asBlankNode().getLabel());
+            addObject(nquad.getObject().toString(), nquad.getSubject().isIRI() ? nquad.getSubject().toString() : null);
         }                    
         if (nquad.getGraphName() != null && nquad.getGraphName().isBlankNode()) {
-            addGraph(nquad.getGraphName().asBlankNode().getLabel());
+            addGraph(nquad.getGraphName().toString());
         }
     }
     
-    private final void addSubject(String label) {
+    private final void addSubject(String label, String predicate) {
         NodeCategory group = categories.get(label);
         
         if (group == null) {
             group = new NodeCategory();
             categories.put(label, group);
         }
-        group.addSubject();
+        group.addSubject(predicate);
     }
     
-    private final void addObject(String label) {
+    private final void addObject(String label, String predicate) {
         NodeCategory cluster = categories.get(label);
         
         if (cluster == null) {
             cluster = new NodeCategory();
             categories.put(label, cluster);
         }
-        cluster.addObject();
+        cluster.addObject(predicate);
     }
     
     private final void addGraph(String label) {

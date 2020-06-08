@@ -2,72 +2,45 @@ package com.apicatalog.rdf.impl;
 
 import java.util.Objects;
 
-import com.apicatalog.iri.IRI;
-import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfObject;
 
 final class RdfObjectImpl implements RdfObject {
 
     private final RdfLiteral literal;
-    private final IRI iri;
-    private final BlankNode blankNode;
+    private final String value;
+    private final Type type;
     
-    private RdfObjectImpl(RdfLiteral literal, IRI iri, BlankNode blankNode) {
+    protected RdfObjectImpl(RdfLiteral literal) {
         this.literal = literal;
-        this.iri = iri;
-        this.blankNode = blankNode;
+        this.value = null;
+        this.type = Type.LITERAL;
     }
 
-    protected static final RdfObject of(RdfLiteral literal) {
-        if (literal == null) {
-            throw new IllegalArgumentException();
-        }
-        return new RdfObjectImpl(literal, null, null);
+    protected RdfObjectImpl(Type type, String value) {
+        this.literal = Type.LITERAL.equals(type) ? new RdfLiteralImpl(value) : null;
+        this.value = Type.LITERAL.equals(type) ? null : value;
+        this.type = type;
     }
-
-    protected static final RdfObject of(IRI iri) {
-        if (iri == null) {
-            throw new IllegalArgumentException();
-        }
-        return new RdfObjectImpl(null, iri, null);
-    }
-
-    protected static final RdfObject of(BlankNode blankNode) {
-        if (blankNode == null) {
-            throw new IllegalArgumentException();
-        }
-        return new RdfObjectImpl(null, null, blankNode);
-    }
-
+    
     @Override
     public boolean isLiteral() {
-        return literal != null;
+        return Type.LITERAL.equals(type);
     }
 
     @Override
     public boolean isIRI() {
-        return iri != null;
-    }
-
-    @Override
-    public RdfLiteral asLiteral() {
-        return literal;
-    }
-
-    @Override
-    public IRI asIRI() {
-        return iri;
+        return Type.IRI.equals(type);
     }
 
     @Override
     public boolean isBlankNode() {
-        return blankNode != null;
+        return Type.BLANK_NODE.equals(type);
     }
 
     @Override
-    public BlankNode asBlankNode() {
-        return blankNode;
+    public RdfLiteral getLiteral() {
+        return literal;
     }
 
     @Override
@@ -75,18 +48,12 @@ final class RdfObjectImpl implements RdfObject {
         if (literal != null) {
             return literal.toString();
         }
-        if (iri != null) {
-            return iri.toString();
-        }
-        if (blankNode != null) {
-            return blankNode.toString();
-        }
-        return "null";
+        return value == null ? "null" : value;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(blankNode, iri, literal);
+        return Objects.hash(value, type, literal);
     }
 
     @Override
@@ -101,7 +68,7 @@ final class RdfObjectImpl implements RdfObject {
             return false;
         }
         RdfObjectImpl other = (RdfObjectImpl) obj;
-        return Objects.equals(blankNode, other.blankNode) && Objects.equals(iri, other.iri)
+        return Objects.equals(value, other.value) && type == other.type
                 && Objects.equals(literal, other.literal);
     }    
 }

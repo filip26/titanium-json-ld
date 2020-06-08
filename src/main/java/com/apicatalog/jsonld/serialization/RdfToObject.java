@@ -57,7 +57,7 @@ final class RdfToObject {
         final Map<String, JsonValue> result = new LinkedHashMap<>();
         
         // 2.
-        final RdfLiteral literal = value.asLiteral();
+        final RdfLiteral literal = value.getLiteral();
         
         // 2.2.
         JsonValue convertedValue = Json.createValue(literal.getValue());

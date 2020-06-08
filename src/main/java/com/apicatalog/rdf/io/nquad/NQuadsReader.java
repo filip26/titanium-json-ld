@@ -3,12 +3,11 @@ package com.apicatalog.rdf.io.nquad;
 import java.io.Reader;
 import java.util.Arrays;
 
-import com.apicatalog.iri.IRI;
-import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfObject;
+import com.apicatalog.rdf.RdfPredicate;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.api.Rdf;
 import com.apicatalog.rdf.io.RdfReader;
@@ -57,7 +56,7 @@ public final class NQuadsReader implements RdfReader {
   
         skipWhitespace(1);
   
-        IRI predicate = readIri();
+        String predicate = readIri();
 
         skipWhitespace(1);
   
@@ -69,14 +68,14 @@ public final class NQuadsReader implements RdfReader {
         
         if (TokenType.IRI_REF == tokenizer.token().getType()) {
 
-            graphName = Rdf.createGraphName(IRI.create(tokenizer.token().getValue()));
+            graphName = Rdf.createGraphName(RdfGraphName.Type.IRI, tokenizer.token().getValue());
             tokenizer.next();
             skipWhitespace(0);
         }
 
         if (TokenType.BLANK_NODE_LABEL == tokenizer.token().getType()) {
             
-            graphName = Rdf.createGraphName(BlankNode.create("_:".concat(tokenizer.token().getValue())));
+            graphName = Rdf.createGraphName(RdfGraphName.Type.BLANK_NODE, "_:".concat(tokenizer.token().getValue()));
             tokenizer.next();
             skipWhitespace(0);
         }
@@ -87,7 +86,8 @@ public final class NQuadsReader implements RdfReader {
         
         tokenizer.next();
 
-        return Rdf.createNQuad(subject, predicate, object, graphName);
+        //TODO use statementbuilder
+        return Rdf.createNQuad(subject, Rdf.createPredicate(RdfPredicate.Type.IRI, predicate), object, graphName);
     }
     
     private RdfSubject readSubject()  throws NQuadsReaderError {
@@ -98,14 +98,14 @@ public final class NQuadsReader implements RdfReader {
             
             tokenizer.next();
             
-            return Rdf.createSubject(IRI.create(token.getValue()));
+            return Rdf.createSubject(RdfSubject.Type.IRI, token.getValue());
         } 
 
         if (TokenType.BLANK_NODE_LABEL == token.getType()) {
             
             tokenizer.next();
             
-            return Rdf.createSubject(BlankNode.create("_:".concat(token.getValue())));            
+            return Rdf.createSubject(RdfSubject.Type.BLANK_NODE, "_:".concat(token.getValue()));            
         }
   
         return unexpected(token);
@@ -118,14 +118,14 @@ public final class NQuadsReader implements RdfReader {
         if (TokenType.IRI_REF == token.getType()) {
             tokenizer.next();
             
-            return Rdf.createObject(IRI.create(token.getValue()));
+            return Rdf.createObject(RdfObject.Type.IRI, token.getValue());
         } 
 
         if (TokenType.BLANK_NODE_LABEL == token.getType()) {
             
             tokenizer.next();
             
-            return Rdf.createObject(BlankNode.create("_:".concat(token.getValue())));            
+            return Rdf.createObject(RdfObject.Type.BLANK_NODE, "_:".concat(token.getValue()));            
         }
   
         return readLiteral();
@@ -149,7 +149,7 @@ public final class NQuadsReader implements RdfReader {
             
             tokenizer.next();
             
-            return Rdf.createObject(Rdf.createLitteral(value.getValue(), langTag));
+            return Rdf.createObject(Rdf.createLangString(value.getValue(), langTag));
             
         } else if (TokenType.LITERAL_DATA_TYPE == tokenizer.token().getType()) {
             
@@ -160,13 +160,13 @@ public final class NQuadsReader implements RdfReader {
                         
             if (TokenType.IRI_REF == attr.getType()) {
                 tokenizer.next();
-                return Rdf.createObject(Rdf.createLitteral(value.getValue(), IRI.create(attr.getValue())));
+                return Rdf.createObject(Rdf.createTypedString(value.getValue(), attr.getValue()));
             }
                 
             unexpected(attr);
         }
         
-        return Rdf.createObject(Rdf.createLitteral(value.getValue()));
+        return Rdf.createObject(RdfObject.Type.LITERAL, value.getValue());
     }
 
     
@@ -177,7 +177,7 @@ public final class NQuadsReader implements RdfReader {
                     );
     }
     
-    private IRI readIri()  throws NQuadsReaderError {
+    private String readIri()  throws NQuadsReaderError {
         
         Token token = tokenizer.token();
         
@@ -187,7 +187,7 @@ public final class NQuadsReader implements RdfReader {
         
         tokenizer.next();
         
-        return IRI.create(token.getValue());
+        return token.getValue();
     }
 
 

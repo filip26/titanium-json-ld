@@ -22,8 +22,8 @@ import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
-import com.apicatalog.uri.UriResolver;
-import com.apicatalog.uri.UriUtils;
+import com.apicatalog.jsonld.uri.UriResolver;
+import com.apicatalog.jsonld.uri.UriUtils;
 
 /**
  * @see <a href=
@@ -403,7 +403,7 @@ public class ActiveContextBuilder {
 
                     String valueString = ((JsonString) value).getString();
 
-                    if (UriUtils.isURI(valueString) || valueString.isBlank() || BlankNode.hasPrefix(valueString)) {
+                    if (valueString.isBlank() || BlankNode.hasPrefix(valueString) || UriUtils.isURI(valueString)) {
 
                         String vocabularyMapping =
                                     result
@@ -412,7 +412,7 @@ public class ActiveContextBuilder {
                                         .documentRelative(true)
                                         .build();
 
-                        if (UriUtils.isURI(vocabularyMapping) || BlankNode.hasPrefix(valueString)) {
+                        if (BlankNode.hasPrefix(valueString) || UriUtils.isURI(vocabularyMapping)) {
                             result.vocabularyMapping = vocabularyMapping;
 
                         } else {

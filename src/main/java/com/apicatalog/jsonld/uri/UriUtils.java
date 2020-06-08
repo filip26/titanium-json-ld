@@ -1,4 +1,4 @@
-package com.apicatalog.uri;
+package com.apicatalog.jsonld.uri;
 
 import java.net.URI;
 
@@ -13,6 +13,8 @@ public final class UriUtils {
 
         //FIXME hack
         if (value.endsWith(":")) {
+//            System.out.println("----- " + value);
+            
             value += ".";
         }
         if (value.endsWith("[") || value.endsWith("]")) {
@@ -20,13 +22,11 @@ public final class UriUtils {
         }
         try {
 
-            
             // TODO ':' 1-length-1 indices only
             return value != null && !value.isBlank()/* && value.indexOf(':', 1) != -1 */ && !Keywords.hasForm(value)
                     && URI.create(value) != null;
 
         } catch (IllegalArgumentException e) {
-//           e.printStackTrace();
             return false;
         }
     }

@@ -1,9 +1,9 @@
 package com.apicatalog.rdf.api;
 
-import com.apicatalog.iri.IRI;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfObject;
+import com.apicatalog.rdf.lang.IRI;
 
 public final class StatementObjectBuilder {
 

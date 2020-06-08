@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import com.apicatalog.uri.UriRelativizer;
+import com.apicatalog.jsonld.uri.UriRelativizer;
 
 @RunWith(Parameterized.class)
 public class UriRelativizerTest {

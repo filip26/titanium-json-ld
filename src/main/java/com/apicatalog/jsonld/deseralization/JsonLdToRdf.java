@@ -6,21 +6,22 @@ import java.util.List;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 
-import com.apicatalog.iri.IRI;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfObject;
+import com.apicatalog.rdf.RdfPredicate;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.api.Rdf;
+import com.apicatalog.rdf.lang.IRI;
 import com.apicatalog.rdf.lang.RdfVocabulary;
-import com.apicatalog.uri.UriUtils;
 
 public final class JsonLdToRdf {
 
@@ -70,11 +71,11 @@ public final class JsonLdToRdf {
                 // 1.1.
                 if (BlankNode.isWellFormed(graphName)) {
                     
-                    rdfGraphName = Rdf.createGraphName(BlankNode.create(graphName));
+                    rdfGraphName = Rdf.createGraphName(RdfGraphName.Type.BLANK_NODE, graphName);
                     
                 } else if (IRI.isWellFormed(graphName)) {
                  
-                    rdfGraphName = Rdf.createGraphName(IRI.create(graphName));
+                    rdfGraphName = Rdf.createGraphName(RdfGraphName.Type.IRI, graphName);
                     
                 } else {
                     continue;
@@ -89,10 +90,10 @@ public final class JsonLdToRdf {
                 // 1.3.1.
                 if (BlankNode.isWellFormed(subject)) {
      
-                    rdfSubject = Rdf.createSubject(BlankNode.create(subject));
+                    rdfSubject = Rdf.createSubject(RdfSubject.Type.BLANK_NODE, subject);
                     
                 } else if (IRI.isWellFormed(subject)) {
-                    rdfSubject = Rdf.createSubject(IRI.create(subject));
+                    rdfSubject = Rdf.createSubject(RdfSubject.Type.IRI, subject);
                 }
                 
                 if (rdfSubject == null) {
@@ -116,10 +117,10 @@ public final class JsonLdToRdf {
                             RdfObject rdfObject = null;
                             
                             if (BlankNode.isWellFormed(typeString)) {
-                                rdfObject = Rdf.createObject(BlankNode.create(typeString));
+                                rdfObject = Rdf.createObject(RdfObject.Type.BLANK_NODE, typeString);
                                 
                             } else if (IRI.isWellFormed(typeString)) {
-                                rdfObject = Rdf.createObject(IRI.create(typeString));
+                                rdfObject = Rdf.createObject(RdfObject.Type.IRI, typeString);
                                 
                             } else {
                                 continue;
@@ -127,7 +128,7 @@ public final class JsonLdToRdf {
 
                             dataset.add(Rdf.createNQuad(
                                                 rdfSubject,
-                                                IRI.create(RdfVocabulary.TYPE),
+                                                Rdf.createPredicate(RdfPredicate.Type.IRI, RdfVocabulary.TYPE),
                                                 rdfObject,
                                                 rdfGraphName
                                             ));
@@ -159,7 +160,7 @@ public final class JsonLdToRdf {
                             if (rdfObject != null) {
                                 dataset.add(Rdf.createNQuad(
                                                         rdfSubject,
-                                                        IRI.create(property),
+                                                        Rdf.createPredicate(RdfPredicate.Type.IRI, property),
                                                         rdfObject,
                                                         rdfGraphName
                                                     ));

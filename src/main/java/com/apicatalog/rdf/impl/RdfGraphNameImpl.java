@@ -2,53 +2,36 @@ package com.apicatalog.rdf.impl;
 
 import java.util.Objects;
 
-import com.apicatalog.iri.IRI;
-import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.rdf.RdfGraphName;
 
 class RdfGraphNameImpl implements RdfGraphName {
 
-    private final IRI iri;
-    private final BlankNode blankNode;
+    private final String value;
+    private final Type type;
     
-    protected RdfGraphNameImpl(IRI iri) {
-        this.iri = iri;
-        this.blankNode = null;
+    protected RdfGraphNameImpl(Type type, String value) {
+        this.type = type;
+        this.value = value;
     }
     
-    protected RdfGraphNameImpl(BlankNode blankNode) {
-        this.blankNode = blankNode;
-        this.iri = null;
-    }
-
     @Override
     public boolean isIRI() {
-        return iri != null;
+        return Type.IRI.equals(type);
     }
 
     @Override
     public boolean isBlankNode() {
-        return blankNode != null;
+        return Type.BLANK_NODE.equals(type);
     }
 
-    @Override
-    public IRI asIRI() {
-        return iri;
-    }
-
-    @Override
-    public BlankNode asBlankNode() {
-        return blankNode;
-    }
-    
     @Override
     public String toString() {
-        return isIRI() ? iri.toString() : blankNode.toString();
+        return value;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(blankNode, iri);
+        return Objects.hash(value, type);
     }
 
     @Override
@@ -63,7 +46,7 @@ class RdfGraphNameImpl implements RdfGraphName {
             return false;
         }
         RdfGraphNameImpl other = (RdfGraphNameImpl) obj;
-        return Objects.equals(blankNode, other.blankNode) && Objects.equals(iri, other.iri);
+        return Objects.equals(value, other.value) && type == other.type;
     }
     
 }

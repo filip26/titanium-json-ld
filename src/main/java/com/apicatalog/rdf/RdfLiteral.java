@@ -1,7 +1,5 @@
 package com.apicatalog.rdf;
 
-import com.apicatalog.iri.IRI;
-
 /**
  * The {@link RdfLiteral} interface describes an <code>RDF Literal</code>.
  * 
@@ -25,7 +23,7 @@ public interface RdfLiteral {
      * 
      * @return
      */
-    IRI getDatatype();
+    String getDatatype();
 
     /**
      * An optional language tag as defined by [BCP47]. If this value is specified,

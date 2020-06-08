@@ -14,7 +14,6 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 
-import com.apicatalog.iri.IRI;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
@@ -27,6 +26,7 @@ import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
 import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfTriple;
+import com.apicatalog.rdf.lang.IRI;
 import com.apicatalog.rdf.lang.RdfVocabulary;
 
 public final class RdfToJsonld {
