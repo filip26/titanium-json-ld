@@ -3,17 +3,12 @@ package com.apicatalog.rdf.api;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfObject;
-import com.apicatalog.rdf.lang.IRI;
 
 public final class StatementObjectBuilder {
 
     
     protected StatementObjectBuilder() {
         
-    }
-
-    public StatementContextBuilder iri(IRI iri) {
-        return null;
     }
 
     public StatementContextBuilder iri(String iri) {
@@ -32,13 +27,6 @@ public final class StatementObjectBuilder {
         return null;
     }
 
-    public StatementContextBuilder litteral(String lexicalForm, IRI dataType) {
-        return null;
-    }
-    
-    public StatementContextBuilder litteral(String lexicalForm, String langTag) {
-        return null;
-    }
 
     public StatementContextBuilder litteral(RdfLiteral literal) {
         return null;

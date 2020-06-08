@@ -20,7 +20,6 @@ import com.apicatalog.rdf.RdfPredicate;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.api.Rdf;
-import com.apicatalog.rdf.lang.IRI;
 import com.apicatalog.rdf.lang.RdfVocabulary;
 
 public final class JsonLdToRdf {
@@ -73,7 +72,7 @@ public final class JsonLdToRdf {
                     
                     rdfGraphName = Rdf.createGraphName(RdfGraphName.Type.BLANK_NODE, graphName);
                     
-                } else if (IRI.isWellFormed(graphName)) {
+                } else if (UriUtils.isAbsoluteUri(graphName)) {
                  
                     rdfGraphName = Rdf.createGraphName(RdfGraphName.Type.IRI, graphName);
                     
@@ -92,7 +91,7 @@ public final class JsonLdToRdf {
      
                     rdfSubject = Rdf.createSubject(RdfSubject.Type.BLANK_NODE, subject);
                     
-                } else if (IRI.isWellFormed(subject)) {
+                } else if (UriUtils.isAbsoluteUri(subject)) {
                     rdfSubject = Rdf.createSubject(RdfSubject.Type.IRI, subject);
                 }
                 
@@ -119,7 +118,7 @@ public final class JsonLdToRdf {
                             if (BlankNode.isWellFormed(typeString)) {
                                 rdfObject = Rdf.createObject(RdfObject.Type.BLANK_NODE, typeString);
                                 
-                            } else if (IRI.isWellFormed(typeString)) {
+                            } else if (UriUtils.isAbsoluteUri(typeString)) {
                                 rdfObject = Rdf.createObject(RdfObject.Type.IRI, typeString);
                                 
                             } else {

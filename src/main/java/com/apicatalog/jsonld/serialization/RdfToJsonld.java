@@ -22,11 +22,11 @@ import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.lang.Version;
+import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
 import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfTriple;
-import com.apicatalog.rdf.lang.IRI;
 import com.apicatalog.rdf.lang.RdfVocabulary;
 
 public final class RdfToJsonld {
@@ -259,7 +259,7 @@ public final class RdfToJsonld {
                     nodeId = ((JsonString)node.get(Keywords.ID)).getString();
    
                     // 6.4.3.5.
-                    if (IRI.isWellFormed(nodeId)) {
+                    if (UriUtils.isAbsoluteUri(nodeId)) {
 
                         break;
                     }                    
