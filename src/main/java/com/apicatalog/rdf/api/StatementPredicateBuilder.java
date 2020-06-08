@@ -1,6 +1,6 @@
 package com.apicatalog.rdf.api;
 
-import com.apicatalog.iri.IRI;
+import com.apicatalog.rdf.lang.IRI;
 
 public final class StatementPredicateBuilder {
 

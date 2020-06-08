@@ -102,14 +102,16 @@ final class NodeMapper {
         }
 
 
-        boolean overflow = true;
-        
-        for (NodeCluster cluster : clusters) {
-            if (overflow) {
-                overflow = cluster.next(); 
-            }
-            if (!overflow) {
-                break;
+        if (iterator > 0) {
+            boolean overflow = true;
+            
+            for (NodeCluster cluster : clusters) {
+                if (overflow) {
+                    overflow = cluster.next(); 
+                }
+                if (!overflow) {
+                    break;
+                }
             }
         }
         

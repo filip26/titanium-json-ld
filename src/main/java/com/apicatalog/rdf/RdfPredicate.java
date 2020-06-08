@@ -1,6 +1,6 @@
 package com.apicatalog.rdf;
 
-public interface RdfGraphName {
+public interface RdfPredicate {
 
     enum Type { IRI, BLANK_NODE }
     

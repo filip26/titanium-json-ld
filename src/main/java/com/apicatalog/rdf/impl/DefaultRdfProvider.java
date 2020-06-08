@@ -3,15 +3,15 @@ package com.apicatalog.rdf.impl;
 import java.io.Reader;
 import java.io.Writer;
 
-import com.apicatalog.iri.IRI;
-import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
 import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfObject;
+import com.apicatalog.rdf.RdfPredicate;
 import com.apicatalog.rdf.RdfSubject;
+import com.apicatalog.rdf.RdfSubject.Type;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.io.RdfFormat;
 import com.apicatalog.rdf.io.RdfReader;
@@ -55,62 +55,47 @@ public final class DefaultRdfProvider extends RdfProvider {
     }
 
     @Override
-    public RdfTriple createTriple(RdfSubject subject, IRI predicate, RdfObject object) {
+    public RdfTriple createTriple(RdfSubject subject, RdfPredicate predicate, RdfObject object) {
         return RdfTripleImpl.create(subject, predicate, object);
     }
 
     @Override
-    public RdfNQuad createNQuad(RdfSubject subject, IRI predicate, RdfObject object, RdfGraphName graphName) {
+    public RdfNQuad createNQuad(RdfSubject subject, RdfPredicate predicate, RdfObject object, RdfGraphName graphName) {
         return new RdfNQuadImpl(subject, predicate, object, graphName);
     }
 
     @Override
-    public RdfSubject createSubject(IRI iri) {
-        return new RdfSubjectImpl(iri);
+    public RdfSubject createSubject(Type type, String value) {
+        return new RdfSubjectImpl(type, value);
     }
 
     @Override
-    public RdfSubject createSubject(BlankNode blankNode) {
-        return new RdfSubjectImpl(blankNode);
+    public RdfPredicate createPredicate(RdfPredicate.Type type, String value) {
+        return new RdfPredicateImpl(type, value);
     }
 
     @Override
-    public RdfObject createObject(IRI iri) {
-        return RdfObjectImpl.of(iri);
+    public RdfObject createObject(RdfObject.Type type, String value) {
+        return new RdfObjectImpl(type, value);
     }
 
     @Override
-    public RdfObject createObject(RdfLiteral literal) {
-        return RdfObjectImpl.of(literal);
+    public RdfLiteral createTypedString(String lexicalForm, String dataType) {
+        return new RdfLiteralImpl(lexicalForm, null, dataType);
     }
 
     @Override
-    public RdfObject createObject(BlankNode blankNode) {
-        return RdfObjectImpl.of(blankNode);
-    }
-
-    @Override
-    public RdfLiteral createLiteral(String lexicalForm) {
-        return new RdfLiteralImpl(lexicalForm);
-    }
-
-    @Override
-    public RdfLiteral createLiteral(String lexicalForm, IRI dataType) {
-        return new RdfLiteralImpl(lexicalForm, dataType);
-    }
-
-    @Override
-    public RdfLiteral createLiteral(String lexicalForm, String langTag) {
+    public RdfLiteral createLangString(String lexicalForm, String langTag) {
         return new RdfLiteralImpl(lexicalForm, langTag);
     }
 
     @Override
-    public RdfGraphName createGraphName(IRI graphName) {
-        return new RdfGraphNameImpl(graphName);
+    public RdfGraphName createGraphName(RdfGraphName.Type type, String value) {
+        return new RdfGraphNameImpl(type, value);
     }
 
     @Override
-    public RdfGraphName createGraphName(BlankNode graphName) {
-        return new RdfGraphNameImpl(graphName);
+    public RdfObject createObject(RdfLiteral literal) {
+        return new RdfObjectImpl(literal);
     }
 }

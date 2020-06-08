@@ -7,15 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.apicatalog.iri.IRI;
 import com.apicatalog.rdf.RdfGraph;
 import com.apicatalog.rdf.RdfObject;
+import com.apicatalog.rdf.RdfPredicate;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.RdfTriple;
 
 final class RdfGraphImpl implements RdfGraph {
 
-    private final Map<RdfSubject, Map<IRI, Set<RdfObject>>> index;
+    private final Map<RdfSubject, Map<RdfPredicate, Set<RdfObject>>> index;
     
     private final List<RdfTriple> triples;
     
@@ -26,8 +26,8 @@ final class RdfGraphImpl implements RdfGraph {
 
     public void add(RdfTriple triple) {
         index
-            .computeIfAbsent(triple.getSubject(), x -> new HashMap<IRI, Set<RdfObject>>())
-            .computeIfAbsent(triple.getPredicate(), x -> new HashSet<RdfObject>())
+            .computeIfAbsent(triple.getSubject(), x -> new HashMap<>())
+            .computeIfAbsent(triple.getPredicate(), x -> new HashSet<>())
             .add(triple.getObject());
         
         triples.add(triple);

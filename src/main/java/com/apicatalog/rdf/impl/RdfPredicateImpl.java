@@ -2,18 +2,18 @@ package com.apicatalog.rdf.impl;
 
 import java.util.Objects;
 
-import com.apicatalog.rdf.RdfSubject;
+import com.apicatalog.rdf.RdfPredicate;
 
-class RdfSubjectImpl implements RdfSubject {
+final class RdfPredicateImpl implements RdfPredicate {
 
-    private final String value;
     private final Type type;
+    private final String value;
     
-    protected RdfSubjectImpl(Type type, String value) {
-        this.value = value;
+    protected RdfPredicateImpl(Type type, String value) {
         this.type = type;
+        this.value = value;
     }
-
+    
     @Override
     public boolean isIRI() {
         return Type.IRI.equals(type);
@@ -31,7 +31,7 @@ class RdfSubjectImpl implements RdfSubject {
 
     @Override
     public int hashCode() {
-        return Objects.hash(value, type);
+        return Objects.hash(type, value);
     }
 
     @Override
@@ -45,7 +45,8 @@ class RdfSubjectImpl implements RdfSubject {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        RdfSubjectImpl other = (RdfSubjectImpl) obj;
-        return Objects.equals(value, other.value) && type == other.type;
+        RdfPredicateImpl other = (RdfPredicateImpl) obj;
+        return type == other.type && Objects.equals(value, other.value);
     }
+
 }

@@ -10,17 +10,18 @@ final class NodeCluster {
     
     String[] target;
     
-    int[] index;
+    int[] indices;
     int[] mapping;
     
-    int iteration;
+    int index;
+
     int permutations;
     
     public NodeCluster(Map<String, Integer> source, String[] target, int permutations) {
         this.source = source;
         this.target = target;
         
-        this.index = new int[source.size()];
+        this.indices = new int[source.size()];
         this.mapping = new int[source.size()];
         
         this.permutations = permutations;
@@ -58,25 +59,29 @@ final class NodeCluster {
     
     public boolean next() {
         
-        boolean overflow = iteration >= index.length; 
-        
-        if (overflow) {
-            reset();
+        if (indices.length == 1) {
+            return true;
         }
-                
-        if (iteration < index.length) {
-            if (index[iteration] < iteration) {
-                swap(iteration % 2 == 0 ?  0: index[iteration], iteration);
-                index[iteration]++;
-                iteration = 0;
+        
+        while (index < indices.length) {
+            if (indices[index] < index) {
+                swap(index % 2 == 0 ?  0 : indices[index], index);
+                indices[index]++;
+                index = 0;
+                break;
             }
             else {
-                index[iteration] = 0;
-                iteration++;
+                indices[index] = 0;
+                index++;
             }
         }
         
-        return overflow;
+        if (index >= indices.length) {
+            reset(); 
+            return true;
+        }
+        
+        return false;
     }
     
     private void swap(int a, int b) {
@@ -86,11 +91,11 @@ final class NodeCluster {
     }
     
     private void reset() {
-        for (int i=0; i < index.length; i++) {
-            index[i] = 0;
+        for (int i=0; i < indices.length; i++) {
+            indices[i] = 0;
             mapping[i] = i;
         }
-        iteration = 0;
+        index = 0;
     }
     
     public String mapping(String label) {
@@ -99,6 +104,5 @@ final class NodeCluster {
     
     public int permutations() {
         return permutations;
-    }
-    
+    }    
 }

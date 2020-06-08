@@ -84,7 +84,7 @@ public final class RdfComparison {
             
             iteration++;
             
-            if (iteration >= 100000) {
+            if (iteration >=  5000000) {
                 System.out.println("Too many permutations [" + mapper.permutations() + "]");
                 return false;
             }
@@ -96,7 +96,7 @@ public final class RdfComparison {
     private static final boolean compareNQuads(final List<RdfNQuad> nquads1, final List<RdfNQuad> nquads2, final Map<String, String> mapping) {
         
         final LinkedList<RdfNQuad> remaining = new LinkedList<>(nquads2);
-        
+
         for (final RdfNQuad nquad1 : nquads1) {
             
             boolean found = false;
@@ -119,9 +119,9 @@ public final class RdfComparison {
     }
     
     private static final boolean compareTriple(final RdfTriple triple1, final RdfTriple triple2, final Map<String, String> mapping) {
-
+        
         return compareSubject(triple1.getSubject(), triple2.getSubject(), mapping)
-                && Objects.equals(triple1.getPredicate(), triple2.getPredicate())
+                && Objects.equals(triple1.getPredicate().toString(), triple2.getPredicate().toString())
                 && compareObject(triple1.getObject(), triple2.getObject(), mapping)
                 ;
     }
@@ -133,17 +133,18 @@ public final class RdfComparison {
     }
     
     private static final boolean compareSubject(RdfSubject subject1, RdfSubject subject2, Map<String, String> mapping) {
+        
+        
         if (subject1.isBlankNode() && subject2.isBlankNode()) { 
-
             return Objects.equals(
-                            subject1.asBlankNode().getLabel(), 
+                            subject1.toString(), 
                             mapping != null
-                                ? mapping.get(subject2.asBlankNode().getLabel())
-                                : subject2.asBlankNode().getLabel()
+                                ? mapping.get(subject2.toString())
+                                : subject2.toString()
                                         );
             
         } else if (subject1.isIRI() && subject2.isIRI()) {
-            return Objects.equals(subject1.asIRI(), subject2.asIRI());
+            return Objects.equals(subject1.toString(), subject2.toString());
         }
         return false;
     }
@@ -153,18 +154,17 @@ public final class RdfComparison {
         if (object1.isBlankNode() && object2.isBlankNode()) {
 
             return Objects.equals(
-                    object1.asBlankNode().getLabel(), 
+                    object1.toString(), 
                     mapping != null
-                        ? mapping.get(object2.asBlankNode().getLabel())
-                        : object2.asBlankNode().getLabel()
+                        ? mapping.get(object2.toString())
+                        : object2.toString()
                                 );
 
         } else if (object1.isIRI() && object2.isIRI()) {
-
-            return Objects.equals(object1.asIRI(), object2.asIRI());
+            return Objects.equals(object1.toString(), object2.toString());
             
         } else if (object1.isLiteral() && object2.isLiteral()) {
-            return Objects.equals(object1.asLiteral(), object2.asLiteral());
+            return Objects.equals(object1.getLiteral(), object2.getLiteral());
         }
         return false;
     }
@@ -178,15 +178,15 @@ public final class RdfComparison {
         if (name1.isBlankNode() && name2.isBlankNode()) { 
             
             return Objects.equals(
-                            name1.asBlankNode().getLabel(), 
+                            name1.toString(), 
                             mapping != null
-                                ? mapping.get(name2.asBlankNode().getLabel())
-                                : name2.asBlankNode().getLabel()
+                                ? mapping.get(name2.toString())
+                                : name2.toString()
                                         );
             
         } else if (name1.isIRI() && name2.isIRI()) {
             
-            return Objects.equals(name1.asIRI(), name2.asIRI());
+            return Objects.equals(name1.toString(), name2.toString());
         }
         return false;
     }

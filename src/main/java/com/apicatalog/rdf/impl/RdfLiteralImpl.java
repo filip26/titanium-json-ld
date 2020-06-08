@@ -2,31 +2,28 @@ package com.apicatalog.rdf.impl;
 
 import java.util.Objects;
 
-import com.apicatalog.iri.IRI;
 import com.apicatalog.rdf.RdfLiteral;
+import com.apicatalog.rdf.lang.RdfVocabulary;
+import com.apicatalog.xml.XsdVocabulary;
 
 final class RdfLiteralImpl implements RdfLiteral {
 
     private final String value;
-    private final IRI dataType;
     private final String langTag;
-    
-    protected RdfLiteralImpl(String value) {
-        this.value = value;
-        this.dataType = IRI.create("http://www.w3.org/2001/XMLSchema#string");  //TODO use constant
-        this.langTag = null; 
-    }
+    private final String dataType;
 
-    protected RdfLiteralImpl(String value, IRI dataType) {
-        this.value = value;
-        this.dataType = dataType;
-        this.langTag = null;
+    protected RdfLiteralImpl(String value) {
+        this(value, null, XsdVocabulary.STRING);
     }
 
     protected RdfLiteralImpl(String value, String langTag) {
+        this(value, langTag, RdfVocabulary.LANG_STRING);
+    }
+
+    protected RdfLiteralImpl(String value, String langTag, String dataType) {
         this.value = value;
         this.langTag = langTag;
-        this.dataType = IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#langString");  //TODO use constant
+        this.dataType = dataType;
     }
 
     @Override
@@ -35,7 +32,7 @@ final class RdfLiteralImpl implements RdfLiteral {
     }
 
     @Override
-    public IRI getDatatype() {
+    public String getDatatype() {
         return dataType;
     }
 

@@ -1,4 +1,4 @@
-package com.apicatalog.uri;
+package com.apicatalog.jsonld.uri;
 
 import java.net.URI;
 import java.util.ArrayList;

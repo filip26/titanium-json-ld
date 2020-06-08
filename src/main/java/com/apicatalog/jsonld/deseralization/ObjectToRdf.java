@@ -9,7 +9,6 @@ import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 
-import com.apicatalog.iri.IRI;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
@@ -23,9 +22,11 @@ import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfObject;
+import com.apicatalog.rdf.RdfPredicate;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.api.Rdf;
+import com.apicatalog.rdf.lang.IRI;
 import com.apicatalog.rdf.lang.RdfVocabulary;
 import com.apicatalog.xml.XsdVocabulary;
 
@@ -76,10 +77,10 @@ final class ObjectToRdf {
             String idString = ((JsonString)id).getString();
      
             if (BlankNode.isWellFormed(idString)) {
-                return Rdf.createObject(BlankNode.create(idString));
+                return Rdf.createObject(RdfObject.Type.BLANK_NODE, idString);
                 
             } else if (IRI.isWellFormed(idString)) {
-                return Rdf.createObject(IRI.create(idString));
+                return Rdf.createObject(RdfObject.Type.IRI, idString);
             }
             return null;
         }
@@ -195,7 +196,7 @@ final class ObjectToRdf {
         if (item.containsKey(Keywords.DIRECTION) && rdfDirection != null) {
 
             // 13.1.
-            String language = item.containsKey(Keywords.LANGUAGE)   
+            final String language = item.containsKey(Keywords.LANGUAGE)   
                                 ? item.getString(Keywords.LANGUAGE).toLowerCase()
                                 : "";
             // 13.2.
@@ -205,50 +206,50 @@ final class ObjectToRdf {
                                 .concat("_")
                                 .concat(item.getString(Keywords.DIRECTION));
                 
-                rdfLiteral = Rdf.createLitteral(valueString, IRI.create(datatype));
+                rdfLiteral = Rdf.createTypedString(valueString, datatype);
                 
             // 13.3.
             } else if (RdfDirection.COMPOUND_LITERAL == rdfDirection) {
 
-                // 13.3.1.
-                BlankNode blankNode = BlankNode.create(nodeMap.createIdentifier());
+                final String blankNodeId = nodeMap.createIdentifier();
                 
-                RdfSubject subject = Rdf.createSubject(blankNode);
+                // 13.3.1.                
+                final RdfSubject subject = Rdf.createSubject(RdfSubject.Type.BLANK_NODE, blankNodeId);
                 
-                // 13.3.2.
+                // 13.3.2. //TODO use statement builder
                 triples.add(Rdf.createTriple(
                                     subject, 
-                                    IRI.create(RdfVocabulary.VALUE), 
-                                    Rdf.createObject(Rdf.createLitteral(valueString)))
+                                    Rdf.createPredicate(RdfPredicate.Type.IRI, RdfVocabulary.VALUE), 
+                                    Rdf.createObject(RdfObject.Type.LITERAL, valueString))
                                     );
                 
                 // 13.3.3.
                 if (item.containsKey(Keywords.LANGUAGE) && JsonUtils.isString(item.get(Keywords.LANGUAGE))) {
                     triples.add(Rdf.createTriple(
                                     subject, 
-                                    IRI.create(RdfVocabulary.LANGUAGE), 
-                                    Rdf.createObject(Rdf.createLitteral(item.getString(Keywords.LANGUAGE).toLowerCase())))
+                                    Rdf.createPredicate(RdfPredicate.Type.IRI, RdfVocabulary.LANGUAGE), 
+                                    Rdf.createObject(RdfObject.Type.LITERAL, item.getString(Keywords.LANGUAGE).toLowerCase()))
                                     );
                 }
                 
                 // 13.3.4.
                 triples.add(Rdf.createTriple(
                                     subject, 
-                                    IRI.create(RdfVocabulary.DIRECTION), 
-                                    Rdf.createObject(Rdf.createLitteral(item.getString(Keywords.DIRECTION))))
+                                    Rdf.createPredicate(RdfPredicate.Type.IRI, RdfVocabulary.DIRECTION), 
+                                    Rdf.createObject(RdfObject.Type.LITERAL, item.getString(Keywords.DIRECTION)))
                                     );
                 
-                return Rdf.createObject(blankNode);
+                return Rdf.createObject(RdfObject.Type.BLANK_NODE, blankNodeId);
             }
             
         // 14.
         } else {
             if (item.containsKey(Keywords.LANGUAGE) && JsonUtils.isString(item.get(Keywords.LANGUAGE))) {  
             
-                rdfLiteral = Rdf.createLitteral(valueString, item.getString(Keywords.LANGUAGE));
+                rdfLiteral = Rdf.createLangString(valueString, item.getString(Keywords.LANGUAGE));
                                 
             } else {
-                rdfLiteral = Rdf.createLitteral(valueString, IRI.create(datatype));
+                rdfLiteral = Rdf.createTypedString(valueString, datatype);
             }
         }
         
