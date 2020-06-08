@@ -21,12 +21,12 @@ public final class JsonLdComparison {
     private JsonLdComparison() {
     }
     
-    public static final boolean equals(JsonValue value1, JsonValue value2) {
+    public static final boolean equals(final JsonValue value1, final JsonValue value2) {
         
         return equals(value1, value2, null);
     }
     
-    static final boolean equals(JsonValue value1, JsonValue value2, String parentProperty) {
+    static final boolean equals(final JsonValue value1, final JsonValue value2, final String parentProperty) {
         
         if (JsonUtils.isNull(value1) && JsonUtils.isNull(value2)) {
             return true;
@@ -47,12 +47,12 @@ public final class JsonLdComparison {
         return false;
     }
     
-    static final boolean objectEquals(JsonObject object1, JsonObject object2) {
+    static final boolean objectEquals(final JsonObject object1, final JsonObject object2) {
         if (object1.size() != object2.size()) {
             return false;
         }
                 
-        for (Entry<String, JsonValue> entry1 : object1.entrySet()) {
+        for (final Entry<String, JsonValue> entry1 : object1.entrySet()) {
             
             if (!object2.containsKey(entry1.getKey())) {
                 return false;
@@ -65,7 +65,7 @@ public final class JsonLdComparison {
         return true;        
     }
     
-    static final boolean arrayEquals(JsonArray array1, JsonArray array2, String parentProperty) {
+    static final boolean arrayEquals(final JsonArray array1, final JsonArray array2, final String parentProperty) {
         
         if (array1.size() != array2.size()) {
             return false;
@@ -91,7 +91,7 @@ public final class JsonLdComparison {
     }
 
     // JSON arrays are generally compared without regard to order
-    static final boolean arraysEqualsUnordered(JsonArray array1, JsonArray array2) {
+    static final boolean arraysEqualsUnordered(final JsonArray array1, final JsonArray array2) {
 
         if (array1.size() != array2.size()) {
             return false;
