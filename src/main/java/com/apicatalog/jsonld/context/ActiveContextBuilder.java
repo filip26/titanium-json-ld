@@ -367,14 +367,8 @@ public class ActiveContextBuilder {
 
                             String resolved = UriResolver.resolve(result.baseUri, valueString);
                             
-                            if (resolved.endsWith(":")) {   //TODO hack
-
-                                result.baseUri = URI.create(resolved + ".");
-                                
-                            } else {
-                                result.baseUri = URI.create(resolved);
-                            }
-
+                            result.baseUri = UriUtils.create(resolved);
+                            
                         } else {
                             throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);
                         }       

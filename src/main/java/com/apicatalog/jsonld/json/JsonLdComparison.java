@@ -93,9 +93,15 @@ public final class JsonLdComparison {
     // JSON arrays are generally compared without regard to order
     static final boolean arraysEqualsUnordered(JsonArray array1, JsonArray array2) {
 
-        final List<JsonValue> remaining = new ArrayList<>(array2);
+        if (array1.size() != array2.size()) {
+            return false;
+        }
         
-        //TODO use sort
+        if (array1.isEmpty()) {
+            return true;
+        }
+        
+        final List<JsonValue> remaining = new ArrayList<>(array2);
         
         for (final JsonValue item1 : array1) {
             
@@ -104,6 +110,7 @@ public final class JsonLdComparison {
             for (final JsonValue item2 : remaining) {
                 
                 found = equals(item1, item2);
+                
                 if (found) {
                     remaining.remove(item2);
                     break;

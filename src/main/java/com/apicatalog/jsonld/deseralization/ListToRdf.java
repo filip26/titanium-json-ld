@@ -78,7 +78,7 @@ final class ListToRdf {
                                            
             // 3.3.
             if (object != null) {
-                triples.add(Rdf.createTriple(   //TODO use statementbuilder
+                triples.add(Rdf.createTriple(
                                     Rdf.createSubject(RdfSubject.Type.BLANK_NODE, subject), 
                                     Rdf.createPredicate(RdfPredicate.Type.IRI, RdfVocabulary.FIRST), 
                                     object

@@ -11,24 +11,30 @@ public final class UriUtils {
 
     public static final boolean isURI(String value) {
 
-        if (value.endsWith(":")) {
-            value += ".";
-            
-        } else if (value.endsWith("[") || value.endsWith("]")) {
-            value = value.substring(0, value.length() - 1);
-        }
-        
-        try {
-
-            return value != null && !value.isBlank() && !Keywords.hasForm(value)
-                    && URI.create(value) != null;
-
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
+        return value != null 
+                    && !value.isBlank() 
+                    && !Keywords.hasForm(value)
+                    && create(value) != null;
     }
 
     
+    public static final URI create(String uri) {
+
+        if (uri.endsWith(":")) {
+            uri += ".";
+            
+        } else if (uri.endsWith("[") || uri.endsWith("]")) {
+            uri = uri.substring(0, uri.length() - 1);
+        }
+
+        try {
+
+            return URI.create(uri);
+            
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
     
     /**
      * @see <a href="https://tools.ietf.org/html/rfc3986#section-2.2">URI - Reserved
