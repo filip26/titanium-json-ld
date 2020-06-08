@@ -71,11 +71,11 @@ final class RdfToObject {
             if (literal.getDatatype() != null) {
             
                 // 2.4.1.
-                if (XsdVocabulary.STRING.equals(literal.getDatatype().toString())) {
+                if (XsdVocabulary.STRING.equals(literal.getDatatype())) {
                     convertedValue = Json.createValue(literal.toString());
     
                 // 2.4.2.
-                } else if (XsdVocabulary.BOOLEAN.equals(literal.getDatatype().toString())) {
+                } else if (XsdVocabulary.BOOLEAN.equals(literal.getDatatype())) {
                     
                     if ("true".equalsIgnoreCase(literal.getValue())) {
                     
@@ -91,23 +91,25 @@ final class RdfToObject {
                     }
                     
                 // 2.4.3.                
-                } else if (XsdVocabulary.INTEGER.equals(literal.getDatatype().toString())) {
+                } else if (XsdVocabulary.INTEGER.equals(literal.getDatatype())) {
                     
                     convertedValue = Json.createValue(Long.valueOf(literal.getValue()));
                     
-                } else if (XsdVocabulary.DOUBLE.equals(literal.getDatatype().toString())) {
+                } else if (XsdVocabulary.DOUBLE.equals(literal.getDatatype())) {
                     
                     convertedValue = Json.createValue(Double.valueOf(literal.getValue()));
                     
                 } else if (literal.getDatatype() != null) {
                     
-                    type = literal.getDatatype().toString();
+                    type = literal.getDatatype();
                     
                 }
             }
 
         // 2.5.
-        } else if (processingMode != Version.V1_0 && literal.getDatatype() != null && RdfVocabulary.JSON.equals(literal.getDatatype().toString())) {
+        } else if (processingMode != Version.V1_0 
+                        && literal.getDatatype() != null 
+                        && RdfVocabulary.JSON.equals(literal.getDatatype())) {
 
             try (JsonParser parser = Json.createParser(new StringReader(literal.getValue()))) {
                 
@@ -122,12 +124,13 @@ final class RdfToObject {
             
         // 2.6.
         } else if (RdfDirection.I18N_DATATYPE == rdfDirection
-                    && literal.getDatatype() != null && literal.getDatatype().toString().startsWith(RdfVocabulary.I18N_BASE)
+                    && literal.getDatatype() != null 
+                    && literal.getDatatype().startsWith(RdfVocabulary.I18N_BASE)
                 ) {
 
             convertedValue = Json.createValue(literal.getValue());
 
-            String langId = literal.getDatatype().toString().substring(RdfVocabulary.I18N_BASE.length());
+            String langId = literal.getDatatype().substring(RdfVocabulary.I18N_BASE.length());
             
             int directionIndex = langId.indexOf('_');
 
@@ -137,9 +140,11 @@ final class RdfToObject {
                 result.put(Keywords.DIRECTION, Json.createValue(langId.substring(directionIndex + 1)));
                 
             } else if (directionIndex == 0) {
+                
                 result.put(Keywords.DIRECTION, Json.createValue(langId.substring(1)));
                 
             } else  if (directionIndex == -1) {
+                
                 result.put(Keywords.LANGUAGE, Json.createValue(langId));
             }
             
@@ -148,8 +153,10 @@ final class RdfToObject {
             result.put(Keywords.LANGUAGE, Json.createValue(literal.getLanguage()));
                      
         // 2.8.   
-        } else if (literal.getDatatype() != null && !XsdVocabulary.STRING.equals(literal.getDatatype().toString())) {
-            type = literal.getDatatype().toString();
+        } else if (literal.getDatatype() != null 
+                        && !XsdVocabulary.STRING.equals(literal.getDatatype())) {
+            
+            type = literal.getDatatype();
         }        
 
         // 2.9.

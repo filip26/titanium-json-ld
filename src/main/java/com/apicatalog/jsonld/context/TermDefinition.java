@@ -11,31 +11,31 @@ import com.apicatalog.jsonld.lang.DirectionType;
 
 public final class TermDefinition {
 
-    // mandatory
-    String uriMapping;
+    // required
+    private String uriMapping;
 
-    boolean prefixFlag;
+    private boolean prefixFlag;
 
-    boolean protectedFlag;
+    private boolean protectedFlag;
 
-    boolean reversePropertyFlag;
+    private boolean reversePropertyFlag;
 
     // optional
-    URI baseUrl;
+    private URI baseUrl;
 
-    JsonValue localContext;
+    private JsonValue localContext;
 
-    Collection<String> containerMapping;
+    private Collection<String> containerMapping;
 
-    String indexMapping;
+    private String indexMapping;
 
-    String nestValue;
+    private String nestValue;
 
-    String typeMapping;
+    private String typeMapping;
 
-    DirectionType directionMapping; //TODO deal with defined as null vs unset
+    private DirectionType directionMapping;
 
-    JsonValue languageMapping;  //TODO deal with defined as null vs unset
+    private JsonValue languageMapping;
     
     public TermDefinition(boolean prefixFlag, boolean protectedFlag, boolean reversePropertyFlag) {
         this.prefixFlag = prefixFlag;
@@ -48,7 +48,7 @@ public final class TermDefinition {
         this.localContext = context;
     }
 
-    public void setBaseUrl(URI baseUrl) {
+    protected void setBaseUrl(URI baseUrl) {
         this.baseUrl = baseUrl;
     }
 
@@ -56,7 +56,7 @@ public final class TermDefinition {
         return uriMapping;
     }
 
-    public void setUriMapping(String uriMapping) {
+    protected void setUriMapping(String uriMapping) {
         this.uriMapping = uriMapping;
     }
 
@@ -80,11 +80,11 @@ public final class TermDefinition {
         return !prefixFlag;
     }
 
-    public void setLanguageMapping(JsonValue languageMapping) {
+    protected void setLanguageMapping(JsonValue languageMapping) {
         this.languageMapping = languageMapping;
     }
 
-    public void addContainerMapping(String mapping) {
+    protected void addContainerMapping(String mapping) {
         this.containerMapping.add(mapping);
     }
 
@@ -111,16 +111,45 @@ public final class TermDefinition {
     public String getIndexMapping() {
         return indexMapping;
     }
-
-    public void setIndexMapping(String indexMapping) {
-        this.indexMapping = indexMapping;
-    }
     
     public String getNestValue() {
         return nestValue;
     }
+
+    public boolean isProtected() {
+        return protectedFlag;
+    }
+
+    protected void setIndexMapping(String indexMapping) {
+        this.indexMapping = indexMapping;
+    }
     
-    public void setNestValue(String nestValue) {
+    
+    protected void setContainerMapping(Collection<String> containerMapping) {
+        this.containerMapping = containerMapping;
+    }
+    
+    protected void setPrefix(boolean prefixFlag) {
+        this.prefixFlag = prefixFlag;
+    }
+    
+    protected void setProtected(boolean protectedFlag) {
+        this.protectedFlag = protectedFlag;
+    }
+    
+    protected void setReverseProperty(boolean reversePropertyFlag) {
+        this.reversePropertyFlag = reversePropertyFlag;
+    }
+    
+    protected void setTypeMapping(String typeMapping) {
+        this.typeMapping = typeMapping;
+    }
+    
+    protected void setDirectionMapping(DirectionType directionMapping) {
+        this.directionMapping = directionMapping;
+    }
+    
+    protected void setNestValue(String nestValue) {
         this.nestValue = nestValue;
     }
 
@@ -133,11 +162,7 @@ public final class TermDefinition {
                 || !Objects.equals(indexMapping, ref.indexMapping) || !Objects.equals(nestValue, ref.nestValue)
                 || !Objects.equals(typeMapping, ref.typeMapping);
 
-//TODO 
-//        JsonValue localContext;
-//        Collection<String> containerMapping;    // any order?
-//        JsonValue languageMapping;
-
+                //TODO compare the rest
     }
     
     public boolean hasContainerMapping(String value) {

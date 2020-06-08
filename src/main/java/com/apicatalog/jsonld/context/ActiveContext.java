@@ -84,7 +84,7 @@ public final class ActiveContext {
     }
 
     public boolean containsProtectedTerm() {
-        return terms.values().stream().anyMatch(d -> d.protectedFlag);
+        return terms.values().stream().anyMatch(TermDefinition::isProtected);
     }
 
     public TermDefinition removeTerm(String term) {

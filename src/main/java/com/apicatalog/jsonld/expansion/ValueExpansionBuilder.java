@@ -20,13 +20,18 @@ import com.apicatalog.jsonld.lang.Keywords;
  */
 public final class ValueExpansionBuilder {
 
-    // mandatory
-    private ActiveContext activeContext;
-    private String activeProperty;
-    private JsonValue value;
+    // required
+    private final ActiveContext activeContext;
+    private final String activeProperty;
+    private final JsonValue value;
+    
+    // runtime
+    private JsonObject result;
+    private TermDefinition definition;
 
     public ValueExpansionBuilder(final ActiveContext activeContext, final JsonValue value,
             final String activeProperty) {
+        
         this.activeContext = activeContext;
         this.value = value;
         this.activeProperty = activeProperty;
@@ -39,7 +44,7 @@ public final class ValueExpansionBuilder {
 
     public JsonValue build() throws JsonLdError {
 
-        final TermDefinition definition = activeContext.getTerm(activeProperty);
+        definition = activeContext.getTerm(activeProperty);
 
         final String typeMapping = (definition != null) ? definition.getTypeMapping() : null;
 
@@ -65,7 +70,7 @@ public final class ValueExpansionBuilder {
         }
 
         // 3.
-        JsonObject result = Json.createObjectBuilder().add(Keywords.VALUE, value).build();
+        result = Json.createObjectBuilder().add(Keywords.VALUE, value).build();
 
         // 4.
         if (typeMapping != null && !Keywords.ID.equals(typeMapping) && !Keywords.VOCAB.equals(typeMapping)
@@ -75,41 +80,45 @@ public final class ValueExpansionBuilder {
 
             // 5.
         } else if (JsonUtils.isString(value)) {
-
-            // 5.1.
-            JsonValue language = null;
-
-            if (definition != null && definition.getLanguageMapping() != null) {
-                language = definition.getLanguageMapping();
-
-            } else if (activeContext.getDefaultLanguage() != null) {
-                language = Json.createValue(activeContext.getDefaultLanguage());
-            }
-
-            // 5.2.
-            DirectionType direction = null;
-
-            if (definition != null) {
-                direction = definition.getDirectionMapping();
-            }
-
-            if (direction == null) {
-                direction = activeContext.getDefaultBaseDirection();
-            }
-
-            // 5.3.
-            if (JsonUtils.isNotNull(language)) {
-                result = Json.createObjectBuilder(result).add(Keywords.LANGUAGE, language).build();
-            }
-
-            // 5.4.
-            if (direction != null && !DirectionType.NULL.equals(direction)) {
-                result = Json.createObjectBuilder(result)
-                        .add(Keywords.DIRECTION, Json.createValue(direction.name().toLowerCase())).build();
-            }
+            buildStringValue();
         }
 
         // 6.
         return result;
+    }
+    
+    private void buildStringValue() throws JsonLdError {
+
+        // 5.1.
+        JsonValue language = null;
+
+        if (definition != null && definition.getLanguageMapping() != null) {
+            language = definition.getLanguageMapping();
+
+        } else if (activeContext.getDefaultLanguage() != null) {
+            language = Json.createValue(activeContext.getDefaultLanguage());
+        }
+
+        // 5.2.
+        DirectionType direction = null;
+
+        if (definition != null) {
+            direction = definition.getDirectionMapping();
+        }
+
+        if (direction == null) {
+            direction = activeContext.getDefaultBaseDirection();
+        }
+
+        // 5.3.
+        if (JsonUtils.isNotNull(language)) {
+            result = Json.createObjectBuilder(result).add(Keywords.LANGUAGE, language).build();
+        }
+
+        // 5.4.
+        if (direction != null && !DirectionType.NULL.equals(direction)) {
+            result = Json.createObjectBuilder(result)
+                    .add(Keywords.DIRECTION, Json.createValue(direction.name().toLowerCase())).build();
+        }
     }
 }

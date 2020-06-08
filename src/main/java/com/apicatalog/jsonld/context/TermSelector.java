@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public final class TermSelector {
 
-    // mandatory
+    // required
     private ActiveContext activeContext;
     
     private String variable;
@@ -43,10 +43,10 @@ public final class TermSelector {
         }
 
         // 2. Initialize inverse context to the value of inverse context in active context.
-        InverseContext inverseContext = activeContext.getInverseContext();
+        final InverseContext inverseContext = activeContext.getInverseContext();
         
         // 3. Initialize container map to the value associated with var in the inverse context.
-        Map<String, Map<String, Map<String, String>>> containerMap = inverseContext.getValue(variable); //TODO get rid of map in map in map ... 
+        final Map<String, Map<String, Map<String, String>>> containerMap = inverseContext.getValue(variable); 
         
         // 4. For each item container in containers:
         for (String container : containers) {
@@ -60,11 +60,11 @@ public final class TermSelector {
             
             // 4.2. Initialize type/language map to the value associated 
             //      with the container entry in container map.
-            Map<String, Map<String, String>> typeLanguageMap = containerMap.get(container);
+            final Map<String, Map<String, String>> typeLanguageMap = containerMap.get(container);
 
             // 4.3. Initialize value map to the value associated with 
             //      type/language entry in type/language map.
-            Map<String, String> valueMap = typeLanguageMap.get(typeLanguage);
+            final Map<String, String> valueMap = typeLanguageMap.get(typeLanguage);
 
             // 4.4.
             for (final String item : preferredValues) {

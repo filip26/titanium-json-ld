@@ -200,7 +200,7 @@ public final class TermDefinitionBuilder {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_PROTECTED_VALUE);
             }
 
-            definition.protectedFlag = JsonUtils.isTrue(valueObject.get(Keywords.PROTECTED));
+            definition.setProtected(valueObject.getBoolean(Keywords.PROTECTED));
         }
 
         // 12.
@@ -236,7 +236,7 @@ public final class TermDefinitionBuilder {
             }
 
             // 12.5.
-            definition.typeMapping =  expandedTypeString;
+            definition.setTypeMapping(expandedTypeString);
         }
 
         // 13.
@@ -258,20 +258,20 @@ public final class TermDefinitionBuilder {
 
             // 13.3.
             if (Keywords.hasForm(reverseString)) {
-                // TODO warning;
+                //TODO warning;
                 return;
             }
 
             // 13.4.
-            definition.uriMapping = 
+            definition.setUriMapping( 
                         activeContext
                             .expandUri(reverseString)
                             .localContext(localContext)
                             .defined(defined)
                             .vocab(true)
-                            .build();
+                            .build());
 
-            if (UriUtils.isNotURI(definition.uriMapping)) {
+            if (UriUtils.isNotURI(definition.getUriMapping())) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
             }
 
@@ -298,7 +298,7 @@ public final class TermDefinitionBuilder {
             }
 
             // 13.6.
-            definition.reversePropertyFlag = true;
+            definition.setReverseProperty(true);
 
             // 13.7.
             activeContext.setTerm(term, definition);
@@ -331,20 +331,20 @@ public final class TermDefinitionBuilder {
                 }
 
                 // 14.2.3
-                definition.uriMapping = 
+                definition.setUriMapping( 
                                 activeContext
                                     .expandUri(idValueString)
                                     .localContext(localContext)
                                     .defined(defined)
                                     .vocab(true)
-                                    .build();
+                                    .build());
 
-                if (Keywords.CONTEXT.equals(definition.uriMapping)) {
+                if (Keywords.CONTEXT.equals(definition.getUriMapping())) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ALIAS);
                 }
 
-                if (!Keywords.contains(definition.uriMapping) && !UriUtils.isURI(definition.uriMapping)
-                        && !BlankNode.hasPrefix(definition.uriMapping)) {
+                if (!Keywords.contains(definition.getUriMapping()) && !UriUtils.isURI(definition.getUriMapping())
+                        && !BlankNode.hasPrefix(definition.getUriMapping())) {
 
                     throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
                 }
@@ -364,20 +364,20 @@ public final class TermDefinitionBuilder {
                                     .vocab(true)
                                     .build();
 
-                    if (expandedTerm == null || !expandedTerm.equals(definition.uriMapping)) {
+                    if (expandedTerm == null || !expandedTerm.equals(definition.getUriMapping())) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
                     }
                 }
 
                 // 14.2.5
                 if (!term.contains(":") && !term.contains("/") && Boolean.TRUE.equals(simpleTerm)
-                        && (definition.uriMapping != null && ((
-                            UriUtils.endsWithGenDelim(definition.uriMapping)
-                                && UriUtils.isURI(definition.uriMapping.substring(0, definition.uriMapping.length() - 1))
+                        && (definition.getUriMapping() != null && ((
+                            UriUtils.endsWithGenDelim(definition.getUriMapping())
+                                && UriUtils.isURI(definition.getUriMapping().substring(0, definition.getUriMapping().length() - 1))
                                     )
-                            || BlankNode.hasPrefix(definition.uriMapping)))) {
+                            || BlankNode.hasPrefix(definition.getUriMapping())))) {
                     
-                    definition.prefixFlag = true;
+                    definition.setPrefix(true);
                 }
             }
 
@@ -398,31 +398,31 @@ public final class TermDefinitionBuilder {
 
                 TermDefinition prefixDefinition = activeContext.getTerm(compactUri.getPrefix());
 
-                definition.uriMapping = prefixDefinition.uriMapping.concat(compactUri.getSuffix());
+                definition.setUriMapping(prefixDefinition.getUriMapping().concat(compactUri.getSuffix()));
 
             // 15.3.
             } else if (UriUtils.isURI(term) || BlankNode.hasPrefix(term)) {
-                definition.uriMapping = term;
+                definition.setUriMapping(term);
             }
 
         // 16.
         } else if (term.contains("/")) {
 
-            definition.uriMapping = 
+            definition.setUriMapping( 
                             activeContext
                                 .expandUri(term)
                                 .localContext(localContext)
                                 .defined(defined)
                                 .vocab(true)
-                                .build();
+                                .build());
 
-            if (!UriUtils.isURI(definition.uriMapping)) {
+            if (!UriUtils.isURI(definition.getUriMapping())) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
             }
 
         // 17.
         } else if (Keywords.TYPE.equals(term)) {
-            definition.uriMapping = Keywords.TYPE;
+            definition.setUriMapping(Keywords.TYPE);
 
         // 18.
         } else if (activeContext.vocabularyMapping == null) {
@@ -430,7 +430,7 @@ public final class TermDefinitionBuilder {
 
         } else {
 
-            definition.uriMapping = activeContext.vocabularyMapping.concat(term);
+            definition.setUriMapping(activeContext.vocabularyMapping.concat(term));
         }
 
         // 19.
@@ -452,11 +452,13 @@ public final class TermDefinitionBuilder {
             if (definition.getContainerMapping().contains(Keywords.TYPE)) {
 
                 // 19.4.1.
-                if (definition.typeMapping == null) {
-                    definition.typeMapping = Keywords.ID;
+                if (definition.getTypeMapping() == null) {
+                    definition.setTypeMapping(Keywords.ID);
                 }
 
-                if (!Keywords.ID.equals(definition.typeMapping) && !Keywords.VOCAB.equals(definition.typeMapping)) {
+                if (!Keywords.ID.equals(definition.getTypeMapping()) 
+                        && !Keywords.VOCAB.equals(definition.getTypeMapping())) {
+                    
                     throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING);
                 }
             }
@@ -490,7 +492,7 @@ public final class TermDefinitionBuilder {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
 
-            definition.indexMapping = indexString;
+            definition.setIndexMapping(indexString);
         }
 
         // 21.
@@ -529,7 +531,7 @@ public final class TermDefinitionBuilder {
             JsonValue language = valueObject.get(Keywords.LANGUAGE);
 
             if (JsonUtils.isNull(language) || JsonUtils.isString(language)) {
-                definition.languageMapping = language;
+                definition.setLanguageMapping(language);
 
             } else {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_MAPPING);
@@ -542,17 +544,17 @@ public final class TermDefinitionBuilder {
             JsonValue direction = valueObject.get(Keywords.DIRECTION);
 
             if (JsonUtils.isNull(direction)) {
-                definition.directionMapping = DirectionType.NULL;
+                definition.setDirectionMapping(DirectionType.NULL);
 
             } else if (JsonUtils.isString(direction)) {
 
                 String directionString = ((JsonString) direction).getString();
 
                 if ("ltr".equals(directionString)) {
-                    definition.directionMapping = DirectionType.LTR;
+                    definition.setDirectionMapping(DirectionType.LTR);
 
                 } else if ("rtl".equals(directionString)) {
-                    definition.directionMapping = DirectionType.RTL;
+                    definition.setDirectionMapping(DirectionType.RTL);
 
                 } else {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
@@ -582,7 +584,7 @@ public final class TermDefinitionBuilder {
             if (Keywords.contains(nestString) && !Keywords.NEST.equals(nestString)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
             }
-            definition.nestValue = nestString;
+            definition.setNestValue(nestString);
         }
 
         // 25.
@@ -597,17 +599,17 @@ public final class TermDefinitionBuilder {
             JsonValue prefix = valueObject.get(Keywords.PREFIX);
 
             if (JsonUtils.isTrue(prefix)) {
-                definition.prefixFlag = true;
+                definition.setPrefix(true);
 
             } else if (JsonUtils.isFalse(prefix) && JsonUtils.isNotNull(prefix)) {
-                definition.prefixFlag = false;
+                definition.setPrefix(false);
 
             } else {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_PREFIX_VALUE);
             }
 
             // 25.3
-            if (definition.prefixFlag && Keywords.contains(definition.uriMapping)) {
+            if (definition.isPrefix() && Keywords.contains(definition.getUriMapping())) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
         }
@@ -620,7 +622,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 27.
-        if (!overrideProtectedFlag && previousDefinition != null && previousDefinition.protectedFlag) {
+        if (!overrideProtectedFlag && previousDefinition != null && previousDefinition.isProtected()) {
 
             // 27.1.
             if (definition.isNotSameExcept(previousDefinition)) {
