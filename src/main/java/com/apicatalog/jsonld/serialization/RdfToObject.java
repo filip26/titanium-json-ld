@@ -18,7 +18,7 @@ import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.lang.RdfVocabulary;
-import com.apicatalog.xml.XsdVocabulary;
+import com.apicatalog.rdf.lang.XsdVocabulary;
 
 final class RdfToObject {
 

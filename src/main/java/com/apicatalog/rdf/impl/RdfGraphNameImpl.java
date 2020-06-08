@@ -48,5 +48,4 @@ class RdfGraphNameImpl implements RdfGraphName {
         RdfGraphNameImpl other = (RdfGraphNameImpl) obj;
         return Objects.equals(value, other.value) && type == other.type;
     }
-    
 }

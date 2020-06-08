@@ -11,7 +11,7 @@ import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfPredicate;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.io.RdfWriter;
-import com.apicatalog.xml.XsdVocabulary;
+import com.apicatalog.rdf.lang.XsdVocabulary;
 
 /**
  * 

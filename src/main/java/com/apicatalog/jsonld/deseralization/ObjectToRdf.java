@@ -28,7 +28,7 @@ import com.apicatalog.rdf.RdfPredicate;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.lang.RdfVocabulary;
-import com.apicatalog.xml.XsdVocabulary;
+import com.apicatalog.rdf.lang.XsdVocabulary;
 
 /**
  * 

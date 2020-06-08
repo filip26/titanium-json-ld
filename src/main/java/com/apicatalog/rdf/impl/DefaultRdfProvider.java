@@ -35,7 +35,6 @@ public final class DefaultRdfProvider extends RdfProvider {
         if (RdfFormat.N_QUADS.equals(format)) {
             return new NQuadsReader(reader);            
         }
-        //TODO
         return null;
     }
 

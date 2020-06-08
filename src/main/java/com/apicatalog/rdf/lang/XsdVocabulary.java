@@ -1,4 +1,4 @@
-package com.apicatalog.xml;
+package com.apicatalog.rdf.lang;
 
 public interface XsdVocabulary {
 

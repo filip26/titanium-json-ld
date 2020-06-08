@@ -2,7 +2,7 @@ package com.apicatalog.rdf;
 
 public interface RdfObject {
 
-    enum Type { IRI, BLANK_NODE, LITERAL };
+    enum Type { IRI, BLANK_NODE, LITERAL }
     
     boolean isLiteral();
     

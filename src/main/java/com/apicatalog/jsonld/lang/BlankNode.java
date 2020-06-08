@@ -1,6 +1,5 @@
 package com.apicatalog.jsonld.lang;
 
-import java.util.Objects;
 import java.util.stream.IntStream;
 
 import com.apicatalog.rdf.lang.RdfGrammar;
@@ -13,48 +12,8 @@ import com.apicatalog.rdf.lang.RdfGrammar;
  */
 public final class BlankNode {
 
-    private final String label;
-
-    private BlankNode(final String label) {
-        this.label = label;
-    }
-
-    @Deprecated
-    public static BlankNode create(String value) {
-        if (value != null && value.startsWith("_:")) {
-            return new BlankNode(value.substring("_:".length()));            
-        }
-
-        throw new IllegalArgumentException();
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    @Override
-    public String toString() {
-        return "_:".concat(label);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(label);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        BlankNode other = (BlankNode) obj;
-        return Objects.equals(label, other.label);
+    private BlankNode() {
+        
     }
     
     public static boolean hasPrefix(final String value) {        
@@ -93,7 +52,5 @@ public final class BlankNode {
         }
         
         return IntStream.range(3, chars.length - 1).map(i -> chars[i]).allMatch(RdfGrammar.IS_PN_CHARS.or(ch -> ch == '.'));        
-    }    
-    
-    
+    }
 }

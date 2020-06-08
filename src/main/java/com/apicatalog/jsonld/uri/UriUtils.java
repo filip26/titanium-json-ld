@@ -11,19 +11,16 @@ public final class UriUtils {
 
     public static final boolean isURI(String value) {
 
-        //FIXME hack
         if (value.endsWith(":")) {
-//            System.out.println("----- " + value);
-            
             value += ".";
-        }
-        if (value.endsWith("[") || value.endsWith("]")) {
+            
+        } else if (value.endsWith("[") || value.endsWith("]")) {
             value = value.substring(0, value.length() - 1);
         }
+        
         try {
 
-            // TODO ':' 1-length-1 indices only
-            return value != null && !value.isBlank()/* && value.indexOf(':', 1) != -1 */ && !Keywords.hasForm(value)
+            return value != null && !value.isBlank() && !Keywords.hasForm(value)
                     && URI.create(value) != null;
 
         } catch (IllegalArgumentException e) {
