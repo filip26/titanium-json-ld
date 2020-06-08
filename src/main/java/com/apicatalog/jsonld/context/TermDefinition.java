@@ -1,9 +1,10 @@
 package com.apicatalog.jsonld.context;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.json.JsonValue;
 
@@ -11,44 +12,44 @@ import com.apicatalog.jsonld.lang.DirectionType;
 
 public final class TermDefinition {
 
-    // mandatory
-    String uriMapping;
+    // required
+    private String uriMapping;
 
-    boolean prefixFlag;
+    private boolean prefixFlag;
 
-    boolean protectedFlag;
+    private boolean protectedFlag;
 
-    boolean reversePropertyFlag;
+    private boolean reversePropertyFlag;
 
     // optional
-    URI baseUrl;
+    private URI baseUrl;
 
-    JsonValue localContext;
+    private JsonValue localContext;
 
-    Collection<String> containerMapping;
+    private Set<String> containerMapping;
 
-    String indexMapping;
+    private String indexMapping;
 
-    String nestValue;
+    private String nestValue;
 
-    String typeMapping;
+    private String typeMapping;
 
-    DirectionType directionMapping; //TODO deal with defined as null vs unset
+    private DirectionType directionMapping;
 
-    JsonValue languageMapping;  //TODO deal with defined as null vs unset
+    private JsonValue languageMapping;
     
     public TermDefinition(boolean prefixFlag, boolean protectedFlag, boolean reversePropertyFlag) {
         this.prefixFlag = prefixFlag;
         this.protectedFlag = protectedFlag;
         this.reversePropertyFlag = reversePropertyFlag;
-        this.containerMapping = new ArrayList<>();
+        this.containerMapping = new HashSet<>();
     }
 
     public void setLocalContext(JsonValue context) {
         this.localContext = context;
     }
 
-    public void setBaseUrl(URI baseUrl) {
+    protected void setBaseUrl(URI baseUrl) {
         this.baseUrl = baseUrl;
     }
 
@@ -56,7 +57,7 @@ public final class TermDefinition {
         return uriMapping;
     }
 
-    public void setUriMapping(String uriMapping) {
+    protected void setUriMapping(String uriMapping) {
         this.uriMapping = uriMapping;
     }
 
@@ -80,11 +81,11 @@ public final class TermDefinition {
         return !prefixFlag;
     }
 
-    public void setLanguageMapping(JsonValue languageMapping) {
+    protected void setLanguageMapping(JsonValue languageMapping) {
         this.languageMapping = languageMapping;
     }
 
-    public void addContainerMapping(String mapping) {
+    protected void addContainerMapping(String mapping) {
         this.containerMapping.add(mapping);
     }
 
@@ -111,33 +112,58 @@ public final class TermDefinition {
     public String getIndexMapping() {
         return indexMapping;
     }
-
-    public void setIndexMapping(String indexMapping) {
-        this.indexMapping = indexMapping;
-    }
     
     public String getNestValue() {
         return nestValue;
     }
+
+    public boolean isProtected() {
+        return protectedFlag;
+    }
+
+    protected void setIndexMapping(String indexMapping) {
+        this.indexMapping = indexMapping;
+    }
     
-    public void setNestValue(String nestValue) {
+    
+    protected void setContainerMapping(Set<String> containerMapping) {
+        this.containerMapping = containerMapping;
+    }
+    
+    protected void setPrefix(boolean prefixFlag) {
+        this.prefixFlag = prefixFlag;
+    }
+    
+    protected void setProtected(boolean protectedFlag) {
+        this.protectedFlag = protectedFlag;
+    }
+    
+    protected void setReverseProperty(boolean reversePropertyFlag) {
+        this.reversePropertyFlag = reversePropertyFlag;
+    }
+    
+    protected void setTypeMapping(String typeMapping) {
+        this.typeMapping = typeMapping;
+    }
+    
+    protected void setDirectionMapping(DirectionType directionMapping) {
+        this.directionMapping = directionMapping;
+    }
+    
+    protected void setNestValue(String nestValue) {
         this.nestValue = nestValue;
     }
 
     public boolean isNotSameExcept(TermDefinition ref) {
-
         return !Objects.equals(uriMapping, ref.uriMapping) || prefixFlag != ref.prefixFlag
                 || !Objects.equals(reversePropertyFlag, ref.reversePropertyFlag)
                 || !Objects.equals(baseUrl, ref.baseUrl) || !Objects.equals(containerMapping, ref.containerMapping)
                 || !Objects.equals(directionMapping, ref.directionMapping)
                 || !Objects.equals(indexMapping, ref.indexMapping) || !Objects.equals(nestValue, ref.nestValue)
-                || !Objects.equals(typeMapping, ref.typeMapping);
-
-//TODO 
-//        JsonValue localContext;
-//        Collection<String> containerMapping;    // any order?
-//        JsonValue languageMapping;
-
+                || !Objects.equals(typeMapping, ref.typeMapping)
+                || !Objects.equals(languageMapping, ref.languageMapping)
+                || !Objects.equals(localContext, ref.localContext)
+                ;
     }
     
     public boolean hasContainerMapping(String value) {

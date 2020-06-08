@@ -10,29 +10,30 @@ final class NodeCategory {
     int subjectOccurence;
     int graphOccurence;
     
-    Set<String> objectPredicate;
-    Set<String> subjectPredicate;
+    final Set<String> objects;
+    final Set<String> subjects;
     
     public NodeCategory() {
         this.objectOccurence = 0;
         this.subjectOccurence = 0;
         this.graphOccurence = 0;
-        this.objectPredicate = new HashSet<>();
-        this.subjectPredicate = new HashSet<>();
+        this.objects = new HashSet<>();
+        this.subjects = new HashSet<>();
     }
         
-    public void addObject(String predicate) {
+    public void addObject(String subject) {
         this.objectOccurence++;
         
-        if (predicate != null) {
-            this.objectPredicate.add(predicate);
+        if (subject != null) {
+            this.subjects.add(subject);
         }
     }
     
-    public void addSubject(String predicate) {
+    public void addSubject(String object) {
         this.subjectOccurence++;
-        if (predicate != null) {
-            this.subjectPredicate.add(predicate);
+        
+        if (object != null) {
+            this.objects.add(object);
         }
     }
     
@@ -42,7 +43,7 @@ final class NodeCategory {
 
     @Override
     public int hashCode() {
-        return Objects.hash(objectOccurence, subjectOccurence, graphOccurence, subjectPredicate, objectPredicate);
+        return Objects.hash(objectOccurence, subjectOccurence, graphOccurence, subjects, objects);
     }
 
     @Override
@@ -60,8 +61,8 @@ final class NodeCategory {
         return objectOccurence == other.objectOccurence 
                 && subjectOccurence == other.subjectOccurence
                 && graphOccurence == other.graphOccurence
-                && subjectPredicate.equals(other.subjectPredicate)
-                && objectPredicate.equals(other.objectPredicate)
+                && subjects.equals(other.subjects)
+                && objects.equals(other.objects)
                 ;
     }      
 }

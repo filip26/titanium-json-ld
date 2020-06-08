@@ -4,26 +4,24 @@ import java.util.Objects;
 
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.lang.RdfVocabulary;
-import com.apicatalog.xml.XsdVocabulary;
+import com.apicatalog.rdf.lang.XsdVocabulary;
 
 final class RdfLiteralImpl implements RdfLiteral {
 
     private final String value;
+    
     private final String langTag;
+    
     private final String dataType;
 
     protected RdfLiteralImpl(String value) {
-        this(value, null, XsdVocabulary.STRING);
+        this(value, null, null);
     }
 
-    protected RdfLiteralImpl(String value, String langTag) {
-        this(value, langTag, RdfVocabulary.LANG_STRING);
-    }
-
-    protected RdfLiteralImpl(String value, String langTag, String dataType) {
+    protected RdfLiteralImpl(String value, String langTag, String datatype) {
         this.value = value;
         this.langTag = langTag;
-        this.dataType = dataType;
+        this.dataType = datatype(langTag, datatype);
     }
 
     @Override
@@ -80,4 +78,10 @@ final class RdfLiteralImpl implements RdfLiteral {
         return builder.toString();
     }
     
+    private static final String datatype(String langTag, String datatype) {
+        if (datatype != null) {
+            return datatype;
+        }
+        return langTag == null ? XsdVocabulary.STRING : RdfVocabulary.LANG_STRING;
+    }
 }

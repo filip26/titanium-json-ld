@@ -150,7 +150,6 @@ public final class JsonUtils {
                     ;
     }    
     
-    // TODO don't use this algorithm, easy reduce complexity
     public static void addValue(Map<String, JsonValue> object, String key, JsonValue value, boolean asArray) {
 
         // 1. If as array is true and the value of key in object does not exist or is

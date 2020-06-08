@@ -7,6 +7,7 @@ import com.apicatalog.rdf.RdfGraphName;
 class RdfGraphNameImpl implements RdfGraphName {
 
     private final String value;
+    
     private final Type type;
     
     protected RdfGraphNameImpl(Type type, String value) {
@@ -48,5 +49,4 @@ class RdfGraphNameImpl implements RdfGraphName {
         RdfGraphNameImpl other = (RdfGraphNameImpl) obj;
         return Objects.equals(value, other.value) && type == other.type;
     }
-    
 }

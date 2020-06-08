@@ -7,9 +7,10 @@ import com.apicatalog.rdf.RdfSubject;
 class RdfSubjectImpl implements RdfSubject {
 
     private final String value;
+    
     private final Type type;
     
-    protected RdfSubjectImpl(Type type, String value) {
+    protected RdfSubjectImpl(final Type type, final String value) {
         this.value = value;
         this.type = type;
     }

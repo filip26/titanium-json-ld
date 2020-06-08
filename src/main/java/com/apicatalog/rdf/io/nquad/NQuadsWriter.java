@@ -11,7 +11,7 @@ import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfPredicate;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.io.RdfWriter;
-import com.apicatalog.xml.XsdVocabulary;
+import com.apicatalog.rdf.lang.XsdVocabulary;
 
 /**
  * 
@@ -27,7 +27,7 @@ public class NQuadsWriter implements RdfWriter {
     }
 
     @Override
-    public void write(RdfDataset dataset) throws IOException {
+    public void write(final RdfDataset dataset) throws IOException {
         
         for (RdfNQuad nquad : dataset.toList()) {
             write(nquad);
@@ -36,7 +36,7 @@ public class NQuadsWriter implements RdfWriter {
         writer.flush();
     }
     
-    public void write(RdfNQuad nquad) throws IOException {
+    public void write(final RdfNQuad nquad) throws IOException {
         
         write(nquad.getSubject());
         writer.write(' ');

@@ -8,17 +8,15 @@ import com.apicatalog.rdf.RdfTriple;
 class RdfTripleImpl implements RdfTriple {
 
     private final RdfSubject subject;
+    
     private final RdfPredicate predicate;
+    
     private final RdfObject object;
     
-    protected RdfTripleImpl(RdfSubject subject, RdfPredicate predicate, RdfObject object) {
+    protected RdfTripleImpl(final RdfSubject subject, final RdfPredicate predicate, final RdfObject object) {
         this.subject = subject;
         this.predicate = predicate; 
         this.object = object;
-    }
-
-    public static RdfTriple create(RdfSubject subject, RdfPredicate predicate, RdfObject object) {
-        return new RdfTripleImpl(subject, predicate, object);
     }
 
     @Override

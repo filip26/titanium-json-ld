@@ -57,7 +57,7 @@ public final class InverseContextBuilder {
             }
             
             // 3.3.
-            String variable = termDefinition.uriMapping;
+            String variable = termDefinition.getUriMapping();
             
             // 3.4.-5.
             Map<String, Map<String, Map<String, String>>> containerMap = result.getValue(variable);

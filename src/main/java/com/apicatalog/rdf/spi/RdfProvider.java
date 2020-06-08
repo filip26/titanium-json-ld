@@ -16,23 +16,22 @@ import com.apicatalog.rdf.impl.DefaultRdfProvider;
 import com.apicatalog.rdf.io.RdfFormat;
 import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.RdfWriter;
+import com.apicatalog.rdf.io.error.UnsupportedFormatException;
 
 public abstract class RdfProvider {
 
-    protected RdfProvider() {
-        
+    protected RdfProvider() {   
     }
-
+    
     public static RdfProvider provider() {
-        //TODO
         return DefaultRdfProvider.INSTANCE;
     }
 
     public abstract RdfDataset createDataset();
 
-    public abstract RdfReader createReader(Reader reader, RdfFormat format);
+    public abstract RdfReader createReader(Reader reader, RdfFormat format) throws UnsupportedFormatException;
 
-    public abstract RdfWriter createWriter(Writer writer, RdfFormat format);
+    public abstract RdfWriter createWriter(Writer writer, RdfFormat format) throws UnsupportedFormatException;
 
     public abstract RdfGraph createGraph();
     
@@ -48,10 +47,8 @@ public abstract class RdfProvider {
     
     public abstract RdfObject createObject(RdfLiteral literal);
     
-    public abstract RdfLiteral createTypedString(String lexicalForm, String dataType);
+    public abstract RdfLiteral createLiteral(String lexicalForm, String langTag, String dataType);
     
-    public abstract RdfLiteral createLangString(String lexicalForm, String langTag);
-
     public abstract RdfGraphName createGraphName(RdfGraphName.Type type, String value);
 
 }

@@ -11,11 +11,11 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfPredicate;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.RdfTriple;
-import com.apicatalog.rdf.api.Rdf;
 import com.apicatalog.rdf.lang.RdfVocabulary;
 
 /**
@@ -78,7 +78,7 @@ final class ListToRdf {
                                            
             // 3.3.
             if (object != null) {
-                triples.add(Rdf.createTriple(   //TODO use statementbuilder
+                triples.add(Rdf.createTriple(
                                     Rdf.createSubject(RdfSubject.Type.BLANK_NODE, subject), 
                                     Rdf.createPredicate(RdfPredicate.Type.IRI, RdfVocabulary.FIRST), 
                                     object

@@ -20,6 +20,7 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.uri.UriResolver;
@@ -366,14 +367,8 @@ public class ActiveContextBuilder {
 
                             String resolved = UriResolver.resolve(result.baseUri, valueString);
                             
-                            if (resolved.endsWith(":")) {   //TODO hack
-
-                                result.baseUri = URI.create(resolved + ".");
-                                
-                            } else {
-                                result.baseUri = URI.create(resolved);
-                            }
-
+                            result.baseUri = UriUtils.create(resolved);
+                            
                         } else {
                             throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);
                         }       
@@ -442,7 +437,10 @@ public class ActiveContextBuilder {
                     }
 
                     result.defaultLanguage = ((JsonString) value).getString();
-                    // TODO check language format, generate warning if needed
+                    
+                    if (!LanguageTag.isWellFormed(result.defaultLanguage)) {
+                        // TODO check language format, generate warning if needed                        
+                    }
                 }
             }
 

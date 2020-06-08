@@ -14,16 +14,18 @@ import com.apicatalog.rdf.lang.RdfGrammar;
  */
 final class Tokenizer {
 
+    private static final int BUFFER_SIZE = 8192;
+    
     private final Reader reader;
     
     private Token next;
     
     protected Tokenizer(Reader reader) {
-        this.reader = new BufferedReader(reader, 8192); //TODO magic constant
+        this.reader = new BufferedReader(reader, BUFFER_SIZE);
         this.next = null;
     }
     
-    public Token next() throws NQuadsReaderError {
+    public Token next() throws NQuadsReaderException {
         
         if (!hasNext()) {
             return next;
@@ -33,12 +35,12 @@ final class Tokenizer {
         return next;
     }
     
-    public Token token() throws NQuadsReaderError {        
+    public Token token() throws NQuadsReaderException {        
         hasNext();
         return next;
     }
     
-    public boolean accept(TokenType type) throws NQuadsReaderError {
+    public boolean accept(TokenType type) throws NQuadsReaderException {
         if (type == token().getType()) {
             next();
             return true;
@@ -46,7 +48,7 @@ final class Tokenizer {
         return false;
     }     
     
-    private Token doRead() throws NQuadsReaderError {
+    private Token doRead() throws NQuadsReaderException {
         
         try {
             int ch = reader.read();
@@ -97,21 +99,21 @@ final class Tokenizer {
             unexpected(ch, "\\\t", "\\\n", "\\\r", "^", "@", "SPACE", ".", "<", "_", "\"");
             
         } catch (IOException e) {
-            throw new NQuadsReaderError(e);
+            throw new NQuadsReaderException(e);
         }
         
         throw new IllegalStateException();
     }
     
-    private void unexpected(int actual, String ...expected) throws NQuadsReaderError {
-        throw new NQuadsReaderError(
+    private void unexpected(int actual, String ...expected) throws NQuadsReaderException {
+        throw new NQuadsReaderException(
                         actual != -1 
                             ? "Unexpected character [" + (char)actual  + "] expected " +  Arrays.toString(expected) + "." 
                             : "Unexpected end of input, expected " + Arrays.toString(expected) + "."
                             );
     }
     
-    private Token skipWhitespaces() throws NQuadsReaderError {
+    private Token skipWhitespaces() throws NQuadsReaderException {
 
         try {
             reader.mark(1);
@@ -127,11 +129,11 @@ final class Tokenizer {
             return Token.WS;
             
         } catch (IOException e) {
-            throw new NQuadsReaderError(e);
+            throw new NQuadsReaderException(e);
         }
     }
 
-    private Token skipEol() throws NQuadsReaderError {
+    private Token skipEol() throws NQuadsReaderException {
 
         try {
             reader.mark(1);
@@ -147,11 +149,11 @@ final class Tokenizer {
             return Token.EOL;
             
         } catch (IOException e) {
-            throw new NQuadsReaderError(e);
+            throw new NQuadsReaderException(e);
         }
     }
 
-    private Token readIriRef() throws NQuadsReaderError {
+    private Token readIriRef() throws NQuadsReaderException {
 
         try {
 
@@ -184,12 +186,8 @@ final class Tokenizer {
                     } else if (ch == 'U') {
                         
                         //TODO unicode
-//                        value.append('\\');
-//                        value.append((char)ch);
-//                        
-//                        readUtf8(value);
-//                        readUtf8(value);
                         unexpected(ch);
+                        
                     } else {
                         unexpected(ch);
                     }
@@ -207,11 +205,11 @@ final class Tokenizer {
             return new Token(TokenType.IRI_REF, value.toString());
             
         } catch (IOException e) {
-            throw new NQuadsReaderError(e);
+            throw new NQuadsReaderException(e);
         }        
     }
     
-    private Token readString() throws NQuadsReaderError {
+    private Token readString() throws NQuadsReaderException {
         try {
 
             StringBuilder value = new StringBuilder();
@@ -242,11 +240,8 @@ final class Tokenizer {
                     } else if (ch == 'U') {
                         
                         //TODO unescape                        
-//                        value.append('\\');
-//                        value.append((char)ch);
-//                        readUtf8(value);
-//                        readUtf8(value);
                         unexpected(ch);
+                        
                     } else {
                         unexpected(ch);
                     }
@@ -264,11 +259,11 @@ final class Tokenizer {
             return new Token(TokenType.STRING_LITERAL_QUOTE, value.toString());
             
         } catch (IOException e) {
-            throw new NQuadsReaderError(e);
+            throw new NQuadsReaderException(e);
         }    
     }
 
-    private Token readLangTag() throws NQuadsReaderError {
+    private Token readLangTag() throws NQuadsReaderException {
         try {
 
             StringBuilder value = new StringBuilder();
@@ -316,11 +311,11 @@ final class Tokenizer {
             return new Token(TokenType.LANGTAG, value.toString());
             
         } catch (IOException e) {
-            throw new NQuadsReaderError(e);
+            throw new NQuadsReaderException(e);
         }    
     }
 
-    private Token readBlankNode() throws NQuadsReaderError {
+    private Token readBlankNode() throws NQuadsReaderException {
         try {
 
             StringBuilder value = new StringBuilder();
@@ -363,11 +358,11 @@ final class Tokenizer {
             return new Token(TokenType.BLANK_NODE_LABEL, value.toString());
             
         } catch (IOException e) {
-            throw new NQuadsReaderError(e);
+            throw new NQuadsReaderException(e);
         }    
     }
     
-    private char[] readUnicode() throws NQuadsReaderError, IOException {
+    private char[] readUnicode() throws NQuadsReaderException, IOException {
         
         char[] code = new char[4];
         
@@ -379,7 +374,7 @@ final class Tokenizer {
         return Character.toChars(Integer.parseInt(String.valueOf(code), 16));
     }
 
-    private char readHex8()  throws IOException, NQuadsReaderError {
+    private char readHex8()  throws IOException, NQuadsReaderException {
         
         int hex = reader.read();
         
@@ -408,7 +403,7 @@ final class Tokenizer {
         return symbol;        
     }
 
-    public boolean hasNext() throws NQuadsReaderError {
+    public boolean hasNext() throws NQuadsReaderException {
         if (next == null) {
             next = doRead();
         }

@@ -6,13 +6,6 @@ public interface RdfPredicate {
     
     boolean isIRI();
     boolean isBlankNode();
+
     
-    @Override
-    String toString();
-    
-    @Override
-    int hashCode();
-    
-    @Override
-    boolean equals(Object obj);
 }

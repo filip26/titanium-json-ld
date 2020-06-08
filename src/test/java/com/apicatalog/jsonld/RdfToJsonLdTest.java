@@ -17,10 +17,11 @@ import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
+import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.api.Rdf;
 import com.apicatalog.rdf.io.RdfFormat;
-import com.apicatalog.rdf.io.nquad.NQuadsReaderError;
+import com.apicatalog.rdf.io.error.UnsupportedFormatException;
+import com.apicatalog.rdf.io.nquad.NQuadsReaderException;
 
 @RunWith(Parameterized.class)
 public class RdfToJsonLdTest {
@@ -58,7 +59,7 @@ public class RdfToJsonLdTest {
                     
                     return JsonLd.fromRdf(input).options(options).get();
                 
-                } catch (IOException | NQuadsReaderError e) {
+                } catch (IOException | NQuadsReaderException | UnsupportedFormatException e) {
                     Assert.fail(e.getMessage());
                 }
                 

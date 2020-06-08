@@ -3,10 +3,9 @@ package com.apicatalog.jsonld.context;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class InverseContext {
+public final class InverseContext {
 
-    //TODO get rid of all maps
-    Map<String ,Map<String, Map<String, Map<String, String>>>> context;
+    private final Map<String ,Map<String, Map<String, Map<String, String>>>> context;
     
     public InverseContext() {
         this.context = new LinkedHashMap<>();
@@ -23,5 +22,4 @@ public class InverseContext {
     public void add(String variable, Map<String, Map<String, Map<String, String>>> containerMap) {
         context.put(variable, containerMap);
     }
-
 }

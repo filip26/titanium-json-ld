@@ -7,9 +7,10 @@ import com.apicatalog.rdf.RdfPredicate;
 final class RdfPredicateImpl implements RdfPredicate {
 
     private final Type type;
+    
     private final String value;
     
-    protected RdfPredicateImpl(Type type, String value) {
+    protected RdfPredicateImpl(final Type type, final String value) {
         this.type = type;
         this.value = value;
     }
