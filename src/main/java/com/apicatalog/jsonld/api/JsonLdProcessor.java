@@ -53,9 +53,9 @@ public interface JsonLdProcessor {
 
     
     
-    Collection<JsonObject> fromRdf(RdfDataset input) throws JsonLdError;
+    JsonArray fromRdf(RdfDataset input) throws JsonLdError;
 
-    Collection<JsonObject> fromRdf(RdfDataset input, JsonLdOptions options) throws JsonLdError;
+    JsonArray fromRdf(RdfDataset input, JsonLdOptions options) throws JsonLdError;
 
     
     

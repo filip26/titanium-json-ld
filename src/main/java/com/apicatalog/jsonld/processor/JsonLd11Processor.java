@@ -77,12 +77,12 @@ public final class JsonLd11Processor implements JsonLdProcessor {
     }
 
     @Override
-    public Collection<JsonObject> fromRdf(RdfDataset input) {
+    public JsonArray fromRdf(RdfDataset input) {
         return fromRdf(input, new JsonLdOptions());
     }
 
     @Override
-    public Collection<JsonObject> fromRdf(RdfDataset input, JsonLdOptions options) {
+    public JsonArray fromRdf(RdfDataset input, JsonLdOptions options) {
         throw new UnsupportedOperationException();
     }
 

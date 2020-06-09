@@ -20,21 +20,21 @@ public final class JsonLd {
     
     public static final ExpansionApi expand(final String documentLocation) {
 
-        assertLocation(documentLocation, "documentLocation");
+        assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME);
         
         return new ExpansionApi(URI.create(documentLocation));
     }
 
     public static final ExpansionApi expand(final URI documentUri) {
             
-        assertUri(documentUri, "documentUri");
+        assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
         
         return new ExpansionApi(documentUri);
     }
     
     public static final CompactionApi compact(String documentLocation, String contextLocation) {
         
-        assertLocation(documentLocation, "documentLocation");
+        assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME);
         assertLocation(contextLocation, "contextLocation");
                 
         return compact(URI.create(documentLocation), URI.create(contextLocation));
@@ -42,7 +42,7 @@ public final class JsonLd {
     
     public static final CompactionApi compact(URI documentUri, URI contextUri) {
         
-        assertUri(documentUri, "documentUri");
+        assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
         assertUri(contextUri, "contextUri");
         
         return new CompactionApi(documentUri, contextUri);
@@ -50,7 +50,7 @@ public final class JsonLd {
 
     public static final CompactionApi compact(String documentLocation, JsonStructure context) {
         
-        assertLocation(documentLocation, "documentLocation");
+        assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME);
         
         if (context == null) {
             throw new IllegalArgumentException("A context is null.");
@@ -61,7 +61,7 @@ public final class JsonLd {
 
     public static final CompactionApi compact(URI documentUri, JsonStructure context) {
         
-        assertUri(documentUri, "documentUri");
+        assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
         
         if (context == null) {
             throw new IllegalArgumentException("A context is null.");
@@ -72,28 +72,28 @@ public final class JsonLd {
 
     public static final FlatteningApi flatten(String documentLocation) {
         
-        assertLocation(documentLocation, "documentLocation");
+        assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME);
         
         return new FlatteningApi(URI.create(documentLocation));
     }
     
     public static final FlatteningApi flatten(URI documentUri) {
         
-        assertUri(documentUri, "documentUri");
+        assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
         
         return new FlatteningApi(documentUri);
     }
 
     public static final ToRdfApi toRdf(String documentLocation) {
         
-        assertLocation(documentLocation, "documentLocation");
+        assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME);
         
         return new ToRdfApi(URI.create(documentLocation));
     }
     
     public static final ToRdfApi toRdf(URI documentUri) {
         
-        assertUri(documentUri, "documentUri");
+        assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
         
         return new ToRdfApi(documentUri);
     }
@@ -130,4 +130,7 @@ public final class JsonLd {
             throw new IllegalArgumentException("'" + param + "' is not an absolute URI [" + uri + "].");
         }
     }
+    
+    private static final String DOCUMENT_LOCATION_PARAM_NAME = "documentLocation";
+    private static final String DOCUMENT_URI_PARAM_NAME = "documentUri";
 }
