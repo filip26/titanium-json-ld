@@ -51,7 +51,7 @@ public final class JsonLdManifestLoader {
                         .getJsonArray("sequence")
                             .stream()
                                 .map(JsonValue::asJsonObject)
-                                .map(o -> JsonLdTestCase.of(o, manifestName, baseUri));
+                                .map(o -> JsonLdTestCase.of(o, manifestName, manifestBase, baseUri));
             }
         }        
     }

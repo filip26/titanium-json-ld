@@ -2,10 +2,21 @@ package com.apicatalog.jsonld.processor;
 
 import java.net.URI;
 
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
+import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.context.ActiveContextBuilder;
+import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 
 /**
  * 
@@ -17,8 +28,68 @@ public final class FramingProcessor {
     private FramingProcessor() {
     }
     
-    public static final JsonObject frame(final URI input, final URI frame, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonObject frame(final RemoteDocument input, final RemoteDocument frame, final JsonLdOptions options) throws JsonLdError {
+        
+        // 4.
+        final JsonLdOptions expansionOptions = new JsonLdOptions(options);
+        expansionOptions.setOrdered(false);
+        
+        JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions);
+        
+        // 7.
+        expansionOptions.setFrameExpansion(false);
+        JsonArray expandedFrame = ExpansionProcessor.expand(frame, expansionOptions);
+        
+        // 8.
+        final JsonValue context;
+        
+        if (JsonUtils.isObject(frame.getDocument().asJsonStructure())
+                && frame.getDocument().asJsonStructure().asJsonObject().containsKey(Keywords.CONTEXT)    
+                ) {
+            context = frame.getDocument().asJsonStructure().asJsonObject().get(Keywords.CONTEXT);
+            
+        } else {
+            context = JsonValue.NULL;
+        }
+            
+        // 9.
+        final URI contextBase = (frame.getContextUrl() != null)
+                                ? frame.getDocumentUrl()
+                                : options.getBase();
+
+        // 10.
+        ActiveContext activeContext = ActiveContextBuilder
+                                        .with(new ActiveContext(options), context, contextBase, options).build();
+        // 11.
+        //TODO
+        
+        // 15.
+        JsonArrayBuilder results = Json.createArrayBuilder();
         
         return null;
     }
+
+    public static final JsonObject frame(final URI input, final URI frame, final JsonLdOptions options) throws JsonLdError {
+        return frame(getDocument(input, options), getDocument(frame, options), options);
+    }
+    
+    private static RemoteDocument getDocument(final URI document, final JsonLdOptions options) throws JsonLdError {
+        if (options.getDocumentLoader() == null) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+        }
+
+        final RemoteDocument remoteDocument = 
+                                options
+                                    .getDocumentLoader()
+                                    .loadDocument(document,
+                                            new LoadDocumentOptions()
+                                                    .setExtractAllScripts(options.isExtractAllScripts()));
+
+        if (remoteDocument == null) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Cannot load document [" + document + "].");
+        }
+        
+        return remoteDocument;
+    }
+    
 }

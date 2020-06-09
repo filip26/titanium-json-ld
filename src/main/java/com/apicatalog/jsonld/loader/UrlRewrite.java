@@ -6,12 +6,12 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.RemoteDocument;
 
-public class UrlRewrite implements LoadDocumentCallback {
+public final class UrlRewrite implements LoadDocumentCallback {
 
-    final String sourceBase;
-    final String targetBase;
+    private final String sourceBase;
+    private final String targetBase;
     
-    final LoadDocumentCallback loader;
+    private final LoadDocumentCallback loader;
     
     public UrlRewrite(final String sourceBase, final String targetBase) {
         this(sourceBase, targetBase, new UrlConnectionLoader());
@@ -25,17 +25,17 @@ public class UrlRewrite implements LoadDocumentCallback {
     }
     
     @Override
-    public RemoteDocument loadDocument(URI url, LoadDocumentOptions options) throws JsonLdError {
+    public RemoteDocument loadDocument(final URI url, final LoadDocumentOptions options) throws JsonLdError {
 
-        String sourceUrl = url.toString();
+        final String sourceUrl = url.toString();
         
         if (!sourceUrl.startsWith(sourceBase)) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
 
-        String realivePath = sourceUrl.substring(sourceBase.length());
+        final String relativePath = sourceUrl.substring(sourceBase.length());
 
-        RemoteDocument remoteDocument = loader.loadDocument(URI.create(targetBase + realivePath), options);
+        final RemoteDocument remoteDocument = loader.loadDocument(URI.create(targetBase + relativePath), options);
         
         if (remoteDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);

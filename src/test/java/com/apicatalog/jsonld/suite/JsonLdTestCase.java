@@ -38,9 +38,15 @@ public final class JsonLdTestCase {
     
     public JsonLdTestCaseOptions options;
     
-    public static final JsonLdTestCase of(JsonObject o, String manifestUri, String baseUri) {
+    private final String testsBase;
+    
+    public JsonLdTestCase(final String testsBase) {
+        this.testsBase = testsBase;
+    }
+    
+    public static final JsonLdTestCase of(JsonObject o, String manifestUri, String manifestBase, String baseUri) {
         
-        final JsonLdTestCase testCase = new JsonLdTestCase();
+        final JsonLdTestCase testCase = new JsonLdTestCase(manifestBase);
         
         testCase.id = o.getString(Keywords.ID);
         
@@ -87,7 +93,7 @@ public final class JsonLdTestCase {
         final LoadDocumentCallback loader = 
                 new UrlRewrite(
                             baseUri, 
-                            "classpath:" + JsonLdManifestLoader.JSON_LD_API_BASE,
+                            "classpath:" + testsBase,
                             new ClassPathLoader()
                         );
         
