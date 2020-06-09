@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium-json-ld</artifactId>
-    <version>0.5.1</version>
+    <version>0.6</version>
     <packaging>jar</packaging>
 
     <name>Titanium JSON-LD 1.1</name>
@@ -67,6 +67,7 @@
          <!--  test resources -->
         <junit.version>4.13</junit.version>
         <test-suite.version>20200518</test-suite.version>
+        <test-suite-framing.version>20200609</test-suite-framing.version>
     </properties>
 
     <dependencies>
@@ -82,19 +83,27 @@
             <artifactId>javax.json</artifactId>
             <version>${json-p.version}</version>
             <scope>test</scope>
-        </dependency>        
+        </dependency>       
+         
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+        
         <dependency>        
             <groupId>com.github.w3c</groupId>
             <artifactId>json-ld-test-suite</artifactId>
             <version>${test-suite.version}</version>
             <scope>test</scope>           
         </dependency>
+        
+		<dependency>
+		  <groupId>com.github.w3c</groupId>
+		  <artifactId>json-ld-framing-test-suite</artifactId>
+		  <version>${test-suite-framing.version}</version>
+		</dependency>        
 
     </dependencies>
 
