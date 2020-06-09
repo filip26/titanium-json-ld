@@ -41,11 +41,12 @@ public class FrameTest {
         //assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
         
         try {
-            (new JsonLdTestRunnerJunit(testCase)).execute(options ->
+            (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
             
-//                    JsonLd.frame(testCase.input).options(options).get()
-                null
-            );
+                Assert.assertNotNull(testCase.frame);
+            
+                return JsonLd.frame(testCase.input, testCase.frame).options(options).get();
+            });
             
         } catch (JsonLdError e) {
             Assert.fail(e.getMessage());

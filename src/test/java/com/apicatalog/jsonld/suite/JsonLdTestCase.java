@@ -26,6 +26,8 @@ public final class JsonLdTestCase {
     
     public URI expect;
     
+    public URI frame;
+    
     public JsonLdErrorCode expectErrorCode;
     
     public String baseUri;
@@ -62,7 +64,11 @@ public final class JsonLdTestCase {
         testCase.expect = o.containsKey("expect")
                                 ? URI.create(baseUri + o.getString("expect"))
                                 : null;
-        
+
+        testCase.frame = o.containsKey("frame")
+                                ? URI.create(baseUri + o.getString("frame"))
+                                : null;
+
         testCase.expectErrorCode = o.containsKey("expectErrorCode")
                                             ? errorCode((o.getString("expectErrorCode")))
                                             : null;

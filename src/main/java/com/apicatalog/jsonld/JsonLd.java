@@ -8,6 +8,7 @@ import com.apicatalog.jsonld.api.JsonLdProcessor;
 import com.apicatalog.jsonld.api.builder.CompactionApi;
 import com.apicatalog.jsonld.api.builder.ExpansionApi;
 import com.apicatalog.jsonld.api.builder.FlatteningApi;
+import com.apicatalog.jsonld.api.builder.FramingApi;
 import com.apicatalog.jsonld.api.builder.FromRdfApi;
 import com.apicatalog.jsonld.api.builder.ToRdfApi;
 import com.apicatalog.jsonld.uri.UriUtils;
@@ -82,6 +83,14 @@ public final class JsonLd {
         assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
         
         return new FlatteningApi(documentUri);
+    }
+
+    public static final FramingApi frame(URI documentUri, URI frameUri) {
+        
+        assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
+        assertUri(frameUri, "frameUri");
+        
+        return new FramingApi(documentUri, frameUri);
     }
 
     public static final ToRdfApi toRdf(String documentLocation) {
