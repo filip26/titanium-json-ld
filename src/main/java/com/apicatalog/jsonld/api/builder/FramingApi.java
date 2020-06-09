@@ -8,6 +8,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
+import com.apicatalog.jsonld.processor.FramingProcessor;
 
 public final class FramingApi {
 
@@ -81,6 +82,6 @@ public final class FramingApi {
     }
     
     public JsonObject get() throws JsonLdError {        
-        return null;
+        return FramingProcessor.frame(documentUri, frameUri, options);
     }
 }
