@@ -36,6 +36,11 @@ public final class CompactionApi {
     }
 
     public CompactionApi options(JsonLdOptions options) {
+        
+        if (options == null) {
+            throw new IllegalArgumentException("Parameter 'options' is null.");
+        }
+        
         this.options = options;
         return this;
     }
@@ -72,7 +77,7 @@ public final class CompactionApi {
         return compactToRelative(true);
     }
 
-    public CompactionApi loader(LoadDocumentCallback loader) {
+    public CompactionApi loader(LoadDocumentCallback loader) {        
         options.setDocumentLoader(loader);
         return this;
     }

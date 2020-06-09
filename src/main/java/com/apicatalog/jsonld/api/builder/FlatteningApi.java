@@ -28,6 +28,11 @@ public final class FlatteningApi {
     }
 
     public FlatteningApi options(JsonLdOptions options) {
+        
+        if (options == null) {
+            throw new IllegalArgumentException("Parameter 'options' is null.");
+        }
+
         this.options = options;
         return this;
     }
