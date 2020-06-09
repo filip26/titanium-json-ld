@@ -68,8 +68,24 @@ public final class JsonLdOptions {
     private boolean useNativeTypes;
     
     private boolean useRdfType;
-
+    
+    // Framing https://www.w3.org/TR/json-ld11-framing/#jsonldoptions
+    
+    private JsonLdEmbed embed;
+    
+    private boolean explicit;
+    
+    private boolean omitDefault;
+    
+    private boolean omitGraph;
+    
+    private boolean requiredAll;
+    
+    private boolean frameDefault;
+    
     public JsonLdOptions() {
+        
+        // default values
         this.base = null;
         this.compactArrays = true;
         this.compactToRelative = true;
@@ -83,6 +99,14 @@ public final class JsonLdOptions {
         this.rdfDirection = null;
         this.useNativeTypes = false;
         this.useRdfType = false;
+        
+        // framing defaults
+        this.embed = JsonLdEmbed.ONCE;
+        this.explicit = false;
+        this.omitDefault = false;
+        this.omitGraph = false;
+        this.requiredAll = false;
+        this.frameDefault = false;        
     }
 
     public JsonLdOptions(JsonLdOptions options) {
@@ -99,6 +123,13 @@ public final class JsonLdOptions {
         this.rdfDirection = options.rdfDirection;
         this.useNativeTypes = options.useNativeTypes;
         this.useRdfType = options.useRdfType;
+        // framing
+        this.embed = options.embed;
+        this.explicit = options.explicit;
+        this.omitDefault = options.omitDefault;
+        this.omitGraph = options.omitGraph;
+        this.requiredAll = options.requiredAll;
+        this.frameDefault = options.frameDefault;
     }
 
     /**
@@ -274,5 +305,54 @@ public final class JsonLdOptions {
     public void setExpandContext(JsonLdContext expandContext) {
         this.expandContext = expandContext;
     }
-
+    
+    // Framing
+    
+    public JsonLdEmbed getEmbed() {
+        return embed;
+    }
+    
+    public void setEmbed(JsonLdEmbed embed) {
+        this.embed = embed;
+    }
+    
+    public boolean isExplicit() {
+        return explicit;
+    }
+    
+    public void setExplicit(boolean explicit) {
+        this.explicit = explicit;
+    }
+    
+    public boolean isOmitDefault() {
+        return omitDefault;
+    }
+    
+    public void setOmitDefault(boolean omitDefault) {
+        this.omitDefault = omitDefault;
+    }
+    
+    public boolean isOmitGraph() {
+        return omitGraph;
+    }
+    
+    public void setOmitGraph(boolean omitGraph) {
+        this.omitGraph = omitGraph;
+    }
+    
+    public boolean isRequiredAll() {
+        return requiredAll;
+    }
+    
+    public void setRequiredAll(boolean requiredAll) {
+        this.requiredAll = requiredAll;
+    }
+    
+    public boolean isFrameDefault() {
+        return frameDefault;
+    }
+    
+    public void setFrameDefault(boolean frameDefault) {
+        this.frameDefault = frameDefault;
+    }
 }

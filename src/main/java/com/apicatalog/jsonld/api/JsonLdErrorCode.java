@@ -235,10 +235,28 @@ public enum JsonLdErrorCode {
      * An attempt was made to redefine a protected term.
      */
     PROTECTED_TERM_REDEFINITION, 
+
     
-    UNSPECIFIED,
+    // Framing Error Codes https://www.w3.org/TR/json-ld11-framing/#error-handling
     
+    /**
+     * The frame is invalid.
+     * 
+     * @see <a href="https://www.w3.org/TR/json-ld11-framing/#dom-jsonldframingerrorcode-invalid-frame">invalid frame</a>
+     */
     INVALID_FRAME,
-    INVALID_KEYWORD_EMBED_VALUE
+    
+    /**
+     * The value for <cpde>@embed</code> is not one recognized for the object embed flag.
+     * 
+     * @see <a href="https://www.w3.org/TR/json-ld11-framing/#dom-jsonldframingerrorcode-invalid-@embed-value">invalid @embed value</a>
+     */
+    INVALID_KEYWORD_EMBED_VALUE,
+    
+    
+    // Custom
+    
+    
+    UNSPECIFIED
 }
 
