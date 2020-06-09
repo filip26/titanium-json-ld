@@ -1,6 +1,7 @@
 package com.apicatalog.jsonld.flattening;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,16 +35,11 @@ public final class NodeMap {
         if (subject == null) {
             return;
         }
-
-        if (!index.containsKey(graphName)) {
-            index.put(graphName, new LinkedHashMap<>());
-        }
         
-        if (!index.get(graphName).containsKey(subject)) {
-            index.get(graphName).put(subject, new LinkedHashMap<>());
-        }
-        
-        index.get(graphName).get(subject).put(property, value);
+        index
+            .computeIfAbsent(graphName, x -> new LinkedHashMap<>())
+            .computeIfAbsent(subject, x -> new LinkedHashMap<>())
+            .put(property, value);
     }
 
     public JsonValue get(String graphName, String subject, String property) {
@@ -91,18 +87,21 @@ public final class NodeMap {
                     ;
     }
 
+    public Collection<String> subjects(String graphName) {
+        return subjects(graphName, false);
+    }
+    
     public Collection<String> subjects(String graphName, boolean sorted) {
         return sorted 
-                ? index.get(graphName).keySet().stream().sorted().collect(Collectors.toList())
-                : index.get(graphName).keySet()
+                ? index.getOrDefault(graphName, Collections.emptyMap()).keySet().stream().sorted().collect(Collectors.toList())
+                : index.getOrDefault(graphName, Collections.emptyMap()).keySet()
                 ;
     }
 
     public Collection<String> properties(String graphName, String subject, boolean sorted) {
         return sorted 
-                ? index.get(graphName).get(subject).keySet().stream().sorted().collect(Collectors.toList())
-                : index.get(graphName).get(subject).keySet()
+                ? index.getOrDefault(graphName, Collections.emptyMap()).getOrDefault(subject, Collections.emptyMap()).keySet().stream().sorted().collect(Collectors.toList())
+                : index.getOrDefault(graphName, Collections.emptyMap()).getOrDefault(subject, Collections.emptyMap()).keySet()
                 ;
     }
-    
 }

@@ -1,19 +1,24 @@
 package com.apicatalog.jsonld.processor;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.json.Json;
 import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.compaction.CompactionBuilder;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.ActiveContextBuilder;
 import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.flattening.NodeMap;
+import com.apicatalog.jsonld.flattening.NodeMapBuilder;
+import com.apicatalog.jsonld.framing.FramingBuilder;
+import com.apicatalog.jsonld.framing.FramingState;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
@@ -63,10 +68,75 @@ public final class FramingProcessor {
         // 11.
         //TODO
         
-        // 15.
-        JsonArrayBuilder results = Json.createArrayBuilder();
+        // 12.
+        activeContext.createInverseContext();
+
+        // 13.
         
-        return null;
+        boolean frameDefault = options.isFrameDefault();
+        //TODO expands to GRAPH        
+        if (!frameDefault && frame.getDocument().asJsonStructure().asJsonObject().containsKey(Keywords.GRAPH)) {
+            frameDefault = true;
+        }
+        
+        // 14.
+        final FramingState state = new FramingState();
+        
+        state.setEmbed(options.getEmbed());     // 14.1.
+        state.setEmbedded(false);               // 14.2.
+        state.setExplicitInclusion(options.isExplicit());   // 14.3.
+        state.setRequireAll(options.isRequiredAll());       // 14.4.
+        state.setOmitDefault(options.isOmitDefault());      // 14.5.
+        if (frameDefault) {
+            state.setGraphName(Keywords.DEFAULT); // 14.6.
+        }
+        state.setGraphMap(NodeMapBuilder.with(expandedInput, new NodeMap()).build());   // 14.7.
+        
+        //TODO
+        
+        // 15.
+        List<JsonValue> results = new ArrayList<>();
+        
+        // 16.
+        FramingBuilder.with(state, 
+                            new ArrayList<>(state.getGraphMap().subjects(state.getGraphName())), 
+                            expandedFrame, 
+                            results, 
+                            null
+                            ).build();
+        
+        // 17.
+        //TODO      
+        
+        // 18.
+        //TODO
+        
+        // 19.
+        JsonValue compactedResults = CompactionBuilder
+                                        .with(activeContext, null, JsonUtils.toJsonArray(results))
+                                        .compactArrays(options.isCompactArrays())
+                                        .ordered(options.isOrdered())
+                                        .build();
+        // 19.1.
+        if (JsonUtils.isEmptyArray(compactedResults)) {
+            compactedResults = JsonValue.EMPTY_JSON_OBJECT;
+            
+        // 19.2.
+        } else if (JsonUtils.isArray(compactedResults)) {
+            //TODO
+        }
+        
+        
+        
+        
+        
+        // 20.
+        //TODO
+        
+        // 21.
+        //TODO
+        
+        return compactedResults.asJsonObject();
     }
 
     public static final JsonObject frame(final URI input, final URI frame, final JsonLdOptions options) throws JsonLdError {
