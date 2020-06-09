@@ -70,7 +70,7 @@ public class FlattenTest {
     @Parameterized.Parameters(name = "{1}: {2}")
     public static Collection<Object[]> data() throws IOException {        
         return JsonLdManifestLoader
-                .load("flatten-manifest.jsonld")
+                .load(JsonLdManifestLoader.JSON_LD_API_BASE, "flatten-manifest.jsonld")
                 .stream()            
                 .map(o -> new Object[] {o, o.id, o.name, o.baseUri})
                 .collect(Collectors.toList());

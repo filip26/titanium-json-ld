@@ -236,6 +236,9 @@ public enum JsonLdErrorCode {
      */
     PROTECTED_TERM_REDEFINITION, 
     
-    UNSPECIFIED
+    UNSPECIFIED,
+    
+    INVALID_FRAME,
+    INVALID_KEYWORD_EMBED_VALUE
 }
 

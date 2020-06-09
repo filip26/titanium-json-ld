@@ -51,7 +51,7 @@ public class RdfToJsonLdTest {
             
             (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
                 
-                try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.RESOURCES_BASE + testCase.input.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
+                try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.input.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
             
                     Assert.assertNotNull(is);
                     
@@ -75,7 +75,7 @@ public class RdfToJsonLdTest {
     @Parameterized.Parameters(name = "{1}: {2}")
     public static Collection<Object[]> data() throws IOException {
         return JsonLdManifestLoader
-                    .load("fromRdf-manifest.jsonld")
+                    .load(JsonLdManifestLoader.JSON_LD_API_BASE, "fromRdf-manifest.jsonld")
                     .stream()            
                     .map(o -> new Object[] {o, o.id, o.name, o.baseUri})
                     .collect(Collectors.toList());

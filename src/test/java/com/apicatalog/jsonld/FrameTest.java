@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import javax.json.JsonValue;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +20,7 @@ import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
 
 @RunWith(Parameterized.class)
-public class ExpandTest {
+public class FrameTest {
     
     @Parameterized.Parameter(0)
     public JsonLdTestCase testCase;
@@ -33,16 +35,16 @@ public class ExpandTest {
     public String baseUri;
     
     @Test
-    public void testExpand() {
+    public void testFrame() {
 
         // skip specVersion == 1.0
-        assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
+        //assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
         
         try {
             (new JsonLdTestRunnerJunit(testCase)).execute(options ->
             
-                        JsonLd.expand(testCase.input).options(options).get()
-                        
+//                    JsonLd.frame(testCase.input).options(options).get()
+                null
             );
             
         } catch (JsonLdError e) {
@@ -53,7 +55,7 @@ public class ExpandTest {
     @Parameterized.Parameters(name = "{1}: {2}")
     public static Collection<Object[]> data() throws IOException {
         return JsonLdManifestLoader
-                    .load(JsonLdManifestLoader.JSON_LD_API_BASE, "expand-manifest.jsonld")
+                    .load(JsonLdManifestLoader.JSON_LD_FRAMING_BASE, "frame-manifest.jsonld")
                     .stream()            
                     .map(o -> new Object[] {o, o.id, o.name, o.baseUri})
                     .collect(Collectors.toList());

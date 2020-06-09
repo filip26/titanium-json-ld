@@ -81,7 +81,7 @@ public final class JsonLdTestCase {
         final LoadDocumentCallback loader = 
                 new UrlRewrite(
                             baseUri, 
-                            "classpath:" + JsonLdManifestLoader.RESOURCES_BASE,
+                            "classpath:" + JsonLdManifestLoader.JSON_LD_API_BASE,
                             new ClassPathLoader()
                         );
         

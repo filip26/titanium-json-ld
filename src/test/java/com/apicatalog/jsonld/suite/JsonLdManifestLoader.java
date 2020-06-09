@@ -14,21 +14,24 @@ import org.junit.Assert;
 
 public final class JsonLdManifestLoader {
 
-    public static final String RESOURCES_BASE = "/com/github/w3c/json-ld-api/tests/"; 
+    public static final String JSON_LD_API_BASE = "/com/github/w3c/json-ld-api/tests/";
+    public static final String JSON_LD_FRAMING_BASE = "/com/github/w3c/json-ld-framing/tests/";
         
     private final String manifestName;
+    private final String manifestBase;
     
-    public JsonLdManifestLoader(String manifest) {
-        this.manifestName = manifest;
+    private JsonLdManifestLoader(final String manifestBase, final String manifestName) {
+        this.manifestBase = manifestBase;
+        this.manifestName = manifestName;
     }
     
-    public static JsonLdManifestLoader load(String manifest) {
-        return new JsonLdManifestLoader(manifest);
+    public static JsonLdManifestLoader load(final String manifestBase, final String manifestName) {
+        return new JsonLdManifestLoader(manifestBase, manifestName);
     }
     
     public Stream<JsonLdTestCase> stream() throws IOException {
         
-        try (InputStream is = JsonLdManifestLoader.class.getResourceAsStream(RESOURCES_BASE + manifestName)) {
+        try (InputStream is = JsonLdManifestLoader.class.getResourceAsStream(manifestBase + manifestName)) {
 
             Assert.assertNotNull(is);
     

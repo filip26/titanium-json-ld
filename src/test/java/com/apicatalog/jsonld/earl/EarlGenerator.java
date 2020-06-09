@@ -51,7 +51,7 @@ public class EarlGenerator {
     public void testExpand(PrintWriter writer) throws IOException {
 
         JsonLdManifestLoader
-            .load("expand-manifest.jsonld")
+            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "expand-manifest.jsonld")
             .stream()
             .forEach(testCase ->                
                         printResult(writer, testCase.uri,           
@@ -66,7 +66,7 @@ public class EarlGenerator {
     public void testCompact(final PrintWriter writer) throws IOException {
 
         JsonLdManifestLoader
-            .load("compact-manifest.jsonld")
+            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld")
             .stream()
             .forEach(testCase ->                
                         printResult(writer, testCase.uri,           
@@ -89,7 +89,7 @@ public class EarlGenerator {
     public void testFlatten(final PrintWriter writer) throws IOException {
 
         JsonLdManifestLoader
-            .load("flatten-manifest.jsonld")
+            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "flatten-manifest.jsonld")
             .stream()
             .forEach(testCase ->                
                         printResult(writer, testCase.uri,           
@@ -120,7 +120,7 @@ public class EarlGenerator {
     public void testToRdf(final PrintWriter writer) throws IOException {
 
         JsonLdManifestLoader
-            .load("toRdf-manifest.jsonld")
+            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "toRdf-manifest.jsonld")
             .stream()
             .forEach(testCase -> printResult(writer, testCase.uri, testToRdf(testCase)));
     }
@@ -129,13 +129,13 @@ public class EarlGenerator {
     public void testFromRdf(PrintWriter writer) throws IOException {
 
         JsonLdManifestLoader
-            .load("fromRdf-manifest.jsonld")
+            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "fromRdf-manifest.jsonld")
             .stream()
             .forEach(testCase ->                
                         printResult(writer, testCase.uri,           
                                 (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
                                 
-                                    try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.RESOURCES_BASE + testCase.input.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
+                                    try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.input.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
                                        
                                         if (is == null) {
                                             throw new IllegalStateException();
@@ -240,7 +240,7 @@ public class EarlGenerator {
             return false;
         }
 
-        try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.RESOURCES_BASE + testCase.expect.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
+        try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.expect.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
             
             RdfDataset expected = Rdf.createReader(is, RdfFormat.N_QUADS).readDataset();
 
