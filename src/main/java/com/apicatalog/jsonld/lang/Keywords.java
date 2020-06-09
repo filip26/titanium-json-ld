@@ -14,8 +14,6 @@ public final class Keywords {
 
     public static final String CONTEXT = "@context";
 
-    public static final String DEFAULT = "@default";
-
     public static final String DIRECTION = "@direction";
 
     public static final String GRAPH = "@graph";
@@ -60,9 +58,31 @@ public final class Keywords {
 
     public static final String VOCAB = "@vocab";
 
-    static final Collection<String> ALL_KEYWORDS = Arrays.asList(ANY, BASE, CONTAINER, CONTEXT, DEFAULT, DIRECTION, GRAPH,
+    // framing
+    public static final String DEFAULT = "@default";
+
+    public static final String EMBED = "@embed";
+    
+    public static final String ALWAYS = "@always";
+    
+    public static final String ONCE = "@once";
+    
+    public static final String NEVER = "@never";
+    
+    public static final String EXPLICIT = "@explicit";
+    
+    public static final String NULL_KEY = "@null";
+    
+    public static final String OMIT_DEFAULT = "@omitDefault";
+    
+    public static final String REQUIRE_ALL = "@requireAll";
+    
+    static final Collection<String> ALL_KEYWORDS = Arrays.asList(ANY, BASE, CONTAINER, CONTEXT, DIRECTION, GRAPH,
             ID, IMPORT, INCLUDED, INDEX, JSON, LANGUAGE, LIST, NEST, NONE, NULL, PREFIX, PRESERVE, PROPAGATE, PROTECTED, REVERSE, SET,
-            TYPE, VALUE, VERSION, VOCAB);
+            TYPE, VALUE, VERSION, VOCAB,
+            // framing
+            DEFAULT, EMBED, ALWAYS, ONCE, NEVER, EXPLICIT, NULL_KEY, OMIT_DEFAULT, REQUIRE_ALL
+            );
 
     protected Keywords() {
     }
@@ -78,21 +98,20 @@ public final class Keywords {
      * @param value
      * @return
      */
-    public static boolean hasForm(final String value) {
+    public static boolean matchForm(final String value) {
         return value.startsWith("@") && value.length() > 1
                 && IntStream.range(1, value.length()).map(value::charAt).allMatch(Character::isAlphabetic);
     }
 
-    public static boolean isNoneOf(final String key, final String... keywords) {
+    public static boolean noneMatch(final String key, final String... keywords) {
         return Arrays.stream(keywords).noneMatch(key::equals);
     }
 
-    public static boolean isOneOf(final String key, final String... keywords) {
+    public static boolean anyMatch(final String key, final String... keywords) {
         return Arrays.stream(keywords).anyMatch(key::equals);
     }
 
-    public static boolean allIn(final Collection<String> values, final String... keywords) {
+    public static boolean allMatch(final Collection<String> values, final String... keywords) {
         return values.stream().allMatch(v -> Arrays.asList(keywords).contains(v));
     }
-
 }
