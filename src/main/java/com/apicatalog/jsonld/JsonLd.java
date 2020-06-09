@@ -20,37 +20,37 @@ public final class JsonLd {
     
     public static final ExpansionApi expand(final String documentLocation) {
 
-        assertLocation(documentLocation, "document");
+        assertLocation(documentLocation, "documentLocation");
         
         return new ExpansionApi(URI.create(documentLocation));
     }
 
     public static final ExpansionApi expand(final URI documentUri) {
             
-        assertUri(documentUri, "document");
+        assertUri(documentUri, "documentUri");
         
         return new ExpansionApi(documentUri);
     }
     
     public static final CompactionApi compact(String documentLocation, String contextLocation) {
         
-        assertLocation(documentLocation, "document");
-        assertLocation(contextLocation, "context");
+        assertLocation(documentLocation, "documentLocation");
+        assertLocation(contextLocation, "contextLocation");
                 
         return compact(URI.create(documentLocation), URI.create(contextLocation));
     }
     
     public static final CompactionApi compact(URI documentUri, URI contextUri) {
         
-        assertUri(documentUri, "document");
-        assertUri(contextUri, "context");
+        assertUri(documentUri, "documentUri");
+        assertUri(contextUri, "contextUri");
         
         return new CompactionApi(documentUri, contextUri);
     }
 
     public static final CompactionApi compact(String documentLocation, JsonStructure context) {
         
-        assertLocation(documentLocation, "document");
+        assertLocation(documentLocation, "documentLocation");
         
         if (context == null) {
             throw new IllegalArgumentException("A context is null.");
@@ -61,7 +61,7 @@ public final class JsonLd {
 
     public static final CompactionApi compact(URI documentUri, JsonStructure context) {
         
-        assertUri(documentUri, "document");
+        assertUri(documentUri, "documentUri");
         
         if (context == null) {
             throw new IllegalArgumentException("A context is null.");
@@ -72,28 +72,28 @@ public final class JsonLd {
 
     public static final FlatteningApi flatten(String documentLocation) {
         
-        assertLocation(documentLocation, "document");
+        assertLocation(documentLocation, "documentLocation");
         
         return new FlatteningApi(URI.create(documentLocation));
     }
     
     public static final FlatteningApi flatten(URI documentUri) {
         
-        assertUri(documentUri, "document");
+        assertUri(documentUri, "documentUri");
         
         return new FlatteningApi(documentUri);
     }
 
     public static final ToRdfApi toRdf(String documentLocation) {
         
-        assertLocation(documentLocation, "document");
+        assertLocation(documentLocation, "documentLocation");
         
         return new ToRdfApi(URI.create(documentLocation));
     }
     
     public static final ToRdfApi toRdf(URI documentUri) {
         
-        assertUri(documentUri, "document");
+        assertUri(documentUri, "documentUri");
         
         return new ToRdfApi(documentUri);
     }
@@ -113,21 +113,21 @@ public final class JsonLd {
     
     private static final void assertLocation(final String location, final String param) {
         if (location == null || location.isBlank()) {
-            throw new IllegalArgumentException("A " + param + "location is null or blank string.");
+            throw new IllegalArgumentException("'" + param + "' is null or blank string.");
         }
         
         if (UriUtils.isNotAbsoluteURI(location)) {
-            throw new IllegalArgumentException("A " + param + " location is not an absolute URI [" + location + "].");
+            throw new IllegalArgumentException("'" + param + "' is not an absolute URI [" + location + "].");
         }
     }
     
     private static final void assertUri(final URI uri, final String param) {
         if (uri == null) {
-            throw new IllegalArgumentException("A " + param + " URI is null.");
+            throw new IllegalArgumentException("'" + param + "' is null.");
         }
 
         if (!uri.isAbsolute()) {
-            throw new IllegalArgumentException("A " + param + " URI is not absolute [" + uri + "].");
+            throw new IllegalArgumentException("'" + param + "' is not an absolute URI [" + uri + "].");
         }
     }
 }
