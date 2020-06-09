@@ -13,16 +13,16 @@ import com.apicatalog.jsonld.processor.ExpansionProcessor;
 public final class ExpansionApi {
 
     // required
-    private final URI document;
+    private final URI documentUri;
     
     // optional
     private JsonLdOptions options;
     
-    public ExpansionApi(URI document) {
-        this.document = document;
+    public ExpansionApi(URI documentUri) {
+        this.documentUri = documentUri;
         this.options = new JsonLdOptions();
     }
-    
+
     public ExpansionApi options(JsonLdOptions options) {
         this.options = options;
         return this;
@@ -74,7 +74,7 @@ public final class ExpansionApi {
         return ordered(true);
     }
     
-    public JsonArray get() throws JsonLdError {
-        return ExpansionProcessor.expand(document, options);
+    public JsonArray get() throws JsonLdError {        
+        return ExpansionProcessor.expand(documentUri, options);
     }
 }
