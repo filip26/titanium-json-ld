@@ -144,7 +144,7 @@ final class MapExpansion1314 {
 
                 // 13.4.2
                 if (result.containsKey(expandedProperty)
-                        && Keywords.isNoneOf(expandedProperty, Keywords.INCLUDED, Keywords.TYPE)) {
+                        && Keywords.noneMatch(expandedProperty, Keywords.INCLUDED, Keywords.TYPE)) {
                     throw new JsonLdError(JsonLdErrorCode.COLLIDING_KEYWORDS);
                 }
 

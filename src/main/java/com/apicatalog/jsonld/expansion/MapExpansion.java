@@ -250,7 +250,7 @@ public final class MapExpansion {
         if (result.containsKey(Keywords.VALUE)) {
 
             // 15.1.
-            if (!Keywords.allIn(result.keySet(), Keywords.DIRECTION, Keywords.INDEX, Keywords.LANGUAGE,
+            if (!Keywords.allMatch(result.keySet(), Keywords.DIRECTION, Keywords.INDEX, Keywords.LANGUAGE,
                     Keywords.TYPE, Keywords.VALUE)) {
 
                 throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);

@@ -80,7 +80,7 @@ public final class UriExpansionBuilder {
         // 2. If value has the form of a keyword (i.e., it matches the ABNF rule
         // "@"1*ALPHA from [RFC5234]),
         // a processor SHOULD generate a warning and return null.
-        if (Keywords.hasForm(value)) {
+        if (Keywords.matchForm(value)) {
             // TODO varning
             return null;
         }

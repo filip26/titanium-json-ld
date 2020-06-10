@@ -125,7 +125,7 @@ public final class JsonLd {
             throw new IllegalArgumentException("'" + param + "' is null or blank string.");
         }
         
-        if (UriUtils.isNotAbsoluteURI(location)) {
+        if (UriUtils.isNotAbsoluteUri(location)) {
             throw new IllegalArgumentException("'" + param + "' is not an absolute URI [" + location + "].");
         }
     }

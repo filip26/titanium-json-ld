@@ -349,7 +349,7 @@ public final class CompactionBuilder {
                 continue;
                 
             // 12.6.
-            } else if (Keywords.isOneOf(expandedProperty,
+            } else if (Keywords.anyMatch(expandedProperty,
                                             Keywords.DIRECTION,
                                             Keywords.INDEX,
                                             Keywords.LANGUAGE,

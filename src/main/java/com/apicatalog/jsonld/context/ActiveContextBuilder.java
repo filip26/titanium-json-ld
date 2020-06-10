@@ -154,7 +154,7 @@ public class ActiveContextBuilder {
                     throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED);
                 }
 
-                if (UriUtils.isNotAbsoluteURI(contextUri)) {
+                if (UriUtils.isNotAbsoluteUri(contextUri)) {
                     throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED);
                 }
 
@@ -500,7 +500,7 @@ public class ActiveContextBuilder {
             // 5.13
             for (String key : contextDefinition.keySet()) {
 
-                if (Keywords.isNoneOf(key, Keywords.BASE, Keywords.DIRECTION, Keywords.IMPORT, Keywords.LANGUAGE,
+                if (Keywords.noneMatch(key, Keywords.BASE, Keywords.DIRECTION, Keywords.IMPORT, Keywords.LANGUAGE,
                         Keywords.PROPAGATE, Keywords.PROTECTED, Keywords.VERSION, Keywords.VOCAB)) {
 
                     boolean protectedFlag = contextDefinition.containsKey(Keywords.PROTECTED)

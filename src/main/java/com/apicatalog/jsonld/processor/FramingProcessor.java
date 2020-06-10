@@ -90,8 +90,12 @@ public final class FramingProcessor {
         if (frameDefault) {
             state.setGraphName(Keywords.DEFAULT); // 14.6.
         }
+        
+        System.out.println(">>> " + expandedInput);
+        
         state.setGraphMap(NodeMapBuilder.with(expandedInput, new NodeMap()).build());   // 14.7.
         
+        System.out.println(">>> " + state.getGraphMap().graphs(true));
         //TODO
         
         // 15.
@@ -110,13 +114,14 @@ public final class FramingProcessor {
         
         // 18.
         //TODO
-        
+        System.out.println("0 < : " + results);
         // 19.
         JsonValue compactedResults = CompactionBuilder
                                         .with(activeContext, null, JsonUtils.toJsonArray(results))
                                         .compactArrays(options.isCompactArrays())
                                         .ordered(options.isOrdered())
                                         .build();
+        System.out.println("1 < : " + compactedResults);
         // 19.1.
         if (JsonUtils.isEmptyArray(compactedResults)) {
             compactedResults = JsonValue.EMPTY_JSON_OBJECT;
