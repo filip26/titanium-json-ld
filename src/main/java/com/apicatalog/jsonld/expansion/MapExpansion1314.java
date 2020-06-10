@@ -157,15 +157,15 @@ final class MapExpansion1314 {
                                     && JsonUtils.isNotEmptyObject(value)
                                     && (JsonUtils.isNotArray(value)
                                             || JsonUtils.isEmptyArray(value)
-                                            || !value.asJsonArray().stream().allMatch(JsonUtils::isNotString) 
+                                            || !value.asJsonArray().stream().allMatch(JsonUtils::isString) 
                                     )
                             ) {
 
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE);
 
                     // 13.4.3.2
-                    } else {
-
+                    } else if (!frameExpansion) {
+ 
                         String expandedStringValue = 
                                     activeContext
                                         .expandUri(((JsonString) value).getString())
@@ -176,7 +176,26 @@ final class MapExpansion1314 {
                         if (expandedStringValue != null) {
                             expandedValue = Json.createValue(expandedStringValue);
                         }
-                        // TODO frameExpansion
+                        
+                    } else if (JsonUtils.isString(value) || JsonUtils.isArray(value))  {
+                        
+                        JsonArrayBuilder array = Json.createArrayBuilder();
+                        
+                        for (JsonValue item : JsonUtils.toJsonArray(value)) {
+
+                            String expandedStringValue = 
+                                    activeContext
+                                        .expandUri(((JsonString) item).getString())
+                                        .documentRelative(true)
+                                        .vocab(false)
+                                        .build();
+
+                            if (expandedStringValue != null) {
+                                array.add(expandedStringValue);
+                            }
+                        }
+
+                        expandedValue = array.build();
                     }
                 }
 

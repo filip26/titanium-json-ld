@@ -11,6 +11,7 @@ import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 
+import com.apicatalog.jsonld.api.JsonLdEmbed;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -85,13 +86,43 @@ public final class FramingBuilder {
         if (frameObject.containsKey(Keywords.TYPE) && !validateFrameType()) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
         }
-        
-        // 2.
-        //TODO
-        boolean embed = false;
-        boolean explicit = false;
-        boolean requireAll = false;
 
+        // 2.
+        JsonLdEmbed embed = state.getEmbed();
+        
+        if (frameObject.containsKey(Keywords.EMBED)) {
+            
+            if (JsonUtils.isNotString(frameObject.get(Keywords.EMBED))
+                    || Keywords.noneMatch(frameObject.getString(Keywords.EMBED), Keywords.ALWAYS, Keywords.ONCE, Keywords.NEVER)
+                    ) {
+                throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
+            }
+            
+            embed = JsonLdEmbed.valueOf(frameObject.getString(Keywords.EMBED));            
+        }
+        
+        boolean explicit = state.isExplicitInclusion();
+        
+        if (frameObject.containsKey(Keywords.EXPLICIT)) {
+            
+            if (JsonUtils.isNotBoolean(frameObject.get(Keywords.EXPLICIT))) {
+                throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
+            }
+            
+            explicit = frameObject.getBoolean(Keywords.EXPLICIT);
+        }
+        
+        boolean requireAll = state.isRequireAll();
+
+        if (frameObject.containsKey(Keywords.REQUIRE_ALL)) {
+            
+            if (JsonUtils.isNotBoolean(frameObject.get(Keywords.REQUIRE_ALL))) {
+                throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
+            }
+            
+            explicit = frameObject.getBoolean(Keywords.REQUIRE_ALL);
+        }
+        
         // 3.
         final List<String> matchedSubjects = FrameMatcher.with(state, subjects, frameObject, requireAll).match();
         
