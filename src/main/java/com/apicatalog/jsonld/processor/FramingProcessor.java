@@ -4,17 +4,21 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.CompactionBuilder;
+import com.apicatalog.jsonld.compaction.UriCompactionBuilder;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.ActiveContextBuilder;
 import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.expansion.UriExpansionBuilder;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.framing.FramingBuilder;
@@ -42,19 +46,17 @@ public final class FramingProcessor {
         JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions);
         
         // 7.
-        expansionOptions.setFrameExpansion(false);
+        expansionOptions.setFrameExpansion(true);
         JsonArray expandedFrame = ExpansionProcessor.expand(frame, expansionOptions);
         
         // 8.
-        final JsonValue context;
+        final JsonObject frameObject = frame.getDocument().asJsonStructure().asJsonObject(); 
         
-        if (JsonUtils.isObject(frame.getDocument().asJsonStructure())
-                && frame.getDocument().asJsonStructure().asJsonObject().containsKey(Keywords.CONTEXT)    
+        JsonValue context = JsonValue.EMPTY_JSON_OBJECT;
+        
+        if (frameObject.containsKey(Keywords.CONTEXT)    
                 ) {
-            context = frame.getDocument().asJsonStructure().asJsonObject().get(Keywords.CONTEXT);
-            
-        } else {
-            context = JsonValue.NULL;
+            context = frameObject.get(Keywords.CONTEXT);   
         }
             
         // 9.
@@ -74,8 +76,14 @@ public final class FramingProcessor {
         // 13.
         
         boolean frameDefault = options.isFrameDefault();
+        
+        String frameGraphExpanded = UriExpansionBuilder.with(activeContext, Keywords.GRAPH).vocab(true).build();
+        
+        System.out.println(">> " + frameGraphExpanded);
+        System.out.println(">> " + frameObject);
+        
         //TODO expands to GRAPH        
-        if (!frameDefault && frame.getDocument().asJsonStructure().asJsonObject().containsKey(Keywords.GRAPH)) {
+        if (!frameDefault && frameObject.containsKey(frameGraphExpanded)) {
             frameDefault = true;
         }
         
@@ -87,15 +95,18 @@ public final class FramingProcessor {
         state.setExplicitInclusion(options.isExplicit());   // 14.3.
         state.setRequireAll(options.isRequiredAll());       // 14.4.
         state.setOmitDefault(options.isOmitDefault());      // 14.5.
-        if (frameDefault) {
-            state.setGraphName(Keywords.DEFAULT); // 14.6.
-        }
-        
-        System.out.println(">>> " + expandedInput);
         
         state.setGraphMap(NodeMapBuilder.with(expandedInput, new NodeMap()).build());   // 14.7.
         
-        System.out.println(">>> " + state.getGraphMap().graphs(true));
+        if (frameDefault) {
+            state.setGraphName(Keywords.DEFAULT); // 14.6.
+
+        } else {
+            state.setGraphName(Keywords.MERGED);
+            state.getGraphMap().merge();
+        }
+        
+        
         //TODO
         
         // 15.
@@ -114,26 +125,30 @@ public final class FramingProcessor {
         
         // 18.
         //TODO
-        System.out.println("0 < : " + results);
+
         // 19.
         JsonValue compactedResults = CompactionBuilder
                                         .with(activeContext, null, JsonUtils.toJsonArray(results))
                                         .compactArrays(options.isCompactArrays())
                                         .ordered(options.isOrdered())
                                         .build();
-        System.out.println("1 < : " + compactedResults);
+
         // 19.1.
         if (JsonUtils.isEmptyArray(compactedResults)) {
             compactedResults = JsonValue.EMPTY_JSON_OBJECT;
             
         // 19.2.
         } else if (JsonUtils.isArray(compactedResults)) {
-            //TODO
+            
+            String key = UriCompactionBuilder.with(activeContext, Keywords.GRAPH).build();
+            
+            compactedResults = Json.createObjectBuilder()
+                                    .add(key, compactedResults).build();
+            
         }
         
-        
-        
-        
+        // 19.3.
+        compactedResults = Json.createObjectBuilder(compactedResults.asJsonObject()).add(Keywords.CONTEXT, context).build();
         
         // 20.
         //TODO

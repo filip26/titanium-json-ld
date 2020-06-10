@@ -1,8 +1,11 @@
 package com.apicatalog.jsonld.framing;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonString;
@@ -88,7 +91,7 @@ public final class FramingBuilder {
         boolean embed = false;
         boolean explicit = false;
         boolean requireAll = false;
-        System.out.println(": " + subjects);
+
         // 3.
         final List<String> matchedSubjects = FrameMatcher.with(state, subjects, frameObject, requireAll).match();
         
@@ -98,8 +101,45 @@ public final class FramingBuilder {
         }
 
         for (final String id : matchedSubjects) {
+
+            final Map<String, JsonValue> node = state.getGraphMap().get(state.getGraphName(), id);
             
-            System.out.println(": " + id);
+            // 1.
+            Map<String, JsonValue> output = new LinkedHashMap<>();
+            output.put(Keywords.ID, Json.createValue(id));
+            
+            System.out.println(">>>: " + id);
+            
+            // 4.2.
+            //TODO
+            
+            // 4.5.
+
+            // 4.7.
+            for (final String property : state.getGraphMap().properties(state.getGraphName(), id, ordered)) {
+
+                final JsonValue objects = state.getGraphMap().get(state.getGraphName(), id, property);
+                
+                // 4.7.1.
+                if (Keywords.contains(property)) {
+                    output.put(property, objects);
+                    
+                // 4.7.2.
+                } else if (explicit && !frameObject.containsKey(property)) {
+                    continue;
+                }
+                System.out.println(": " + objects + ", " + property);
+                // 4.7.3.
+                for (final JsonValue item : JsonUtils.toJsonArray(objects)) {
+                    
+                }
+                
+                //TODO
+                
+                // 4.7.6.
+                parent.add(JsonUtils.toJsonObject(output));
+                
+            }
             
         }
         

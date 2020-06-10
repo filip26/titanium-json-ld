@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
@@ -50,6 +52,16 @@ public final class NodeMap {
         
         return null;
     }
+    
+    public Map<String, JsonValue> get(String graphName, String subject) {
+        
+        if (index.containsKey(graphName)) {
+            return index.get(graphName).get(subject);
+        }
+        
+        return null;
+    }
+
 
     public boolean doesNotContain(String graphName, String subject) {
         return !index.containsKey(graphName) 
@@ -103,5 +115,58 @@ public final class NodeMap {
                 ? index.getOrDefault(graphName, Collections.emptyMap()).getOrDefault(subject, Collections.emptyMap()).keySet().stream().sorted().collect(Collectors.toList())
                 : index.getOrDefault(graphName, Collections.emptyMap()).getOrDefault(subject, Collections.emptyMap()).keySet()
                 ;
+    }
+    
+    /**
+     * 
+     * @see <a href="https://www.w3.org/TR/json-ld11-api/#merge-node-maps">Merge Node Maps</a>
+     */
+    public void merge() {
+        
+        // 1.
+        final NodeMap result = new NodeMap();
+ 
+        // 2.
+        for (final Map.Entry<String, Map<String, Map<String, JsonValue>>> graphEntry : index.entrySet()) {
+            
+            for (final Map.Entry<String, Map<String, JsonValue>> subject : graphEntry.getValue().entrySet()) {
+             
+                // 2.1.
+                if (result.doesNotContain(Keywords.MERGED, subject.getKey())) {
+                    result.set(Keywords.MERGED, subject.getKey(), Keywords.ID, Json.createValue(subject.getKey()));
+                }
+                                
+                // 2.2.
+                for (final Map.Entry<String, JsonValue> property : subject.getValue().entrySet()) {
+                
+                    // 2.2.1.
+                    if (!Keywords.TYPE.equals(property.getKey())
+                            && Keywords.matchForm(property.getKey()) 
+                            ) {
+                        
+                        result.set(Keywords.MERGED, subject.getKey(), property.getKey(), property.getValue());
+                        
+                    } else {
+                        
+                        final JsonArrayBuilder array;
+                        
+                        if (result.doesNotContain(Keywords.MERGED, subject.getKey(), property.getKey())) {
+                            array = Json.createArrayBuilder();
+                            
+                        } else {
+                            array = Json.createArrayBuilder(JsonUtils.toJsonArray(result.get(Keywords.MERGED, subject.getKey(), property.getKey())));
+                        }
+                        
+                        JsonUtils.toJsonArray(property.getValue()).forEach(array::add);
+                        
+                        result.set(Keywords.MERGED, subject.getKey(), property.getKey(), array.build());
+                    }
+                    
+                }
+                
+            }
+        }
+        
+        index.put(Keywords.MERGED, result.index.get(Keywords.MERGED));
     }
 }

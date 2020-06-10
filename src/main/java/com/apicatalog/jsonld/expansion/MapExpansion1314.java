@@ -152,11 +152,18 @@ final class MapExpansion1314 {
                 if (Keywords.ID.equals(expandedProperty)) {
 
                     // 13.4.3.1
-                    if (JsonUtils.isNotString(value)) {
-                        // TODO frameExpansion
+                    if (JsonUtils.isNotString(value) && !frameExpansion
+                            || frameExpansion 
+                                    && JsonUtils.isNotEmptyObject(value)
+                                    && (JsonUtils.isNotArray(value)
+                                            || JsonUtils.isEmptyArray(value)
+                                            || !value.asJsonArray().stream().allMatch(JsonUtils::isNotString) 
+                                    )
+                            ) {
+
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE);
 
-                        // 13.4.3.2
+                    // 13.4.3.2
                     } else {
 
                         String expandedStringValue = 
@@ -322,10 +329,15 @@ final class MapExpansion1314 {
 
                         expandedValue = value;
 
-                        // 13.4.7.2
+                    // 13.4.7.2
                     } else if (!frameExpansion && JsonUtils.isNotNull(value) && JsonUtils.isNotScalar(value)
-                    // TODO frameexpansion
-                    ) {
+                               || frameExpansion 
+                                       && JsonUtils.isNotEmptyObject(value)
+                                       && (JsonUtils.isNotArray(value)
+                                               || JsonUtils.isEmptyArray(value)
+                                               || !value.asJsonArray().stream().allMatch(JsonUtils::isScalar)
+                                               )
+                            ) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
 
                         // 13.4.7.3
@@ -500,9 +512,13 @@ final class MapExpansion1314 {
                 }
 
                 // 13.4.15
-                if (frameExpansion && (Keywords.DEFAULT.equals(expandedProperty) || "@embed".equals(expandedProperty)
-                        || "@explicit".equals(expandedProperty) || "@omitDefault".equals(expandedProperty)
-                        || "@requireAll)".equals(expandedProperty))) {
+                if (frameExpansion 
+                        && (Keywords.DEFAULT.equals(expandedProperty) 
+                                || Keywords.EMBED.equals(expandedProperty)
+                                || Keywords.EXPLICIT.equals(expandedProperty) 
+                                || Keywords.OMIT_DEFAULT.equals(expandedProperty)
+                                || Keywords.REQUIRE_ALL.equals(expandedProperty))
+                        ) {
 
                     //TODO frame expansion
                 }
