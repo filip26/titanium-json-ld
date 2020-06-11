@@ -177,7 +177,7 @@ final class MapExpansion1314 {
                             expandedValue = Json.createValue(expandedStringValue);
                         }
                         
-                    } else if (JsonUtils.isString(value) || JsonUtils.isArray(value))  {
+                    } else if (JsonUtils.isScalar(value) || JsonUtils.isArray(value))  {
                         
                         JsonArrayBuilder array = Json.createArrayBuilder();
                         
@@ -197,6 +197,7 @@ final class MapExpansion1314 {
 
                         expandedValue = array.build();
                     }
+
                 }
 
                 // 13.4.4
@@ -539,7 +540,10 @@ final class MapExpansion1314 {
                                 || Keywords.REQUIRE_ALL.equals(expandedProperty))
                         ) {
 
-                    //TODO frame expansion
+                    expandedValue = Expansion.with(activeContext, value, expandedProperty, baseUrl)
+                                            .frameExpansion(frameExpansion)
+                                            .ordered(ordered)
+                                            .compute();
                 }
 
                 // 13.4.16
