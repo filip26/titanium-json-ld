@@ -1,9 +1,11 @@
 package com.apicatalog.jsonld.framing;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -30,6 +32,7 @@ public final class FramingBuilder {
     private List<String> subjects;
     private JsonArray frame;
     private List<JsonValue> parent;
+    
     private String activeProperty;
     
     // optional
@@ -95,7 +98,7 @@ public final class FramingBuilder {
             if (JsonUtils.isNotString(frameObject.get(Keywords.EMBED))
                     || Keywords.noneMatch(frameObject.getString(Keywords.EMBED), Keywords.ALWAYS, Keywords.ONCE, Keywords.NEVER)
                     ) {
-                throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
+                throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE);
             }
             
             embed = JsonLdEmbed.valueOf(frameObject.getString(Keywords.EMBED));            
@@ -120,61 +123,83 @@ public final class FramingBuilder {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
             }
             
-            explicit = frameObject.getBoolean(Keywords.REQUIRE_ALL);
+            requireAll = frameObject.getBoolean(Keywords.REQUIRE_ALL);
         }
         
         // 3.
-        final List<String> matchedSubjects = FrameMatcher.with(state, subjects, frameObject, requireAll).match();
+        final List<String> matchedSubjects = 
+                                FrameMatcher
+                                    .with(state, subjects, frameObject, requireAll)
+                                    .match();
+        
+        System.out.println(">>> " + matchedSubjects);
         
         // 4.
         if (ordered) {
             Collections.sort(matchedSubjects);
         }
 
+        Set<String> embeddedNodes = new HashSet<>();
+
         for (final String id : matchedSubjects) {
 
             final Map<String, JsonValue> node = state.getGraphMap().get(state.getGraphName(), id);
             
-            // 1.
+            // 4.1.
             Map<String, JsonValue> output = new LinkedHashMap<>();
             output.put(Keywords.ID, Json.createValue(id));
             
-            System.out.println(">>>: " + id);
-            
             // 4.2.
-            //TODO
+            if (!state.isEmbedded() && embeddedNodes.contains(state.getGraphName() + "@" + id))  {
+                continue;
+            }
+
+            if ( embeddedNodes.contains(state.getGraphName() + "@" + id)) {
+                continue;
+            }
+            
+            // 4.3.
+            
+            // 4.4.
             
             // 4.5.
+            //if (state.getGraphMap().)
+            
+            // 4.6.
 
             // 4.7.
+                
             for (final String property : state.getGraphMap().properties(state.getGraphName(), id, ordered)) {
-
+System.out.println("Property: " + property);
                 final JsonValue objects = state.getGraphMap().get(state.getGraphName(), id, property);
                 
                 // 4.7.1.
                 if (Keywords.contains(property)) {
                     output.put(property, objects);
+                    continue;
                     
                 // 4.7.2.
                 } else if (explicit && !frameObject.containsKey(property)) {
                     continue;
                 }
-                System.out.println(": " + objects + ", " + property);
+
                 // 4.7.3.
                 for (final JsonValue item : JsonUtils.toJsonArray(objects)) {
                     
                 }
                 
+                // 4.7.4.
+//                for (final )
+                
                 //TODO
                 
                 // 4.7.6.
+                embeddedNodes.add(state.getGraphName() + "@" + id );
                 parent.add(JsonUtils.toJsonObject(output));
                 
             }
-            
+          
         }
-        
-        
     }
     
     private boolean validateFrameId() {

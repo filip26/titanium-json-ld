@@ -79,8 +79,6 @@ public final class FramingProcessor {
         
         String frameGraphExpanded = UriExpansionBuilder.with(activeContext, Keywords.GRAPH).vocab(true).build();
         
-        System.out.println(">> " + frameGraphExpanded);
-        System.out.println(">> " + frameObject);
         
         //TODO expands to GRAPH        
         if (!frameDefault && frameObject.containsKey(frameGraphExpanded)) {
@@ -108,6 +106,7 @@ public final class FramingProcessor {
         
         
         //TODO
+        System.out.println("Expanded Frame: " + expandedFrame);
         
         // 15.
         List<JsonValue> results = new ArrayList<>();
@@ -125,7 +124,7 @@ public final class FramingProcessor {
         
         // 18.
         //TODO
-
+        
         // 19.
         JsonValue compactedResults = CompactionBuilder
                                         .with(activeContext, null, JsonUtils.toJsonArray(results))
@@ -140,21 +139,31 @@ public final class FramingProcessor {
         // 19.2.
         } else if (JsonUtils.isArray(compactedResults)) {
             
-            String key = UriCompactionBuilder.with(activeContext, Keywords.GRAPH).build();
+            String key = UriCompactionBuilder.with(activeContext, Keywords.GRAPH).vocab(true).build();
             
             compactedResults = Json.createObjectBuilder()
                                     .add(key, compactedResults).build();
             
         }
         
-        // 19.3.
-        compactedResults = Json.createObjectBuilder(compactedResults.asJsonObject()).add(Keywords.CONTEXT, context).build();
-        
         // 20.
         //TODO
         
         // 21.
+        if (!options.isOmitGraph()) {
+            if  (!compactedResults.asJsonObject().containsKey(Keywords.GRAPH)) {
+                compactedResults = Json.createObjectBuilder().add(Keywords.GRAPH, 
+                                        Json.createArrayBuilder().add(compactedResults)
+                                        ).build();
+            }
+            //TODO
+            
+        }
         //TODO
+
+        // 19.3.
+        compactedResults = Json.createObjectBuilder(compactedResults.asJsonObject()).add(Keywords.CONTEXT, context).build();
+        
         
         return compactedResults.asJsonObject();
     }

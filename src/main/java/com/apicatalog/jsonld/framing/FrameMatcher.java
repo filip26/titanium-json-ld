@@ -2,8 +2,8 @@ package com.apicatalog.jsonld.framing;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
@@ -37,44 +37,71 @@ public final class FrameMatcher {
             return subjects;
         }
         
-        List<String> result = new ArrayList<>();
+        final List<String> result = new ArrayList<>();
         
-        for (final String node : subjects) {
-            
-            if (match(node)) {
-                result.add(node);
+        for (final String subject : subjects) {
+                                    
+            if (match(subject)) {
+                result.add(subject);
             }
         }
         
         return result;
     }
     
-    private boolean match(final String property) throws JsonLdError {
+    private boolean match(final String subject) throws JsonLdError {
+
+
+
         
-        JsonArray value = frame.getJsonArray(property);
+        Map<String, JsonValue> node = state.getGraphMap().get(state.getGraphName(), subject);
         
-        // 2.1.
-        if (Keywords.ID.equals(property)) {
-            //TODO
+        int match = 0;
+        
+        for (final String property : frame.keySet()) {
             
-            return false;
+//            if (!requireAll && match > 0) {
+//                return true;
+//            }
+
+            JsonValue nodeValue = node.get(property);
+
+            // 2.1.
+            if (Keywords.ID.equals(property)) {
+
+                
+                //TODO
+                
+                return false;
+                
+            // 2.2.
+            } else if (Keywords.TYPE.equals(property)) {
+                if (frame.getJsonArray(property).stream().anyMatch(nodeValue.asJsonArray()::contains)) {
+                    match++;
+                    return true;
+                } else if (nodeValue.asJsonArray().isEmpty() && JsonUtils.isEmptyObject(frame.getJsonArray(property))) {
+                    match++;
+                    return true;
+                }
+                return false;
+
+            } else if (Keywords.matchForm(property)) {
+                continue;
+            }
             
-        // 2.2.
-        } else if (Keywords.TYPE.equals(property)) {
-          //TODO
+
             
-            return false;
+            // 2.5.
+//            if (JsonUtils.isNull(value) || JsonUtils.isEmptyArray(value) /*TODO @default||*/ ) {
+//                return true;
+//            }
+            
+            // 2.6.
+            
+            
+
         }
-        
-        // 2.5.
-        if (JsonUtils.isNull(value) || JsonUtils.isEmptyArray(value) /*TODO @default||*/ ) {
-            return true;
-        }
-        
-        // 2.6.
-        
-        
-        return false;
+        return !requireAll && match > 0 || requireAll && match == frame.size();
     }
     
 }
