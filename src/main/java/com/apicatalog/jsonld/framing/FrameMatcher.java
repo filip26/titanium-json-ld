@@ -16,22 +16,22 @@ public final class FrameMatcher {
     // required
     private FramingState state;
     private List<String> subjects;
-    private JsonObject frame;
+    private Frame frame;
     private boolean requireAll;
     
-    private FrameMatcher(FramingState state, List<String> subjects, JsonObject frame, boolean requireAll) {
+    private FrameMatcher(FramingState state, List<String> subjects, Frame frame, boolean requireAll) {
         this.state = state;
         this.subjects = subjects;
         this.frame = frame;
         this.requireAll = requireAll; 
     }
     
-    public static final FrameMatcher with(FramingState state, List<String> subjects, JsonObject frame, boolean requireAll) {
+    public static final FrameMatcher with(FramingState state, List<String> subjects, Frame frame, boolean requireAll) {
         return new FrameMatcher(state, subjects, frame, requireAll);
     }
     
     public List<String> match() throws JsonLdError {
-        
+     System.out.println("Match: " + subjects);   
         // 1.
         if (frame.isEmpty()) {
             return subjects;
@@ -58,7 +58,7 @@ public final class FrameMatcher {
         
         int match = 0;
         
-        for (final String property : frame.keySet()) {
+        for (final String property : frame.keys()) {
             
 //            if (!requireAll && match > 0) {
 //                return true;
@@ -78,11 +78,11 @@ public final class FrameMatcher {
             } else if (Keywords.TYPE.equals(property)) {
                 
                 if (nodeValue != null) {
-                
-                    if (frame.getJsonArray(property).stream().anyMatch(nodeValue.asJsonArray()::contains)) {
+                    if (frame.getArray(property).stream().anyMatch(nodeValue.asJsonArray()::contains)) {
                         match++;
                         return true;
-                    } else if (nodeValue.asJsonArray().isEmpty() && JsonUtils.isEmptyObject(frame.getJsonArray(property))) {
+                        
+                    } else if (nodeValue.asJsonArray().isEmpty() && frame.isWildCard(property)) {
                         match++;
                         return true;
                     }
@@ -105,7 +105,8 @@ public final class FrameMatcher {
             
 
         }
-        return !requireAll && match > 0 || requireAll && match == frame.size();
+       // return !requireAll && match > 0 || requireAll && match == frame.size();
+        return false;
     }
     
 }

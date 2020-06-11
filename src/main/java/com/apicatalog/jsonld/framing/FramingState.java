@@ -1,5 +1,8 @@
 package com.apicatalog.jsonld.framing;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.apicatalog.jsonld.api.JsonLdEmbed;
 import com.apicatalog.jsonld.flattening.NodeMap;
 
@@ -14,8 +17,11 @@ public final class FramingState {
     private String graphName;
     private NodeMap graphMap;
     
+    private Map<String, Map<String, Object>> processed;
+    
     //TODO subject map
     public FramingState() {
+        this.processed = new HashMap<>();
         
     }
     
@@ -27,6 +33,7 @@ public final class FramingState {
         this.omitDefault = state.omitDefault;
         this.graphMap = state.graphMap;
         this.graphName = state.graphName;
+        this.processed = state.processed;    //TODO ?!
     }
     
     public JsonLdEmbed getEmbed() {
@@ -85,4 +92,12 @@ public final class FramingState {
         this.graphMap = graphMap;
     }
 
+    public boolean isProcessed(String subject) {
+        return processed.containsKey(graphName) && processed.get(graphName).containsKey(subject);
+    }
+    
+    public void markProcessed(String subject) {
+        processed.computeIfAbsent(graphName, x -> new HashMap<>()).put(subject, Boolean.TRUE);    //TODO
+    }
+    
 }

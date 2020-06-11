@@ -13,4 +13,10 @@ public final class ValueObject {
         return JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.VALUE);
     }
 
+    public static JsonValue getValue(JsonValue value) {
+        return isValueObject(value)
+                    ? value.asJsonObject().get(Keywords.VALUE)
+                    : null; 
+    }
+
 }

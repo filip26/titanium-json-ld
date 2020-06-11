@@ -21,6 +21,7 @@ import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.expansion.UriExpansionBuilder;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
+import com.apicatalog.jsonld.framing.Frame;
 import com.apicatalog.jsonld.framing.FramingBuilder;
 import com.apicatalog.jsonld.framing.FramingState;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -49,11 +50,12 @@ public final class FramingProcessor {
         expansionOptions.setFrameExpansion(true);
         JsonArray expandedFrame = ExpansionProcessor.expand(frame, expansionOptions);
 
-    
+        
         // 8.
         final JsonObject frameObject = frame.getDocument().asJsonStructure().asJsonObject(); 
 
-
+        System.out.println("Frame: " + frameObject);
+        System.out.println("ExpandedFrame: " + expandedFrame);
         
         JsonValue context = JsonValue.EMPTY_JSON_OBJECT;
         
@@ -115,15 +117,19 @@ public final class FramingProcessor {
         // 16.
         FramingBuilder.with(state, 
                             new ArrayList<>(state.getGraphMap().subjects(state.getGraphName())), 
-                            expandedFrame, 
+                            Frame.of(expandedFrame), 
                             resultMap, 
                             null
                             ).build();
+        
+        System.out.println("Result: " + resultMap);
+        
         
         // 17.
         //TODO      
         
         // 18.
+        
         //TODO
         
         // 19.
