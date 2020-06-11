@@ -48,9 +48,12 @@ public final class FramingProcessor {
         // 7.
         expansionOptions.setFrameExpansion(true);
         JsonArray expandedFrame = ExpansionProcessor.expand(frame, expansionOptions);
-        
+
+    
         // 8.
         final JsonObject frameObject = frame.getDocument().asJsonStructure().asJsonObject(); 
+
+
         
         JsonValue context = JsonValue.EMPTY_JSON_OBJECT;
         

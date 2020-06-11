@@ -23,6 +23,7 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.NodeObject;
+import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.jsonld.uri.UriUtils;
 
 /**
@@ -64,7 +65,7 @@ public final class FramingBuilder {
     }
     
     public void build() throws JsonLdError {
-        
+
         // 1.
         if (JsonUtils.isArray(frame)) {
             
@@ -110,14 +111,20 @@ public final class FramingBuilder {
         }
         
         boolean explicit = state.isExplicitInclusion();
-        
+
         if (frameObject.containsKey(Keywords.EXPLICIT)) {
             
-            if (JsonUtils.isNotBoolean(frameObject.get(Keywords.EXPLICIT))) {
+            JsonValue explicitValue = frameObject.get(Keywords.EXPLICIT);
+            
+            if (ValueObject.isValueObject(explicitValue)) {
+                explicitValue = explicitValue.asJsonObject().get(Keywords.VALUE);
+            }
+            
+            if (JsonUtils.isNotBoolean(explicitValue)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
             }
             
-            explicit = frameObject.getBoolean(Keywords.EXPLICIT);
+            explicit = JsonUtils.isTrue(explicitValue);
         }
         
         boolean requireAll = state.isRequireAll();
