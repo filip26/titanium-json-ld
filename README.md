@@ -21,7 +21,7 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 [Flattening](https://www.w3.org/TR/json-ld/#flattened-document-form) | 55 | 55 | 100% |
 [JSON-LD to RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 449 | 447 | 99.5% |  won't fix: <ul><li>[te075](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#te075) - blank node as a predicate</li><li>[tli12](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#tli12) - an invalid IRI as @base</li></ul>
 [RDF to JSON-LD](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 51 | 51  | 100% | 
-[Framing](https://www.w3.org/TR/json-ld11-framing/#framing) | | | TBD |
+[Framing](https://www.w3.org/TR/json-ld11-framing/#framing) | 89 | 11 | 12.3% |
 
 See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld-api/reports/#subj_Titanium_JSON_LD_Java) for more details.
 
