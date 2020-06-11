@@ -2,12 +2,12 @@ package com.apicatalog.jsonld.processor;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
-import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
@@ -104,18 +104,16 @@ public final class FramingProcessor {
             state.getGraphMap().merge();
         }
         
-        
         //TODO
-        System.out.println("Expanded Frame: " + expandedFrame);
         
         // 15.
-        List<JsonValue> results = new ArrayList<>();
+        Map<String, JsonValue> resultMap = new LinkedHashMap<>();
         
         // 16.
         FramingBuilder.with(state, 
                             new ArrayList<>(state.getGraphMap().subjects(state.getGraphName())), 
                             expandedFrame, 
-                            results, 
+                            resultMap, 
                             null
                             ).build();
         
@@ -127,7 +125,7 @@ public final class FramingProcessor {
         
         // 19.
         JsonValue compactedResults = CompactionBuilder
-                                        .with(activeContext, null, JsonUtils.toJsonArray(results))
+                                        .with(activeContext, null, JsonUtils.toJsonArray(resultMap.values()))
                                         .compactArrays(options.isCompactArrays())
                                         .ordered(options.isOrdered())
                                         .build();
@@ -150,11 +148,21 @@ public final class FramingProcessor {
         //TODO
         
         // 21.
-        if (!options.isOmitGraph()) {
+        if (!options.isOmitGraph() /*&& !compactedResults.asJsonObject().isEmpty()*/) {
             if  (!compactedResults.asJsonObject().containsKey(Keywords.GRAPH)) {
-                compactedResults = Json.createObjectBuilder().add(Keywords.GRAPH, 
-                                        Json.createArrayBuilder().add(compactedResults)
-                                        ).build();
+                
+                if (compactedResults.asJsonObject().isEmpty()) {
+                
+                    compactedResults = Json.createObjectBuilder().add(Keywords.GRAPH, 
+                            JsonValue.EMPTY_JSON_ARRAY
+                            ).build();
+
+                } else {
+                
+                    compactedResults = Json.createObjectBuilder().add(Keywords.GRAPH, 
+                                            Json.createArrayBuilder().add(compactedResults)
+                                            ).build();
+                }
             }
             //TODO
             
@@ -162,7 +170,9 @@ public final class FramingProcessor {
         //TODO
 
         // 19.3.
-        compactedResults = Json.createObjectBuilder(compactedResults.asJsonObject()).add(Keywords.CONTEXT, context).build();
+        if (!compactedResults.asJsonObject().isEmpty()) {
+            compactedResults = Json.createObjectBuilder(compactedResults.asJsonObject()).add(Keywords.CONTEXT, context).build();
+        }
         
         
         return compactedResults.asJsonObject();

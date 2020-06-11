@@ -1,5 +1,6 @@
 package com.apicatalog.jsonld.framing;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -9,8 +10,10 @@ import java.util.Set;
 
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonString;
+import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdEmbed;
@@ -18,6 +21,8 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.ListObject;
+import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.uri.UriUtils;
 
 /**
@@ -30,8 +35,8 @@ public final class FramingBuilder {
     // required
     private FramingState state;
     private List<String> subjects;
-    private JsonArray frame;
-    private List<JsonValue> parent;
+    private JsonStructure frame;
+    private Map<String, JsonValue> parent;
     
     private String activeProperty;
     
@@ -41,7 +46,7 @@ public final class FramingBuilder {
     // runtime
     private JsonObject frameObject;
     
-    private FramingBuilder(FramingState state, List<String> subjects, JsonArray frame, List<JsonValue> parent, String activeProperty) {
+    private FramingBuilder(FramingState state, List<String> subjects, JsonStructure frame, Map<String, JsonValue> parent, String activeProperty) {
         this.state = state;
         this.subjects = subjects;
         this.frame = frame;
@@ -54,7 +59,7 @@ public final class FramingBuilder {
         this.frameObject = null;
     }
     
-    public static final FramingBuilder with(FramingState state, List<String> subjects, JsonArray frame, List<JsonValue> parent, String activeProperty) {
+    public static final FramingBuilder with(FramingState state, List<String> subjects, JsonStructure frame, Map<String, JsonValue> parent, String activeProperty) {
         return new FramingBuilder(state, subjects, frame, parent, activeProperty);
     }
     
@@ -131,15 +136,13 @@ public final class FramingBuilder {
                                 FrameMatcher
                                     .with(state, subjects, frameObject, requireAll)
                                     .match();
-        
-        System.out.println(">>> " + matchedSubjects);
-        
+                
         // 4.
         if (ordered) {
             Collections.sort(matchedSubjects);
         }
 
-        Set<String> embeddedNodes = new HashSet<>();
+//        Set<String> embeddedNodes = new HashSet<>();
 
         for (final String id : matchedSubjects) {
 
@@ -150,13 +153,13 @@ public final class FramingBuilder {
             output.put(Keywords.ID, Json.createValue(id));
             
             // 4.2.
-            if (!state.isEmbedded() && embeddedNodes.contains(state.getGraphName() + "@" + id))  {
-                continue;
-            }
+//            if (!state.isEmbedded() && embeddedNodes.contains(state.getGraphName() + "@" + id))  {
+//                continue;
+//            }
 
-            if ( embeddedNodes.contains(state.getGraphName() + "@" + id)) {
-                continue;
-            }
+//            if ( embeddedNodes.contains(state.getGraphName() + "@" + id)) {
+//                continue;
+//            }
             
             // 4.3.
             
@@ -170,7 +173,7 @@ public final class FramingBuilder {
             // 4.7.
                 
             for (final String property : state.getGraphMap().properties(state.getGraphName(), id, ordered)) {
-System.out.println("Property: " + property);
+
                 final JsonValue objects = state.getGraphMap().get(state.getGraphName(), id, property);
                 
                 // 4.7.1.
@@ -186,6 +189,42 @@ System.out.println("Property: " + property);
                 // 4.7.3.
                 for (final JsonValue item : JsonUtils.toJsonArray(objects)) {
                     
+                    // 4.7.3.1.
+                    if (ListObject.isListObject(item)) {
+                        System.out.println("TODO: LIST");
+                        
+                    } else if (NodeObject.isNodeReference(item)) {
+                        
+                        FramingState clonedState = new FramingState(state);
+                        clonedState.setEmbedded(true);
+                        
+                        JsonValue newFrame = frameObject.get(property);
+                        
+                        if (newFrame == null) {
+                            newFrame = JsonValue.EMPTY_JSON_OBJECT;
+                            //TODO
+                        }
+                    
+                        
+                        FramingBuilder.with(
+                                    clonedState, 
+                                    Arrays.asList(item.asJsonObject().getString(Keywords.ID)),
+                                    (JsonStructure)newFrame, 
+                                    output, 
+                                    property)
+                            .build();
+                        
+                    } else {
+                        
+                        if (output.containsKey(property)) {
+                            output.put(property, Json.createArrayBuilder(output.get(property).asJsonArray()).add(item).build());
+                        } else {
+                        
+                            output.put(property, Json.createArrayBuilder().add(item).build());
+                        }
+  
+                    }
+                    
                 }
                 
                 // 4.7.4.
@@ -194,8 +233,10 @@ System.out.println("Property: " + property);
                 //TODO
                 
                 // 4.7.6.
-                embeddedNodes.add(state.getGraphName() + "@" + id );
-                parent.add(JsonUtils.toJsonObject(output));
+                //embeddedNodes.add(state.getGraphName() + "@" + id );
+                
+                addToResult(JsonUtils.toJsonObject(output));
+
                 
             }
           
@@ -249,4 +290,24 @@ System.out.println("Property: " + property);
         } 
         return JsonUtils.isString(typeValue) && UriUtils.isAbsoluteUri(((JsonString)typeValue).getString());
     }
+    
+    private void addToResult(JsonValue output) {
+        if (activeProperty == null) {
+            parent.put(Integer.toHexString(parent.size()), output);
+        } else {
+            
+            final JsonArrayBuilder array;
+            
+            if (parent.containsKey(activeProperty)) {
+//                array = Json.createArrayBuilder(parent.get(activeProperty).asJsonArray());
+                
+            } else {
+   
+            }
+            array = Json.createArrayBuilder();
+            
+            parent.put(activeProperty, array.add(output).build());
+        }        
+    }
+    
 }

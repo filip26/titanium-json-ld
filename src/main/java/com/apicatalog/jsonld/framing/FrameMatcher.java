@@ -76,12 +76,16 @@ public final class FrameMatcher {
                 
             // 2.2.
             } else if (Keywords.TYPE.equals(property)) {
-                if (frame.getJsonArray(property).stream().anyMatch(nodeValue.asJsonArray()::contains)) {
-                    match++;
-                    return true;
-                } else if (nodeValue.asJsonArray().isEmpty() && JsonUtils.isEmptyObject(frame.getJsonArray(property))) {
-                    match++;
-                    return true;
+                
+                if (nodeValue != null) {
+                
+                    if (frame.getJsonArray(property).stream().anyMatch(nodeValue.asJsonArray()::contains)) {
+                        match++;
+                        return true;
+                    } else if (nodeValue.asJsonArray().isEmpty() && JsonUtils.isEmptyObject(frame.getJsonArray(property))) {
+                        match++;
+                        return true;
+                    }
                 }
                 return false;
 

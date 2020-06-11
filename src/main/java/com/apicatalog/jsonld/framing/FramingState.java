@@ -15,6 +15,19 @@ public final class FramingState {
     private NodeMap graphMap;
     
     //TODO subject map
+    public FramingState() {
+        
+    }
+    
+    public FramingState(FramingState state) {
+        this.embed = state.embed;
+        this.requireAll = state.requireAll;
+        this.embedded = state.embedded;
+        this.explicitInclusion = state.explicitInclusion;
+        this.omitDefault = state.omitDefault;
+        this.graphMap = state.graphMap;
+        this.graphName = state.graphName;
+    }
     
     public JsonLdEmbed getEmbed() {
         return embed;

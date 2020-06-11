@@ -21,4 +21,10 @@ public class NodeObject {
         // TODO https://www.w3.org/TR/json-ld11/#dfn-node-object
     }
     
+    public static final boolean isNodeReference(JsonValue value) {
+        return JsonUtils.isObject(value) 
+                    && value.asJsonObject().size() == 1 
+                    && value.asJsonObject().containsKey(Keywords.ID);        
+    }
+    
 }
