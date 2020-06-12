@@ -200,8 +200,9 @@ public final class FramingProcessor {
 
         // 19.3.
 //        if (!compactedResults.asJsonObject().isEmpty()) {
+        if (JsonUtils.isNotEmptyArray(context) && JsonUtils.isNotEmptyObject(context)) {
             compactedResults = Json.createObjectBuilder(compactedResults.asJsonObject()).add(Keywords.CONTEXT, context).build();
-//        }
+        }
         
         
         return compactedResults.asJsonObject();
