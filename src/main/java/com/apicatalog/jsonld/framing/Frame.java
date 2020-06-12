@@ -148,7 +148,7 @@ public final class Frame {
     }
     
     private static final boolean validateFrameType(JsonObject frame) {
-        
+
         final JsonValue typeValue = frame.get(Keywords.TYPE);
         
         if (JsonUtils.isArray(typeValue) && JsonUtils.isNotEmptyArray(typeValue)) {
@@ -169,8 +169,10 @@ public final class Frame {
             }
             return true;
             
-        } 
-        return JsonUtils.isString(typeValue) && UriUtils.isAbsoluteUri(((JsonString)typeValue).getString());
+        }
+        return 
+                JsonUtils.isEmptyArray(typeValue)
+                || JsonUtils.isString(typeValue) && UriUtils.isAbsoluteUri(((JsonString)typeValue).getString());
     }
     
     public Set<String> keys() {
