@@ -66,7 +66,7 @@ public final class Frame {
         if (frame.containsKey(Keywords.EMBED)) {
 
             JsonValue embed = frame.get(Keywords.EMBED);
-            
+
             if (embed == null || JsonUtils.isNull(embed)) {
                 return defaultValue;
             }

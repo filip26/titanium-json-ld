@@ -138,7 +138,7 @@ public final class FramingBuilder {
 
                     if (subframe == null) {
                         subframe = Json.createObjectBuilder()
-                                        .add(Keywords.EMBED, embed.name())
+                                        .add(Keywords.EMBED, "@".concat(embed.name().toLowerCase()))
                                         .add(Keywords.EXPLICIT, explicit)
                                         .add(Keywords.REQUIRE_ALL, requireAll)
                                         .build();
