@@ -36,8 +36,6 @@ public final class Keywords {
 
     public static final String NONE = "@none";
     
-    public static final String NULL = "@null";
-
     public static final String PREFIX = "@prefix";
 
     public static final String PRESERVE = "@preserve";
@@ -71,7 +69,7 @@ public final class Keywords {
     
     public static final String EXPLICIT = "@explicit";
     
-    public static final String NULL_KEY = "@null";
+    public static final String NULL = "@null";
     
     public static final String OMIT_DEFAULT = "@omitDefault";
     
@@ -80,10 +78,10 @@ public final class Keywords {
     public static final String MERGED = "@merged";
     
     static final Collection<String> ALL_KEYWORDS = Arrays.asList(ANY, BASE, CONTAINER, CONTEXT, DIRECTION, GRAPH,
-            ID, IMPORT, INCLUDED, INDEX, JSON, LANGUAGE, LIST, NEST, NONE, NULL, PREFIX, PRESERVE, PROPAGATE, PROTECTED, REVERSE, SET,
+            ID, IMPORT, INCLUDED, INDEX, JSON, LANGUAGE, LIST, NEST, NONE, PREFIX, PRESERVE, PROPAGATE, PROTECTED, REVERSE, SET,
             TYPE, VALUE, VERSION, VOCAB,
             // framing
-            DEFAULT, EMBED, ALWAYS, ONCE, NEVER, EXPLICIT, NULL_KEY, OMIT_DEFAULT, REQUIRE_ALL, MERGED
+            DEFAULT, EMBED, ALWAYS, ONCE, NEVER, EXPLICIT, NULL, OMIT_DEFAULT, REQUIRE_ALL, MERGED
             );
 
 

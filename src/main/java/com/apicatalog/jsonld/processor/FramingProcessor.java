@@ -11,8 +11,10 @@ import java.util.stream.Collectors;
 
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonString;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
@@ -160,7 +162,7 @@ public final class FramingProcessor {
         }
         
         // 20.
-        //TODO
+        compactedResults = replaceNull(compactedResults);
         
         // 21.
         if (!options.isOmitGraph() /*&& !compactedResults.asJsonObject().isEmpty()*/) {
@@ -244,5 +246,33 @@ public final class FramingProcessor {
         return object.build();
     }
     
+    private static final JsonValue replaceNull(JsonValue value) {
+        
+        if (JsonUtils.isString(value) && Keywords.NULL.equals(((JsonString)value).getString())) {
+            return JsonValue.NULL;
+            
+        } else if (JsonUtils.isScalar(value)) {
+            return value;
+            
+        } else if (JsonUtils.isArray(value)) {
+            
+            JsonArrayBuilder array = Json.createArrayBuilder();
+            
+            value.asJsonArray().stream().map(FramingProcessor::replaceNull).forEach(array::add);
+            
+            JsonArray result = array.build();
+            
+            return result.size() != 1 || JsonUtils.isNotNull(result.get(0)) ? result : JsonValue.EMPTY_JSON_ARRAY;
+        }
+        
+        JsonObjectBuilder object = Json.createObjectBuilder();
+        
+        for (Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
+            
+            object.add(entry.getKey(), replaceNull(entry.getValue()));
+            
+        }
+        return object.build();
+    }
     
 }
