@@ -31,7 +31,7 @@ public final class FrameMatcher {
     }
     
     public List<String> match() throws JsonLdError {
-     System.out.println("Match: " + subjects);   
+   
         // 1.
         if (frame.isEmpty()) {
             return subjects;
@@ -66,7 +66,7 @@ public final class FrameMatcher {
 //            }
 
             JsonValue nodeValue = node.get(property);
-            System.out.println("match type: " + property + " -> " + nodeValue + " to " + frame.get(property));
+
 
             // 2.1.
             if (Keywords.ID.equals(property)) {
@@ -89,7 +89,7 @@ public final class FrameMatcher {
                         return true;
                     }
                 }
-                System.out.println(" no match on " + property );
+
                 return false;
 
             } else if (Keywords.matchForm(property)) {

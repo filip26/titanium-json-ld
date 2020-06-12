@@ -139,6 +139,7 @@ public final class FramingProcessor {
                                         .ordered(options.isOrdered())
                                         .build();
 
+        System.out.println("Compacted: " + compactedResults);
         // 19.1.
         if (JsonUtils.isEmptyArray(compactedResults)) {
             compactedResults = JsonValue.EMPTY_JSON_OBJECT;
@@ -210,4 +211,13 @@ public final class FramingProcessor {
         return remoteDocument;
     }
     
+    
+//    private static final Map<String, JsonValue> removePreserve(Map<String, JsonValue> result) {
+//        
+//        if (result.containsKey(Keywords.PRESERVE)) {
+//            
+//        }
+//        
+//        
+//    }
 }

@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.json.Json;
-import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
 import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
@@ -74,7 +74,7 @@ public final class FramingBuilder {
         }
 
         for (final String id : matchedSubjects) {
-
+            
             final Map<String, JsonValue> node = state.getGraphMap().get(state.getGraphName(), id);
             
             // 4.1.
@@ -94,7 +94,7 @@ public final class FramingBuilder {
                             ) /*TODO circular */
                     
                     ) {
-                addToResult(JsonUtils.toJsonObject(output));
+                addToResult(parent, activeProperty, JsonUtils.toJsonObject(output));
                 continue;
             }
             
@@ -104,12 +104,12 @@ public final class FramingBuilder {
                     && state.isProcessed(id)
                     
                     ) {
-                addToResult(JsonUtils.toJsonObject(output));
+                addToResult(parent, activeProperty, JsonUtils.toJsonObject(output));
                 continue;
             }
 
             state.markProcessed(id);
-            
+
             // 4.5.
             //TODO
             
@@ -118,7 +118,6 @@ public final class FramingBuilder {
             
             // 4.7.    
             for (final String property : state.getGraphMap().properties(state.getGraphName(), id, ordered)) {
-
                 final JsonValue objects = state.getGraphMap().get(state.getGraphName(), id, property);
                 
                 // 4.7.1.
@@ -164,61 +163,70 @@ public final class FramingBuilder {
                         
                     } else {
 
-                        if (output.containsKey(property)) {
-                            output.put(property, Json.createArrayBuilder(output.get(property).asJsonArray()).add(item).build());
-                            
-                        } else {
-                            output.put(property, Json.createArrayBuilder().add(item).build());                           
-                        }
-
+                        JsonUtils.addValue(output, property, item, true);
                     }
-                }
-                
-                // 4.7.4.
-                for (String prop : frame.keys().stream().filter(Predicate.not(Keywords::contains)).collect(Collectors.toList())) {
-                    
-                    if (output.containsKey(prop)) {
-                        continue;
-                    }
-                    
-                    //JsonValue item = frame.get(prop).asJsonArray().get(0);
-                    
-                    //System.out.println(">> " + prop + " -> " + item);
-
-                    //TODO
-                    if (state.isOmitDefault()) {
-                        continue;
-                    }
-                    
-        //            output.put(prop, Json.createArrayBuilder().add(Keywords.NULL).build());
-
-                    
-//                    output.put(prop, Json.createArrayBuilder()
-//                                            .add(Json.createObjectBuilder()
-//                                                        .add(Keywords.PRESERVE, Json.createArrayBuilder()
-//                                                                                .add(Keywords.NULL))).build());
-                    
-                    System.out.println("TODO " + prop);
-                }
-
-                // 4.7.5.
-                //TODO
-                
-               
-                               
+                }                               
             }
+            
+            
+            // 4.7.4.
+            for (String property : frame.keys().stream().filter(Predicate.not(Keywords::contains)).collect(Collectors.toList())) {
+
+                if (output.containsKey(property)) {
+                    continue;
+                }
+                
+                // 4.7.4.2.
+                final JsonObject propertyFrame;
+                
+                if (JsonUtils.isArray(frame.get(property)) && JsonUtils.isNotEmptyArray(frame.get(property))) {
+                    propertyFrame = frame.get(property).asJsonArray().getJsonObject(0);
+                } else {
+                    propertyFrame = JsonValue.EMPTY_JSON_OBJECT;
+                }
+                
+                // 4.7.4.3.
+                if ((state.isOmitDefault() && !propertyFrame.containsKey(Keywords.OMIT_DEFAULT))
+                        || (JsonUtils.isTrue(propertyFrame.get(Keywords.OMIT_DEFAULT)))
+                        ) {
+                    continue;
+                }
+                
+                // 4.7.4.4.
+                JsonValue defaultValue = propertyFrame.get(Keywords.DEFAULT);
+                
+                if (defaultValue == null) {
+                    defaultValue = JsonValue.NULL;// Json.createValue(Keywords.NULL);
+                }
+
+                output.put(property, Json.createArrayBuilder()
+                        .add(defaultValue).build());
+
+
+//                output.put(prop, Json.createArrayBuilder()
+//                                        .add(Json.createObjectBuilder()
+//                                                    .add(Keywords.PRESERVE, 
+//                                                            Json.createArrayBuilder().add(
+//                                                            defaultValue))).build());
+                
+            }
+
+            // 4.7.5.
+            //TODO
+            
+
             // 4.8.
-            addToResult(JsonUtils.toJsonObject(output));
+            addToResult(parent, activeProperty, JsonUtils.toJsonObject(output));
           
         }
     }
         
-    private void addToResult(JsonValue output) {
+    private void addToResult(Map<String, JsonValue> result, String property, JsonValue output) {
         if (activeProperty == null) {
-            parent.put(Integer.toHexString(parent.size()), output);
+            result.put(Integer.toHexString(parent.size()), output);
         } else {
 
-            JsonUtils.addValue(parent, activeProperty, output, true);
+            JsonUtils.addValue(result, property, output, true);
             
 //            final JsonArrayBuilder array;
 //            
