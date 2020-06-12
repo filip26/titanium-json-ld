@@ -186,28 +186,26 @@ public final class FramingBuilder {
                 }
                 
                 // 4.7.4.3.
-                if ((state.isOmitDefault() && !propertyFrame.containsKey(Keywords.OMIT_DEFAULT))
-                        || (JsonUtils.isTrue(propertyFrame.get(Keywords.OMIT_DEFAULT)))
-                        ) {
+                if (Frame.getBoolean(propertyFrame, Keywords.OMIT_DEFAULT, state.isOmitDefault())) {
                     continue;
                 }
-                
+                                
                 // 4.7.4.4.
                 JsonValue defaultValue = propertyFrame.get(Keywords.DEFAULT);
                 
-                if (defaultValue == null) {
-                    defaultValue = JsonValue.NULL;// Json.createValue(Keywords.NULL);
+                if (JsonUtils.isNull(defaultValue)) {
+                    defaultValue = Json.createValue(Keywords.NULL);
                 }
 
+//                output.put(property, Json.createArrayBuilder()
+//                        .add(defaultValue).build());
+//
+
                 output.put(property, Json.createArrayBuilder()
-                        .add(defaultValue).build());
-
-
-//                output.put(prop, Json.createArrayBuilder()
-//                                        .add(Json.createObjectBuilder()
-//                                                    .add(Keywords.PRESERVE, 
-//                                                            Json.createArrayBuilder().add(
-//                                                            defaultValue))).build());
+                                        .add(Json.createObjectBuilder()
+                                                    .add(Keywords.PRESERVE, 
+                                                            Json.createArrayBuilder().add(
+                                                            defaultValue))).build());
                 
             }
 

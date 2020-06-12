@@ -2,12 +2,17 @@ package com.apicatalog.jsonld.processor;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
@@ -129,12 +134,12 @@ public final class FramingProcessor {
         //TODO      
         
         // 18.
-        
+        List<JsonValue> result = removePreserve(resultMap.values());
         //TODO
         
         // 19.
         JsonValue compactedResults = CompactionBuilder
-                                        .with(activeContext, null, JsonUtils.toJsonArray(resultMap.values()))
+                                        .with(activeContext, null, JsonUtils.toJsonArray(result))
                                         .compactArrays(options.isCompactArrays())
                                         .ordered(options.isOrdered())
                                         .build();
@@ -212,12 +217,32 @@ public final class FramingProcessor {
     }
     
     
-//    private static final Map<String, JsonValue> removePreserve(Map<String, JsonValue> result) {
-//        
-//        if (result.containsKey(Keywords.PRESERVE)) {
-//            
-//        }
-//        
-//        
-//    }
+    private static final List<JsonValue> removePreserve(Collection<JsonValue> array) {
+        return array.stream().map(FramingProcessor::removePreserveValue).collect(Collectors.toList());
+    }
+    
+    private static final JsonValue removePreserveValue(JsonValue value) {
+        
+        if (JsonUtils.isScalar(value)) {
+            return value;
+        }
+        if (JsonUtils.isArray(value)) {
+            return JsonUtils.toJsonArray(removePreserve(value.asJsonArray()));
+        }
+        
+        JsonObjectBuilder object = Json.createObjectBuilder();
+        
+        for (Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
+            
+            if (Keywords.PRESERVE.equals(entry.getKey())) {
+                
+                return entry.getValue().asJsonArray().get(0);
+            }
+            object.add(entry.getKey(), removePreserveValue(entry.getValue()));
+        }
+        
+        return object.build();
+    }
+    
+    
 }

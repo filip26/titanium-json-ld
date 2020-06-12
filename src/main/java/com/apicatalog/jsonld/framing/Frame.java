@@ -99,29 +99,17 @@ public final class Frame {
     }
     
     public boolean getExplicit(boolean defaultValue) throws JsonLdError {
-        
-        if (frame.containsKey(Keywords.EXPLICIT)) {
-          
-            JsonValue explicitValue = frame.get(Keywords.EXPLICIT);
-          
-            if (ValueObject.isValueObject(explicitValue)) {
-                explicitValue = ValueObject.getValue(explicitValue);
-            }
-          
-            if (JsonUtils.isNotBoolean(explicitValue)) {
-                throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
-            }
-          
-            return JsonUtils.isTrue(explicitValue);
-        }
-
-        return defaultValue;
+        return getBoolean(frame, Keywords.EXPLICIT, defaultValue);
     }
     
     public boolean getRequireAll(boolean defaultValue) throws JsonLdError {
-        if (frame.containsKey(Keywords.REQUIRE_ALL)) {
+        return getBoolean(frame, Keywords.REQUIRE_ALL, defaultValue);
+    }
+    
+    public static final boolean getBoolean(JsonObject frame, String key, boolean defaultValue) throws JsonLdError {
+        if (frame.containsKey(key)) {
 
-            JsonValue value = frame.get(Keywords.REQUIRE_ALL);
+            JsonValue value = frame.get(key);
             
             if (ValueObject.isValueObject(value)) {
                 value = ValueObject.getValue(value);
@@ -134,6 +122,7 @@ public final class Frame {
             return JsonUtils.isTrue(value);
         }
         return defaultValue; 
+
     }
     
     private static final boolean validateFrameId(JsonObject frame) {
@@ -183,7 +172,7 @@ public final class Frame {
         } 
         return JsonUtils.isString(typeValue) && UriUtils.isAbsoluteUri(((JsonString)typeValue).getString());
     }
-
+    
     public Set<String> keys() {
         return frame.keySet();
     }
