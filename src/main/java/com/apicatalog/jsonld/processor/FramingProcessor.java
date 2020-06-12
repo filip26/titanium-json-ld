@@ -165,9 +165,6 @@ public final class FramingProcessor {
         // 20.
         compactedResults = replaceNull(compactedResults);
         
-        System.out.println(">>>>>>>> " + options.isOmitGraph());
-        
-        
         final boolean omitGraph;
         
         if (options.isOmitGraph() == null) {

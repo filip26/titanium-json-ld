@@ -322,7 +322,7 @@ public final class MapExpansion {
 
             // 19.1. If result is a map which is empty, or contains only the entries @value
             // or @list, set result to null
-            if (result.isEmpty() || result.containsKey(Keywords.VALUE) || result.containsKey(Keywords.LIST)) {
+            if (!frameExpansion && result.isEmpty() || result.containsKey(Keywords.VALUE) || result.containsKey(Keywords.LIST)) {
                 return JsonValue.NULL;
             }
 

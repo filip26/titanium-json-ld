@@ -99,5 +99,12 @@ public final class FramingState {
     public void markProcessed(String subject) {
         processed.computeIfAbsent(graphName, x -> new HashMap<>()).put(subject, Boolean.TRUE);    //TODO
     }
+
+    public void release(String id) {
+        if (processed.containsKey(graphName)) {
+            processed.get(graphName).remove(id);
+        }
+        
+    }
     
 }

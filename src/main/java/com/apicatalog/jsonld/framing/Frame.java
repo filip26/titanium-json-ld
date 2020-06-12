@@ -30,20 +30,20 @@ public final class Frame {
         
         // 1.
         if (JsonUtils.isArray(structure)) {
-            
-            if (structure.asJsonArray().size() > 1 
-                    || structure.asJsonArray().isEmpty() 
+
+            if (structure.asJsonArray().size() != 1  
                     || JsonUtils.isNotObject(structure.asJsonArray().get(0))
                     ) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
             }
-            
-            frameObject = structure.asJsonArray().getJsonObject(0); 
+
+            frameObject = structure.asJsonArray().getJsonObject(0);
+
             
         } else if (JsonUtils.isObject(structure)) {
             
             frameObject = structure.asJsonObject();
-            
+
         } else {
             throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
         }

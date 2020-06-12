@@ -212,6 +212,7 @@ public final class FramingBuilder {
             // 4.7.5.
             //TODO
             
+            state.release(id);
 
             // 4.8.
             addToResult(parent, activeProperty, JsonUtils.toJsonObject(output));
@@ -219,12 +220,13 @@ public final class FramingBuilder {
         }
     }
         
-    private void addToResult(Map<String, JsonValue> result, String property, JsonValue output) {
-        if (activeProperty == null) {
-            result.put(Integer.toHexString(parent.size()), output);
+    private static void addToResult(Map<String, JsonValue> result, String property, JsonValue value) {
+        
+        if (property == null) {
+            result.put(Integer.toHexString(result.size()), value);
         } else {
 
-            JsonUtils.addValue(result, property, output, true);
+            JsonUtils.addValue(result, property, value, true);
             
 //            final JsonArrayBuilder array;
 //            
