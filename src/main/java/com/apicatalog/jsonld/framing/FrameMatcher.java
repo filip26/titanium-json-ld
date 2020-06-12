@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.json.JsonObject;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
@@ -67,10 +66,20 @@ public final class FrameMatcher {
 
             JsonValue nodeValue = node.get(property);
 
-
             // 2.1.
             if (Keywords.ID.equals(property)) {
 
+                nodeValue = JsonUtils.toJsonArray(nodeValue);
+                
+                if (JsonUtils.toJsonArray(frame.get(property)).stream().anyMatch(nodeValue.asJsonArray()::contains)) {
+                    match++;
+                    return true;
+                    
+                } else if (frame.isWildCard(Keywords.TYPE) || frame.isNone(property)) {
+                    
+                    match++;
+                    return true;
+                }
                 
                 //TODO
                 
@@ -79,17 +88,21 @@ public final class FrameMatcher {
             // 2.2.
             } else if (Keywords.TYPE.equals(property)) {
 
-                if (nodeValue != null) {
-                    if (frame.getArray(property).stream().anyMatch(nodeValue.asJsonArray()::contains)) {
-                        match++;
-                        return true;
-                        
-                    } else if (!nodeValue.asJsonArray().isEmpty() && frame.isWildCard(property)) {
-                        match++;
-                        return true;
-                    }
+//                if (nodeValue != null) {
+                    
+                if (JsonUtils.isNotNull(nodeValue) && !nodeValue.asJsonArray().isEmpty() && frame.isWildCard(property)) {
+                    match++;
+                    return true;
+                    
+                } else if ((JsonUtils.isNull(nodeValue) || nodeValue.asJsonArray().isEmpty()) && frame.isNone(property)) {
+                    match++;
+                    return true;
+                    
+                } else if (JsonUtils.isNotNull(nodeValue) &&frame.getArray(property).stream().anyMatch(nodeValue.asJsonArray()::contains)) {
+                    match++;
+                    return true;
                 }
-
+                //TODO default
                 return false;
 
             } else if (Keywords.matchForm(property)) {

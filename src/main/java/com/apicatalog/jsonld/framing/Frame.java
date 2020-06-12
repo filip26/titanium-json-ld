@@ -198,6 +198,21 @@ public final class Frame {
                             );
     }
 
+    public boolean isNone(String property) {
+        return frame.containsKey(property) 
+                    && JsonUtils.isEmptyArray(get(property))
+//                            || (JsonUtils.isArray(get(property))
+//                                    && get(property).asJsonArray().size() == 1
+//                                    && JsonUtils.isEmptyObject(get(property).asJsonArray().get(0)))
+                            ;
+    }
+
+    public boolean isNotEmpty(String property) {
+        return frame.containsKey(property) 
+                            ;
+    }
+
+    
     public Collection<JsonValue> getArray(String property) {
         return frame.containsKey(property)
                     ? JsonUtils.toJsonArray(frame.get(property))
