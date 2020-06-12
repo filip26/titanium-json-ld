@@ -89,8 +89,9 @@ public final class FramingBuilder {
 
             // 4.3.
             if (state.isEmbedded() 
-                    && JsonLdEmbed.NEVER == embed
-                    /*TODO circular */
+                    && (JsonLdEmbed.NEVER == embed
+                            || state.isProcessed(id)
+                            ) /*TODO circular */
                     
                     ) {
                 addToResult(JsonUtils.toJsonObject(output));
@@ -164,12 +165,12 @@ public final class FramingBuilder {
                     } else {
 
                         if (output.containsKey(property)) {
-                            //output.put(property, Json.createArrayBuilder(output.get(property).asJsonArray()).add(item).build());
+                            output.put(property, Json.createArrayBuilder(output.get(property).asJsonArray()).add(item).build());
                             
                         } else {
-                           
+                            output.put(property, Json.createArrayBuilder().add(item).build());                           
                         }
-                        output.put(property, Json.createArrayBuilder().add(item).build());
+
                     }
                 }
                 
@@ -180,16 +181,16 @@ public final class FramingBuilder {
                         continue;
                     }
                     
-                    JsonValue item = frame.get(prop).asJsonArray().get(0);
+                    //JsonValue item = frame.get(prop).asJsonArray().get(0);
                     
-                    System.out.println(">> " + prop + " -> " + item);
+                    //System.out.println(">> " + prop + " -> " + item);
 
                     //TODO
                     if (state.isOmitDefault()) {
                         continue;
                     }
                     
-                    output.put(prop, Json.createArrayBuilder().add(Keywords.NULL).build());
+        //            output.put(prop, Json.createArrayBuilder().add(Keywords.NULL).build());
 
                     
 //                    output.put(prop, Json.createArrayBuilder()
@@ -203,10 +204,11 @@ public final class FramingBuilder {
                 // 4.7.5.
                 //TODO
                 
-                // 4.7.6.
-                addToResult(JsonUtils.toJsonObject(output));                
+               
+                               
             }
-
+            // 4.8.
+            addToResult(JsonUtils.toJsonObject(output));
           
         }
     }
@@ -215,18 +217,20 @@ public final class FramingBuilder {
         if (activeProperty == null) {
             parent.put(Integer.toHexString(parent.size()), output);
         } else {
+
+            JsonUtils.addValue(parent, activeProperty, output, true);
             
-            final JsonArrayBuilder array;
-            
-            if (parent.containsKey(activeProperty)) {
+//            final JsonArrayBuilder array;
+//            
+//            if (parent.containsKey(activeProperty)) {
 //                array = Json.createArrayBuilder(parent.get(activeProperty).asJsonArray());
-                
-            } else {
-   
-            }
-            array = Json.createArrayBuilder();
-            
-            parent.put(activeProperty, array.add(output).build());
+//                
+//            } else {
+//                array = Json.createArrayBuilder();   
+//            }
+//
+//            
+//            parent.put(activeProperty, array.add(output).build());
         }        
     }
     

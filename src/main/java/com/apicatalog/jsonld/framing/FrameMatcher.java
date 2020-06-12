@@ -57,14 +57,16 @@ public final class FrameMatcher {
         Map<String, JsonValue> node = state.getGraphMap().get(state.getGraphName(), subject);
         
         int match = 0;
+        int count = 0;
         
         for (final String property : frame.keys()) {
-            
+
 //            if (!requireAll && match > 0) {
 //                return true;
 //            }
 
             JsonValue nodeValue = node.get(property);
+            System.out.println("match type: " + property + " -> " + nodeValue + " to " + frame.get(property));
 
             // 2.1.
             if (Keywords.ID.equals(property)) {
@@ -87,12 +89,13 @@ public final class FrameMatcher {
                         return true;
                     }
                 }
+                System.out.println(" no match on " + property );
                 return false;
 
             } else if (Keywords.matchForm(property)) {
                 continue;
             }
-            
+            count ++;
 
             
             // 2.5.
@@ -106,7 +109,7 @@ public final class FrameMatcher {
 
         }
        // return !requireAll && match > 0 || requireAll && match == frame.size();
-        return false;
+        return count == 0;
     }
     
 }
