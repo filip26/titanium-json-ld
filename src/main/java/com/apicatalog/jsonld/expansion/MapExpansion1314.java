@@ -353,11 +353,13 @@ final class MapExpansion1314 {
                     } else if (!frameExpansion && JsonUtils.isNotNull(value) && JsonUtils.isNotScalar(value)
                                || frameExpansion 
                                        && JsonUtils.isNotEmptyObject(value)
+                                       && JsonUtils.isNotNull(value) && JsonUtils.isNotScalar(value)
                                        && (JsonUtils.isNotArray(value)
                                                || JsonUtils.isEmptyArray(value)
                                                || !value.asJsonArray().stream().allMatch(JsonUtils::isScalar)
                                                )
                             ) {
+                        System.out.println("" + value);
                         throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
 
                         // 13.4.7.3
