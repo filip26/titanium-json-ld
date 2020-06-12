@@ -153,14 +153,14 @@ final class MapExpansion1314 {
 
                     // 13.4.3.1
                     if (JsonUtils.isNotString(value) && !frameExpansion
-                            || frameExpansion 
+                            || frameExpansion
+                                    && JsonUtils.isNotString(value)
                                     && JsonUtils.isNotEmptyObject(value)
                                     && (JsonUtils.isNotArray(value)
                                             || JsonUtils.isEmptyArray(value)
                                             || !value.asJsonArray().stream().allMatch(JsonUtils::isString) 
                                     )
                             ) {
-
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE);
 
                     // 13.4.3.2

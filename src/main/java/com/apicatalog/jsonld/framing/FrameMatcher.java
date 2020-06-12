@@ -75,7 +75,7 @@ public final class FrameMatcher {
                     match++;
                     return true;
                     
-                } else if (frame.isWildCard(Keywords.TYPE) || frame.isNone(property)) {
+                } else if (frame.isWildCard(Keywords.TYPE) || frame.isNone(Keywords.NONE)) {
                     
                     match++;
                     return true;
