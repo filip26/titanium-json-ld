@@ -123,6 +123,7 @@ public final class JsonLdOptions {
         this.rdfDirection = options.rdfDirection;
         this.useNativeTypes = options.useNativeTypes;
         this.useRdfType = options.useRdfType;
+        
         // framing
         this.embed = options.embed;
         this.explicit = options.explicit;

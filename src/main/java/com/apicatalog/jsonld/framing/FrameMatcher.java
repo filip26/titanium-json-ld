@@ -78,13 +78,13 @@ public final class FrameMatcher {
                 
             // 2.2.
             } else if (Keywords.TYPE.equals(property)) {
-                
+
                 if (nodeValue != null) {
                     if (frame.getArray(property).stream().anyMatch(nodeValue.asJsonArray()::contains)) {
                         match++;
                         return true;
                         
-                    } else if (nodeValue.asJsonArray().isEmpty() && frame.isWildCard(property)) {
+                    } else if (!nodeValue.asJsonArray().isEmpty() && frame.isWildCard(property)) {
                         match++;
                         return true;
                     }
