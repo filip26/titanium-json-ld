@@ -22,6 +22,7 @@ public class JsonLdTestCaseOptions {
     public Boolean produceGeneralizedRdf;
     public Boolean useNativeTypes;
     public Boolean useRdfType;
+    public Boolean omitGraph;
     
     public static final JsonLdTestCaseOptions of(JsonObject o, String baseUri) {
         
@@ -61,6 +62,10 @@ public class JsonLdTestCaseOptions {
 
         if (o.containsKey("useRdfType")) {
             options.useRdfType = o.getBoolean("useRdfType");
+        }
+
+        if (o.containsKey("omitGraph")) {
+            options.omitGraph = o.getBoolean("omitGraph");
         }
 
         return options;

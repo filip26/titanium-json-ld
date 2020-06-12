@@ -77,7 +77,7 @@ public final class JsonLdOptions {
     
     private boolean omitDefault;
     
-    private boolean omitGraph;
+    private Boolean omitGraph;
     
     private boolean requiredAll;
     
@@ -104,7 +104,7 @@ public final class JsonLdOptions {
         this.embed = JsonLdEmbed.ONCE;
         this.explicit = false;
         this.omitDefault = false;
-        this.omitGraph = false;
+        this.omitGraph = null;
         this.requiredAll = false;
         this.frameDefault = false;        
     }
@@ -332,11 +332,11 @@ public final class JsonLdOptions {
         this.omitDefault = omitDefault;
     }
     
-    public boolean isOmitGraph() {
+    public Boolean isOmitGraph() {
         return omitGraph;
     }
     
-    public void setOmitGraph(boolean omitGraph) {
+    public void setOmitGraph(Boolean omitGraph) {
         this.omitGraph = omitGraph;
     }
     

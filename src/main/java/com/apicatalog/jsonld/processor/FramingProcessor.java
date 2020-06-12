@@ -33,6 +33,7 @@ import com.apicatalog.jsonld.framing.FramingBuilder;
 import com.apicatalog.jsonld.framing.FramingState;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 
 /**
@@ -164,8 +165,22 @@ public final class FramingProcessor {
         // 20.
         compactedResults = replaceNull(compactedResults);
         
+        System.out.println(">>>>>>>> " + options.isOmitGraph());
+        
+        
+        final boolean omitGraph;
+        
+        if (options.isOmitGraph() == null) {
+            
+            omitGraph = activeContext.inMode(Version.V1_1);
+            
+        } else {
+            omitGraph = options.isOmitGraph();
+        }
+        
+        
         // 21.
-        if (!options.isOmitGraph() /*&& !compactedResults.asJsonObject().isEmpty()*/) {
+        if (!omitGraph /*&& !compactedResults.asJsonObject().isEmpty()*/) {
             if  (!compactedResults.asJsonObject().containsKey(Keywords.GRAPH)) {
                 
                 if (compactedResults.asJsonObject().isEmpty()) {
@@ -187,9 +202,9 @@ public final class FramingProcessor {
         //TODO
 
         // 19.3.
-        if (!compactedResults.asJsonObject().isEmpty()) {
+//        if (!compactedResults.asJsonObject().isEmpty()) {
             compactedResults = Json.createObjectBuilder(compactedResults.asJsonObject()).add(Keywords.CONTEXT, context).build();
-        }
+//        }
         
         
         return compactedResults.asJsonObject();
