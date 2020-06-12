@@ -374,9 +374,14 @@ final class MapExpansion1314 {
 
                 // 13.4.8
                 if (Keywords.LANGUAGE.equals(expandedProperty)) {
-
                     // 13.4.8.1
-                    if (JsonUtils.isNotString(value)) {
+                    if (JsonUtils.isNotString(value) && !frameExpansion
+                            || frameExpansion
+                                    && JsonUtils.isNotString(value)
+                                    && JsonUtils.isNotEmptyObject(value)
+                                    && (JsonUtils.isNotEmptyArray(value) && !value.asJsonArray().stream().allMatch(JsonUtils::isString))
+                            
+                            ) {
                         // TODO frameExpansion
                         throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
                     }
