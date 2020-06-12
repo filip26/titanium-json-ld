@@ -15,12 +15,10 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdEmbed;
 import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.NodeObject;
-import com.apicatalog.jsonld.lang.ValueObject;
 
 /**
  * 
@@ -57,39 +55,13 @@ public final class FramingBuilder {
     
     public void build() throws JsonLdError {
 
-   
-
         // 2.
         JsonLdEmbed embed = frame.getEmbed(state.getEmbed());
                 
-        boolean explicit = state.isExplicitInclusion();
+        boolean explicit = frame.getExplicit(state.isExplicitInclusion());
 
-//        if (frameObject.containsKey(Keywords.EXPLICIT)) {
-//            
-//            JsonValue explicitValue = frameObject.get(Keywords.EXPLICIT);
-//            
-//            if (ValueObject.isValueObject(explicitValue)) {
-//                explicitValue = explicitValue.asJsonObject().get(Keywords.VALUE);
-//            }
-//            
-//            if (JsonUtils.isNotBoolean(explicitValue)) {
-//                throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
-//            }
-//            
-//            explicit = JsonUtils.isTrue(explicitValue);
-//        }
-        
-        boolean requireAll = state.isRequireAll();
+        boolean requireAll = frame.getRequireAll(state.isRequireAll());
 
-//        if (frameObject.containsKey(Keywords.REQUIRE_ALL)) {
-//            
-//            if (JsonUtils.isNotBoolean(frameObject.get(Keywords.REQUIRE_ALL))) {
-//                throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
-//            }
-//            
-//            requireAll = frameObject.getBoolean(Keywords.REQUIRE_ALL);
-//        }
-        
         // 3.
         final List<String> matchedSubjects = 
                                 FrameMatcher
@@ -116,11 +88,18 @@ public final class FramingBuilder {
             }
 
             // 4.3.
-            //TODO
+            if (state.isEmbedded() 
+                    && JsonLdEmbed.NEVER == embed
+                    /*TODO circular */
+                    
+                    ) {
+                addToResult(JsonUtils.toJsonObject(output));
+                continue;
+            }
             
             // 4.4.
             if (state.isEmbedded() 
-                    && JsonLdEmbed.ONCE == state.getEmbed()
+                    && JsonLdEmbed.ONCE == embed
                     && state.isProcessed(id)
                     
                     ) {
@@ -158,8 +137,11 @@ public final class FramingBuilder {
                     JsonValue subframe = frame.get(property);
 
                     if (subframe == null) {
-                        subframe = JsonValue.EMPTY_JSON_OBJECT;
-                        //TODO
+                        subframe = Json.createObjectBuilder()
+                                        .add(Keywords.EMBED, embed.name())
+                                        .add(Keywords.EXPLICIT, explicit)
+                                        .add(Keywords.REQUIRE_ALL, requireAll)
+                                        .build();
                     }
 
                     // 4.7.3.1.
@@ -170,11 +152,7 @@ public final class FramingBuilder {
                         
                         FramingState clonedState = new FramingState(state);
                         clonedState.setEmbedded(true);
-                        
 
-                        
-                    
-                        
                         FramingBuilder.with(
                                     clonedState, 
                                     Arrays.asList(item.asJsonObject().getString(Keywords.ID)),
@@ -186,15 +164,13 @@ public final class FramingBuilder {
                     } else {
 
                         if (output.containsKey(property)) {
-                           
-                            output.put(property, Json.createArrayBuilder(output.get(property).asJsonArray()).add(item).build());
+                            //output.put(property, Json.createArrayBuilder(output.get(property).asJsonArray()).add(item).build());
+                            
                         } else {
-                        
-                            output.put(property, Json.createArrayBuilder().add(item).build());
+                           
                         }
-  
+                        output.put(property, Json.createArrayBuilder().add(item).build());
                     }
-                    
                 }
                 
                 // 4.7.4.
@@ -203,7 +179,16 @@ public final class FramingBuilder {
                     if (output.containsKey(prop)) {
                         continue;
                     }
+                    
+                    JsonValue item = frame.get(prop).asJsonArray().get(0);
+                    
+                    System.out.println(">> " + prop + " -> " + item);
 
+                    //TODO
+                    if (state.isOmitDefault()) {
+                        continue;
+                    }
+                    
                     output.put(prop, Json.createArrayBuilder().add(Keywords.NULL).build());
 
                     

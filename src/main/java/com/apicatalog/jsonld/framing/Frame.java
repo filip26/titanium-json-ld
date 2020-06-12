@@ -89,7 +89,7 @@ public final class Frame {
                 return JsonLdEmbed.NEVER;
                 
             } else if (JsonUtils.isTrue(embed)) {
-                return JsonLdEmbed.ALWAYS;
+                return JsonLdEmbed.ONCE;
             }
 
             throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE);             
@@ -98,6 +98,43 @@ public final class Frame {
         return defaultValue;
     }
     
+    public boolean getExplicit(boolean defaultValue) throws JsonLdError {
+        
+        if (frame.containsKey(Keywords.EXPLICIT)) {
+          
+            JsonValue explicitValue = frame.get(Keywords.EXPLICIT);
+          
+            if (ValueObject.isValueObject(explicitValue)) {
+                explicitValue = ValueObject.getValue(explicitValue);
+            }
+          
+            if (JsonUtils.isNotBoolean(explicitValue)) {
+                throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
+            }
+          
+            return JsonUtils.isTrue(explicitValue);
+        }
+
+        return defaultValue;
+    }
+    
+    public boolean getRequireAll(boolean defaultValue) throws JsonLdError {
+        if (frame.containsKey(Keywords.REQUIRE_ALL)) {
+
+            JsonValue value = frame.get(Keywords.REQUIRE_ALL);
+            
+            if (ValueObject.isValueObject(value)) {
+                value = ValueObject.getValue(value);
+            }
+
+            if (JsonUtils.isNotBoolean(value)) {
+                throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
+            }
+      
+            return JsonUtils.isTrue(value);
+        }
+        return defaultValue; 
+    }
     
     private static final boolean validateFrameId(JsonObject frame) {
         
