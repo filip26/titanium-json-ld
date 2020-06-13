@@ -236,4 +236,12 @@ public final class Frame {
     public String toString() {
         return frame.toString();
     }
+
+    public boolean isValuePattern() {
+        return ValueObject.isValueObject(frame) && JsonUtils.isObject(ValueObject.getValue(frame));
+    }
+    
+    public boolean matchValue(JsonValue value) {
+        return JsonUtils.isObject(value) && ValuePatternMatcher.with(ValueObject.getValue(frame).asJsonObject(), value.asJsonObject()).match();
+    }
 }

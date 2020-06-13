@@ -140,6 +140,7 @@ public final class FrameMatcher {
 
             // 2.7.
             if (!nodeValues.isEmpty() && propertyFrame != null && propertyFrame.isEmpty()) {
+                
                 if (requireAll) {
                     count++;
                     continue;
@@ -147,9 +148,20 @@ public final class FrameMatcher {
                 return true;                
             }
             
+            // 2.8.
+            if (propertyFrame != null 
+                    && propertyFrame.isValuePattern()
+                    && nodeValues.stream().anyMatch(propertyFrame::matchValue)
+                    ) {
+                
+                if (requireAll) {
+                    count++;
+                    continue;
+                }
+                return true;
+            }
+            
             System.out.println("match: " + nodeValues + ", " + propertyFrame + ", " + requireAll);
-
-
 
             if (requireAll) {
                 return false;
