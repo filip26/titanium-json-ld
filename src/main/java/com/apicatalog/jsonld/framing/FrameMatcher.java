@@ -1,18 +1,15 @@
 package com.apicatalog.jsonld.framing;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import javax.json.JsonArray;
-import javax.json.JsonObject;
 import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.lang.DefaultObject;
 import com.apicatalog.jsonld.lang.Keywords;
 
 public final class FrameMatcher {
@@ -47,7 +44,6 @@ public final class FrameMatcher {
 
             System.out.println("match subject " + subject + ", " + frame);
             if (match(subject)) {
-                System.out.println("         hit " + subject );
                 result.add(subject);
             }
         }
@@ -93,7 +89,7 @@ public final class FrameMatcher {
                         || frame.isDefault(property)
                         || (JsonUtils.isNotNull(nodeValue) && frame.getArray(property).stream().anyMatch(nodeValue.asJsonArray()::contains))
                         ){
-                    System.out.println("HIT!!!!!!!!!!!!!!!");
+
                     if (requireAll) {
 
                         count++;
@@ -117,7 +113,9 @@ public final class FrameMatcher {
                 propertyFrame = Frame.of((JsonStructure)propertyValue);
             }
 
-            final JsonArray nodeValues = JsonUtils.toJsonArray(nodeValue);
+            final JsonArray nodeValues = nodeValue != null 
+                                            ? JsonUtils.toJsonArray(nodeValue)
+                                            : JsonValue.EMPTY_JSON_ARRAY;
             
             // 2.5.
             if (nodeValues.isEmpty() 

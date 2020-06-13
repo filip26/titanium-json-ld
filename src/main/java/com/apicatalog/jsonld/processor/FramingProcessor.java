@@ -51,9 +51,10 @@ public final class FramingProcessor {
         // 4.
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
         expansionOptions.setOrdered(false);
+        input.setDocumentUrl(null); //TODO needs revision
         
         JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions);
-        
+
         // 7.
         expansionOptions.setFrameExpansion(true);
         JsonArray expandedFrame = ExpansionProcessor.expand(frame, expansionOptions);
@@ -73,10 +74,10 @@ public final class FramingProcessor {
         }
             
         // 9.
-        final URI contextBase = (frame.getContextUrl() != null)
+        URI contextBase = (frame.getContextUrl() != null)
                                 ? frame.getDocumentUrl()
                                 : options.getBase();
-
+                                
         // 10.
         ActiveContext activeContext = ActiveContextBuilder
                                         .with(new ActiveContext(options), context, contextBase, options).build();

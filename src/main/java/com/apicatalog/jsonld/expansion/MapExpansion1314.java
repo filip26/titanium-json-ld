@@ -359,7 +359,6 @@ final class MapExpansion1314 {
                                                || !value.asJsonArray().stream().allMatch(JsonUtils::isScalar)
                                                )
                             ) {
-                        System.out.println("" + value);
                         throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
 
                         // 13.4.7.3

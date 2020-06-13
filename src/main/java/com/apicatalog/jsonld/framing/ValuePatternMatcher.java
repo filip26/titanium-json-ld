@@ -43,7 +43,7 @@ public final class ValuePatternMatcher {
 
                                     
         return (JsonUtils.isNotNull(value1) && JsonUtils.isEmptyObject(value2))
-                    || (JsonUtils.isNotNull(value2)  && JsonUtils.toJsonArray(value1).contains(value1))
+                    || (JsonUtils.isNotNull(value2)  && JsonUtils.toJsonArray(value2).contains(value1))
                     ;
     }
     
