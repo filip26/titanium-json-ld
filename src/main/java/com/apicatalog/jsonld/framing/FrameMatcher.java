@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.json.JsonArray;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
@@ -49,20 +50,10 @@ public final class FrameMatcher {
     }
     
     private boolean match(final String subject) throws JsonLdError {
-
-
-
         
-        Map<String, JsonValue> node = state.getGraphMap().get(state.getGraphName(), subject);
-        
-        int match = 0;
-        int count = 0;
+        final Map<String, JsonValue> node = state.getGraphMap().get(state.getGraphName(), subject);
         
         for (final String property : frame.keys()) {
-
-//            if (!requireAll && match > 0) {
-//                return true;
-//            }
 
             JsonValue nodeValue = node.get(property);
 
@@ -71,58 +62,70 @@ public final class FrameMatcher {
 
                 nodeValue = JsonUtils.toJsonArray(nodeValue);
                 
-                if (JsonUtils.toJsonArray(frame.get(property)).stream().anyMatch(nodeValue.asJsonArray()::contains)) {
-                    match++;
-                    return true;
-                    
-                } else if (frame.isWildCard(Keywords.TYPE) || frame.isNone(Keywords.NONE)) {
-                    
-                    match++;
-                    return true;
+                if (JsonUtils.toJsonArray(frame.get(property)).stream().anyMatch(nodeValue.asJsonArray()::contains)
+                        || (frame.isWildCard(Keywords.TYPE) || frame.isNone(Keywords.NONE))
+                        ) {
+              
+                    if (requireAll) {
+                        continue;
+                    }
+                    return true;                    
                 }
-                
-                //TODO
-                
                 return false;
                 
             // 2.2.
             } else if (Keywords.TYPE.equals(property)) {
 
-//                if (nodeValue != null) {
+                if ((JsonUtils.isNotNull(nodeValue) && !nodeValue.asJsonArray().isEmpty() && frame.isWildCard(property))
+                        || ((JsonUtils.isNull(nodeValue) || nodeValue.asJsonArray().isEmpty()) && frame.isNone(property))
+                        || (JsonUtils.isNotNull(nodeValue) &&frame.getArray(property).stream().anyMatch(nodeValue.asJsonArray()::contains))
+                        ){
                     
-                if (JsonUtils.isNotNull(nodeValue) && !nodeValue.asJsonArray().isEmpty() && frame.isWildCard(property)) {
-                    match++;
-                    return true;
-                    
-                } else if ((JsonUtils.isNull(nodeValue) || nodeValue.asJsonArray().isEmpty()) && frame.isNone(property)) {
-                    match++;
-                    return true;
-                    
-                } else if (JsonUtils.isNotNull(nodeValue) &&frame.getArray(property).stream().anyMatch(nodeValue.asJsonArray()::contains)) {
-                    match++;
+                    if (requireAll) {
+                        continue;
+                    }
                     return true;
                 }
-                //TODO default
                 return false;
 
+            // skip other keywords
             } else if (Keywords.matchForm(property)) {
                 continue;
             }
-            count ++;
-
+         
+            Frame propertyFrame;
+            
+            System.out.println("TODO " + property);
             
             // 2.5.
 //            if (JsonUtils.isNull(value) || JsonUtils.isEmptyArray(value) /*TODO @default||*/ ) {
 //                return true;
 //            }
             
-            // 2.6.
-            
-            
 
+            JsonArray nodeValues = JsonUtils.toJsonArray(nodeValue);
+            
+            // 2.6.
+            if (nodeValues.isEmpty() && frame.isNone(property)) {
+                
+                if (requireAll) {
+                    continue;
+                }
+                return true;                
+            }
+
+            // 2.7.
+            if (!nodeValues.isEmpty() && frame.isWildCard(property)) {
+                if (requireAll) {
+                    continue;
+                }
+                return true;
+            }
+
+            return false;
         }
-       // return !requireAll && match > 0 || requireAll && match == frame.size();
-        return count == 0;
+
+        return true;
     }
     
 }

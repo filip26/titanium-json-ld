@@ -136,7 +136,11 @@ public final class JsonUtils {
     }
 
     public static JsonArray toJsonArray(JsonValue value) {
-        return JsonUtils.isArray(value) ? value.asJsonArray() : Json.createArrayBuilder().add(value).build();
+        return JsonUtils.isArray(value) 
+                    ? value.asJsonArray() 
+                    : JsonUtils.isNotNull(value)
+                        ? Json.createArrayBuilder().add(value).build()
+                        : JsonValue.EMPTY_JSON_ARRAY;
     }
 
     public static boolean isBlankString(JsonValue value) {

@@ -277,7 +277,7 @@ public final class MapExpansion {
 
             // 15.5
             } else if (result.containsKey(Keywords.TYPE)
-                    && (JsonUtils.isNotString(type) || UriUtils.isNotURI(((JsonString) type).getString()))) {
+                    && (JsonUtils.isNotString(type) || UriUtils.isNotURI(((JsonString) type).getString())) && !frameExpansion) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE);
             }
 
