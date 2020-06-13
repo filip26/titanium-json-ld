@@ -1,5 +1,6 @@
 package com.apicatalog.jsonld.framing;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
@@ -27,7 +28,7 @@ public final class Frame {
     public static final Frame of(JsonStructure structure) throws JsonLdError {
         
         final JsonObject frameObject;;
-        
+
         // 1.
         if (JsonUtils.isArray(structure)) {
 
@@ -50,12 +51,12 @@ public final class Frame {
         
         // 1.2.
         if (frameObject.containsKey(Keywords.ID) && !validateFrameId(frameObject)) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
+            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @id is not valid.");
         }
         
         // 1.3.
         if (frameObject.containsKey(Keywords.TYPE) && !validateFrameType(frameObject)) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
+            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Fram @type is not valid.");
         }
         return new Frame(frameObject);
     }
@@ -192,7 +193,15 @@ public final class Frame {
     }
 
     public boolean isEmpty() {
-        return frame.isEmpty();
+        return frame.keySet()
+                    .stream()
+                    .allMatch(Arrays.asList(
+                                        Keywords.DEFAULT,
+                                        Keywords.OMIT_DEFAULT, 
+                                        Keywords.EMBED, 
+                                        Keywords.EXPLICIT, 
+                                        Keywords.REQUIRE_ALL
+                                        )::contains);
     }
 
     public boolean isWildCard(String property) {
@@ -207,10 +216,7 @@ public final class Frame {
     public boolean isNone(String property) {
         return frame.containsKey(property) 
                     && JsonUtils.isEmptyArray(get(property))
-//                            || (JsonUtils.isArray(get(property))
-//                                    && get(property).asJsonArray().size() == 1
-//                                    && JsonUtils.isEmptyObject(get(property).asJsonArray().get(0)))
-                            ;
+                    ;
     }
 
     public boolean isNotEmpty(String property) {
@@ -224,5 +230,10 @@ public final class Frame {
                     ? JsonUtils.toJsonArray(frame.get(property))
                     : JsonValue.EMPTY_JSON_ARRAY
                     ;
+    }
+    
+    @Override
+    public String toString() {
+        return frame.toString();
     }
 }

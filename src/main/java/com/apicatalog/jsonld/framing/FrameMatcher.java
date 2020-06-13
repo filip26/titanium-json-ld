@@ -1,6 +1,7 @@
 package com.apicatalog.jsonld.framing;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ public final class FrameMatcher {
     
     public List<String> match() throws JsonLdError {
    
-        // 1.
+        // 1. if frame is empty then all subject match
         if (frame.isEmpty()) {
             return subjects;
         }
@@ -42,8 +43,10 @@ public final class FrameMatcher {
         final List<String> result = new ArrayList<>();
         
         for (final String subject : subjects) {
-                                    
+
+            System.out.println("match subject " + subject + ", " + frame);
             if (match(subject)) {
+                System.out.println("         hit " + subject );
                 result.add(subject);
             }
         }
@@ -52,7 +55,7 @@ public final class FrameMatcher {
     }
     
     private boolean match(final String subject) throws JsonLdError {
-        
+
         final Map<String, JsonValue> node = state.getGraphMap().get(state.getGraphName(), subject);
         
         int count = 0;
@@ -90,6 +93,7 @@ public final class FrameMatcher {
                         ){
                     
                     if (requireAll) {
+
                         count++;
                         continue;
                     }
@@ -102,17 +106,24 @@ public final class FrameMatcher {
                 continue;
             }
          
-//            Frame propertyFrame = Frame.of((JsonStructure)frame.get(property));
             
+            JsonValue propertyValue = frame.get(property);
+            Frame propertyFrame = null;
 
+            if (JsonUtils.isNotNull(propertyValue) 
+                    && JsonUtils.isArray(propertyValue) && JsonUtils.isNotEmptyArray(propertyValue)) {
+                propertyFrame = Frame.of((JsonStructure)propertyValue);
+            }
+
+            final JsonArray nodeValues = JsonUtils.toJsonArray(nodeValue);
             
             // 2.5.
-//            if (JsonUtils.isNull(value) || JsonUtils.isEmptyArray(value) /*TODO @default||*/ ) {
-//                return true;
-//            }
-            
-
-            JsonArray nodeValues = JsonUtils.toJsonArray(nodeValue);
+            if (nodeValues.isEmpty() 
+                    && propertyFrame != null 
+                    && propertyFrame.contains(Keywords.DEFAULT) //TODO only default
+                    ) {
+                continue;
+            }
             
             // 2.6.
             if (nodeValues.isEmpty() && frame.isNone(property)) {
@@ -128,20 +139,24 @@ public final class FrameMatcher {
             }
 
             // 2.7.
-            if (!nodeValues.isEmpty() && frame.isWildCard(property)) {
+            if (!nodeValues.isEmpty() && propertyFrame != null && propertyFrame.isEmpty()) {
                 if (requireAll) {
                     count++;
                     continue;
                 }
-                return true;
+                return true;                
             }
+            
+            System.out.println("match: " + nodeValues + ", " + propertyFrame + ", " + requireAll);
+
+
 
             if (requireAll) {
                 return false;
             }
         }
-
-        return count == 0 || count == frame.keys().size();
+        System.out.println("     : " + count);
+        return count > 0;
     }
     
 }
