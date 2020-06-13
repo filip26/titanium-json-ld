@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
@@ -53,6 +55,8 @@ public final class FrameMatcher {
         
         final Map<String, JsonValue> node = state.getGraphMap().get(state.getGraphName(), subject);
         
+        int count = 0;
+        
         for (final String property : frame.keys()) {
 
             JsonValue nodeValue = node.get(property);
@@ -63,10 +67,14 @@ public final class FrameMatcher {
                 nodeValue = JsonUtils.toJsonArray(nodeValue);
                 
                 if (JsonUtils.toJsonArray(frame.get(property)).stream().anyMatch(nodeValue.asJsonArray()::contains)
-                        || (frame.isWildCard(Keywords.TYPE) || frame.isNone(Keywords.NONE))
+//                        || frame.isWildCard(Keywords.TYPE) 
+//                        || frame.isNone(Keywords.TYPE)
+                        || frame.isWildCard(Keywords.ID) 
+                        || frame.isNone(Keywords.ID)
                         ) {
               
                     if (requireAll) {
+                        count++;
                         continue;
                     }
                     return true;                    
@@ -78,10 +86,11 @@ public final class FrameMatcher {
 
                 if ((JsonUtils.isNotNull(nodeValue) && !nodeValue.asJsonArray().isEmpty() && frame.isWildCard(property))
                         || ((JsonUtils.isNull(nodeValue) || nodeValue.asJsonArray().isEmpty()) && frame.isNone(property))
-                        || (JsonUtils.isNotNull(nodeValue) &&frame.getArray(property).stream().anyMatch(nodeValue.asJsonArray()::contains))
+                        || (JsonUtils.isNotNull(nodeValue) && frame.getArray(property).stream().anyMatch(nodeValue.asJsonArray()::contains))
                         ){
                     
                     if (requireAll) {
+                        count++;
                         continue;
                     }
                     return true;
@@ -93,9 +102,9 @@ public final class FrameMatcher {
                 continue;
             }
          
-            Frame propertyFrame;
+//            Frame propertyFrame = Frame.of((JsonStructure)frame.get(property));
             
-            System.out.println("TODO " + property);
+
             
             // 2.5.
 //            if (JsonUtils.isNull(value) || JsonUtils.isEmptyArray(value) /*TODO @default||*/ ) {
@@ -109,23 +118,30 @@ public final class FrameMatcher {
             if (nodeValues.isEmpty() && frame.isNone(property)) {
                 
                 if (requireAll) {
+                    count++;
                     continue;
                 }
-                return true;                
+                return true;
+                
+            } else if (!nodeValues.isEmpty() && frame.isNone(property)) {
+                return false;
             }
 
             // 2.7.
             if (!nodeValues.isEmpty() && frame.isWildCard(property)) {
                 if (requireAll) {
+                    count++;
                     continue;
                 }
                 return true;
             }
 
-            return false;
+            if (requireAll) {
+                return false;
+            }
         }
 
-        return true;
+        return count == 0 || count == frame.keys().size();
     }
     
 }
