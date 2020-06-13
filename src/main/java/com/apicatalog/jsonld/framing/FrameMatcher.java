@@ -12,6 +12,7 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.DefaultObject;
 import com.apicatalog.jsonld.lang.Keywords;
 
 public final class FrameMatcher {
@@ -63,7 +64,7 @@ public final class FrameMatcher {
         for (final String property : frame.keys()) {
 
             JsonValue nodeValue = node.get(property);
-
+            System.out.println("match: " + property + ", " + nodeValue + ", " + frame + ", " + requireAll);
             // 2.1.
             if (Keywords.ID.equals(property)) {
 
@@ -89,9 +90,10 @@ public final class FrameMatcher {
 
                 if ((JsonUtils.isNotNull(nodeValue) && !nodeValue.asJsonArray().isEmpty() && frame.isWildCard(property))
                         || ((JsonUtils.isNull(nodeValue) || nodeValue.asJsonArray().isEmpty()) && frame.isNone(property))
+                        || frame.isDefault(property)
                         || (JsonUtils.isNotNull(nodeValue) && frame.getArray(property).stream().anyMatch(nodeValue.asJsonArray()::contains))
                         ){
-                    
+                    System.out.println("HIT!!!!!!!!!!!!!!!");
                     if (requireAll) {
 
                         count++;
@@ -161,7 +163,7 @@ public final class FrameMatcher {
                 return true;
             }
             
-            System.out.println("match: " + nodeValues + ", " + propertyFrame + ", " + requireAll);
+
 
             if (requireAll) {
                 return false;

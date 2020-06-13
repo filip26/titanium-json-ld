@@ -13,6 +13,7 @@ import com.apicatalog.jsonld.api.JsonLdEmbed;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.DefaultObject;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.jsonld.uri.UriUtils;
@@ -155,15 +156,16 @@ public final class Frame {
     private static final boolean validateFrameType(JsonObject frame) {
 
         final JsonValue typeValue = frame.get(Keywords.TYPE);
-        
+
         if (JsonUtils.isArray(typeValue) && JsonUtils.isNotEmptyArray(typeValue)) {
-                        
+            
             if (typeValue.asJsonArray().size() == 1
                    && (JsonUtils.isEmptyObject(typeValue.asJsonArray().get(0))
-                           || (JsonUtils.isObject(typeValue) 
-                                   && typeValue.asJsonObject().containsKey(Keywords.DEFAULT)
+                           || (JsonUtils.isObject(typeValue.asJsonArray().get(0))
+                                   && typeValue.asJsonArray().get(0).asJsonObject().containsKey(Keywords.DEFAULT)
                                    )
                     )) {
+
                 return true;
             } 
             
@@ -177,6 +179,7 @@ public final class Frame {
         }
         return 
                 JsonUtils.isEmptyArray(typeValue)
+                || JsonUtils.isEmptyObject(typeValue)
                 || JsonUtils.isString(typeValue) && UriUtils.isAbsoluteUri(((JsonString)typeValue).getString());
     }
     
@@ -238,10 +241,19 @@ public final class Frame {
     }
 
     public boolean isValuePattern() {
-        return ValueObject.isValueObject(frame) && JsonUtils.isObject(ValueObject.getValue(frame));
+        return ValueObject.isValueObject(frame);
     }
     
     public boolean matchValue(JsonValue value) {
-        return JsonUtils.isObject(value) && ValuePatternMatcher.with(ValueObject.getValue(frame).asJsonObject(), value.asJsonObject()).match();
+        return JsonUtils.isObject(value) && ValuePatternMatcher.with(frame, value.asJsonObject()).match();
+    }
+
+    public boolean isDefault(String property) {
+
+        return DefaultObject.isDefaultObject(frame.get(property))
+                || JsonUtils.isArray(frame.get(property))
+                    && frame.get(property).asJsonArray().size() == 1
+                    && DefaultObject.isDefaultObject(frame.get(property).asJsonArray().get(0))
+                ;
     }
 }

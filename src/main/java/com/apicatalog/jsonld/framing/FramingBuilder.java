@@ -169,20 +169,26 @@ public final class FramingBuilder {
             }
             
             
-            // 4.7.4.
-            for (String property : frame.keys().stream().filter(Predicate.not(Keywords::contains)).collect(Collectors.toList())) {
+            // 4.7.4. - default values
+            for (String property : frame.keys()) {
 
-                if (output.containsKey(property)) {
+                if (output.containsKey(property)
+                        || !Keywords.TYPE.equals(property) && Keywords.matchForm(property)
+                        || Keywords.TYPE.equals(property) && !frame.isDefault(property)
+                        ) {
                     continue;
                 }
-                
+            
+    
                 // 4.7.4.2.
                 final JsonObject propertyFrame;
                 
                 if (JsonUtils.isArray(frame.get(property)) && JsonUtils.isNotEmptyArray(frame.get(property))) {
                     propertyFrame = frame.get(property).asJsonArray().getJsonObject(0);
+                    
                 } else {
                     propertyFrame = JsonValue.EMPTY_JSON_OBJECT;
+                    
                 }
                 
                 // 4.7.4.3.
