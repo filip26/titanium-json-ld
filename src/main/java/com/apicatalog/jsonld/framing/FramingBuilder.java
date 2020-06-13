@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonString;
 import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
@@ -77,21 +78,29 @@ public final class FramingBuilder {
             
             final Map<String, JsonValue> node = state.getGraphMap().get(state.getGraphName(), id);
             
+            final String nodeId = JsonUtils.isString(node.get(Keywords.ID))
+                                ? ((JsonString)node.get(Keywords.ID)).getString()
+                                : null;
+
             // 4.1.
             Map<String, JsonValue> output = new LinkedHashMap<>();
             output.put(Keywords.ID, Json.createValue(id));
             
             
+            if (activeProperty == null) {
+                state.clearDone();
+            }
+            
             // 4.2.
-            if (!state.isEmbedded() && state.isProcessed(id))  {
+            if (!state.isEmbedded() && state.isDone(id))  {
                 continue;
             }
 
             // 4.3.
             if (state.isEmbedded() 
                     && (JsonLdEmbed.NEVER == embed
-                            || state.isProcessed(id)
-                            ) /*TODO circular */
+                            || state.isParent(nodeId)
+                            ) 
                     
                     ) {
                 addToResult(parent, activeProperty, JsonUtils.toJsonObject(output));
@@ -101,14 +110,15 @@ public final class FramingBuilder {
             // 4.4.
             if (state.isEmbedded() 
                     && JsonLdEmbed.ONCE == embed
-                    && state.isProcessed(id)
+                    && state.isDone(id)
                     
                     ) {
                 addToResult(parent, activeProperty, JsonUtils.toJsonObject(output));
                 continue;
             }
 
-            state.markProcessed(id);
+            state.markDone(id);
+            state.addParent(nodeId);
 
             // 4.5.
             //TODO
@@ -218,7 +228,7 @@ public final class FramingBuilder {
             // 4.7.5.
             //TODO
             
-            state.release(id);
+            state.removeLastParent();
 
             // 4.8.
             addToResult(parent, activeProperty, JsonUtils.toJsonObject(output));

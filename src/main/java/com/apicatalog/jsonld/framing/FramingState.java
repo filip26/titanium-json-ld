@@ -1,5 +1,7 @@
 package com.apicatalog.jsonld.framing;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,12 +19,13 @@ public final class FramingState {
     private String graphName;
     private NodeMap graphMap;
     
-    private Map<String, Map<String, Object>> processed;
+    private Map<String, Map<String, Object>> done;
+    private Deque<String> parents;
     
     //TODO subject map
     public FramingState() {
-        this.processed = new HashMap<>();
-        
+        this.done = new HashMap<>();
+        this.parents = new ArrayDeque<>();
     }
     
     public FramingState(FramingState state) {
@@ -33,7 +36,8 @@ public final class FramingState {
         this.omitDefault = state.omitDefault;
         this.graphMap = state.graphMap;
         this.graphName = state.graphName;
-        this.processed = state.processed;    //TODO ?!
+        this.done = state.done;    //TODO ?!
+        this.parents =  state.parents;
     }
     
     public JsonLdEmbed getEmbed() {
@@ -92,18 +96,28 @@ public final class FramingState {
         this.graphMap = graphMap;
     }
 
-    public boolean isProcessed(String subject) {
-        return processed.containsKey(graphName) && processed.get(graphName).containsKey(subject);
+    public boolean isDone(String subject) {
+        return done.containsKey(graphName) && done.get(graphName).containsKey(subject);
     }
     
-    public void markProcessed(String subject) {
-        processed.computeIfAbsent(graphName, x -> new HashMap<>()).put(subject, Boolean.TRUE);    //TODO
+    public void markDone(String subject) {
+        done.computeIfAbsent(graphName, x -> new HashMap<>()).put(subject, Boolean.TRUE);    //TODO
     }
 
-    public void release(String id) {
-        if (processed.containsKey(graphName)) {
-            processed.get(graphName).remove(id);
-        }
+    public boolean isParent(String subject) {
+        return parents.contains(graphName + "@@@" +  subject);
+    }
+    
+    public void addParent(String subject) {
+        parents.push(graphName + "@@@" + subject); 
+    }
+    
+    public void removeLastParent() {
+        parents.pop();
+    }
+
+    public void clearDone() {
+        done.clear();
         
     }
     
