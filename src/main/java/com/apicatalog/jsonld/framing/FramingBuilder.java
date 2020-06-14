@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -223,8 +224,57 @@ public final class FramingBuilder {
                 
             }
 
-            // 4.7.5.
-            //TODO
+            // 4.7.5. - reverse properties
+            if (frame.contains(Keywords.REVERSE)) {
+                
+                final JsonValue reverseObject = frame.get(Keywords.REVERSE);;
+                
+                if (JsonUtils.isObject(reverseObject)) {
+                
+                    for (final String reverseProperty :  reverseObject.asJsonObject().keySet()) {
+                      
+                        final JsonValue subframe = reverseObject.asJsonObject().get(reverseProperty);
+                        
+                        for (final String subjectProperty : state.getGraphMap().get(state.getGraphName()).keySet()) {
+                         
+                            JsonValue nodeValues = state.getGraphMap().get(state.getGraphName(), subjectProperty, reverseProperty);
+
+                            if (nodeValues != null
+                                    && JsonUtils.toJsonArray(nodeValues)
+                                                .stream()
+                                                .filter(JsonUtils::isObject)
+                                                .map(JsonObject.class::cast)
+                                                .filter(v -> v.containsKey(Keywords.ID))
+                                                .map(v -> v.getString(Keywords.ID))
+                                                .anyMatch(vid -> Objects.equals(vid, id))
+                                    ) {
+
+                                final Map<String, JsonValue> reverseMap;
+                                
+                                if (output.containsKey(Keywords.REVERSE)) {                        
+                                    reverseMap = new LinkedHashMap<>(output.get(Keywords.REVERSE).asJsonObject());
+                                    
+                                } else {
+                                    reverseMap = new LinkedHashMap<>();
+                                }
+
+                                Map<String, JsonValue> revereseResult = new LinkedHashMap<>();
+                                
+                                FramingBuilder.with(
+                                                state, 
+                                                Arrays.asList(subjectProperty), 
+                                                Frame.of((JsonStructure)subframe),
+                                                revereseResult, 
+                                                activeProperty)
+                                            .build();
+                                
+                                JsonUtils.addValue(reverseMap, reverseProperty, JsonUtils.toJsonArray(revereseResult.values()), true);
+                                output.put(Keywords.REVERSE, JsonUtils.toJsonObject(reverseMap));
+                            }
+                        }                        
+                    }
+                }
+            }
             
             state.removeLastParent();
 
