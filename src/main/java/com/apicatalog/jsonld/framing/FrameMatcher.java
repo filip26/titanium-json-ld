@@ -5,14 +5,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.json.JsonArray;
-import javax.json.JsonString;
 import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.NodeObject;
 
 public final class FrameMatcher {
 
@@ -63,10 +61,8 @@ public final class FrameMatcher {
                 nodeValue = JsonUtils.toJsonArray(nodeValue);
                 
                 if (JsonUtils.toJsonArray(frame.get(property)).stream().anyMatch(nodeValue.asJsonArray()::contains)
-//                        || frame.isWildCard(Keywords.TYPE) 
-//                        || frame.isNone(Keywords.TYPE)
-                        || frame.isWildCard(Keywords.TYPE) 
-                        || frame.isNone(Keywords.TYPE)
+                        || frame.isWildCard(Keywords.ID) 
+                        || frame.isNone(Keywords.ID)
                         ) {
               
                     if (requireAll) {

@@ -177,6 +177,9 @@ final class MapExpansion1314 {
                             expandedValue = Json.createValue(expandedStringValue);
                         }
                         
+                    } else if (JsonUtils.isObject(value)) {
+                        expandedValue = Json.createArrayBuilder().add(JsonValue.EMPTY_JSON_OBJECT).build();
+                        
                     } else if (JsonUtils.isScalar(value) || JsonUtils.isArray(value))  {
                         
                         JsonArrayBuilder array = Json.createArrayBuilder();
