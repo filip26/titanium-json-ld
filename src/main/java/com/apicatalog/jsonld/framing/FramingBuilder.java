@@ -2,12 +2,14 @@ package com.apicatalog.jsonld.framing;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import javax.json.Json;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonStructure;
@@ -212,12 +214,44 @@ public final class FramingBuilder {
                         
                         if (JsonUtils.isArray(item.asJsonObject().get(Keywords.LIST))) {
                         
-                            for (JsonValue listItem : item.asJsonObject().getJsonArray(Keywords.LIST)) {
-                                
-                            }
-                            System.out.println("TODO: LIST");
+                            final JsonArrayBuilder list = Json.createArrayBuilder();
                             
-                            output.put(property, Json.createArrayBuilder().add(Json.createObjectBuilder().add(Keywords.LIST, item.asJsonObject().get(Keywords.LIST))).build());
+                            for (final JsonValue listItem : item.asJsonObject().getJsonArray(Keywords.LIST)) {
+
+                                // 4.7.3.1.1.
+                                if (NodeObject.isNodeReference(listItem)) {
+
+                                    FramingState listState = new FramingState(state);
+                                    listState.setEmbedded(true);
+                                    
+                                    JsonValue listFrame = frame.get(Keywords.LIST);
+                                    
+                                    if (listFrame == null) {
+                                        listFrame = Json.createObjectBuilder()
+                                                .add(Keywords.EMBED, "@".concat(embed.name().toLowerCase()))
+                                                .add(Keywords.EXPLICIT, explicit)
+                                                .add(Keywords.REQUIRE_ALL, requireAll)
+                                                .build();
+                                    }
+
+                                    Map<String, JsonValue> listResult = new LinkedHashMap<>();
+                                    
+                                    FramingBuilder.with(
+                                            listState, 
+                                            Arrays.asList(listItem.asJsonObject().getString(Keywords.ID)),
+                                            Frame.of((JsonStructure)listFrame), 
+                                            listResult, 
+                                            Keywords.LIST)
+                                    .build();
+
+                                    list.add(listResult.get(Keywords.LIST));
+                                    
+                                // 4.7.3.1.2.
+                                } else {
+                                    list.add(listItem);
+                                }
+                            }                           
+                            output.put(property, Json.createArrayBuilder().add(Json.createObjectBuilder().add(Keywords.LIST, list)).build());
                         }
                         
                     } else if (NodeObject.isNodeReference(item)) {
