@@ -9,3 +9,5 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
+    ignore:
+      - dependency-name: "com.github.w3c:json-ld-test-suite"
