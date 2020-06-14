@@ -2,6 +2,8 @@ package com.apicatalog.jsonld.framing;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import javax.json.JsonObject;
@@ -15,6 +17,7 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.DefaultObject;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.jsonld.uri.UriUtils;
 
@@ -255,5 +258,28 @@ public final class Frame {
                     && frame.get(property).asJsonArray().size() == 1
                     && DefaultObject.isDefaultObject(frame.get(property).asJsonArray().get(0))
                 ;
+    }
+
+    public boolean isNodePattern() {
+        return NodeObject.isNodeObject(frame);
+    }
+
+    public boolean isNodeReference() {
+        return NodeObject.isNodeReference(frame);
+    }
+    
+    public boolean matchNode(FramingState state, JsonValue value, boolean requireAll) throws JsonLdError {
+        if (JsonUtils.isNotObject(value) || !value.asJsonObject().containsKey(Keywords.ID)) {
+            return false;
+        }
+        
+        JsonValue valueObject = state.getGraphMap().get(state.getGraphName())
+                .get(value.asJsonObject().getString(Keywords.ID));
+     
+        if (JsonUtils.isNotObject(valueObject)) {
+            return false;
+        }
+        
+        return FrameMatcher.with(state, null, this, requireAll).match(valueObject.asJsonObject());
     }
 }

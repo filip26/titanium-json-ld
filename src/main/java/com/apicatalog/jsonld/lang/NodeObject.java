@@ -12,7 +12,7 @@ public class NodeObject {
     }
 
     public static final boolean isNodeObject(JsonValue value) {
-        return JsonUtils.isObject(value) 
+        return JsonUtils.isObject(value)
                     && ((!value.asJsonObject().containsKey(Keywords.VALUE)
                                 && !value.asJsonObject().containsKey(Keywords.LIST) 
                                 && !value.asJsonObject().containsKey(Keywords.SET))

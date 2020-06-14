@@ -17,6 +17,7 @@ public final class FramingState {
     private boolean omitDefault;
     
     private String graphName;
+    
     private NodeMap graphMap;
     
     private Map<String, Map<String, Object>> done;
@@ -95,7 +96,7 @@ public final class FramingState {
     public void setGraphMap(NodeMap graphMap) {
         this.graphMap = graphMap;
     }
-
+    
     public boolean isDone(String subject) {
         return done.containsKey(graphName) && done.get(graphName).containsKey(subject);
     }

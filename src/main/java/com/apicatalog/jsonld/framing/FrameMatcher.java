@@ -1,6 +1,7 @@
 package com.apicatalog.jsonld.framing;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -42,8 +43,7 @@ public final class FrameMatcher {
         
         for (final String subject : subjects) {
 
-            System.out.println("match subject " + subject + ", " + frame);
-            if (match(subject)) {
+            if (match(state.getGraphMap().get(state.getGraphName(), subject))) {
                 result.add(subject);
             }
         }
@@ -51,16 +51,20 @@ public final class FrameMatcher {
         return result;
     }
     
-    private boolean match(final String subject) throws JsonLdError {
+    public boolean match(final Map<String, JsonValue> node) throws JsonLdError {
 
-        final Map<String, JsonValue> node = state.getGraphMap().get(state.getGraphName(), subject);
+        // = ;
+        //System.out.println("> " + subject);
+        //TODO
+//        if (node == null) {
+//            return false;
+//        }
         
         int count = 0;
         
         for (final String property : frame.keys()) {
 
             JsonValue nodeValue = node.get(property);
-            System.out.println("match: " + property + ", " + nodeValue + ", " + frame + ", " + requireAll);
             // 2.1.
             if (Keywords.ID.equals(property)) {
 
@@ -106,11 +110,13 @@ public final class FrameMatcher {
          
             
             JsonValue propertyValue = frame.get(property);
-            Frame propertyFrame = null;
+            final Frame propertyFrame;
 
             if (JsonUtils.isNotNull(propertyValue) 
                     && JsonUtils.isArray(propertyValue) && JsonUtils.isNotEmptyArray(propertyValue)) {
                 propertyFrame = Frame.of((JsonStructure)propertyValue);
+            } else {
+                propertyFrame = null;
             }
 
             final JsonArray nodeValues = nodeValue != null 
@@ -161,6 +167,65 @@ public final class FrameMatcher {
                 return true;
             }
             
+            // 2.9. //TODO for any???
+            if (propertyFrame != null
+                    && propertyFrame.isNodePattern()
+                    && !nodeValues.isEmpty()
+                    
+                    ) {
+                
+                if (propertyFrame.isNodeReference()) {
+
+                    boolean match = false;
+                    for (JsonValue values : nodeValues) {
+                        
+                        match = propertyFrame.matchNode(state, values, requireAll);
+                        if (match) {
+                            break;
+                        }
+                    }
+                                            
+                    if (match) {
+                        if (requireAll) {
+                            count++;
+                            continue;
+                        }
+                        return true;
+                    }
+                }
+                
+//                // 2.9.1.
+//                List<String> valueSubjects = new ArrayList<>();
+//                
+
+                
+//                for (Map.Entry<String, JsonValue> subjectNode : node.get(nodeValue.asJsonObject().get(Keywords.ID)).asJsonObject().entrySet()) {
+//                    if (NodeObject.isNodeObject(subjectNode.getValue())
+//                            || JsonUtils.isArray(subjectNode.getValue())
+//                                 && NodeObject.isNodeObject(subjectNode.getValue().asJsonArray().get(0)) 
+//                            ) {
+//                        valueSubjects.add(subjectNode.getKey());
+//                    }
+//                }
+//                
+////                System.out.println(">>>>>> " + propertyFrame);
+////                System.out.println(">>>>---------->> " +  node);
+//                System.out.println(">>>>------>> " +  valueSubjects);
+//                
+//                // 2.9.2.
+////                List<String> matchedSubject = FrameMatcher.with(state, valueSubjects, propertyFrame, requireAll).match();
+//                List<String> matchedSubject = FrameMatcher.with(state, valueSubjects, propertyFrame, requireAll).match();
+//                System.out.println(">>>>------------------->> " +  matchedSubject);
+                
+//                if (!matchedSubject.isEmpty()) {
+//                    if (requireAll) {
+//                        count++;
+//                        continue;
+//                    }
+//                    return true;
+//                    
+//                }
+            }
 
 
             if (requireAll) {
