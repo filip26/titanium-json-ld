@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.Map;
 
 import javax.json.JsonArray;
+import javax.json.JsonString;
 import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.NodeObject;
 
 public final class FrameMatcher {
 
@@ -50,13 +52,6 @@ public final class FrameMatcher {
     
     public boolean match(final Map<String, JsonValue> node) throws JsonLdError {
 
-        // = ;
-        //System.out.println("> " + subject);
-        //TODO
-//        if (node == null) {
-//            return false;
-//        }
-        
         int count = 0;
         
         for (final String property : frame.keys()) {
@@ -70,8 +65,8 @@ public final class FrameMatcher {
                 if (JsonUtils.toJsonArray(frame.get(property)).stream().anyMatch(nodeValue.asJsonArray()::contains)
 //                        || frame.isWildCard(Keywords.TYPE) 
 //                        || frame.isNone(Keywords.TYPE)
-                        || frame.isWildCard(Keywords.ID) 
-                        || frame.isNone(Keywords.ID)
+                        || frame.isWildCard(Keywords.TYPE) 
+                        || frame.isNone(Keywords.TYPE)
                         ) {
               
                     if (requireAll) {
@@ -120,6 +115,7 @@ public final class FrameMatcher {
                                             ? JsonUtils.toJsonArray(nodeValue)
                                             : JsonValue.EMPTY_JSON_ARRAY;
             
+                                        
             // 2.5.
             if (nodeValues.isEmpty() 
                     && propertyFrame != null 
@@ -163,7 +159,7 @@ public final class FrameMatcher {
                 }
                 return true;
             }
-            
+
             // 2.9. //TODO for any???
             if (propertyFrame != null
                     && propertyFrame.isNodePattern()
@@ -189,39 +185,14 @@ public final class FrameMatcher {
                         }
                         return true;
                     }
+                    
+                } else if (!propertyFrame.isEmpty()) {
+                    if (requireAll) {
+                        count++;
+                        continue;
+                    }
+                    return true;  
                 }
-                
-//                // 2.9.1.
-//                List<String> valueSubjects = new ArrayList<>();
-//                
-
-                
-//                for (Map.Entry<String, JsonValue> subjectNode : node.get(nodeValue.asJsonObject().get(Keywords.ID)).asJsonObject().entrySet()) {
-//                    if (NodeObject.isNodeObject(subjectNode.getValue())
-//                            || JsonUtils.isArray(subjectNode.getValue())
-//                                 && NodeObject.isNodeObject(subjectNode.getValue().asJsonArray().get(0)) 
-//                            ) {
-//                        valueSubjects.add(subjectNode.getKey());
-//                    }
-//                }
-//                
-////                System.out.println(">>>>>> " + propertyFrame);
-////                System.out.println(">>>>---------->> " +  node);
-//                System.out.println(">>>>------>> " +  valueSubjects);
-//                
-//                // 2.9.2.
-////                List<String> matchedSubject = FrameMatcher.with(state, valueSubjects, propertyFrame, requireAll).match();
-//                List<String> matchedSubject = FrameMatcher.with(state, valueSubjects, propertyFrame, requireAll).match();
-//                System.out.println(">>>>------------------->> " +  matchedSubject);
-                
-//                if (!matchedSubject.isEmpty()) {
-//                    if (requireAll) {
-//                        count++;
-//                        continue;
-//                    }
-//                    return true;
-//                    
-//                }
             }
 
 

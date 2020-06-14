@@ -197,7 +197,7 @@ public final class Frame {
     }
 
     public boolean isEmpty() {
-        return frame.keySet()
+        return frame.isEmpty() || frame.keySet()
                     .stream()
                     .allMatch(Arrays.asList(
                                         Keywords.DEFAULT,
@@ -208,6 +208,11 @@ public final class Frame {
                                         )::contains);
     }
 
+    
+    public boolean isWildCard() {
+        return JsonUtils.isEmptyObject(frame);
+    }
+    
     public boolean isWildCard(String property) {
         return frame.containsKey(property) 
                     && (JsonUtils.isEmptyObject(get(property))
