@@ -32,6 +32,7 @@ import com.apicatalog.jsonld.framing.Frame;
 import com.apicatalog.jsonld.framing.FramingBuilder;
 import com.apicatalog.jsonld.framing.FramingState;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
@@ -133,13 +134,15 @@ public final class FramingProcessor {
         
         System.out.println("Result: " + resultMap);
         
+        Collection<JsonValue> result = resultMap.values();        
         
-        // 17.
-        //TODO      
+        // 17. - remove blank @id
+        if (!activeContext.inMode(Version.V1_0)) {
+            result = removeBlankId(result);
+        }
         
-        // 18.
-        List<JsonValue> result = removePreserve(resultMap.values());
-        //TODO
+        // 18. - remove preserve
+        result = removePreserve(result);
         
         // 19.
         JsonValue compactedResults = CompactionBuilder
@@ -288,5 +291,35 @@ public final class FramingProcessor {
         }
         return object.build();
     }
-    
+
+    private static final List<JsonValue> removeBlankId(Collection<JsonValue> array) {
+        return array.stream().map(FramingProcessor::removeBlankIdKey).collect(Collectors.toList());
+    }
+
+    private static final JsonValue removeBlankIdKey(JsonValue value) {
+        
+        if (JsonUtils.isScalar(value)) {
+            return value;
+        }
+        if (JsonUtils.isArray(value)) {
+            return JsonUtils.toJsonArray(removeBlankId(value.asJsonArray()));
+        }
+        
+        JsonObjectBuilder object = Json.createObjectBuilder();
+        
+        for (Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
+            
+            if (Keywords.ID.equals(entry.getKey()) && JsonUtils.isString(entry.getValue())) {
+             
+                if (BlankNode.isWellFormed(((JsonString)entry.getValue()).getString())) {
+                    continue;
+                }
+
+            }
+            object.add(entry.getKey(), removeBlankIdKey(entry.getValue()));
+        }
+        
+        return object.build();
+    }
+
 }

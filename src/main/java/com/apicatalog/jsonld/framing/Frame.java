@@ -154,7 +154,9 @@ public final class Frame {
             }
             return true;
             
-        } 
+        } else if (JsonUtils.isNull(idValue)) {
+//            return true;
+        }
         return JsonUtils.isString(idValue) && UriUtils.isAbsoluteUri(((JsonString)idValue).getString());
     }
     

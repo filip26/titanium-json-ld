@@ -338,25 +338,11 @@ public final class FramingBuilder {
     }
         
     private static void addToResult(Map<String, JsonValue> result, String property, JsonValue value) {
-        
         if (property == null) {
             result.put(Integer.toHexString(result.size()), value);
-        } else {
-
-            JsonUtils.addValue(result, property, value, true);
             
-//            final JsonArrayBuilder array;
-//            
-//            if (parent.containsKey(activeProperty)) {
-//                array = Json.createArrayBuilder(parent.get(activeProperty).asJsonArray());
-//                
-//            } else {
-//                array = Json.createArrayBuilder();   
-//            }
-//
-//            
-//            parent.put(activeProperty, array.add(output).build());
+        } else {
+            JsonUtils.addValue(result, property, value, true);
         }        
     }
-    
 }
