@@ -3,6 +3,7 @@ package com.apicatalog.jsonld.processor;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -292,17 +293,35 @@ public final class FramingProcessor {
         return object.build();
     }
 
-    private static final List<JsonValue> removeBlankId(Collection<JsonValue> array) {
-        return array.stream().map(FramingProcessor::removeBlankIdKey).collect(Collectors.toList());
+    private static final Collection<JsonValue> removeBlankId(Collection<JsonValue> array) {
+        
+        Map<String, Integer> candiates = new HashMap<>();
+        
+        array.stream().forEach(v -> findBlankNodes(v, candiates));
+        
+        List<String> remove = candiates.entrySet().stream().filter(e -> e.getValue() == 1).map(Entry::getKey).collect(Collectors.toList());
+        
+        if (remove.isEmpty()) {
+            return array;
+        }
+        
+        return array.stream().map(v -> removeBlankIdKey(v, remove)).collect(Collectors.toList());
     }
 
-    private static final JsonValue removeBlankIdKey(JsonValue value) {
+    private static final JsonValue removeBlankIdKey(JsonValue value, List<String> blankNodes) {
         
         if (JsonUtils.isScalar(value)) {
             return value;
         }
         if (JsonUtils.isArray(value)) {
-            return JsonUtils.toJsonArray(removeBlankId(value.asJsonArray()));
+            
+            JsonArrayBuilder array = Json.createArrayBuilder();
+            
+            for (JsonValue item : value.asJsonArray()) {
+                array.add(removeBlankIdKey(item, blankNodes));
+            }
+            
+            return array.build();
         }
         
         JsonObjectBuilder object = Json.createObjectBuilder();
@@ -311,15 +330,43 @@ public final class FramingProcessor {
             
             if (Keywords.ID.equals(entry.getKey()) && JsonUtils.isString(entry.getValue())) {
              
-                if (BlankNode.isWellFormed(((JsonString)entry.getValue()).getString())) {
+                if (blankNodes.contains(((JsonString)entry.getValue()).getString())) {
                     continue;
                 }
 
             }
-            object.add(entry.getKey(), removeBlankIdKey(entry.getValue()));
+            object.add(entry.getKey(), removeBlankIdKey(entry.getValue(), blankNodes));
         }
         
         return object.build();
     }
 
+    private static final void findBlankNodes(JsonValue value, final Map<String, Integer> blankNodes) {
+
+        if (JsonUtils.isString(value)) {
+            
+            if (BlankNode.isWellFormed(((JsonString)value).getString())) {
+                Integer count = blankNodes.computeIfAbsent(((JsonString)value).getString(), x -> Integer.valueOf(0));
+                blankNodes.put(((JsonString)value).getString(), ++count);
+            }            
+            
+            return;
+        }
+        
+        if (JsonUtils.isScalar(value)) {
+            return;
+        }
+        
+        if (JsonUtils.isArray(value)) {
+            for (JsonValue item : value.asJsonArray()) {
+                findBlankNodes(item, blankNodes);        
+            }
+            return;
+        }
+        
+        for (Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
+            
+            findBlankNodes(entry.getValue(), blankNodes);
+        }
+    }
 }
