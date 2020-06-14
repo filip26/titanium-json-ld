@@ -209,7 +209,16 @@ public final class FramingBuilder {
 
                     // 4.7.3.1.
                     if (ListObject.isListObject(item)) {
-                        System.out.println("TODO: LIST");
+                        
+                        if (JsonUtils.isArray(item.asJsonObject().get(Keywords.LIST))) {
+                        
+                            for (JsonValue listItem : item.asJsonObject().getJsonArray(Keywords.LIST)) {
+                                
+                            }
+                            System.out.println("TODO: LIST");
+                            
+                            output.put(property, Json.createArrayBuilder().add(Json.createObjectBuilder().add(Keywords.LIST, item.asJsonObject().get(Keywords.LIST))).build());
+                        }
                         
                     } else if (NodeObject.isNodeReference(item)) {
                         

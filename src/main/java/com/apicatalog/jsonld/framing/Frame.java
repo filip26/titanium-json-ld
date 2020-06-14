@@ -122,7 +122,7 @@ public final class Frame {
                 value = ValueObject.getValue(value);
             }
 
-            if (JsonUtils.isNull(value)) {
+            if (JsonUtils.isNull(value)) {  //TODO investigate
                 return false;
             }
             
@@ -154,8 +154,6 @@ public final class Frame {
             }
             return true;
             
-        } else if (JsonUtils.isNull(idValue)) {
-//            return true;
         }
         return JsonUtils.isString(idValue) && UriUtils.isAbsoluteUri(((JsonString)idValue).getString());
     }
