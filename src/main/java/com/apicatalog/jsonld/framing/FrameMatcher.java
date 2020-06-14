@@ -1,7 +1,6 @@
 package com.apicatalog.jsonld.framing;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -17,22 +16,20 @@ public final class FrameMatcher {
 
     // required
     private FramingState state;
-    private List<String> subjects;
     private Frame frame;
     private boolean requireAll;
     
-    private FrameMatcher(FramingState state, List<String> subjects, Frame frame, boolean requireAll) {
+    private FrameMatcher(FramingState state, Frame frame, boolean requireAll) {
         this.state = state;
-        this.subjects = subjects;
         this.frame = frame;
         this.requireAll = requireAll; 
     }
     
-    public static final FrameMatcher with(FramingState state, List<String> subjects, Frame frame, boolean requireAll) {
-        return new FrameMatcher(state, subjects, frame, requireAll);
+    public static final FrameMatcher with(FramingState state, Frame frame, boolean requireAll) {
+        return new FrameMatcher(state, frame, requireAll);
     }
     
-    public List<String> match() throws JsonLdError {
+    public List<String> match(final List<String> subjects) throws JsonLdError {
    
         // 1. if frame is empty then all subject match
         if (frame.isEmpty()) {

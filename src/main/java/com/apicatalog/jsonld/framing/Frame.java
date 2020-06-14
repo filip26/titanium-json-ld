@@ -2,8 +2,6 @@ package com.apicatalog.jsonld.framing;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 import javax.json.JsonObject;
@@ -280,6 +278,6 @@ public final class Frame {
             return false;
         }
         
-        return FrameMatcher.with(state, null, this, requireAll).match(valueObject.asJsonObject());
+        return FrameMatcher.with(state, this, requireAll).match(valueObject.asJsonObject());
     }
 }

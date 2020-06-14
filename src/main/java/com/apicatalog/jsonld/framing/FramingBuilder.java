@@ -64,8 +64,8 @@ public final class FramingBuilder {
         // 3.
         final List<String> matchedSubjects = 
                                 FrameMatcher
-                                    .with(state, subjects, frame, requireAll)
-                                    .match();
+                                    .with(state, frame, requireAll)
+                                    .match(subjects);
                 
         // 4.
         if (ordered) {
