@@ -19,7 +19,7 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 [Expansion](https://www.w3.org/TR/json-ld/#expanded-document-form) | 369 |  369 | 100% | 
 [Compaction](https://www.w3.org/TR/json-ld/#compacted-document-form) | 239 | 239 | 100% |
 [Flattening](https://www.w3.org/TR/json-ld/#flattened-document-form) | 55 | 55 | 100% |
-[JSON-LD to RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 449 | 447 | 99.5% |  won't fix: <ul><li>[te075](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#te075) - blank node as a predicate</li><li>[tli12](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#tli12) - an invalid IRI as @base</li></ul>
+[JSON-LD to RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 449 | 447 | 99.5% | <ul><li>[te075 - @vocab as blank node identifier](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#te075)</li><li>[tli12 - List with bad @base](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#tli12)</li></ul>
 [RDF to JSON-LD](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 51 | 51  | 100% | 
 [Framing](https://www.w3.org/TR/json-ld11-framing/#framing) | 89 | 76 | 85.3% |
 
@@ -35,7 +35,6 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 - [ ] 0.6 - [Framing](https://www.w3.org/TR/json-ld11-framing/)
 - [ ] 0.7 - Document & Context loaders
 - [ ] 0.8 - [JSON-LD API](https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface)
-- [ ] 0.9 - CLI
 - [ ] 1.0 - Documented, A+ code
 
 ## Examples
