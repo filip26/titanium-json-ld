@@ -62,7 +62,6 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
          
          <json-p.version>1.1.4</json-p.version>
-         <commons-rdf-api.version>0.5.0</commons-rdf-api.version>
          
          <!--  test resources -->
         <junit.version>4.13</junit.version>
@@ -98,12 +97,12 @@
             <version>${test-suite.version}</version>
             <scope>test</scope>           
         </dependency>
-        
-		<dependency>
-		  <groupId>com.github.w3c</groupId>
-		  <artifactId>json-ld-framing-test-suite</artifactId>
-		  <version>${test-suite-framing.version}</version>
-		</dependency>        
+
+        <dependency>
+            <groupId>com.github.w3c</groupId>
+            <artifactId>json-ld-framing-test-suite</artifactId>
+            <version>${test-suite-framing.version}</version>
+        </dependency>
 
     </dependencies>
 
