@@ -123,8 +123,20 @@ public final class FramingBuilder {
             //TODO
             
             // 4.6.
-            //TODO
-            
+            if (frame.contains(Keywords.INCLUDED)) {
+                
+                FramingState includedState = new FramingState(state);
+                includedState.setEmbedded(false);
+                
+                FramingBuilder.with(
+                                    includedState, 
+                                    subjects, 
+                                    Frame.of((JsonStructure)frame.get(Keywords.INCLUDED)),
+                                    output, 
+                                    Keywords.INCLUDED
+                                    ).build();                
+            }
+
             // 4.7.    
             for (final String property : state.getGraphMap().properties(state.getGraphName(), id, ordered)) {
                 final JsonValue objects = state.getGraphMap().get(state.getGraphName(), id, property);
@@ -212,10 +224,6 @@ public final class FramingBuilder {
                     defaultValue = Json.createValue(Keywords.NULL);
                 }
 
-//                output.put(property, Json.createArrayBuilder()
-//                        .add(defaultValue).build());
-//
-
                 output.put(property, Json.createArrayBuilder()
                                         .add(Json.createObjectBuilder()
                                                     .add(Keywords.PRESERVE, 
@@ -237,7 +245,7 @@ public final class FramingBuilder {
                         
                         for (final String subjectProperty : state.getGraphMap().get(state.getGraphName()).keySet()) {
                          
-                            JsonValue nodeValues = state.getGraphMap().get(state.getGraphName(), subjectProperty, reverseProperty);
+                            final JsonValue nodeValues = state.getGraphMap().get(state.getGraphName(), subjectProperty, reverseProperty);
 
                             if (nodeValues != null
                                     && JsonUtils.toJsonArray(nodeValues)
@@ -251,6 +259,19 @@ public final class FramingBuilder {
 
                                 final Map<String, JsonValue> reverseMap;
                                 
+                                final Map<String, JsonValue> revereseResult = new LinkedHashMap<>();
+                                
+                                FramingState reverseState = new FramingState(state);
+                                reverseState.setEmbedded(true);
+                                
+                                FramingBuilder.with(
+                                                reverseState, 
+                                                Arrays.asList(subjectProperty), 
+                                                Frame.of((JsonStructure)subframe),
+                                                revereseResult, 
+                                                null)
+                                            .build();
+
                                 if (output.containsKey(Keywords.REVERSE)) {                        
                                     reverseMap = new LinkedHashMap<>(output.get(Keywords.REVERSE).asJsonObject());
                                     
@@ -258,16 +279,6 @@ public final class FramingBuilder {
                                     reverseMap = new LinkedHashMap<>();
                                 }
 
-                                Map<String, JsonValue> revereseResult = new LinkedHashMap<>();
-                                
-                                FramingBuilder.with(
-                                                state, 
-                                                Arrays.asList(subjectProperty), 
-                                                Frame.of((JsonStructure)subframe),
-                                                revereseResult, 
-                                                activeProperty)
-                                            .build();
-                                
                                 JsonUtils.addValue(reverseMap, reverseProperty, JsonUtils.toJsonArray(revereseResult.values()), true);
                                 output.put(Keywords.REVERSE, JsonUtils.toJsonObject(reverseMap));
                             }

@@ -28,7 +28,7 @@ public final class Frame {
     }
     
     public static final Frame of(JsonStructure structure) throws JsonLdError {
-        
+
         final JsonObject frameObject;;
 
         // 1.
@@ -122,6 +122,10 @@ public final class Frame {
                 value = ValueObject.getValue(value);
             }
 
+            if (JsonUtils.isNull(value)) {
+                return false;
+            }
+            
             if (JsonUtils.isNotBoolean(value)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
             }
