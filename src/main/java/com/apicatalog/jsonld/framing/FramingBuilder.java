@@ -120,7 +120,49 @@ public final class FramingBuilder {
             state.addParent(nodeId);
 
             // 4.5.
-            //TODO
+            if (state.getGraphMap().contains(id)) {
+                
+                // 4.5.1.
+                boolean recurse;
+                Frame subframe;
+                
+                if (!frame.contains(Keywords.GRAPH)) {
+                    recurse = !Keywords.MERGED.equals(state.getGraphName());
+                    subframe = Frame.of(JsonValue.EMPTY_JSON_OBJECT);
+                    
+                // 4.5.2.
+                } else {
+                    recurse = !Keywords.ID.equals(id) && !Keywords.DEFAULT.equals(id);
+                    
+                    if (JsonUtils.isObject(frame.get(Keywords.GRAPH))
+                            || JsonUtils.isArray(frame.get(Keywords.GRAPH))
+                            ) {
+                        
+                        subframe = Frame.of((JsonStructure)frame.get(Keywords.GRAPH));
+                        
+                    } else {
+                        subframe = Frame.of(JsonValue.EMPTY_JSON_OBJECT);
+                    }
+                }
+                
+                // 4.5.3.
+                if (recurse) {
+                    
+                    FramingState graphState = new FramingState(state);
+                    
+                    graphState.setGraphName(id);
+                    graphState.setEmbedded(false);
+                    
+                    FramingBuilder.with(
+                                        graphState, 
+                                        List.copyOf(state.getGraphMap().get(id).keySet()), 
+                                        subframe, 
+                                        output, 
+                                        Keywords.GRAPH
+                                    ).build();
+                }
+                
+            }
             
             // 4.6.
             if (frame.contains(Keywords.INCLUDED)) {

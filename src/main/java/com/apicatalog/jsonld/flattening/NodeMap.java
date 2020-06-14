@@ -169,4 +169,8 @@ public final class NodeMap {
         
         index.put(Keywords.MERGED, result.index.get(Keywords.MERGED));
     }
+
+    public boolean contains(String id) {
+        return index.containsKey(id);
+    }
 }
