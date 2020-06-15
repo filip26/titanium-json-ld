@@ -54,12 +54,17 @@ public final class FrameMatcher {
     }
     
     public boolean match(final Map<String, JsonValue> node) throws JsonLdError {
-
+        System.out.println(" subject : " + node + ", " + frame);  
         int count = 0;
+        
+        boolean nonKeywordProperty = false;
         
         for (final String property : frame.keys()) {
 
             JsonValue nodeValue = node.get(property);
+            
+            System.out.println("         : " + property + ", " +nodeValue);
+            
             // 2.1.
             if (Keywords.ID.equals(property)) {
 
@@ -101,6 +106,7 @@ public final class FrameMatcher {
                 continue;
             }
          
+            nonKeywordProperty = true;
             
             JsonValue propertyValue = frame.get(property);
             final Frame propertyFrame;
@@ -260,7 +266,7 @@ public final class FrameMatcher {
             }
         }
 
-        return count > 0;
+        return !nonKeywordProperty || count > 0;
     }
     
 }

@@ -79,7 +79,7 @@ public final class FramingBuilder {
         if (ordered) {
             Collections.sort(matchedSubjects);
         }
-
+        System.out.println("0: " + matchedSubjects + ", " + frame + ", " + subjects);  
         for (final String id : matchedSubjects) {
             
             final Map<String, JsonValue> node = state.getGraphMap().get(state.getGraphName(), id);
@@ -125,10 +125,10 @@ public final class FramingBuilder {
 
             state.markDone(id);
             state.addParent(nodeId);
-
+            System.out.println(">>>> HIT " + id + ", " + frame);
             // 4.5.
             if (state.getGraphMap().contains(id)) {
-                
+      
                 // 4.5.1.
                 boolean recurse;
                 Frame subframe;
@@ -192,7 +192,7 @@ public final class FramingBuilder {
             // 4.7.    
             for (final String property : state.getGraphMap().properties(state.getGraphName(), id, ordered)) {
                 final JsonValue objects = state.getGraphMap().get(state.getGraphName(), id, property);
-                
+   
                 // 4.7.1.
                 if (Keywords.contains(property)) {
                     output.put(property, objects);
@@ -264,6 +264,8 @@ public final class FramingBuilder {
                         }
                         
                     } else if (NodeObject.isNodeReference(item)) {
+
+                        System.out.println(">>>> HIT                   " + property + " -> " + objects + ", " + subframe);
                         
                         FramingState clonedState = new FramingState(state);
                         clonedState.setEmbedded(true);
@@ -292,7 +294,6 @@ public final class FramingBuilder {
 
             // 4.7.4. - default values
             for (String property : frame.keys()) {
-
                 if (output.containsKey(property)
                         || !Keywords.TYPE.equals(property) && Keywords.matchForm(property)
                         || Keywords.TYPE.equals(property) && !frame.isDefault(property)
@@ -310,7 +311,7 @@ public final class FramingBuilder {
                     propertyFrame = JsonValue.EMPTY_JSON_OBJECT;
                     
                 }
-                
+
                 // 4.7.4.3.
                 if (Frame.getBoolean(propertyFrame, Keywords.OMIT_DEFAULT, state.isOmitDefault())) {
                     continue;
@@ -318,7 +319,7 @@ public final class FramingBuilder {
                                 
                 // 4.7.4.4.
                 JsonValue defaultValue = propertyFrame.get(Keywords.DEFAULT);
-                
+
                 if (JsonUtils.isNull(defaultValue)) {
                     defaultValue = Json.createValue(Keywords.NULL);
                 }
@@ -391,7 +392,6 @@ public final class FramingBuilder {
 
             // 4.8.
             addToResult(parent, activeProperty, JsonUtils.toJsonObject(output));
-          
         }
     }
         
