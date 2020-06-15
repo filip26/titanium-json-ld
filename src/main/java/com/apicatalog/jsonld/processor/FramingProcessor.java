@@ -51,11 +51,7 @@ public final class FramingProcessor {
     }
     
     public static final JsonObject frame(final RemoteDocument input, final RemoteDocument frame, final JsonLdOptions options) throws JsonLdError {
-//options.setBase(null);
-//              input.setDocumentUrl(null); //TODO needs revision
-//              frame.setDocumentUrl(null);
-//        input.setDocumentUrl(null);
-//        frame.setDocumentUrl(null);
+
         // 4.
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
         expansionOptions.setOrdered(false);
@@ -81,30 +77,24 @@ public final class FramingProcessor {
         }
             
         // 9.
-        URI contextBase = (frame.getContextUrl() != null)
+        final URI contextBase = (frame.getContextUrl() != null)
                                 ? frame.getDocumentUrl()
                                 : options.getBase();
 
-
-                                
-            ActiveContext ac = new ActiveContext(input.getDocumentUrl(), input.getDocumentUrl(), options);
-        // 10.
-        ActiveContext activeContext = ActiveContextBuilder
-                                        .with(ac, context, contextBase, options).build();
-        // 11.
-
-        
-        //TODO
-
-        
+        // 10-11.
+        final ActiveContext activeContext = 
+                            ActiveContextBuilder
+                                 .with(
+                                     new ActiveContext(input.getDocumentUrl(), input.getDocumentUrl(), options),
+                                     context, 
+                                     contextBase, 
+                                     options)
+                                 .build();
         
         // 12.
         activeContext.createInverseContext();
 
         // 13.
-        
-//        boolean frameDefault = options.isFrameDefault();
-        
         final List<String> frameKeysExpanded = new ArrayList<>();
         
         for (final String key : frameObject.keySet()) {
@@ -115,7 +105,7 @@ public final class FramingProcessor {
                                     .build()
                                     );
         }
-        System.out.println("------------------>>> " + frameKeysExpanded);
+
         boolean frameDefault = frameKeysExpanded.contains(Keywords.GRAPH); 
                 
         // 14.
@@ -165,13 +155,6 @@ public final class FramingProcessor {
         result = removePreserve(result);
         
         // 19.
-//        options.setBase(input.getDocumentUrl());
-
-        RemoteDocument framed = new RemoteDocument();
-        framed.setDocument(JsonDocument.of(JsonUtils.toJsonArray(result)));
-        framed.setDocumentUrl(input.getDocumentUrl());
-        
-//        activeContext.setBaseUri(input.getDocumentUrl());
         JsonValue compactedResults = CompactionBuilder
                                         .with(activeContext, null, JsonUtils.toJsonArray(result))
                                         .compactArrays(options.isCompactArrays())

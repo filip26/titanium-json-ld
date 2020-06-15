@@ -46,7 +46,10 @@ public final class FrameMatcher {
         for (final String subject : subjects) {
 
             if (match(state.getGraphMap().get(state.getGraphName(), subject))) {
+//                System.out.println(" subject true: " + state.getGraphMap().get(state.getGraphName(), subject) + ", " + frame);
                 result.add(subject);
+            } else {
+//                System.out.println(" subject false: " + state.getGraphMap().get(state.getGraphName(), subject) + ", " + frame);
             }
         }
         
@@ -54,7 +57,7 @@ public final class FrameMatcher {
     }
     
     public boolean match(final Map<String, JsonValue> node) throws JsonLdError {
-        System.out.println(" subject : " + node + ", " + frame);  
+  
         int count = 0;
         
         boolean nonKeywordProperty = false;
@@ -63,7 +66,8 @@ public final class FrameMatcher {
 
             JsonValue nodeValue = node.get(property);
             
-            System.out.println("         : " + property + ", " +nodeValue);
+//            System.out.println("         : " + property + ", " +nodeValue);
+//            System.out.println("         : " + frame.get(property));
             
             // 2.1.
             if (Keywords.ID.equals(property)) {

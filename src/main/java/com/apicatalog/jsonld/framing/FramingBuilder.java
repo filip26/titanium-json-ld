@@ -220,13 +220,17 @@ public final class FramingBuilder {
                     // 4.7.3.1.
                     if (ListObject.isListObject(item)) {
 
-                        output.put(property, Json.createArrayBuilder().add(Json.createObjectBuilder().add(Keywords.LIST, JsonValue.EMPTY_JSON_ARRAY)).build());
-                        
-
-                            JsonValue listFrame = frame.contains(property) && JsonUtils.isObject(frame.get(property))
-                                                    ? frame.get(property).asJsonObject().get(Keywords.LIST)
-                                                    : null;
+                            JsonValue listFrame = null;
                             
+                            if (frame.contains(property)) {
+                                
+                                if (JsonUtils.isNotEmptyArray(frame.get(property))
+                                        && JsonUtils.isObject(frame.get(property).asJsonArray().get(0))
+                                        ) {
+                                    listFrame = frame.get(property).asJsonArray().get(0).asJsonObject().get(Keywords.LIST);
+                                }
+                            }
+
                             if (listFrame == null) {
                                 listFrame = Json.createObjectBuilder()
                                         .add(Keywords.EMBED, "@".concat(embed.name().toLowerCase()))
@@ -257,7 +261,9 @@ public final class FramingBuilder {
                                                     .ordered(ordered)
                                                     .build();
 
-                                    list.add(listResult.get(Keywords.LIST));
+                                    if (listResult.containsKey(Keywords.LIST)) {
+                                        list.add(listResult.get(Keywords.LIST));
+                                    }
                                     
                                 // 4.7.3.1.2.
                                 } else {
