@@ -28,7 +28,7 @@ public final class UriRelativizer {
         }
         
         if (!Objects.equals(base.getAuthority(), uri.getAuthority())) {
-            return UriUtils.recompose(null, uri.getAuthority(), uri.getPath() , uri.getQuery(), uri.getFragment());
+            return uri.toString();
         }
         
         final Path uriPath = Path.of(uri.getPath());

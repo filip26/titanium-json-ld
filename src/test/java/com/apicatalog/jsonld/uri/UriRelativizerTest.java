@@ -60,7 +60,6 @@ public class UriRelativizerTest {
         data.add(new Object[] {URI.create("http://a/b/c/?q"), "g", "http://a/b/c/g"});
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "g/", "http://a/b/c/g/"});
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "../../g", "http://a/g"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "//g", "http://g"});
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "?y", "http://a/b/c/d;p?y"});
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "g?y", "http://a/b/c/g?y"});
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "#s", "http://a/b/c/d;p?q#s"});

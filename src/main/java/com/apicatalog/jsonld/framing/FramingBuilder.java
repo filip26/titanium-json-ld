@@ -125,7 +125,7 @@ public final class FramingBuilder {
 
             state.markDone(id);
             state.addParent(nodeId);
-            System.out.println(">>>> HIT " + id + ", " + frame);
+
             // 4.5.
             if (state.getGraphMap().contains(id)) {
       
@@ -219,12 +219,25 @@ public final class FramingBuilder {
 
                     // 4.7.3.1.
                     if (ListObject.isListObject(item)) {
+
+                        output.put(property, Json.createArrayBuilder().add(Json.createObjectBuilder().add(Keywords.LIST, JsonValue.EMPTY_JSON_ARRAY)).build());
                         
-                        if (JsonUtils.isArray(item.asJsonObject().get(Keywords.LIST))) {
-                        
+
+                            JsonValue listFrame = frame.contains(property) && JsonUtils.isObject(frame.get(property))
+                                                    ? frame.get(property).asJsonObject().get(Keywords.LIST)
+                                                    : null;
+                            
+                            if (listFrame == null) {
+                                listFrame = Json.createObjectBuilder()
+                                        .add(Keywords.EMBED, "@".concat(embed.name().toLowerCase()))
+                                        .add(Keywords.EXPLICIT, explicit)
+                                        .add(Keywords.REQUIRE_ALL, requireAll)
+                                        .build();
+                            }
+
                             final JsonArrayBuilder list = Json.createArrayBuilder();
                             
-                            for (final JsonValue listItem : item.asJsonObject().getJsonArray(Keywords.LIST)) {
+                            for (final JsonValue listItem : JsonUtils.toJsonArray(item.asJsonObject().get(Keywords.LIST))) {
 
                                 // 4.7.3.1.1.
                                 if (NodeObject.isNodeReference(listItem)) {
@@ -232,15 +245,6 @@ public final class FramingBuilder {
                                     FramingState listState = new FramingState(state);
                                     listState.setEmbedded(true);
                                     
-                                    JsonValue listFrame = frame.get(Keywords.LIST);
-                                    
-                                    if (listFrame == null) {
-                                        listFrame = Json.createObjectBuilder()
-                                                .add(Keywords.EMBED, "@".concat(embed.name().toLowerCase()))
-                                                .add(Keywords.EXPLICIT, explicit)
-                                                .add(Keywords.REQUIRE_ALL, requireAll)
-                                                .build();
-                                    }
 
                                     Map<String, JsonValue> listResult = new LinkedHashMap<>();
                                     
@@ -261,12 +265,10 @@ public final class FramingBuilder {
                                 }
                             }                           
                             output.put(property, Json.createArrayBuilder().add(Json.createObjectBuilder().add(Keywords.LIST, list)).build());
-                        }
+
                         
                     } else if (NodeObject.isNodeReference(item)) {
 
-                        System.out.println(">>>> HIT                   " + property + " -> " + objects + ", " + subframe);
-                        
                         FramingState clonedState = new FramingState(state);
                         clonedState.setEmbedded(true);
 

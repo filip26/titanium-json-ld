@@ -16,6 +16,7 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
+import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
@@ -25,6 +26,7 @@ import com.apicatalog.jsonld.compaction.CompactionBuilder;
 import com.apicatalog.jsonld.compaction.UriCompactionBuilder;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.ActiveContextBuilder;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.expansion.UriExpansionBuilder;
 import com.apicatalog.jsonld.flattening.NodeMap;
@@ -49,11 +51,15 @@ public final class FramingProcessor {
     }
     
     public static final JsonObject frame(final RemoteDocument input, final RemoteDocument frame, final JsonLdOptions options) throws JsonLdError {
-        
+//options.setBase(null);
+//              input.setDocumentUrl(null); //TODO needs revision
+//              frame.setDocumentUrl(null);
+//        input.setDocumentUrl(null);
+//        frame.setDocumentUrl(null);
         // 4.
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
         expansionOptions.setOrdered(false);
-        input.setDocumentUrl(null); //TODO needs revision
+
         
         JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
 
@@ -78,12 +84,19 @@ public final class FramingProcessor {
         URI contextBase = (frame.getContextUrl() != null)
                                 ? frame.getDocumentUrl()
                                 : options.getBase();
+
+
                                 
+            ActiveContext ac = new ActiveContext(input.getDocumentUrl(), input.getDocumentUrl(), options);
         // 10.
         ActiveContext activeContext = ActiveContextBuilder
-                                        .with(new ActiveContext(options), context, contextBase, options).build();
+                                        .with(ac, context, contextBase, options).build();
         // 11.
+
+        
         //TODO
+
+        
         
         // 12.
         activeContext.createInverseContext();
@@ -152,6 +165,13 @@ public final class FramingProcessor {
         result = removePreserve(result);
         
         // 19.
+//        options.setBase(input.getDocumentUrl());
+
+        RemoteDocument framed = new RemoteDocument();
+        framed.setDocument(JsonDocument.of(JsonUtils.toJsonArray(result)));
+        framed.setDocumentUrl(input.getDocumentUrl());
+        
+//        activeContext.setBaseUri(input.getDocumentUrl());
         JsonValue compactedResults = CompactionBuilder
                                         .with(activeContext, null, JsonUtils.toJsonArray(result))
                                         .compactArrays(options.isCompactArrays())
