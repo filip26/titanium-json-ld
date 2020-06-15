@@ -28,8 +28,8 @@ import com.apicatalog.rdf.io.nquad.NQuadsReaderException;
 public class EarlGenerator {
     
     public static final String FILE_NAME = "java-jsonp-ld-earl.ttl";
-    public static final String VERSION = "0.5";
-    public static final String RELEASE_DATE = "2020-06-08";
+    public static final String VERSION = "0.6";
+    public static final String RELEASE_DATE = "2020-06-16";
     
     public static void main(String[] args) throws IOException {
         (new EarlGenerator()).generate(Paths.get(FILE_NAME));
@@ -45,13 +45,14 @@ public class EarlGenerator {
             testFlatten(writer);
             testToRdf(writer);
             testFromRdf(writer);
+            testFrame(writer);
         };
     }
     
     public void testExpand(PrintWriter writer) throws IOException {
 
         JsonLdManifestLoader
-            .load("expand-manifest.jsonld")
+            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "expand-manifest.jsonld")
             .stream()
             .forEach(testCase ->                
                         printResult(writer, testCase.uri,           
@@ -66,7 +67,7 @@ public class EarlGenerator {
     public void testCompact(final PrintWriter writer) throws IOException {
 
         JsonLdManifestLoader
-            .load("compact-manifest.jsonld")
+            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld")
             .stream()
             .forEach(testCase ->                
                         printResult(writer, testCase.uri,           
@@ -89,7 +90,7 @@ public class EarlGenerator {
     public void testFlatten(final PrintWriter writer) throws IOException {
 
         JsonLdManifestLoader
-            .load("flatten-manifest.jsonld")
+            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "flatten-manifest.jsonld")
             .stream()
             .forEach(testCase ->                
                         printResult(writer, testCase.uri,           
@@ -120,7 +121,7 @@ public class EarlGenerator {
     public void testToRdf(final PrintWriter writer) throws IOException {
 
         JsonLdManifestLoader
-            .load("toRdf-manifest.jsonld")
+            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "toRdf-manifest.jsonld")
             .stream()
             .forEach(testCase -> printResult(writer, testCase.uri, testToRdf(testCase)));
     }
@@ -129,13 +130,13 @@ public class EarlGenerator {
     public void testFromRdf(PrintWriter writer) throws IOException {
 
         JsonLdManifestLoader
-            .load("fromRdf-manifest.jsonld")
+            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "fromRdf-manifest.jsonld")
             .stream()
             .forEach(testCase ->                
                         printResult(writer, testCase.uri,           
                                 (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
                                 
-                                    try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.RESOURCES_BASE + testCase.input.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
+                                    try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.input.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
                                        
                                         if (is == null) {
                                             throw new IllegalStateException();
@@ -150,6 +151,21 @@ public class EarlGenerator {
                                     }
                                     
                                 })
+                         )
+                    );
+    }
+
+    public void testFrame(PrintWriter writer) throws IOException {
+
+        JsonLdManifestLoader
+            .load(JsonLdManifestLoader.JSON_LD_FRAMING_BASE, "frame-manifest.jsonld")
+            .stream()
+            .forEach(testCase ->                
+                        printResult(writer, testCase.uri,           
+                                (new JsonLdTestRunnerEarl(testCase)).execute(options ->
+                                
+                                    JsonLd.frame(testCase.input, testCase.frame).options(options).get()
+                                )
                          )
                     );
     }
@@ -190,15 +206,15 @@ public class EarlGenerator {
         writer.println("<https://github.com/filip26/titanium-json-ld> a earl:TestSubject,");
         writer.println("    doap:Project,");
         writer.println("    earl:Software;");
-        writer.println("  dc:title \"Titanium JSON-LD\" ;");
+        writer.println("  dc:title \"Titanium\" ;");
         writer.println("  dc:creator <https://github.com/filip26>;");
-        writer.println("  doap:name \"Titanium JSON-LD\";");
+        writer.println("  doap:name \"Titanium\";");
         writer.println("  doap:description \"A JSON-LD 1.1 Processor & API for Java\";");
         writer.println("  doap:developer <https://github.com/filip26>;");
         writer.println("  doap:homepage <https://github.com/filip26/titanium-json-ld>;");
         writer.println("  doap:license <https://github.com/filip26/titanium-json-ld/blob/master/LICENSE>;");
         writer.println("  doap:release [");
-        writer.println("    doap:name \"Titanium JSON-LD v" + VERSION + "\";");
+        writer.println("    doap:name \"Titanium v" + VERSION + "\";");
         writer.println("    doap:revision \"" + VERSION + "\";");
         writer.println("    doap:created \"" + RELEASE_DATE + "\"^^xsd:date;");
         writer.println("  ] ;");
@@ -240,7 +256,7 @@ public class EarlGenerator {
             return false;
         }
 
-        try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.RESOURCES_BASE + testCase.expect.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
+        try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.expect.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
             
             RdfDataset expected = Rdf.createReader(is, RdfFormat.N_QUADS).readDataset();
 

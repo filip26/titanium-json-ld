@@ -154,7 +154,7 @@ public final class TermDefinitionBuilder {
         } else if (Keywords.contains(term)) {
             throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
 
-        } else if (Keywords.hasForm(term)) {
+        } else if (Keywords.matchForm(term)) {
             // TODO warning
             return;
         }
@@ -230,8 +230,8 @@ public final class TermDefinitionBuilder {
             if (((Keywords.JSON.equals(expandedTypeString) || Keywords.NONE.equals(expandedTypeString))
                     && activeContext.inMode(Version.V1_0))
                     // 12.4.
-                    || (Keywords.isNoneOf(expandedTypeString, Keywords.ID, Keywords.JSON, Keywords.NONE, Keywords.VOCAB)
-                            && UriUtils.isNotAbsoluteURI(expandedTypeString))) {
+                    || (Keywords.noneMatch(expandedTypeString, Keywords.ID, Keywords.JSON, Keywords.NONE, Keywords.VOCAB)
+                            && UriUtils.isNotAbsoluteUri(expandedTypeString))) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING);
             }
 
@@ -257,7 +257,7 @@ public final class TermDefinitionBuilder {
             String reverseString = ((JsonString) reverse).getString();
 
             // 13.3.
-            if (Keywords.hasForm(reverseString)) {
+            if (Keywords.matchForm(reverseString)) {
                 //TODO warning;
                 return;
             }
@@ -288,7 +288,7 @@ public final class TermDefinitionBuilder {
 
                     String containerString = ((JsonString) container).getString();
 
-                    if (Keywords.isOneOf(containerString, Keywords.SET, Keywords.INDEX)) {
+                    if (Keywords.anyMatch(containerString, Keywords.SET, Keywords.INDEX)) {
                         definition.addContainerMapping(containerString);
 
                     } else {
@@ -325,7 +325,7 @@ public final class TermDefinitionBuilder {
                 String idValueString = ((JsonString) idValue).getString();
 
                 // 14.2.2
-                if (!Keywords.contains(idValueString) && Keywords.hasForm(idValueString)) {
+                if (!Keywords.contains(idValueString) && Keywords.matchForm(idValueString)) {
                     //TODO generate warning
                     return;
                 }
@@ -615,7 +615,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 26.
-        if (!Keywords.allIn(valueObject.keySet(), Keywords.ID, Keywords.REVERSE, Keywords.CONTAINER,
+        if (!Keywords.allMatch(valueObject.keySet(), Keywords.ID, Keywords.REVERSE, Keywords.CONTAINER,
                 Keywords.CONTEXT, Keywords.DIRECTION, Keywords.INDEX, Keywords.LANGUAGE, Keywords.NEST, Keywords.PREFIX,
                 Keywords.PROTECTED, Keywords.TYPE)) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
@@ -650,7 +650,7 @@ public final class TermDefinitionBuilder {
                 return false;
             }
 
-            return Keywords.isNoneOf(((JsonString)container).getString(), Keywords.GRAPH, Keywords.ID, Keywords.TYPE);    
+            return Keywords.noneMatch(((JsonString)container).getString(), Keywords.GRAPH, Keywords.ID, Keywords.TYPE);    
         } 
         
         if (JsonUtils.isArray(container) && container.asJsonArray().size() == 1) {
@@ -659,7 +659,7 @@ public final class TermDefinitionBuilder {
 
         if (JsonUtils.isString(container) ) {
 
-            return Keywords.isOneOf(((JsonString)container).getString(), 
+            return Keywords.anyMatch(((JsonString)container).getString(), 
                                 Keywords.GRAPH, 
                                 Keywords.ID, 
                                 Keywords.INDEX, 

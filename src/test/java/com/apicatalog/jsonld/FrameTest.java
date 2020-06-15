@@ -3,7 +3,6 @@ package com.apicatalog.jsonld;
 import static org.junit.Assume.assumeFalse;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -17,14 +16,9 @@ import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
-import com.apicatalog.rdf.Rdf;
-import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.io.RdfFormat;
-import com.apicatalog.rdf.io.error.UnsupportedFormatException;
-import com.apicatalog.rdf.io.nquad.NQuadsReaderException;
 
 @RunWith(Parameterized.class)
-public class RdfToJsonLdTest {
+public class FrameTest {
     
     @Parameterized.Parameter(0)
     public JsonLdTestCase testCase;
@@ -39,32 +33,21 @@ public class RdfToJsonLdTest {
     public String baseUri;
     
     @Test
-    public void testExpand() {
+    public void testFrame() {
 
         // skip specVersion == 1.0
         assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
-        
-        // skip normative == false
-        //assumeTrue(testCase.options.normative == null || testCase.options.normative);
 
+        // @embed: @last - won't fix
+        assumeFalse("#t0059".equals(testCase.id));
+
+        
         try {
-            
             (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
-                
-                try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.input.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
             
-                    Assert.assertNotNull(is);
-                    
-                    RdfDataset input = Rdf.createReader(is, RdfFormat.N_QUADS).readDataset();
-                    
-                    return JsonLd.fromRdf(input).options(options).get();
-                
-                } catch (IOException | NQuadsReaderException | UnsupportedFormatException e) {
-                    Assert.fail(e.getMessage());
-                }
-                
-                return null;
-                
+                Assert.assertNotNull(testCase.frame);
+            
+                return JsonLd.frame(testCase.input, testCase.frame).options(options).get();
             });
             
         } catch (JsonLdError e) {
@@ -75,7 +58,7 @@ public class RdfToJsonLdTest {
     @Parameterized.Parameters(name = "{1}: {2}")
     public static Collection<Object[]> data() throws IOException {
         return JsonLdManifestLoader
-                    .load(JsonLdManifestLoader.JSON_LD_API_BASE, "fromRdf-manifest.jsonld")
+                    .load(JsonLdManifestLoader.JSON_LD_FRAMING_BASE, "frame-manifest.jsonld")
                     .stream()            
                     .map(o -> new Object[] {o, o.id, o.name, o.baseUri})
                     .collect(Collectors.toList());

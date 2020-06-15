@@ -13,7 +13,7 @@ public final class UriUtils {
 
         return value != null 
                     && !value.isBlank() 
-                    && !Keywords.hasForm(value)
+                    && !Keywords.matchForm(value)
                     && create(value) != null;
     }
 
@@ -51,7 +51,7 @@ public final class UriUtils {
         return !isURI(expandedTypeString);
     }
 
-    public static final boolean isNotAbsoluteURI(final String uri) {
+    public static final boolean isNotAbsoluteUri(final String uri) {
         try {
             return !URI.create(uri).isAbsolute();
         } catch (IllegalArgumentException e) {

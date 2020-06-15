@@ -144,7 +144,7 @@ final class MapExpansion1314 {
 
                 // 13.4.2
                 if (result.containsKey(expandedProperty)
-                        && Keywords.isNoneOf(expandedProperty, Keywords.INCLUDED, Keywords.TYPE)) {
+                        && Keywords.noneMatch(expandedProperty, Keywords.INCLUDED, Keywords.TYPE)) {
                     throw new JsonLdError(JsonLdErrorCode.COLLIDING_KEYWORDS);
                 }
 
@@ -152,13 +152,20 @@ final class MapExpansion1314 {
                 if (Keywords.ID.equals(expandedProperty)) {
 
                     // 13.4.3.1
-                    if (JsonUtils.isNotString(value)) {
-                        // TODO frameExpansion
+                    if (JsonUtils.isNotString(value) && !frameExpansion
+                            || frameExpansion
+                                    && JsonUtils.isNotString(value)
+                                    && JsonUtils.isNotEmptyObject(value)
+                                    && (JsonUtils.isNotArray(value)
+                                            || JsonUtils.isEmptyArray(value)
+                                            || !value.asJsonArray().stream().allMatch(JsonUtils::isString) 
+                                    )
+                            ) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE);
 
-                        // 13.4.3.2
-                    } else {
-
+                    // 13.4.3.2
+                    } else if (!frameExpansion) {
+ 
                         String expandedStringValue = 
                                     activeContext
                                         .expandUri(((JsonString) value).getString())
@@ -169,8 +176,31 @@ final class MapExpansion1314 {
                         if (expandedStringValue != null) {
                             expandedValue = Json.createValue(expandedStringValue);
                         }
-                        // TODO frameExpansion
+                        
+                    } else if (JsonUtils.isObject(value)) {
+                        expandedValue = Json.createArrayBuilder().add(JsonValue.EMPTY_JSON_OBJECT).build();
+                        
+                    } else if (JsonUtils.isScalar(value) || JsonUtils.isArray(value))  {
+                        
+                        JsonArrayBuilder array = Json.createArrayBuilder();
+                        
+                        for (JsonValue item : JsonUtils.toJsonArray(value)) {
+
+                            String expandedStringValue = 
+                                    activeContext
+                                        .expandUri(((JsonString) item).getString())
+                                        .documentRelative(true)
+                                        .vocab(false)
+                                        .build();
+
+                            if (expandedStringValue != null) {
+                                array.add(expandedStringValue);
+                            }
+                        }
+
+                        expandedValue = array.build();
                     }
+
                 }
 
                 // 13.4.4
@@ -322,10 +352,16 @@ final class MapExpansion1314 {
 
                         expandedValue = value;
 
-                        // 13.4.7.2
+                    // 13.4.7.2
                     } else if (!frameExpansion && JsonUtils.isNotNull(value) && JsonUtils.isNotScalar(value)
-                    // TODO frameexpansion
-                    ) {
+                               || frameExpansion 
+                                       && JsonUtils.isNotEmptyObject(value)
+                                       && JsonUtils.isNotNull(value) && JsonUtils.isNotScalar(value)
+                                       && (JsonUtils.isNotArray(value)
+                                               || JsonUtils.isEmptyArray(value)
+                                               || !value.asJsonArray().stream().allMatch(JsonUtils::isScalar)
+                                               )
+                            ) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
 
                         // 13.4.7.3
@@ -342,15 +378,20 @@ final class MapExpansion1314 {
 
                 // 13.4.8
                 if (Keywords.LANGUAGE.equals(expandedProperty)) {
-
                     // 13.4.8.1
-                    if (JsonUtils.isNotString(value)) {
+                    if (JsonUtils.isNotString(value) && !frameExpansion
+                            || frameExpansion
+                                    && JsonUtils.isNotString(value)
+                                    && JsonUtils.isNotEmptyObject(value)
+                                    && (JsonUtils.isNotEmptyArray(value) && !value.asJsonArray().stream().allMatch(JsonUtils::isString))
+                            
+                            ) {
                         // TODO frameExpansion
                         throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
                     }
 
                     // 13.4.8.2
-                    expandedValue = value;
+                    expandedValue = JsonUtils.isString(value) ? Json.createValue(((JsonString)value).getString().toLowerCase()) : value;
                     // TODO validation, warning, frameExpansion
                 }
 
@@ -500,11 +541,18 @@ final class MapExpansion1314 {
                 }
 
                 // 13.4.15
-                if (frameExpansion && (Keywords.DEFAULT.equals(expandedProperty) || "@embed".equals(expandedProperty)
-                        || "@explicit".equals(expandedProperty) || "@omitDefault".equals(expandedProperty)
-                        || "@requireAll)".equals(expandedProperty))) {
+                if (frameExpansion 
+                        && (Keywords.DEFAULT.equals(expandedProperty) 
+                                || Keywords.EMBED.equals(expandedProperty)
+                                || Keywords.EXPLICIT.equals(expandedProperty) 
+                                || Keywords.OMIT_DEFAULT.equals(expandedProperty)
+                                || Keywords.REQUIRE_ALL.equals(expandedProperty))
+                        ) {
 
-                    //TODO frame expansion
+                    expandedValue = Expansion.with(activeContext, value, expandedProperty, baseUrl)
+                                            .frameExpansion(frameExpansion)
+                                            .ordered(ordered)
+                                            .compute();
                 }
 
                 // 13.4.16
@@ -598,7 +646,7 @@ final class MapExpansion1314 {
                                             .build();
 
                             if (!Keywords.NONE.equals(expandedLangCode)) {
-                                langMap.add(Keywords.LANGUAGE, Json.createValue(langCode));
+                                langMap.add(Keywords.LANGUAGE, Json.createValue(langCode.toLowerCase()));
                             }
                         }
 

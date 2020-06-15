@@ -339,6 +339,7 @@ public final class CompactionBuilder {
                 if (!JsonUtils.isEmptyArray(compactedValue)) {
                     result.put(Keywords.PRESERVE, compactedValue);
                 }
+                continue;
             }
             
             // 12.5.
@@ -349,7 +350,7 @@ public final class CompactionBuilder {
                 continue;
                 
             // 12.6.
-            } else if (Keywords.isOneOf(expandedProperty,
+            } else if (Keywords.anyMatch(expandedProperty,
                                             Keywords.DIRECTION,
                                             Keywords.INDEX,
                                             Keywords.LANGUAGE,

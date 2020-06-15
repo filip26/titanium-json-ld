@@ -16,7 +16,7 @@ public final class Term {
             return false;
         }
 
-        if (Keywords.hasForm(name)) {
+        if (Keywords.matchForm(name)) {
             return Keywords.TYPE.equals(name);
         }
 

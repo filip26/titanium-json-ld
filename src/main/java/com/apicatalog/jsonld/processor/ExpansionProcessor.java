@@ -44,10 +44,10 @@ public final class ExpansionProcessor {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
         
-        return expand(remoteDocument, options);
+        return expand(remoteDocument, options, false);
     }
 
-    public static final JsonArray expand(RemoteDocument input, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonArray expand(RemoteDocument input, final JsonLdOptions options, boolean frameExpansion) throws JsonLdError {
 
         final JsonStructure jsonStructure = input.getDocument().asJsonStructure();
 
@@ -90,7 +90,7 @@ public final class ExpansionProcessor {
         JsonValue expanded = 
                         Expansion
                             .with(activeContext, jsonStructure, null, baseUrl)
-                            .frameExpansion(options.isFrameExpansion())
+                            .frameExpansion(frameExpansion)
                             .ordered(options.isOrdered())
                             .compute();
 

@@ -55,8 +55,6 @@ public final class JsonLdOptions {
     
     private boolean extractAllScripts;
     
-    private boolean frameExpansion;
-    
     private boolean ordered;
     
     private Version processingMode;
@@ -68,21 +66,44 @@ public final class JsonLdOptions {
     private boolean useNativeTypes;
     
     private boolean useRdfType;
-
+    
+    // Framing https://www.w3.org/TR/json-ld11-framing/#jsonldoptions
+    
+    private JsonLdEmbed embed;
+    
+    private boolean explicit;
+    
+    private boolean omitDefault;
+    
+    private Boolean omitGraph;
+    
+    private boolean requiredAll;
+    
+///    private boolean frameDefault;
+    
     public JsonLdOptions() {
+        
+        // default values
         this.base = null;
         this.compactArrays = true;
         this.compactToRelative = true;
         this.documentLoader = new UrlConnectionLoader();
         this.expandContext = null;
         this.extractAllScripts = false;
-        this.frameExpansion = false;
         this.ordered = false;
         this.processingMode = Version.V1_1;
         this.produceGeneralizedRdf = true;
         this.rdfDirection = null;
         this.useNativeTypes = false;
         this.useRdfType = false;
+        
+        // framing defaults
+        this.embed = JsonLdEmbed.ONCE;
+        this.explicit = false;
+        this.omitDefault = false;
+        this.omitGraph = null;
+        this.requiredAll = false;
+//        this.frameDefault = false;        
     }
 
     public JsonLdOptions(JsonLdOptions options) {
@@ -92,13 +113,20 @@ public final class JsonLdOptions {
         this.documentLoader = options.documentLoader;
         this.expandContext = options.expandContext;
         this.extractAllScripts = options.extractAllScripts;
-        this.frameExpansion = options.frameExpansion;
         this.ordered = options.ordered;
         this.processingMode = options.processingMode;
         this.produceGeneralizedRdf = options.produceGeneralizedRdf;
         this.rdfDirection = options.rdfDirection;
         this.useNativeTypes = options.useNativeTypes;
         this.useRdfType = options.useRdfType;
+        
+        // framing
+        this.embed = options.embed;
+        this.explicit = options.explicit;
+        this.omitDefault = options.omitDefault;
+        this.omitGraph = options.omitGraph;
+        this.requiredAll = options.requiredAll;
+//        this.frameDefault = options.frameDefault;
     }
 
     /**
@@ -164,23 +192,6 @@ public final class JsonLdOptions {
     }
 
     /**
-     * Enables special frame processing rules for the
-     * <a href="https://www.w3.org/TR/json-ld11-api/#expansion-algorithm">Expansion
-     * Algorithm</a>.
-     * <p>
-     * Enables special rules for the <a href=
-     * "https://www.w3.org/TR/json-ld11-api/#serialize-rdf-as-json-ld-algorithm">Serialize
-     * RDF as JSON-LD Algorithm</a> to use JSON-LD native types as values, where
-     * possible.
-     * </p>
-     * 
-     * @return
-     */
-    public boolean isFrameExpansion() {
-        return frameExpansion;
-    }
-
-    /**
      * If set to <code>true</code>, certain algorithm processing steps where
      * indicated are ordered lexicographically. If <code>false</code>, order is not
      * considered in processing.
@@ -235,10 +246,6 @@ public final class JsonLdOptions {
         this.extractAllScripts = extractAllScripts;
     }
 
-    public void setFrameExpansion(boolean frameExpansion) {
-        this.frameExpansion = frameExpansion;
-    }
-
     public void setOrdered(boolean ordered) {
         this.ordered = ordered;
     }
@@ -274,5 +281,54 @@ public final class JsonLdOptions {
     public void setExpandContext(JsonLdContext expandContext) {
         this.expandContext = expandContext;
     }
-
+    
+    // Framing
+    
+    public JsonLdEmbed getEmbed() {
+        return embed;
+    }
+    
+    public void setEmbed(JsonLdEmbed embed) {
+        this.embed = embed;
+    }
+    
+    public boolean isExplicit() {
+        return explicit;
+    }
+    
+    public void setExplicit(boolean explicit) {
+        this.explicit = explicit;
+    }
+    
+    public boolean isOmitDefault() {
+        return omitDefault;
+    }
+    
+    public void setOmitDefault(boolean omitDefault) {
+        this.omitDefault = omitDefault;
+    }
+    
+    public Boolean isOmitGraph() {
+        return omitGraph;
+    }
+    
+    public void setOmitGraph(Boolean omitGraph) {
+        this.omitGraph = omitGraph;
+    }
+    
+    public boolean isRequiredAll() {
+        return requiredAll;
+    }
+    
+    public void setRequiredAll(boolean requiredAll) {
+        this.requiredAll = requiredAll;
+    }
+    
+//    public boolean isFrameDefault() {
+//        return frameDefault;
+//    }
+//    
+//    public void setFrameDefault(boolean frameDefault) {
+//        this.frameDefault = frameDefault;
+//    }
 }

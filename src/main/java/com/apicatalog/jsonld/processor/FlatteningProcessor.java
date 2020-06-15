@@ -63,7 +63,7 @@ public final class FlatteningProcessor {
         expansionOptions.setBase(options.getBase());
         expansionOptions.setProcessingMode(options.getProcessingMode());
         
-        JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions);
+        JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
         
         // 5.
         

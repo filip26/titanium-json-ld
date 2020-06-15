@@ -26,6 +26,8 @@ public final class JsonLdTestCase {
     
     public URI expect;
     
+    public URI frame;
+    
     public JsonLdErrorCode expectErrorCode;
     
     public String baseUri;
@@ -36,9 +38,15 @@ public final class JsonLdTestCase {
     
     public JsonLdTestCaseOptions options;
     
-    public static final JsonLdTestCase of(JsonObject o, String manifestUri, String baseUri) {
+    private final String testsBase;
+    
+    public JsonLdTestCase(final String testsBase) {
+        this.testsBase = testsBase;
+    }
+    
+    public static final JsonLdTestCase of(JsonObject o, String manifestUri, String manifestBase, String baseUri) {
         
-        final JsonLdTestCase testCase = new JsonLdTestCase();
+        final JsonLdTestCase testCase = new JsonLdTestCase(manifestBase);
         
         testCase.id = o.getString(Keywords.ID);
         
@@ -62,7 +70,11 @@ public final class JsonLdTestCase {
         testCase.expect = o.containsKey("expect")
                                 ? URI.create(baseUri + o.getString("expect"))
                                 : null;
-        
+
+        testCase.frame = o.containsKey("frame")
+                                ? URI.create(baseUri + o.getString("frame"))
+                                : null;
+
         testCase.expectErrorCode = o.containsKey("expectErrorCode")
                                             ? errorCode((o.getString("expectErrorCode")))
                                             : null;
@@ -81,7 +93,7 @@ public final class JsonLdTestCase {
         final LoadDocumentCallback loader = 
                 new UrlRewrite(
                             baseUri, 
-                            "classpath:" + JsonLdManifestLoader.RESOURCES_BASE,
+                            "classpath:" + testsBase,
                             new ClassPathLoader()
                         );
         
