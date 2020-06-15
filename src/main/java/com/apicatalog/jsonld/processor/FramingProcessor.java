@@ -25,7 +25,6 @@ import com.apicatalog.jsonld.compaction.CompactionBuilder;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.ActiveContextBuilder;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.expansion.UriExpansionBuilder;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.framing.Frame;
@@ -83,19 +82,11 @@ public final class FramingProcessor {
                                      options)
                                  .build();
         
-        // 12.
-        activeContext.createInverseContext();
-
         // 13.
         final List<String> frameKeysExpanded = new ArrayList<>();
         
         for (final String key : frameObject.keySet()) {
-
-            frameKeysExpanded.add(UriExpansionBuilder
-                                    .with(activeContext, key)
-                                    .vocab(true)
-                                    .build()
-                                    );
+            frameKeysExpanded.add(activeContext.expandUri(key).vocab(true).build());
         }
 
         boolean frameDefault = frameKeysExpanded.contains(Keywords.GRAPH); 

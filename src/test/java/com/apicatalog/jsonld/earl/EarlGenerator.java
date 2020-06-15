@@ -28,8 +28,8 @@ import com.apicatalog.rdf.io.nquad.NQuadsReaderException;
 public class EarlGenerator {
     
     public static final String FILE_NAME = "java-jsonp-ld-earl.ttl";
-    public static final String VERSION = "0.5";
-    public static final String RELEASE_DATE = "2020-06-08";
+    public static final String VERSION = "0.6";
+    public static final String RELEASE_DATE = "2020-06-16";
     
     public static void main(String[] args) throws IOException {
         (new EarlGenerator()).generate(Paths.get(FILE_NAME));
@@ -45,6 +45,7 @@ public class EarlGenerator {
             testFlatten(writer);
             testToRdf(writer);
             testFromRdf(writer);
+            testFrame(writer);
         };
     }
     
@@ -154,6 +155,21 @@ public class EarlGenerator {
                     );
     }
 
+    public void testFrame(PrintWriter writer) throws IOException {
+
+        JsonLdManifestLoader
+            .load(JsonLdManifestLoader.JSON_LD_FRAMING_BASE, "frame-manifest.jsonld")
+            .stream()
+            .forEach(testCase ->                
+                        printResult(writer, testCase.uri,           
+                                (new JsonLdTestRunnerEarl(testCase)).execute(options ->
+                                
+                                    JsonLd.frame(testCase.input, testCase.frame).options(options).get()
+                                )
+                         )
+                    );
+    }
+
     void printResult(PrintWriter writer, String testUri, boolean passed) {
         
         if (!passed) {
@@ -190,15 +206,15 @@ public class EarlGenerator {
         writer.println("<https://github.com/filip26/titanium-json-ld> a earl:TestSubject,");
         writer.println("    doap:Project,");
         writer.println("    earl:Software;");
-        writer.println("  dc:title \"Titanium JSON-LD\" ;");
+        writer.println("  dc:title \"Titanium\" ;");
         writer.println("  dc:creator <https://github.com/filip26>;");
-        writer.println("  doap:name \"Titanium JSON-LD\";");
+        writer.println("  doap:name \"Titanium\";");
         writer.println("  doap:description \"A JSON-LD 1.1 Processor & API for Java\";");
         writer.println("  doap:developer <https://github.com/filip26>;");
         writer.println("  doap:homepage <https://github.com/filip26/titanium-json-ld>;");
         writer.println("  doap:license <https://github.com/filip26/titanium-json-ld/blob/master/LICENSE>;");
         writer.println("  doap:release [");
-        writer.println("    doap:name \"Titanium JSON-LD v" + VERSION + "\";");
+        writer.println("    doap:name \"Titanium v" + VERSION + "\";");
         writer.println("    doap:revision \"" + VERSION + "\";");
         writer.println("    doap:created \"" + RELEASE_DATE + "\"^^xsd:date;");
         writer.println("  ] ;");
