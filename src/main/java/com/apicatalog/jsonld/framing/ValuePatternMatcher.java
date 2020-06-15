@@ -28,59 +28,68 @@ public final class ValuePatternMatcher {
     }
     
     public boolean match() {
-        return pattern.isEmpty() || matchValue() && matchType() && matchLanguage();
+        
+        final JsonValue value2 = pattern.containsKey(Keywords.VALUE)
+                ? pattern.get(Keywords.VALUE)
+                : null;
+        
+        final JsonValue type2 = pattern.containsKey(Keywords.TYPE)
+                ? pattern.get(Keywords.TYPE)
+                : null;
+
+        
+        final JsonValue lang2 = pattern.containsKey(Keywords.LANGUAGE)
+                ? pattern.get(Keywords.LANGUAGE)
+                : null;
+
+        if (value2 == null && type2 == null && lang2 == null) {
+            return true;
+        }
+                
+        return matchValue(value2) && matchType(type2) && matchLanguage(lang2);
     }
     
-    private boolean matchValue() {
+    private boolean matchValue(JsonValue value2) {
 
         final JsonValue value1 = value.containsKey(Keywords.VALUE) 
                                     ? value.get(Keywords.VALUE)
                                     : null;
 
-        final JsonValue value2 = pattern.containsKey(Keywords.VALUE)
-                                    ? pattern.get(Keywords.VALUE)
-                                    : null;
 
   
-        return value2 == null || (JsonUtils.isNotNull(value1) && JsonUtils.isEmptyObject(value2))
+        return (JsonUtils.isNotNull(value1) && JsonUtils.isEmptyObject(value2))
                     || (JsonUtils.isNotNull(value2)  && JsonUtils.toJsonArray(value2).contains(value1))
                     ;
     }
     
-    private boolean matchType() {
+    private boolean matchType(JsonValue type2) {
         
         final JsonValue type1 = value.containsKey(Keywords.TYPE) 
                 ? value.get(Keywords.TYPE)
                 : null;
 
-        final JsonValue type2 = pattern.containsKey(Keywords.TYPE)
-                ? pattern.get(Keywords.TYPE)
-                : null;
-
-        return type2 == null 
-                || (JsonUtils.isNotNull(type1) && (JsonUtils.isNull(type2) || JsonUtils.isEmptyObject(type2)))
+        return (JsonUtils.isNotNull(type1) && JsonUtils.isNotNull(type2) && JsonUtils.isEmptyObject(type2))
                     || (JsonUtils.isNull(type1) && (JsonUtils.isNull(type2) || JsonUtils.isEmptyArray(type2)))
                     || (JsonUtils.isNotNull(type2) && JsonUtils.toJsonArray(type2).contains(type1))
                 ;
     }
     
-    private boolean matchLanguage() {
+    private boolean matchLanguage(JsonValue lang2) {
         
         final String lang1 = value.containsKey(Keywords.LANGUAGE) 
                 ? value.getString(Keywords.LANGUAGE).toLowerCase()
                 : null;
-
-        final JsonValue lang2 = pattern.containsKey(Keywords.LANGUAGE)
-                ? pattern.get(Keywords.LANGUAGE)
-                : null;
-
                 
                 
-        if (lang2 == null || ((lang1 != null && (JsonUtils.isNull(lang2) || JsonUtils.isEmptyObject(lang2)))
-                || (lang1 != null && (JsonUtils.isNull(lang2) || JsonUtils.isEmptyArray(lang2)))
-                )) {
+        if ((lang1 != null && JsonUtils.isNotNull(lang2) && JsonUtils.isEmptyObject(lang2))
+                || (lang1 == null && (JsonUtils.isNull(lang2) || JsonUtils.isEmptyArray(lang2)))
+                ) {
             
             return true;
+        }
+
+        if (lang1 == null || lang2 == null) {
+            return false;
         }
 
         return JsonUtils.isNotNull(lang2) 
@@ -88,6 +97,7 @@ public final class ValuePatternMatcher {
                                 .stream()
                                 .map(JsonString.class::cast)
                                 .map(JsonString::getString)
+                                .map(String::toLowerCase)
                                 .anyMatch(x -> x.equals(lang1));
     }
 }

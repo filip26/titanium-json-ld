@@ -15,6 +15,7 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.DefaultObject;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.jsonld.uri.UriUtils;
@@ -200,7 +201,7 @@ public final class Frame {
         return frame.containsKey(property);
     }
 
-    public boolean isEmpty() {
+    public boolean isWildCard() {
         return frame.isEmpty() || frame.keySet()
                     .stream()
                     .allMatch(Arrays.asList(
@@ -210,11 +211,6 @@ public final class Frame {
                                         Keywords.EXPLICIT, 
                                         Keywords.REQUIRE_ALL
                                         )::contains);
-    }
-
-    
-    public boolean isWildCard() {
-        return JsonUtils.isEmptyObject(frame);
     }
     
     public boolean isWildCard(String property) {
@@ -232,10 +228,10 @@ public final class Frame {
                     ;
     }
 
-    public boolean isNotEmpty(String property) {
-        return frame.containsKey(property) 
-                            ;
-    }
+//    public boolean isNotEmpty(String property) {
+//        return frame.containsKey(property) 
+//                            ;
+//    }
 
     
     public Collection<JsonValue> getArray(String property) {
@@ -288,5 +284,9 @@ public final class Frame {
         }
         
         return FrameMatcher.with(state, this, requireAll).match(valueObject.asJsonObject());
+    }
+
+    public boolean isList() {
+        return ListObject.isListObject(frame);
     }
 }

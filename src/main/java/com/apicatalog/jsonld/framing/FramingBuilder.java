@@ -20,6 +20,7 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.NodeObject;
+import com.apicatalog.jsonld.lang.ValueObject;
 
 /**
  * 
@@ -276,7 +277,14 @@ public final class FramingBuilder {
                                         .ordered(ordered)                        
                                         .build();
                         
+                    } else if (ValueObject.isValueObject(item)) {                        
+                        if ((Frame.of((JsonStructure)subframe)).matchValue(item)) {
+                            JsonUtils.addValue(output, property, item, true);
+                        }
+                        
                     } else {
+                        
+
                         JsonUtils.addValue(output, property, item, true);
                     }
                 }                               

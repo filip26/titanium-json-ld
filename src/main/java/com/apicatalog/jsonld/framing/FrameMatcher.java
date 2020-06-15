@@ -13,6 +13,9 @@ import javax.json.JsonValue;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.ListObject;
+import com.apicatalog.jsonld.lang.NodeObject;
+import com.apicatalog.jsonld.lang.ValueObject;
 
 public final class FrameMatcher {
 
@@ -34,7 +37,7 @@ public final class FrameMatcher {
     public List<String> match(final Collection<String> subjects) throws JsonLdError {
    
         // 1. if frame is empty then all subject match
-        if (frame.isEmpty()) {
+        if (frame.isWildCard()) {
             return new LinkedList<>(subjects);
         }
         
@@ -104,7 +107,9 @@ public final class FrameMatcher {
 
             if (JsonUtils.isNotNull(propertyValue) 
                     && JsonUtils.isArray(propertyValue) && JsonUtils.isNotEmptyArray(propertyValue)) {
+                
                 propertyFrame = Frame.of((JsonStructure)propertyValue);
+                
             } else {
                 propertyFrame = null;
             }
@@ -112,8 +117,7 @@ public final class FrameMatcher {
             final JsonArray nodeValues = nodeValue != null 
                                             ? JsonUtils.toJsonArray(nodeValue)
                                             : JsonValue.EMPTY_JSON_ARRAY;
-            
-                                        
+
             // 2.5.
             if (nodeValues.isEmpty() 
                     && propertyFrame != null 
@@ -136,7 +140,7 @@ public final class FrameMatcher {
             }
 
             // 2.7.
-            if (!nodeValues.isEmpty() && propertyFrame != null && propertyFrame.isEmpty()) {
+            if (!nodeValues.isEmpty() && propertyFrame != null && propertyFrame.isWildCard()) {
                 
                 if (requireAll) {
                     count++;
@@ -150,55 +154,109 @@ public final class FrameMatcher {
                     && propertyFrame.isValuePattern()
                     && nodeValues.stream().anyMatch(propertyFrame::matchValue)
                     ) {
-                
+                System.out.println(">>> " + propertyFrame + ", " + nodeValues);
                 if (requireAll) {
                     count++;
                     continue;
                 }
                 return true;
             }
-
-            // 2.9. //TODO for any???
-            if (propertyFrame != null
-                    && propertyFrame.isNodePattern()
-                    && !nodeValues.isEmpty()
-                    
-                    ) {
+            
+            if (propertyFrame == null) {
                 
-                if (propertyFrame.isNodeReference()) {
-
-                    boolean match = false;
-                    for (JsonValue values : nodeValues) {
-                        
-                        match = propertyFrame.matchNode(state, values, requireAll);
-                        if (match) {
-                            break;
-                        }
-                    }
-                                            
-                    if (match) {
-                        if (requireAll) {
-                            count++;
-                            continue;
-                        }
-                        return true;
-                    }
-                    
-                } else if (!propertyFrame.isEmpty()) {
+                if (nodeValues.isEmpty()) {
                     if (requireAll) {
                         count++;
                         continue;
                     }
-                    return true;  
+                    return true;                    
                 }
-            }
+                return false;
+                
+            } else if (!nodeValues.isEmpty()) {
+                
+                if (propertyFrame.isList()) {
 
+                    JsonValue listValue = propertyFrame.get(Keywords.LIST);
+                    
+                    if (ListObject.isListObject(nodeValues.get(0))) {
+    
+                        JsonValue nodeListValue = nodeValues.get(0).asJsonObject().get(Keywords.LIST);
+                                            
+                        if (ValueObject.isValueObject(listValue.asJsonArray().get(0))) {
+    
+                            boolean match = false;
+                            for (JsonValue value : JsonUtils.toJsonArray(nodeListValue)) {
+            
+                                match = Frame.of((JsonStructure)listValue).matchValue(value);
+                                if (match) {
+                                    break;
+                                }
+                            }
+                                
+                            if (match) {
+                                if (requireAll) {
+                                    count++;
+                                    continue;
+                                }
+                                return true;
+                            }
+                            
+                        } else if (NodeObject.isNodeObject(listValue.asJsonArray().get(0)) || NodeObject.isNodeReference(listValue.asJsonArray().get(0))) {
+                            
+                            boolean match = false;
+                            for (JsonValue value : JsonUtils.toJsonArray(nodeListValue)) {
+            
+                                match = Frame.of((JsonStructure)listValue).matchNode(state, value, requireAll);
+    
+                                if (match) {
+                                    break;
+                                }
+                            }
+                                
+                            if (match) {
+                                if (requireAll) {
+                                    count++;
+                                    continue;
+                                }
+                                return true;
+                            }
+                        }
+                    }
+
+                } else if (propertyFrame.isNodeReference()) {
+    
+                        boolean match = false;
+                        for (JsonValue values : nodeValues) {
+                            
+                            match = propertyFrame.matchNode(state, values, requireAll);
+                            if (match) {
+                                break;
+                            }
+                        }
+                                                
+                        if (match) {
+                            if (requireAll) {
+                                count++;
+                                continue;
+                            }
+                            return true;
+                        }
+                        
+                } else if (JsonUtils.isObject(propertyValue)) {
+                        if (requireAll) {
+                            count++;
+                            continue;
+                        }
+                        return true;  
+                }    
+            }
 
             if (requireAll) {
                 return false;
             }
         }
-        System.out.println("     : " + count);
+
         return count > 0;
     }
     
