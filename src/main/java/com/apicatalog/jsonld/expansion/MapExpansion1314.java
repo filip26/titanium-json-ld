@@ -391,7 +391,7 @@ final class MapExpansion1314 {
                     }
 
                     // 13.4.8.2
-                    expandedValue = value;
+                    expandedValue = JsonUtils.isString(value) ? Json.createValue(((JsonString)value).getString().toLowerCase()) : value;
                     // TODO validation, warning, frameExpansion
                 }
 
@@ -646,7 +646,7 @@ final class MapExpansion1314 {
                                             .build();
 
                             if (!Keywords.NONE.equals(expandedLangCode)) {
-                                langMap.add(Keywords.LANGUAGE, Json.createValue(langCode));
+                                langMap.add(Keywords.LANGUAGE, Json.createValue(langCode.toLowerCase()));
                             }
                         }
 
