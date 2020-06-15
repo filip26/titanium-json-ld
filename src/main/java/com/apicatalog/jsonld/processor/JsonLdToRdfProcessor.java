@@ -52,7 +52,7 @@ public final class JsonLdToRdfProcessor {
         expansionOptions.setBase(options.getBase());
         expansionOptions.setExpandContext(options.getExpandContext());
         
-        final JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions);
+        final JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
 
         return JsonLdToRdf
                         .with(

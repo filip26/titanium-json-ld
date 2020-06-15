@@ -43,7 +43,7 @@ public final class JsonLd11Processor implements JsonLdProcessor {
 
     @Override
     public JsonArray expand(final RemoteDocument remoteDocument, final JsonLdOptions options) throws JsonLdError {
-        return ExpansionProcessor.expand(remoteDocument, options);
+        return ExpansionProcessor.expand(remoteDocument, options, false);
     }
 
     @Override

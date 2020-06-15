@@ -56,15 +56,6 @@ public final class ExpansionApi {
         return base(URI.create(baseUri));
     }
 
-    public ExpansionApi frame(boolean enable) {
-        options.setFrameExpansion(enable);
-        return this;
-    }
-
-    public ExpansionApi frame() {
-        return frame(true);
-    }
-
     public ExpansionApi loader(LoadDocumentCallback loader) {
         options.setDocumentLoader(loader);
         return this;

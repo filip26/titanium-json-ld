@@ -58,15 +58,6 @@ public final class FramingApi {
         return base(URI.create(baseUri));
     }
 
-    public FramingApi frame(boolean enable) {
-        options.setFrameExpansion(enable);
-        return this;
-    }
-
-    public FramingApi frame() {
-        return frame(true);
-    }
-
     public FramingApi loader(LoadDocumentCallback loader) {
         options.setDocumentLoader(loader);
         return this;

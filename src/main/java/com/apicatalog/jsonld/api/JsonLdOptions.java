@@ -55,8 +55,6 @@ public final class JsonLdOptions {
     
     private boolean extractAllScripts;
     
-    private boolean frameExpansion;
-    
     private boolean ordered;
     
     private Version processingMode;
@@ -92,7 +90,6 @@ public final class JsonLdOptions {
         this.documentLoader = new UrlConnectionLoader();
         this.expandContext = null;
         this.extractAllScripts = false;
-        this.frameExpansion = false;
         this.ordered = false;
         this.processingMode = Version.V1_1;
         this.produceGeneralizedRdf = true;
@@ -116,7 +113,6 @@ public final class JsonLdOptions {
         this.documentLoader = options.documentLoader;
         this.expandContext = options.expandContext;
         this.extractAllScripts = options.extractAllScripts;
-        this.frameExpansion = options.frameExpansion;
         this.ordered = options.ordered;
         this.processingMode = options.processingMode;
         this.produceGeneralizedRdf = options.produceGeneralizedRdf;
@@ -196,23 +192,6 @@ public final class JsonLdOptions {
     }
 
     /**
-     * Enables special frame processing rules for the
-     * <a href="https://www.w3.org/TR/json-ld11-api/#expansion-algorithm">Expansion
-     * Algorithm</a>.
-     * <p>
-     * Enables special rules for the <a href=
-     * "https://www.w3.org/TR/json-ld11-api/#serialize-rdf-as-json-ld-algorithm">Serialize
-     * RDF as JSON-LD Algorithm</a> to use JSON-LD native types as values, where
-     * possible.
-     * </p>
-     * 
-     * @return
-     */
-    public boolean isFrameExpansion() {
-        return frameExpansion;
-    }
-
-    /**
      * If set to <code>true</code>, certain algorithm processing steps where
      * indicated are ordered lexicographically. If <code>false</code>, order is not
      * considered in processing.
@@ -265,10 +244,6 @@ public final class JsonLdOptions {
 
     public void setExtractAllScripts(boolean extractAllScripts) {
         this.extractAllScripts = extractAllScripts;
-    }
-
-    public void setFrameExpansion(boolean frameExpansion) {
-        this.frameExpansion = frameExpansion;
     }
 
     public void setOrdered(boolean ordered) {

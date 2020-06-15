@@ -55,11 +55,10 @@ public final class FramingProcessor {
         expansionOptions.setOrdered(false);
         input.setDocumentUrl(null); //TODO needs revision
         
-        JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions);
+        JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
 
         // 7.
-        expansionOptions.setFrameExpansion(true);
-        JsonArray expandedFrame = ExpansionProcessor.expand(frame, expansionOptions);
+        JsonArray expandedFrame = ExpansionProcessor.expand(frame, expansionOptions, true);
 
         
         // 8.
