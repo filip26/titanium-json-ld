@@ -126,6 +126,14 @@ public final class Frame {
             if (JsonUtils.isNull(value)) {  //TODO investigate
                 return false;
             }
+            if (JsonUtils.isString(value)) {
+                if ("true".equalsIgnoreCase(((JsonString)value).getString())) {
+                    return true;
+                    
+                } else if ("false".equalsIgnoreCase(((JsonString)value).getString())) {
+                    return false;
+                }
+            }
             
             if (JsonUtils.isNotBoolean(value)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
