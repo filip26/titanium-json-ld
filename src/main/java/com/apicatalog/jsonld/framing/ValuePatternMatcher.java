@@ -41,8 +41,8 @@ public final class ValuePatternMatcher {
                                     ? pattern.get(Keywords.VALUE)
                                     : null;
 
-                                    
-        return (JsonUtils.isNotNull(value1) && JsonUtils.isEmptyObject(value2))
+  
+        return value2 == null || (JsonUtils.isNotNull(value1) && JsonUtils.isEmptyObject(value2))
                     || (JsonUtils.isNotNull(value2)  && JsonUtils.toJsonArray(value2).contains(value1))
                     ;
     }
@@ -57,7 +57,7 @@ public final class ValuePatternMatcher {
                 ? pattern.get(Keywords.TYPE)
                 : null;
 
-        return type1 == null && type2 == null 
+        return type2 == null 
                 || (JsonUtils.isNotNull(type1) && (JsonUtils.isNull(type2) || JsonUtils.isEmptyObject(type2)))
                     || (JsonUtils.isNull(type1) && (JsonUtils.isNull(type2) || JsonUtils.isEmptyArray(type2)))
                     || (JsonUtils.isNotNull(type2) && JsonUtils.toJsonArray(type2).contains(type1))
@@ -76,7 +76,7 @@ public final class ValuePatternMatcher {
 
                 
                 
-        if (lang1 == null && lang2 == null || ((lang1 != null && (JsonUtils.isNull(lang2) || JsonUtils.isEmptyObject(lang2)))
+        if (lang2 == null || ((lang1 != null && (JsonUtils.isNull(lang2) || JsonUtils.isEmptyObject(lang2)))
                 || (lang1 != null && (JsonUtils.isNull(lang2) || JsonUtils.isEmptyArray(lang2)))
                 )) {
             
