@@ -1,6 +1,8 @@
 package com.apicatalog.jsonld.framing;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,11 +31,11 @@ public final class FrameMatcher {
         return new FrameMatcher(state, frame, requireAll);
     }
     
-    public List<String> match(final List<String> subjects) throws JsonLdError {
+    public List<String> match(final Collection<String> subjects) throws JsonLdError {
    
         // 1. if frame is empty then all subject match
         if (frame.isEmpty()) {
-            return subjects;
+            return new LinkedList<>(subjects);
         }
         
         final List<String> result = new ArrayList<>();

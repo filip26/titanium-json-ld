@@ -127,11 +127,13 @@ public final class FramingProcessor {
         
         // 16.
         FramingBuilder.with(state, 
-                            new ArrayList<>(state.getGraphMap().subjects(state.getGraphName())), 
-                            Frame.of(expandedFrame), 
-                            resultMap, 
-                            null
-                            ).build();
+                                new ArrayList<>(state.getGraphMap().subjects(state.getGraphName())), 
+                                Frame.of(expandedFrame), 
+                                resultMap, 
+                                null
+                            )
+                        .ordered(options.isOrdered())
+                        .build();
         
         System.out.println("Result: " + resultMap);
         

@@ -2,7 +2,6 @@ package com.apicatalog.jsonld.framing;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,10 +29,10 @@ import com.apicatalog.jsonld.lang.NodeObject;
 public final class FramingBuilder {
 
     // required
-    private FramingState state;
-    private List<String> subjects;
-    private Frame frame;
-    private Map<String, JsonValue> parent;
+    private final FramingState state;
+    private final List<String> subjects;
+    private final Frame frame;
+    private final Map<String, JsonValue> parent;
     
     private String activeProperty;
     
@@ -55,14 +54,19 @@ public final class FramingBuilder {
         return new FramingBuilder(state, subjects, frame, parent, activeProperty);
     }
     
+    public FramingBuilder ordered(boolean ordered) {
+        this.ordered = ordered;
+        return this;
+    }
+    
     public void build() throws JsonLdError {
 
         // 2.
-        JsonLdEmbed embed = frame.getEmbed(state.getEmbed());
+        final JsonLdEmbed embed = frame.getEmbed(state.getEmbed());
                 
-        boolean explicit = frame.getExplicit(state.isExplicitInclusion());
+        final boolean explicit = frame.getExplicit(state.isExplicitInclusion());
 
-        boolean requireAll = frame.getRequireAll(state.isRequireAll());
+        final boolean requireAll = frame.getRequireAll(state.isRequireAll());
 
         // 3.
         final List<String> matchedSubjects = 
@@ -161,9 +165,10 @@ public final class FramingBuilder {
                                         subframe, 
                                         output, 
                                         Keywords.GRAPH
-                                    ).build();
+                                        )
+                                    .ordered(ordered)
+                                    .build();
                 }
-                
             }
             
             // 4.6.
@@ -178,7 +183,9 @@ public final class FramingBuilder {
                                     Frame.of((JsonStructure)frame.get(Keywords.INCLUDED)),
                                     output, 
                                     Keywords.INCLUDED
-                                    ).build();                
+                                    )
+                                .ordered(ordered)
+                                .build();                
             }
 
             // 4.7.    
@@ -237,12 +244,13 @@ public final class FramingBuilder {
                                     Map<String, JsonValue> listResult = new LinkedHashMap<>();
                                     
                                     FramingBuilder.with(
-                                            listState, 
-                                            Arrays.asList(listItem.asJsonObject().getString(Keywords.ID)),
-                                            Frame.of((JsonStructure)listFrame), 
-                                            listResult, 
-                                            Keywords.LIST)
-                                    .build();
+                                                        listState, 
+                                                        Arrays.asList(listItem.asJsonObject().getString(Keywords.ID)),
+                                                        Frame.of((JsonStructure)listFrame), 
+                                                        listResult, 
+                                                        Keywords.LIST)
+                                                    .ordered(ordered)
+                                                    .build();
 
                                     list.add(listResult.get(Keywords.LIST));
                                     
@@ -260,21 +268,20 @@ public final class FramingBuilder {
                         clonedState.setEmbedded(true);
 
                         FramingBuilder.with(
-                                    clonedState, 
-                                    Arrays.asList(item.asJsonObject().getString(Keywords.ID)),
-                                    Frame.of((JsonStructure)subframe), 
-                                    output, 
-                                    property)
-                            .build();
+                                            clonedState, 
+                                            Arrays.asList(item.asJsonObject().getString(Keywords.ID)),
+                                            Frame.of((JsonStructure)subframe), 
+                                            output, 
+                                            property)
+                                        .ordered(ordered)                        
+                                        .build();
                         
                     } else {
-
                         JsonUtils.addValue(output, property, item, true);
                     }
                 }                               
             }
-            
-            
+
             // 4.7.4. - default values
             for (String property : frame.keys()) {
 
@@ -284,8 +291,7 @@ public final class FramingBuilder {
                         ) {
                     continue;
                 }
-            
-    
+
                 // 4.7.4.2.
                 final JsonObject propertyFrame;
                 
@@ -350,12 +356,13 @@ public final class FramingBuilder {
                                 reverseState.setEmbedded(true);
                                 
                                 FramingBuilder.with(
-                                                reverseState, 
-                                                Arrays.asList(subjectProperty), 
-                                                Frame.of((JsonStructure)subframe),
-                                                revereseResult, 
-                                                null)
-                                            .build();
+                                                    reverseState, 
+                                                    Arrays.asList(subjectProperty), 
+                                                    Frame.of((JsonStructure)subframe),
+                                                    revereseResult, 
+                                                    null)
+                                                .ordered(ordered)
+                                                .build();
 
                                 if (output.containsKey(Keywords.REVERSE)) {                        
                                     reverseMap = new LinkedHashMap<>(output.get(Keywords.REVERSE).asJsonObject());
