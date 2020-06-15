@@ -83,10 +83,6 @@ public final class Frame {
 
                 String stringValue = ((JsonString)embed).getString();
              
-//                if ("@last".equals(stringValue)) {
-//                    return JsonLdEmbed.ONCE;
-//                }
-                
                 if (Keywords.noneMatch(stringValue, Keywords.ALWAYS, Keywords.ONCE, Keywords.NEVER)) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE);
                 }

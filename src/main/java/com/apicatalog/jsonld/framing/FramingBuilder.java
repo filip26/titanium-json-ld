@@ -79,7 +79,7 @@ public final class FramingBuilder {
         if (ordered) {
             Collections.sort(matchedSubjects);
         }
-        System.out.println("0: " + matchedSubjects + ", " + frame + ", " + subjects);  
+          
         for (final String id : matchedSubjects) {
             
             final Map<String, JsonValue> node = state.getGraphMap().get(state.getGraphName(), id);

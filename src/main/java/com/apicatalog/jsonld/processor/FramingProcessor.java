@@ -16,17 +16,14 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
-import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.CompactionBuilder;
-import com.apicatalog.jsonld.compaction.UriCompactionBuilder;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.ActiveContextBuilder;
-import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.expansion.UriExpansionBuilder;
 import com.apicatalog.jsonld.flattening.NodeMap;
@@ -56,19 +53,14 @@ public final class FramingProcessor {
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
         expansionOptions.setOrdered(false);
 
-        
         JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
 
         // 7.
         JsonArray expandedFrame = ExpansionProcessor.expand(frame, expansionOptions, true);
 
-        
         // 8.
         final JsonObject frameObject = frame.getDocument().asJsonStructure().asJsonObject(); 
 
-        System.out.println("Frame: " + frameObject);
-        System.out.println("ExpandedFrame: " + expandedFrame);
-        
         JsonValue context = JsonValue.EMPTY_JSON_OBJECT;
         
         if (frameObject.containsKey(Keywords.CONTEXT)    
@@ -126,8 +118,6 @@ public final class FramingProcessor {
             state.setGraphName(Keywords.MERGED);
             state.getGraphMap().merge();
         }
-        System.out.println(">>>> " + state.getGraphMap());
-        System.out.println(">>>> " + state.getGraphName());
         
         // 15.
         Map<String, JsonValue> resultMap = new LinkedHashMap<>();
@@ -141,8 +131,6 @@ public final class FramingProcessor {
                             )
                         .ordered(options.isOrdered())
                         .build();
-        
-        System.out.println("Result: " + resultMap);
         
         Collection<JsonValue> result = resultMap.values();        
         
@@ -161,19 +149,13 @@ public final class FramingProcessor {
                                         .ordered(options.isOrdered())
                                         .build();
 
-        System.out.println("Compacted: " + compactedResults);
-        // 19.1.
-        if (JsonUtils.isEmptyArray(compactedResults)) {
-            compactedResults = JsonValue.EMPTY_JSON_OBJECT;
-            
-        // 19.2.
-        } else if (JsonUtils.isArray(compactedResults)) {
-            
-            String key = UriCompactionBuilder.with(activeContext, Keywords.GRAPH).vocab(true).build();
+        if (JsonUtils.isArray(compactedResults)) {
+        
+            String key = activeContext.compactUri(Keywords.GRAPH).vocab(true).build();
             
             compactedResults = Json.createObjectBuilder()
                                     .add(key, compactedResults).build();
-            
+        
         }
         
         // 20.
@@ -189,9 +171,8 @@ public final class FramingProcessor {
             omitGraph = options.isOmitGraph();
         }
         
-        
         // 21.
-        if (!omitGraph /*&& !compactedResults.asJsonObject().isEmpty()*/) {
+        if (!omitGraph) {
             if  (!compactedResults.asJsonObject().containsKey(Keywords.GRAPH)) {
                 
                 if (compactedResults.asJsonObject().isEmpty()) {
@@ -207,18 +188,12 @@ public final class FramingProcessor {
                                             ).build();
                 }
             }
-            //TODO
-            
         }
-        //TODO
 
-        // 19.3.
-//        if (!compactedResults.asJsonObject().isEmpty()) {
         if (JsonUtils.isNotEmptyArray(context) && JsonUtils.isNotEmptyObject(context)) {
             compactedResults = Json.createObjectBuilder(compactedResults.asJsonObject()).add(Keywords.CONTEXT, context).build();
         }
-        
-        
+                
         return compactedResults.asJsonObject();
     }
 
