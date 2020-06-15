@@ -149,19 +149,6 @@ public final class FrameMatcher {
                 return true;                
             }
             
-            // 2.8.
-            if (propertyFrame != null 
-                    && propertyFrame.isValuePattern()
-                    && nodeValues.stream().anyMatch(propertyFrame::matchValue)
-                    ) {
-                System.out.println(">>> " + propertyFrame + ", " + nodeValues);
-                if (requireAll) {
-                    count++;
-                    continue;
-                }
-                return true;
-            }
-            
             if (propertyFrame == null) {
                 
                 if (nodeValues.isEmpty()) {
@@ -171,15 +158,14 @@ public final class FrameMatcher {
                     }
                     return true;                    
                 }
-                return false;
                 
-            } else if (!nodeValues.isEmpty()) {
-                
+            } else  {
+
                 if (propertyFrame.isList()) {
 
                     JsonValue listValue = propertyFrame.get(Keywords.LIST);
                     
-                    if (ListObject.isListObject(nodeValues.get(0))) {
+                    if (!nodeValues.isEmpty() && ListObject.isListObject(nodeValues.get(0))) {
     
                         JsonValue nodeListValue = nodeValues.get(0).asJsonObject().get(Keywords.LIST);
                                             
@@ -203,7 +189,7 @@ public final class FrameMatcher {
                             }
                             
                         } else if (NodeObject.isNodeObject(listValue.asJsonArray().get(0)) || NodeObject.isNodeReference(listValue.asJsonArray().get(0))) {
-                            
+
                             boolean match = false;
                             for (JsonValue value : JsonUtils.toJsonArray(nodeListValue)) {
             
@@ -223,15 +209,29 @@ public final class FrameMatcher {
                             }
                         }
                     }
+                    
+                } else if (propertyFrame.isValuePattern()) {
+
+                    if (nodeValues.stream().anyMatch(propertyFrame::matchValue)) { 
+                        if (requireAll) {
+                            count++;
+                            continue;
+                        }
+                        return true;
+                    }
 
                 } else if (propertyFrame.isNodeReference()) {
-    
+
                         boolean match = false;
-                        for (JsonValue values : nodeValues) {
+                        
+                        if (!nodeValues.isEmpty()) {
                             
-                            match = propertyFrame.matchNode(state, values, requireAll);
-                            if (match) {
-                                break;
+                            for (JsonValue values : nodeValues) {
+                                
+                                match = propertyFrame.matchNode(state, values, requireAll);
+                                if (match) {
+                                    break;
+                                }
                             }
                         }
                                                 
@@ -243,12 +243,15 @@ public final class FrameMatcher {
                             return true;
                         }
                         
-                } else if (JsonUtils.isObject(propertyValue)) {
+                } else  {
+                                        
+                    if (!nodeValues.isEmpty()) {
                         if (requireAll) {
                             count++;
                             continue;
                         }
-                        return true;  
+                        return true;
+                    }  
                 }    
             }
 

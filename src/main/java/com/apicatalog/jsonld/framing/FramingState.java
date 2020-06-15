@@ -119,7 +119,5 @@ public final class FramingState {
 
     public void clearDone() {
         done.clear();
-        
     }
-    
 }

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.json.Json;
@@ -172,5 +173,10 @@ public final class NodeMap {
 
     public boolean contains(String id) {
         return index.containsKey(id);
+    }
+    
+    @Override
+    public String toString() {
+        return Objects.toString(index);
     }
 }

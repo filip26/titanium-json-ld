@@ -90,16 +90,21 @@ public final class FramingProcessor {
 
         // 13.
         
-        boolean frameDefault = options.isFrameDefault();
+//        boolean frameDefault = options.isFrameDefault();
         
-        String frameGraphExpanded = UriExpansionBuilder.with(activeContext, Keywords.GRAPH).vocab(true).build();
+        final List<String> frameKeysExpanded = new ArrayList<>();
         
-        
-        //TODO expands to GRAPH        
-        if (!frameDefault && frameObject.containsKey(frameGraphExpanded)) {
-            frameDefault = true;
+        for (final String key : frameObject.keySet()) {
+
+            frameKeysExpanded.add(UriExpansionBuilder
+                                    .with(activeContext, key)
+                                    .vocab(true)
+                                    .build()
+                                    );
         }
-        
+        System.out.println("------------------>>> " + frameKeysExpanded);
+        boolean frameDefault = frameKeysExpanded.contains(Keywords.GRAPH); 
+                
         // 14.
         final FramingState state = new FramingState();
         
@@ -118,8 +123,8 @@ public final class FramingProcessor {
             state.setGraphName(Keywords.MERGED);
             state.getGraphMap().merge();
         }
-        
-        //TODO
+        System.out.println(">>>> " + state.getGraphMap());
+        System.out.println(">>>> " + state.getGraphName());
         
         // 15.
         Map<String, JsonValue> resultMap = new LinkedHashMap<>();

@@ -79,7 +79,7 @@ public final class JsonLdOptions {
     
     private boolean requiredAll;
     
-    private boolean frameDefault;
+///    private boolean frameDefault;
     
     public JsonLdOptions() {
         
@@ -103,7 +103,7 @@ public final class JsonLdOptions {
         this.omitDefault = false;
         this.omitGraph = null;
         this.requiredAll = false;
-        this.frameDefault = false;        
+//        this.frameDefault = false;        
     }
 
     public JsonLdOptions(JsonLdOptions options) {
@@ -126,7 +126,7 @@ public final class JsonLdOptions {
         this.omitDefault = options.omitDefault;
         this.omitGraph = options.omitGraph;
         this.requiredAll = options.requiredAll;
-        this.frameDefault = options.frameDefault;
+//        this.frameDefault = options.frameDefault;
     }
 
     /**
@@ -324,11 +324,11 @@ public final class JsonLdOptions {
         this.requiredAll = requiredAll;
     }
     
-    public boolean isFrameDefault() {
-        return frameDefault;
-    }
-    
-    public void setFrameDefault(boolean frameDefault) {
-        this.frameDefault = frameDefault;
-    }
+//    public boolean isFrameDefault() {
+//        return frameDefault;
+//    }
+//    
+//    public void setFrameDefault(boolean frameDefault) {
+//        this.frameDefault = frameDefault;
+//    }
 }
