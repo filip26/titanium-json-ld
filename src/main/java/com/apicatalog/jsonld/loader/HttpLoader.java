@@ -1,12 +1,16 @@
 package com.apicatalog.jsonld.loader;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpClient.Redirect;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,14 +36,17 @@ public class HttpLoader implements LoadDocumentCallback {
     
     private static final String PLUS_JSON = "+json";
     
-    private int connectTimeout;
-    private int readTimeout;
     private int maxRedirections;
 
+    private final HttpClient httpClient;
+    
     public HttpLoader() {
-        this.connectTimeout = -1;
-        this.readTimeout = -1;
-        this.maxRedirections = MAX_REDIRECTIONS;
+        this(HttpClient.newBuilder().followRedirects(Redirect.NEVER).build(), MAX_REDIRECTIONS);
+    }
+    
+    public HttpLoader(HttpClient httpClient, int maxRedirections) {
+        this.httpClient = httpClient;
+        this.maxRedirections = maxRedirections;
     }
     
     @Override
@@ -52,48 +59,45 @@ public class HttpLoader implements LoadDocumentCallback {
             int redirection = 0;
             boolean done = false;
             
-            HttpURLConnection connection = null;
-            
-            URL url = uri.toURL();
+            URI targetUri = uri;
             
             MediaType contentType = null;
+            
+            HttpResponse<InputStream> response = null;
             
             while (!done) {
                 
                 // 2.
-                connection = (HttpURLConnection)url.openConnection();
-    
-                connection.setInstanceFollowRedirects(false);
+                HttpRequest request = 
+                                HttpRequest.newBuilder()
+                                    .GET()
+                                    .uri(targetUri)
+                                    .header("Accept", ACCEPT_HEADER) //TODO add profile
+                                    .build();
                 
-                if (connectTimeout >= 0) {
-                    connection.setConnectTimeout(connectTimeout);
-                }
-                if (readTimeout >= 0) {
-                    connection.setReadTimeout(readTimeout);
-                }
-                
-                connection.setRequestMethod("GET");
-                connection.setRequestProperty("Accept", ACCEPT_HEADER); //TODO add profile
-    
-                connection.setUseCaches(false);
-                connection.setDoInput(false);
-                connection.setDoInput(true);
-                
-                connection.connect();
-    
+                response = httpClient.send(request, BodyHandlers.ofInputStream());
+                                    
                 // 3.
-                if (connection.getResponseCode() == 301
-                    || connection.getResponseCode() == 302
-                    || connection.getResponseCode() == 303
-                    || connection.getResponseCode() == 307
+                if (response.statusCode() == 301
+                    || response.statusCode() == 302
+                    || response.statusCode() == 303
+                    || response.statusCode() == 307
                     ) {
 
-                    if (connection.getResponseCode() == 303) {
+                    //if (response.statusCode() == 303) {
                     //    remoteDocument.setDocumentUrl(url.toURI());
+                    //}
+
+                    final Optional<String> location = response.headers().firstValue("Location");
+                    
+                    if (location.isPresent()) {
+                        targetUri = URI.create(UriResolver.resolve(targetUri, location.get()));
+
+                    } else {
+                        throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Header location is required for code [" + response.statusCode() + "].");
                     }
                     
-                    url = new URL(UriResolver.resolve(url.toURI(), connection.getHeaderField("Location")));
-                    connection.disconnect();
+
                     redirection++;
                     
                     if (maxRedirections > 0 && redirection >= maxRedirections) {
@@ -103,15 +107,14 @@ public class HttpLoader implements LoadDocumentCallback {
                     continue;
                 }
                 
-                if (connection.getResponseCode() != 200) {
-                    connection.disconnect();
-                    throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unexpected response code [" + connection.getResponseCode() + "]");
+                if (response.statusCode() != 200) {
+                    throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unexpected response code [" + response.statusCode() + "]");
                 }
 
-                final String contentTypeValue = connection.getHeaderField("Content-Type");
+                final Optional<String> contentTypeValue = response.headers().firstValue("Content-Type");
                 
-                if (contentTypeValue != null) {                    
-                    contentType = MediaType.valueOf(contentTypeValue);
+                if (contentTypeValue.isPresent()) {                    
+                    contentType = MediaType.valueOf(contentTypeValue.get());
                 }
                 
                 if (contentType != null
@@ -119,8 +122,8 @@ public class HttpLoader implements LoadDocumentCallback {
                      && !MediaType.HTML.match(contentType)
                      && !MediaType.XHTML.match(contentType)
                         ) {
-
-                    final List<String> linkValues = connection.getHeaderFields().get("Link");
+                    
+                    final List<String> linkValues = response.headers().map().get("Link");
                     
                     System.out.println("link: " + linkValues + ", content-type: " + contentType);
                     
@@ -143,7 +146,6 @@ public class HttpLoader implements LoadDocumentCallback {
                             
 //                            url = new URL(UriResolver.resolve(url.toURI(), .connection.));
                             
-                            connection.disconnect();
                             redirection++;
                             
                             if (maxRedirections > 0 && redirection >= maxRedirections) {
@@ -173,8 +175,6 @@ public class HttpLoader implements LoadDocumentCallback {
                     && !contentType.subtype().toLowerCase().endsWith(PLUS_JSON))  
                     ) {
                 
-                connection.disconnect();
-                
                 throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, 
                                             "Unsupported media type '" + contentType 
                                             + "'. Supported content types are [" 
@@ -187,12 +187,10 @@ public class HttpLoader implements LoadDocumentCallback {
 
             // 7.
                         
-            Document document = JsonDocument.parse(new InputStreamReader(connection.getInputStream()));
-
-            connection.disconnect();
+            Document document = JsonDocument.parse(new InputStreamReader(response.body()));
 
             if (remoteDocument.getDocumentUrl() == null) {
-                remoteDocument.setDocumentUrl(url.toURI());
+                remoteDocument.setDocumentUrl(targetUri);
             }
 
             remoteDocument.setContentType(contentType);
@@ -202,29 +200,11 @@ public class HttpLoader implements LoadDocumentCallback {
             
             return remoteDocument;
             
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | InterruptedException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);            
         }        
     }
-    
-    /**
-     *  Connect timeout value in milliseconds
-     *  
-     * @param timeout
-     */
-    public void setConnectTimeout(int timeout) {
-        this.connectTimeout = timeout;
-    }
 
-    /**
-     *  Read timeout value in milliseconds
-     *  
-     * @param timeout
-     */
-    public void setReadTimeout(int timeout) {
-        this.readTimeout = timeout;
-    }
-    
     public void setMaxRedirections(int maxRedirections) {
         this.maxRedirections = maxRedirections;
     }

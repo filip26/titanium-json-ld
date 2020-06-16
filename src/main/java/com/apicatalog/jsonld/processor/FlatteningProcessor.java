@@ -58,10 +58,8 @@ public final class FlatteningProcessor {
     public static final JsonStructure flatten(final RemoteDocument input, final JsonStructure context, final JsonLdOptions options) throws JsonLdError {
         
         // 4.
-        JsonLdOptions expansionOptions = new JsonLdOptions();
+        JsonLdOptions expansionOptions = new JsonLdOptions(options);
         expansionOptions.setOrdered(false);
-        expansionOptions.setBase(options.getBase());
-        expansionOptions.setProcessingMode(options.getProcessingMode());
         
         JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
         
@@ -76,10 +74,7 @@ public final class FlatteningProcessor {
             RemoteDocument document = new RemoteDocument();
             document.setDocument(JsonDocument.of(flattenedOutput));
             
-            JsonLdOptions compactionOptions = new JsonLdOptions();
-            compactionOptions.setOrdered(options.isOrdered());
-            compactionOptions.setProcessingMode(options.getProcessingMode());
-            compactionOptions.setCompactArrays(options.isCompactArrays());
+            JsonLdOptions compactionOptions = new JsonLdOptions(options);
             
             if (options.getBase() != null) {
                 compactionOptions.setBase(options.getBase());

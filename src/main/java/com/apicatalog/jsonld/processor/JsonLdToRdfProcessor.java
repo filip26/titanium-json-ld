@@ -47,7 +47,7 @@ public final class JsonLdToRdfProcessor {
 
     public static final RdfDataset toRdf(RemoteDocument input, final JsonLdOptions options) throws JsonLdError {
 
-        final JsonLdOptions expansionOptions = new JsonLdOptions();
+        final JsonLdOptions expansionOptions = new JsonLdOptions(options);
         expansionOptions.setProcessingMode(options.getProcessingMode());
         expansionOptions.setBase(options.getBase());
         expansionOptions.setExpandContext(options.getExpandContext());
