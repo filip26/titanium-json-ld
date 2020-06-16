@@ -2,8 +2,8 @@ package com.apicatalog.jsonld.document;
 
 import java.net.URI;
 
+import com.apicatalog.jsonld.http.MediaType;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
-import com.apicatalog.jsonld.loader.MediaType;
 
 /**
  * The {@link RemoteDocument} is used by a {@link LoadDocumentCallback} to

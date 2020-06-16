@@ -6,18 +6,18 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.RemoteDocument;
 
-public final class UrlRewrite implements LoadDocumentCallback {
+public final class UriRewriter implements LoadDocumentCallback {
 
     private final String sourceBase;
     private final String targetBase;
     
     private final LoadDocumentCallback loader;
     
-    public UrlRewrite(final String sourceBase, final String targetBase) {
-        this(sourceBase, targetBase, new HttpDocumentLoader());
+    public UriRewriter(final String sourceBase, final String targetBase) {
+        this(sourceBase, targetBase, new HttpLoader());
     }
     
-    public UrlRewrite(final String sourceBase, final String targetBase, final LoadDocumentCallback loader) {
+    public UriRewriter(final String sourceBase, final String targetBase, final LoadDocumentCallback loader) {
         this.sourceBase = sourceBase;
         this.targetBase = targetBase;
         

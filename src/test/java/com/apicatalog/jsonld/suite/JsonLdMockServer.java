@@ -16,7 +16,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
-import com.apicatalog.jsonld.loader.HttpDocumentLoader;
+import com.apicatalog.jsonld.loader.HttpLoader;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 
 public final class JsonLdMockServer {
@@ -79,11 +79,11 @@ public final class JsonLdMockServer {
     public void stop() {
         
         verify(getRequestedFor(urlMatching(testCase.input.toString().substring(testBase.length())))
-                .withHeader("accept", equalTo(HttpDocumentLoader.ACCEPT_HEADER)));
+                .withHeader("accept", equalTo(HttpLoader.ACCEPT_HEADER)));
 
         if (testCase.redirectTo != null) {
             verify(getRequestedFor(urlMatching(testCase.redirectTo.toString().substring(testBase.length())))
-                    .withHeader("accept", equalTo(HttpDocumentLoader.ACCEPT_HEADER)));                
+                    .withHeader("accept", equalTo(HttpLoader.ACCEPT_HEADER)));                
         }
         
         if (testCase.httpLink != null) {

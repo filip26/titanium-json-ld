@@ -5,7 +5,7 @@ import java.net.URI;
 import javax.json.JsonObject;
 
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.jsonld.loader.HttpDocumentLoader;
+import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 
 /**
@@ -85,7 +85,7 @@ public final class JsonLdOptions {
         this.base = null;
         this.compactArrays = true;
         this.compactToRelative = true;
-        this.documentLoader = new HttpDocumentLoader();
+        this.documentLoader = new HttpLoader();
         this.expandContext = null;
         this.extractAllScripts = false;
         this.ordered = false;

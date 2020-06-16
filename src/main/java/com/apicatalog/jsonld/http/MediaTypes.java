@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.loader;
+package com.apicatalog.jsonld.http;
 
 /**
  * @see <a href="https://www.w3.org/TR/json-ld11/#iana-considerations">IANA Considerations</a>

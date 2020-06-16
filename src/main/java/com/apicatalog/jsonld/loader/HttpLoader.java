@@ -15,9 +15,12 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.http.Link;
+import com.apicatalog.jsonld.http.LinkHeaderParser;
+import com.apicatalog.jsonld.http.MediaType;
 import com.apicatalog.jsonld.uri.UriResolver;
 
-public class HttpDocumentLoader implements LoadDocumentCallback {
+public class HttpLoader implements LoadDocumentCallback {
 
     public static final String ACCEPT_HEADER = 
                                     MediaType.JSON_LD.toString()
@@ -33,7 +36,7 @@ public class HttpDocumentLoader implements LoadDocumentCallback {
     private int readTimeout;
     private int maxRedirections;
 
-    public HttpDocumentLoader() {
+    public HttpLoader() {
         this.connectTimeout = -1;
         this.readTimeout = -1;
         this.maxRedirections = MAX_REDIRECTIONS;

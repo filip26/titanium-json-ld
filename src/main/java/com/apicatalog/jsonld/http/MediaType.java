@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.loader;
+package com.apicatalog.jsonld.http;
 
 import java.util.Objects;
 
