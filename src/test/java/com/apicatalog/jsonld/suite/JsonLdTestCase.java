@@ -40,6 +40,10 @@ public final class JsonLdTestCase {
 
     public String contentType;
     
+    public URI redirectTo;
+    
+    public Integer httpStatus;
+    
     private final String testsBase;
     
     public JsonLdTestCase(final String testsBase) {
@@ -88,6 +92,15 @@ public final class JsonLdTestCase {
         testCase.baseUri = baseUri;
         
         testCase.contentType = o.getString("contentType", "application/ld+json");
+        
+        testCase.redirectTo = o.containsKey("option") && o.getJsonObject("option").containsKey("redirectTo")
+                                ? URI.create(baseUri + o.getJsonObject("option").getString("redirectTo"))
+                                : null;
+        
+        testCase.httpStatus = o.containsKey("option")  
+                                    ? o.getJsonObject("option").getInt("httpStatus", 301)
+                                    : null
+                                    ;
                                 
         return testCase;
     }
@@ -134,5 +147,4 @@ public final class JsonLdTestCase {
 
         return JsonLdErrorCode.valueOf(errorCode.strip().toUpperCase().replace(" ", "_").replace("-", "_").replaceAll("\\_\\@", "_KEYWORD_" )); 
     }
-    
 }

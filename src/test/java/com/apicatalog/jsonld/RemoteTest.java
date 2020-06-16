@@ -1,15 +1,18 @@
 package com.apicatalog.jsonld;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -22,9 +25,7 @@ import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
-import com.apicatalog.jsonld.loader.UrlConnectionLoader;
+import com.apicatalog.jsonld.loader.HttpDocumentLoader;
 import com.apicatalog.jsonld.loader.UrlRewrite;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
@@ -46,15 +47,26 @@ public class RemoteTest {
     @Parameterized.Parameter(3)
     public String baseUri;
     
+    private static final String TESTS_BASE = "https://w3c.github.io";
+    
     @Rule
     public final WireMockRule wireMockRule = new WireMockRule();
     
     @Test
     public void testRemote() {
 
-        String inputPath = testCase.input.toString().substring(JsonLdManifestLoader.JSON_LD_API_BASE.length() -1);
+        String inputPath;
         
-        try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.JSON_LD_API_BASE + inputPath.substring("/tests/".length()))) {
+        if (testCase.redirectTo != null) {
+            inputPath = testCase.redirectTo.toString();
+            
+        } else {
+            inputPath = testCase.input.toString();
+        }
+        
+        System.out.println(">>> " + inputPath + ", " + testCase.input);
+        try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.JSON_LD_API_BASE + inputPath.substring(testCase.baseUri.length()))) {
+
             
             Assert.assertNotNull(is);
 
@@ -65,7 +77,15 @@ public class RemoteTest {
             
             (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
 
-                stubFor(get(urlEqualTo(testCase.input.toString().substring("https://w3c.github.io".length())))
+                if (testCase.redirectTo != null) {
+                    stubFor(get(urlEqualTo(testCase.input.toString().substring(TESTS_BASE.length())))
+                            .willReturn(aResponse()
+                                .withStatus(testCase.httpStatus)
+                                .withHeader("Location", testCase.redirectTo.toASCIIString().substring(TESTS_BASE.length()))
+                                    )); 
+                }
+                
+                stubFor(get(urlEqualTo(inputPath.substring(TESTS_BASE.length())))
                       .willReturn(aResponse()
                           .withStatus(200)
                           .withHeader("Content-Type", testCase.contentType)
@@ -73,41 +93,21 @@ public class RemoteTest {
                               ));
 
                 JsonLdOptions expandOptions = new JsonLdOptions(options);
-                expandOptions.setDocumentLoader(new UrlRewrite("https://w3c.github.io", wireMockRule.baseUrl(), new UrlConnectionLoader()));
+                expandOptions.setDocumentLoader(new UrlRewrite(TESTS_BASE, wireMockRule.baseUrl(), new HttpDocumentLoader()));
                 
-                return JsonLd.expand(testCase.input).options(expandOptions).get();                        
+                return JsonLd.expand(testCase.input).options(expandOptions).get();
             });
-        
+
+            verify(getRequestedFor(urlMatching(testCase.input.toString().substring(TESTS_BASE.length())))
+                    .withHeader("accept", equalTo(HttpDocumentLoader.ACCEPT_HEADER)));
+            
         } catch (JsonLdError e) {
             e.printStackTrace();
             Assert.fail(e.getMessage());
             
         } catch (IOException e) {
             Assert.fail(e.getMessage());
-        }
-
-        
-//        Result result = myHttpServiceCallingObject.doSomething();
-
-//        assertTrue(result.wasSuccessful());
-
-//        verify(postRequestedFor(urlMatching("/my/resource/[a-z0-9]+"))
-//                .withRequestBody(matching(".*<message>1234</message>.*"))
-//                .withHeader("Content-Type", notMatching("application/json")));
-        
-//        // skip specVersion == 1.0
-//        assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
-//        
-//        try {
-//            (new JsonLdTestRunnerJunit(testCase)).execute(options ->
-//            
-//                        JsonLd.expand(testCase.input).options(options).get()
-//                        
-//            );
-//            
-//        } catch (JsonLdError e) {
-//            Assert.fail(e.getMessage());
-//        }
+        }        
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")

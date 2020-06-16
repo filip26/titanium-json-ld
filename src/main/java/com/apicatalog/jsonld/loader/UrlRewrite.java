@@ -14,7 +14,7 @@ public final class UrlRewrite implements LoadDocumentCallback {
     private final LoadDocumentCallback loader;
     
     public UrlRewrite(final String sourceBase, final String targetBase) {
-        this(sourceBase, targetBase, new UrlConnectionLoader());
+        this(sourceBase, targetBase, new HttpDocumentLoader());
     }
     
     public UrlRewrite(final String sourceBase, final String targetBase, final LoadDocumentCallback loader) {
@@ -41,7 +41,12 @@ public final class UrlRewrite implements LoadDocumentCallback {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
 
-        remoteDocument.setDocumentUrl(url);
+        if (remoteDocument.getDocumentUrl() != null && remoteDocument.getDocumentUrl().toString().startsWith(targetBase)) {
+            
+            final String remoteRelativePath = remoteDocument.getDocumentUrl().toString().substring(targetBase.length()); 
+            remoteDocument.setDocumentUrl(URI.create(sourceBase + remoteRelativePath));
+
+        }
         return remoteDocument;
 
     }
