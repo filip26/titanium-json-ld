@@ -79,7 +79,8 @@ public final class JsonLdOptions {
     
     private boolean requiredAll;
     
-///    private boolean frameDefault;
+    // Remote
+    private String contentType;
     
     public JsonLdOptions() {
         
@@ -103,7 +104,6 @@ public final class JsonLdOptions {
         this.omitDefault = false;
         this.omitGraph = null;
         this.requiredAll = false;
-//        this.frameDefault = false;        
     }
 
     public JsonLdOptions(JsonLdOptions options) {
@@ -126,7 +126,6 @@ public final class JsonLdOptions {
         this.omitDefault = options.omitDefault;
         this.omitGraph = options.omitGraph;
         this.requiredAll = options.requiredAll;
-//        this.frameDefault = options.frameDefault;
     }
 
     /**
@@ -323,12 +322,4 @@ public final class JsonLdOptions {
     public void setRequiredAll(boolean requiredAll) {
         this.requiredAll = requiredAll;
     }
-    
-//    public boolean isFrameDefault() {
-//        return frameDefault;
-//    }
-//    
-//    public void setFrameDefault(boolean frameDefault) {
-//        this.frameDefault = frameDefault;
-//    }
 }

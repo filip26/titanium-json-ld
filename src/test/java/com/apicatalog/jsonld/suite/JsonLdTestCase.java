@@ -37,6 +37,8 @@ public final class JsonLdTestCase {
     public Set<String> type;
     
     public JsonLdTestCaseOptions options;
+
+    public String contentType;
     
     private final String testsBase;
     
@@ -84,6 +86,8 @@ public final class JsonLdTestCase {
                                 : new JsonLdTestCaseOptions();
                                 
         testCase.baseUri = baseUri;
+        
+        testCase.contentType = o.getString("contentType", "application/ld+json");
                                 
         return testCase;
     }

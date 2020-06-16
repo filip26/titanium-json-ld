@@ -50,6 +50,7 @@ public class JsonLdTestCaseOptions {
         if (o.containsKey("compactToRelative")) {
             options.compactToRelative = o.getBoolean("compactToRelative");
         }
+        
         options.rdfDirection = o.getString("rdfDirection", null);
         
         if (o.containsKey("produceGeneralizedRdf")) {
