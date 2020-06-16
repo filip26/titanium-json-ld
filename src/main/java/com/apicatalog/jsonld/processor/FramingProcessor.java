@@ -131,7 +131,7 @@ public final class FramingProcessor {
         }
         
         // 18. - remove preserve
-        result = removePreserve(result);
+        result = result.stream().map(FramingProcessor::removePreserve).collect(Collectors.toList());
         
         // 19.
         JsonValue compactedResults = CompactionBuilder
@@ -168,21 +168,19 @@ public final class FramingProcessor {
         }
         
         // 21.
-        if (!omitGraph) {
-            if  (!compactedResults.asJsonObject().containsKey(Keywords.GRAPH)) {
+        if (!omitGraph && !compactedResults.asJsonObject().containsKey(Keywords.GRAPH)) {
                 
-                if (compactedResults.asJsonObject().isEmpty()) {
-                
-                    compactedResults = Json.createObjectBuilder().add(Keywords.GRAPH, 
-                            JsonValue.EMPTY_JSON_ARRAY
-                            ).build();
+            if (compactedResults.asJsonObject().isEmpty()) {
+            
+                compactedResults = Json.createObjectBuilder().add(Keywords.GRAPH, 
+                        JsonValue.EMPTY_JSON_ARRAY
+                        ).build();
 
-                } else {
-                
-                    compactedResults = Json.createObjectBuilder().add(Keywords.GRAPH, 
-                                            Json.createArrayBuilder().add(compactedResults)
-                                            ).build();
-                }
+            } else {
+            
+                compactedResults = Json.createObjectBuilder().add(Keywords.GRAPH, 
+                                        Json.createArrayBuilder().add(compactedResults)
+                                        ).build();
             }
         }
 
@@ -216,30 +214,33 @@ public final class FramingProcessor {
         
         return remoteDocument;
     }
-    
-    
-    private static final List<JsonValue> removePreserve(Collection<JsonValue> array) {
-        return array.stream().map(FramingProcessor::removePreserveValue).collect(Collectors.toList());
-    }
-    
-    private static final JsonValue removePreserveValue(JsonValue value) {
+        
+    private static final JsonValue removePreserve(JsonValue value) {
         
         if (JsonUtils.isScalar(value)) {
             return value;
         }
+        
         if (JsonUtils.isArray(value)) {
-            return JsonUtils.toJsonArray(removePreserve(value.asJsonArray()));
+            
+            final JsonArrayBuilder array = Json.createArrayBuilder();
+            
+            for (final JsonValue item : value.asJsonArray()) {
+                array.add(removePreserve(item));
+            }
+            
+            return array.build();
         }
         
-        JsonObjectBuilder object = Json.createObjectBuilder();
+        final JsonObjectBuilder object = Json.createObjectBuilder();
         
-        for (Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
+        for (final Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
             
             if (Keywords.PRESERVE.equals(entry.getKey())) {
                 
                 return entry.getValue().asJsonArray().get(0);
             }
-            object.add(entry.getKey(), removePreserveValue(entry.getValue()));
+            object.add(entry.getKey(), removePreserve(entry.getValue()));
         }
         
         return object.build();
@@ -309,13 +310,13 @@ public final class FramingProcessor {
         
         for (Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
             
-            if (Keywords.ID.equals(entry.getKey()) && JsonUtils.isString(entry.getValue())) {
-             
-                if (blankNodes.contains(((JsonString)entry.getValue()).getString())) {
+            if (Keywords.ID.equals(entry.getKey()) 
+                    && JsonUtils.isString(entry.getValue())
+                    && blankNodes.contains(((JsonString)entry.getValue()).getString())) {
+                
                     continue;
-                }
-
             }
+            
             object.add(entry.getKey(), removeBlankIdKey(entry.getValue(), blankNodes));
         }
         
