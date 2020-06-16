@@ -44,6 +44,8 @@ Titanium JSON-LD implements the [JsonLdProcessor](https://www.w3.org/TR/json-ld1
 #### JsonLd Builder API 
 
 ```javascript
+
+// Expansion
 JsonLd.expand("https://w3c.github.io/json-ld-api/tests/expand/0001-in.jsonld")
       .ordered()
       .get();
@@ -52,16 +54,22 @@ JsonLd.expand("https://example.com/document.json")
       .context("https://example.com/context.jsonld")  // external context
       .get();
 
+// Compaction
 JsonLd.compact("https://example.com/expanded.jsonld", "https://example.com/context.jsonld").get();
 
+// Flattening
 JsonLd.flatten("https://example.com/document.jsonld").get();
 
+// JSON-LD to RDF
 JsonLd.toRdf("https://example.com/document.jsonld").get();
 
+// RDF to JSON-LD
 RdfDataset dataset = Rdf.createReader(reader, RdfFormat.N_QUADS).readDataset();
 
 JsonLd.fromRdf(dataset).options(options).get();
 
+// Framing
+JsonLd.frame("https://example.com/document.jsonld", "https://example.com/frame.jsonld").get();
 
 ```
 
