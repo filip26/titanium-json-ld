@@ -140,7 +140,12 @@ public final class FramingProcessor {
                                         .ordered(options.isOrdered())
                                         .build();
 
-        if (JsonUtils.isArray(compactedResults)) {
+        // 19.1.
+        if (JsonUtils.isEmptyArray(compactedResults)) {
+            compactedResults = JsonValue.EMPTY_JSON_OBJECT;
+            
+        // 19.2.
+        } else if (JsonUtils.isArray(compactedResults)) {
         
             String key = activeContext.compactUri(Keywords.GRAPH).vocab(true).build();
             
@@ -148,7 +153,7 @@ public final class FramingProcessor {
                                     .add(key, compactedResults).build();
         
         }
-        
+
         // 20.
         compactedResults = replaceNull(compactedResults);
         
@@ -181,6 +186,7 @@ public final class FramingProcessor {
             }
         }
 
+        // 19.3.
         if (JsonUtils.isNotEmptyArray(context) && JsonUtils.isNotEmptyObject(context)) {
             compactedResults = Json.createObjectBuilder(compactedResults.asJsonObject()).add(Keywords.CONTEXT, context).build();
         }
