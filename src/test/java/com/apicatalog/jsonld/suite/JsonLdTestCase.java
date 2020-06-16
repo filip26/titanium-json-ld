@@ -44,6 +44,8 @@ public final class JsonLdTestCase {
     
     public Integer httpStatus;
     
+    public String httpLink;
+    
     private final String testsBase;
     
     public JsonLdTestCase(final String testsBase) {
@@ -101,7 +103,8 @@ public final class JsonLdTestCase {
                                     ? o.getJsonObject("option").getInt("httpStatus", 301)
                                     : null
                                     ;
-                                
+        testCase.httpLink = o.getString("httpLink", null);
+        
         return testCase;
     }
         

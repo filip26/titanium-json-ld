@@ -30,6 +30,7 @@ import com.apicatalog.jsonld.loader.UrlRewrite;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 @RunWith(Parameterized.class)
@@ -82,20 +83,26 @@ public class RemoteTest {
                                     )); 
                 }
                 
+                ResponseDefinitionBuilder mockResponseBuilder = aResponse();
+                
                 if (inputContent != null) {
-                    stubFor(get(urlEqualTo(inputPath.substring(TESTS_BASE.length())))
-                          .willReturn(aResponse()
+                    mockResponseBuilder
                               .withStatus(200)
                               .withHeader("Content-Type", testCase.contentType)
-                              .withBody(inputContent)
-                                  ));
+                              ;
+                    
+                    if (testCase.httpLink != null) {
+                        mockResponseBuilder.withHeader("Link", testCase.httpLink);
+                    }
+                    
+                    mockResponseBuilder.withBody(inputContent);
+                    
                 } else {
-                    stubFor(get(urlEqualTo(inputPath.substring(TESTS_BASE.length())))
-                            .willReturn(aResponse()
-                                .withStatus(404)
-                                    ));                    
+                    mockResponseBuilder.withStatus(404);                  
                 }
-
+                
+                stubFor(get(urlEqualTo(inputPath.substring(TESTS_BASE.length()))).willReturn(mockResponseBuilder));
+                
                 JsonLdOptions expandOptions = new JsonLdOptions(options);
                 expandOptions.setDocumentLoader(new UrlRewrite(TESTS_BASE, wireMockRule.baseUrl(), new HttpDocumentLoader()));
                 
