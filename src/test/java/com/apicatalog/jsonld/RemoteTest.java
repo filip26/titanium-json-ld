@@ -64,16 +64,13 @@ public class RemoteTest {
             inputPath = testCase.input.toString();
         }
         
-        System.out.println(">>> " + inputPath + ", " + testCase.input);
         try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.JSON_LD_API_BASE + inputPath.substring(testCase.baseUri.length()))) {
 
-            
-            Assert.assertNotNull(is);
-
-            String inputContent = 
-                        new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
-                              .lines()
-                              .collect(Collectors.joining("\n"));
+            String inputContent = is != null 
+                            ? new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
+                                  .lines()
+                                  .collect(Collectors.joining("\n"))
+                            : null;
             
             (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
 
@@ -85,12 +82,19 @@ public class RemoteTest {
                                     )); 
                 }
                 
-                stubFor(get(urlEqualTo(inputPath.substring(TESTS_BASE.length())))
-                      .willReturn(aResponse()
-                          .withStatus(200)
-                          .withHeader("Content-Type", testCase.contentType)
-                          .withBody(inputContent)
-                              ));
+                if (inputContent != null) {
+                    stubFor(get(urlEqualTo(inputPath.substring(TESTS_BASE.length())))
+                          .willReturn(aResponse()
+                              .withStatus(200)
+                              .withHeader("Content-Type", testCase.contentType)
+                              .withBody(inputContent)
+                                  ));
+                } else {
+                    stubFor(get(urlEqualTo(inputPath.substring(TESTS_BASE.length())))
+                            .willReturn(aResponse()
+                                .withStatus(404)
+                                    ));                    
+                }
 
                 JsonLdOptions expandOptions = new JsonLdOptions(options);
                 expandOptions.setDocumentLoader(new UrlRewrite(TESTS_BASE, wireMockRule.baseUrl(), new HttpDocumentLoader()));
@@ -100,9 +104,14 @@ public class RemoteTest {
 
             verify(getRequestedFor(urlMatching(testCase.input.toString().substring(TESTS_BASE.length())))
                     .withHeader("accept", equalTo(HttpDocumentLoader.ACCEPT_HEADER)));
+
+            if (testCase.redirectTo != null) {
+                verify(getRequestedFor(urlMatching(testCase.redirectTo.toString().substring(TESTS_BASE.length())))
+                        .withHeader("accept", equalTo(HttpDocumentLoader.ACCEPT_HEADER)));                
+            }
             
         } catch (JsonLdError e) {
-            e.printStackTrace();
+
             Assert.fail(e.getMessage());
             
         } catch (IOException e) {
