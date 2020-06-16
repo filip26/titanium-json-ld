@@ -40,9 +40,9 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 
 ## Examples
 
-Titanium JSON-LD implements the [JsonLdProcessor](https://www.w3.org/TR/json-ld11-api/#the-jsonldprocessor-interface) interface and custom interface based on the builder design pattern.
+Titanium implements the [JsonLdProcessor](https://www.w3.org/TR/json-ld11-api/#the-jsonldprocessor-interface) interface and custom interface based on builder design pattern.
 
-#### JsonLd Builder API 
+#### Builder API 
 
 ```javascript
 
