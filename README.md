@@ -32,7 +32,7 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 - [x] 0.3 - ~~[Flattening Algorithms](https://www.w3.org/TR/json-ld11-api/#flattening-algorithms)~~
 - [x] 0.4 - ~~[JSON-LD to RDF](https://www.w3.org/TR/json-ld11-api/#deserialize-json-ld-to-rdf-algorithm)~~
 - [x] 0.5 - ~~[RDF to JSON-LD](https://www.w3.org/TR/json-ld11-api/#serialize-rdf-as-json-ld-algorithm)~~
-- [ ] 0.6 - [Framing](https://www.w3.org/TR/json-ld11-framing/)
+- [x] 0.6 - ~~[Framing](https://www.w3.org/TR/json-ld11-framing/)~~
 - [ ] 0.7 - Document & Context loaders
 - [ ] 0.8 - [JSON-LD API](https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface)
 - [ ] 1.0 - Documented, A+ code
@@ -44,6 +44,8 @@ Titanium JSON-LD implements the [JsonLdProcessor](https://www.w3.org/TR/json-ld1
 #### JsonLd Builder API 
 
 ```javascript
+
+// Expansion
 JsonLd.expand("https://w3c.github.io/json-ld-api/tests/expand/0001-in.jsonld")
       .ordered()
       .get();
@@ -52,16 +54,22 @@ JsonLd.expand("https://example.com/document.json")
       .context("https://example.com/context.jsonld")  // external context
       .get();
 
+// Compaction
 JsonLd.compact("https://example.com/expanded.jsonld", "https://example.com/context.jsonld").get();
 
+// Flattening
 JsonLd.flatten("https://example.com/document.jsonld").get();
 
+// JSON-LD to RDF
 JsonLd.toRdf("https://example.com/document.jsonld").get();
 
+// RDF to JSON-LD
 RdfDataset dataset = Rdf.createReader(reader, RdfFormat.N_QUADS).readDataset();
 
 JsonLd.fromRdf(dataset).options(options).get();
 
+// Framing
+JsonLd.frame("https://example.com/document.jsonld", "https://example.com/frame.jsonld").get();
 
 ```
 

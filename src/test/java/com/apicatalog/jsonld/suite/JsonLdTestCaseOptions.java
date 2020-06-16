@@ -67,7 +67,6 @@ public class JsonLdTestCaseOptions {
         if (o.containsKey("omitGraph")) {
             options.omitGraph = o.getBoolean("omitGraph");
         }
-
         return options;
     }
 
@@ -107,6 +106,10 @@ public class JsonLdTestCaseOptions {
         
         if (useRdfType != null) {
             options.setUseRdfType(useRdfType);
+        }
+        
+        if (omitGraph != null) {
+            options.setOmitGraph(omitGraph);
         }
         
     }
