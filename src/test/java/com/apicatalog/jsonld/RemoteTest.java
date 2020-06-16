@@ -92,7 +92,7 @@ public class RemoteTest {
                               ;
                     
                     if (testCase.httpLink != null) {
-                        mockResponseBuilder.withHeader("Link", testCase.httpLink);
+                        testCase.httpLink.forEach(link -> mockResponseBuilder.withHeader("Link", link));
                     }
                     
                     mockResponseBuilder.withBody(inputContent);

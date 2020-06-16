@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
@@ -26,16 +27,20 @@ public class HttpDocumentLoader implements LoadDocumentCallback {
     
     private int connectTimeout;
     private int readTimeout;
+    private int maxRedirections;
 
     public HttpDocumentLoader() {
         this.connectTimeout = -1;
         this.readTimeout = -1;
+        this.maxRedirections = MAX_REDIRECTIONS;
     }
     
     @Override
     public RemoteDocument loadDocument(final URI uri, final LoadDocumentOptions options) throws JsonLdError {
 
         try {
+
+            final RemoteDocument remoteDocument = new RemoteDocument();
             
             int redirection = 0;
             boolean done = false;
@@ -44,7 +49,9 @@ public class HttpDocumentLoader implements LoadDocumentCallback {
             
             URL url = uri.toURL();
             
-            while (redirection < MAX_REDIRECTIONS && !done) {
+            String contentType = null;
+            
+            while (!done) {
                 
                 // 2.
                  connection = (HttpURLConnection)url.openConnection();
@@ -74,28 +81,40 @@ public class HttpDocumentLoader implements LoadDocumentCallback {
                     || connection.getResponseCode() == 307
                     ) {
 
+                    if (connection.getResponseCode() == 303) {
+                    //    remoteDocument.setDocumentUrl(url.toURI());
+                    }
+                    
                     url = new URL(UriResolver.resolve(url.toURI(), connection.getHeaderField("Location")));
                     connection.disconnect();
                     redirection++;
-                    continue;                    
+                    
+                    if (maxRedirections > 0 && redirection >= maxRedirections) {
+                        throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections");
+                    }
+
+                    continue;
                 }
+                
+                if (connection.getResponseCode() != 200) {
+                    connection.disconnect();
+                    throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unexpected response code [" + connection.getResponseCode() + "]");
+                }
+
+                contentType = connection.getHeaderField("Content-Type");
+                List<String> link = connection.getHeaderFields().get("Link");
+                
+                System.out.println("link: " + link + ", content-type: " + contentType);
+                
+                // 4.
+                //TODO
+
                 done = true;
             }
             
-            if (!done) {
-                connection.disconnect();
-                throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections");
+            if (remoteDocument.getDocumentUrl() == null) {
+                remoteDocument.setDocumentUrl(url.toURI());
             }
-            
-            if (connection.getResponseCode() != 200) {
-                connection.disconnect();
-                throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unexpected response code [" + connection.getResponseCode() + "]");
-            }
-            
-            String contentType = connection.getHeaderField("Content-Type");
-            
-            // 4.
-            //TODO
             
             // 5.
             //TODO
@@ -119,9 +138,8 @@ public class HttpDocumentLoader implements LoadDocumentCallback {
             
             connection.disconnect();
             
-            RemoteDocument remoteDocument = new RemoteDocument();
             remoteDocument.setDocument(document);
-            remoteDocument.setDocumentUrl(url.toURI()); 
+             
 
             //TODO set content type, profile & contextUrl
             
@@ -149,5 +167,9 @@ public class HttpDocumentLoader implements LoadDocumentCallback {
      */
     public void setReadTimeout(int timeout) {
         this.readTimeout = timeout;
+    }
+    
+    public void setMaxRedirections(int maxRedirections) {
+        this.maxRedirections = maxRedirections;
     }
 }

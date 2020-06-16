@@ -1,14 +1,17 @@
 package com.apicatalog.jsonld.suite;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.json.JsonObject;
 import javax.json.JsonString;
+import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.ClassPathLoader;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
@@ -44,7 +47,7 @@ public final class JsonLdTestCase {
     
     public Integer httpStatus;
     
-    public String httpLink;
+    public Set<String> httpLink;
     
     private final String testsBase;
     
@@ -103,7 +106,21 @@ public final class JsonLdTestCase {
                                     ? o.getJsonObject("option").getInt("httpStatus", 301)
                                     : null
                                     ;
-        testCase.httpLink = o.getString("httpLink", null);
+
+        if (o.containsKey("option") &&  o.getJsonObject("option").containsKey("httpLink")) {
+            
+            JsonValue links = o.getJsonObject("option").get("httpLink");
+            
+            if (JsonUtils.isArray(links)) {
+                testCase.httpLink = links.asJsonArray().stream()
+                                            .map(JsonString.class::cast)
+                                            .map(JsonString::getString)
+                                            .collect(Collectors.toSet());
+            } else {
+                testCase.httpLink = new HashSet<>();
+                testCase.httpLink.add(((JsonString)links).getString());
+            }
+        }
         
         return testCase;
     }
