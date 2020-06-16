@@ -7,6 +7,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
@@ -18,12 +20,14 @@ import com.apicatalog.jsonld.uri.UriResolver;
 public class HttpDocumentLoader implements LoadDocumentCallback {
 
     public static final String ACCEPT_HEADER = 
-                                    MediaTypes.JSON_LD_MEDIA_TYPE
+                                    MediaType.JSON_LD.toString()
                                         .concat(",")
-                                        .concat(MediaTypes.JSON_MEDIA_TYPE)
+                                        .concat(MediaType.JSON.toString())
                                         .concat(");q=0.9,*/*;q=0.8");
     
     public static final int MAX_REDIRECTIONS = 10;
+    
+    private static final String PLUS_JSON = "+json";
     
     private int connectTimeout;
     private int readTimeout;
@@ -49,12 +53,12 @@ public class HttpDocumentLoader implements LoadDocumentCallback {
             
             URL url = uri.toURL();
             
-            String contentType = null;
+            MediaType contentType = null;
             
             while (!done) {
                 
                 // 2.
-                 connection = (HttpURLConnection)url.openConnection();
+                connection = (HttpURLConnection)url.openConnection();
     
                 connection.setInstanceFollowRedirects(false);
                 
@@ -101,52 +105,101 @@ public class HttpDocumentLoader implements LoadDocumentCallback {
                     throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unexpected response code [" + connection.getResponseCode() + "]");
                 }
 
-                contentType = connection.getHeaderField("Content-Type");
-                List<String> link = connection.getHeaderFields().get("Link");
+                final String contentTypeValue = connection.getHeaderField("Content-Type");
                 
-                System.out.println("link: " + link + ", content-type: " + contentType);
+                if (contentTypeValue != null) {                    
+                    contentType = MediaType.valueOf(contentTypeValue);
+                }
                 
-                // 4.
-                //TODO
+                if (contentType != null
+                     && !MediaType.JSON_LD.match(contentType)
+                     && !MediaType.HTML.match(contentType)
+                     && !MediaType.XHTML.match(contentType)
+                        ) {
 
+                    final List<String> linkValues = connection.getHeaderFields().get("Link");
+                    
+                    System.out.println("link: " + linkValues + ", content-type: " + contentType);
+                    
+                    Set<Link> links = null;
+                    
+                    if (linkValues != null) {
+                        links = linkValues.stream().flatMap(l -> new LinkHeaderParser(l).parse().stream()).collect(Collectors.toSet());
+                    }
+                    
+                    System.out.println("weblinks: " + links);
+
+
+                    if (links != null) {
+                        
+                        // 4.
+                        if (!MediaType.JSON.match(contentType)
+                                && !contentType.subtype().toLowerCase().endsWith(PLUS_JSON)
+//                                && links.stream().fin
+                                ) {
+                            
+//                            url = new URL(UriResolver.resolve(url.toURI(), .connection.));
+                            
+                            connection.disconnect();
+                            redirection++;
+                            
+                            if (maxRedirections > 0 && redirection >= maxRedirections) {
+                                throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections");
+                            }
+
+                            continue;
+                        }
+                        
+                        // 5.
+                        if (MediaType.JSON.match(contentType)
+                                || contentType.subtype().toLowerCase().endsWith(PLUS_JSON)
+//                                && links.stream().fin
+                                ) {
+                            //TODO setContextUrl
+                        }
+                    }
+                }
+                    
                 done = true;
             }
             
-            if (remoteDocument.getDocumentUrl() == null) {
-                remoteDocument.setDocumentUrl(url.toURI());
-            }
-            
-            // 5.
-            //TODO
-            
             // 6.
-            if (!MediaTypes.JSON_LD_MEDIA_TYPE.equalsIgnoreCase(contentType)
-                    && !MediaTypes.JSON_MEDIA_TYPE.equalsIgnoreCase(contentType)
-                    && (contentType == null || !contentType.toLowerCase().endsWith("+json"))  
+            if (contentType == null ||
+                    (!MediaType.JSON_LD.match(contentType)
+                    && !MediaType.JSON.match(contentType)
+                    && !contentType.subtype().toLowerCase().endsWith(PLUS_JSON))  
                     ) {
+                
                 connection.disconnect();
+                
                 throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, 
                                             "Unsupported media type '" + contentType 
                                             + "'. Supported content types are [" 
-                                            + MediaTypes.JSON_LD_MEDIA_TYPE + ", " 
-                                            + MediaTypes.JSON_MEDIA_TYPE + ", *+json]"
+                                            + MediaType.JSON_LD + ", " 
+                                            + MediaType.JSON  + ", "
+                                            + PLUS_JSON
+                                            + "]"
                                             );
             }
-            
+
             // 7.
+                        
             Document document = JsonDocument.parse(new InputStreamReader(connection.getInputStream()));
-            
+
             connection.disconnect();
-            
+
+            if (remoteDocument.getDocumentUrl() == null) {
+                remoteDocument.setDocumentUrl(url.toURI());
+            }
+
+            remoteDocument.setContentType(contentType);
             remoteDocument.setDocument(document);
              
-
-            //TODO set content type, profile & contextUrl
+            //TODO set profile
             
             return remoteDocument;
             
         } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);            
         }        
     }

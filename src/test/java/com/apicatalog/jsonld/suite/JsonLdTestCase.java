@@ -15,6 +15,7 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.ClassPathLoader;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
+import com.apicatalog.jsonld.loader.MediaType;
 import com.apicatalog.jsonld.loader.UrlRewrite;
 
 public final class JsonLdTestCase {
@@ -41,7 +42,7 @@ public final class JsonLdTestCase {
     
     public JsonLdTestCaseOptions options;
 
-    public String contentType;
+    public MediaType contentType;
     
     public URI redirectTo;
     
@@ -96,7 +97,23 @@ public final class JsonLdTestCase {
                                 
         testCase.baseUri = baseUri;
         
-        testCase.contentType = o.getString("contentType", "application/ld+json");
+        
+        testCase.contentType = o.containsKey("option") && o.getJsonObject("option").containsKey("contentType") 
+                                    ? MediaType.valueOf(o.getJsonObject("option").getString("contentType"))
+                                    : null;
+        
+        if (testCase.contentType == null && testCase.input != null) {
+            
+            if (testCase.input.toString().endsWith(".jsonld")) {
+                testCase.contentType = MediaType.JSON_LD;
+                
+            } else if (testCase.input.toString().endsWith(".json")) {
+                testCase.contentType = MediaType.JSON;
+                
+            } else if (testCase.input.toString().endsWith(".html")) {
+                testCase.contentType = MediaType.HTML;
+            }
+        }
         
         testCase.redirectTo = o.containsKey("option") && o.getJsonObject("option").containsKey("redirectTo")
                                 ? URI.create(baseUri + o.getJsonObject("option").getString("redirectTo"))

@@ -3,6 +3,7 @@ package com.apicatalog.jsonld.document;
 import java.net.URI;
 
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
+import com.apicatalog.jsonld.loader.MediaType;
 
 /**
  * The {@link RemoteDocument} is used by a {@link LoadDocumentCallback} to
@@ -15,7 +16,7 @@ import com.apicatalog.jsonld.loader.LoadDocumentCallback;
  */
 public class RemoteDocument {
 
-    private String contextType;
+    private MediaType contentType;
     private URI contextUrl;
 
     private Document document;
@@ -29,8 +30,8 @@ public class RemoteDocument {
      * 
      * @return
      */
-    public String getContextType() {
-        return contextType;
+    public MediaType getContentType() {
+        return contentType;
     }
 
     /**
@@ -57,7 +58,7 @@ public class RemoteDocument {
 
     /**
      * The value of any <code>profile</code> parameter retrieved as part of the
-     * original {@link #getContextType()}.
+     * original {@link #getContentType()}.
      * 
      * @return
      */
@@ -77,5 +78,9 @@ public class RemoteDocument {
 
     public void setDocument(Document document) {
         this.document = document;
-    }    
+    }   
+    
+    public void setContentType(MediaType contentType) {
+        this.contentType = contentType;
+    }
 }

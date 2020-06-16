@@ -1,19 +1,6 @@
 package com.apicatalog.jsonld;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -28,9 +15,9 @@ import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.loader.HttpDocumentLoader;
 import com.apicatalog.jsonld.loader.UrlRewrite;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
+import com.apicatalog.jsonld.suite.JsonLdMockServer;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
-import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 @RunWith(Parameterized.class)
@@ -55,70 +42,29 @@ public class RemoteTest {
     
     @Test
     public void testRemote() {
-
-        String inputPath;
         
-        if (testCase.redirectTo != null) {
-            inputPath = testCase.redirectTo.toString();
+        try {
+
+            JsonLdMockServer server = new JsonLdMockServer(testCase, TESTS_BASE);
             
-        } else {
-            inputPath = testCase.input.toString();
-        }
-        
-        try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.JSON_LD_API_BASE + inputPath.substring(testCase.baseUri.length()))) {
-
-            String inputContent = is != null 
-                            ? new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
-                                  .lines()
-                                  .collect(Collectors.joining("\n"))
-                            : null;
+            server.start();
             
             (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
-
-                if (testCase.redirectTo != null) {
-                    stubFor(get(urlEqualTo(testCase.input.toString().substring(TESTS_BASE.length())))
-                            .willReturn(aResponse()
-                                .withStatus(testCase.httpStatus)
-                                .withHeader("Location", testCase.redirectTo.toASCIIString().substring(TESTS_BASE.length()))
-                                    )); 
-                }
-                
-                ResponseDefinitionBuilder mockResponseBuilder = aResponse();
-                
-                if (inputContent != null) {
-                    mockResponseBuilder
-                              .withStatus(200)
-                              .withHeader("Content-Type", testCase.contentType)
-                              ;
-                    
-                    if (testCase.httpLink != null) {
-                        testCase.httpLink.forEach(link -> mockResponseBuilder.withHeader("Link", link));
-                    }
-                    
-                    mockResponseBuilder.withBody(inputContent);
-                    
-                } else {
-                    mockResponseBuilder.withStatus(404);                  
-                }
-                
-                stubFor(get(urlEqualTo(inputPath.substring(TESTS_BASE.length()))).willReturn(mockResponseBuilder));
                 
                 JsonLdOptions expandOptions = new JsonLdOptions(options);
-                expandOptions.setDocumentLoader(new UrlRewrite(TESTS_BASE, wireMockRule.baseUrl(), new HttpDocumentLoader()));
+                
+                expandOptions.setDocumentLoader(
+                                    new UrlRewrite(
+                                                TESTS_BASE, 
+                                                wireMockRule.baseUrl(), 
+                                                new HttpDocumentLoader()));
                 
                 return JsonLd.expand(testCase.input).options(expandOptions).get();
             });
 
-            verify(getRequestedFor(urlMatching(testCase.input.toString().substring(TESTS_BASE.length())))
-                    .withHeader("accept", equalTo(HttpDocumentLoader.ACCEPT_HEADER)));
-
-            if (testCase.redirectTo != null) {
-                verify(getRequestedFor(urlMatching(testCase.redirectTo.toString().substring(TESTS_BASE.length())))
-                        .withHeader("accept", equalTo(HttpDocumentLoader.ACCEPT_HEADER)));                
-            }
+            server.stop();
             
         } catch (JsonLdError e) {
-
             Assert.fail(e.getMessage());
             
         } catch (IOException e) {

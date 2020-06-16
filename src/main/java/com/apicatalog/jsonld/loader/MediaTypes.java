@@ -20,8 +20,4 @@ public class MediaTypes {
     
     public static final String JSON_LD_PROFILE_FRAMED = "http://www.w3.org/ns/json-ld#framed";        
     
-    public static final String JSON_LD_MEDIA_TYPE = "application/ld+json";
-    
-    public static final String JSON_MEDIA_TYPE = "application/json";
-    
 }
