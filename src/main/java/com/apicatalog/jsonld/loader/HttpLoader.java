@@ -18,10 +18,9 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.http.Link;
-import com.apicatalog.jsonld.http.LinkHeaderParser;
-import com.apicatalog.jsonld.http.MediaType;
 import com.apicatalog.jsonld.http.JsonLdProfile;
+import com.apicatalog.jsonld.http.Link;
+import com.apicatalog.jsonld.http.MediaType;
 import com.apicatalog.jsonld.uri.UriResolver;
 
 public class HttpLoader implements LoadDocumentCallback {
@@ -117,18 +116,22 @@ public class HttpLoader implements LoadDocumentCallback {
 
                 if (linkValues != null && !linkValues.isEmpty()) {
 
+                    final URI xbaseUri = targetUri;
+                    linkValues.stream().flatMap(l -> Link.valueOf(l, xbaseUri).stream()).forEach(System.out::println);
+                    
                     // 4.
                     if (contentType == null 
                             || (!MediaType.JSON.match(contentType)
                                     && !contentType.subtype().toLowerCase().endsWith(PLUS_JSON))
                             ) {
+                        
+                        final URI baseUri = targetUri;
 
                         Optional<Link> alternate = 
                                             linkValues.stream()
-                                                .flatMap(l -> new LinkHeaderParser(l).parse().stream())
-                                                .filter(
-                                                        f -> "alternate".equalsIgnoreCase(f.rel())
-                                                                && MediaType.JSON_LD.toString().equals(f.type())
+                                                .flatMap(l -> Link.valueOf(l, baseUri).stream())
+                                                .filter(l -> l.rel().contains("alternate")
+                                                                && MediaType.JSON_LD.toString().equals(l.type())
                                                         )
                                                 .findFirst();
 
@@ -154,12 +157,13 @@ public class HttpLoader implements LoadDocumentCallback {
                             && (MediaType.JSON.match(contentType)
                                     || contentType.subtype().toLowerCase().endsWith(PLUS_JSON))
                             ) {
-                        
+
+                        final URI baseUri = targetUri;
 
                         List<Link> contextUri = 
                                         linkValues.stream()
-                                            .flatMap(l -> new LinkHeaderParser(l).parse().stream())
-                                            .filter(f -> JsonLdProfile.CONTEXT.equals(f.rel()))
+                                            .flatMap(l -> Link.valueOf(l, baseUri).stream())
+                                            .filter(l -> l.rel().contains(JsonLdProfile.CONTEXT))
                                             .collect(Collectors.toList());
 
                         System.out.println("contextUri:" + contextUri);
