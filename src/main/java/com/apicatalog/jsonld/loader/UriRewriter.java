@@ -6,18 +6,18 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.RemoteDocument;
 
-public final class UrlRewrite implements LoadDocumentCallback {
+public final class UriRewriter implements LoadDocumentCallback {
 
     private final String sourceBase;
     private final String targetBase;
     
     private final LoadDocumentCallback loader;
     
-    public UrlRewrite(final String sourceBase, final String targetBase) {
-        this(sourceBase, targetBase, new UrlConnectionLoader());
+    public UriRewriter(final String sourceBase, final String targetBase) {
+        this(sourceBase, targetBase, new HttpLoader());
     }
     
-    public UrlRewrite(final String sourceBase, final String targetBase, final LoadDocumentCallback loader) {
+    public UriRewriter(final String sourceBase, final String targetBase, final LoadDocumentCallback loader) {
         this.sourceBase = sourceBase;
         this.targetBase = targetBase;
         
@@ -30,7 +30,7 @@ public final class UrlRewrite implements LoadDocumentCallback {
         final String sourceUrl = url.toString();
         
         if (!sourceUrl.startsWith(sourceBase)) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            return loader.loadDocument(url, options);
         }
 
         final String relativePath = sourceUrl.substring(sourceBase.length());
@@ -41,7 +41,12 @@ public final class UrlRewrite implements LoadDocumentCallback {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
 
-        remoteDocument.setDocumentUrl(url);
+        if (remoteDocument.getDocumentUrl() != null && remoteDocument.getDocumentUrl().toString().startsWith(targetBase)) {
+            
+            final String remoteRelativePath = remoteDocument.getDocumentUrl().toString().substring(targetBase.length()); 
+            remoteDocument.setDocumentUrl(URI.create(sourceBase + remoteRelativePath));
+
+        }
         return remoteDocument;
 
     }

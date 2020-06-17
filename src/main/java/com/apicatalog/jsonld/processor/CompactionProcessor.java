@@ -58,11 +58,9 @@ public final class CompactionProcessor {
     public static final JsonObject compact(final RemoteDocument input, final JsonStructure context, final JsonLdOptions options) throws JsonLdError {
         
         // 4.
-        JsonLdOptions expansionOptions = new JsonLdOptions();
+        JsonLdOptions expansionOptions = new JsonLdOptions(options);
         expansionOptions.setOrdered(false);
         expansionOptions.setExtractAllScripts(false);
-        expansionOptions.setBase(options.getBase());
-        expansionOptions.setProcessingMode(options.getProcessingMode());
         
         JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
 

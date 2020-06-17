@@ -1,18 +1,22 @@
 package com.apicatalog.jsonld.suite;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.json.JsonObject;
 import javax.json.JsonString;
+import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.http.MediaType;
+import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.ClassPathLoader;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
-import com.apicatalog.jsonld.loader.UrlRewrite;
+import com.apicatalog.jsonld.loader.UriRewriter;
 
 public final class JsonLdTestCase {
 
@@ -37,6 +41,14 @@ public final class JsonLdTestCase {
     public Set<String> type;
     
     public JsonLdTestCaseOptions options;
+
+    public MediaType contentType;
+    
+    public URI redirectTo;
+    
+    public Integer httpStatus;
+    
+    public Set<String> httpLink;
     
     private final String testsBase;
     
@@ -84,14 +96,56 @@ public final class JsonLdTestCase {
                                 : new JsonLdTestCaseOptions();
                                 
         testCase.baseUri = baseUri;
-                                
+        
+        
+        testCase.contentType = o.containsKey("option") && o.getJsonObject("option").containsKey("contentType") 
+                                    ? MediaType.valueOf(o.getJsonObject("option").getString("contentType"))
+                                    : null;
+        
+        if (testCase.contentType == null && testCase.input != null) {
+            
+            if (testCase.input.toString().endsWith(".jsonld")) {
+                testCase.contentType = MediaType.JSON_LD;
+                
+            } else if (testCase.input.toString().endsWith(".json")) {
+                testCase.contentType = MediaType.JSON;
+                
+            } else if (testCase.input.toString().endsWith(".html")) {
+                testCase.contentType = MediaType.HTML;
+            }
+        }
+        
+        testCase.redirectTo = o.containsKey("option") && o.getJsonObject("option").containsKey("redirectTo")
+                                ? URI.create(baseUri + o.getJsonObject("option").getString("redirectTo"))
+                                : null;
+        
+        testCase.httpStatus = o.containsKey("option")  
+                                    ? o.getJsonObject("option").getInt("httpStatus", 301)
+                                    : null
+                                    ;
+
+        if (o.containsKey("option") &&  o.getJsonObject("option").containsKey("httpLink")) {
+            
+            JsonValue links = o.getJsonObject("option").get("httpLink");
+            
+            if (JsonUtils.isArray(links)) {
+                testCase.httpLink = links.asJsonArray().stream()
+                                            .map(JsonString.class::cast)
+                                            .map(JsonString::getString)
+                                            .collect(Collectors.toSet());
+            } else {
+                testCase.httpLink = new HashSet<>();
+                testCase.httpLink.add(((JsonString)links).getString());
+            }
+        }
+        
         return testCase;
     }
         
     public JsonLdOptions getOptions() {
         
         final LoadDocumentCallback loader = 
-                new UrlRewrite(
+                new UriRewriter(
                             baseUri, 
                             "classpath:" + testsBase,
                             new ClassPathLoader()
@@ -130,5 +184,4 @@ public final class JsonLdTestCase {
 
         return JsonLdErrorCode.valueOf(errorCode.strip().toUpperCase().replace(" ", "_").replace("-", "_").replaceAll("\\_\\@", "_KEYWORD_" )); 
     }
-    
 }

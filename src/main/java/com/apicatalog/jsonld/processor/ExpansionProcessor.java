@@ -2,6 +2,7 @@ package com.apicatalog.jsonld.processor;
 
 import java.net.URI;
 
+import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
@@ -86,13 +87,20 @@ public final class ExpansionProcessor {
                                 .create(options.getExpandContext().asJsonArray(), baseUrl)
                                 .build();
         }
+        
+        // 7.
+        if (input.getContextUrl() != null) {
+            activeContext = activeContext
+                                .create(Json.createValue(input.getContextUrl().toString()), input.getContextUrl())
+                                .build();
+        }
 
-        JsonValue expanded = 
-                        Expansion
-                            .with(activeContext, jsonStructure, null, baseUrl)
-                            .frameExpansion(frameExpansion)
-                            .ordered(options.isOrdered())
-                            .compute();
+        // 8.
+        JsonValue expanded = Expansion
+                                .with(activeContext, jsonStructure, null, baseUrl)
+                                .frameExpansion(frameExpansion)
+                                .ordered(options.isOrdered())
+                                .compute();
 
         // 8.1
         if (JsonUtils.isObject(expanded)) {
