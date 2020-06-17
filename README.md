@@ -12,8 +12,6 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 
 ###  Status
 
-*work in progress*
-
  Feature | Tests | Pass | Status | Notes
  --- | ---: | ---: | ---: | ---
 [Expansion](https://www.w3.org/TR/json-ld/#expanded-document-form) | 369 |  369 | 100% | 
@@ -73,5 +71,35 @@ JsonLd.fromRdf(dataset).options(options).get();
 JsonLd.frame("https://example.com/document.jsonld", "https://example.com/frame.jsonld").get();
 
 ```
+## Contributing
+
+Your contribution is welcome. 
+
+### Building
+
+Fork and clone the project repository:
+
+```bash
+> git clone git@github.com:filip26/titanium-json-ld.git
+```
+
+#### Install test packages
+
+Download [json-ld-test-suite](https://github.com/filip26/json-ld-api/packages/248430) and [json-ld-framing-test-suite](https://github.com/filip26/json-ld-api/packages/261048). 
+
+```bash
+> mvn install:install-file -Dfile=<path-to-json-ld-test-suite> -DgroupId=com.github.w3c \
+-DartifactId=json-ld-test-suite -Dversion=20200518 -Dpackaging=jar
+
+> mvn install:install-file -Dfile=<path-to-json-ld-framing-test-suite> -DgroupId=com.github.w3c \
+-DartifactId=json-ld-framing-test-suite -Dversion=20200609 -Dpackaging=jar
+
+```
+#### Compile sources
+
+```bash
+> mvn package
+```
+Each pull request must pass tests.
 
 
