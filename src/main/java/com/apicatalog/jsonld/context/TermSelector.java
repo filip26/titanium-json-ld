@@ -18,21 +18,18 @@ public final class TermSelector {
     
     private final String typeLanguage;
     
-    private final Collection<String> preferredValues;
-    
-    private TermSelector(ActiveContext activeContext, String variable, Collection<String> containers, String typeLanguage, Collection<String> preferredValues) {
+    private TermSelector(final ActiveContext activeContext, final String variable, final Collection<String> containers, final String typeLanguage) {
         this.activeContext = activeContext;
         this.variable = variable;
         this.containers = containers;
         this.typeLanguage = typeLanguage;
-        this.preferredValues = preferredValues;
     }
     
-    public static TermSelector with(ActiveContext activeContext, String variable, Collection<String> containers, String typeLanguage, Collection<String> preferredValues) {
-        return new TermSelector(activeContext, variable, containers, typeLanguage, preferredValues);
+    public static TermSelector with(final ActiveContext activeContext, final String variable, final Collection<String> containers, final String typeLanguage) {
+        return new TermSelector(activeContext, variable, containers, typeLanguage);
     }
     
-    public String select() {
+    public String select(final Collection<String> preferredValues) {
 
         // 1. If the active context has a null inverse context, 
         //    set inverse context in active context to the result of calling 

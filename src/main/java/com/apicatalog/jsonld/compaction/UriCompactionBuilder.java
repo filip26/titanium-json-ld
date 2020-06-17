@@ -435,7 +435,7 @@ public final class UriCompactionBuilder {
             preferredValues.add(Keywords.ANY);
             
             // 4.19.
-            for (String preferredValue : new ArrayList<>(preferredValues)) {
+            for (final String preferredValue : new ArrayList<>(preferredValues)) {
                 
                 int index = preferredValue.indexOf('_');
                 
@@ -447,7 +447,7 @@ public final class UriCompactionBuilder {
             }            
 
             // 4.20.
-            String term = activeContext.selectTerm(variable, containers, typeLanguage, preferredValues).select();
+            final String term = activeContext.selectTerm(variable, containers, typeLanguage).select(preferredValues);
             
             // 4.21.
             if (term != null) {

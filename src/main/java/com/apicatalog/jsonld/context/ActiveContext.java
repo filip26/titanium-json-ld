@@ -178,8 +178,8 @@ public final class ActiveContext {
          this.inverseContext = InverseContextBuilder.with(this).build();
     }
     
-    public TermSelector selectTerm(String variable, Collection<String> containerMapping, String typeLanguage, Collection<String> preferredValues) {
-        return TermSelector.with(this, variable, containerMapping, typeLanguage, preferredValues);
+    public TermSelector selectTerm(String variable, Collection<String> containerMapping, String typeLanguage) {
+        return TermSelector.with(this, variable, containerMapping, typeLanguage);
     }
 
     public ValueCompactionBuilder compactValue(final JsonObject element, final String activeProperty) {

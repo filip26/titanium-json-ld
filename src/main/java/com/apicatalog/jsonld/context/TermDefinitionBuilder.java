@@ -666,8 +666,7 @@ public final class TermDefinitionBuilder {
                                 Keywords.LANGUAGE,
                                 Keywords.LIST, 
                                 Keywords.SET, 
-                                Keywords.TYPE); 
-            
+                                Keywords.TYPE);
         }
         
         if (JsonUtils.isArray(container)) { 
@@ -699,8 +698,7 @@ public final class TermDefinitionBuilder {
                         || JsonUtils.contains(Keywords.LANGUAGE, container)
                         || JsonUtils.contains(Keywords.TYPE, container)
                         ;
-            }
-            
+            }            
         }
         return false;
     }
