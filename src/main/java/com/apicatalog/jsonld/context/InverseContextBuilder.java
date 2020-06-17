@@ -1,7 +1,5 @@
 package com.apicatalog.jsonld.context;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.json.JsonString;
@@ -30,20 +28,20 @@ public final class InverseContextBuilder {
     public InverseContext build() {
         
         // 1.
-        InverseContext result = new InverseContext();
+        final InverseContext result = new InverseContext();
         
         // 2.
-        String defaultLanguage = activeContext.getDefaultLanguage() != null
+        final String defaultLanguage = activeContext.getDefaultLanguage() != null
                                     ? activeContext.getDefaultLanguage().toLowerCase()
                                     : Keywords.NONE;
                                     
         // 3
-        for (String term : activeContext.getTerms().stream().sorted().collect(Collectors.toList())) {
+        for (final String term : activeContext.getTerms().stream().sorted().collect(Collectors.toList())) {
         
-            TermDefinition termDefinition = activeContext.getTerm(term);
+            final TermDefinition termDefinition = activeContext.getTerm(term);
 
             // 3.1.
-            if (termDefinition == null) {   //TODO does active context contain null values??
+            if (termDefinition == null) {
                 continue;
             }
             
@@ -57,75 +55,30 @@ public final class InverseContextBuilder {
             }
             
             // 3.3.
-            String variable = termDefinition.getUriMapping();
-            
-            // 3.4.-5.
-            Map<String, Map<String, Map<String, String>>> containerMap = result.getValue(variable);
-            
-            if (containerMap == null) {
-                containerMap = new LinkedHashMap<>();
-                result.add(variable, containerMap);
-            }
-            
-            // 3.6.-9.
-            Map<String, Map<String, String>> typeLanguageMap = containerMap.get(container);
-            
-            Map<String, String> languageMap = null;
-            
-            Map<String, String> typeMap = null;
-            
-            if (typeLanguageMap == null) {
-                //TODO create class, get rid of Map, refactor this whole block 
-                typeLanguageMap = new LinkedHashMap<>();
-                
-                languageMap = new LinkedHashMap<>();
-                typeLanguageMap.put(Keywords.LANGUAGE, languageMap);
-                
-                typeMap = new LinkedHashMap<>();
-                typeLanguageMap.put(Keywords.TYPE, typeMap);
-                
-                Map<String, String> anyMap =new LinkedHashMap<>();
-                anyMap.put(Keywords.NONE, term);
-                
-                typeLanguageMap.put(Keywords.ANY, anyMap);
-                
-                containerMap.put(container, typeLanguageMap);
-                
-            } else {
-                
-                languageMap = typeLanguageMap.get(Keywords.LANGUAGE);
-                typeMap = typeLanguageMap.get(Keywords.TYPE);
-            }
+            final String variable = termDefinition.getUriMapping();
+                        
+            result.setIfAbsent(variable, container, Keywords.ANY, Keywords.NONE, term);
 
             // 3.10.
             if (termDefinition.isReverseProperty()) {
 
                 // 3.10.1
-                if (!typeMap.containsKey(Keywords.REVERSE)) {
-                    typeMap.put(Keywords.REVERSE, term);
-                }
+                result.setIfAbsent(variable, container, Keywords.TYPE, Keywords.REVERSE, term);
             
             // 3.11.
             } else if (Keywords.NONE.equals(termDefinition.getTypeMapping()) ) {
                 
                 // 3.11.1.
-                if (!languageMap.containsKey(Keywords.ANY)) {
-                    languageMap.put(Keywords.ANY, term);
-                }
+                result.setIfAbsent(variable, container, Keywords.LANGUAGE, Keywords.ANY, term);
 
                 // 3.11.2.
-                if (!typeMap.containsKey(Keywords.ANY)) {
-                    typeMap.put(Keywords.ANY, term);
-                }
+                result.setIfAbsent(variable, container, Keywords.TYPE, Keywords.ANY, term);
 
             // 3.12.
             } else if (termDefinition.getTypeMapping() != null) {
 
                 // 3.12.1
-                if (!typeMap.containsKey(termDefinition.getTypeMapping())) {
-                    typeMap.put(termDefinition.getTypeMapping(), term);
-                }
-
+                result.setIfAbsent(variable, container, Keywords.TYPE, termDefinition.getTypeMapping(), term);
                 
             // 3.13.
             } else if (termDefinition.getLanguageMapping() != null
@@ -158,9 +111,7 @@ public final class InverseContextBuilder {
                 }
                 
                 // 3.13.5.
-                if (!languageMap.containsKey(langDir)) {
-                    languageMap.put(langDir, term);
-                }
+                result.setIfAbsent(variable, container, Keywords.LANGUAGE, langDir, term);
                 
             // 3.14.
             } else if (termDefinition.getLanguageMapping() != null) {
@@ -173,11 +124,7 @@ public final class InverseContextBuilder {
                 }
                               
                 // 3.14.2.
-                if (!languageMap.containsKey(language)) {
-                    
-                    languageMap.put(language, term);
-                }
-
+                result.setIfAbsent(variable, container, Keywords.LANGUAGE, language, term);
                 
             // 3.15.
             } else if (termDefinition.getDirectionMapping() != null) {
@@ -190,15 +137,13 @@ public final class InverseContextBuilder {
                 }
 
                 // 3.15.2.
-                if (!languageMap.containsKey(direction)) {
-                    languageMap.put(direction, term);
-                }
+                result.setIfAbsent(variable, container, Keywords.LANGUAGE, direction, term);
 
             // 3.16.
             } else if (activeContext.getDefaultBaseDirection() != null) {
                 
                 // 3.16.1.
-                String langDir = (activeContext.getDefaultLanguage() != null 
+                final String langDir = (activeContext.getDefaultLanguage() != null 
                                     ? activeContext.getDefaultLanguage()
                                     : ""
                                     )
@@ -207,42 +152,30 @@ public final class InverseContextBuilder {
                                     .toLowerCase();
                 
                 // 3.16.2.
-                if (!languageMap.containsKey(langDir)) {
-                    languageMap.put(langDir, term);
-                }
+                result.setIfAbsent(variable, container, Keywords.LANGUAGE, langDir, term);
+
 
                 // 3.16.3.
-                if (!languageMap.containsKey(Keywords.NONE)) {
-                    languageMap.put(Keywords.NONE, term);
-                }
+                result.setIfAbsent(variable, container, Keywords.LANGUAGE, Keywords.NONE, term);
                 
                 // 3.16.4.
-                if (!typeMap.containsKey(Keywords.NONE)) {
-                    typeMap.put(Keywords.NONE, term);
-                }
+                result.setIfAbsent(variable, container, Keywords.TYPE, Keywords.NONE, term);
                 
             // 3.17.
             } else {
                 
                 // 3.17.1.
-                if (!languageMap.containsKey(defaultLanguage)) {
-                    languageMap.put(defaultLanguage, term);
-                }
+                result.setIfAbsent(variable, container, Keywords.LANGUAGE, defaultLanguage, term);
                 
                 // 3.17.2.
-                if (!languageMap.containsKey(Keywords.NONE)) {
-                    languageMap.put(Keywords.NONE, term);
-                }
+                result.setIfAbsent(variable, container, Keywords.LANGUAGE, Keywords.NONE, term);
                 
                 // 3.17.2.
-                if (!typeMap.containsKey(Keywords.NONE)) {
-                    typeMap.put(Keywords.NONE, term);
-                }
+                result.setIfAbsent(variable, container, Keywords.TYPE, Keywords.NONE, term);
             }
         }
         
         // 4.
         return result;
     }
-    
 }

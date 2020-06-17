@@ -66,15 +66,17 @@ public final class TermSelector {
             //      type/language entry in type/language map.
             final Map<String, String> valueMap = typeLanguageMap.get(typeLanguage);
 
-            // 4.4.
-            for (final String item : preferredValues) {
-                
-                // 4.4.1.
-                if (!valueMap.containsKey(item)) {
-                    continue;
+            if (valueMap != null) {
+                // 4.4.
+                for (final String item : preferredValues) {
+                    
+                    // 4.4.1.
+                    if (!valueMap.containsKey(item)) {
+                        continue;
+                    }
+    
+                    return valueMap.get(item);
                 }
-
-                return valueMap.get(item);
             }
         }   
 
