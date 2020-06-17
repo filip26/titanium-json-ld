@@ -98,10 +98,10 @@ public final class CompactionProcessor {
         
         // 9.
         JsonValue compactedOutput = CompactionBuilder
-                                        .with(activeContext, null, expandedInput)
+                                        .with(activeContext)
                                         .compactArrays(options.isCompactArrays())
                                         .ordered(options.isOrdered())
-                                        .build();
+                                        .compact(expandedInput);
         
         // 9.1.
         if (JsonUtils.isEmptyArray(compactedOutput)) {

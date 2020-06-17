@@ -135,10 +135,10 @@ public final class FramingProcessor {
         
         // 19.
         JsonValue compactedResults = CompactionBuilder
-                                        .with(activeContext, null, JsonUtils.toJsonArray(result))
-                                        .compactArrays(options.isCompactArrays())
-                                        .ordered(options.isOrdered())
-                                        .build();
+                                                .with(activeContext)
+                                                .compactArrays(options.isCompactArrays())
+                                                .ordered(options.isOrdered())
+                                                .compact(JsonUtils.toJsonArray(result));
 
         // 19.1.
         if (JsonUtils.isEmptyArray(compactedResults)) {

@@ -35,26 +35,22 @@ import com.apicatalog.jsonld.lang.Version;
 public final class CompactionBuilder {
 
     // required
-    private ActiveContext activeContext;
-    private String activeProperty;
-    private JsonValue element;
+    private final ActiveContext context;
     
     // optional
     private boolean compactArrays;
     private boolean ordered;
     
-    CompactionBuilder(final ActiveContext activeContext, final String activeProperty, final JsonValue element) {
-        this.activeContext = activeContext;
-        this.activeProperty = activeProperty;
-        this.element = element;
+    private CompactionBuilder(final ActiveContext context) {
+        this.context = context;
         
         // default values
         this.compactArrays = false;
         this.ordered = false;
     }
     
-    public static CompactionBuilder with(final ActiveContext activeContext, final String activeProperty, final JsonValue element) {
-        return new CompactionBuilder(activeContext, activeProperty, element);
+    public static CompactionBuilder with(final ActiveContext activeContext) {
+        return new CompactionBuilder(activeContext);
     }
     
     public CompactionBuilder compactArrays(final boolean compactArrays) {
@@ -67,10 +63,15 @@ public final class CompactionBuilder {
         return this;
     }
     
-    public JsonValue build() throws JsonLdError {
+    public JsonValue compact(final JsonValue element) throws JsonLdError {
+        return compact(null, element);
+    }
+    
+    public JsonValue compact(final String activeProperty, final JsonValue element) throws JsonLdError {
 
         // 1.
-        ActiveContext typeContext = activeContext;
+        ActiveContext typeContext = context;
+        ActiveContext activeContext = context;
         
         // 2.
         if (JsonUtils.isScalar(element)) {
@@ -90,10 +91,10 @@ public final class CompactionBuilder {
                 
                 // 3.2.1.
                 JsonValue compactedItem = CompactionBuilder
-                                                .with(activeContext, activeProperty, item)
-                                                .compactArrays(compactArrays)
-                                                .ordered(ordered)
-                                                .build();
+                                                    .with(activeContext)
+                                                    .compactArrays(compactArrays)
+                                                    .ordered(ordered)
+                                                    .compact(activeProperty, item);
                 // 3.2.2.                
                 if (JsonUtils.isNotNull(compactedItem)) {
                     resultBuilder.add(compactedItem);
@@ -163,10 +164,10 @@ public final class CompactionBuilder {
                 ) {
 
             return CompactionBuilder
-                        .with(activeContext, activeProperty, elementObject.get(Keywords.LIST))
-                        .compactArrays(compactArrays)
-                        .ordered(ordered)
-                        .build();
+                            .with(activeContext)
+                            .compactArrays(compactArrays)
+                            .ordered(ordered)
+                            .compact(activeProperty, elementObject.get(Keywords.LIST));
         }
         
         // 9.
@@ -285,11 +286,14 @@ public final class CompactionBuilder {
             if (Keywords.REVERSE.equals(expandedProperty)) {
                 
                 // 12.3.1.
-                Map<String, JsonValue> compactedMap = new LinkedHashMap<>(CompactionBuilder
-                                                .with(activeContext, Keywords.REVERSE, expandedValue)
+                Map<String, JsonValue> compactedMap = 
+                                new LinkedHashMap<>(
+                                        CompactionBuilder
+                                                .with(activeContext)
                                                 .compactArrays(compactArrays)
                                                 .ordered(ordered)
-                                                .build().asJsonObject());
+                                                .compact(Keywords.REVERSE, expandedValue)
+                                                .asJsonObject());
                 // 12.3.2.
                 for (Entry<String, JsonValue> entry : new HashSet<>(compactedMap.entrySet())) {
                     
@@ -330,10 +334,10 @@ public final class CompactionBuilder {
 
                 // 12.4.1.
                 JsonValue compactedValue = CompactionBuilder
-                                                .with(activeContext, activeProperty, expandedValue)
-                                                .compactArrays(compactArrays)
-                                                .ordered(ordered)
-                                                .build();
+                                                    .with(activeContext)
+                                                    .compactArrays(compactArrays)
+                                                    .ordered(ordered)
+                                                    .compact(activeProperty, expandedValue);
                 
                 // 12.4.2.
                 if (!JsonUtils.isEmptyArray(compactedValue)) {
@@ -474,11 +478,11 @@ public final class CompactionBuilder {
                 }
 
                 JsonValue compactedItem = CompactionBuilder
-                                                .with(activeContext, itemActiveProperty, expandedItemValue)
-                                                .compactArrays(compactArrays)
-                                                .ordered(ordered)
-                                                .build();
-                
+                                                    .with(activeContext)
+                                                    .compactArrays(compactArrays)
+                                                    .ordered(ordered)
+                                                    .compact(itemActiveProperty, expandedItemValue);
+                    
                 // 12.8.7.
                 if (ListObject.isListObject(expandedItem)) {
 
@@ -820,8 +824,8 @@ public final class CompactionBuilder {
                                 JsonObject map = Json.createObjectBuilder().add(Keywords.ID, expandedItem.asJsonObject().get(Keywords.ID)).build();
                                 
                                 compactedItem = CompactionBuilder
-                                                    .with(activeContext, itemActiveProperty, map)
-                                                    .build();
+                                                        .with(activeContext)
+                                                        .compact(itemActiveProperty, map);
                             }   
                         }
                     }

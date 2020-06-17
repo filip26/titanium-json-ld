@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public final class InverseContext {
 
-    private final Map<String ,Map<String, Map<String, Map<String, String>>>> context;
+    private final Map<String, Map<String, Map<String, Map<String, String>>>> context;
     
     public InverseContext() {
         this.context = new LinkedHashMap<>();

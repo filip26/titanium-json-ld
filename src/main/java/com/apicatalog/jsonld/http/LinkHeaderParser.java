@@ -18,7 +18,7 @@ import com.apicatalog.jsonld.uri.UriResolver;
  */
 final class LinkHeaderParser {
 
-    private enum State { INIT, URI_REF, PARAMS, PARAM_NAME, PARAM_VALUE, STRING_VALUE, LITERAL_VALUE, ESCAPE };
+    private enum State { INIT, URI_REF, PARAMS, PARAM_NAME, PARAM_VALUE, STRING_VALUE, LITERAL_VALUE, ESCAPE }
     
     private final char[] linkHeader;
     

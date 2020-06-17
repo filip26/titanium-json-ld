@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -30,6 +31,8 @@ import com.apicatalog.jsonld.uri.UriUtils;
  */
 public final class TermDefinitionBuilder {
 
+    private static final Logger LOGGER = Logger.getLogger(TermDefinitionBuilder.class.getName());
+    
     // mandatory
     ActiveContext activeContext;
 
