@@ -13,10 +13,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
+import com.apicatalog.jsonld.http.JsonLdProfile;
+import com.apicatalog.jsonld.http.Link;
+import com.apicatalog.jsonld.http.MediaType;
 import com.apicatalog.jsonld.loader.HttpLoader;
+import com.apicatalog.jsonld.uri.UriResolver;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 
 public final class JsonLdMockServer {
@@ -48,6 +53,34 @@ public final class JsonLdMockServer {
                             .withStatus(testCase.httpStatus)
                             .withHeader("Location", testCase.redirectTo.toASCIIString().substring(testBase.length()))
                                 )); 
+            }
+            
+            if (testCase.httpLink != null && testCase.httpLink.size() == 1) {
+                Link link = Link.valueOf(testCase.httpLink.iterator().next(), URI.create(".")).iterator().next();
+                
+                String contentType;
+                
+                if (link.rel().contains(JsonLdProfile.CONTEXT)) {
+                    contentType = MediaType.JSON_LD.toString();
+                } else {
+                    contentType = link.type();
+                }
+
+                String linkUri = UriResolver.resolve(testCase.input, link.uri().toString());
+                
+                try (InputStream lis = getClass().getResourceAsStream(JsonLdManifestLoader.JSON_LD_API_BASE + linkUri.substring(testCase.baseUri.length()))) {
+
+                    String inputContent = new BufferedReader(new InputStreamReader(lis, StandardCharsets.UTF_8))
+                            .lines()
+                            .collect(Collectors.joining("\n"));
+
+                    stubFor(get(urlEqualTo(linkUri.substring(testBase.length())))
+                            .willReturn(aResponse()
+                                .withStatus(200)
+                                .withHeader("Content-Type", contentType)
+                                .withBody(inputContent)
+                                    )); 
+                } 
             }
                 
             ResponseDefinitionBuilder mockResponseBuilder = aResponse();

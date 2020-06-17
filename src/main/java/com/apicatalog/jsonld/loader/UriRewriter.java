@@ -30,7 +30,7 @@ public final class UriRewriter implements LoadDocumentCallback {
         final String sourceUrl = url.toString();
         
         if (!sourceUrl.startsWith(sourceBase)) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            return loader.loadDocument(url, options);
         }
 
         final String relativePath = sourceUrl.substring(sourceBase.length());

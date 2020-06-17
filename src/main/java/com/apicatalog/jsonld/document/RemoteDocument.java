@@ -83,4 +83,8 @@ public class RemoteDocument {
     public void setContentType(MediaType contentType) {
         this.contentType = contentType;
     }
+    
+    public void setContextUrl(URI contextUrl) {
+        this.contextUrl = contextUrl;
+    }
 }

@@ -116,9 +116,6 @@ public class HttpLoader implements LoadDocumentCallback {
 
                 if (linkValues != null && !linkValues.isEmpty()) {
 
-                    final URI xbaseUri = targetUri;
-                    linkValues.stream().flatMap(l -> Link.valueOf(l, xbaseUri).stream()).forEach(System.out::println);
-                    
                     // 4.
                     if (contentType == null 
                             || (!MediaType.JSON.match(contentType)
@@ -160,22 +157,17 @@ public class HttpLoader implements LoadDocumentCallback {
 
                         final URI baseUri = targetUri;
 
-                        List<Link> contextUri = 
+                        final List<Link> contextUri = 
                                         linkValues.stream()
                                             .flatMap(l -> Link.valueOf(l, baseUri).stream())
                                             .filter(l -> l.rel().contains(JsonLdProfile.CONTEXT))
                                             .collect(Collectors.toList());
-
-                        System.out.println("contextUri:" + contextUri);
                         
                         if (contextUri.size() > 1) {
-                            
                             throw new JsonLdError(JsonLdErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS);
                             
                         } else if(contextUri.size() == 1) {
-
-                            //TODO setContextUrl
-                            
+                            remoteDocument.setContextUrl(contextUri.get(0).uri());
                         }
                     }
                 }
