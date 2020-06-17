@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.json.JsonObject;
 import javax.json.JsonValue;
@@ -87,15 +88,15 @@ public final class ActiveContext {
         return terms.values().stream().anyMatch(TermDefinition::isProtected);
     }
 
-    public TermDefinition removeTerm(String term) {
+    public Optional<TermDefinition> removeTerm(String term) {
 
         if (terms.containsKey(term)) {
             TermDefinition def = terms.get(term);
             terms.remove(term);
-            return def;
+            return Optional.of(def);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     public void setTerm(String term, TermDefinition definition) {
@@ -178,7 +179,7 @@ public final class ActiveContext {
          this.inverseContext = InverseContextBuilder.with(this).build();
     }
     
-    public TermSelector selectTerm(String variable, Collection<String> containerMapping, String typeLanguage) {
+    public TermSelector termSelector(String variable, Collection<String> containerMapping, String typeLanguage) {
         return TermSelector.with(this, variable, containerMapping, typeLanguage);
     }
 

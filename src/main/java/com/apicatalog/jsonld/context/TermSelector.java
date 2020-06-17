@@ -1,6 +1,7 @@
 package com.apicatalog.jsonld.context;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * 
@@ -29,7 +30,7 @@ public final class TermSelector {
         return new TermSelector(activeContext, variable, containers, typeLanguage);
     }
     
-    public String select(final Collection<String> preferredValues) {
+    public Optional<String> match(final Collection<String> preferredValues) {
 
         // 1. If the active context has a null inverse context, 
         //    set inverse context in active context to the result of calling 
@@ -42,7 +43,7 @@ public final class TermSelector {
         final InverseContext inverseContext = activeContext.getInverseContext();
                
         // 4. For each item container in containers:
-        for (String container : containers) {
+        for (final String container : containers) {
  
             if (inverseContext.doesNotContain(variable, container, typeLanguage)) {
                 continue;
@@ -60,6 +61,6 @@ public final class TermSelector {
         }   
 
         // 5.
-        return null;
+        return Optional.empty();
     } 
 }

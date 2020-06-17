@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.json.JsonArray;
 import javax.json.JsonString;
@@ -447,11 +448,11 @@ public final class UriCompactionBuilder {
             }            
 
             // 4.20.
-            final String term = activeContext.selectTerm(variable, containers, typeLanguage).select(preferredValues);
+            final Optional<String> term = activeContext.termSelector(variable, containers, typeLanguage).match(preferredValues);
             
             // 4.21.
-            if (term != null) {
-                return term;
+            if (term.isPresent()) {
+                return term.get();
             }
         }
 

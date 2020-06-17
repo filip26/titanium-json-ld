@@ -24,7 +24,7 @@ public final class InverseContextBuilder {
     public static final InverseContextBuilder with(final ActiveContext activeContext) {
         return new InverseContextBuilder(activeContext);  
     }
-    
+
     public InverseContext build() {
         
         // 1.

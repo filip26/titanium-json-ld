@@ -2,6 +2,7 @@ package com.apicatalog.jsonld.context;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public final class InverseContext {
 
@@ -11,38 +12,38 @@ public final class InverseContext {
         this.context = new LinkedHashMap<>();
     }
     
-    private void set(String variable, String container, String type, String key, String value) {
+    private void set(final String variable, final String container, final String type, final String key, final String value) {
         context.computeIfAbsent(variable, x -> new LinkedHashMap<>())
                 .computeIfAbsent(container, x -> new LinkedHashMap<>())
                 .computeIfAbsent(type, x -> new LinkedHashMap<>())                
                 .put(key, value);
     }
 
-    public boolean doesNotContain(String variable, String container, String type) {
+    public boolean doesNotContain(final String variable, final String container, final String type) {
         return !context.containsKey(variable)
                 || !context.get(variable).containsKey(container)
                 || !context.get(variable).get(container).containsKey(type);        
     }
     
-    public boolean doesNotContain(String variable, String container, String type, String key) {
+    public boolean doesNotContain(final String variable, final String container, final String type, final String key) {
         return doesNotContain(variable, container, type)
                 || !context.get(variable).get(container).get(type).containsKey(key);
     }
 
-    public boolean contains(String variable) {
+    public boolean contains(final String variable) {
         return context.containsKey(variable);
     }
 
-    public void setIfAbsent(String variable, String container, String type, String key, String value) {
+    public void setIfAbsent(final String variable, final String container, final String type, final String key, final String value) {
         if (doesNotContain(variable, container, type, key)) {
             set(variable, container, type, key, value);
         }
     }
     
-    public String get(String variable, String container, String type, String key) {
+    public Optional<String> get(final String variable, final String container, final String type, final String key) {
         if (doesNotContain(variable, container, type, key)) {
-            return null;
+            return Optional.empty();
         }
-        return context.get(variable).get(container).get(type).get(key);
+        return Optional.ofNullable(context.get(variable).get(container).get(type).get(key));
     }
 }

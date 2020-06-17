@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -160,7 +161,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 6.
-        TermDefinition previousDefinition = activeContext.removeTerm(term);
+        final Optional<TermDefinition> previousDefinition = activeContext.removeTerm(term);
 
         JsonObject valueObject = null;
         Boolean simpleTerm = null;
@@ -622,15 +623,15 @@ public final class TermDefinitionBuilder {
         }
 
         // 27.
-        if (!overrideProtectedFlag && previousDefinition != null && previousDefinition.isProtected()) {
+        if (!overrideProtectedFlag && previousDefinition.isPresent() && previousDefinition.get().isProtected()) {
 
             // 27.1.
-            if (definition.isNotSameExcept(previousDefinition)) {
+            if (definition.isNotSameExcept(previousDefinition.get())) {
                 throw new JsonLdError(JsonLdErrorCode.PROTECTED_TERM_REDEFINITION);
             }
 
             // 27.2.
-            definition = previousDefinition;
+            definition = previousDefinition.get();
         }
 
         // 28
@@ -638,7 +639,7 @@ public final class TermDefinitionBuilder {
         defined.put(term, Boolean.TRUE);
     }
     
-    final boolean isValidContainer(JsonValue container) {
+    private final boolean isValidContainer(JsonValue container) {
         
         if (JsonUtils.isNull(container)) {
             return false;

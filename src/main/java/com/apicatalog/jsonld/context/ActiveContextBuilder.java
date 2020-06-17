@@ -56,6 +56,9 @@ public class ActiveContextBuilder {
     private boolean validateScopedContext;
 
     private final JsonLdOptions options;
+    
+    // runtime
+    private ActiveContext result;
 
     private ActiveContextBuilder(ActiveContext activeContext, JsonValue localContext, URI baseUrl, final JsonLdOptions options) {
 
@@ -69,6 +72,9 @@ public class ActiveContextBuilder {
         this.overrideProtected = false;
         this.propagate = true;
         this.validateScopedContext = true;
+        
+        // runtime
+        this.result = null;
     }
 
     public static final ActiveContextBuilder with(ActiveContext activeContext, JsonValue localContext, URI baseUrl, JsonLdOptions options) {
@@ -99,7 +105,7 @@ public class ActiveContextBuilder {
 
         // 1. Initialize result to the result of cloning active context, with inverse
         // context set to null.
-        ActiveContext result = new ActiveContext(activeContext);
+        result = new ActiveContext(activeContext);
         result.inverseContext = null;
 
         // 2. If local context is an object containing the member @propagate,
@@ -151,87 +157,7 @@ public class ActiveContextBuilder {
             // 5.2. if context is a string,
             if (JsonUtils.isString(itemContext)) {
 
-                String contextUri = itemContext.toString();
-
-                // 5.2.1
-                if (baseUrl != null) {
-                    contextUri = UriResolver.resolve(baseUrl, ((JsonString) itemContext).getString());
-                    
-                } else if (UriUtils.isNotURI(contextUri)) {
-                    throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Context URI is not URI [" + contextUri + "].");
-                }
-
-                if (UriUtils.isNotAbsoluteUri(contextUri)) {
-                    throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Context URI is not absolute [" + contextUri + "].");
-                }
-
-                // 5.2.2
-                if (!validateScopedContext && remoteContexts.contains(contextUri)) {
-                    continue;
-                }
-
-                // 5.2.3
-                if (remoteContexts.size() > MAX_REMOTE_CONTEXTS) {
-                    throw new JsonLdError(JsonLdErrorCode.CONTEXT_OVERFLOW, "Too many contexts [>" + MAX_REMOTE_CONTEXTS + "].");
-                }
-                remoteContexts.add(contextUri);
-
-                // 5.2.5.
-                if (options.getDocumentLoader() == null) {
-                    throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Document loaded is null.");
-                }
-
-                LoadDocumentOptions loaderOptions = new LoadDocumentOptions();
-                loaderOptions.setProfile(JsonLdProfile.CONTEXT);
-                loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
-
-                JsonStructure importedStructure = null;
-                URI documentUrl = null;
-
-                try {
-                    RemoteDocument remoteImport = 
-                                        options
-                                            .getDocumentLoader()
-                                            .loadDocument(URI.create(contextUri), loaderOptions);
-
-                    documentUrl = remoteImport.getDocumentUrl();
-
-                    importedStructure = remoteImport.getDocument().asJsonStructure();
-
-                    if (importedStructure == null) {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");
-                    }
-
-                // 5.2.5.1.
-                } catch (JsonLdError e) {
-                    throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
-                }
-
-                // 5.2.5.2.
-                if (JsonUtils.isNotObject(importedStructure)) {
-                    throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is not valid Json Object [" + importedStructure.getValueType() + "].");
-                }
-
-                JsonValue importedContext = importedStructure.asJsonObject();
-
-                if (JsonUtils.isNotObject(importedContext) || !importedContext.asJsonObject().containsKey(Keywords.CONTEXT)) {
-                    throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT);
-                }
-
-                // 5.2.5.3.
-                importedContext = importedContext.asJsonObject().get(Keywords.CONTEXT);
-
-                // 5.2.6
-                try {
-                    result = result
-                                .create(importedContext, documentUrl)
-                                .remoteContexts(new ArrayList<>(remoteContexts))
-                                .validateScopedContext(validateScopedContext)
-                                .build();
-
-                } catch (JsonLdError e) {
-                    throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
-                }
+                importContext(((JsonString)itemContext).getString());
 
                 // 5.2.7
                 continue;
@@ -462,7 +388,7 @@ public class ActiveContextBuilder {
                 if (JsonUtils.isNull(value)) {
                     result.defaultBaseDirection = DirectionType.NULL;
 
-                    // 5.10.4.
+                // 5.10.4.
                 } else {
 
                     if (!JsonUtils.isString(value)) {
@@ -522,5 +448,90 @@ public class ActiveContextBuilder {
 
         // 6.
         return result;
+    }
+    
+    private void importContext(final String context) throws JsonLdError {
+
+        String contextUri = context;
+        
+        // 5.2.1
+        if (baseUrl != null) {
+            contextUri = UriResolver.resolve(baseUrl, contextUri);
+            
+        } else if (UriUtils.isNotURI(contextUri)) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Context URI is not URI [" + contextUri + "].");
+        }
+
+        if (UriUtils.isNotAbsoluteUri(contextUri)) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Context URI is not absolute [" + contextUri + "].");
+        }
+
+        // 5.2.2
+        if (!validateScopedContext && remoteContexts.contains(contextUri)) {
+            return;
+        }
+
+        // 5.2.3
+        if (remoteContexts.size() > MAX_REMOTE_CONTEXTS) {
+            throw new JsonLdError(JsonLdErrorCode.CONTEXT_OVERFLOW, "Too many contexts [>" + MAX_REMOTE_CONTEXTS + "].");
+        }
+        remoteContexts.add(contextUri);
+
+        // 5.2.5.
+        if (options.getDocumentLoader() == null) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Document loaded is null.");
+        }
+
+        LoadDocumentOptions loaderOptions = new LoadDocumentOptions();
+        loaderOptions.setProfile(JsonLdProfile.CONTEXT);
+        loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
+
+        JsonStructure importedStructure = null;
+        URI documentUrl = null;
+
+        try {
+            RemoteDocument remoteImport = 
+                                options
+                                    .getDocumentLoader()
+                                    .loadDocument(URI.create(contextUri), loaderOptions);
+
+            documentUrl = remoteImport.getDocumentUrl();
+
+            importedStructure = remoteImport.getDocument().asJsonStructure();
+
+            if (importedStructure == null) {
+                throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");
+            }
+
+        // 5.2.5.1.
+        } catch (JsonLdError e) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
+        }
+
+        // 5.2.5.2.
+        if (JsonUtils.isNotObject(importedStructure)) {
+            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is not valid Json Object [" + importedStructure.getValueType() + "].");
+        }
+
+        JsonValue importedContext = importedStructure.asJsonObject();
+
+        if (JsonUtils.isNotObject(importedContext) || !importedContext.asJsonObject().containsKey(Keywords.CONTEXT)) {
+            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT);
+        }
+
+        // 5.2.5.3.
+        importedContext = importedContext.asJsonObject().get(Keywords.CONTEXT);
+
+        // 5.2.6
+        try {
+            result = result
+                        .create(importedContext, documentUrl)
+                        .remoteContexts(new ArrayList<>(remoteContexts))
+                        .validateScopedContext(validateScopedContext)
+                        .build();
+
+        } catch (JsonLdError e) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
+        }
     }
 }
