@@ -45,7 +45,6 @@ public class JsonLdTestRunnerJunit {
             Assert.assertNotNull("A result is expected but got null", result);
         
         } catch (JsonLdError e) {
-            e.printStackTrace();
             Assert.assertEquals(e.getMessage(), testCase.expectErrorCode, e.getCode());
             return;
         }

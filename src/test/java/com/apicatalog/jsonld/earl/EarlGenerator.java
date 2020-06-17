@@ -10,12 +10,18 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
+import javax.json.JsonValue;
+
 import com.apicatalog.jsonld.JsonLd;
+import com.apicatalog.jsonld.RemoteTest;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
+import com.apicatalog.jsonld.loader.UriRewriter;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
+import com.apicatalog.jsonld.suite.JsonLdMockServer;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerEarl;
 import com.apicatalog.rdf.Rdf;
@@ -24,12 +30,13 @@ import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.io.RdfFormat;
 import com.apicatalog.rdf.io.error.UnsupportedFormatException;
 import com.apicatalog.rdf.io.nquad.NQuadsReaderException;
+import com.github.tomakehurst.wiremock.WireMockServer;
 
 public class EarlGenerator {
     
     public static final String FILE_NAME = "java-jsonp-ld-earl.ttl";
-    public static final String VERSION = "0.6";
-    public static final String RELEASE_DATE = "2020-06-16";
+    public static final String VERSION = "0.7";
+    public static final String RELEASE_DATE = "2020-06-17";
     
     public static void main(String[] args) throws IOException {
         (new EarlGenerator()).generate(Paths.get(FILE_NAME));
@@ -44,6 +51,7 @@ public class EarlGenerator {
             testExpand(writer);
             testFlatten(writer);
             testToRdf(writer);
+            testRemote(writer);
             testFromRdf(writer);
             testFrame(writer);
         };
@@ -168,6 +176,51 @@ public class EarlGenerator {
                                 )
                          )
                     );
+    }
+
+    
+    public void testRemote(PrintWriter writer) throws IOException {
+
+        JsonLdManifestLoader
+            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "remote-doc-manifest.jsonld")
+            .stream()
+            .forEach(testCase -> {
+                
+                boolean result = false;
+                
+                try {
+                    WireMockServer wireMockServer = new WireMockServer();
+                    wireMockServer.start();
+
+                    JsonLdMockServer server = new JsonLdMockServer(testCase, RemoteTest.TESTS_BASE);
+                    server.start();
+                    
+                    
+                    result = (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
+    
+                            
+                            JsonLdOptions expandOptions = new JsonLdOptions(options);
+                            
+                            expandOptions.setDocumentLoader(
+                                                new UriRewriter(
+                                                            RemoteTest.TESTS_BASE, 
+                                                            wireMockServer.baseUrl(), 
+                                                            new HttpLoader()));
+                            
+                            JsonValue r = JsonLd.expand(testCase.input).options(expandOptions).get();
+                            
+                            return r;
+                    });
+                    
+                    server.stop();
+                    wireMockServer.stop();
+                    
+                } catch (Throwable e) {
+                    result = false;
+                }
+                
+                printResult(writer, testCase.uri, result);
+            });
     }
 
     void printResult(PrintWriter writer, String testUri, boolean passed) {

@@ -1,5 +1,7 @@
 package com.apicatalog.jsonld;
 
+import static org.junit.Assume.assumeFalse;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -35,13 +37,16 @@ public class RemoteTest {
     @Parameterized.Parameter(3)
     public String baseUri;
     
-    private static final String TESTS_BASE = "https://w3c.github.io";
+    public static final String TESTS_BASE = "https://w3c.github.io";
     
     @Rule
     public final WireMockRule wireMockRule = new WireMockRule();
     
     @Test
     public void testRemote() {
+
+        // skip, HTML extraction is not supported yet
+        assumeFalse("#t0013".equals(testCase.id));
         
         try {
 

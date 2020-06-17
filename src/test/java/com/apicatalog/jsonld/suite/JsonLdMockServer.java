@@ -17,7 +17,6 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
-import com.apicatalog.jsonld.http.JsonLdProfile;
 import com.apicatalog.jsonld.http.Link;
 import com.apicatalog.jsonld.http.MediaType;
 import com.apicatalog.jsonld.loader.HttpLoader;
@@ -56,14 +55,23 @@ public final class JsonLdMockServer {
             }
             
             if (testCase.httpLink != null && testCase.httpLink.size() == 1) {
-                Link link = Link.valueOf(testCase.httpLink.iterator().next(), URI.create(".")).iterator().next();
                 
-                String contentType;
+                String linkValue = testCase.httpLink.iterator().next();
                 
-                if (link.rel().contains(JsonLdProfile.CONTEXT)) {
-                    contentType = MediaType.JSON_LD.toString();
-                } else {
-                    contentType = link.type();
+                Link link = Link.valueOf(linkValue, URI.create(".")).iterator().next();
+                
+                String contentType = link.type();
+                
+                if (contentType == null || contentType.isBlank()) {
+                    if (link.uri().toString().endsWith(".html")) {
+                        contentType = MediaType.HTML.toString();
+                        
+                    } else if (link.uri().toString().endsWith(".jsonld")) {
+                        contentType = MediaType.JSON_LD.toString();
+                        
+                    } else if (link.uri().toString().endsWith(".json")) {
+                        contentType = MediaType.JSON.toString();
+                    }
                 }
 
                 String linkUri = UriResolver.resolve(testCase.input, link.uri().toString());
@@ -110,7 +118,6 @@ public final class JsonLdMockServer {
     }
     
     public void stop() {
-        
         verify(getRequestedFor(urlMatching(testCase.input.toString().substring(testBase.length())))
                 .withHeader("accept", equalTo(HttpLoader.ACCEPT_HEADER)));
 
@@ -118,11 +125,5 @@ public final class JsonLdMockServer {
             verify(getRequestedFor(urlMatching(testCase.redirectTo.toString().substring(testBase.length())))
                     .withHeader("accept", equalTo(HttpLoader.ACCEPT_HEADER)));                
         }
-        
-        if (testCase.httpLink != null) {
-            
-        }
-
     }
-    
 }

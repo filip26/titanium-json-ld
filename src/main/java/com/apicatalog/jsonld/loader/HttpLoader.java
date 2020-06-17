@@ -132,8 +132,6 @@ public class HttpLoader implements LoadDocumentCallback {
                                                         )
                                                 .findFirst();
 
-                        System.out.println("alternate:" + alternate);
-                        
                         if (alternate.isPresent()) {
                         
                             targetUri = alternate.get().uri();

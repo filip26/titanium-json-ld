@@ -10,7 +10,7 @@ import java.util.Objects;
 public final class MediaType {
 
     private static final String TYPE_APPLICATION = "application";
-    private static final String TYPE_TEXT = "application";    
+    private static final String TYPE_TEXT = "text";    
     private static final String WILDCARD = "*";
     
     public static final MediaType HTML = new MediaType(TYPE_TEXT, "html"); 
