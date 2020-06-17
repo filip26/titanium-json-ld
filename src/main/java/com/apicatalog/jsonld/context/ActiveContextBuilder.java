@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.json.JsonObject;
 import javax.json.JsonString;
@@ -34,6 +36,10 @@ import com.apicatalog.jsonld.uri.UriUtils;
  */
 public class ActiveContextBuilder {
 
+    private static final int MAX_REMOTE_CONTEXTS = 256; 
+    
+    private static final Logger LOGGER = Logger.getLogger(ActiveContextBuilder.class.getName());
+    
     // mandatory
     private final ActiveContext activeContext;
     private final JsonValue localContext;
@@ -164,8 +170,7 @@ public class ActiveContextBuilder {
                 }
 
                 // 5.2.3
-                //TODO make it option, get rid of magic numbers
-                if (remoteContexts.size() > 256) {
+                if (remoteContexts.size() > MAX_REMOTE_CONTEXTS) {
                     throw new JsonLdError(JsonLdErrorCode.CONTEXT_OVERFLOW);
                 }
                 remoteContexts.add(contextUri);
@@ -439,7 +444,7 @@ public class ActiveContextBuilder {
                     result.defaultLanguage = ((JsonString) value).getString();
                     
                     if (!LanguageTag.isWellFormed(result.defaultLanguage)) {
-                        // TODO check language format, generate warning if needed                        
+                        LOGGER.log(Level.WARNING, "Language tag [{}] is not well formed.", result.defaultLanguage);                        
                     }
                 }
             }
