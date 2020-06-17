@@ -24,6 +24,10 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 
 See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld-api/reports/#subj_Titanium_JSON_LD_Java) for more details.
 
+## Installation
+
+TBD
+
 ## Roadmap
 
 - [x] 0.1 - ~~[Expansion Algorithms](https://www.w3.org/TR/json-ld11-api/#expansion-algorithms)~~
