@@ -11,8 +11,7 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
@@ -119,40 +118,43 @@ public class HttpLoader implements LoadDocumentCallback {
                 
                 if (contentType != null
                      && !MediaType.JSON_LD.match(contentType)
-                     && !MediaType.HTML.match(contentType)
-                     && !MediaType.XHTML.match(contentType)
+//                     && !MediaType.HTML.match(contentType)
+//                     && !MediaType.XHTML.match(contentType)
                         ) {
                     
-                    final List<String> linkValues = response.headers().map().get("Link");
-                    
-                    System.out.println("link: " + linkValues + ", content-type: " + contentType);
-                    
-                    Set<Link> links = null;
-                    
-                    if (linkValues != null) {
-                        links = linkValues.stream().flatMap(l -> new LinkHeaderParser(l).parse().stream()).collect(Collectors.toSet());
-                    }
-                    
-                    System.out.println("weblinks: " + links);
+                    final List<String> linkValues = response.headers().map().get("link");
 
-
-                    if (links != null) {
-                        
+                    if (linkValues != null && !linkValues.isEmpty()) {
+                                                
                         // 4.
                         if (!MediaType.JSON.match(contentType)
                                 && !contentType.subtype().toLowerCase().endsWith(PLUS_JSON)
-//                                && links.stream().fin
                                 ) {
-                            
-//                            url = new URL(UriResolver.resolve(url.toURI(), .connection.));
-                            
-                            redirection++;
-                            
-                            if (maxRedirections > 0 && redirection >= maxRedirections) {
-                                throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections");
-                            }
 
-                            continue;
+                            final Stream<Link> links = linkValues.stream().flatMap(l -> new LinkHeaderParser(l).parse().stream());
+                                                        
+                            Optional<Link> alternate = 
+                                    links
+                                        .filter(
+                                                f -> "alternate".equalsIgnoreCase(f.rel())
+                                                        && MediaType.JSON_LD.toString().equals(f.type())
+                                                )
+                                        .findFirst();
+
+                            System.out.println("alternate:" + alternate);
+                            
+                            if (alternate.isPresent()) {
+                            
+                                targetUri = alternate.get().uri();
+                                
+                                redirection++;
+                                
+                                if (maxRedirections > 0 && redirection >= maxRedirections) {
+                                    throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections");
+                                }
+    
+                                continue;
+                            }
                         }
                         
                         // 5.
@@ -197,10 +199,15 @@ public class HttpLoader implements LoadDocumentCallback {
             remoteDocument.setDocument(document);
              
             //TODO set profile
-            
+
             return remoteDocument;
             
-        } catch (IOException | InterruptedException e) {
+        } catch (InterruptedException e) {
+            
+            Thread.currentThread().interrupt();
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+            
+        } catch (IOException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);            
         }        
     }

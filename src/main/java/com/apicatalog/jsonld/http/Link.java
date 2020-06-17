@@ -1,5 +1,6 @@
 package com.apicatalog.jsonld.http;
 
+import java.net.URI;
 import java.util.Collection;
 
 /**
@@ -22,6 +23,20 @@ public final class Link {
      */
     public static final Collection<Link> parseHttpHeader(String linkHeader) {
         
+        return null;
+    }
+
+    public URI uri() {
+        return null;
+    }
+
+    public String rel() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String type() {
+        // TODO Auto-generated method stub
         return null;
     }
     
