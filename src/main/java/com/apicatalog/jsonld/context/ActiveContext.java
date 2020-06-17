@@ -163,8 +163,8 @@ public final class ActiveContext {
         return UriExpansionBuilder.with(this, value);
     }
 
-    public TermDefinitionBuilder createTerm(JsonObject localContext, String term, Map<String, Boolean> defined) {
-        return TermDefinitionBuilder.with(this, localContext, term, defined);
+    public TermDefinitionBuilder newTerm(JsonObject localContext, Map<String, Boolean> defined) {
+        return TermDefinitionBuilder.with(this, localContext, defined);
     }
 
     public ActiveContextBuilder create(final JsonValue localContext, final URI base) {

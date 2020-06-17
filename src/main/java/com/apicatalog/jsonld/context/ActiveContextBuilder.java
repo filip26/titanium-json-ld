@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -421,27 +420,24 @@ public class ActiveContextBuilder {
                 }
             }
 
-            // 5.12. Create a map defined to keep track of whether
-            // or not a term has already been defined or is currently being defined during
-            // recursion.
-            Map<String, Boolean> defined = new HashMap<>();
+            final TermDefinitionBuilder termBuilder =
+                            result
+                                .newTerm(contextDefinition, new HashMap<>())
+                                .baseUrl(baseUrl)
+                                .overrideProtectedFlag(overrideProtected)
+                                .remoteContexts(new ArrayList<>(remoteContexts));
 
             // 5.13
-            for (String key : contextDefinition.keySet()) {
+            for (final String key : contextDefinition.keySet()) {
 
                 if (Keywords.noneMatch(key, Keywords.BASE, Keywords.DIRECTION, Keywords.IMPORT, Keywords.LANGUAGE,
                         Keywords.PROPAGATE, Keywords.PROTECTED, Keywords.VERSION, Keywords.VOCAB)) {
 
-                    boolean protectedFlag = contextDefinition.containsKey(Keywords.PROTECTED)
-                            && JsonUtils.isTrue(contextDefinition.get(Keywords.PROTECTED));
-
-                    result
-                        .createTerm(contextDefinition, key, defined)
-                        .baseUrl(baseUrl)
-                        .protectedFlag(protectedFlag)
-                        .overrideProtectedFlag(overrideProtected)
-                        .remoteContexts(new ArrayList<>(remoteContexts))
-                        .build();
+                    termBuilder.protectedFlag(
+                                    contextDefinition.containsKey(Keywords.PROTECTED)
+                                        && JsonUtils.isTrue(contextDefinition.get(Keywords.PROTECTED))
+                                        )
+                                .create(key);
                 }
             }
         }

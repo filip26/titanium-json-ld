@@ -34,13 +34,11 @@ public final class TermDefinitionBuilder {
     private static final Logger LOGGER = Logger.getLogger(TermDefinitionBuilder.class.getName());
     
     // mandatory
-    ActiveContext activeContext;
+    private final ActiveContext activeContext;
 
-    JsonObject localContext;
+    private final JsonObject localContext;
 
-    String term;
-
-    Map<String, Boolean> defined;
+    private final Map<String, Boolean> defined;
 
     // optional
     URI baseUrl;
@@ -53,11 +51,9 @@ public final class TermDefinitionBuilder {
 
     boolean validateScopedContext;
 
-    private TermDefinitionBuilder(ActiveContext activeContext, JsonObject localContext, String term,
-            Map<String, Boolean> defined) {
+    private TermDefinitionBuilder(ActiveContext activeContext, JsonObject localContext, Map<String, Boolean> defined) {
         this.activeContext = activeContext;
         this.localContext = localContext;
-        this.term = term;
         this.defined = defined;
 
         // default values
@@ -68,9 +64,8 @@ public final class TermDefinitionBuilder {
         this.validateScopedContext = true;
     }
 
-    public static final TermDefinitionBuilder with(ActiveContext activeContext, JsonObject localContext, String term,
-            Map<String, Boolean> defined) {
-        return new TermDefinitionBuilder(activeContext, localContext, term, defined);
+    public static final TermDefinitionBuilder with(ActiveContext activeContext, JsonObject localContext, Map<String, Boolean> defined) {
+        return new TermDefinitionBuilder(activeContext, localContext, defined);
     }
 
     public TermDefinitionBuilder baseUrl(URI baseUrl) {
@@ -98,7 +93,7 @@ public final class TermDefinitionBuilder {
         return this;
     }
 
-    public void build() throws JsonLdError {
+    public void create(final String term) throws JsonLdError {
 
         if (term.isBlank()) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
@@ -393,9 +388,7 @@ public final class TermDefinitionBuilder {
             // 15.1.
             if (compactUri != null && compactUri.isNotBlank() && localContext.containsKey(compactUri.getPrefix())) {
 
-                activeContext
-                        .createTerm(localContext, compactUri.getPrefix(), defined)
-                        .build();
+                activeContext.newTerm(localContext, defined).create(compactUri.getPrefix());
             }
             // 15.2.
             if (compactUri != null && compactUri.isNotBlank() && activeContext.containsTerm(compactUri.getPrefix())) {

@@ -101,10 +101,7 @@ public final class UriExpansionBuilder {
                 String entryValueString = ((JsonString) entryValue).getString();
 
                 if (!defined.containsKey(entryValueString) || Boolean.FALSE.equals(defined.get(entryValueString))) {
-
-                    activeContext
-                            .createTerm(localContext, value, defined)
-                            .build();
+                    activeContext.newTerm(localContext, defined).create(value);
                 }
             }
         }
@@ -142,9 +139,7 @@ public final class UriExpansionBuilder {
             if (localContext != null && localContext.containsKey(split[0])
                     && (!defined.containsKey(split[0]) || !Boolean.TRUE.equals(defined.get(split[0])))) {
 
-                activeContext
-                    .createTerm(localContext, split[0], defined)
-                    .build();
+                activeContext.newTerm(localContext,defined).create(split[0]);
             }
 
             // 6.4.
