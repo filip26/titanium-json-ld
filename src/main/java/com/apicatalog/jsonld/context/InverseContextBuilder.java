@@ -154,7 +154,6 @@ public final class InverseContextBuilder {
                 // 3.16.2.
                 result.setIfAbsent(variable, container, Keywords.LANGUAGE, langDir, term);
 
-
                 // 3.16.3.
                 result.setIfAbsent(variable, container, Keywords.LANGUAGE, Keywords.NONE, term);
                 
