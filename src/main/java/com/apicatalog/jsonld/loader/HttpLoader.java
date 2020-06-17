@@ -11,7 +11,7 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
@@ -21,6 +21,7 @@ import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.http.Link;
 import com.apicatalog.jsonld.http.LinkHeaderParser;
 import com.apicatalog.jsonld.http.MediaType;
+import com.apicatalog.jsonld.http.JsonLdProfile;
 import com.apicatalog.jsonld.uri.UriResolver;
 
 public class HttpLoader implements LoadDocumentCallback {
@@ -83,10 +84,6 @@ public class HttpLoader implements LoadDocumentCallback {
                     || response.statusCode() == 307
                     ) {
 
-                    //if (response.statusCode() == 303) {
-                    //    remoteDocument.setDocumentUrl(url.toURI());
-                    //}
-
                     final Optional<String> location = response.headers().firstValue("Location");
                     
                     if (location.isPresent()) {
@@ -116,53 +113,65 @@ public class HttpLoader implements LoadDocumentCallback {
                     contentType = MediaType.valueOf(contentTypeValue.get());
                 }
                 
-                if (contentType != null
-                     && !MediaType.JSON_LD.match(contentType)
-//                     && !MediaType.HTML.match(contentType)
-//                     && !MediaType.XHTML.match(contentType)
-                        ) {
-                    
-                    final List<String> linkValues = response.headers().map().get("link");
+                final List<String> linkValues = response.headers().map().get("link");
 
-                    if (linkValues != null && !linkValues.isEmpty()) {
-                                                
-                        // 4.
-                        if (!MediaType.JSON.match(contentType)
-                                && !contentType.subtype().toLowerCase().endsWith(PLUS_JSON)
-                                ) {
+                if (linkValues != null && !linkValues.isEmpty()) {
 
-                            final Stream<Link> links = linkValues.stream().flatMap(l -> new LinkHeaderParser(l).parse().stream());
-                                                        
-                            Optional<Link> alternate = 
-                                    links
-                                        .filter(
-                                                f -> "alternate".equalsIgnoreCase(f.rel())
-                                                        && MediaType.JSON_LD.toString().equals(f.type())
-                                                )
-                                        .findFirst();
+                    // 4.
+                    if (contentType == null 
+                            || (!MediaType.JSON.match(contentType)
+                                    && !contentType.subtype().toLowerCase().endsWith(PLUS_JSON))
+                            ) {
 
-                            System.out.println("alternate:" + alternate);
-                            
-                            if (alternate.isPresent()) {
-                            
-                                targetUri = alternate.get().uri();
-                                
-                                redirection++;
-                                
-                                if (maxRedirections > 0 && redirection >= maxRedirections) {
-                                    throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections");
-                                }
-    
-                                continue;
-                            }
-                        }
+                        Optional<Link> alternate = 
+                                            linkValues.stream()
+                                                .flatMap(l -> new LinkHeaderParser(l).parse().stream())
+                                                .filter(
+                                                        f -> "alternate".equalsIgnoreCase(f.rel())
+                                                                && MediaType.JSON_LD.toString().equals(f.type())
+                                                        )
+                                                .findFirst();
+
+                        System.out.println("alternate:" + alternate);
                         
-                        // 5.
-                        if (MediaType.JSON.match(contentType)
-                                || contentType.subtype().toLowerCase().endsWith(PLUS_JSON)
-//                                && links.stream().fin
-                                ) {
+                        if (alternate.isPresent()) {
+                        
+                            targetUri = alternate.get().uri();
+                            
+                            redirection++;
+                            
+                            if (maxRedirections > 0 && redirection >= maxRedirections) {
+                                throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections");
+                            }
+
+                            continue;
+                        }
+                    }
+                    
+                    // 5.
+                    if (contentType != null 
+                            && !MediaType.JSON_LD.match(contentType) 
+                            && (MediaType.JSON.match(contentType)
+                                    || contentType.subtype().toLowerCase().endsWith(PLUS_JSON))
+                            ) {
+                        
+
+                        List<Link> contextUri = 
+                                        linkValues.stream()
+                                            .flatMap(l -> new LinkHeaderParser(l).parse().stream())
+                                            .filter(f -> JsonLdProfile.CONTEXT.equals(f.rel()))
+                                            .collect(Collectors.toList());
+
+                        System.out.println("contextUri:" + contextUri);
+                        
+                        if (contextUri.size() > 1) {
+                            
+                            throw new JsonLdError(JsonLdErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS);
+                            
+                        } else if(contextUri.size() == 1) {
+
                             //TODO setContextUrl
+                            
                         }
                     }
                 }
@@ -187,8 +196,7 @@ public class HttpLoader implements LoadDocumentCallback {
                                             );
             }
 
-            // 7.
-                        
+            // 7.   
             Document document = JsonDocument.parse(new InputStreamReader(response.body()));
 
             if (remoteDocument.getDocumentUrl() == null) {
