@@ -119,11 +119,11 @@ public final class JsonLdMockServer {
     
     public void stop() {
         verify(getRequestedFor(urlMatching(testCase.input.toString().substring(testBase.length())))
-                .withHeader("accept", equalTo(HttpLoader.ACCEPT_HEADER)));
+                .withHeader("accept", equalTo(HttpLoader.getAcceptHeader())));
 
         if (testCase.redirectTo != null) {
             verify(getRequestedFor(urlMatching(testCase.redirectTo.toString().substring(testBase.length())))
-                    .withHeader("accept", equalTo(HttpLoader.ACCEPT_HEADER)));                
+                .withHeader("accept", equalTo(HttpLoader.getAcceptHeader())));
         }
     }
 }

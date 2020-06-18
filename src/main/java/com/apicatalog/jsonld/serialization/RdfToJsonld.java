@@ -224,7 +224,7 @@ public final class RdfToJsonld {
                 List<String> listNodes = new ArrayList<>();
                 
                 String nodeId = ((JsonString)node.get(Keywords.ID)).getString();
-                
+
                 // 6.4.3.
                 while (RdfVocabulary.REST.equals(usage.property)
                         && BlankNode.isWellFormed(nodeId)
@@ -236,8 +236,8 @@ public final class RdfToJsonld {
                         && (node.size() == 3
                                 || (node.size() == 4 && node.containsKey(Keywords.TYPE)
                                     && node.get(Keywords.TYPE).asJsonArray().size() == 1
+                                    && node.get(Keywords.TYPE).asJsonArray().contains(Json.createValue(RdfVocabulary.LIST))
                                     ))
-                        //TODO TYPE check
                         ) {
 
                     // 6.4.3.1.

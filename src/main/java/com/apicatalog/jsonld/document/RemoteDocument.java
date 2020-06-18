@@ -87,4 +87,8 @@ public class RemoteDocument {
     public void setContextUrl(URI contextUrl) {
         this.contextUrl = contextUrl;
     }
+    
+    public void setProfile(String profile) {
+        this.profile = profile;
+    }
 }
