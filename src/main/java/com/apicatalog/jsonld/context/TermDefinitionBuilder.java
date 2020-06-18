@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.json.Json;
@@ -146,10 +147,10 @@ public final class TermDefinitionBuilder {
             throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
 
         } else if (Keywords.matchForm(term)) {
-            // TODO warning
+            LOGGER.log(Level.WARNING, "Term [{}] has form of a keyword. Keywords cannot be overridden.", term);
             return;
         }
-
+        
         // 6.
         final Optional<TermDefinition> previousDefinition = activeContext.removeTerm(term);
 
@@ -249,7 +250,7 @@ public final class TermDefinitionBuilder {
 
             // 13.3.
             if (Keywords.matchForm(reverseString)) {
-                //TODO warning;
+                LOGGER.log(Level.WARNING, "The value [{}] associated with @reverse cannot have form of a keyword.", reverseString);
                 return;
             }
 
@@ -317,7 +318,7 @@ public final class TermDefinitionBuilder {
 
                 // 14.2.2
                 if (!Keywords.contains(idValueString) && Keywords.matchForm(idValueString)) {
-                    //TODO generate warning
+                    LOGGER.log(Level.WARNING, "The value [{}] associated with @id has form of a keyword but is not keyword.", idValueString);
                     return;
                 }
 
