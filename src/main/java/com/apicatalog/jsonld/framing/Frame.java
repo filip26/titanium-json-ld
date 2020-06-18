@@ -1,6 +1,5 @@
 package com.apicatalog.jsonld.framing;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
@@ -206,24 +205,13 @@ public final class Frame {
     }
 
     public boolean isWildCard() {
-        return frameObject.isEmpty() || frameObject.keySet()
-                    .stream()
-                    .allMatch(Arrays.asList(
-                                        Keywords.DEFAULT,
-                                        Keywords.OMIT_DEFAULT, 
-                                        Keywords.EMBED, 
-                                        Keywords.EXPLICIT, 
-                                        Keywords.REQUIRE_ALL
-                                        )::contains);
+        return ValuePatternMatcher.isWildcard(frameObject);
     }
     
     public boolean isWildCard(String property) {
         return frameObject.containsKey(property) 
-                    && (JsonUtils.isEmptyObject(get(property))
-                            || (JsonUtils.isArray(get(property))
-                                    && get(property).asJsonArray().size() == 1
-                                    && JsonUtils.isEmptyObject(get(property).asJsonArray().get(0)))
-                            );
+                    && ValuePatternMatcher.isWildcard(get(property))
+                    ;
     }
 
     public boolean isNone(String property) {

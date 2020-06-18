@@ -1,5 +1,7 @@
 package com.apicatalog.jsonld.framing;
 
+import java.util.Arrays;
+
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
@@ -96,13 +98,38 @@ public final class ValuePatternMatcher {
                                 .anyMatch(x -> x.equalsIgnoreCase(lang1));
     }
     
-    private static final boolean isWildcard(JsonValue value) {
-        return value != null 
-                && (JsonUtils.isEmptyObject(value) 
-                        || (JsonUtils.isArray(value) 
-                                && value.asJsonArray().size() == 1
-                                && JsonUtils.isEmptyObject(value.asJsonArray().get(0)))
-                        );
+    protected static final boolean isWildcard(JsonValue value) {
+        
+        if (JsonUtils.isEmptyObject(value)) {
+            return true;
+        }
+        
+        JsonObject frame = null;
+        
+        if (JsonUtils.isObject(value)) {
+            
+            frame = (JsonObject)value;
+            
+        } else if (JsonUtils.isArray(value) 
+                    && value.asJsonArray().size() == 1
+                    && JsonUtils.isObject(value.asJsonArray().get(0))) {
+            
+            frame = value.asJsonArray().getJsonObject(0);
+        }
+
+        if (frame == null) {
+            return false;
+        }
+
+        return frame.isEmpty() || frame.keySet()
+                .stream()
+                .allMatch(Arrays.asList(
+                            Keywords.DEFAULT,
+                            Keywords.OMIT_DEFAULT, 
+                            Keywords.EMBED, 
+                            Keywords.EXPLICIT, 
+                            Keywords.REQUIRE_ALL
+                            )::contains);
     }
     
     private static final boolean isNone(JsonValue value) {
