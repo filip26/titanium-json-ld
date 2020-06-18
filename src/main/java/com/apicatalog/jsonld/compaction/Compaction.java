@@ -218,7 +218,7 @@ public final class Compaction {
             Collections.sort(expandedProperties);
         }
         
-        for (String expandedProperty : expandedProperties) {
+        for (final String expandedProperty : expandedProperties) {
 
             JsonValue expandedValue = elementObject.get(expandedProperty);
             
@@ -240,11 +240,11 @@ public final class Compaction {
                 
                 continue;
             }
-            
+
             // 12.2.
             if (Keywords.TYPE.equals(expandedProperty)) {
 
-                JsonValue compactedValue = JsonValue.NULL;
+                final JsonValue compactedValue;
 
                 // 12.2.1.
                 if (JsonUtils.isString(expandedValue)) {
@@ -269,7 +269,7 @@ public final class Compaction {
                     compactedValue = compactedArray.build();
                                         
                 } else {
-                    //TODO error
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_VALUE, "@type value is not valid [" + expandedValue + "].");
                 }
 
                 // 12.2.3.

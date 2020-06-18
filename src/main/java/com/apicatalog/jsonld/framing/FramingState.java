@@ -20,10 +20,10 @@ public final class FramingState {
     
     private NodeMap graphMap;
     
-    private Map<String, Map<String, Object>> done;
+    private Map<String, Map<String, Boolean>> done;
+    
     private Deque<String> parents;
     
-    //TODO subject map
     public FramingState() {
         this.done = new HashMap<>();
         this.parents = new ArrayDeque<>();
@@ -37,7 +37,7 @@ public final class FramingState {
         this.omitDefault = state.omitDefault;
         this.graphMap = state.graphMap;
         this.graphName = state.graphName;
-        this.done = state.done;    //TODO ?!
+        this.done = state.done;
         this.parents =  state.parents;
     }
     
@@ -102,7 +102,7 @@ public final class FramingState {
     }
     
     public void markDone(String subject) {
-        done.computeIfAbsent(graphName, x -> new HashMap<>()).put(subject, Boolean.TRUE);    //TODO
+        done.computeIfAbsent(graphName, x -> new HashMap<>()).put(subject, Boolean.TRUE);
     }
 
     public boolean isParent(String subject) {
