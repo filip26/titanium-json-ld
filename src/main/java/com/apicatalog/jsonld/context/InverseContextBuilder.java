@@ -1,8 +1,13 @@
 package com.apicatalog.jsonld.context;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.json.JsonString;
+import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.DirectionType;
@@ -43,134 +48,159 @@ public final class InverseContextBuilder {
                 continue;
             }
 
-            final TermDefinition termDefinition = activeContext.getTerm(term).get();
+            final Optional<Collection<String>> containerMapping = activeContext.getTerm(term).map(TermDefinition::getContainerMapping);
 
             // 3.2.
-            String container = Keywords.NONE;
-            
-            if (termDefinition.getContainerMapping() != null 
-                    && !termDefinition.getContainerMapping().isEmpty()) {
-                
-                container = termDefinition.getContainerMapping().stream().sorted().collect(Collectors.joining());
-            }
-            
-            // 3.3.
-            final String variable = termDefinition.getUriMapping();
-                        
-            result.setIfAbsent(variable, container, Keywords.ANY, Keywords.NONE, term);
+            final String container = containerMapping
+                                            .filter(Predicate.not(Collection::isEmpty))
+                                            .orElse(Arrays.asList(Keywords.NONE))
+                                            .stream()
+                                            .sorted()
+                                            .collect(Collectors.joining());
 
+            // 3.3.
+            final Optional<String> variable = activeContext.getTerm(term).map(TermDefinition::getUriMapping);
+
+            variable.ifPresent(v -> result.setIfAbsent(v, container, Keywords.ANY, Keywords.NONE, term));
+
+            final Optional<JsonValue> languageMapping = activeContext.getTerm(term).map(TermDefinition::getLanguageMapping);
+            final Optional<DirectionType> directionMapping = activeContext.getTerm(term).map(TermDefinition::getDirectionMapping);
+            
             // 3.10.
-            if (termDefinition.isReverseProperty()) {
+            if (activeContext.getTerm(term).map(TermDefinition::isReverseProperty).orElse(false)) {
 
                 // 3.10.1
-                result.setIfAbsent(variable, container, Keywords.TYPE, Keywords.REVERSE, term);
+                variable.ifPresent(v -> result.setIfAbsent(v, container, Keywords.TYPE, Keywords.REVERSE, term));
             
             // 3.11.
-            } else if (Keywords.NONE.equals(termDefinition.getTypeMapping()) ) {
+            } else if (activeContext.getTerm(term)
+                                    .map(TermDefinition::getTypeMapping)
+                                    .map(Keywords.NONE::equals).orElse(false)) {
                 
-                // 3.11.1.
-                result.setIfAbsent(variable, container, Keywords.LANGUAGE, Keywords.ANY, term);
-
-                // 3.11.2.
-                result.setIfAbsent(variable, container, Keywords.TYPE, Keywords.ANY, term);
+                variable.ifPresent(v -> {
+                    // 3.11.1.
+                    result.setIfAbsent(v, container, Keywords.LANGUAGE, Keywords.ANY, term);
+                    // 3.11.2.
+                    result.setIfAbsent(v, container, Keywords.TYPE, Keywords.ANY, term);
+                });
 
             // 3.12.
-            } else if (termDefinition.getTypeMapping() != null) {
+            } else if (activeContext.getTerm(term).map(TermDefinition::getTypeMapping).isPresent()) {
 
                 // 3.12.1
-                result.setIfAbsent(variable, container, Keywords.TYPE, termDefinition.getTypeMapping(), term);
-                
+                variable.ifPresent(v -> result.setIfAbsent(
+                                                    v, 
+                                                    container, 
+                                                    Keywords.TYPE, 
+                                                    activeContext
+                                                            .getTerm(term)
+                                                            .map(TermDefinition::getTypeMapping)
+                                                            .get(),
+                                                    term
+                                                )
+                                    );
+
             // 3.13.
-            } else if (termDefinition.getLanguageMapping() != null
-                        && termDefinition.getDirectionMapping() != null
-                    ) {
+            } else if (languageMapping.isPresent() && directionMapping.isPresent()) {
          
                 // 3.13.1.
-                String langDir = Keywords.NULL;
+                final String langDir;
                 
                 // 3.13.2.
-                if (JsonUtils.isString(termDefinition.getLanguageMapping())
-                        && termDefinition.getDirectionMapping() != DirectionType.NULL
+                if (languageMapping.filter(JsonUtils::isString).isPresent()
+                        && directionMapping.get() != DirectionType.NULL
                         ) {
                     
-                    langDir = ((JsonString)termDefinition.getLanguageMapping())
-                                    .getString()
+                    langDir = languageMapping
+                                    .map(JsonString.class::cast)
+                                    .map(JsonString::getString)
+                                    .orElse("")
                                     .concat("_")
-                                    .concat(termDefinition.getDirectionMapping().name())
+                                    .concat(directionMapping.get().name())
                                     .toLowerCase();
 
                 // 3.13.3.
-                } else if (JsonUtils.isString(termDefinition.getLanguageMapping())) {
+                } else if (languageMapping.filter(JsonUtils::isString).isPresent()) {
                     
-                    langDir = ((JsonString)termDefinition.getLanguageMapping()).getString().toLowerCase();
+                    langDir = ((JsonString)languageMapping.get()).getString().toLowerCase();
                     
                 // 3.13.4.
-                } else if (termDefinition.getDirectionMapping() != DirectionType.NULL) {
+                } else if (directionMapping.get() != DirectionType.NULL) {
                     
-                    langDir = "_".concat(termDefinition.getDirectionMapping().name().toLowerCase());
+                    langDir = "_".concat(directionMapping.get().name().toLowerCase());
+                    
+                } else {
+                    
+                    langDir = Keywords.NULL; 
                 }
                 
                 // 3.13.5.
-                result.setIfAbsent(variable, container, Keywords.LANGUAGE, langDir, term);
+                variable.ifPresent(v -> result.setIfAbsent(v, container, Keywords.LANGUAGE, langDir, term));
                 
             // 3.14.
-            } else if (termDefinition.getLanguageMapping() != null) {
+            } else if (languageMapping.isPresent()) {
 
                 /// 3.14.1.
-                String language = Keywords.NULL;
+                final String language;
                 
-                if (JsonUtils.isString(termDefinition.getLanguageMapping())) {
-                    language = ((JsonString)termDefinition.getLanguageMapping()).getString().toLowerCase();
+                if (JsonUtils.isString(languageMapping.get())) {
+                    language = ((JsonString)languageMapping.get()).getString().toLowerCase();
+                    
+                } else {
+                    language = Keywords.NULL;
                 }
                               
                 // 3.14.2.
-                result.setIfAbsent(variable, container, Keywords.LANGUAGE, language, term);
+                variable.ifPresent(v -> result.setIfAbsent(v, container, Keywords.LANGUAGE, language, term));
                 
             // 3.15.
-            } else if (termDefinition.getDirectionMapping() != null) {
+            } else if (directionMapping.isPresent()) {
 
                 // 3.15.1.
-                String direction = Keywords.NONE;
+                final String direction;
                 
-                if (termDefinition.getDirectionMapping() != DirectionType.NULL) {
-                    direction = "_".concat(termDefinition.getDirectionMapping().name().toLowerCase());
+                if (directionMapping.get() != DirectionType.NULL) {
+                    direction = "_".concat(directionMapping.get().name().toLowerCase());
+                    
+                } else {
+                    direction = Keywords.NONE;
                 }
 
                 // 3.15.2.
-                result.setIfAbsent(variable, container, Keywords.LANGUAGE, direction, term);
+                variable.ifPresent(v -> result.setIfAbsent(v, container, Keywords.LANGUAGE, direction, term));
 
             // 3.16.
             } else if (activeContext.getDefaultBaseDirection() != null) {
                 
                 // 3.16.1.
                 final String langDir = (activeContext.getDefaultLanguage() != null 
-                                    ? activeContext.getDefaultLanguage()
-                                    : ""
-                                    )
+                                            ? activeContext.getDefaultLanguage()
+                                            : ""
+                                            )
                                     .concat("_")
                                     .concat(activeContext.getDefaultBaseDirection().name())
                                     .toLowerCase();
                 
-                // 3.16.2.
-                result.setIfAbsent(variable, container, Keywords.LANGUAGE, langDir, term);
-
-                // 3.16.3.
-                result.setIfAbsent(variable, container, Keywords.LANGUAGE, Keywords.NONE, term);
-                
-                // 3.16.4.
-                result.setIfAbsent(variable, container, Keywords.TYPE, Keywords.NONE, term);
+                variable.ifPresent(v -> {
+                    // 3.16.2.
+                    result.setIfAbsent(v, container, Keywords.LANGUAGE, langDir, term);
+                    // 3.16.3.
+                    result.setIfAbsent(v, container, Keywords.LANGUAGE, Keywords.NONE, term);
+                    // 3.16.4.
+                    result.setIfAbsent(v, container, Keywords.TYPE, Keywords.NONE, term);
+                });
                 
             // 3.17.
             } else {
                 
-                // 3.17.1.
-                result.setIfAbsent(variable, container, Keywords.LANGUAGE, defaultLanguage, term);
-                
-                // 3.17.2.
-                result.setIfAbsent(variable, container, Keywords.LANGUAGE, Keywords.NONE, term);
-                
-                // 3.17.2.
-                result.setIfAbsent(variable, container, Keywords.TYPE, Keywords.NONE, term);
+                variable.ifPresent(v -> {
+                    // 3.17.1.
+                    result.setIfAbsent(v, container, Keywords.LANGUAGE, defaultLanguage, term);
+                    // 3.17.2.                    
+                    result.setIfAbsent(v, container, Keywords.LANGUAGE, Keywords.NONE, term);
+                    // 3.17.2.                    
+                    result.setIfAbsent(v, container, Keywords.TYPE, Keywords.NONE, term);
+                });
             }
         }
         

@@ -136,7 +136,7 @@ public final class CompactionBuilder {
         }
         
         // 6.
-        if (activePropertyDefinition.map(TermDefinition::getLocalContext).isPresent()) {
+        if (activePropertyDefinition.isPresent() && activePropertyDefinition.map(TermDefinition::getLocalContext).isPresent()) {
             activeContext = 
                     activeContext
                             .newContext()
@@ -196,7 +196,7 @@ public final class CompactionBuilder {
             for (final String term : compactedTypes) {
 
                 final Optional<TermDefinition> termDefinition = typeContext.getTerm(term);
-                                                                ;
+
                 // 11.1.
                 if (termDefinition.isPresent() && termDefinition.get().hasLocalContext()) {
 
