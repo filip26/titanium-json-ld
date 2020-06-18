@@ -55,7 +55,7 @@ public final class ValueExpansionBuilder {
             // 1.
             if (Keywords.ID.equals(typeMapping.get()) && JsonUtils.isString(value)) {
 
-                String expandedValue = activeContext.expandUri(((JsonString) value).getString()).documentRelative(true)
+                String expandedValue = activeContext.uriExpansion(((JsonString) value).getString()).documentRelative(true)
                         .vocab(false).build();
 
                 return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();
@@ -64,7 +64,7 @@ public final class ValueExpansionBuilder {
             // 2.
             if (Keywords.VOCAB.equals(typeMapping.get()) && JsonUtils.isString(value)) {
 
-                String expandedValue = activeContext.expandUri(((JsonString) value).getString()).documentRelative(true)
+                String expandedValue = activeContext.uriExpansion(((JsonString) value).getString()).documentRelative(true)
                         .vocab(true).build();
 
                 return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();

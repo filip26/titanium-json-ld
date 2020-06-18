@@ -143,7 +143,7 @@ public final class ValueCompactionBuilder {
             }
 
         // 10.
-        } else if (((value.containsKey(Keywords.LANGUAGE)
+        } else if ((((value.containsKey(Keywords.LANGUAGE)
                                 && JsonUtils.isString(value.get(Keywords.LANGUAGE))
                                 && JsonUtils.isString(language)
                                 && (((JsonString)language).getString().equalsIgnoreCase(value.getString(Keywords.LANGUAGE)))
@@ -161,18 +161,15 @@ public final class ValueCompactionBuilder {
                                     || DirectionType.NULL == DirectionType.valueOf(value.getString(Keywords.DIRECTION).toUpperCase())
                                 ))
                                 )
-                        
-                        ){
+                        )
+                    && ((value.containsKey(Keywords.INDEX)
+                            && activePropertyDefinition.isPresent()
+                            && activePropertyDefinition.get().hasContainerMapping(Keywords.INDEX))
+                        || !value.containsKey(Keywords.INDEX)
+                            )
+                ){
 
-            // 10.1.
-            if ((value.containsKey(Keywords.INDEX)
-                    && activePropertyDefinition.isPresent()
-                    && activePropertyDefinition.get().hasContainerMapping(Keywords.INDEX))
-                || !value.containsKey(Keywords.INDEX)
-                    ) {
-                
                 result = value.get(Keywords.VALUE);
-            }
         }
 
         // 11.

@@ -125,14 +125,14 @@ public final class CompactionBuilder {
         
         // 4.
         JsonObject elementObject = element.asJsonObject();
-        
+
         // 5.
-        if (activeContext.hasPreviousContext()
+        if (activeContext.getPreviousContext().isPresent()
                 && !elementObject.containsKey(Keywords.VALUE)
                 && !(elementObject.containsKey(Keywords.ID)
                         && elementObject.size() == 1)
                 ) {
-            activeContext = activeContext.getPreviousContext();
+            activeContext = activeContext.getPreviousContext().get();
         }
         
         // 6.
@@ -393,7 +393,7 @@ public final class CompactionBuilder {
                                                     .orElse(null);
                   
                     // 12.7.2.1.
-                    if (!Keywords.NEST.equals(nestTerm) && !Keywords.NEST.equals(activeContext.expandUri(nestTerm).vocab(true).build())) {
+                    if (!Keywords.NEST.equals(nestTerm) && !Keywords.NEST.equals(activeContext.uriExpansion(nestTerm).vocab(true).build())) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
                     
@@ -440,7 +440,7 @@ public final class CompactionBuilder {
                                             .orElse(null);
                     
                     // 12.8.2.1.
-                    if (!Keywords.NEST.equals(nestTerm) && !Keywords.NEST.equals(activeContext.expandUri(nestTerm).vocab(true).build())) {
+                    if (!Keywords.NEST.equals(nestTerm) && !Keywords.NEST.equals(activeContext.uriExpansion(nestTerm).vocab(true).build())) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
                     
@@ -818,7 +818,7 @@ public final class CompactionBuilder {
                         // 12.8.9.8.4.
                         if (JsonUtils.isObject(compactedItem) && compactedItem.asJsonObject().size() == 1) {
                             
-                            String epandedKey = activeContext.expandUri(compactedItem.asJsonObject().keySet().iterator().next()).vocab(true).build();
+                            String epandedKey = activeContext.uriExpansion(compactedItem.asJsonObject().keySet().iterator().next()).vocab(true).build();
                             
                             if (Keywords.ID.equals(epandedKey)) {
 

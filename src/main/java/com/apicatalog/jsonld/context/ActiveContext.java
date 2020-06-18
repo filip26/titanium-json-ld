@@ -127,12 +127,8 @@ public final class ActiveContext {
         return options.getProcessingMode() != null && options.getProcessingMode().equals(version);
     }
 
-    public boolean hasPreviousContext() {
-        return previousContext != null;
-    }
-
-    public ActiveContext getPreviousContext() {
-        return previousContext;
+    public Optional<ActiveContext> getPreviousContext() {
+        return Optional.ofNullable(previousContext);
     }
     
     public URI getBaseUrl() {
@@ -155,11 +151,11 @@ public final class ActiveContext {
         return terms.keySet();
     }
 
-    public ValueExpansionBuilder expandValue(final JsonValue element, final String activeProperty) throws JsonLdError {
+    public ValueExpansionBuilder valueExpansion(final JsonValue element, final String activeProperty) throws JsonLdError {
         return ValueExpansionBuilder.with(this, element, activeProperty);
     }
 
-    public UriExpansionBuilder expandUri(final String value) {
+    public UriExpansionBuilder uriExpansion(final String value) {
         return UriExpansionBuilder.with(this, value);
     }
 

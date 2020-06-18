@@ -88,7 +88,7 @@ public final class MapExpansion {
         // set active context to previous context from active context,
         // as the scope of a term-scoped context does not apply when processing new node
         // objects.
-        if (activeContext.hasPreviousContext() && !fromMap) {
+        if (activeContext.getPreviousContext().isPresent() && !fromMap) {
 
             List<String> keys = new ArrayList<>(element.keySet());
             Collections.sort(keys);
@@ -99,7 +99,7 @@ public final class MapExpansion {
 
                 String expandedKey = 
                             activeContext
-                                .expandUri(key)
+                                .uriExpansion(key)
                                 .vocab(true)
                                 .build();
 
@@ -110,7 +110,7 @@ public final class MapExpansion {
             }
 
             if (revert) {
-                activeContext = activeContext.getPreviousContext();
+                activeContext = activeContext.getPreviousContext().get();
             }
         }
 
@@ -151,7 +151,7 @@ public final class MapExpansion {
 
             String expandedKey = 
                         activeContext
-                            .expandUri(key)
+                            .uriExpansion(key)
                             .vocab(true)
                             .build();
 
@@ -229,7 +229,7 @@ public final class MapExpansion {
             if (lastValue != null) {
 
                 inputType = activeContext
-                                .expandUri(lastValue)
+                                .uriExpansion(lastValue)
                                 .vocab(true)
                                 .build();
             }

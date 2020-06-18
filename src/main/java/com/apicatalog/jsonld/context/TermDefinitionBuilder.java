@@ -49,8 +49,6 @@ public final class TermDefinitionBuilder {
 
     private Collection<String> remoteContexts;
 
-    private boolean validateScopedContext;
-
     private TermDefinitionBuilder(ActiveContext activeContext, JsonObject localContext, Map<String, Boolean> defined) {
         this.activeContext = activeContext;
         this.localContext = localContext;
@@ -61,7 +59,6 @@ public final class TermDefinitionBuilder {
         this.protectedFlag = false;
         this.overrideProtectedFlag = false;
         this.remoteContexts = new ArrayList<>();
-        this.validateScopedContext = true;
     }
 
     public static final TermDefinitionBuilder with(ActiveContext activeContext, JsonObject localContext, Map<String, Boolean> defined) {
@@ -85,11 +82,6 @@ public final class TermDefinitionBuilder {
 
     public TermDefinitionBuilder remoteContexts(Collection<String> remoteContexts) {
         this.remoteContexts = remoteContexts;
-        return this;
-    }
-
-    public TermDefinitionBuilder validateScopedContext(boolean validateScopedContext) {
-        this.validateScopedContext = validateScopedContext;
         return this;
     }
 
@@ -215,7 +207,7 @@ public final class TermDefinitionBuilder {
             // 12.2.
             String expandedTypeString = 
                         activeContext
-                            .expandUri(((JsonString) type).getString())                    
+                            .uriExpansion(((JsonString) type).getString())                    
                             .localContext(localContext)
                             .defined(defined)
                             .vocab(true)
@@ -264,7 +256,7 @@ public final class TermDefinitionBuilder {
             // 13.4.
             definition.setUriMapping( 
                         activeContext
-                            .expandUri(reverseString)
+                            .uriExpansion(reverseString)
                             .localContext(localContext)
                             .defined(defined)
                             .vocab(true)
@@ -332,7 +324,7 @@ public final class TermDefinitionBuilder {
                 // 14.2.3
                 definition.setUriMapping( 
                                 activeContext
-                                    .expandUri(idValueString)
+                                    .uriExpansion(idValueString)
                                     .localContext(localContext)
                                     .defined(defined)
                                     .vocab(true)
@@ -357,7 +349,7 @@ public final class TermDefinitionBuilder {
                     // 14.2.4.2
                     String expandedTerm = 
                                 activeContext
-                                    .expandUri(term)
+                                    .uriExpansion(term)
                                     .localContext(localContext)
                                     .defined(defined)
                                     .vocab(true)
@@ -411,7 +403,7 @@ public final class TermDefinitionBuilder {
 
             definition.setUriMapping( 
                             activeContext
-                                .expandUri(term)
+                                .uriExpansion(term)
                                 .localContext(localContext)
                                 .defined(defined)
                                 .vocab(true)
@@ -483,7 +475,7 @@ public final class TermDefinitionBuilder {
 
             String expandedIndex =
                             activeContext
-                                .expandUri(indexString)
+                                .uriExpansion(indexString)
                                 .localContext(localContext)
                                 .defined(defined)
                                 .vocab(true)

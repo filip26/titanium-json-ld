@@ -112,13 +112,10 @@ public final class UriExpansionBuilder {
         
         // 4. if active context has a term definition for value,
         // and the associated IRI mapping is a keyword, return that keyword.
-        if (definition.isPresent()) {
-
-            // 5. If vocab is true and the active context has a term definition for value,
-            // return the associated IRI mapping
-            if (Keywords.contains(definition.get().getUriMapping()) || vocab) {
-                return definition.get().getUriMapping();
-            }
+        // 5. If vocab is true and the active context has a term definition for value,
+        // return the associated IRI mapping
+        if (definition.isPresent() && (Keywords.contains(definition.get().getUriMapping()) || vocab)) {
+            return definition.get().getUriMapping();
         }
 
         // 6. If value contains a colon (:) anywhere after the first character, it is

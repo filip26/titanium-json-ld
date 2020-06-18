@@ -529,5 +529,4 @@ public final class UriCompactionBuilder {
         // 11.
         return variable;
     }
-
 }

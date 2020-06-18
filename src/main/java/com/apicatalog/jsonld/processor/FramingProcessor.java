@@ -81,7 +81,7 @@ public final class FramingProcessor {
         final List<String> frameKeysExpanded = new ArrayList<>();
         
         for (final String key : frameObject.keySet()) {
-            frameKeysExpanded.add(activeContext.expandUri(key).vocab(true).build());
+            frameKeysExpanded.add(activeContext.uriExpansion(key).vocab(true).build());
         }
 
         boolean frameDefault = frameKeysExpanded.contains(Keywords.GRAPH); 
