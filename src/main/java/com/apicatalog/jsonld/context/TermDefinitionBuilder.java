@@ -147,7 +147,7 @@ public final class TermDefinitionBuilder {
             throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
 
         } else if (Keywords.matchForm(term)) {
-            LOGGER.log(Level.WARNING, "Term [{}] has form of a keyword. Keywords cannot be overridden.", term);
+            LOGGER.log(Level.WARNING, "Term [{0}] has form of a keyword. Keywords cannot be overridden.", term);
             return;
         }
         
@@ -250,7 +250,7 @@ public final class TermDefinitionBuilder {
 
             // 13.3.
             if (Keywords.matchForm(reverseString)) {
-                LOGGER.log(Level.WARNING, "The value [{}] associated with @reverse cannot have form of a keyword.", reverseString);
+                LOGGER.log(Level.WARNING, "The value [{0}] associated with @reverse cannot have form of a keyword.", reverseString);
                 return;
             }
 
@@ -318,7 +318,7 @@ public final class TermDefinitionBuilder {
 
                 // 14.2.2
                 if (!Keywords.contains(idValueString) && Keywords.matchForm(idValueString)) {
-                    LOGGER.log(Level.WARNING, "The value [{}] associated with @id has form of a keyword but is not keyword.", idValueString);
+                    LOGGER.log(Level.WARNING, "The value [{0}] associated with @id has form of a keyword but is not keyword.", idValueString);
                     return;
                 }
 

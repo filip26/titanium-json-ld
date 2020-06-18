@@ -359,7 +359,7 @@ public class ActiveContextBuilder {
                     result.setDefaultLanguage(((JsonString)value).getString());
                     
                     if (!LanguageTag.isWellFormed(result.getDefaultLanguage())) {
-                        LOGGER.log(Level.WARNING, "Language tag [{}] is not well formed.", result.getDefaultLanguage());                        
+                        LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", result.getDefaultLanguage());                        
                     }
                 }
             }

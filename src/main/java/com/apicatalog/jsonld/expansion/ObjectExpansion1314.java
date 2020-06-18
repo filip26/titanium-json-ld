@@ -629,10 +629,6 @@ final class ObjectExpansion1314 {
                         // 13.7.4.2.3.
                         JsonObjectBuilder langMap = Json.createObjectBuilder().add(Keywords.VALUE, item);
 
-                        if (Keywords.NONE.equals(((JsonString) item).getString())) {
-                            // TODO warning
-                        }
-
                         // 13.7.4.2.4.
                         if (!Keywords.NONE.equals(langCode)) {
 
