@@ -30,6 +30,7 @@ import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.jsonld.lang.Version;
+import com.apicatalog.jsonld.uri.UriUtils;
 
 /**
  * 
@@ -216,13 +217,24 @@ final class ObjectExpansion1314 {
                 if (Keywords.TYPE.equals(expandedProperty)) {
 
                     // 13.4.4.1
-                    if (!frameExpansion && JsonUtils.isNotString(value) && JsonUtils.isNotArray(value)
-                            || (frameExpansion && !JsonUtils.isEmptyObject(value) && JsonUtils.isNotString(value)
-                                    && JsonUtils.isNotArray(value) && !DefaultObject.isDefaultObject(value)
-                            /* TODO default object */
-                            )) {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_VALUE);
-
+                    if ((!frameExpansion 
+                            && JsonUtils.isNotString(value) 
+                            && (JsonUtils.isNotArray(value)
+                                    || !value.asJsonArray().stream().allMatch(JsonUtils::isString)
+                                ))
+                            || frameExpansion 
+                                    && JsonUtils.isNotString(value)
+                                    && JsonUtils.isNotEmptyObject(value)
+                                    && (JsonUtils.isNotArray(value)
+                                            || !value.asJsonArray().stream().allMatch(JsonUtils::isString)
+                                        )
+                                    && !DefaultObject.isDefaultObject(value)
+                                        && (JsonUtils.isNotString(DefaultObject.getValue(value))
+                                                || !UriUtils.isURI(((JsonString)DefaultObject.getValue(value)).getString())
+                                            )
+                            ) {
+                        
+                        throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_VALUE, "@type value is not valid [" + value + "].");
                     }
 
                     // 13.4.4.2
