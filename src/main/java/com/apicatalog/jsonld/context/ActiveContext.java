@@ -7,14 +7,12 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.json.JsonObject;
-import javax.json.JsonValue;
 
-import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.compaction.UriCompactionBuilder;
-import com.apicatalog.jsonld.compaction.ValueCompactionBuilder;
-import com.apicatalog.jsonld.expansion.UriExpansionBuilder;
-import com.apicatalog.jsonld.expansion.ValueExpansionBuilder;
+import com.apicatalog.jsonld.compaction.UriCompaction;
+import com.apicatalog.jsonld.compaction.ValueCompaction;
+import com.apicatalog.jsonld.expansion.UriExpansion;
+import com.apicatalog.jsonld.expansion.ValueExpansion;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Version;
 
@@ -51,7 +49,7 @@ public final class ActiveContext {
 
     private final JsonLdOptions options;
     
-    public ActiveContext(JsonLdOptions options) {
+    public ActiveContext(final JsonLdOptions options) {
         this(null, null, null, options);
     }
 
@@ -92,18 +90,14 @@ public final class ActiveContext {
         return terms.values().stream().anyMatch(TermDefinition::isProtected);
     }
 
-    protected Optional<TermDefinition> removeTerm(String term) {
-
+    protected Optional<TermDefinition> removeTerm(final String term) {
         if (terms.containsKey(term)) {
-            TermDefinition def = terms.get(term);
-            terms.remove(term);
-            return Optional.of(def);
+            return Optional.of(terms.remove(term));
         }
-
         return Optional.empty();
     }
 
-    public Optional<TermDefinition> getTerm(String value) {
+    public Optional<TermDefinition> getTerm(final String value) {
         return Optional.ofNullable(terms.get(value));
     }
 
@@ -123,19 +117,19 @@ public final class ActiveContext {
         return vocabularyMapping;
     }
 
-    public boolean inMode(Version version) {
+    public boolean inMode(final Version version) {
         return options.getProcessingMode() != null && options.getProcessingMode().equals(version);
     }
 
-    public Optional<ActiveContext> getPreviousContext() {
-        return Optional.ofNullable(previousContext);
+    public ActiveContext getPreviousContext() {
+        return previousContext;
     }
     
     public URI getBaseUrl() {
         return baseUrl;
     }
     
-    public void setBaseUri(URI baseUri) {
+    public void setBaseUri(final URI baseUri) {
         this.baseUri = baseUri;
     }
 
@@ -150,32 +144,32 @@ public final class ActiveContext {
     public Collection<String> getTerms() {
         return terms.keySet();
     }
-
-    public ValueExpansionBuilder valueExpansion(final JsonValue element, final String activeProperty) throws JsonLdError {
-        return ValueExpansionBuilder.with(this, element, activeProperty);
-    }
-
-    public UriExpansionBuilder uriExpansion(final String value) {
-        return UriExpansionBuilder.with(this, value);
-    }
-
-    public TermDefinitionBuilder newTerm(JsonObject localContext, Map<String, Boolean> defined) {
-        return TermDefinitionBuilder.with(this, localContext, defined);
-    }
-
+    
     public ActiveContextBuilder newContext() {
         return ActiveContextBuilder.with(this);
     }
 
-    public UriCompactionBuilder uriCompaction() {
-        return UriCompactionBuilder.with(this);
+    public UriExpansion uriExpansion() {
+        return UriExpansion.with(this);
     }
 
-    public ValueCompactionBuilder valueCompaction() {
-        return ValueCompactionBuilder.with(this);
+    public ValueExpansion valueExpansion() {
+        return ValueExpansion.with(this);
     }
 
-    public TermSelector termSelector(String variable, Collection<String> containerMapping, String typeLanguage) {
+    public UriCompaction uriCompaction() {
+        return UriCompaction.with(this);
+    }
+
+    public ValueCompaction valueCompaction() {
+        return ValueCompaction.with(this);
+    }
+
+    public TermDefinitionBuilder newTerm(final JsonObject localContext, final Map<String, Boolean> defined) {
+        return TermDefinitionBuilder.with(this, localContext, defined);
+    }
+
+    public TermSelector termSelector(final String variable, final Collection<String> containerMapping, final String typeLanguage) {
         return TermSelector.with(this, variable, containerMapping, typeLanguage);
     }
 
@@ -183,31 +177,31 @@ public final class ActiveContext {
         return options;
     }
     
-    protected void setDefaultBaseDirection(DirectionType defaultBaseDirection) {
+    protected void setDefaultBaseDirection(final DirectionType defaultBaseDirection) {
         this.defaultBaseDirection = defaultBaseDirection;
     }
     
-    protected void setDefaultLanguage(String defaultLanguage) {
+    protected void setDefaultLanguage(final String defaultLanguage) {
         this.defaultLanguage = defaultLanguage;
     }
     
-    protected void setVocabularyMapping(String vocabularyMapping) {
+    protected void setVocabularyMapping(final String vocabularyMapping) {
         this.vocabularyMapping = vocabularyMapping;
     }
     
-    protected void setBaseUrl(URI baseUrl) {
+    protected void setBaseUrl(final URI baseUrl) {
         this.baseUrl = baseUrl;
     }
     
-    protected void setPreviousContext(ActiveContext previousContext) {
+    protected void setPreviousContext(final ActiveContext previousContext) {
         this.previousContext = previousContext;
     }
     
-    protected void setInverseContext(InverseContext inverseContext) {
+    protected void setInverseContext(final InverseContext inverseContext) {
         this.inverseContext = inverseContext;
     }
     
-    protected void setTerm(String term, TermDefinition definition) {
+    protected void setTerm(final String term, final TermDefinition definition) {
         terms.put(term, definition);
     }
 }

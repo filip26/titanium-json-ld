@@ -22,7 +22,6 @@ public final class UriResolver {
             return relative;
         }
 
-        //FIXME hack
         if (relative.endsWith(":")) {
             relative += ".";
         }

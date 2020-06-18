@@ -86,7 +86,7 @@ public final class Expansion {
         // 4. If element is a scalar
         if (JsonUtils.isScalar(element)) {
 
-            return ScalarExpansionBuilder
+            return ScalarExpansion
                         .with(activeContext, propertyContext, element, activeProperty)
                         .compute();
         }
@@ -100,7 +100,7 @@ public final class Expansion {
         }
 
         // 6. Otherwise element is a map
-        return MapExpansion
+        return ObjectExpansion
                     .with(activeContext, propertyContext, element.asJsonObject(), activeProperty, baseUrl)
                     .frameExpansion(frameExpansion)
                     .ordered(ordered)

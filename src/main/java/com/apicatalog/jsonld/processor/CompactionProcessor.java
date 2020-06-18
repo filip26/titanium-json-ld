@@ -11,7 +11,7 @@ import javax.json.JsonValue;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.compaction.CompactionBuilder;
+import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -97,7 +97,7 @@ public final class CompactionProcessor {
         }
         
         // 9.
-        JsonValue compactedOutput = CompactionBuilder
+        JsonValue compactedOutput = Compaction
                                         .with(activeContext)
                                         .compactArrays(options.isCompactArrays())
                                         .ordered(options.isOrdered())

@@ -207,11 +207,11 @@ public final class TermDefinitionBuilder {
             // 12.2.
             String expandedTypeString = 
                         activeContext
-                            .uriExpansion(((JsonString) type).getString())                    
+                            .uriExpansion()                    
                             .localContext(localContext)
                             .defined(defined)
                             .vocab(true)
-                            .build();
+                            .expand(((JsonString) type).getString());
 
             if (expandedTypeString == null) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING);
@@ -256,11 +256,11 @@ public final class TermDefinitionBuilder {
             // 13.4.
             definition.setUriMapping( 
                         activeContext
-                            .uriExpansion(reverseString)
+                            .uriExpansion()
                             .localContext(localContext)
                             .defined(defined)
                             .vocab(true)
-                            .build());
+                            .expand(reverseString));
 
             if (UriUtils.isNotURI(definition.getUriMapping())) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
@@ -324,11 +324,11 @@ public final class TermDefinitionBuilder {
                 // 14.2.3
                 definition.setUriMapping( 
                                 activeContext
-                                    .uriExpansion(idValueString)
+                                    .uriExpansion()
                                     .localContext(localContext)
                                     .defined(defined)
                                     .vocab(true)
-                                    .build());
+                                    .expand(idValueString));
 
                 if (Keywords.CONTEXT.equals(definition.getUriMapping())) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ALIAS);
@@ -349,11 +349,11 @@ public final class TermDefinitionBuilder {
                     // 14.2.4.2
                     String expandedTerm = 
                                 activeContext
-                                    .uriExpansion(term)
+                                    .uriExpansion()
                                     .localContext(localContext)
                                     .defined(defined)
                                     .vocab(true)
-                                    .build();
+                                    .expand(term);
 
                     if (expandedTerm == null || !expandedTerm.equals(definition.getUriMapping())) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
@@ -403,11 +403,11 @@ public final class TermDefinitionBuilder {
 
             definition.setUriMapping( 
                             activeContext
-                                .uriExpansion(term)
+                                .uriExpansion()
                                 .localContext(localContext)
                                 .defined(defined)
                                 .vocab(true)
-                                .build());
+                                .expand(term));
 
             if (!UriUtils.isURI(definition.getUriMapping())) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
@@ -475,11 +475,11 @@ public final class TermDefinitionBuilder {
 
             String expandedIndex =
                             activeContext
-                                .uriExpansion(indexString)
+                                .uriExpansion()
                                 .localContext(localContext)
                                 .defined(defined)
                                 .vocab(true)
-                                .build();
+                                .expand(indexString);
 
             if (expandedIndex == null || UriUtils.isNotURI(expandedIndex)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);

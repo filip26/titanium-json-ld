@@ -21,13 +21,13 @@ import javax.json.JsonValue;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.compaction.CompactionBuilder;
+import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.framing.Frame;
-import com.apicatalog.jsonld.framing.FramingBuilder;
+import com.apicatalog.jsonld.framing.Framing;
 import com.apicatalog.jsonld.framing.FramingState;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
@@ -81,7 +81,7 @@ public final class FramingProcessor {
         final List<String> frameKeysExpanded = new ArrayList<>();
         
         for (final String key : frameObject.keySet()) {
-            frameKeysExpanded.add(activeContext.uriExpansion(key).vocab(true).build());
+            frameKeysExpanded.add(activeContext.uriExpansion().vocab(true).expand(key));
         }
 
         boolean frameDefault = frameKeysExpanded.contains(Keywords.GRAPH); 
@@ -109,7 +109,7 @@ public final class FramingProcessor {
         Map<String, JsonValue> resultMap = new LinkedHashMap<>();
         
         // 16.
-        FramingBuilder.with(state, 
+        Framing.with(state, 
                                 new ArrayList<>(state.getGraphMap().subjects(state.getGraphName())), 
                                 Frame.of(expandedFrame), 
                                 resultMap, 
@@ -129,7 +129,7 @@ public final class FramingProcessor {
         result = result.stream().map(FramingProcessor::removePreserve).collect(Collectors.toList());
         
         // 19.
-        JsonValue compactedResults = CompactionBuilder
+        JsonValue compactedResults = Compaction
                                                 .with(activeContext)
                                                 .compactArrays(options.isCompactArrays())
                                                 .ordered(options.isOrdered())

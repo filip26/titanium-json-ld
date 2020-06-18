@@ -24,17 +24,17 @@ import com.apicatalog.jsonld.lang.Keywords;
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#value-compaction">Value Compaction</a>
  *
  */
-public final class ValueCompactionBuilder {
+public final class ValueCompaction {
 
     // mandatory
     private final ActiveContext activeContext;
     
-    private ValueCompactionBuilder(final ActiveContext activeContext) {
+    private ValueCompaction(final ActiveContext activeContext) {
         this.activeContext = activeContext;
     }
     
-    public static ValueCompactionBuilder with(ActiveContext activeContext) {
-        return new ValueCompactionBuilder(activeContext);
+    public static ValueCompaction with(ActiveContext activeContext) {
+        return new ValueCompaction(activeContext);
     }
     
     public JsonValue compact(final JsonObject value, final String activeProperty) throws JsonLdError {

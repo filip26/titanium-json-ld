@@ -27,7 +27,7 @@ import com.apicatalog.jsonld.lang.ValueObject;
  * @see <a href="https://w3c.github.io/json-ld-framing/#framing-algorithm">Framing Algorithm</a>
  *
  */
-public final class FramingBuilder {
+public final class Framing {
 
     // required
     private final FramingState state;
@@ -40,7 +40,7 @@ public final class FramingBuilder {
     // optional
     private boolean ordered;
     
-    private FramingBuilder(FramingState state, List<String> subjects, Frame frame, Map<String, JsonValue> parent, String activeProperty) {
+    private Framing(FramingState state, List<String> subjects, Frame frame, Map<String, JsonValue> parent, String activeProperty) {
         this.state = state;
         this.subjects = subjects;
         this.frame = frame;
@@ -51,11 +51,11 @@ public final class FramingBuilder {
         this.ordered = false;
     }
     
-    public static final FramingBuilder with(FramingState state, List<String> subjects, Frame frame, Map<String, JsonValue> parent, String activeProperty) {
-        return new FramingBuilder(state, subjects, frame, parent, activeProperty);
+    public static final Framing with(FramingState state, List<String> subjects, Frame frame, Map<String, JsonValue> parent, String activeProperty) {
+        return new Framing(state, subjects, frame, parent, activeProperty);
     }
     
-    public FramingBuilder ordered(boolean ordered) {
+    public Framing ordered(boolean ordered) {
         this.ordered = ordered;
         return this;
     }
@@ -160,7 +160,7 @@ public final class FramingBuilder {
                     graphState.setGraphName(id);
                     graphState.setEmbedded(false);
                     
-                    FramingBuilder.with(
+                    Framing.with(
                                         graphState, 
                                         List.copyOf(state.getGraphMap().get(id).keySet()), 
                                         subframe, 
@@ -178,7 +178,7 @@ public final class FramingBuilder {
                 FramingState includedState = new FramingState(state);
                 includedState.setEmbedded(false);
                 
-                FramingBuilder.with(
+                Framing.with(
                                     includedState, 
                                     subjects, 
                                     Frame.of((JsonStructure)frame.get(Keywords.INCLUDED)),
@@ -222,13 +222,11 @@ public final class FramingBuilder {
 
                             JsonValue listFrame = null;
                             
-                            if (frame.contains(property)) {
-                                
-                                if (JsonUtils.isNotEmptyArray(frame.get(property))
-                                        && JsonUtils.isObject(frame.get(property).asJsonArray().get(0))
-                                        ) {
-                                    listFrame = frame.get(property).asJsonArray().get(0).asJsonObject().get(Keywords.LIST);
-                                }
+                            if (frame.contains(property)
+                                    && JsonUtils.isNotEmptyArray(frame.get(property))
+                                    && JsonUtils.isObject(frame.get(property).asJsonArray().get(0))
+                                ) {
+                                listFrame = frame.get(property).asJsonArray().get(0).asJsonObject().get(Keywords.LIST);
                             }
 
                             if (listFrame == null) {
@@ -252,7 +250,7 @@ public final class FramingBuilder {
 
                                     Map<String, JsonValue> listResult = new LinkedHashMap<>();
                                     
-                                    FramingBuilder.with(
+                                    Framing.with(
                                                         listState, 
                                                         Arrays.asList(listItem.asJsonObject().getString(Keywords.ID)),
                                                         Frame.of((JsonStructure)listFrame), 
@@ -278,7 +276,7 @@ public final class FramingBuilder {
                         FramingState clonedState = new FramingState(state);
                         clonedState.setEmbedded(true);
 
-                        FramingBuilder.with(
+                        Framing.with(
                                             clonedState, 
                                             Arrays.asList(item.asJsonObject().getString(Keywords.ID)),
                                             Frame.of((JsonStructure)subframe), 
@@ -343,7 +341,7 @@ public final class FramingBuilder {
             // 4.7.5. - reverse properties
             if (frame.contains(Keywords.REVERSE)) {
                 
-                final JsonValue reverseObject = frame.get(Keywords.REVERSE);;
+                final JsonValue reverseObject = frame.get(Keywords.REVERSE);
                 
                 if (JsonUtils.isObject(reverseObject)) {
                 
@@ -372,7 +370,7 @@ public final class FramingBuilder {
                                 FramingState reverseState = new FramingState(state);
                                 reverseState.setEmbedded(true);
                                 
-                                FramingBuilder.with(
+                                Framing.with(
                                                     reverseState, 
                                                     Arrays.asList(subjectProperty), 
                                                     Frame.of((JsonStructure)subframe),

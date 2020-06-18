@@ -20,31 +20,24 @@ import com.apicatalog.jsonld.lang.Keywords;
  *      Expansion Algorithm</a>
  *
  */
-public final class ValueExpansionBuilder {
+public final class ValueExpansion {
 
     // required
     private final ActiveContext activeContext;
-    private final String activeProperty;
-    private final JsonValue value;
     
     // runtime
     private JsonObject result;
     private Optional<TermDefinition> definition;
 
-    public ValueExpansionBuilder(final ActiveContext activeContext, final JsonValue value,
-            final String activeProperty) {
-        
+    private ValueExpansion(final ActiveContext activeContext) {
         this.activeContext = activeContext;
-        this.value = value;
-        this.activeProperty = activeProperty;
     }
 
-    public static final ValueExpansionBuilder with(final ActiveContext activeContext, final JsonValue element,
-            final String activeProperty) {
-        return new ValueExpansionBuilder(activeContext, element, activeProperty);
+    public static final ValueExpansion with(final ActiveContext activeContext) {
+        return new ValueExpansion(activeContext);
     }
 
-    public JsonValue build() throws JsonLdError {
+    public JsonValue expand(final JsonValue value, final String activeProperty) throws JsonLdError {
 
         definition = activeContext.getTerm(activeProperty);
 
@@ -55,8 +48,8 @@ public final class ValueExpansionBuilder {
             // 1.
             if (Keywords.ID.equals(typeMapping.get()) && JsonUtils.isString(value)) {
 
-                String expandedValue = activeContext.uriExpansion(((JsonString) value).getString()).documentRelative(true)
-                        .vocab(false).build();
+                String expandedValue = activeContext.uriExpansion().documentRelative(true)
+                        .vocab(false).expand(((JsonString) value).getString());
 
                 return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();
             }
@@ -64,8 +57,8 @@ public final class ValueExpansionBuilder {
             // 2.
             if (Keywords.VOCAB.equals(typeMapping.get()) && JsonUtils.isString(value)) {
 
-                String expandedValue = activeContext.uriExpansion(((JsonString) value).getString()).documentRelative(true)
-                        .vocab(true).build();
+                String expandedValue = activeContext.uriExpansion().documentRelative(true)
+                        .vocab(true).expand(((JsonString) value).getString());
 
                 return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();
             }

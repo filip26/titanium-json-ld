@@ -31,7 +31,7 @@ import com.apicatalog.jsonld.uri.UriUtils;
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#iri-compaction">IRI Compaction</a>
  *
  */
-public final class UriCompactionBuilder {
+public final class UriCompaction {
 
     // required
     private final ActiveContext activeContext;
@@ -41,7 +41,7 @@ public final class UriCompactionBuilder {
     private boolean vocab;
     private boolean reverse;
     
-    private UriCompactionBuilder(final ActiveContext activeContext) {
+    private UriCompaction(final ActiveContext activeContext) {
         this.activeContext = activeContext;
         
         // default values
@@ -50,21 +50,21 @@ public final class UriCompactionBuilder {
         this.reverse = false;
     }
     
-    public static UriCompactionBuilder with(final ActiveContext activeContext) {
-        return new UriCompactionBuilder(activeContext);
+    public static UriCompaction with(final ActiveContext activeContext) {
+        return new UriCompaction(activeContext);
     }
     
-    public UriCompactionBuilder value(JsonValue value) {
+    public UriCompaction value(JsonValue value) {
         this.value = value;
         return this;
     }
 
-    public UriCompactionBuilder vocab(boolean vocab) {
+    public UriCompaction vocab(boolean vocab) {
         this.vocab = vocab;
         return this;
     }
     
-    public UriCompactionBuilder reverse(boolean reverse) {
+    public UriCompaction reverse(boolean reverse) {
         this.reverse = reverse;
         return this;
     }

@@ -112,7 +112,7 @@ public class ActiveContextBuilder {
 
         // 3. If propagate is false, and result does not have a previous context,
         // set previous context in result to active context.
-        if (!propagate && result.getPreviousContext().isEmpty()) {
+        if (!propagate && result.getPreviousContext() == null) {
             result.setPreviousContext(activeContext);
         }
 
@@ -138,7 +138,7 @@ public class ActiveContextBuilder {
                 // of result.
                 result = propagate
                         ? new ActiveContext(activeContext.getBaseUrl(), activeContext.getBaseUrl(), activeContext.getOptions())
-                        : new ActiveContext(activeContext.getBaseUrl(), activeContext.getBaseUrl(), result.getPreviousContext().orElse(null),
+                        : new ActiveContext(activeContext.getBaseUrl(), activeContext.getBaseUrl(), result.getPreviousContext(),
                                 activeContext.getOptions());
 
                 // 5.1.3. Continue with the next context
@@ -322,10 +322,10 @@ public class ActiveContextBuilder {
 
                         String vocabularyMapping =
                                     result
-                                        .uriExpansion(valueString)
+                                        .uriExpansion()
                                         .vocab(true)
                                         .documentRelative(true)
-                                        .build();
+                                        .expand(valueString);
 
                         if (BlankNode.hasPrefix(valueString) || UriUtils.isURI(vocabularyMapping)) {
                             result.setVocabularyMapping(vocabularyMapping);

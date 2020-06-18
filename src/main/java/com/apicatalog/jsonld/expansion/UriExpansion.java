@@ -23,11 +23,10 @@ import com.apicatalog.jsonld.uri.UriUtils;
  *      Expansion</a>
  *
  */
-public final class UriExpansionBuilder {
+public final class UriExpansion {
 
     // mandatory
-    private ActiveContext activeContext;
-    private String value;
+    private final ActiveContext activeContext;
 
     // optional
     private boolean documentRelative;
@@ -36,9 +35,8 @@ public final class UriExpansionBuilder {
     private JsonObject localContext;
     private Map<String, Boolean> defined;
     
-    private UriExpansionBuilder(final ActiveContext activeContext, final String value) {
+    private UriExpansion(final ActiveContext activeContext) {
         this.activeContext = activeContext;
-        this.value = value;
 
         // default values
         this.documentRelative = false;
@@ -47,31 +45,31 @@ public final class UriExpansionBuilder {
         this.defined = null;
     }
 
-    public static final UriExpansionBuilder with(final ActiveContext activeContext, final String value) {
-        return new UriExpansionBuilder(activeContext, value);
+    public static final UriExpansion with(final ActiveContext activeContext) {
+        return new UriExpansion(activeContext);
     }
 
-    public UriExpansionBuilder documentRelative(boolean value) {
+    public UriExpansion documentRelative(boolean value) {
         this.documentRelative = value;
         return this;
     }
 
-    public UriExpansionBuilder vocab(boolean value) {
+    public UriExpansion vocab(boolean value) {
         this.vocab = value;
         return this;
     }
 
-    public UriExpansionBuilder localContext(JsonObject value) {
+    public UriExpansion localContext(JsonObject value) {
         this.localContext = value;
         return this;
     }
 
-    public UriExpansionBuilder defined(Map<String, Boolean> value) {
+    public UriExpansion defined(Map<String, Boolean> value) {
         this.defined = value;
         return this;
     }
     
-    public String build() throws JsonLdError {
+    public String expand(final String value) throws JsonLdError {
 
         // 1. If value is a keyword or null, return value as is.
         if (value == null || Keywords.contains(value)) {
@@ -117,21 +115,23 @@ public final class UriExpansionBuilder {
         if (definition.isPresent() && (Keywords.contains(definition.get().getUriMapping()) || vocab)) {
             return definition.get().getUriMapping();
         }
+        
+        String result = value;
 
         // 6. If value contains a colon (:) anywhere after the first character, it is
         // either an IRI,
         // a compact IRI, or a blank node identifier
-        if (value.indexOf(':', 1) != -1) {
+        if (result.indexOf(':', 1) != -1) {
 
             // 6.1. Split value into a prefix and suffix at the first occurrence of a colon
             // (:).
-            String[] split = value.split(":", 2);
+            String[] split = result.split(":", 2);
 
             // 6.2. If prefix is underscore (_) or suffix begins with double-forward-slash
             // (//),
             // return value as it is already an IRI or a blank node identifier.
             if ("_".equals(split[0]) || split[1].startsWith("//")) {
-                return value;
+                return result;
             }
 
             // 6.3.
@@ -149,14 +149,14 @@ public final class UriExpansionBuilder {
                 if (prefixDefinition.map(TermDefinition::getUriMapping).isPresent()
                         && prefixDefinition.map(TermDefinition::isPrefix).orElse(false)) {
                     
-                    value = prefixDefinition.map(TermDefinition::getUriMapping).map(m -> m.concat(split[1])).orElse(null);
+                    result = prefixDefinition.map(TermDefinition::getUriMapping).map(m -> m.concat(split[1])).orElse(null);
                 }
 
             }
 
             // 6.5
-            if (UriUtils.isAbsoluteUri(value) || BlankNode.hasPrefix(value)) {
-                return value;
+            if (UriUtils.isAbsoluteUri(result) || BlankNode.hasPrefix(result)) {
+                return result;
             }
         }
 
@@ -164,15 +164,15 @@ public final class UriExpansionBuilder {
         // return the result of concatenating the vocabulary mapping with value.
         if (vocab && activeContext.getVocabularyMapping() != null) {
             
-            return activeContext.getVocabularyMapping().concat(value);
+            return activeContext.getVocabularyMapping().concat(result);
 
         // 8.
         } else if (documentRelative) {
 
-            value = UriResolver.resolve(activeContext.getBaseUri(), value);
+            return UriResolver.resolve(activeContext.getBaseUri(), result);
         }
 
         // 9.
-        return value;
+        return result;
     }
 }

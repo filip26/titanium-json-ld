@@ -38,7 +38,7 @@ import com.apicatalog.jsonld.lang.Version;
  *      Algorithm</a>
  *
  */
-final class MapExpansion1314 {
+final class ObjectExpansion1314 {
 
     // mandatory
     private final ActiveContext activeContext;
@@ -55,7 +55,7 @@ final class MapExpansion1314 {
     private boolean frameExpansion;
     private boolean ordered;
 
-    private MapExpansion1314(final ActiveContext activeContext, final JsonObject element,
+    private ObjectExpansion1314(final ActiveContext activeContext, final JsonObject element,
             final String activeProperty, final URI baseUrl) {
         this.activeContext = activeContext;
         this.element = element;
@@ -67,37 +67,37 @@ final class MapExpansion1314 {
         this.ordered = false;
     }
 
-    public static final MapExpansion1314 with(final ActiveContext activeContext, final JsonObject element,
+    public static final ObjectExpansion1314 with(final ActiveContext activeContext, final JsonObject element,
             final String activeProperty, final URI baseUrl) {
-        return new MapExpansion1314(activeContext, element, activeProperty, baseUrl);
+        return new ObjectExpansion1314(activeContext, element, activeProperty, baseUrl);
     }
 
-    public MapExpansion1314 frameExpansion(boolean value) {
+    public ObjectExpansion1314 frameExpansion(boolean value) {
         this.frameExpansion = value;
         return this;
     }
 
-    public MapExpansion1314 ordered(boolean value) {
+    public ObjectExpansion1314 ordered(boolean value) {
         this.ordered = value;
         return this;
     }
 
-    public MapExpansion1314 nest(Map<String, JsonValue> nest) {
+    public ObjectExpansion1314 nest(Map<String, JsonValue> nest) {
         this.nest = nest;
         return this;
     }
 
-    public MapExpansion1314 typeContext(ActiveContext typeContext) {
+    public ObjectExpansion1314 typeContext(ActiveContext typeContext) {
         this.typeContext = typeContext;
         return this;
     }
 
-    public MapExpansion1314 result(Map<String, JsonValue> result) {
+    public ObjectExpansion1314 result(Map<String, JsonValue> result) {
         this.result = result;
         return this;
     }
 
-    public MapExpansion1314 inputType(String inputType) {
+    public ObjectExpansion1314 inputType(String inputType) {
         this.inputType = inputType;
         return this;
     }
@@ -121,10 +121,10 @@ final class MapExpansion1314 {
             // 13.2.
             String expandedProperty = 
                         activeContext
-                            .uriExpansion(key)
+                            .uriExpansion()
                             .documentRelative(false)
                             .vocab(true)
-                            .build();
+                            .expand(key);
     
             // 13.3.
             if (expandedProperty == null || (!expandedProperty.contains(":") && !Keywords.contains(expandedProperty))) {
@@ -169,10 +169,10 @@ final class MapExpansion1314 {
  
                         String expandedStringValue = 
                                     activeContext
-                                        .uriExpansion(((JsonString) value).getString())
+                                        .uriExpansion()
                                         .documentRelative(true)
                                         .vocab(false)
-                                        .build();
+                                        .expand(((JsonString) value).getString());
 
                         if (expandedStringValue != null) {
                             expandedValue = Json.createValue(expandedStringValue);
@@ -189,10 +189,10 @@ final class MapExpansion1314 {
 
                             String expandedStringValue = 
                                     activeContext
-                                        .uriExpansion(((JsonString) item).getString())
+                                        .uriExpansion()
                                         .documentRelative(true)
                                         .vocab(false)
-                                        .build();
+                                        .expand(((JsonString) item).getString());
 
                             if (expandedStringValue != null) {
                                 array.add(expandedStringValue);
@@ -229,10 +229,10 @@ final class MapExpansion1314 {
                         expandedValue = Json.createObjectBuilder()
                                 .add(Keywords.DEFAULT,
                                         typeContext
-                                                .uriExpansion(((JsonString) value).getString())
+                                                .uriExpansion()
                                                 .vocab(true)
                                                 .documentRelative(true)
-                                                .build())
+                                                .expand(((JsonString) value).getString()))
                                 .build();
 
                     // 13.4.4.4
@@ -242,10 +242,10 @@ final class MapExpansion1314 {
 
                             String expandedStringValue = 
                                         typeContext
-                                            .uriExpansion(((JsonString) value).getString())
+                                            .uriExpansion()
                                             .vocab(true)
                                             .documentRelative(true)
-                                            .build();
+                                            .expand(((JsonString) value).getString());
 
                             if (expandedStringValue != null) {
                                 expandedValue = Json.createValue(expandedStringValue);
@@ -261,10 +261,10 @@ final class MapExpansion1314 {
 
                                     String expandedStringValue =
                                             typeContext
-                                                .uriExpansion(((JsonString) item).getString())
+                                                .uriExpansion()
                                                 .vocab(true)
                                                 .documentRelative(true)
-                                                .build();
+                                                .expand(((JsonString) item).getString());
 
                                     if (expandedStringValue != null) {
                                         array.add(Json.createValue(expandedStringValue));
@@ -638,9 +638,9 @@ final class MapExpansion1314 {
 
                             String expandedLangCode = 
                                         activeContext
-                                            .uriExpansion(langCode)
+                                            .uriExpansion()
                                             .vocab(true)
-                                            .build();
+                                            .expand(langCode);
 
                             if (!Keywords.NONE.equals(expandedLangCode)) {
                                 langMap.add(Keywords.LANGUAGE, Json.createValue(langCode.toLowerCase()));
@@ -683,10 +683,10 @@ final class MapExpansion1314 {
                     // 13.8.3.1.
                     ActiveContext mapContext = activeContext;
 
-                    if (activeContext.getPreviousContext().isPresent()
+                    if (activeContext.getPreviousContext() != null 
                             && (containerMapping.contains(Keywords.ID) || containerMapping.contains(Keywords.TYPE))) {
 
-                        mapContext = activeContext.getPreviousContext().get();
+                        mapContext = activeContext.getPreviousContext();
                     }
 
                     // 13.8.3.2.
@@ -712,9 +712,9 @@ final class MapExpansion1314 {
                     // 13.8.3.4.
                     String expandedIndex = 
                                 activeContext
-                                    .uriExpansion(index)
+                                    .uriExpansion()
                                     .vocab(true)
-                                    .build();
+                                    .expand(index);
 
                     // 13.8.3.5.
                     if (JsonUtils.isNotArray(indexValue)) {
@@ -738,15 +738,15 @@ final class MapExpansion1314 {
                                 && !Keywords.NONE.equals(expandedIndex)) {
 
                             // 13.8.3.7.2.1.
-                            JsonValue reExpandedIndex = activeContext.valueExpansion(Json.createValue(index), indexKey)
-                                    .build();
+                            JsonValue reExpandedIndex = activeContext.valueExpansion()
+                                    .expand(Json.createValue(index), indexKey);
 
                             // 13.8.3.7.2.2.
                             String expandedIndexKey = 
                                         activeContext
-                                            .uriExpansion(indexKey)
+                                            .uriExpansion()
                                             .vocab(true)
-                                            .build();
+                                            .expand(indexKey);
 
                             // 13.8.3.7.2.3.
                             JsonArrayBuilder indexPropertyValues = Json.createArrayBuilder().add(reExpandedIndex);
@@ -785,10 +785,10 @@ final class MapExpansion1314 {
                                 && !Keywords.NONE.equals(expandedIndex)) {
 
                             expandedIndex = activeContext
-                                                .uriExpansion(index)
+                                                .uriExpansion()
                                                 .vocab(false)
                                                 .documentRelative(true)
-                                                .build();
+                                                .expand(index);
 
                             item = Json.createObjectBuilder(item.asJsonObject()).add(Keywords.ID, expandedIndex)
                                     .build();
@@ -927,9 +927,9 @@ final class MapExpansion1314 {
 
                     String expandedNestedValueKey = 
                                             typeContext
-                                                .uriExpansion(nestedValueKey)
+                                                .uriExpansion()
                                                 .vocab(true)
-                                                .build();
+                                                .expand(nestedValueKey);
 
                     if (Keywords.VALUE.equals(expandedNestedValueKey)) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
@@ -937,7 +937,7 @@ final class MapExpansion1314 {
                 }
 
                 // 14.2.2
-                MapExpansion1314
+                ObjectExpansion1314
                         .with(activeContext, nestValue.asJsonObject(), activeProperty, baseUrl)
                         .inputType(inputType)
                         .result(result)
