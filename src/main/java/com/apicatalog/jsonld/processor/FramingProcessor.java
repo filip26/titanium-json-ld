@@ -110,13 +110,13 @@ public final class FramingProcessor {
         
         // 16.
         Framing.with(state, 
-                                new ArrayList<>(state.getGraphMap().subjects(state.getGraphName())), 
-                                Frame.of(expandedFrame), 
-                                resultMap, 
-                                null
-                            )
-                        .ordered(options.isOrdered())
-                        .build();
+                    new ArrayList<>(state.getGraphMap().subjects(state.getGraphName())), 
+                    Frame.of(expandedFrame), 
+                    resultMap, 
+                    null
+                    )
+                .ordered(options.isOrdered())
+                .frame();
         
         Collection<JsonValue> result = resultMap.values();        
         

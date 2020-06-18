@@ -36,7 +36,7 @@ public final class ScalarExpansion {
         return new ScalarExpansion(activeContext, propertyContext, element, activeProperty);
     }
 
-    public JsonValue compute() throws JsonLdError {
+    public JsonValue expand() throws JsonLdError {
 
         /*
          * 4.1. If active property is null or @graph, drop the free-floating scalar by

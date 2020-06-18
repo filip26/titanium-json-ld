@@ -77,7 +77,7 @@ public final class ObjectExpansion {
         return this;
     }
 
-    public JsonValue compute() throws JsonLdError {
+    public JsonValue expand() throws JsonLdError {
 
         // 7. If active context has a previous context, the active context is not
         // propagated.
@@ -243,7 +243,7 @@ public final class ObjectExpansion {
                     .nest(new LinkedHashMap<>())
                     .frameExpansion(frameExpansion)
                     .ordered(ordered)
-                    .compute();
+                    .expand();
 
         // 15.
         if (result.containsKey(Keywords.VALUE)) {

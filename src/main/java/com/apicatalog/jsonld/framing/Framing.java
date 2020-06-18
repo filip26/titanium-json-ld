@@ -60,7 +60,7 @@ public final class Framing {
         return this;
     }
     
-    public void build() throws JsonLdError {
+    public void frame() throws JsonLdError {
 
         // 2.
         final JsonLdEmbed embed = frame.getEmbed(state.getEmbed());
@@ -155,20 +155,20 @@ public final class Framing {
                 // 4.5.3.
                 if (recurse) {
                     
-                    FramingState graphState = new FramingState(state);
+                    final FramingState graphState = new FramingState(state);
                     
                     graphState.setGraphName(id);
                     graphState.setEmbedded(false);
                     
                     Framing.with(
-                                        graphState, 
-                                        List.copyOf(state.getGraphMap().get(id).keySet()), 
-                                        subframe, 
-                                        output, 
-                                        Keywords.GRAPH
-                                        )
-                                    .ordered(ordered)
-                                    .build();
+                                graphState, 
+                                List.copyOf(state.getGraphMap().get(id).keySet()), 
+                                subframe, 
+                                output, 
+                                Keywords.GRAPH
+                                )
+                            .ordered(ordered)
+                            .frame();
                 }
             }
             
@@ -179,14 +179,14 @@ public final class Framing {
                 includedState.setEmbedded(false);
                 
                 Framing.with(
-                                    includedState, 
-                                    subjects, 
-                                    Frame.of((JsonStructure)frame.get(Keywords.INCLUDED)),
-                                    output, 
-                                    Keywords.INCLUDED
-                                    )
-                                .ordered(ordered)
-                                .build();                
+                            includedState, 
+                            subjects, 
+                            Frame.of((JsonStructure)frame.get(Keywords.INCLUDED)),
+                            output, 
+                            Keywords.INCLUDED
+                            )
+                        .ordered(ordered)
+                        .frame();                
             }
 
             // 4.7.    
@@ -251,13 +251,13 @@ public final class Framing {
                                     Map<String, JsonValue> listResult = new LinkedHashMap<>();
                                     
                                     Framing.with(
-                                                        listState, 
-                                                        Arrays.asList(listItem.asJsonObject().getString(Keywords.ID)),
-                                                        Frame.of((JsonStructure)listFrame), 
-                                                        listResult, 
-                                                        Keywords.LIST)
-                                                    .ordered(ordered)
-                                                    .build();
+                                                listState, 
+                                                Arrays.asList(listItem.asJsonObject().getString(Keywords.ID)),
+                                                Frame.of((JsonStructure)listFrame), 
+                                                listResult, 
+                                                Keywords.LIST)
+                                            .ordered(ordered)
+                                            .frame();
 
                                     if (listResult.containsKey(Keywords.LIST)) {
                                         list.add(listResult.get(Keywords.LIST));
@@ -277,13 +277,13 @@ public final class Framing {
                         clonedState.setEmbedded(true);
 
                         Framing.with(
-                                            clonedState, 
-                                            Arrays.asList(item.asJsonObject().getString(Keywords.ID)),
-                                            Frame.of((JsonStructure)subframe), 
-                                            output, 
-                                            property)
-                                        .ordered(ordered)                        
-                                        .build();
+                                    clonedState, 
+                                    Arrays.asList(item.asJsonObject().getString(Keywords.ID)),
+                                    Frame.of((JsonStructure)subframe), 
+                                    output, 
+                                    property)
+                                .ordered(ordered)                        
+                                .frame();
                         
                     } else if (ValueObject.isValueObject(item)) {                        
                         if ((Frame.of((JsonStructure)subframe)).matchValue(item)) {
@@ -371,13 +371,13 @@ public final class Framing {
                                 reverseState.setEmbedded(true);
                                 
                                 Framing.with(
-                                                    reverseState, 
-                                                    Arrays.asList(subjectProperty), 
-                                                    Frame.of((JsonStructure)subframe),
-                                                    revereseResult, 
-                                                    null)
-                                                .ordered(ordered)
-                                                .build();
+                                            reverseState, 
+                                            Arrays.asList(subjectProperty), 
+                                            Frame.of((JsonStructure)subframe),
+                                            revereseResult, 
+                                            null)
+                                        .ordered(ordered)
+                                        .frame();
 
                                 if (output.containsKey(Keywords.REVERSE)) {                        
                                     reverseMap = new LinkedHashMap<>(output.get(Keywords.REVERSE).asJsonObject());

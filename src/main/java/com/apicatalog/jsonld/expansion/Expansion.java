@@ -88,7 +88,7 @@ public final class Expansion {
 
             return ScalarExpansion
                         .with(activeContext, propertyContext, element, activeProperty)
-                        .compute();
+                        .expand();
         }
 
         // 5. If element is an array,
@@ -96,7 +96,7 @@ public final class Expansion {
 
             return ArrayExpansion
                         .with(activeContext, element.asJsonArray(), activeProperty, baseUrl)
-                        .compute();
+                        .expand();
         }
 
         // 6. Otherwise element is a map
@@ -105,6 +105,6 @@ public final class Expansion {
                     .frameExpansion(frameExpansion)
                     .ordered(ordered)
                     .fromMap(fromMap)
-                    .compute();
+                    .expand();
     }
 }

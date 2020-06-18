@@ -43,7 +43,7 @@ public final class Flattening {
         return this;
     }
     
-    public JsonArray build() throws JsonLdError {
+    public JsonArray flatten() throws JsonLdError {
         
         // 1.
         NodeMap nodeMap = new NodeMap();

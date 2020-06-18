@@ -68,7 +68,7 @@ public final class ArrayExpansion {
         return this;
     }
 
-    public JsonValue compute() throws JsonLdError {
+    public JsonValue expand() throws JsonLdError {
 
         // 5.1
         final JsonArrayBuilder result = Json.createArrayBuilder();

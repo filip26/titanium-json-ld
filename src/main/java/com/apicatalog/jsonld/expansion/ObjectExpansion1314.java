@@ -108,7 +108,7 @@ final class ObjectExpansion1314 {
         return this;
     }
 
-    public void compute() throws JsonLdError {
+    public void expand() throws JsonLdError {
 
         // 13.
         List<String> keys = new ArrayList<>(element.keySet());
@@ -996,7 +996,7 @@ final class ObjectExpansion1314 {
                         .nest(new LinkedHashMap<>())
                         .frameExpansion(frameExpansion)
                         .ordered(ordered)
-                        .compute();
+                        .expand();
             }
         }
     }
