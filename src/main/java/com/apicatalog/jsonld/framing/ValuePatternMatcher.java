@@ -55,10 +55,8 @@ public final class ValuePatternMatcher {
                                     ? value.get(Keywords.VALUE)
                                     : null;
 
-
-  
-        return (JsonUtils.isNotNull(value1) && JsonUtils.isEmptyObject(value2))
-                    || (JsonUtils.isNotNull(value2)  && JsonUtils.toJsonArray(value2).contains(value1))
+        return (JsonUtils.isNotNull(value1) && isWildcard(value2))
+                    || (JsonUtils.isNotNull(value2) && JsonUtils.toJsonArray(value2).contains(value1))
                     ;
     }
     
@@ -68,23 +66,21 @@ public final class ValuePatternMatcher {
                 ? value.get(Keywords.TYPE)
                 : null;
 
-        return (JsonUtils.isNotNull(type1) && JsonUtils.isNotNull(type2) && JsonUtils.isEmptyObject(type2))
-                    || (JsonUtils.isNull(type1) && (JsonUtils.isNull(type2) || JsonUtils.isEmptyArray(type2)))
+        return (JsonUtils.isNotNull(type1) && isWildcard(type2))
+                    || (JsonUtils.isNull(type1) && isNone(type2))
                     || (JsonUtils.isNotNull(type2) && JsonUtils.toJsonArray(type2).contains(type1))
                 ;
     }
     
     private boolean matchLanguage(JsonValue lang2) {
-        
+
         final String lang1 = value.containsKey(Keywords.LANGUAGE) 
-                ? value.getString(Keywords.LANGUAGE).toLowerCase()
-                : null;
-                
-                
-        if ((lang1 != null && JsonUtils.isNotNull(lang2) && JsonUtils.isEmptyObject(lang2))
-                || (lang1 == null && (JsonUtils.isNull(lang2) || JsonUtils.isEmptyArray(lang2)))
+                                    ? value.getString(Keywords.LANGUAGE).toLowerCase()
+                                    : null;
+                                
+        if ((lang1 != null && isWildcard(lang2))
+                || (lang1 == null && isNone(lang2))
                 ) {
-            
             return true;
         }
 
@@ -97,7 +93,19 @@ public final class ValuePatternMatcher {
                                 .stream()
                                 .map(JsonString.class::cast)
                                 .map(JsonString::getString)
-                                .map(String::toLowerCase)
-                                .anyMatch(x -> x.equals(lang1));
+                                .anyMatch(x -> x.equalsIgnoreCase(lang1));
+    }
+    
+    private static final boolean isWildcard(JsonValue value) {
+        return value != null 
+                && (JsonUtils.isEmptyObject(value) 
+                        || (JsonUtils.isArray(value) 
+                                && value.asJsonArray().size() == 1
+                                && JsonUtils.isEmptyObject(value.asJsonArray().get(0)))
+                        );
+    }
+    
+    private static final boolean isNone(JsonValue value) {
+        return JsonUtils.isNull(value) || JsonUtils.isEmptyArray(value);
     }
 }

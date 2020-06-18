@@ -354,20 +354,24 @@ final class ObjectExpansion1314 {
                         expandedValue = value;
 
                     // 13.4.7.2
-                    } else if (!frameExpansion && JsonUtils.isNotNull(value) && JsonUtils.isNotScalar(value)
-                               || frameExpansion 
-                                       && JsonUtils.isNotEmptyObject(value)
-                                       && JsonUtils.isNotNull(value) && JsonUtils.isNotScalar(value)
-                                       && (JsonUtils.isNotArray(value)
+                    } else if (JsonUtils.isNull(value) 
+                                || JsonUtils.isScalar(value)
+                                    || frameExpansion 
+                                       && (JsonUtils.isEmptyObject(value)
                                                || JsonUtils.isEmptyArray(value)
-                                               || !value.asJsonArray().stream().allMatch(JsonUtils::isScalar)
+                                               || JsonUtils.isArray(value)
+                                                       && value.asJsonArray().stream().allMatch(JsonUtils::isScalar)
                                                )
                             ) {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
 
-                        // 13.4.7.3
-                    } else {
                         expandedValue = value;
+                        
+                        if (frameExpansion) {
+                            expandedValue = JsonUtils.toJsonArray(expandedValue);
+                        }
+
+                    } else {
+                        throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
                     }
 
                     // 13.4.7.4
@@ -379,21 +383,27 @@ final class ObjectExpansion1314 {
 
                 // 13.4.8
                 if (Keywords.LANGUAGE.equals(expandedProperty)) {
+                    
                     // 13.4.8.1
-                    if (JsonUtils.isNotString(value) && !frameExpansion
+                    if (JsonUtils.isString(value)
                             || frameExpansion
-                                    && JsonUtils.isNotString(value)
-                                    && JsonUtils.isNotEmptyObject(value)
-                                    && (JsonUtils.isNotEmptyArray(value) && !value.asJsonArray().stream().allMatch(JsonUtils::isString))
-                            
+                                    && (JsonUtils.isEmptyObject(value)
+                                        || JsonUtils.isEmptyArray(value) 
+                                        || JsonUtils.isArray(value) 
+                                                && value.asJsonArray().stream().allMatch(JsonUtils::isString)
+                                        )
                             ) {
-                        // TODO frameExpansion
+
+                        // 13.4.8.2
+                        expandedValue = JsonUtils.isString(value) ? Json.createValue(((JsonString)value).getString().toLowerCase()) : value;
+                        
+                        if (frameExpansion) {
+                            expandedValue = JsonUtils.toJsonArray(expandedValue);
+                        }
+
+                    } else {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
                     }
-
-                    // 13.4.8.2
-                    expandedValue = JsonUtils.isString(value) ? Json.createValue(((JsonString)value).getString().toLowerCase()) : value;
-                    // TODO validation, warning, frameExpansion
                 }
 
                 // 13.4.9.
@@ -404,15 +414,26 @@ final class ObjectExpansion1314 {
                     }
 
                     // 13.4.9.2.
-                    if (JsonUtils.isNotString(value) && !((JsonString) value).getString().equals("ltr")
-                            && !((JsonString) value).getString().equals("rtl")) {
-                        // TODO frameexpansion
+                    if ((JsonUtils.isString(value) 
+                            && "ltr".equals(((JsonString) value).getString()) || "rtl".equals(((JsonString) value).getString()))
+                            || frameExpansion
+                                    && (JsonUtils.isEmptyObject(value)
+                                            || JsonUtils.isEmptyArray(value)
+                                            || JsonUtils.isArray(value) 
+                                                    && value.asJsonArray().stream().allMatch(JsonUtils::isString)
+                                            )
+                            ) {
+                     
+                        // 13.4.9.3.
+                        expandedValue = value;
+                        
+                        if (frameExpansion) {
+                            expandedValue = JsonUtils.toJsonArray(expandedValue);
+                        }
+                        
+                    } else {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
                     }
-
-                    // 13.4.9.3.
-                    expandedValue = value;
-                    // TODO frameexpansion
                 }
 
                 // 13.4.10.
