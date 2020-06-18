@@ -6,7 +6,7 @@ import com.apicatalog.jsonld.json.JsonUtils;
 
 public final class ValueObject {
 
-    ValueObject() {
+    private ValueObject() {
     }
 
     public static final boolean isValueObject(JsonValue value) {

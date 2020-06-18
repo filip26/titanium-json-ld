@@ -4,9 +4,9 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.json.JsonUtils;
 
-public class DefaultObject {
+public final class DefaultObject {
 
-    DefaultObject() {
+    private DefaultObject() {
     }
 
     /**
