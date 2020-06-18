@@ -158,16 +158,15 @@ final class ObjectExpansion1314 {
                                     && JsonUtils.isNotString(value)
                                     && JsonUtils.isNotEmptyObject(value)
                                     && (JsonUtils.isNotArray(value)
-                                            || JsonUtils.isEmptyArray(value)
                                             || !value.asJsonArray().stream().allMatch(JsonUtils::isString) 
                                     )
                             ) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE);
 
                     // 13.4.3.2
-                    } else if (!frameExpansion) {
+                    } else if (JsonUtils.isString(value)) {
  
-                        String expandedStringValue = 
+                        final String expandedStringValue = 
                                     activeContext
                                         .uriExpansion()
                                         .documentRelative(true)
@@ -175,17 +174,27 @@ final class ObjectExpansion1314 {
                                         .expand(((JsonString) value).getString());
 
                         if (expandedStringValue != null) {
+                            
                             expandedValue = Json.createValue(expandedStringValue);
+                            
+                            if (frameExpansion) {
+                                expandedValue = JsonUtils.toJsonArray(expandedValue);
+                            }
                         }
                         
                     } else if (JsonUtils.isObject(value)) {
+                        
                         expandedValue = Json.createArrayBuilder().add(JsonValue.EMPTY_JSON_OBJECT).build();
                         
-                    } else if (JsonUtils.isScalar(value) || JsonUtils.isArray(value))  {
+                    } else if (JsonUtils.isEmptyArray(value)) {
                         
-                        JsonArrayBuilder array = Json.createArrayBuilder();
+                        expandedValue = JsonValue.EMPTY_JSON_ARRAY;
                         
-                        for (JsonValue item : JsonUtils.toJsonArray(value)) {
+                    } else if (JsonUtils.isArray(value))  {
+                        
+                        final JsonArrayBuilder array = Json.createArrayBuilder();
+                        
+                        for (final JsonValue item : JsonUtils.toJsonArray(value)) {
 
                             String expandedStringValue = 
                                     activeContext
@@ -201,7 +210,6 @@ final class ObjectExpansion1314 {
 
                         expandedValue = array.build();
                     }
-
                 }
 
                 // 13.4.4
