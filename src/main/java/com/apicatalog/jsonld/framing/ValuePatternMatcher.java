@@ -98,7 +98,7 @@ public final class ValuePatternMatcher {
                                 .anyMatch(x -> x.equalsIgnoreCase(lang1));
     }
     
-    protected static final boolean isWildcard(JsonValue value) {
+    protected static final boolean isWildcard(JsonValue value, String...except) {
         
         if (JsonUtils.isEmptyObject(value)) {
             return true;
@@ -122,17 +122,18 @@ public final class ValuePatternMatcher {
         }
 
         return frame.isEmpty() || frame.keySet()
-                .stream()
-                .allMatch(Arrays.asList(
-                            Keywords.DEFAULT,
-                            Keywords.OMIT_DEFAULT, 
-                            Keywords.EMBED, 
-                            Keywords.EXPLICIT, 
-                            Keywords.REQUIRE_ALL
-                            )::contains);
+                                        .stream()
+                                        .allMatch(Arrays.asList(
+                                                    Keywords.DEFAULT,
+                                                    Keywords.OMIT_DEFAULT, 
+                                                    Keywords.EMBED, 
+                                                    Keywords.EXPLICIT, 
+                                                    Keywords.REQUIRE_ALL,
+                                                    except
+                                                    )::contains);
     }
     
-    private static final boolean isNone(JsonValue value) {
+    protected static final boolean isNone(JsonValue value) {
         return JsonUtils.isNull(value) || JsonUtils.isEmptyArray(value);
     }
 }

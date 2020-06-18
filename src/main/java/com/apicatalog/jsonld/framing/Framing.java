@@ -302,7 +302,7 @@ public final class Framing {
             for (String property : frame.keys()) {
                 if (output.containsKey(property)
                         || !Keywords.TYPE.equals(property) && Keywords.matchForm(property)
-                        || Keywords.TYPE.equals(property) && !frame.isDefault(property)
+                        || Keywords.TYPE.equals(property) && !frame.isDefaultOjbect(property)
                         ) {
                     continue;
                 }

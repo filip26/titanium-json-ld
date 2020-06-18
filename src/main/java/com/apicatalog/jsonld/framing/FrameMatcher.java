@@ -86,8 +86,8 @@ public final class FrameMatcher {
 
                 if ((JsonUtils.isNotNull(nodeValue) && !nodeValue.asJsonArray().isEmpty() && frame.isWildCard(property))
                         || ((JsonUtils.isNull(nodeValue) || nodeValue.asJsonArray().isEmpty()) && frame.isNone(property))
-                        || frame.isDefault(property)
-                        || (JsonUtils.isNotNull(nodeValue) && frame.getArray(property).stream().anyMatch(nodeValue.asJsonArray()::contains))
+                        || frame.isDefaultOjbect(property)
+                        || (JsonUtils.isNotNull(nodeValue) && frame.getCollection(property).stream().anyMatch(nodeValue.asJsonArray()::contains))
                         ){
 
                     if (requireAll) {
@@ -125,7 +125,7 @@ public final class FrameMatcher {
             // 2.5.
             if (nodeValues.isEmpty() 
                     && propertyFrame != null 
-                    && propertyFrame.contains(Keywords.DEFAULT) //TODO only default
+                    && propertyFrame.containsOnly(Keywords.DEFAULT)
                     ) {
                 continue;
             }
@@ -165,7 +165,7 @@ public final class FrameMatcher {
                 
             } else  {
 
-                if (propertyFrame.isList()) {
+                if (propertyFrame.isListObject()) {
 
                     JsonValue listValue = propertyFrame.get(Keywords.LIST);
                     

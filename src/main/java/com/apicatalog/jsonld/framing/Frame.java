@@ -27,7 +27,7 @@ public final class Frame {
         this.frameObject = frameObject;
     }
     
-    public static final Frame of(JsonStructure structure) throws JsonLdError {
+    public static final Frame of(final JsonStructure structure) throws JsonLdError {
 
         final JsonObject frameObject;
 
@@ -37,7 +37,7 @@ public final class Frame {
             if (structure.asJsonArray().size() != 1  
                     || JsonUtils.isNotObject(structure.asJsonArray().get(0))
                     ) {
-                throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
+                throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame is not JSON object nor an array containg JSON object [" + structure + "]");
             }
 
             frameObject = structure.asJsonArray().getJsonObject(0);
@@ -48,23 +48,22 @@ public final class Frame {
             frameObject = structure.asJsonObject();
 
         } else {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
+            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame is not JSON object. [" + structure + "]");
         }
         
         // 1.2.
         if (frameObject.containsKey(Keywords.ID) && !validateFrameId(frameObject)) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @id is not valid.");
+            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @id value is not valid [" + frameObject.get(Keywords.ID) + "].");
         }
         
         // 1.3.
         if (frameObject.containsKey(Keywords.TYPE) && !validateFrameType(frameObject)) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Fram @type is not valid.");
+            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @type value i not valid [" + frameObject.get(Keywords.TYPE) + "].");
         }
         return new Frame(frameObject);
     }
-    
-    
-    public JsonLdEmbed getEmbed(JsonLdEmbed defaultValue) throws JsonLdError {
+        
+    public JsonLdEmbed getEmbed(final JsonLdEmbed defaultValue) throws JsonLdError {
         
         if (frameObject.containsKey(Keywords.EMBED)) {
 
@@ -205,27 +204,28 @@ public final class Frame {
         return frameObject.containsKey(property);
     }
 
+    public boolean containsOnly(String property) {
+        return frameObject.containsKey(property) && ValuePatternMatcher.isWildcard(frameObject, property);
+    }
+
     public boolean isWildCard() {
         return ValuePatternMatcher.isWildcard(frameObject);
     }
     
     public boolean isWildCard(String property) {
         return frameObject.containsKey(property) 
-                    && ValuePatternMatcher.isWildcard(get(property))
-                    ;
+                    && ValuePatternMatcher.isWildcard(frameObject.get(property));
     }
 
     public boolean isNone(String property) {
         return frameObject.containsKey(property) 
-                    && JsonUtils.isEmptyArray(get(property))
-                    ;
+                    && ValuePatternMatcher.isNone(frameObject.get(property));
     }
 
-    public Collection<JsonValue> getArray(String property) {
+    public Collection<JsonValue> getCollection(String property) {
         return frameObject.containsKey(property)
                     ? JsonUtils.toJsonArray(frameObject.get(property))
-                    : JsonValue.EMPTY_JSON_ARRAY
-                    ;
+                    : JsonValue.EMPTY_JSON_ARRAY;
     }
     
     @Override
@@ -241,8 +241,7 @@ public final class Frame {
         return JsonUtils.isObject(value) && ValuePatternMatcher.with(frameObject, value.asJsonObject()).match();
     }
 
-    public boolean isDefault(String property) {
-
+    public boolean isDefaultOjbect(String property) {
         return DefaultObject.isDefaultObject(frameObject.get(property))
                 || JsonUtils.isArray(frameObject.get(property))
                     && frameObject.get(property).asJsonArray().size() == 1
@@ -273,7 +272,7 @@ public final class Frame {
         return FrameMatcher.with(state, this, requireAll).match(valueObject.asJsonObject());
     }
 
-    public boolean isList() {
+    public boolean isListObject() {
         return ListObject.isListObject(frameObject);
     }
 }
