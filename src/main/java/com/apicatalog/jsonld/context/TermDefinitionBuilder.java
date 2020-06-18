@@ -20,6 +20,7 @@ import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.CompactUri;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.uri.UriUtils;
 
@@ -525,6 +526,11 @@ public final class TermDefinitionBuilder {
             JsonValue language = valueObject.get(Keywords.LANGUAGE);
 
             if (JsonUtils.isNull(language) || JsonUtils.isString(language)) {
+                
+                if (JsonUtils.isString(language) && !LanguageTag.isWellFormed(((JsonString)language).getString())) {
+                    LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", ((JsonString)language).getString());
+                }
+                
                 definition.setLanguageMapping(language);
 
             } else {

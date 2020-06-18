@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
@@ -26,6 +28,7 @@ import com.apicatalog.jsonld.lang.DefaultObject;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.GraphObject;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.ValueObject;
@@ -41,6 +44,8 @@ import com.apicatalog.jsonld.uri.UriUtils;
  */
 final class ObjectExpansion1314 {
 
+    private static final Logger LOGGER = Logger.getLogger(ObjectExpansion1314.class.getName());
+    
     // mandatory
     private final ActiveContext activeContext;
     private final JsonObject element;
@@ -414,6 +419,10 @@ final class ObjectExpansion1314 {
                                         )
                             ) {
 
+                        if (JsonUtils.isString(value) && !LanguageTag.isWellFormed(((JsonString)value).getString())) {
+                            LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", ((JsonString)value).getString());
+                        }                        
+                        
                         // 13.4.8.2
                         expandedValue = JsonUtils.isString(value) ? Json.createValue(((JsonString)value).getString().toLowerCase()) : value;
                         
@@ -680,6 +689,11 @@ final class ObjectExpansion1314 {
                                             .expand(langCode);
 
                             if (!Keywords.NONE.equals(expandedLangCode)) {
+                                
+                                if (!LanguageTag.isWellFormed(langCode)) {
+                                    LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", langCode);
+                                }                        
+         
                                 langMap.add(Keywords.LANGUAGE, Json.createValue(langCode.toLowerCase()));
                             }
                         }
