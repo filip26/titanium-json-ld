@@ -400,10 +400,10 @@ public final class UriCompactionBuilder {
                 
                 final String compactedIdValue = activeContext.uriCompaction().vocab(true).compact(idValue);
                 
-                final TermDefinition compactedIdValueTermDefinition = activeContext.getTerm(compactedIdValue);
+                final Optional<TermDefinition> compactedIdValueTermDefinition = activeContext.getTerm(compactedIdValue);
                 
-                if (compactedIdValueTermDefinition != null
-                        && idValue.equals(compactedIdValueTermDefinition.getUriMapping())
+                if (compactedIdValueTermDefinition.isPresent()
+                        && idValue.equals(compactedIdValueTermDefinition.get().getUriMapping())
                         ) {
                     preferredValues.add(Keywords.VOCAB);
                     preferredValues.add(Keywords.ID);
@@ -492,8 +492,11 @@ public final class UriCompactionBuilder {
             // 7.3.
             if (((compactUri == null || (compacttUriCandidate.compareTo(compactUri) < 0))
                             && !activeContext.containsTerm(compacttUriCandidate))
-                    || (activeContext.containsTerm(compacttUriCandidate) 
-                            && variable.equals(activeContext.getTerm(compacttUriCandidate).getUriMapping())
+                    || (activeContext
+                                .getTerm(compacttUriCandidate)
+                                .map(TermDefinition::getUriMapping)
+                                .map(u -> u.equals(variable))
+                                .orElse(false)
                             && JsonUtils.isNull(value)
                             )
                     ) {
@@ -509,10 +512,11 @@ public final class UriCompactionBuilder {
         // 9.
         if (UriUtils.isAbsoluteUri(variable)) {
             
-            URI uri = URI.create(variable);
+            final URI uri = URI.create(variable);
             
-            if ((uri.getScheme() != null && activeContext.containsTerm(uri.getScheme()))
-                && (activeContext.getTerm(uri.getScheme()).isPrefix() && uri.getAuthority() == null)) {
+            if (uri.getScheme() != null 
+                    && activeContext.getTerm(uri.getScheme()).map(TermDefinition::isPrefix).orElse(false)
+                    && uri.getAuthority() == null) {
                 throw new JsonLdError(JsonLdErrorCode.IRI_CONFUSED_WITH_PREFIX);
             }
         }

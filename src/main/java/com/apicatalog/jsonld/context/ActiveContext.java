@@ -27,7 +27,7 @@ public final class ActiveContext {
 
     // the active term definitions which specify how keys and values have to be
     // interpreted
-    private Map<String, TermDefinition> terms;
+    private final Map<String, TermDefinition> terms;
 
     // the current base IRI
     private URI baseUri;
@@ -80,7 +80,11 @@ public final class ActiveContext {
         this.options = origin.options;
     }
 
-    public boolean containsTerm(String term) {
+    public void createInverseContext() {
+        this.inverseContext = InverseContextBuilder.with(this).build();
+   }
+   
+    public boolean containsTerm(final String term) {
         return terms.containsKey(term);
     }
 
@@ -99,12 +103,8 @@ public final class ActiveContext {
         return Optional.empty();
     }
 
-    protected void setTerm(String term, TermDefinition definition) {
-        terms.put(term, definition);
-    }
-
-    public TermDefinition getTerm(String value) {
-        return terms.get(value);
+    public Optional<TermDefinition> getTerm(String value) {
+        return Optional.ofNullable(terms.get(value));
     }
 
     public DirectionType getDefaultBaseDirection() {
@@ -174,17 +174,13 @@ public final class ActiveContext {
     public UriCompactionBuilder uriCompaction() {
         return UriCompactionBuilder.with(this);
     }
-    
-    public void createInverseContext() {
-         this.inverseContext = InverseContextBuilder.with(this).build();
-    }
-    
-    public TermSelector termSelector(String variable, Collection<String> containerMapping, String typeLanguage) {
-        return TermSelector.with(this, variable, containerMapping, typeLanguage);
-    }
 
     public ValueCompactionBuilder valueCompaction() {
         return ValueCompactionBuilder.with(this);
+    }
+
+    public TermSelector termSelector(String variable, Collection<String> containerMapping, String typeLanguage) {
+        return TermSelector.with(this, variable, containerMapping, typeLanguage);
     }
 
     public JsonLdOptions getOptions() {
@@ -213,5 +209,9 @@ public final class ActiveContext {
     
     protected void setInverseContext(InverseContext inverseContext) {
         this.inverseContext = inverseContext;
+    }
+    
+    protected void setTerm(String term, TermDefinition definition) {
+        terms.put(term, definition);
     }
 }

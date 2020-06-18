@@ -7,9 +7,9 @@ import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.serialization.RdfToJsonld;
 import com.apicatalog.rdf.RdfDataset;
 
-public final class RdfToJsonLdProcessor {
+public final class FromRdfProcessor {
 
-    private RdfToJsonLdProcessor() {
+    private FromRdfProcessor() {
     }
     
     public static final JsonArray fromRdf(final RdfDataset dataset, final JsonLdOptions options) throws JsonLdError {

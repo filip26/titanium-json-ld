@@ -53,12 +53,13 @@ public final class ScalarExpansionBuilder {
          * property in active context.
          */
         if (propertyContext != null) {
-
-            final TermDefinition definition = activeContext.getTerm(activeProperty);
-
+            
             activeContext = activeContext
                                 .newContext()
-                                .create(propertyContext, definition.getBaseUrl());
+                                .create(
+                                    propertyContext,
+                                    activeContext.getTerm(activeProperty).map(TermDefinition::getBaseUrl).orElse(null)                                    
+                                );
         }
 
         /*

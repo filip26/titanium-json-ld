@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -78,7 +79,7 @@ public final class CompactionBuilder {
             return element;
         }
         
-        TermDefinition activePropertyDefinition = activeContext.getTerm(activeProperty);
+        final Optional<TermDefinition> activePropertyDefinition = activeContext.getTerm(activeProperty);
         
         // 3. 
         if (JsonUtils.isArray(element)) {
@@ -109,9 +110,9 @@ public final class CompactionBuilder {
                     || !compactArrays
                     || Keywords.GRAPH.equals(activeProperty)
                     || Keywords.SET.equals(activeProperty)
-                    || (activePropertyDefinition != null
-                            && (activePropertyDefinition.hasContainerMapping(Keywords.LIST)
-                                || activePropertyDefinition.hasContainerMapping(Keywords.SET))
+                    || (activePropertyDefinition.isPresent()
+                            && (activePropertyDefinition.get().hasContainerMapping(Keywords.LIST)
+                                || activePropertyDefinition.get().hasContainerMapping(Keywords.SET))
                             )
                     ) {
 
@@ -135,13 +136,13 @@ public final class CompactionBuilder {
         }
         
         // 6.
-        if (activePropertyDefinition != null && activePropertyDefinition.hasLocalContext()) {
+        if (activePropertyDefinition.map(TermDefinition::getLocalContext).isPresent()) {
             activeContext = 
                     activeContext
                             .newContext()
                             .overrideProtected(true)
-                            .create(activePropertyDefinition.getLocalContext(),
-                                    activePropertyDefinition.getBaseUrl());
+                            .create(activePropertyDefinition.get().getLocalContext(),
+                                    activePropertyDefinition.get().getBaseUrl());
                     
         }
         // 7.
@@ -151,7 +152,9 @@ public final class CompactionBuilder {
             
             final JsonValue result = activeContext.valueCompaction().compact(elementObject, activeProperty);
             
-            if (JsonUtils.isScalar(result) || activePropertyDefinition != null && Keywords.JSON.equals(activePropertyDefinition.getTypeMapping())) {
+            if (JsonUtils.isScalar(result) 
+                    || (activePropertyDefinition.isPresent() 
+                            && Keywords.JSON.equals(activePropertyDefinition.get().getTypeMapping()))) {
                 
                 return result;
             }
@@ -160,8 +163,8 @@ public final class CompactionBuilder {
         
         // 8.
         if (ListObject.isListObject(element)
-                && activePropertyDefinition != null
-                && activePropertyDefinition.hasContainerMapping(Keywords.LIST)
+                && activePropertyDefinition.isPresent()
+                && activePropertyDefinition.get().hasContainerMapping(Keywords.LIST)
                 ) {
 
             return CompactionBuilder
@@ -190,18 +193,18 @@ public final class CompactionBuilder {
 
             Collections.sort(compactedTypes);
             
-            for (String term : compactedTypes) {
+            for (final String term : compactedTypes) {
 
+                final Optional<TermDefinition> termDefinition = typeContext.getTerm(term);
+                                                                ;
                 // 11.1.
-                if (typeContext.containsTerm(term) && typeContext.getTerm(term).hasLocalContext()) {
-                    
-                    TermDefinition termDefinition = typeContext.getTerm(term);
-                    
+                if (termDefinition.isPresent() && termDefinition.get().hasLocalContext()) {
+
                     activeContext = 
                             activeContext
                                 .newContext()
                                 .propagate(false)
-                                .create(termDefinition.getLocalContext(), termDefinition.getBaseUrl());
+                                .create(termDefinition.get().getLocalContext(), termDefinition.get().getBaseUrl());
                 }
             }
         }
@@ -268,13 +271,13 @@ public final class CompactionBuilder {
                 }
 
                 // 12.2.3.
-                String alias = activeContext.uriCompaction().vocab(true).compact(expandedProperty);
+                final String alias = activeContext.uriCompaction().vocab(true).compact(expandedProperty);
 
                 // 12.2.4.
-                boolean asArray = (activeContext.inMode(Version.V1_1)
-                                        && activeContext.containsTerm(alias)
-                                        && activeContext.getTerm(alias).hasContainerMapping(Keywords.SET))
-                                    || !compactArrays; 
+                final boolean asArray = !compactArrays 
+                                        || (activeContext.inMode(Version.V1_1)
+                                            && activeContext.getTerm(alias).map(t -> t.hasContainerMapping(Keywords.SET)).orElse(false)
+                                           );
 
                 // 12.2.5.
                 JsonUtils.addValue(result, alias, compactedValue, asArray);
@@ -296,16 +299,17 @@ public final class CompactionBuilder {
                                                 .compact(Keywords.REVERSE, expandedValue)
                                                 .asJsonObject());
                 // 12.3.2.
-                for (Entry<String, JsonValue> entry : new HashSet<>(compactedMap.entrySet())) {
+                for (final Entry<String, JsonValue> entry : new HashSet<>(compactedMap.entrySet())) {
                     
                     // 12.3.2.1.
-                    if (activeContext.containsTerm(entry.getKey())
-                            && activeContext.getTerm(entry.getKey()).isReverseProperty()
-                            ) {
+                    if (activeContext.getTerm(entry.getKey()).map(TermDefinition::isReverseProperty).orElse(false)) {
 
                         // 12.3.2.1.1
-                        boolean asArray = activeContext.getTerm(entry.getKey()).hasContainerMapping(Keywords.SET)
-                                            || !compactArrays;
+                        final boolean asArray = !compactArrays
+                                            || activeContext
+                                                        .getTerm(entry.getKey())
+                                                        .map(td -> td.hasContainerMapping(Keywords.SET))
+                                                        .orElse(false);
 
                         // 12.3.2.1.2.
                         JsonUtils.addValue(result, entry.getKey(), entry.getValue(), asArray);
@@ -349,8 +353,8 @@ public final class CompactionBuilder {
             
             // 12.5.
             if (Keywords.INDEX.equals(expandedProperty)
-                    && activePropertyDefinition != null
-                    && activePropertyDefinition.hasContainerMapping(Keywords.INDEX)
+                    && activePropertyDefinition.isPresent()
+                    && activePropertyDefinition.get().hasContainerMapping(Keywords.INDEX)
                     ) {
                 continue;
                 
@@ -374,18 +378,19 @@ public final class CompactionBuilder {
             if (JsonUtils.isEmptyArray(expandedValue)) {
                 
                 // 12.7.1.
-                String itemActiveProperty = activeContext
+                final String itemActiveProperty = activeContext
                                                     .uriCompaction()
                                                     .value(expandedValue)
                                                     .vocab(true)
                                                     .reverse(insideReverse)
                                                     .compact(expandedProperty);
                 // 12.7.2.
-                if (activeContext.containsTerm(itemActiveProperty)
-                        && activeContext.getTerm(itemActiveProperty).getNestValue() != null
-                        ) {
+                if (activeContext.getTerm(itemActiveProperty).map(TermDefinition::getNestValue).isPresent()) {
                     
-                    String nestTerm = activeContext.getTerm(itemActiveProperty).getNestValue(); 
+                    final String nestTerm = activeContext
+                                                    .getTerm(itemActiveProperty)                             
+                                                    .map(TermDefinition::getNestValue)
+                                                    .orElse(null);
                   
                     // 12.7.2.1.
                     if (!Keywords.NEST.equals(nestTerm) && !Keywords.NEST.equals(activeContext.expandUri(nestTerm).vocab(true).build())) {
@@ -427,11 +432,12 @@ public final class CompactionBuilder {
                 String nestResultKey = null;
 
                 // 12.8.2.
-                if (activeContext.containsTerm(itemActiveProperty)
-                        && activeContext.getTerm(itemActiveProperty).getNestValue() != null
-                        ) {
+                if (activeContext.getTerm(itemActiveProperty).map(TermDefinition::getNestValue).isPresent()) {
                     
-                    String nestTerm = activeContext.getTerm(itemActiveProperty).getNestValue(); 
+                    final String nestTerm = activeContext
+                                            .getTerm(itemActiveProperty)
+                                            .map(TermDefinition::getNestValue)
+                                            .orElse(null);
                     
                     // 12.8.2.1.
                     if (!Keywords.NEST.equals(nestTerm) && !Keywords.NEST.equals(activeContext.expandUri(nestTerm).vocab(true).build())) {
@@ -453,15 +459,11 @@ public final class CompactionBuilder {
                 }
                 
                 // 12.8.4.
-                Collection<String> container = activeContext.containsTerm(itemActiveProperty)
-                                                ? activeContext.getTerm(itemActiveProperty).getContainerMapping()
-                                                    : null;
-                                                    
-                                                    
-                if (container == null) {
-                    container = new LinkedList<>();
-                }
-                
+                final Collection<String> container= activeContext
+                                                        .getTerm(itemActiveProperty)
+                                                        .map(TermDefinition::getContainerMapping)
+                                                        .orElse(new LinkedList<>());
+                                                                    
                 // 12.8.5.
                 boolean asArray = container.contains(Keywords.SET) 
                                         || Keywords.GRAPH.equals(itemActiveProperty)
@@ -677,15 +679,11 @@ public final class CompactionBuilder {
                     String containerKey = activeContext.uriCompaction().vocab(true).compact(keyToCompact);
 
                     // 12.8.9.3.
-                    String indexKey = null;
-                    if (activeContext.containsTerm(itemActiveProperty)) {
-                        indexKey = activeContext.getTerm(itemActiveProperty).getIndexMapping();
-                    }
-                    
-                    if (indexKey == null) {
-                        indexKey = Keywords.INDEX;
-                    }
-                    
+                    final String indexKey = activeContext
+                                                .getTerm(itemActiveProperty)
+                                                .map(TermDefinition::getIndexMapping)
+                                                .orElse(Keywords.INDEX);
+                                        
                     String mapKey = null;
                     
                     // 12.8.9.4.

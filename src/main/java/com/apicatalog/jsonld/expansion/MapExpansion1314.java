@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
@@ -567,21 +568,17 @@ final class MapExpansion1314 {
             }
 
             // 13.5.
-            TermDefinition keyTermDefinition = activeContext.getTerm(key);
+            final Optional<TermDefinition> keyTermDefinition = activeContext.getTerm(key);
 
-            Collection<String> containerMapping = null;
-
-            if (keyTermDefinition != null) {
-                containerMapping = keyTermDefinition.getContainerMapping();
-            }
-            if (containerMapping == null) {
-                containerMapping = Collections.emptyList();
-            }
-
+            final Collection<String> containerMapping = keyTermDefinition
+                                                        .map(TermDefinition::getContainerMapping)
+                                                        .orElse(Collections.emptyList());
+                    
             JsonValue expandedValue;
 
             // 13.6.
-            if (keyTermDefinition != null && Keywords.JSON.equals(keyTermDefinition.getTypeMapping())) {
+            if (keyTermDefinition.isPresent()
+                    && Keywords.JSON.equals(keyTermDefinition.get().getTypeMapping())) {
 
                 expandedValue = Json.createObjectBuilder().add(Keywords.VALUE, value)
                         .add(Keywords.TYPE, Json.createValue(Keywords.JSON)).build();
@@ -596,8 +593,8 @@ final class MapExpansion1314 {
                 DirectionType direction = activeContext.getDefaultBaseDirection();
 
                 // 13.7.3.
-                if (keyTermDefinition != null && keyTermDefinition.getDirectionMapping() != null) {
-                    direction = keyTermDefinition.getDirectionMapping();
+                if (keyTermDefinition.isPresent() && keyTermDefinition.map(TermDefinition::getDirectionMapping).isPresent()) {
+                    direction = keyTermDefinition.get().getDirectionMapping();
                 }
 
                 // 13.7.4.
@@ -668,24 +665,18 @@ final class MapExpansion1314 {
                 expandedValue = Json.createArrayBuilder().build();
 
                 // 13.8.2.
-                String indexKey = null;
-
-                if (keyTermDefinition != null) {
-                    indexKey = keyTermDefinition.getIndexMapping();
-                }
-
-                if (indexKey == null) {
-                    indexKey = Keywords.INDEX;
-                }
+                final String indexKey = keyTermDefinition
+                                            .map(TermDefinition::getIndexMapping)
+                                            .orElse(Keywords.INDEX);
 
                 // 13.8.3.
-                List<String> indicies = new ArrayList<>(value.asJsonObject().keySet());
+                final List<String> indicies = new ArrayList<>(value.asJsonObject().keySet());
 
                 if (ordered) {
                     Collections.sort(indicies);
                 }
 
-                for (String index : indicies) {
+                for (final String index : indicies) {
 
                     JsonValue indexValue = value.asJsonObject().get(index);
                     
@@ -699,15 +690,18 @@ final class MapExpansion1314 {
                     }
 
                     // 13.8.3.2.
-                    TermDefinition indexTermDefinition = mapContext.getTerm(index);
+                    final Optional<TermDefinition> indexTermDefinition = mapContext.getTerm(index);
 
-                    if (containerMapping.contains(Keywords.TYPE) && indexTermDefinition != null
-                            && indexTermDefinition.hasLocalContext()) {
+                    if (containerMapping.contains(Keywords.TYPE) 
+                                && indexTermDefinition.map(TermDefinition::getLocalContext).isPresent()
+                                ) {
 
                         mapContext = 
                                 mapContext
                                     .newContext()
-                                    .create(indexTermDefinition.getLocalContext(), indexTermDefinition.getBaseUrl());
+                                    .create(
+                                        indexTermDefinition.get().getLocalContext(), 
+                                        indexTermDefinition.get().getBaseUrl());
                     }
 
                     // 13.8.3.3.
@@ -862,7 +856,7 @@ final class MapExpansion1314 {
             }
 
             // 13.13.
-            if (keyTermDefinition != null && keyTermDefinition.isReverseProperty()) {
+            if (keyTermDefinition.isPresent() && keyTermDefinition.get().isReverseProperty()) {
 
                 // 13.13.1.
                 // 13.13.2.

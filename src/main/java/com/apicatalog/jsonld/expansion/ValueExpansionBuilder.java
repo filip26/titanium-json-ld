@@ -1,5 +1,7 @@
 package com.apicatalog.jsonld.expansion;
 
+import java.util.Optional;
+
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonString;
@@ -27,7 +29,7 @@ public final class ValueExpansionBuilder {
     
     // runtime
     private JsonObject result;
-    private TermDefinition definition;
+    private Optional<TermDefinition> definition;
 
     public ValueExpansionBuilder(final ActiveContext activeContext, final JsonValue value,
             final String activeProperty) {
@@ -46,12 +48,12 @@ public final class ValueExpansionBuilder {
 
         definition = activeContext.getTerm(activeProperty);
 
-        final String typeMapping = (definition != null) ? definition.getTypeMapping() : null;
+        final Optional<String> typeMapping = definition.map(TermDefinition::getTypeMapping);
 
-        if (typeMapping != null) {
+        if (typeMapping.isPresent()) {
 
             // 1.
-            if (Keywords.ID.equals(typeMapping) && JsonUtils.isString(value)) {
+            if (Keywords.ID.equals(typeMapping.get()) && JsonUtils.isString(value)) {
 
                 String expandedValue = activeContext.expandUri(((JsonString) value).getString()).documentRelative(true)
                         .vocab(false).build();
@@ -60,7 +62,7 @@ public final class ValueExpansionBuilder {
             }
 
             // 2.
-            if (Keywords.VOCAB.equals(typeMapping) && JsonUtils.isString(value)) {
+            if (Keywords.VOCAB.equals(typeMapping.get()) && JsonUtils.isString(value)) {
 
                 String expandedValue = activeContext.expandUri(((JsonString) value).getString()).documentRelative(true)
                         .vocab(true).build();
@@ -73,10 +75,10 @@ public final class ValueExpansionBuilder {
         result = Json.createObjectBuilder().add(Keywords.VALUE, value).build();
 
         // 4.
-        if (typeMapping != null && !Keywords.ID.equals(typeMapping) && !Keywords.VOCAB.equals(typeMapping)
-                && !Keywords.NONE.equals(typeMapping)) {
+        if (typeMapping.isPresent() && !Keywords.ID.equals(typeMapping.get()) && !Keywords.VOCAB.equals(typeMapping.get())
+                && !Keywords.NONE.equals(typeMapping.get())) {
 
-            result = Json.createObjectBuilder(result).add(Keywords.TYPE, Json.createValue(typeMapping)).build();
+            result = Json.createObjectBuilder(result).add(Keywords.TYPE, Json.createValue(typeMapping.get())).build();
 
             // 5.
         } else if (JsonUtils.isString(value)) {
@@ -92,24 +94,18 @@ public final class ValueExpansionBuilder {
         // 5.1.
         JsonValue language = null;
 
-        if (definition != null && definition.getLanguageMapping() != null) {
-            language = definition.getLanguageMapping();
+        if (definition.isPresent() && definition.map(TermDefinition::getLanguageMapping).isPresent()) {
+            language = definition.get().getLanguageMapping();
 
         } else if (activeContext.getDefaultLanguage() != null) {
             language = Json.createValue(activeContext.getDefaultLanguage());
         }
 
         // 5.2.
-        DirectionType direction = null;
-
-        if (definition != null) {
-            direction = definition.getDirectionMapping();
-        }
-
-        if (direction == null) {
-            direction = activeContext.getDefaultBaseDirection();
-        }
-
+        final DirectionType direction = definition
+                                            .map(TermDefinition::getDirectionMapping)
+                                            .orElse(activeContext.getDefaultBaseDirection());
+        
         // 5.3.
         if (JsonUtils.isNotNull(language)) {
             result = Json.createObjectBuilder(result).add(Keywords.LANGUAGE, language).build();

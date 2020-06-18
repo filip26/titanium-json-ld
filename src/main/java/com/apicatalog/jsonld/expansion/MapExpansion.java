@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.json.Json;
@@ -116,15 +117,16 @@ public final class MapExpansion {
         // 8.
         if (propertyContext != null) {
             
-            TermDefinition activePropertyDefinition = activeContext.getTerm(activeProperty);
-
             activeContext = activeContext
                                 .newContext()
                                 .overrideProtected(true)
-                                .create(propertyContext, activePropertyDefinition != null
-                                                            ? activePropertyDefinition.getBaseUrl() 
-                                                            : null
-                                        );                                
+                                .create(
+                                    propertyContext, 
+                                    activeContext
+                                            .getTerm(activeProperty)
+                                            .map(TermDefinition::getBaseUrl)
+                                            .orElse(null)    
+                                        );        
         }
 
         // 9.
@@ -173,26 +175,23 @@ public final class MapExpansion {
                                     .sorted()
                                     .collect(Collectors.toList());
 
-            for (String term : terms) {
+            for (final String term : terms) {
 
-                if (typeContext.containsTerm(term)) {
+                Optional<JsonValue> localContext = typeContext.getTerm(term).map(TermDefinition::getLocalContext);
 
-                    TermDefinition termDefinition = typeContext.getTerm(term);
+                if (localContext.isPresent()) {
+                    
+                    Optional<TermDefinition> valueDefinition = activeContext.getTerm(term);
 
-                    if (termDefinition.hasLocalContext()) {
-                        
-                        TermDefinition valueDefinition = activeContext.getTerm(term);                        
-
-                        activeContext = 
-                                activeContext
-                                    .newContext()
-                                    .propagate(false)
-                                    .create(termDefinition.getLocalContext(), 
-                                            valueDefinition != null
-                                                ? valueDefinition.getBaseUrl()
-                                                : null
-                                            );
-                    }
+                    activeContext = 
+                            activeContext
+                                .newContext()
+                                .propagate(false)
+                                .create(localContext.get(), 
+                                        valueDefinition.isPresent()
+                                            ? valueDefinition.get().getBaseUrl()
+                                            : null
+                                        );
                 }
             }
         }

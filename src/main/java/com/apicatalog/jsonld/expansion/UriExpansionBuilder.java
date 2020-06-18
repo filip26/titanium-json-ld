@@ -1,6 +1,7 @@
 package com.apicatalog.jsonld.expansion;
 
 import java.util.Map;
+import java.util.Optional;
 
 import javax.json.JsonObject;
 import javax.json.JsonString;
@@ -106,16 +107,17 @@ public final class UriExpansionBuilder {
             }
         }
 
+        
+        Optional<TermDefinition> definition = activeContext.getTerm(value); 
+        
         // 4. if active context has a term definition for value,
         // and the associated IRI mapping is a keyword, return that keyword.
-        if (activeContext.containsTerm(value)) {
-
-            TermDefinition termDefinition = activeContext.getTerm(value);
+        if (definition.isPresent()) {
 
             // 5. If vocab is true and the active context has a term definition for value,
             // return the associated IRI mapping
-            if (Keywords.contains(termDefinition.getUriMapping()) || vocab) {
-                return termDefinition.getUriMapping();
+            if (Keywords.contains(definition.get().getUriMapping()) || vocab) {
+                return definition.get().getUriMapping();
             }
         }
 
@@ -145,12 +147,12 @@ public final class UriExpansionBuilder {
             // 6.4.
             if (activeContext.containsTerm(split[0])) {
 
-                TermDefinition prefixDefinition = activeContext.getTerm(split[0]);
+                final Optional<TermDefinition> prefixDefinition = activeContext.getTerm(split[0]);
 
-                if (prefixDefinition != null && prefixDefinition.getUriMapping() != null
-                        && prefixDefinition.isPrefix()) {
+                if (prefixDefinition.map(TermDefinition::getUriMapping).isPresent()
+                        && prefixDefinition.map(TermDefinition::isPrefix).orElse(false)) {
                     
-                    value = prefixDefinition.getUriMapping().concat(split[1]);
+                    value = prefixDefinition.map(TermDefinition::getUriMapping).map(m -> m.concat(split[1])).orElse(null);
                 }
 
             }

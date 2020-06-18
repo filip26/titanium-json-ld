@@ -6,6 +6,7 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 
@@ -77,11 +78,10 @@ public final class Expansion {
         // 3. If active property has a term definition in active context with a local
         // context,
         // initialize property-scoped context to that local context.
-        JsonValue propertyContext = null;
-
-        if (activeContext.containsTerm(activeProperty)) {
-            propertyContext = activeContext.getTerm(activeProperty).getLocalContext();
-        }
+        final JsonValue propertyContext = activeContext
+                                            .getTerm(activeProperty)
+                                            .map(TermDefinition::getLocalContext)
+                                            .orElse(null);
 
         // 4. If element is a scalar
         if (JsonUtils.isScalar(element)) {

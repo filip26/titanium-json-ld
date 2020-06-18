@@ -38,13 +38,13 @@ public final class InverseContextBuilder {
         // 3
         for (final String term : activeContext.getTerms().stream().sorted().collect(Collectors.toList())) {
         
-            final TermDefinition termDefinition = activeContext.getTerm(term);
-
             // 3.1.
-            if (termDefinition == null) {
+            if (activeContext.getTerm(term).isEmpty()) {
                 continue;
             }
-            
+
+            final TermDefinition termDefinition = activeContext.getTerm(term).get();
+
             // 3.2.
             String container = Keywords.NONE;
             

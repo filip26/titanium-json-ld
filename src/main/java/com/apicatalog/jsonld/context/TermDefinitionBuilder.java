@@ -349,7 +349,7 @@ public final class TermDefinitionBuilder {
                 }
 
                 // 14.2.4
-                if (term.substring(0, term.length()-1).indexOf(':', 1) != -1 || term.contains("/")) {
+                if (term.substring(0, term.length() - 1).indexOf(':', 1) != -1 || term.contains("/")) {
 
                     // 14.2.4.1
                     defined.put(term, Boolean.TRUE);
@@ -393,9 +393,13 @@ public final class TermDefinitionBuilder {
             // 15.2.
             if (compactUri != null && compactUri.isNotBlank() && activeContext.containsTerm(compactUri.getPrefix())) {
 
-                TermDefinition prefixDefinition = activeContext.getTerm(compactUri.getPrefix());
-
-                definition.setUriMapping(prefixDefinition.getUriMapping().concat(compactUri.getSuffix()));
+                definition.setUriMapping(
+                                activeContext
+                                        .getTerm(compactUri.getPrefix())
+                                        .map(TermDefinition::getUriMapping)
+                                        .map(u -> u.concat(compactUri.getSuffix()))
+                                        .orElse(null)
+                                        );
 
             // 15.3.
             } else if (UriUtils.isURI(term) || BlankNode.hasPrefix(term)) {
