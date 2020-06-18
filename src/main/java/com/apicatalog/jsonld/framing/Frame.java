@@ -110,17 +110,19 @@ public final class Frame {
     }
     
     public static final boolean getBoolean(JsonObject frame, String key, boolean defaultValue) throws JsonLdError {
+        
         if (frame.containsKey(key)) {
 
             JsonValue value = frame.get(key);
+
+            if (JsonUtils.isNull(value)) {
+                return defaultValue;
+            }
             
             if (ValueObject.isValueObject(value)) {
                 value = ValueObject.getValue(value);
             }
 
-            if (JsonUtils.isNull(value)) {  //TODO investigate
-                return false;
-            }
             if (JsonUtils.isString(value)) {
                 if ("true".equalsIgnoreCase(((JsonString)value).getString())) {
                     return true;
@@ -137,7 +139,6 @@ public final class Frame {
             return JsonUtils.isTrue(value);
         }
         return defaultValue; 
-
     }
     
     private static final boolean validateFrameId(JsonObject frame) {

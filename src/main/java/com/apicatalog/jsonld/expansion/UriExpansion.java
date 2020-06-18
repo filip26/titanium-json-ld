@@ -2,6 +2,8 @@ package com.apicatalog.jsonld.expansion;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.json.JsonObject;
 import javax.json.JsonString;
@@ -25,6 +27,8 @@ import com.apicatalog.jsonld.uri.UriUtils;
  */
 public final class UriExpansion {
 
+    private static final Logger LOGGER = Logger.getLogger(UriExpansion.class.getName());
+    
     // mandatory
     private final ActiveContext activeContext;
 
@@ -80,7 +84,7 @@ public final class UriExpansion {
         // "@"1*ALPHA from [RFC5234]),
         // a processor SHOULD generate a warning and return null.
         if (Keywords.matchForm(value)) {
-            // TODO varning
+            LOGGER.log(Level.WARNING, "Value [{0}] of keyword form [@1*ALPHA] is not allowed.", value);
             return null;
         }
 
