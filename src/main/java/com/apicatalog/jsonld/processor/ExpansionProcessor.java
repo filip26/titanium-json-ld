@@ -83,16 +83,14 @@ public final class ExpansionProcessor {
         if (options.getExpandContext() != null) {
             //TODO @context entry
             
-            activeContext = activeContext
-                                .create(options.getExpandContext().asJsonArray(), baseUrl)
-                                .build();
+            activeContext = activeContext.newContext().create(options.getExpandContext().asJsonArray(), baseUrl);
         }
         
         // 7.
         if (input.getContextUrl() != null) {
             activeContext = activeContext
-                                .create(Json.createValue(input.getContextUrl().toString()), input.getContextUrl())
-                                .build();
+                                .newContext()
+                                .create(Json.createValue(input.getContextUrl().toString()), input.getContextUrl());
         }
 
         // 8.

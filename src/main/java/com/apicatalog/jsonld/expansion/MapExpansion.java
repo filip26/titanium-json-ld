@@ -119,20 +119,20 @@ public final class MapExpansion {
             TermDefinition activePropertyDefinition = activeContext.getTerm(activeProperty);
 
             activeContext = activeContext
+                                .newContext()
+                                .overrideProtected(true)
                                 .create(propertyContext, activePropertyDefinition != null
                                                             ? activePropertyDefinition.getBaseUrl() 
                                                             : null
-                                        )                                
-                                .overrideProtected(true)
-                                .build();
+                                        );                                
         }
 
         // 9.
         if (element.containsKey(Keywords.CONTEXT)) {
 
             activeContext = activeContext
-                                .create(element.get(Keywords.CONTEXT), baseUrl)
-                                .build();
+                                .newContext()
+                                .create(element.get(Keywords.CONTEXT), baseUrl);
         }
 
         // 10.
@@ -185,13 +185,13 @@ public final class MapExpansion {
 
                         activeContext = 
                                 activeContext
+                                    .newContext()
+                                    .propagate(false)
                                     .create(termDefinition.getLocalContext(), 
                                             valueDefinition != null
                                                 ? valueDefinition.getBaseUrl()
                                                 : null
-                                            )
-                                    .propagate(false)
-                                    .build();
+                                            );
                     }
                 }
             }

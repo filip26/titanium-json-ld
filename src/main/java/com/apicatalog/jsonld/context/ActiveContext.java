@@ -27,29 +27,29 @@ public final class ActiveContext {
 
     // the active term definitions which specify how keys and values have to be
     // interpreted
-    Map<String, TermDefinition> terms;
+    private Map<String, TermDefinition> terms;
 
     // the current base IRI
-    URI baseUri;
+    private URI baseUri;
 
     // the original base URL
-    URI baseUrl;
+    private URI baseUrl;
 
-    InverseContext inverseContext;
+    private InverseContext inverseContext;
 
     // an optional previous context, used when a non-propagated context is defined.
-    ActiveContext previousContext;
+    private ActiveContext previousContext;
 
     // an optional vocabulary mapping
-    String vocabularyMapping;
+    private String vocabularyMapping;
 
     // an optional default language
-    String defaultLanguage;
+    private String defaultLanguage;
 
     // an optional default base direction ("ltr" or "rtl")
-    DirectionType defaultBaseDirection;
+    private DirectionType defaultBaseDirection;
 
-    final JsonLdOptions options;
+    private final JsonLdOptions options;
     
     public ActiveContext(JsonLdOptions options) {
         this(null, null, null, options);
@@ -88,7 +88,7 @@ public final class ActiveContext {
         return terms.values().stream().anyMatch(TermDefinition::isProtected);
     }
 
-    public Optional<TermDefinition> removeTerm(String term) {
+    protected Optional<TermDefinition> removeTerm(String term) {
 
         if (terms.containsKey(term)) {
             TermDefinition def = terms.get(term);
@@ -99,7 +99,7 @@ public final class ActiveContext {
         return Optional.empty();
     }
 
-    public void setTerm(String term, TermDefinition definition) {
+    protected void setTerm(String term, TermDefinition definition) {
         terms.put(term, definition);
     }
 
@@ -167,12 +167,12 @@ public final class ActiveContext {
         return TermDefinitionBuilder.with(this, localContext, defined);
     }
 
-    public ActiveContextBuilder create(final JsonValue localContext, final URI base) {
-        return ActiveContextBuilder.with(this, localContext, base, options);
+    public ActiveContextBuilder newContext() {
+        return ActiveContextBuilder.with(this);
     }
 
-    public UriCompactionBuilder compactUri(final String value) {
-        return UriCompactionBuilder.with(this, value);
+    public UriCompactionBuilder uriCompaction() {
+        return UriCompactionBuilder.with(this);
     }
     
     public void createInverseContext() {
@@ -183,8 +183,35 @@ public final class ActiveContext {
         return TermSelector.with(this, variable, containerMapping, typeLanguage);
     }
 
-    public ValueCompactionBuilder compactValue(final JsonObject element, final String activeProperty) {
-        return ValueCompactionBuilder.with(this, activeProperty, element);
+    public ValueCompactionBuilder valueCompaction() {
+        return ValueCompactionBuilder.with(this);
+    }
+
+    public JsonLdOptions getOptions() {
+        return options;
     }
     
+    protected void setDefaultBaseDirection(DirectionType defaultBaseDirection) {
+        this.defaultBaseDirection = defaultBaseDirection;
+    }
+    
+    protected void setDefaultLanguage(String defaultLanguage) {
+        this.defaultLanguage = defaultLanguage;
+    }
+    
+    protected void setVocabularyMapping(String vocabularyMapping) {
+        this.vocabularyMapping = vocabularyMapping;
+    }
+    
+    protected void setBaseUrl(URI baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+    
+    protected void setPreviousContext(ActiveContext previousContext) {
+        this.previousContext = previousContext;
+    }
+    
+    protected void setInverseContext(InverseContext inverseContext) {
+        this.inverseContext = inverseContext;
+    }
 }

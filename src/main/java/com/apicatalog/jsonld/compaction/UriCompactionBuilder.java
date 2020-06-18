@@ -35,16 +35,14 @@ public final class UriCompactionBuilder {
 
     // required
     private final ActiveContext activeContext;
-    private String variable;
     
     // optional
     private JsonValue value;
     private boolean vocab;
     private boolean reverse;
     
-    public UriCompactionBuilder(final ActiveContext activeContext, final String variable) {
+    private UriCompactionBuilder(final ActiveContext activeContext) {
         this.activeContext = activeContext;
-        this.variable = variable;
         
         // default values
         this.value = null;
@@ -52,8 +50,8 @@ public final class UriCompactionBuilder {
         this.reverse = false;
     }
     
-    public static UriCompactionBuilder with(ActiveContext activeContext, String variable) {
-        return new UriCompactionBuilder(activeContext, variable);
+    public static UriCompactionBuilder with(final ActiveContext activeContext) {
+        return new UriCompactionBuilder(activeContext);
     }
     
     public UriCompactionBuilder value(JsonValue value) {
@@ -71,7 +69,7 @@ public final class UriCompactionBuilder {
         return this;
     }
     
-    public String build() throws JsonLdError {
+    public String compact(final String variable) throws JsonLdError {
  
         // 1.
         if (variable == null) {
@@ -398,11 +396,11 @@ public final class UriCompactionBuilder {
                    ) {
             
                 // 4.16.1.
-                String idValue = value.asJsonObject().getString(Keywords.ID);
+                final String idValue = value.asJsonObject().getString(Keywords.ID);
                 
-                String compactedIdValue = activeContext.compactUri(idValue).vocab(true).build();
+                final String compactedIdValue = activeContext.uriCompaction().vocab(true).compact(idValue);
                 
-                TermDefinition compactedIdValueTermDefinition = activeContext.getTerm(compactedIdValue);
+                final TermDefinition compactedIdValueTermDefinition = activeContext.getTerm(compactedIdValue);
                 
                 if (compactedIdValueTermDefinition != null
                         && idValue.equals(compactedIdValueTermDefinition.getUriMapping())

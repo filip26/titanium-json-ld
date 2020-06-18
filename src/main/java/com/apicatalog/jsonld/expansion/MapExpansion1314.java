@@ -706,8 +706,8 @@ final class MapExpansion1314 {
 
                         mapContext = 
                                 mapContext
-                                    .create(indexTermDefinition.getLocalContext(), indexTermDefinition.getBaseUrl())
-                                    .build();
+                                    .newContext()
+                                    .create(indexTermDefinition.getLocalContext(), indexTermDefinition.getBaseUrl());
                     }
 
                     // 13.8.3.3.

@@ -41,15 +41,15 @@ public final class TermDefinitionBuilder {
     private final Map<String, Boolean> defined;
 
     // optional
-    URI baseUrl;
+    private URI baseUrl;
 
-    boolean protectedFlag;
+    private boolean protectedFlag;
 
-    boolean overrideProtectedFlag;
+    private boolean overrideProtectedFlag;
 
-    Collection<String> remoteContexts;
+    private Collection<String> remoteContexts;
 
-    boolean validateScopedContext;
+    private boolean validateScopedContext;
 
     private TermDefinitionBuilder(ActiveContext activeContext, JsonObject localContext, Map<String, Boolean> defined) {
         this.activeContext = activeContext;
@@ -422,12 +422,12 @@ public final class TermDefinitionBuilder {
             definition.setUriMapping(Keywords.TYPE);
 
         // 18.
-        } else if (activeContext.vocabularyMapping == null) {
+        } else if (activeContext.getVocabularyMapping() == null) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
 
         } else {
 
-            definition.setUriMapping(activeContext.vocabularyMapping.concat(term));
+            definition.setUriMapping(activeContext.getVocabularyMapping().concat(term));
         }
 
         // 19.
@@ -506,11 +506,11 @@ public final class TermDefinitionBuilder {
             // 21.3.
             try {
                 activeContext
-                        .create(context, baseUrl)
+                        .newContext()
                         .overrideProtected(true)
                         .remoteContexts(new ArrayList<>(remoteContexts))
-                        .validateScopedContext(false)
-                        .build();
+                        .validateScopedContext(false)                        
+                        .create(context, baseUrl);
 
             } catch (JsonLdError e) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_SCOPED_CONTEXT, e);

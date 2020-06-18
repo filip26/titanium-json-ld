@@ -23,7 +23,6 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.CompactionBuilder;
 import com.apicatalog.jsonld.context.ActiveContext;
-import com.apicatalog.jsonld.context.ActiveContextBuilder;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
@@ -73,14 +72,10 @@ public final class FramingProcessor {
                                 : options.getBase();
 
         // 10-11.
-        final ActiveContext activeContext = 
-                            ActiveContextBuilder
-                                 .with(
-                                     new ActiveContext(input.getDocumentUrl(), input.getDocumentUrl(), options),
-                                     context, 
-                                     contextBase, 
-                                     options)
-                                 .build();
+        final ActiveContext activeContext =
+                                new ActiveContext(input.getDocumentUrl(), input.getDocumentUrl(), options)
+                                            .newContext()
+                                            .create(context, contextBase);
         
         // 13.
         final List<String> frameKeysExpanded = new ArrayList<>();
@@ -147,7 +142,7 @@ public final class FramingProcessor {
         // 19.2.
         } else if (JsonUtils.isArray(compactedResults)) {
         
-            String key = activeContext.compactUri(Keywords.GRAPH).vocab(true).build();
+            final String key = activeContext.uriCompaction().vocab(true).compact(Keywords.GRAPH);
             
             compactedResults = Json.createObjectBuilder()
                                     .add(key, compactedResults).build();

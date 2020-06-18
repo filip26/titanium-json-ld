@@ -86,7 +86,7 @@ public final class CompactionProcessor {
         // 7.
         ActiveContext activeContext = new ActiveContext(options);
         
-        activeContext = activeContext.create(contextValue, contextBase).build();
+        activeContext = activeContext.newContext().create(contextValue, contextBase);
 
         // 8.
         if (options.getBase() != null) {
@@ -111,7 +111,7 @@ public final class CompactionProcessor {
         } else if (JsonUtils.isArray(compactedOutput)) {
             compactedOutput = Json.createObjectBuilder()
                                     .add(
-                                        activeContext.compactUri(Keywords.GRAPH).vocab(true).build(),
+                                        activeContext.uriCompaction().vocab(true).compact(Keywords.GRAPH),
                                         compactedOutput
                                         )
                                     .build();

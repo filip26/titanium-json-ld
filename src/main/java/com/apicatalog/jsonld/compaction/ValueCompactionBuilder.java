@@ -26,21 +26,17 @@ import com.apicatalog.jsonld.lang.Keywords;
 public final class ValueCompactionBuilder {
 
     // mandatory
-    private ActiveContext activeContext;
-    private String activeProperty;
-    private JsonObject value;
+    private final ActiveContext activeContext;
     
-    ValueCompactionBuilder(ActiveContext activeContext, String activeProperty, JsonObject value) {
+    private ValueCompactionBuilder(final ActiveContext activeContext) {
         this.activeContext = activeContext;
-        this.activeProperty = activeProperty;
-        this.value = value;
     }
     
-    public static ValueCompactionBuilder with(ActiveContext activeContext, String activeProperty, JsonObject value) {
-        return new ValueCompactionBuilder(activeContext, activeProperty, value);
+    public static ValueCompactionBuilder with(ActiveContext activeContext) {
+        return new ValueCompactionBuilder(activeContext);
     }
     
-    public JsonValue build() throws JsonLdError {
+    public JsonValue compact(final JsonObject value, final String activeProperty) throws JsonLdError {
 
         // 1.
         JsonValue result = value;
@@ -82,15 +78,15 @@ public final class ValueCompactionBuilder {
             // 6.1.
             if (activePropertyDefinition != null && Keywords.ID.equals(activePropertyDefinition.getTypeMapping())) {
                 result = JsonUtils.toJsonValue(activeContext
-                                                .compactUri(value.getString(Keywords.ID))
-                                                .build());
+                                                .uriCompaction()
+                                                .compact(value.getString(Keywords.ID)));
 
             // 6.2.
             } else if (activePropertyDefinition != null && Keywords.VOCAB.equals(activePropertyDefinition.getTypeMapping())) {
                 result = JsonUtils.toJsonValue(activeContext
-                                                .compactUri(value.getString(Keywords.ID))
+                                                .uriCompaction()
                                                 .vocab(true)
-                                                .build());                
+                                                .compact(value.getString(Keywords.ID)));
             }
         // 7.
         } else if (value.containsKey(Keywords.TYPE)
@@ -122,7 +118,7 @@ public final class ValueCompactionBuilder {
             if (JsonUtils.isNotNull(resultTypes)) {
                 for (JsonValue type : JsonUtils.toJsonArray(resultTypes)) {
     
-                    types.add(activeContext.compactUri(((JsonString)type).getString()).vocab(true).build());                    
+                    types.add(activeContext.uriCompaction().vocab(true).compact(((JsonString)type).getString()));                    
                 }
                 
                 Map<String, JsonValue> resultMap = new LinkedHashMap<>(result.asJsonObject());
@@ -184,9 +180,9 @@ public final class ValueCompactionBuilder {
             for (Entry<String, JsonValue> entry : result.asJsonObject().entrySet()) {
                 resultBuilder.add(
                                 activeContext
-                                        .compactUri(entry.getKey())
+                                        .uriCompaction()
                                         .vocab(true)
-                                        .build(), 
+                                        .compact(entry.getKey()), 
                                 entry.getValue()
                                 );
             }
