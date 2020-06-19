@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 
 public final class RdfComparison {
 
-    final RdfDataset dataset1;
-    final RdfDataset dataset2;
+    private final RdfDataset dataset1;
+    private final RdfDataset dataset2;
     
     private RdfComparison(final RdfDataset dataset1, final RdfDataset dataset2) {
         this.dataset1 = dataset1;

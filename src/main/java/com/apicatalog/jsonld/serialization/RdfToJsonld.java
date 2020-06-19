@@ -459,10 +459,10 @@ public final class RdfToJsonld {
         }        
     }
     
-    static class Reference {
-        String graphName;
-        String subject;
-        String property;
-        int valueIndex;
+    protected static class Reference {
+        private String graphName;
+        private String subject;
+        private String property;
+        private int valueIndex;
     }
 }

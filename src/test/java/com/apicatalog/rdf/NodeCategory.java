@@ -6,12 +6,12 @@ import java.util.Set;
 
 final class NodeCategory {
 
-    int objectOccurence;
-    int subjectOccurence;
-    int graphOccurence;
+    private int objectOccurence;
+    private int subjectOccurence;
+    private int graphOccurence;
     
-    final Set<String> objects;
-    final Set<String> subjects;
+    private final Set<String> objects;
+    private final Set<String> subjects;
     
     public NodeCategory() {
         this.objectOccurence = 0;

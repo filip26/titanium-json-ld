@@ -635,7 +635,9 @@ public final class TermDefinitionBuilder {
         defined.put(term, Boolean.TRUE);
     }
     
-    private final boolean isValidContainer(JsonValue container) {
+    private final boolean isValidContainer(final JsonValue value) {
+        
+        JsonValue container = value;
         
         if (JsonUtils.isNull(container)) {
             return false;

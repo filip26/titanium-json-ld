@@ -155,7 +155,7 @@ final class LinkHeaderParser {
                 stringValue.append(ch);
                 state = State.STRING_VALUE;
                 break;
-            }
+            }            
         }
 
         switch (state) {
