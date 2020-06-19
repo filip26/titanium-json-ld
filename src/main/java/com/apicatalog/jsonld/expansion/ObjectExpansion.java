@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.json.Json;
@@ -89,46 +88,11 @@ public final class ObjectExpansion {
         // 10.
         final ActiveContext typeContext = activeContext;
 
-        final String typeKey = processTypeScoped(element.keySet(), typeContext);
+        final String typeKey = processTypeScoped(typeContext);
 
-        // 12.
-        Map<String, JsonValue> result = new LinkedHashMap<>();
-
-        String inputType = null;
-
-        // Initialize input type to expansion of the last value of the first entry in
-        // element
-        // expanding to @type (if any), ordering entries lexicographically by key. Both
-        // the key and
-        // value of the matched entry are IRI expanded.
-        if (typeKey != null) {
-
-            JsonValue t = element.get(typeKey);
-
-            String lastValue = null;
-
-            if (JsonUtils.isArray(t)) {
-
-                List<String> sortedValues = new ArrayList<>(t.asJsonArray().stream().filter(JsonUtils::isString)
-                        .map(JsonString.class::cast).map(JsonString::getString).sorted().collect(Collectors.toList()));
-
-                if (!sortedValues.isEmpty()) {
-                    lastValue = sortedValues.get(sortedValues.size() - 1);
-                }
-            }
-
-            if (JsonUtils.isString(t)) {
-                lastValue = ((JsonString) t).getString();
-            }
-
-            if (lastValue != null) {
-
-                inputType = activeContext
-                                .uriExpansion()
-                                .vocab(true)
-                                .expand(lastValue);
-            }
-        }
+        final String inputType = findInputType(typeKey);
+        
+        final Map<String, JsonValue> result = new LinkedHashMap<>();
 
         ObjectExpansion1314
                     .with(activeContext, element, activeProperty, baseUrl)
@@ -224,12 +188,12 @@ public final class ObjectExpansion {
         }
     }
 
-    private String processTypeScoped(final Set<String> keys, final ActiveContext typeContext) throws JsonLdError {
+    private String processTypeScoped(final ActiveContext typeContext) throws JsonLdError {
         
         String typeKey = null;
         
         // 11.
-        for (final String key : keys.stream().sorted().collect(Collectors.toSet())) {
+        for (final String key : element.keySet().stream().sorted().collect(Collectors.toSet())) {
 
             final String expandedKey = 
                         activeContext
@@ -279,6 +243,47 @@ public final class ObjectExpansion {
         }
         
         return typeKey;
+    }
+    
+    private String findInputType(final String typeKey) throws JsonLdError {
+        
+        String inputType = null;
+        
+        // Initialize input type to expansion of the last value of the first entry in
+        // element
+        // expanding to @type (if any), ordering entries lexicographically by key. Both
+        // the key and
+        // value of the matched entry are IRI expanded.
+        if (typeKey != null) {
+
+            JsonValue t = element.get(typeKey);
+
+            String lastValue = null;
+
+            if (JsonUtils.isArray(t)) {
+
+                List<String> sortedValues = new ArrayList<>(t.asJsonArray().stream().filter(JsonUtils::isString)
+                        .map(JsonString.class::cast).map(JsonString::getString).sorted().collect(Collectors.toList()));
+
+                if (!sortedValues.isEmpty()) {
+                    lastValue = sortedValues.get(sortedValues.size() - 1);
+                }
+            }
+
+            if (JsonUtils.isString(t)) {
+                lastValue = ((JsonString) t).getString();
+            }
+
+            if (lastValue != null) {
+
+                inputType = activeContext
+                                .uriExpansion()
+                                .vocab(true)
+                                .expand(lastValue);
+            }
+        }
+        
+        return inputType;
     }
     
     private JsonValue normalizeValue(final Map<String, JsonValue> result) throws JsonLdError {

@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
@@ -431,7 +432,7 @@ public final class TermDefinitionBuilder {
             // 19.1.
             JsonValue containerValue = valueObject.get(Keywords.CONTAINER);
 
-            if (!isValidContainer(containerValue)) {
+            if (!validateContainer(containerValue)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
             }
 
@@ -635,7 +636,7 @@ public final class TermDefinitionBuilder {
         defined.put(term, Boolean.TRUE);
     }
     
-    private final boolean isValidContainer(final JsonValue value) {
+    private final boolean validateContainer(final JsonValue value) {
         
         JsonValue container = value;
         
@@ -669,36 +670,43 @@ public final class TermDefinitionBuilder {
         }
         
         if (JsonUtils.isArray(container)) { 
-            
-            if (container.asJsonArray().size() > 3) {
-                return false;
-            }
-             
-            if (JsonUtils.contains(Keywords.GRAPH, container)
-                    && JsonUtils.contains(Keywords.ID, container)) {
 
-                return container.asJsonArray().size() == 2 || JsonUtils.contains(Keywords.SET, container);
-            } 
-            if (JsonUtils.contains(Keywords.GRAPH, container)
-                    && JsonUtils.contains(Keywords.INDEX, container)) {
-                
-                return container.asJsonArray().size() == 2 || JsonUtils.contains(Keywords.SET, container);
-            }
-            
-            if (container.asJsonArray().size() > 2) {
-                return false;
-            }
-
-            if (JsonUtils.contains(Keywords.SET, container)) {
-                
-                return JsonUtils.contains(Keywords.GRAPH, container)
-                        || JsonUtils.contains(Keywords.ID, container)
-                        || JsonUtils.contains(Keywords.INDEX, container)
-                        || JsonUtils.contains(Keywords.LANGUAGE, container)
-                        || JsonUtils.contains(Keywords.TYPE, container)
-                        ;
-            }            
+            return validateContaierArray(container.asJsonArray());
         }
+        
+        return false;
+    }
+    
+    private final boolean validateContaierArray(final JsonArray containers) {
+        
+        if (containers.size() > 3) {
+            return false;
+        }
+         
+        if (JsonUtils.contains(Keywords.GRAPH, containers)
+                && JsonUtils.contains(Keywords.ID, containers)) {
+
+            return containers.size() == 2 || JsonUtils.contains(Keywords.SET, containers);
+        } 
+        if (JsonUtils.contains(Keywords.GRAPH, containers)
+                && JsonUtils.contains(Keywords.INDEX, containers)) {
+            
+            return containers.size() == 2 || JsonUtils.contains(Keywords.SET, containers);
+        }
+        
+        if (containers.size() > 2) {
+            return false;
+        }
+
+        if (JsonUtils.contains(Keywords.SET, containers)) {
+            
+            return JsonUtils.contains(Keywords.GRAPH, containers)
+                    || JsonUtils.contains(Keywords.ID, containers)
+                    || JsonUtils.contains(Keywords.INDEX, containers)
+                    || JsonUtils.contains(Keywords.LANGUAGE, containers)
+                    || JsonUtils.contains(Keywords.TYPE, containers)
+                    ;
+        }            
         return false;
     }
     

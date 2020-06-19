@@ -16,7 +16,7 @@ import javax.json.JsonValue;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.http.JsonLdProfile;
+import com.apicatalog.jsonld.http.ProfileConstants;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.DirectionType;
@@ -213,7 +213,7 @@ public class ActiveContextBuilder {
                 }
 
                 LoadDocumentOptions loaderOptions = new LoadDocumentOptions();
-                loaderOptions.setProfile(JsonLdProfile.CONTEXT);
+                loaderOptions.setProfile(ProfileConstants.CONTEXT);
                 loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
 
                 JsonStructure importedStructure = null;
@@ -471,7 +471,7 @@ public class ActiveContextBuilder {
         }
 
         LoadDocumentOptions loaderOptions = new LoadDocumentOptions();
-        loaderOptions.setProfile(JsonLdProfile.CONTEXT);
+        loaderOptions.setProfile(ProfileConstants.CONTEXT);
         loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
 
         JsonStructure importedStructure = null;
