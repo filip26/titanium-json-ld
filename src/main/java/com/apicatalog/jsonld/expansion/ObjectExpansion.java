@@ -265,20 +265,21 @@ public final class ObjectExpansion {
 
             JsonValue value = result.get(Keywords.VALUE);
 
-            if (JsonUtils.contains(Keywords.JSON, type)) {
+            if (!JsonUtils.contains(Keywords.JSON, type)) {
 
-            // 15.3.
-            } else if (JsonUtils.isNull(value) || (JsonUtils.isArray(value) && value.asJsonArray().isEmpty())) {
-                return JsonValue.NULL;
-
-            // 15.4
-            } else if (JsonUtils.isNotString(value) && result.containsKey(Keywords.LANGUAGE) && !frameExpansion) {
-                throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
-
-            // 15.5
-            } else if (result.containsKey(Keywords.TYPE)
-                    && (JsonUtils.isNotString(type) || UriUtils.isNotURI(((JsonString) type).getString())) && !frameExpansion) {
-                throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE);
+                // 15.3.
+                if (JsonUtils.isNull(value) || (JsonUtils.isArray(value) && value.asJsonArray().isEmpty())) {
+                    return JsonValue.NULL;
+    
+                // 15.4
+                } else if (JsonUtils.isNotString(value) && result.containsKey(Keywords.LANGUAGE) && !frameExpansion) {
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
+    
+                // 15.5
+                } else if (result.containsKey(Keywords.TYPE)
+                        && (JsonUtils.isNotString(type) || UriUtils.isNotURI(((JsonString) type).getString())) && !frameExpansion) {
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE);
+                }
             }
 
         // 16. Otherwise, if result contains the entry @type and its associated value is

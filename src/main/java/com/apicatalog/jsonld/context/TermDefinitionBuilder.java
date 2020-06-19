@@ -305,10 +305,7 @@ public final class TermDefinitionBuilder {
         if (idValue != null && (JsonUtils.isNotString(idValue) || !term.equals(((JsonString) idValue).getString()))) {
 
             // 14.1.
-            if (JsonUtils.isNull(idValue)) {
-
-            // 14.2
-            } else {
+            if (JsonUtils.isNotNull(idValue)) {
 
                 // 14.2.1
                 if (JsonUtils.isNotString(idValue)) {
