@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium-json-ld</artifactId>
-    <version>0.7.1</version>
+    <version>0.7.2</version>
     <packaging>jar</packaging>
 
     <name>Titanium JSON-LD 1.1</name>
@@ -65,6 +65,7 @@
          
          <!--  test resources -->
         <junit.version>4.13</junit.version>
+        <wiremock.version>2.26.3</wiremock.version>
         <test-suite.version>20200518</test-suite.version>
         <test-suite-framing.version>20200609</test-suite-framing.version>
     </properties>
@@ -108,7 +109,7 @@
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock-jre8</artifactId>
-            <version>2.26.3</version>
+            <version>${wiremock.version}</version>
             <scope>test</scope>
         </dependency>
 
