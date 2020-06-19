@@ -19,7 +19,7 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.http.JsonLdProfile;
+import com.apicatalog.jsonld.http.ProfileConstants;
 import com.apicatalog.jsonld.http.Link;
 import com.apicatalog.jsonld.http.MediaType;
 import com.apicatalog.jsonld.uri.UriResolver;
@@ -153,7 +153,7 @@ public class HttpLoader implements LoadDocumentCallback {
                         final List<Link> contextUri = 
                                         linkValues.stream()
                                             .flatMap(l -> Link.valueOf(l, baseUri).stream())
-                                            .filter(l -> l.rel().contains(JsonLdProfile.CONTEXT))
+                                            .filter(l -> l.rel().contains(ProfileConstants.CONTEXT))
                                             .collect(Collectors.toList());
                         
                         if (contextUri.size() > 1) {
