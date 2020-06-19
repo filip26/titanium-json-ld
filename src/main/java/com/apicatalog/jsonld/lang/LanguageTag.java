@@ -8,8 +8,7 @@ public final class LanguageTag {
 
     private LanguageTag() {
     }
-    
-    
+
     /**
      * LANGTAG  ::= [a-zA-Z]+ ('-' [a-zA-Z0-9]+)*
      * 

@@ -20,9 +20,9 @@ import com.apicatalog.rdf.RdfDataset;
  * @see <a href="https://w3c.github.io/json-ld-api/#dom-jsonldprocessor-tordf">JsonLdProcessor.toRdf()</a>
  *
  */
-public final class JsonLdToRdfProcessor {
+public final class ToRdfProcessor {
 
-    JsonLdToRdfProcessor() {
+    private ToRdfProcessor() {
     }
 
     public static final RdfDataset toRdf(final URI input, final JsonLdOptions options) throws JsonLdError {

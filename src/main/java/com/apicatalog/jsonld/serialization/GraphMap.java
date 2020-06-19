@@ -19,13 +19,11 @@ final class GraphMap {
     
     private final Map<String, Map<String, List<Reference>>> usages;
     
-    
     public GraphMap() {
         this.index = new LinkedHashMap<>();
         this.index.put(Keywords.DEFAULT, new LinkedHashMap<>());
         
         this.usages = new LinkedHashMap<>();
-        
     }
 
     public boolean contains(String graphName, String subject) {
@@ -78,11 +76,9 @@ final class GraphMap {
             .computeIfAbsent(subject, e -> new ArrayList<>())
             .add(reference)
             ;
-        
     }
 
     public void remove(String graphName, String subject) {
         index.get(graphName).remove(subject);
-    }
-    
+    }   
 }

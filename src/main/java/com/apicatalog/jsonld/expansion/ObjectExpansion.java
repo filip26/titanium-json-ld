@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.json.Json;
@@ -28,7 +29,7 @@ import com.apicatalog.jsonld.uri.UriUtils;
  *      Algorithm</a>
  *
  */
-public final class MapExpansion {
+public final class ObjectExpansion {
 
     // mandatory
     private ActiveContext activeContext;
@@ -42,7 +43,7 @@ public final class MapExpansion {
     private boolean ordered;
     private boolean fromMap;
 
-    private MapExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final JsonObject element,
+    private ObjectExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final JsonObject element,
             final String activeProperty, final URI baseUrl) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
@@ -56,27 +57,27 @@ public final class MapExpansion {
         this.fromMap = false;
     }
 
-    public static final MapExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
+    public static final ObjectExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
             final JsonObject element, final String activeProperty, final URI baseUrl) {
-        return new MapExpansion(activeContext, propertyContext, element, activeProperty, baseUrl);
+        return new ObjectExpansion(activeContext, propertyContext, element, activeProperty, baseUrl);
     }
 
-    public MapExpansion frameExpansion(boolean value) {
+    public ObjectExpansion frameExpansion(boolean value) {
         this.frameExpansion = value;
         return this;
     }
 
-    public MapExpansion ordered(boolean value) {
+    public ObjectExpansion ordered(boolean value) {
         this.ordered = value;
         return this;
     }
 
-    public MapExpansion fromMap(boolean value) {
+    public ObjectExpansion fromMap(boolean value) {
         this.fromMap = value;
         return this;
     }
 
-    public JsonValue compute() throws JsonLdError {
+    public JsonValue expand() throws JsonLdError {
 
         // 7. If active context has a previous context, the active context is not
         // propagated.
@@ -87,20 +88,20 @@ public final class MapExpansion {
         // set active context to previous context from active context,
         // as the scope of a term-scoped context does not apply when processing new node
         // objects.
-        if (activeContext.hasPreviousContext() && !fromMap) {
+        if (activeContext.getPreviousContext() != null && !fromMap) {
 
             List<String> keys = new ArrayList<>(element.keySet());
             Collections.sort(keys);
 
             boolean revert = true;
 
-            for (String key : keys) {
+            for (final String key : keys) {
 
                 String expandedKey = 
                             activeContext
-                                .expandUri(key)
+                                .uriExpansion()
                                 .vocab(true)
-                                .build();
+                                .expand(key);
 
                 if (Keywords.VALUE.equals(expandedKey) || (Keywords.ID.equals(expandedKey) && (element.size() == 1))) {
                     revert = false;
@@ -116,23 +117,24 @@ public final class MapExpansion {
         // 8.
         if (propertyContext != null) {
             
-            TermDefinition activePropertyDefinition = activeContext.getTerm(activeProperty);
-
             activeContext = activeContext
-                                .create(propertyContext, activePropertyDefinition != null
-                                                            ? activePropertyDefinition.getBaseUrl() 
-                                                            : null
-                                        )                                
+                                .newContext()
                                 .overrideProtected(true)
-                                .build();
+                                .create(
+                                    propertyContext, 
+                                    activeContext
+                                            .getTerm(activeProperty)
+                                            .map(TermDefinition::getBaseUrl)
+                                            .orElse(null)    
+                                        );        
         }
 
         // 9.
         if (element.containsKey(Keywords.CONTEXT)) {
 
             activeContext = activeContext
-                                .create(element.get(Keywords.CONTEXT), baseUrl)
-                                .build();
+                                .newContext()
+                                .create(element.get(Keywords.CONTEXT), baseUrl);
         }
 
         // 10.
@@ -149,9 +151,9 @@ public final class MapExpansion {
 
             String expandedKey = 
                         activeContext
-                            .expandUri(key)
+                            .uriExpansion()
                             .vocab(true)
-                            .build();
+                            .expand(key);
 
             if (!Keywords.TYPE.equals(expandedKey)) {
                 continue;
@@ -173,26 +175,23 @@ public final class MapExpansion {
                                     .sorted()
                                     .collect(Collectors.toList());
 
-            for (String term : terms) {
+            for (final String term : terms) {
 
-                if (typeContext.containsTerm(term)) {
+                Optional<JsonValue> localContext = typeContext.getTerm(term).map(TermDefinition::getLocalContext);
 
-                    TermDefinition termDefinition = typeContext.getTerm(term);
+                if (localContext.isPresent()) {
+                    
+                    Optional<TermDefinition> valueDefinition = activeContext.getTerm(term);
 
-                    if (termDefinition.hasLocalContext()) {
-                        
-                        TermDefinition valueDefinition = activeContext.getTerm(term);                        
-
-                        activeContext = 
-                                activeContext
-                                    .create(termDefinition.getLocalContext(), 
-                                            valueDefinition != null
-                                                ? valueDefinition.getBaseUrl()
-                                                : null
-                                            )
-                                    .propagate(false)
-                                    .build();
-                    }
+                    activeContext = 
+                            activeContext
+                                .newContext()
+                                .propagate(false)
+                                .create(localContext.get(), 
+                                        valueDefinition.isPresent()
+                                            ? valueDefinition.get().getBaseUrl()
+                                            : null
+                                        );
                 }
             }
         }
@@ -230,13 +229,13 @@ public final class MapExpansion {
             if (lastValue != null) {
 
                 inputType = activeContext
-                                .expandUri(lastValue)
+                                .uriExpansion()
                                 .vocab(true)
-                                .build();
+                                .expand(lastValue);
             }
         }
 
-        MapExpansion1314
+        ObjectExpansion1314
                     .with(activeContext, element, activeProperty, baseUrl)
                     .inputType(inputType)
                     .result(result)
@@ -244,7 +243,7 @@ public final class MapExpansion {
                     .nest(new LinkedHashMap<>())
                     .frameExpansion(frameExpansion)
                     .ordered(ordered)
-                    .compute();
+                    .expand();
 
         // 15.
         if (result.containsKey(Keywords.VALUE)) {
@@ -257,6 +256,7 @@ public final class MapExpansion {
             }
             if ((result.containsKey(Keywords.DIRECTION) || result.containsKey(Keywords.LANGUAGE))
                     && result.keySet().contains(Keywords.TYPE)) {
+                
                 throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
             }
 

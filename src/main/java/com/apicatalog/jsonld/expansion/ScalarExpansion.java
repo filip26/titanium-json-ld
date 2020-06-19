@@ -15,7 +15,7 @@ import com.apicatalog.jsonld.lang.Keywords;
  *      Algorithm</a>
  *
  */
-public final class ScalarExpansionBuilder {
+public final class ScalarExpansion {
 
     // mandatory
     private ActiveContext activeContext;
@@ -23,7 +23,7 @@ public final class ScalarExpansionBuilder {
     private JsonValue element;
     private String activeProperty;
 
-    private ScalarExpansionBuilder(final ActiveContext activeContext, final JsonValue propertyContext,
+    private ScalarExpansion(final ActiveContext activeContext, final JsonValue propertyContext,
             final JsonValue element, final String activeProperty) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
@@ -31,12 +31,12 @@ public final class ScalarExpansionBuilder {
         this.activeProperty = activeProperty;
     }
 
-    public static final ScalarExpansionBuilder with(final ActiveContext activeContext, final JsonValue propertyContext,
+    public static final ScalarExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
             final JsonValue element, final String activeProperty) {
-        return new ScalarExpansionBuilder(activeContext, propertyContext, element, activeProperty);
+        return new ScalarExpansion(activeContext, propertyContext, element, activeProperty);
     }
 
-    public JsonValue compute() throws JsonLdError {
+    public JsonValue expand() throws JsonLdError {
 
         /*
          * 4.1. If active property is null or @graph, drop the free-floating scalar by
@@ -53,18 +53,19 @@ public final class ScalarExpansionBuilder {
          * property in active context.
          */
         if (propertyContext != null) {
-
-            final TermDefinition definition = activeContext.getTerm(activeProperty);
-
+            
             activeContext = activeContext
-                                .create(propertyContext, definition.getBaseUrl())
-                                .build();
+                                .newContext()
+                                .create(
+                                    propertyContext,
+                                    activeContext.getTerm(activeProperty).map(TermDefinition::getBaseUrl).orElse(null)                                    
+                                );
         }
 
         /*
          * 4.3. Return the result of the Value Expansion algorithm, passing the active
          * context, active property, and element as value.
          */
-        return ValueExpansionBuilder.with(activeContext, element, activeProperty).build();
+        return activeContext.valueExpansion().expand(element, activeProperty);
     }
 }

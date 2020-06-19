@@ -7,7 +7,7 @@ import javax.json.JsonArray;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.jsonld.processor.RdfToJsonLdProcessor;
+import com.apicatalog.jsonld.processor.FromRdfProcessor;
 import com.apicatalog.rdf.RdfDataset;
 
 public final class FromRdfApi {
@@ -57,6 +57,6 @@ public final class FromRdfApi {
     }
     
     public JsonArray get() throws JsonLdError {
-        return RdfToJsonLdProcessor.fromRdf(dataset, options);
+        return FromRdfProcessor.fromRdf(dataset, options);
     }
 }

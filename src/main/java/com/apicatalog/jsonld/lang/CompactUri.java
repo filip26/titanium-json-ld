@@ -15,7 +15,7 @@ public final class CompactUri {
 
     private final boolean blank;
 
-    CompactUri(final String prefix, final String suffix, final boolean blank) {
+    private CompactUri(final String prefix, final String suffix, final boolean blank) {
         this.prefix = prefix;
         this.suffix = suffix;
         this.blank = blank;

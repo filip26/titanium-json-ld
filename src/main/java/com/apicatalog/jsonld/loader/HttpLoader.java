@@ -9,6 +9,7 @@ import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,12 +26,6 @@ import com.apicatalog.jsonld.uri.UriResolver;
 
 public class HttpLoader implements LoadDocumentCallback {
 
-    public static final String ACCEPT_HEADER = 
-                                    MediaType.JSON_LD.toString()
-                                        .concat(",")
-                                        .concat(MediaType.JSON.toString())
-                                        .concat(");q=0.9,*/*;q=0.8");
-    
     public static final int MAX_REDIRECTIONS = 10;
     
     private static final String PLUS_JSON = "+json";
@@ -47,7 +42,7 @@ public class HttpLoader implements LoadDocumentCallback {
         this.httpClient = httpClient;
         this.maxRedirections = maxRedirections;
     }
-    
+        
     @Override
     public RemoteDocument loadDocument(final URI uri, final LoadDocumentOptions options) throws JsonLdError {
 
@@ -71,7 +66,7 @@ public class HttpLoader implements LoadDocumentCallback {
                                 HttpRequest.newBuilder()
                                     .GET()
                                     .uri(targetUri)
-                                    .header("Accept", ACCEPT_HEADER) //TODO add profile
+                                    .header("Accept", getAcceptHeader(options.getRequestProfile()))
                                     .build();
                 
                 response = httpClient.send(request, BodyHandlers.ofInputStream());
@@ -191,16 +186,15 @@ public class HttpLoader implements LoadDocumentCallback {
             }
 
             // 7.   
-            Document document = JsonDocument.parse(new InputStreamReader(response.body()));
+            final Document document = JsonDocument.parse(new InputStreamReader(response.body()));
 
             if (remoteDocument.getDocumentUrl() == null) {
                 remoteDocument.setDocumentUrl(targetUri);
             }
 
-            remoteDocument.setContentType(contentType);
+            remoteDocument.setContentType(new MediaType(contentType.type(), contentType.subtype()));
             remoteDocument.setDocument(document);
-             
-            //TODO set profile
+            remoteDocument.setProfile(contentType.paramValue("profile"));
 
             return remoteDocument;
             
@@ -214,7 +208,28 @@ public class HttpLoader implements LoadDocumentCallback {
         }        
     }
 
-    public void setMaxRedirections(int maxRedirections) {
+    public void setMaxRedirections(final int maxRedirections) {
         this.maxRedirections = maxRedirections;
+    }
+    
+    public static final String getAcceptHeader() {
+        return getAcceptHeader(null);
+    }
+    
+    public static final String getAcceptHeader(final Collection<String> profiles) {
+        final StringBuilder builder = new StringBuilder();
+        
+        builder.append(MediaType.JSON_LD.toString());
+
+        if (profiles != null && !profiles.isEmpty()) {
+            builder.append(";profile=\"");
+            builder.append(profiles.stream().collect(Collectors.joining(" ")));
+            builder.append("\"");
+        }
+        
+        builder.append(',');
+        builder.append(MediaType.JSON.toString());
+        builder.append(";q=0.9,*/*;q=0.8"); 
+        return builder.toString();        
     }
 }

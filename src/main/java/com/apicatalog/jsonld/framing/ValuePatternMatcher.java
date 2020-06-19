@@ -1,5 +1,7 @@
 package com.apicatalog.jsonld.framing;
 
+import java.util.Arrays;
+
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
@@ -55,10 +57,8 @@ public final class ValuePatternMatcher {
                                     ? value.get(Keywords.VALUE)
                                     : null;
 
-
-  
-        return (JsonUtils.isNotNull(value1) && JsonUtils.isEmptyObject(value2))
-                    || (JsonUtils.isNotNull(value2)  && JsonUtils.toJsonArray(value2).contains(value1))
+        return (JsonUtils.isNotNull(value1) && isWildcard(value2))
+                    || (JsonUtils.isNotNull(value2) && JsonUtils.toJsonArray(value2).contains(value1))
                     ;
     }
     
@@ -68,23 +68,21 @@ public final class ValuePatternMatcher {
                 ? value.get(Keywords.TYPE)
                 : null;
 
-        return (JsonUtils.isNotNull(type1) && JsonUtils.isNotNull(type2) && JsonUtils.isEmptyObject(type2))
-                    || (JsonUtils.isNull(type1) && (JsonUtils.isNull(type2) || JsonUtils.isEmptyArray(type2)))
+        return (JsonUtils.isNotNull(type1) && isWildcard(type2))
+                    || (JsonUtils.isNull(type1) && isNone(type2))
                     || (JsonUtils.isNotNull(type2) && JsonUtils.toJsonArray(type2).contains(type1))
                 ;
     }
     
     private boolean matchLanguage(JsonValue lang2) {
-        
+
         final String lang1 = value.containsKey(Keywords.LANGUAGE) 
-                ? value.getString(Keywords.LANGUAGE).toLowerCase()
-                : null;
-                
-                
-        if ((lang1 != null && JsonUtils.isNotNull(lang2) && JsonUtils.isEmptyObject(lang2))
-                || (lang1 == null && (JsonUtils.isNull(lang2) || JsonUtils.isEmptyArray(lang2)))
+                                    ? value.getString(Keywords.LANGUAGE).toLowerCase()
+                                    : null;
+                                
+        if ((lang1 != null && isWildcard(lang2))
+                || (lang1 == null && isNone(lang2))
                 ) {
-            
             return true;
         }
 
@@ -97,7 +95,45 @@ public final class ValuePatternMatcher {
                                 .stream()
                                 .map(JsonString.class::cast)
                                 .map(JsonString::getString)
-                                .map(String::toLowerCase)
-                                .anyMatch(x -> x.equals(lang1));
+                                .anyMatch(x -> x.equalsIgnoreCase(lang1));
+    }
+    
+    protected static final boolean isWildcard(JsonValue value, String...except) {
+        
+        if (JsonUtils.isEmptyObject(value)) {
+            return true;
+        }
+        
+        JsonObject frame = null;
+        
+        if (JsonUtils.isObject(value)) {
+            
+            frame = (JsonObject)value;
+            
+        } else if (JsonUtils.isArray(value) 
+                    && value.asJsonArray().size() == 1
+                    && JsonUtils.isObject(value.asJsonArray().get(0))) {
+            
+            frame = value.asJsonArray().getJsonObject(0);
+        }
+
+        if (frame == null) {
+            return false;
+        }
+
+        return frame.isEmpty() || frame.keySet()
+                                        .stream()
+                                        .allMatch(Arrays.asList(
+                                                    Keywords.DEFAULT,
+                                                    Keywords.OMIT_DEFAULT, 
+                                                    Keywords.EMBED, 
+                                                    Keywords.EXPLICIT, 
+                                                    Keywords.REQUIRE_ALL,
+                                                    except
+                                                    )::contains);
+    }
+    
+    protected static final boolean isNone(JsonValue value) {
+        return JsonUtils.isNull(value) || JsonUtils.isEmptyArray(value);
     }
 }

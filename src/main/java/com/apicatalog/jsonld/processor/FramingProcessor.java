@@ -21,14 +21,13 @@ import javax.json.JsonValue;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.compaction.CompactionBuilder;
+import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.context.ActiveContext;
-import com.apicatalog.jsonld.context.ActiveContextBuilder;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.framing.Frame;
-import com.apicatalog.jsonld.framing.FramingBuilder;
+import com.apicatalog.jsonld.framing.Framing;
 import com.apicatalog.jsonld.framing.FramingState;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
@@ -73,20 +72,16 @@ public final class FramingProcessor {
                                 : options.getBase();
 
         // 10-11.
-        final ActiveContext activeContext = 
-                            ActiveContextBuilder
-                                 .with(
-                                     new ActiveContext(input.getDocumentUrl(), input.getDocumentUrl(), options),
-                                     context, 
-                                     contextBase, 
-                                     options)
-                                 .build();
+        final ActiveContext activeContext =
+                                new ActiveContext(input.getDocumentUrl(), input.getDocumentUrl(), options)
+                                            .newContext()
+                                            .create(context, contextBase);
         
         // 13.
         final List<String> frameKeysExpanded = new ArrayList<>();
         
         for (final String key : frameObject.keySet()) {
-            frameKeysExpanded.add(activeContext.expandUri(key).vocab(true).build());
+            frameKeysExpanded.add(activeContext.uriExpansion().vocab(true).expand(key));
         }
 
         boolean frameDefault = frameKeysExpanded.contains(Keywords.GRAPH); 
@@ -114,14 +109,14 @@ public final class FramingProcessor {
         Map<String, JsonValue> resultMap = new LinkedHashMap<>();
         
         // 16.
-        FramingBuilder.with(state, 
-                                new ArrayList<>(state.getGraphMap().subjects(state.getGraphName())), 
-                                Frame.of(expandedFrame), 
-                                resultMap, 
-                                null
-                            )
-                        .ordered(options.isOrdered())
-                        .build();
+        Framing.with(state, 
+                    new ArrayList<>(state.getGraphMap().subjects(state.getGraphName())), 
+                    Frame.of(expandedFrame), 
+                    resultMap, 
+                    null
+                    )
+                .ordered(options.isOrdered())
+                .frame();
         
         Collection<JsonValue> result = resultMap.values();        
         
@@ -134,11 +129,11 @@ public final class FramingProcessor {
         result = result.stream().map(FramingProcessor::removePreserve).collect(Collectors.toList());
         
         // 19.
-        JsonValue compactedResults = CompactionBuilder
-                                        .with(activeContext, null, JsonUtils.toJsonArray(result))
-                                        .compactArrays(options.isCompactArrays())
-                                        .ordered(options.isOrdered())
-                                        .build();
+        JsonValue compactedResults = Compaction
+                                                .with(activeContext)
+                                                .compactArrays(options.isCompactArrays())
+                                                .ordered(options.isOrdered())
+                                                .compact(JsonUtils.toJsonArray(result));
 
         // 19.1.
         if (JsonUtils.isEmptyArray(compactedResults)) {
@@ -147,7 +142,7 @@ public final class FramingProcessor {
         // 19.2.
         } else if (JsonUtils.isArray(compactedResults)) {
         
-            String key = activeContext.compactUri(Keywords.GRAPH).vocab(true).build();
+            final String key = activeContext.uriCompaction().vocab(true).compact(Keywords.GRAPH);
             
             compactedResults = Json.createObjectBuilder()
                                     .add(key, compactedResults).build();

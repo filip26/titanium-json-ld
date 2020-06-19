@@ -1,6 +1,7 @@
 package com.apicatalog.jsonld.expansion;
 
 import java.net.URI;
+import java.util.Optional;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -67,7 +68,7 @@ public final class ArrayExpansion {
         return this;
     }
 
-    public JsonValue compute() throws JsonLdError {
+    public JsonValue expand() throws JsonLdError {
 
         // 5.1
         final JsonArrayBuilder result = Json.createArrayBuilder();
@@ -84,11 +85,11 @@ public final class ArrayExpansion {
                                 .fromMap(fromMap)
                                 .compute();
 
-            TermDefinition definition = activeContext.getTerm(activeProperty);
+            final Optional<TermDefinition> definition = activeContext.getTerm(activeProperty);
 
             // 5.2.2
-            if (definition != null && definition.getContainerMapping() != null
-                    && definition.getContainerMapping().contains(Keywords.LIST) && JsonUtils.isArray(expanded)) {
+            if (definition.isPresent() && definition.get().getContainerMapping() != null
+                    && definition.get().getContainerMapping().contains(Keywords.LIST) && JsonUtils.isArray(expanded)) {
 
                 expanded = ListObject.toListObject(expanded);
             }

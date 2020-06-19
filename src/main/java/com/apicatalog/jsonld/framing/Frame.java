@@ -1,6 +1,5 @@
 package com.apicatalog.jsonld.framing;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
@@ -22,15 +21,15 @@ import com.apicatalog.jsonld.uri.UriUtils;
 
 public final class Frame {
 
-    private final JsonObject frame;
+    private final JsonObject frameObject;
     
-    private Frame(final JsonObject frame) {
-        this.frame = frame;
+    private Frame(final JsonObject frameObject) {
+        this.frameObject = frameObject;
     }
     
-    public static final Frame of(JsonStructure structure) throws JsonLdError {
+    public static final Frame of(final JsonStructure structure) throws JsonLdError {
 
-        final JsonObject frameObject;;
+        final JsonObject frameObject;
 
         // 1.
         if (JsonUtils.isArray(structure)) {
@@ -38,7 +37,7 @@ public final class Frame {
             if (structure.asJsonArray().size() != 1  
                     || JsonUtils.isNotObject(structure.asJsonArray().get(0))
                     ) {
-                throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
+                throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame is not JSON object nor an array containg JSON object [" + structure + "]");
             }
 
             frameObject = structure.asJsonArray().getJsonObject(0);
@@ -49,27 +48,26 @@ public final class Frame {
             frameObject = structure.asJsonObject();
 
         } else {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
+            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame is not JSON object. [" + structure + "]");
         }
         
         // 1.2.
         if (frameObject.containsKey(Keywords.ID) && !validateFrameId(frameObject)) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @id is not valid.");
+            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @id value is not valid [" + frameObject.get(Keywords.ID) + "].");
         }
         
         // 1.3.
         if (frameObject.containsKey(Keywords.TYPE) && !validateFrameType(frameObject)) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Fram @type is not valid.");
+            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @type value i not valid [" + frameObject.get(Keywords.TYPE) + "].");
         }
         return new Frame(frameObject);
     }
-    
-    
-    public JsonLdEmbed getEmbed(JsonLdEmbed defaultValue) throws JsonLdError {
         
-        if (frame.containsKey(Keywords.EMBED)) {
+    public JsonLdEmbed getEmbed(final JsonLdEmbed defaultValue) throws JsonLdError {
+        
+        if (frameObject.containsKey(Keywords.EMBED)) {
 
-            JsonValue embed = frame.get(Keywords.EMBED);
+            JsonValue embed = frameObject.get(Keywords.EMBED);
 
             if (embed == null || JsonUtils.isNull(embed)) {
                 return defaultValue;
@@ -103,25 +101,27 @@ public final class Frame {
     }
     
     public boolean getExplicit(boolean defaultValue) throws JsonLdError {
-        return getBoolean(frame, Keywords.EXPLICIT, defaultValue);
+        return getBoolean(frameObject, Keywords.EXPLICIT, defaultValue);
     }
     
     public boolean getRequireAll(boolean defaultValue) throws JsonLdError {
-        return getBoolean(frame, Keywords.REQUIRE_ALL, defaultValue);
+        return getBoolean(frameObject, Keywords.REQUIRE_ALL, defaultValue);
     }
     
     public static final boolean getBoolean(JsonObject frame, String key, boolean defaultValue) throws JsonLdError {
+        
         if (frame.containsKey(key)) {
 
             JsonValue value = frame.get(key);
+
+            if (JsonUtils.isNull(value)) {
+                return defaultValue;
+            }
             
             if (ValueObject.isValueObject(value)) {
                 value = ValueObject.getValue(value);
             }
 
-            if (JsonUtils.isNull(value)) {  //TODO investigate
-                return false;
-            }
             if (JsonUtils.isString(value)) {
                 if ("true".equalsIgnoreCase(((JsonString)value).getString())) {
                     return true;
@@ -138,7 +138,6 @@ public final class Frame {
             return JsonUtils.isTrue(value);
         }
         return defaultValue; 
-
     }
     
     private static final boolean validateFrameId(JsonObject frame) {
@@ -194,85 +193,68 @@ public final class Frame {
     }
     
     public Set<String> keys() {
-        return frame.keySet();
+        return frameObject.keySet();
     }
 
     public JsonValue get(String property) {
-        return frame.get(property);
+        return frameObject.get(property);
     }
 
     public boolean contains(String property) {
-        return frame.containsKey(property);
+        return frameObject.containsKey(property);
+    }
+
+    public boolean containsOnly(String property) {
+        return frameObject.containsKey(property) && ValuePatternMatcher.isWildcard(frameObject, property);
     }
 
     public boolean isWildCard() {
-        return frame.isEmpty() || frame.keySet()
-                    .stream()
-                    .allMatch(Arrays.asList(
-                                        Keywords.DEFAULT,
-                                        Keywords.OMIT_DEFAULT, 
-                                        Keywords.EMBED, 
-                                        Keywords.EXPLICIT, 
-                                        Keywords.REQUIRE_ALL
-                                        )::contains);
+        return ValuePatternMatcher.isWildcard(frameObject);
     }
     
     public boolean isWildCard(String property) {
-        return frame.containsKey(property) 
-                    && (JsonUtils.isEmptyObject(get(property))
-                            || (JsonUtils.isArray(get(property))
-                                    && get(property).asJsonArray().size() == 1
-                                    && JsonUtils.isEmptyObject(get(property).asJsonArray().get(0)))
-                            );
+        return frameObject.containsKey(property) 
+                    && ValuePatternMatcher.isWildcard(frameObject.get(property));
     }
 
     public boolean isNone(String property) {
-        return frame.containsKey(property) 
-                    && JsonUtils.isEmptyArray(get(property))
-                    ;
+        return frameObject.containsKey(property) 
+                    && ValuePatternMatcher.isNone(frameObject.get(property));
     }
 
-//    public boolean isNotEmpty(String property) {
-//        return frame.containsKey(property) 
-//                            ;
-//    }
-
-    
-    public Collection<JsonValue> getArray(String property) {
-        return frame.containsKey(property)
-                    ? JsonUtils.toJsonArray(frame.get(property))
-                    : JsonValue.EMPTY_JSON_ARRAY
-                    ;
+    public Collection<JsonValue> getCollection(String property) {
+        return frameObject.containsKey(property)
+                    ? JsonUtils.toJsonArray(frameObject.get(property))
+                    : JsonValue.EMPTY_JSON_ARRAY;
     }
     
     @Override
     public String toString() {
-        return frame.toString();
+        return frameObject.toString();
     }
 
     public boolean isValuePattern() {
-        return ValueObject.isValueObject(frame);
+        return ValueObject.isValueObject(frameObject);
     }
     
     public boolean matchValue(JsonValue value) {
-        return JsonUtils.isObject(value) && ValuePatternMatcher.with(frame, value.asJsonObject()).match();
+        return JsonUtils.isObject(value) && ValuePatternMatcher.with(frameObject, value.asJsonObject()).match();
     }
 
-    public boolean isDefault(String property) {
-
-        return DefaultObject.isDefaultObject(frame.get(property))
-                || JsonUtils.isArray(frame.get(property))
-                    && frame.get(property).asJsonArray().size() == 1
-                    && DefaultObject.isDefaultObject(frame.get(property).asJsonArray().get(0))
+    public boolean isDefaultOjbect(String property) {
+        return DefaultObject.isDefaultObject(frameObject.get(property))
+                || JsonUtils.isArray(frameObject.get(property))
+                    && frameObject.get(property).asJsonArray().size() == 1
+                    && DefaultObject.isDefaultObject(frameObject.get(property).asJsonArray().get(0))
                 ;
     }
 
     public boolean isNodePattern() {
-        return NodeObject.isNodeObject(frame);
+        return NodeObject.isNodeObject(frameObject);
     }
 
     public boolean isNodeReference() {
-        return NodeObject.isNodeReference(frame);
+        return NodeObject.isNodeReference(frameObject);
     }
     
     public boolean matchNode(FramingState state, JsonValue value, boolean requireAll) throws JsonLdError {
@@ -290,7 +272,7 @@ public final class Frame {
         return FrameMatcher.with(state, this, requireAll).match(valueObject.asJsonObject());
     }
 
-    public boolean isList() {
-        return ListObject.isListObject(frame);
+    public boolean isListObject() {
+        return ListObject.isListObject(frameObject);
     }
 }

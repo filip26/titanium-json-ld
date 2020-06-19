@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.json.JsonArray;
 import javax.json.JsonString;
@@ -30,20 +31,18 @@ import com.apicatalog.jsonld.uri.UriUtils;
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#iri-compaction">IRI Compaction</a>
  *
  */
-public final class UriCompactionBuilder {
+public final class UriCompaction {
 
     // required
     private final ActiveContext activeContext;
-    private String variable;
     
     // optional
     private JsonValue value;
     private boolean vocab;
     private boolean reverse;
     
-    public UriCompactionBuilder(final ActiveContext activeContext, final String variable) {
+    private UriCompaction(final ActiveContext activeContext) {
         this.activeContext = activeContext;
-        this.variable = variable;
         
         // default values
         this.value = null;
@@ -51,26 +50,26 @@ public final class UriCompactionBuilder {
         this.reverse = false;
     }
     
-    public static UriCompactionBuilder with(ActiveContext activeContext, String variable) {
-        return new UriCompactionBuilder(activeContext, variable);
+    public static UriCompaction with(final ActiveContext activeContext) {
+        return new UriCompaction(activeContext);
     }
     
-    public UriCompactionBuilder value(JsonValue value) {
+    public UriCompaction value(JsonValue value) {
         this.value = value;
         return this;
     }
 
-    public UriCompactionBuilder vocab(boolean vocab) {
+    public UriCompaction vocab(boolean vocab) {
         this.vocab = vocab;
         return this;
     }
     
-    public UriCompactionBuilder reverse(boolean reverse) {
+    public UriCompaction reverse(boolean reverse) {
         this.reverse = reverse;
         return this;
     }
     
-    public String build() throws JsonLdError {
+    public String compact(final String variable) throws JsonLdError {
  
         // 1.
         if (variable == null) {
@@ -397,14 +396,14 @@ public final class UriCompactionBuilder {
                    ) {
             
                 // 4.16.1.
-                String idValue = value.asJsonObject().getString(Keywords.ID);
+                final String idValue = value.asJsonObject().getString(Keywords.ID);
                 
-                String compactedIdValue = activeContext.compactUri(idValue).vocab(true).build();
+                final String compactedIdValue = activeContext.uriCompaction().vocab(true).compact(idValue);
                 
-                TermDefinition compactedIdValueTermDefinition = activeContext.getTerm(compactedIdValue);
+                final Optional<TermDefinition> compactedIdValueTermDefinition = activeContext.getTerm(compactedIdValue);
                 
-                if (compactedIdValueTermDefinition != null
-                        && idValue.equals(compactedIdValueTermDefinition.getUriMapping())
+                if (compactedIdValueTermDefinition.isPresent()
+                        && idValue.equals(compactedIdValueTermDefinition.get().getUriMapping())
                         ) {
                     preferredValues.add(Keywords.VOCAB);
                     preferredValues.add(Keywords.ID);
@@ -435,7 +434,7 @@ public final class UriCompactionBuilder {
             preferredValues.add(Keywords.ANY);
             
             // 4.19.
-            for (String preferredValue : new ArrayList<>(preferredValues)) {
+            for (final String preferredValue : new ArrayList<>(preferredValues)) {
                 
                 int index = preferredValue.indexOf('_');
                 
@@ -447,11 +446,11 @@ public final class UriCompactionBuilder {
             }            
 
             // 4.20.
-            String term = activeContext.selectTerm(variable, containers, typeLanguage, preferredValues).select();
+            final Optional<String> term = activeContext.termSelector(variable, containers, typeLanguage).match(preferredValues);
             
             // 4.21.
-            if (term != null) {
-                return term;
+            if (term.isPresent()) {
+                return term.get();
             }
         }
 
@@ -493,8 +492,11 @@ public final class UriCompactionBuilder {
             // 7.3.
             if (((compactUri == null || (compacttUriCandidate.compareTo(compactUri) < 0))
                             && !activeContext.containsTerm(compacttUriCandidate))
-                    || (activeContext.containsTerm(compacttUriCandidate) 
-                            && variable.equals(activeContext.getTerm(compacttUriCandidate).getUriMapping())
+                    || (activeContext
+                                .getTerm(compacttUriCandidate)
+                                .map(TermDefinition::getUriMapping)
+                                .map(u -> u.equals(variable))
+                                .orElse(false)
                             && JsonUtils.isNull(value)
                             )
                     ) {
@@ -510,10 +512,11 @@ public final class UriCompactionBuilder {
         // 9.
         if (UriUtils.isAbsoluteUri(variable)) {
             
-            URI uri = URI.create(variable);
+            final URI uri = URI.create(variable);
             
-            if ((uri.getScheme() != null && activeContext.containsTerm(uri.getScheme()))
-                && (activeContext.getTerm(uri.getScheme()).isPrefix() && uri.getAuthority() == null)) {
+            if (uri.getScheme() != null 
+                    && activeContext.getTerm(uri.getScheme()).map(TermDefinition::isPrefix).orElse(false)
+                    && uri.getAuthority() == null) {
                 throw new JsonLdError(JsonLdErrorCode.IRI_CONFUSED_WITH_PREFIX);
             }
         }
@@ -526,5 +529,4 @@ public final class UriCompactionBuilder {
         // 11.
         return variable;
     }
-
 }

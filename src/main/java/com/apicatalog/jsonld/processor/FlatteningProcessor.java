@@ -10,7 +10,7 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.flattening.FlatteningBuilder;
+import com.apicatalog.jsonld.flattening.Flattening;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 
@@ -66,7 +66,7 @@ public final class FlatteningProcessor {
         // 5.
         
         // 6.
-        JsonStructure flattenedOutput = FlatteningBuilder.with(expandedInput).ordered(options.isOrdered()).build();
+        JsonStructure flattenedOutput = Flattening.with(expandedInput).ordered(options.isOrdered()).flatten();
 
         // 6.1.
         if (JsonUtils.isNotNull(context)) {

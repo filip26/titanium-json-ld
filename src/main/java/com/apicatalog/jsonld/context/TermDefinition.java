@@ -125,7 +125,6 @@ public final class TermDefinition {
         this.indexMapping = indexMapping;
     }
     
-    
     protected void setContainerMapping(Set<String> containerMapping) {
         this.containerMapping = containerMapping;
     }

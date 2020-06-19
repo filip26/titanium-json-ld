@@ -19,7 +19,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 
-public final class FlatteningBuilder {
+public final class Flattening {
 
     // required
     private JsonStructure element;
@@ -27,23 +27,23 @@ public final class FlatteningBuilder {
     // optional
     private boolean ordered;
     
-    private FlatteningBuilder(final JsonStructure element) {
+    private Flattening(final JsonStructure element) {
         this.element = element;
         
         // default values
         this.ordered = false;
     }
     
-    public static final FlatteningBuilder with(final JsonStructure element) {
-        return new FlatteningBuilder(element);
+    public static final Flattening with(final JsonStructure element) {
+        return new Flattening(element);
     }
     
-    public FlatteningBuilder ordered(boolean ordered) {
+    public Flattening ordered(boolean ordered) {
         this.ordered = ordered;
         return this;
     }
     
-    public JsonArray build() throws JsonLdError {
+    public JsonArray flatten() throws JsonLdError {
         
         // 1.
         NodeMap nodeMap = new NodeMap();

@@ -6,9 +6,9 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.json.JsonUtils;
 
-public class ListObject {
+public final class ListObject {
 
-    ListObject() {
+    private ListObject() {
     }
 
     /**
@@ -23,10 +23,13 @@ public class ListObject {
      * @return
      */
     public static final boolean isListObject(JsonValue value) {
-
-        return JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.LIST);
-        // TODO check @index and no other entries
-
+        return JsonUtils.isObject(value) 
+                    && value.asJsonObject().containsKey(Keywords.LIST)
+                    && (value.asJsonObject().size() == 1
+                            || (value.asJsonObject().size() == 2 
+                                    && value.asJsonObject().containsKey(Keywords.INDEX)
+                                    )
+                            );
     }
 
     /*

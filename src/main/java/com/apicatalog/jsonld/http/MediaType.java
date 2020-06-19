@@ -1,6 +1,9 @@
 package com.apicatalog.jsonld.http;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * 
@@ -23,19 +26,26 @@ public final class MediaType {
     
     public static final MediaType ANY = new MediaType(WILDCARD, WILDCARD);
     
-
     private final String type;
     private final String subtype;
     
-    public MediaType(String type, String subtype) {
+    private final Map<String, String> parameters;
+
+    protected MediaType(String type, String subtype, Map<String, String> parameters) {
         this.type = type;
         this.subtype = subtype;
+        this.parameters = parameters;
+        
+    }
+
+    public MediaType(String type, String subtype) {
+        this(type, subtype, Collections.emptyMap());
     }
 
     public boolean match(MediaType mediaType) {
         return mediaType != null
-                && (WILDCARD.equals(type) || Objects.equals(type, mediaType.type))
-                && (WILDCARD.equals(subtype) || Objects.equals(subtype, mediaType.subtype))
+                && (WILDCARD.equals(type) || WILDCARD.equals(mediaType.type) || Objects.equals(type, mediaType.type))
+                && (WILDCARD.equals(subtype) || WILDCARD.equals(mediaType.subtype) || Objects.equals(subtype, mediaType.subtype))
                 ;
     }
 
@@ -47,29 +57,23 @@ public final class MediaType {
         return subtype;
     }
     
+    public Set<String> paramNames() {
+        return parameters.keySet();
+    }
+    
+    public String paramValue(String name) {
+        return parameters.get(name);
+    }
+    
     @Override
         public String toString() {
             return String.valueOf(type).concat("/").concat(subtype);
         }
 
     public static final MediaType valueOf(String contentTypeValue) {
-
         if (contentTypeValue == null || contentTypeValue.isBlank()) {
             return null;
         }
-        
-        int slash = contentTypeValue.indexOf('/');
-        
-        if (slash == -1) {
-            return null;
-        }
-        
-        int semicolon = contentTypeValue.indexOf(';', slash);
-        
-        if (semicolon != -1) {
-            return new MediaType(contentTypeValue.substring(0, slash).strip(), contentTypeValue.substring(slash + 1, semicolon).strip());            
-        }
-
-        return new MediaType(contentTypeValue.substring(0, slash).strip(), contentTypeValue.substring(slash + 1).strip());
+        return new MediaTypeParser(contentTypeValue).parse();
     }
 }

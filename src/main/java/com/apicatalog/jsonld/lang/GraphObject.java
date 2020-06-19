@@ -15,9 +15,9 @@ import com.apicatalog.jsonld.json.JsonUtils;
  * @see <a href="https://www.w3.org/TR/json-ld11/#graph-objects">Graph Objects</a>
  *
  */
-public class GraphObject {
+public final class GraphObject {
 
-    GraphObject() {
+    private GraphObject() {
     }
 
     public static final boolean isGraphObject(JsonValue value) {

@@ -11,7 +11,7 @@ import javax.json.JsonValue;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.compaction.CompactionBuilder;
+import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -86,7 +86,7 @@ public final class CompactionProcessor {
         // 7.
         ActiveContext activeContext = new ActiveContext(options);
         
-        activeContext = activeContext.create(contextValue, contextBase).build();
+        activeContext = activeContext.newContext().create(contextValue, contextBase);
 
         // 8.
         if (options.getBase() != null) {
@@ -97,11 +97,11 @@ public final class CompactionProcessor {
         }
         
         // 9.
-        JsonValue compactedOutput = CompactionBuilder
-                                        .with(activeContext, null, expandedInput)
+        JsonValue compactedOutput = Compaction
+                                        .with(activeContext)
                                         .compactArrays(options.isCompactArrays())
                                         .ordered(options.isOrdered())
-                                        .build();
+                                        .compact(expandedInput);
         
         // 9.1.
         if (JsonUtils.isEmptyArray(compactedOutput)) {
@@ -111,7 +111,7 @@ public final class CompactionProcessor {
         } else if (JsonUtils.isArray(compactedOutput)) {
             compactedOutput = Json.createObjectBuilder()
                                     .add(
-                                        activeContext.compactUri(Keywords.GRAPH).vocab(true).build(),
+                                        activeContext.uriCompaction().vocab(true).compact(Keywords.GRAPH),
                                         compactedOutput
                                         )
                                     .build();

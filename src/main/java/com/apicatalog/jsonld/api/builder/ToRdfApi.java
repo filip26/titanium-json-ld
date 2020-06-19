@@ -7,7 +7,7 @@ import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
-import com.apicatalog.jsonld.processor.JsonLdToRdfProcessor;
+import com.apicatalog.jsonld.processor.ToRdfProcessor;
 import com.apicatalog.rdf.RdfDataset;
 
 public final class ToRdfApi {
@@ -85,6 +85,6 @@ public final class ToRdfApi {
     }
     
     public RdfDataset get() throws JsonLdError {
-        return JsonLdToRdfProcessor.toRdf(document, options);
+        return ToRdfProcessor.toRdf(document, options);
     }
 }

@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -32,75 +33,76 @@ import com.apicatalog.jsonld.lang.Version;
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#compaction-algorithm">Compaction Algorithm</a>
  *
  */
-public final class CompactionBuilder {
+public final class Compaction {
 
     // required
-    private ActiveContext activeContext;
-    private String activeProperty;
-    private JsonValue element;
+    private final ActiveContext context;
     
     // optional
     private boolean compactArrays;
     private boolean ordered;
     
-    CompactionBuilder(final ActiveContext activeContext, final String activeProperty, final JsonValue element) {
-        this.activeContext = activeContext;
-        this.activeProperty = activeProperty;
-        this.element = element;
+    private Compaction(final ActiveContext context) {
+        this.context = context;
         
         // default values
         this.compactArrays = false;
         this.ordered = false;
     }
     
-    public static CompactionBuilder with(final ActiveContext activeContext, final String activeProperty, final JsonValue element) {
-        return new CompactionBuilder(activeContext, activeProperty, element);
+    public static Compaction with(final ActiveContext activeContext) {
+        return new Compaction(activeContext);
     }
     
-    public CompactionBuilder compactArrays(final boolean compactArrays) {
+    public Compaction compactArrays(final boolean compactArrays) {
         this.compactArrays = compactArrays;
         return this;
     }
     
-    public CompactionBuilder ordered(final boolean ordered) {
+    public Compaction ordered(final boolean ordered) {
         this.ordered = ordered;
         return this;
     }
     
-    public JsonValue build() throws JsonLdError {
+    public JsonValue compact(final JsonValue element) throws JsonLdError {
+        return compact(null, element);
+    }
+    
+    public JsonValue compact(final String activeProperty, final JsonValue element) throws JsonLdError {
 
         // 1.
-        ActiveContext typeContext = activeContext;
+        ActiveContext typeContext = context;
+        ActiveContext activeContext = context;
         
         // 2.
         if (JsonUtils.isScalar(element)) {
             return element;
         }
         
-        TermDefinition activePropertyDefinition = activeContext.getTerm(activeProperty);
+        final Optional<TermDefinition> activePropertyDefinition = activeContext.getTerm(activeProperty);
         
         // 3. 
         if (JsonUtils.isArray(element)) {
 
             // 3.1.
-            JsonArrayBuilder resultBuilder = Json.createArrayBuilder();
+            final JsonArrayBuilder resultBuilder = Json.createArrayBuilder();
 
             // 3.2.
-            for (JsonValue item : element.asJsonArray()) {
+            for (final JsonValue item : element.asJsonArray()) {
                 
                 // 3.2.1.
-                JsonValue compactedItem = CompactionBuilder
-                                                .with(activeContext, activeProperty, item)
-                                                .compactArrays(compactArrays)
-                                                .ordered(ordered)
-                                                .build();
+                final JsonValue compactedItem = Compaction
+                                                    .with(activeContext)
+                                                    .compactArrays(compactArrays)
+                                                    .ordered(ordered)
+                                                    .compact(activeProperty, item);
                 // 3.2.2.                
                 if (JsonUtils.isNotNull(compactedItem)) {
                     resultBuilder.add(compactedItem);
                 }
             }
             
-            JsonArray result = resultBuilder.build();
+            final JsonArray result = resultBuilder.build();
 
             // 3.3.
             if (result.isEmpty() 
@@ -108,9 +110,9 @@ public final class CompactionBuilder {
                     || !compactArrays
                     || Keywords.GRAPH.equals(activeProperty)
                     || Keywords.SET.equals(activeProperty)
-                    || (activePropertyDefinition != null
-                            && (activePropertyDefinition.hasContainerMapping(Keywords.LIST)
-                                || activePropertyDefinition.hasContainerMapping(Keywords.SET))
+                    || (activePropertyDefinition.isPresent()
+                            && (activePropertyDefinition.get().hasContainerMapping(Keywords.LIST)
+                                || activePropertyDefinition.get().hasContainerMapping(Keywords.SET))
                             )
                     ) {
 
@@ -122,34 +124,39 @@ public final class CompactionBuilder {
         }
         
         // 4.
-        JsonObject elementObject = element.asJsonObject();
-        
+        final JsonObject elementObject = element.asJsonObject();
+
         // 5.
-        if (activeContext.hasPreviousContext()
+        if (activeContext.getPreviousContext() != null
                 && !elementObject.containsKey(Keywords.VALUE)
                 && !(elementObject.containsKey(Keywords.ID)
                         && elementObject.size() == 1)
                 ) {
             activeContext = activeContext.getPreviousContext();
         }
-        
+
         // 6.
-        if (activePropertyDefinition != null && activePropertyDefinition.hasLocalContext()) {
+        if (activePropertyDefinition.isPresent() 
+                && activePropertyDefinition.map(TermDefinition::getLocalContext).isPresent()) {
+            
             activeContext = 
                     activeContext
-                            .create(activePropertyDefinition.getLocalContext(), activePropertyDefinition.getBaseUrl())
+                            .newContext()
                             .overrideProtected(true)
-                            .build();
-                    
+                            .create(activePropertyDefinition.get().getLocalContext(),
+                                    activePropertyDefinition.get().getBaseUrl());
         }
+
         // 7.
         if (elementObject.containsKey(Keywords.VALUE)
                 || elementObject.containsKey(Keywords.ID) 
                 ) {
             
-            JsonValue result = activeContext.compactValue(elementObject, activeProperty).build();
+            final JsonValue result = activeContext.valueCompaction().compact(elementObject, activeProperty);
             
-            if (JsonUtils.isScalar(result) || activePropertyDefinition != null && Keywords.JSON.equals(activePropertyDefinition.getTypeMapping())) {
+            if (JsonUtils.isScalar(result) 
+                    || (activePropertyDefinition.isPresent() 
+                            && Keywords.JSON.equals(activePropertyDefinition.get().getTypeMapping()))) {
                 
                 return result;
             }
@@ -158,60 +165,60 @@ public final class CompactionBuilder {
         
         // 8.
         if (ListObject.isListObject(element)
-                && activePropertyDefinition != null
-                && activePropertyDefinition.hasContainerMapping(Keywords.LIST)
+                && activePropertyDefinition.isPresent()
+                && activePropertyDefinition.get().hasContainerMapping(Keywords.LIST)
                 ) {
 
-            return CompactionBuilder
-                        .with(activeContext, activeProperty, elementObject.get(Keywords.LIST))
-                        .compactArrays(compactArrays)
-                        .ordered(ordered)
-                        .build();
+            return Compaction
+                            .with(activeContext)
+                            .compactArrays(compactArrays)
+                            .ordered(ordered)
+                            .compact(activeProperty, elementObject.get(Keywords.LIST));
         }
         
         // 9.
-        boolean insideReverse = Keywords.REVERSE.equals(activeProperty);
+        final boolean insideReverse = Keywords.REVERSE.equals(activeProperty);
         
         // 10.
-        Map<String, JsonValue> result = new LinkedHashMap<>();
+        final Map<String, JsonValue> result = new LinkedHashMap<>();
 
         // 11.
         if (elementObject.containsKey(Keywords.TYPE)) {
             
-            List<String> compactedTypes = new ArrayList<>();
+            final List<String> compactedTypes = new ArrayList<>();
             
             for (JsonValue type : JsonUtils.toJsonArray(elementObject.get(Keywords.TYPE))) {
                 
-                compactedTypes.add(activeContext.compactUri(((JsonString)type).getString()).vocab(true).build());
+                compactedTypes.add(activeContext.uriCompaction().vocab(true).compact(((JsonString)type).getString()));
                 
             }
 
             Collections.sort(compactedTypes);
             
-            for (String term : compactedTypes) {
+            for (final String term : compactedTypes) {
+
+                final Optional<TermDefinition> termDefinition = typeContext.getTerm(term);
 
                 // 11.1.
-                if (typeContext.containsTerm(term) && typeContext.getTerm(term).hasLocalContext()) {
-                    
-                    TermDefinition termDefinition = typeContext.getTerm(term);
-                    
+                if (termDefinition.isPresent() && termDefinition.get().hasLocalContext()) {
+
                     activeContext = 
                             activeContext
-                                    .create(termDefinition.getLocalContext(), termDefinition.getBaseUrl())
-                                    .propagate(false)
-                                    .build();
+                                .newContext()
+                                .propagate(false)
+                                .create(termDefinition.get().getLocalContext(), termDefinition.get().getBaseUrl());
                 }
             }
         }
 
         // 12.
-        List<String> expandedProperties = new ArrayList<>(elementObject.keySet());
+        final List<String> expandedProperties = new ArrayList<>(elementObject.keySet());
         
         if (ordered) {
             Collections.sort(expandedProperties);
         }
         
-        for (String expandedProperty : expandedProperties) {
+        for (final String expandedProperty : expandedProperties) {
 
             JsonValue expandedValue = elementObject.get(expandedProperty);
             
@@ -222,26 +229,26 @@ public final class CompactionBuilder {
                 
                 // 12.1.1.
                 if (JsonUtils.isString(expandedValue)) {
-                    compactedValue = JsonUtils.toJsonValue(activeContext.compactUri(((JsonString)expandedValue).getString()).build());
+                    compactedValue = JsonUtils.toJsonValue(activeContext.uriCompaction().compact(((JsonString)expandedValue).getString()));
                 }
                 
                 // 12.1.2.
-                String alias = activeContext.compactUri(expandedProperty).vocab(true).build();
+                String alias = activeContext.uriCompaction().vocab(true).compact(expandedProperty);
                 
                 // 12.1.3.
                 result.put(alias, compactedValue);
                 
                 continue;
             }
-            
+
             // 12.2.
             if (Keywords.TYPE.equals(expandedProperty)) {
 
-                JsonValue compactedValue = JsonValue.NULL;
+                final JsonValue compactedValue;
 
                 // 12.2.1.
                 if (JsonUtils.isString(expandedValue)) {
-                    compactedValue = JsonUtils.toJsonValue(typeContext.compactUri(((JsonString)expandedValue).getString()).vocab(true).build());
+                    compactedValue = JsonUtils.toJsonValue(typeContext.uriCompaction().vocab(true).compact(((JsonString)expandedValue).getString()));
                     
                 // 12.2.2.
                 } else if (JsonUtils.isArray(expandedValue)) {
@@ -253,7 +260,7 @@ public final class CompactionBuilder {
                     for (JsonValue expandedType : expandedValue.asJsonArray()) {
 
                         // 12.2.2.2.1.
-                        String term = typeContext.compactUri(((JsonString)expandedType).getString()).vocab(true).build();
+                        String term = typeContext.uriCompaction().vocab(true).compact(((JsonString)expandedType).getString());
 
                         // 12.2.2.2.2.
                         compactedArray.add(term);
@@ -262,17 +269,17 @@ public final class CompactionBuilder {
                     compactedValue = compactedArray.build();
                                         
                 } else {
-                    //TODO error
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_VALUE, "@type value is not valid [" + expandedValue + "].");
                 }
 
                 // 12.2.3.
-                String alias = activeContext.compactUri(expandedProperty).vocab(true).build();
+                final String alias = activeContext.uriCompaction().vocab(true).compact(expandedProperty);
 
                 // 12.2.4.
-                boolean asArray = (activeContext.inMode(Version.V1_1)
-                                        && activeContext.containsTerm(alias)
-                                        && activeContext.getTerm(alias).hasContainerMapping(Keywords.SET))
-                                    || !compactArrays; 
+                final boolean asArray = !compactArrays 
+                                        || (activeContext.inMode(Version.V1_1)
+                                            && activeContext.getTerm(alias).map(t -> t.hasContainerMapping(Keywords.SET)).orElse(false)
+                                           );
 
                 // 12.2.5.
                 JsonUtils.addValue(result, alias, compactedValue, asArray);
@@ -285,22 +292,26 @@ public final class CompactionBuilder {
             if (Keywords.REVERSE.equals(expandedProperty)) {
                 
                 // 12.3.1.
-                Map<String, JsonValue> compactedMap = new LinkedHashMap<>(CompactionBuilder
-                                                .with(activeContext, Keywords.REVERSE, expandedValue)
+                final Map<String, JsonValue> compactedMap = 
+                                new LinkedHashMap<>(
+                                        Compaction
+                                                .with(activeContext)
                                                 .compactArrays(compactArrays)
                                                 .ordered(ordered)
-                                                .build().asJsonObject());
+                                                .compact(Keywords.REVERSE, expandedValue)
+                                                .asJsonObject());
                 // 12.3.2.
-                for (Entry<String, JsonValue> entry : new HashSet<>(compactedMap.entrySet())) {
+                for (final Entry<String, JsonValue> entry : new HashSet<>(compactedMap.entrySet())) {
                     
                     // 12.3.2.1.
-                    if (activeContext.containsTerm(entry.getKey())
-                            && activeContext.getTerm(entry.getKey()).isReverseProperty()
-                            ) {
+                    if (activeContext.getTerm(entry.getKey()).map(TermDefinition::isReverseProperty).orElse(false)) {
 
                         // 12.3.2.1.1
-                        boolean asArray = activeContext.getTerm(entry.getKey()).hasContainerMapping(Keywords.SET)
-                                            || !compactArrays;
+                        final boolean asArray = !compactArrays
+                                            || activeContext
+                                                        .getTerm(entry.getKey())
+                                                        .map(td -> td.hasContainerMapping(Keywords.SET))
+                                                        .orElse(false);
 
                         // 12.3.2.1.2.
                         JsonUtils.addValue(result, entry.getKey(), entry.getValue(), asArray);
@@ -315,7 +326,7 @@ public final class CompactionBuilder {
                 if (!compactedMap.isEmpty()) {
 
                     // 12.8.3.1.
-                    String alias = activeContext.compactUri(Keywords.REVERSE).vocab(true).build();
+                    String alias = activeContext.uriCompaction().vocab(true).compact(Keywords.REVERSE);
                     
                     // 12.8.3.2.                    
                     result.put(alias, JsonUtils.toJsonObject(compactedMap));
@@ -329,11 +340,11 @@ public final class CompactionBuilder {
             if (Keywords.PRESERVE.equals(expandedProperty)) {
 
                 // 12.4.1.
-                JsonValue compactedValue = CompactionBuilder
-                                                .with(activeContext, activeProperty, expandedValue)
-                                                .compactArrays(compactArrays)
-                                                .ordered(ordered)
-                                                .build();
+                final JsonValue compactedValue = Compaction
+                                                    .with(activeContext)
+                                                    .compactArrays(compactArrays)
+                                                    .ordered(ordered)
+                                                    .compact(activeProperty, expandedValue);
                 
                 // 12.4.2.
                 if (!JsonUtils.isEmptyArray(compactedValue)) {
@@ -344,8 +355,8 @@ public final class CompactionBuilder {
             
             // 12.5.
             if (Keywords.INDEX.equals(expandedProperty)
-                    && activePropertyDefinition != null
-                    && activePropertyDefinition.hasContainerMapping(Keywords.INDEX)
+                    && activePropertyDefinition.isPresent()
+                    && activePropertyDefinition.get().hasContainerMapping(Keywords.INDEX)
                     ) {
                 continue;
                 
@@ -357,7 +368,7 @@ public final class CompactionBuilder {
                                             Keywords.VALUE
                                             )) {                
                 // 12.6.1.
-                String alias = activeContext.compactUri(expandedProperty).vocab(true).build();
+                String alias = activeContext.uriCompaction().vocab(true).compact(expandedProperty);
                 
                 // 12.6.2.
                 result.put(alias, expandedValue);
@@ -369,21 +380,22 @@ public final class CompactionBuilder {
             if (JsonUtils.isEmptyArray(expandedValue)) {
                 
                 // 12.7.1.
-                String itemActiveProperty = activeContext
-                                                    .compactUri(expandedProperty)
+                final String itemActiveProperty = activeContext
+                                                    .uriCompaction()
                                                     .value(expandedValue)
                                                     .vocab(true)
                                                     .reverse(insideReverse)
-                                                    .build();
+                                                    .compact(expandedProperty);
                 // 12.7.2.
-                if (activeContext.containsTerm(itemActiveProperty)
-                        && activeContext.getTerm(itemActiveProperty).getNestValue() != null
-                        ) {
+                if (activeContext.getTerm(itemActiveProperty).map(TermDefinition::getNestValue).isPresent()) {
                     
-                    String nestTerm = activeContext.getTerm(itemActiveProperty).getNestValue(); 
+                    final String nestTerm = activeContext
+                                                    .getTerm(itemActiveProperty)                             
+                                                    .map(TermDefinition::getNestValue)
+                                                    .orElse(null);
                   
                     // 12.7.2.1.
-                    if (!Keywords.NEST.equals(nestTerm) && !Keywords.NEST.equals(activeContext.expandUri(nestTerm).vocab(true).build())) {
+                    if (!Keywords.NEST.equals(nestTerm) && !Keywords.NEST.equals(activeContext.uriExpansion().vocab(true).expand(nestTerm))) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
                     
@@ -408,28 +420,29 @@ public final class CompactionBuilder {
             }
             
             // 12.8.
-            for (JsonValue expandedItem : expandedValue.asJsonArray()) {
+            for (final JsonValue expandedItem : expandedValue.asJsonArray()) {
      
                 // 12.8.1.
-                String itemActiveProperty = activeContext
-                                                .compactUri(expandedProperty)
+                final String itemActiveProperty = activeContext
+                                                .uriCompaction()
                                                 .value(expandedItem)
                                                 .vocab(true)
                                                 .reverse(insideReverse)
-                                                .build();
+                                                .compact(expandedProperty);
 
                 Map<String, JsonValue> nestResult = null;
                 String nestResultKey = null;
 
                 // 12.8.2.
-                if (activeContext.containsTerm(itemActiveProperty)
-                        && activeContext.getTerm(itemActiveProperty).getNestValue() != null
-                        ) {
+                if (activeContext.getTerm(itemActiveProperty).map(TermDefinition::getNestValue).isPresent()) {
                     
-                    String nestTerm = activeContext.getTerm(itemActiveProperty).getNestValue(); 
+                    final String nestTerm = activeContext
+                                            .getTerm(itemActiveProperty)
+                                            .map(TermDefinition::getNestValue)
+                                            .orElse(null);
                     
                     // 12.8.2.1.
-                    if (!Keywords.NEST.equals(nestTerm) && !Keywords.NEST.equals(activeContext.expandUri(nestTerm).vocab(true).build())) {
+                    if (!Keywords.NEST.equals(nestTerm) && !Keywords.NEST.equals(activeContext.uriExpansion().vocab(true).expand(nestTerm))) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
                     
@@ -448,15 +461,11 @@ public final class CompactionBuilder {
                 }
                 
                 // 12.8.4.
-                Collection<String> container = activeContext.containsTerm(itemActiveProperty)
-                                                ? activeContext.getTerm(itemActiveProperty).getContainerMapping()
-                                                    : null;
-                                                    
-                                                    
-                if (container == null) {
-                    container = new LinkedList<>();
-                }
-                
+                final Collection<String> container= activeContext
+                                                        .getTerm(itemActiveProperty)
+                                                        .map(TermDefinition::getContainerMapping)
+                                                        .orElse(new LinkedList<>());
+                                                                    
                 // 12.8.5.
                 boolean asArray = container.contains(Keywords.SET) 
                                         || Keywords.GRAPH.equals(itemActiveProperty)
@@ -473,12 +482,12 @@ public final class CompactionBuilder {
                     expandedItemValue = expandedItem.asJsonObject().get(Keywords.GRAPH);
                 }
 
-                JsonValue compactedItem = CompactionBuilder
-                                                .with(activeContext, itemActiveProperty, expandedItemValue)
-                                                .compactArrays(compactArrays)
-                                                .ordered(ordered)
-                                                .build();
-                
+                JsonValue compactedItem = Compaction
+                                                    .with(activeContext)
+                                                    .compactArrays(compactArrays)
+                                                    .ordered(ordered)
+                                                    .compact(itemActiveProperty, expandedItemValue);
+                    
                 // 12.8.7.
                 if (ListObject.isListObject(expandedItem)) {
 
@@ -489,7 +498,7 @@ public final class CompactionBuilder {
                     if (!container.contains(Keywords.LIST)) {
 
                         // 12.8.7.2.1.
-                        String key = activeContext.compactUri(Keywords.LIST).vocab(true).build();
+                        String key = activeContext.uriCompaction().vocab(true).compact(Keywords.LIST);
                         
                         compactedItem = Json.createObjectBuilder().add(key, compactedItem).build();
                         
@@ -497,7 +506,7 @@ public final class CompactionBuilder {
                         if (JsonUtils.isObject(expandedItem) 
                                 && expandedItem.asJsonObject().containsKey(Keywords.INDEX)) {
 
-                            String indexKey = activeContext.compactUri(Keywords.INDEX).vocab(true).build();
+                            String indexKey = activeContext.uriCompaction().vocab(true).compact(Keywords.INDEX);
 
                             compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject())
                                                 .add(indexKey, expandedItem.asJsonObject().get(Keywords.INDEX))
@@ -534,10 +543,10 @@ public final class CompactionBuilder {
                         
                         if (expandedItem.asJsonObject().containsKey(Keywords.ID)) {
                             String id = expandedItem.asJsonObject().getString(Keywords.ID);
-                            mapKey = activeContext.compactUri(id).build();
+                            mapKey = activeContext.uriCompaction().compact(id);
                             
                         } else {
-                            mapKey = activeContext.compactUri(Keywords.NONE).vocab(true).build();
+                            mapKey = activeContext.uriCompaction().vocab(true).compact(Keywords.NONE);
                         }
    
                         // 12.8.8.1.3.
@@ -582,9 +591,9 @@ public final class CompactionBuilder {
                         if (JsonUtils.isArray(compactedItem) && compactedItem.asJsonArray().size() > 1) {
                             compactedItem = Json.createObjectBuilder().add(
                                                         activeContext
-                                                            .compactUri(Keywords.INCLUDED)
+                                                            .uriCompaction()
                                                             .vocab(true)
-                                                            .build(),
+                                                            .compact(Keywords.INCLUDED),
                                                         compactedItem
                                                     ).build();
                         }
@@ -602,9 +611,9 @@ public final class CompactionBuilder {
                         // 12.8.8.4.1.
                         compactedItem = Json.createObjectBuilder().add(
                                 activeContext
-                                    .compactUri(Keywords.GRAPH)
+                                    .uriCompaction()
                                     .vocab(true)
-                                    .build(),
+                                    .compact(Keywords.GRAPH),
                                 compactedItem
                             ).build(); 
                         
@@ -613,12 +622,14 @@ public final class CompactionBuilder {
 
                             compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).add(
                                     activeContext
-                                        .compactUri(Keywords.ID)
+                                        .uriCompaction()
                                         .vocab(true)
-                                        .build(),
+                                        .compact(Keywords.ID),
+                                        
                                     activeContext
-                                        .compactUri(expandedItem.asJsonObject().getString(Keywords.ID))
-                                        .build()
+                                        .uriCompaction()
+                                        .compact(expandedItem.asJsonObject().getString(Keywords.ID))
+
                                 ).build(); 
                         }
                                                         
@@ -627,9 +638,9 @@ public final class CompactionBuilder {
                             
                             compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).add(
                                     activeContext
-                                        .compactUri(Keywords.INDEX)
+                                        .uriCompaction()
                                         .vocab(true)
-                                        .build(),
+                                        .compact(Keywords.INDEX),
                                     expandedItem.asJsonObject().getString(Keywords.INDEX)
                                 ).build(); 
                         }
@@ -647,7 +658,7 @@ public final class CompactionBuilder {
                         ) {
 
                     // 12.8.9.1
-                    Map<String, JsonValue> mapObject = nestResult.containsKey(itemActiveProperty)
+                    final Map<String, JsonValue> mapObject = nestResult.containsKey(itemActiveProperty)
                                                             ? new LinkedHashMap<>(nestResult.get(itemActiveProperty).asJsonObject())
                                                             : new LinkedHashMap<>()
                                                             ;
@@ -667,18 +678,14 @@ public final class CompactionBuilder {
                         keyToCompact = Keywords.TYPE;
                     }
 
-                    String containerKey = activeContext.compactUri(keyToCompact).vocab(true).build();
+                    String containerKey = activeContext.uriCompaction().vocab(true).compact(keyToCompact);
 
                     // 12.8.9.3.
-                    String indexKey = null;
-                    if (activeContext.containsTerm(itemActiveProperty)) {
-                        indexKey = activeContext.getTerm(itemActiveProperty).getIndexMapping();
-                    }
-                    
-                    if (indexKey == null) {
-                        indexKey = Keywords.INDEX;
-                    }
-                    
+                    final String indexKey = activeContext
+                                                .getTerm(itemActiveProperty)
+                                                .map(TermDefinition::getIndexMapping)
+                                                .orElse(Keywords.INDEX);
+                                        
                     String mapKey = null;
                     
                     // 12.8.9.4.
@@ -710,9 +717,9 @@ public final class CompactionBuilder {
 
                         // 12.8.9.6.1.
                         containerKey = activeContext
-                                                .compactUri(indexKey)
+                                                .uriCompaction()
                                                 .vocab(true)
-                                                .build();
+                                                .compact(indexKey);
                         
                         // 12.8.9.6.2.
                         if (JsonUtils.isObject(compactedItem) && compactedItem.asJsonObject().containsKey(containerKey)) {
@@ -763,10 +770,7 @@ public final class CompactionBuilder {
                             Map<String, JsonValue> compactedItemMap = new LinkedHashMap<>(compactedItem.asJsonObject());
                             compactedItemMap.remove(containerKey);
                             
-                            compactedItem = JsonUtils.toJsonObject(compactedItemMap);
-                            
-                        } else {
-                           // mapKey = null;  //TODO needs to be revised, removal candidate
+                            compactedItem = JsonUtils.toJsonObject(compactedItemMap);                            
                         }
 
                     // 12.8.9.8.
@@ -813,22 +817,22 @@ public final class CompactionBuilder {
                         // 12.8.9.8.4.
                         if (JsonUtils.isObject(compactedItem) && compactedItem.asJsonObject().size() == 1) {
                             
-                            String epandedKey = activeContext.expandUri(compactedItem.asJsonObject().keySet().iterator().next()).vocab(true).build();
+                            String epandedKey = activeContext.uriExpansion().vocab(true).expand(compactedItem.asJsonObject().keySet().iterator().next());
                             
                             if (Keywords.ID.equals(epandedKey)) {
 
                                 JsonObject map = Json.createObjectBuilder().add(Keywords.ID, expandedItem.asJsonObject().get(Keywords.ID)).build();
                                 
-                                compactedItem = CompactionBuilder
-                                                    .with(activeContext, itemActiveProperty, map)
-                                                    .build();
+                                compactedItem = Compaction
+                                                        .with(activeContext)
+                                                        .compact(itemActiveProperty, map);
                             }   
                         }
                     }
                     
                     // 12.8.9.9.
                     if (mapKey == null) {
-                        mapKey = activeContext.compactUri(Keywords.NONE).vocab(true).build();
+                        mapKey = activeContext.uriCompaction().vocab(true).compact(Keywords.NONE);
                     } 
                     // 12.8.9.10.
                     JsonUtils.addValue(mapObject, mapKey, compactedItem, asArray);
@@ -850,6 +854,5 @@ public final class CompactionBuilder {
 
         // 13.
         return JsonUtils.toJsonObject(result);
-    }
-    
+    }   
 }

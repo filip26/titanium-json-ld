@@ -3,6 +3,7 @@ package com.apicatalog.jsonld.compaction;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
@@ -23,24 +24,20 @@ import com.apicatalog.jsonld.lang.Keywords;
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#value-compaction">Value Compaction</a>
  *
  */
-public final class ValueCompactionBuilder {
+public final class ValueCompaction {
 
     // mandatory
-    private ActiveContext activeContext;
-    private String activeProperty;
-    private JsonObject value;
+    private final ActiveContext activeContext;
     
-    ValueCompactionBuilder(ActiveContext activeContext, String activeProperty, JsonObject value) {
+    private ValueCompaction(final ActiveContext activeContext) {
         this.activeContext = activeContext;
-        this.activeProperty = activeProperty;
-        this.value = value;
     }
     
-    public static ValueCompactionBuilder with(ActiveContext activeContext, String activeProperty, JsonObject value) {
-        return new ValueCompactionBuilder(activeContext, activeProperty, value);
+    public static ValueCompaction with(ActiveContext activeContext) {
+        return new ValueCompaction(activeContext);
     }
     
-    public JsonValue build() throws JsonLdError {
+    public JsonValue compact(final JsonObject value, final String activeProperty) throws JsonLdError {
 
         // 1.
         JsonValue result = value;
@@ -50,15 +47,15 @@ public final class ValueCompactionBuilder {
             activeContext.createInverseContext();
         }
         
-        TermDefinition activePropertyDefinition = activeContext.getTerm(activeProperty);
+        final Optional<TermDefinition> activePropertyDefinition = activeContext.getTerm(activeProperty);
         
         // 4. - 5.
         JsonValue language = null; 
         DirectionType direction = null;
 
-        if (activePropertyDefinition != null) {
-            language = activePropertyDefinition.getLanguageMapping(); 
-            direction = activePropertyDefinition.getDirectionMapping();
+        if (activePropertyDefinition.isPresent()) {
+            language = activePropertyDefinition.get().getLanguageMapping(); 
+            direction = activePropertyDefinition.get().getDirectionMapping();
         }
 
         if (language == null) {
@@ -80,23 +77,27 @@ public final class ValueCompactionBuilder {
                 ) {
             
             // 6.1.
-            if (activePropertyDefinition != null && Keywords.ID.equals(activePropertyDefinition.getTypeMapping())) {
+            if (activePropertyDefinition.isPresent() 
+                            && Keywords.ID.equals(activePropertyDefinition.get().getTypeMapping())) {
+                
                 result = JsonUtils.toJsonValue(activeContext
-                                                .compactUri(value.getString(Keywords.ID))
-                                                .build());
+                                                .uriCompaction()
+                                                .compact(value.getString(Keywords.ID)));
 
             // 6.2.
-            } else if (activePropertyDefinition != null && Keywords.VOCAB.equals(activePropertyDefinition.getTypeMapping())) {
+            } else if (activePropertyDefinition.isPresent()
+                            && Keywords.VOCAB.equals(activePropertyDefinition.get().getTypeMapping())) {
+                
                 result = JsonUtils.toJsonValue(activeContext
-                                                .compactUri(value.getString(Keywords.ID))
+                                                .uriCompaction()
                                                 .vocab(true)
-                                                .build());                
+                                                .compact(value.getString(Keywords.ID)));
             }
         // 7.
         } else if (value.containsKey(Keywords.TYPE)
-                    && activePropertyDefinition != null
+                    && activePropertyDefinition.isPresent()
                     && JsonUtils.contains(
-                                    activePropertyDefinition.getTypeMapping(),
+                                    activePropertyDefinition.get().getTypeMapping(),
                                     value.get(Keywords.TYPE)
                                         )
                     ) {
@@ -104,14 +105,15 @@ public final class ValueCompactionBuilder {
             result = value.get(Keywords.VALUE);
 
         // 8.
-        } else if (activePropertyDefinition != null && Keywords.NONE.equals(activePropertyDefinition.getTypeMapping())
-                    || (value.containsKey(Keywords.TYPE)
-                            && (activePropertyDefinition == null
-                                    || !JsonUtils.contains(
-                                            activePropertyDefinition.getTypeMapping(),
-                                            value.get(Keywords.TYPE)
-                                            )
-                                    ))
+        } else if (activePropertyDefinition.isPresent() 
+                        && Keywords.NONE.equals(activePropertyDefinition.get().getTypeMapping())
+                        || (value.containsKey(Keywords.TYPE)
+                                && (activePropertyDefinition.isEmpty()
+                                        || !JsonUtils.contains(
+                                                activePropertyDefinition.get().getTypeMapping(),
+                                                value.get(Keywords.TYPE)
+                                                )
+                                        ))
                 ) {
 
             // 8.1.
@@ -122,7 +124,7 @@ public final class ValueCompactionBuilder {
             if (JsonUtils.isNotNull(resultTypes)) {
                 for (JsonValue type : JsonUtils.toJsonArray(resultTypes)) {
     
-                    types.add(activeContext.compactUri(((JsonString)type).getString()).vocab(true).build());                    
+                    types.add(activeContext.uriCompaction().vocab(true).compact(((JsonString)type).getString()));                    
                 }
                 
                 Map<String, JsonValue> resultMap = new LinkedHashMap<>(result.asJsonObject());
@@ -135,15 +137,13 @@ public final class ValueCompactionBuilder {
         } else if (JsonUtils.isNotString(value.get(Keywords.VALUE))) {
             
             if (!value.containsKey(Keywords.INDEX) 
-                    || (activePropertyDefinition != null
-                            && activePropertyDefinition.hasContainerMapping(Keywords.INDEX)
-                    )
-                ) {
+                    || activePropertyDefinition.map(td -> td.hasContainerMapping(Keywords.INDEX)).orElse(false)
+                    ) {
                 result = value.get(Keywords.VALUE);
             }
 
         // 10.
-        } else if (((value.containsKey(Keywords.LANGUAGE)
+        } else if ((((value.containsKey(Keywords.LANGUAGE)
                                 && JsonUtils.isString(value.get(Keywords.LANGUAGE))
                                 && JsonUtils.isString(language)
                                 && (((JsonString)language).getString().equalsIgnoreCase(value.getString(Keywords.LANGUAGE)))
@@ -161,19 +161,15 @@ public final class ValueCompactionBuilder {
                                     || DirectionType.NULL == DirectionType.valueOf(value.getString(Keywords.DIRECTION).toUpperCase())
                                 ))
                                 )
-                        
-                        ){
+                        )
+                    && ((value.containsKey(Keywords.INDEX)
+                            && activePropertyDefinition.isPresent()
+                            && activePropertyDefinition.get().hasContainerMapping(Keywords.INDEX))
+                        || !value.containsKey(Keywords.INDEX)
+                            )
+                ){
 
-            // 10.1.
-            if ((value.containsKey(Keywords.INDEX)
-                    && activePropertyDefinition != null
-                    && activePropertyDefinition.hasContainerMapping(Keywords.INDEX))
-                || !value.containsKey(Keywords.INDEX)
-                    ) {
-                
-                
                 result = value.get(Keywords.VALUE);
-            }
         }
 
         // 11.
@@ -184,9 +180,9 @@ public final class ValueCompactionBuilder {
             for (Entry<String, JsonValue> entry : result.asJsonObject().entrySet()) {
                 resultBuilder.add(
                                 activeContext
-                                        .compactUri(entry.getKey())
+                                        .uriCompaction()
                                         .vocab(true)
-                                        .build(), 
+                                        .compact(entry.getKey()), 
                                 entry.getValue()
                                 );
             }

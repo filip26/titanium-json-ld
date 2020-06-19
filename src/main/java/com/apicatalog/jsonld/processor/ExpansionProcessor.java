@@ -81,18 +81,30 @@ public final class ExpansionProcessor {
         // If expandContext is a map having an @context entry, pass that entry's value
         // instead for local context.
         if (options.getExpandContext() != null) {
-            //TODO @context entry
             
-            activeContext = activeContext
-                                .create(options.getExpandContext().asJsonArray(), baseUrl)
-                                .build();
+            final JsonArray expandedContext = options.getExpandContext().asJsonArray();
+            
+            if (expandedContext.size() == 1 
+                    && JsonUtils.isObject(expandedContext.get(0)) 
+                    && expandedContext.getJsonObject(0).containsKey(Keywords.CONTEXT)
+                    ) {
+                
+                activeContext = activeContext
+                                    .newContext()
+                                        .create(
+                                            expandedContext.getJsonObject(0).get(Keywords.CONTEXT), 
+                                            baseUrl);
+                
+            } else {
+                activeContext = activeContext.newContext().create(expandedContext, baseUrl);   
+            }
         }
         
         // 7.
         if (input.getContextUrl() != null) {
             activeContext = activeContext
-                                .create(Json.createValue(input.getContextUrl().toString()), input.getContextUrl())
-                                .build();
+                                .newContext()
+                                .create(Json.createValue(input.getContextUrl().toString()), input.getContextUrl());
         }
 
         // 8.
