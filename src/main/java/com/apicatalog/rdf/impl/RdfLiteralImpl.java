@@ -3,8 +3,8 @@ package com.apicatalog.rdf.impl;
 import java.util.Objects;
 
 import com.apicatalog.rdf.RdfLiteral;
-import com.apicatalog.rdf.lang.RdfVocabulary;
-import com.apicatalog.rdf.lang.XsdVocabulary;
+import com.apicatalog.rdf.lang.RdfContants;
+import com.apicatalog.rdf.lang.XsdContants;
 
 final class RdfLiteralImpl implements RdfLiteral {
 
@@ -82,6 +82,6 @@ final class RdfLiteralImpl implements RdfLiteral {
         if (datatype != null) {
             return datatype;
         }
-        return langTag == null ? XsdVocabulary.STRING : RdfVocabulary.LANG_STRING;
+        return langTag == null ? XsdContants.STRING : RdfContants.LANG_STRING;
     }
 }

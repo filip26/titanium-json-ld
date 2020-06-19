@@ -27,8 +27,8 @@ import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfPredicate;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.RdfTriple;
-import com.apicatalog.rdf.lang.RdfVocabulary;
-import com.apicatalog.rdf.lang.XsdVocabulary;
+import com.apicatalog.rdf.lang.RdfContants;
+import com.apicatalog.rdf.lang.XsdContants;
 
 /**
  * 
@@ -123,7 +123,7 @@ final class ObjectToRdf {
         // 8.
         if (Keywords.JSON.equals(datatype)) {
             valueString = JsonCanonicalizer.canonicalize(value);
-            datatype = RdfVocabulary.JSON;
+            datatype = RdfContants.JSON;
             
         // 9.
         } else if (JsonUtils.isTrue(value)) {
@@ -131,7 +131,7 @@ final class ObjectToRdf {
             valueString = "true";
             
             if (datatype == null) {
-                datatype = XsdVocabulary.BOOLEAN;
+                datatype = XsdContants.BOOLEAN;
             }
             
         } else if (JsonUtils.isFalse(value)) {
@@ -139,7 +139,7 @@ final class ObjectToRdf {
             valueString = "false";
             
             if (datatype == null) {
-                datatype = XsdVocabulary.BOOLEAN;
+                datatype = XsdContants.BOOLEAN;
             }
 
             
@@ -151,14 +151,14 @@ final class ObjectToRdf {
             
             // 11.
             if ((!number.isIntegral()  && number.doubleValue() % -1 != 0)
-                    || XsdVocabulary.DOUBLE.equals(datatype)
+                    || XsdContants.DOUBLE.equals(datatype)
                     || number.bigDecimalValue().compareTo(BigDecimal.ONE.movePointRight(21)) >= 0
                     ) {
 
                 valueString = toXsdDouble(number.bigDecimalValue());
                 
                 if (datatype == null) {
-                    datatype = XsdVocabulary.DOUBLE;
+                    datatype = XsdContants.DOUBLE;
                 }
                 
             // 10.
@@ -167,7 +167,7 @@ final class ObjectToRdf {
                 valueString = number.bigIntegerValue().toString();
                 
                 if (datatype == null) {
-                    datatype = XsdVocabulary.INTEGER;
+                    datatype = XsdContants.INTEGER;
                 }
 
             }
@@ -176,8 +176,8 @@ final class ObjectToRdf {
         } else if (datatype == null) {
             
             datatype = item.containsKey(Keywords.LANGUAGE)
-                                ? RdfVocabulary.LANG_STRING
-                                : XsdVocabulary.STRING
+                                ? RdfContants.LANG_STRING
+                                : XsdContants.STRING
                                 ;
         }
         
@@ -219,7 +219,7 @@ final class ObjectToRdf {
                 // 13.3.2.
                 triples.add(Rdf.createTriple(
                                     subject, 
-                                    Rdf.createPredicate(RdfPredicate.Type.IRI, RdfVocabulary.VALUE), 
+                                    Rdf.createPredicate(RdfPredicate.Type.IRI, RdfContants.VALUE), 
                                     Rdf.createObject(RdfObject.Type.LITERAL, valueString))
                                     );
                 
@@ -227,7 +227,7 @@ final class ObjectToRdf {
                 if (item.containsKey(Keywords.LANGUAGE) && JsonUtils.isString(item.get(Keywords.LANGUAGE))) {
                     triples.add(Rdf.createTriple(
                                     subject, 
-                                    Rdf.createPredicate(RdfPredicate.Type.IRI, RdfVocabulary.LANGUAGE), 
+                                    Rdf.createPredicate(RdfPredicate.Type.IRI, RdfContants.LANGUAGE), 
                                     Rdf.createObject(RdfObject.Type.LITERAL, item.getString(Keywords.LANGUAGE).toLowerCase()))
                                     );
                 }
@@ -235,7 +235,7 @@ final class ObjectToRdf {
                 // 13.3.4.
                 triples.add(Rdf.createTriple(
                                     subject, 
-                                    Rdf.createPredicate(RdfPredicate.Type.IRI, RdfVocabulary.DIRECTION), 
+                                    Rdf.createPredicate(RdfPredicate.Type.IRI, RdfContants.DIRECTION), 
                                     Rdf.createObject(RdfObject.Type.LITERAL, item.getString(Keywords.DIRECTION)))
                                     );
                 

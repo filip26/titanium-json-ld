@@ -20,7 +20,7 @@ import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfPredicate;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.RdfTriple;
-import com.apicatalog.rdf.lang.RdfVocabulary;
+import com.apicatalog.rdf.lang.RdfContants;
 
 public final class JsonLdToRdf {
 
@@ -127,7 +127,7 @@ public final class JsonLdToRdf {
 
                             dataset.add(Rdf.createNQuad(
                                                 rdfSubject,
-                                                Rdf.createPredicate(RdfPredicate.Type.IRI, RdfVocabulary.TYPE),
+                                                Rdf.createPredicate(RdfPredicate.Type.IRI, RdfContants.TYPE),
                                                 rdfObject,
                                                 rdfGraphName
                                             ));

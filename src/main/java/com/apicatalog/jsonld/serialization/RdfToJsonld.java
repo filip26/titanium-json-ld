@@ -27,7 +27,7 @@ import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
 import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfTriple;
-import com.apicatalog.rdf.lang.RdfVocabulary;
+import com.apicatalog.rdf.lang.RdfContants;
 
 public final class RdfToJsonld {
 
@@ -144,7 +144,7 @@ public final class RdfToJsonld {
                             // 6.1.6.1.
                             clObject = clObject.remove(Keywords.ID);
                             
-                            JsonValue value = clNode.get(RdfVocabulary.VALUE);
+                            JsonValue value = clNode.get(RdfContants.VALUE);
                             
                             // 6.1.6.2.
                             if (JsonUtils.isArray(value) && value.asJsonArray().size() == 1) {
@@ -158,9 +158,9 @@ public final class RdfToJsonld {
                             clObject = clObject.add(Keywords.VALUE, value);
 
                             // 6.1.6.3.
-                            if (clNode.containsKey(RdfVocabulary.LANGUAGE)) {
+                            if (clNode.containsKey(RdfContants.LANGUAGE)) {
                                 
-                                JsonValue lang = clNode.get(RdfVocabulary.LANGUAGE);
+                                JsonValue lang = clNode.get(RdfContants.LANGUAGE);
                                 
                                 if (JsonUtils.isArray(lang)) {
                                     lang = lang.asJsonArray().get(0);
@@ -178,9 +178,9 @@ public final class RdfToJsonld {
                             }
 
                             // 6.1.6.4.     
-                            if (clNode.containsKey(RdfVocabulary.DIRECTION)) {
+                            if (clNode.containsKey(RdfContants.DIRECTION)) {
                                 
-                                JsonValue direction = clNode.get(RdfVocabulary.DIRECTION);
+                                JsonValue direction = clNode.get(RdfContants.DIRECTION);
                                 
                                 if (JsonUtils.isArray(direction)) {
                                     direction = direction.asJsonArray().get(0);
@@ -209,12 +209,12 @@ public final class RdfToJsonld {
             }
             
             // 6.2.
-            if (!graphMap.contains(graphName, RdfVocabulary.NIL)) {
+            if (!graphMap.contains(graphName, RdfContants.NIL)) {
                 continue;
             }
 
             // 6.4.
-            for (Reference usage : graphMap.getUsages(graphName, RdfVocabulary.NIL)) {
+            for (Reference usage : graphMap.getUsages(graphName, RdfContants.NIL)) {
 
                 // 6.4.1.
                 Map<String, JsonValue> node = graphMap.get(usage.graphName, usage.subject); 
@@ -226,22 +226,22 @@ public final class RdfToJsonld {
                 String nodeId = ((JsonString)node.get(Keywords.ID)).getString();
 
                 // 6.4.3.
-                while (RdfVocabulary.REST.equals(usage.property)
+                while (RdfContants.REST.equals(usage.property)
                         && BlankNode.isWellFormed(nodeId)
                         && referenceOnce.get(nodeId) != null
-                        && node.containsKey(RdfVocabulary.FIRST)
-                        && node.containsKey(RdfVocabulary.REST)
-                        && node.get(RdfVocabulary.FIRST).asJsonArray().size() == 1
-                        && node.get(RdfVocabulary.REST).asJsonArray().size() == 1
+                        && node.containsKey(RdfContants.FIRST)
+                        && node.containsKey(RdfContants.REST)
+                        && node.get(RdfContants.FIRST).asJsonArray().size() == 1
+                        && node.get(RdfContants.REST).asJsonArray().size() == 1
                         && (node.size() == 3
                                 || (node.size() == 4 && node.containsKey(Keywords.TYPE)
                                     && node.get(Keywords.TYPE).asJsonArray().size() == 1
-                                    && node.get(Keywords.TYPE).asJsonArray().contains(Json.createValue(RdfVocabulary.LIST))
+                                    && node.get(Keywords.TYPE).asJsonArray().contains(Json.createValue(RdfContants.LIST))
                                     ))
                         ) {
 
                     // 6.4.3.1.
-                    list.add(node.get(RdfVocabulary.FIRST).asJsonArray().get(0));
+                    list.add(node.get(RdfContants.FIRST).asJsonArray().get(0));
                     
                     // 6.4.3.2.
                     listNodes.add(nodeId);
@@ -374,7 +374,7 @@ public final class RdfToJsonld {
                         
             // 5.7.3.
             if (RdfDirection.COMPOUND_LITERAL == rdfDirection 
-                    && RdfVocabulary.DIRECTION.equals(predicate)) {
+                    && RdfContants.DIRECTION.equals(predicate)) {
                 
                 compoundMap.put(subject, Boolean.TRUE);
             }
@@ -387,7 +387,7 @@ public final class RdfToJsonld {
             }
             
             // 5.7.5.
-            if (!useRdfType && RdfVocabulary.TYPE.equals(predicate) && !triple.getObject().isLiteral()) {
+            if (!useRdfType && RdfContants.TYPE.equals(predicate) && !triple.getObject().isLiteral()) {
                 
                 if (graphMap.contains(graphName, subject, Keywords.TYPE)) {
                     
@@ -430,7 +430,7 @@ public final class RdfToJsonld {
             }
             
             // 5.7.9.
-            if (triple.getObject().isIRI() && RdfVocabulary.NIL.equals(triple.getObject().toString())) {
+            if (triple.getObject().isIRI() && RdfContants.NIL.equals(triple.getObject().toString())) {
 
                 Reference reference = new Reference();
                 reference.graphName = graphName;
