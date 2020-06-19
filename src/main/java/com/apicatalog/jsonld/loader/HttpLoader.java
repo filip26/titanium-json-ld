@@ -192,9 +192,9 @@ public class HttpLoader implements LoadDocumentCallback {
                 remoteDocument.setDocumentUrl(targetUri);
             }
 
-            remoteDocument.setContentType(contentType);
+            remoteDocument.setContentType(new MediaType(contentType.type(), contentType.subtype()));
             remoteDocument.setDocument(document);
-//TODO            remoteDocument.setProfile(contentType.profile());
+            remoteDocument.setProfile(contentType.paramValue("profile"));
 
             return remoteDocument;
             
@@ -220,13 +220,11 @@ public class HttpLoader implements LoadDocumentCallback {
         final StringBuilder builder = new StringBuilder();
         
         builder.append(MediaType.JSON_LD.toString());
-        
-        if (profiles != null) {
-            profiles.forEach(profile -> {
-                builder.append(";profile=\"");
-                builder.append(profile);
-                builder.append("\"");
-            });
+
+        if (profiles != null && !profiles.isEmpty()) {
+            builder.append(";profile=\"");
+            builder.append(profiles.stream().collect(Collectors.joining(" ")));
+            builder.append("\"");
         }
         
         builder.append(',');
