@@ -2,9 +2,6 @@ package com.apicatalog.rdf.lang;
 
 public final class RdfVocabulary {
 
-    private RdfVocabulary() {
-    }
-    
     public static final String DIRECTION = "http://www.w3.org/1999/02/22-rdf-syntax-ns#direction";
     
     public static final String TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
@@ -26,5 +23,8 @@ public final class RdfVocabulary {
     public static final String LANGUAGE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#language";
     
     public static final String I18N_BASE = "https://www.w3.org/ns/i18n#";
+
+    private RdfVocabulary() {
+    }
        
 }

@@ -5,9 +5,6 @@ package com.apicatalog.jsonld.http;
  */
 public class JsonLdProfile {
 
-    private JsonLdProfile() {
-    }
-    
     public static final String EXPANDED = "http://www.w3.org/ns/json-ld#expanded";
     
     public static final String COMPACTED = "http://www.w3.org/ns/json-ld#compacted";
@@ -19,5 +16,7 @@ public class JsonLdProfile {
     public static final String FRAME = "http://www.w3.org/ns/json-ld#frame";
     
     public static final String FRAMED = "http://www.w3.org/ns/json-ld#framed";        
-    
+
+    private JsonLdProfile() {
+    }    
 }

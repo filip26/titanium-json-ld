@@ -9,6 +9,12 @@ import java.util.stream.Collectors;
 
 public final class RdfComparison {
 
+    private static final Predicate<RdfNQuad> HAS_BLANKS  = 
+            t -> t.getObject().isBlankNode() 
+                    || t.getSubject().isBlankNode()
+                    || t.getGraphName() != null && t.getGraphName().isBlankNode()
+                    ;
+            
     private final RdfDataset dataset1;
     private final RdfDataset dataset2;
     
@@ -192,11 +198,5 @@ public final class RdfComparison {
             return Objects.equals(name1.toString(), name2.toString());
         }
         return false;
-    }
-    private static final Predicate<RdfNQuad> HAS_BLANKS  = 
-                            t -> t.getObject().isBlankNode() 
-                                    || t.getSubject().isBlankNode()
-                                    || t.getGraphName() != null && t.getGraphName().isBlankNode()
-                                    ; 
-    
+    }    
 }
