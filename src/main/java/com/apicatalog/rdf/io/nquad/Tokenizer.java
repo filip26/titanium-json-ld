@@ -422,26 +422,26 @@ final class Tokenizer {
     
     protected static class Token {
         
-        static final Token EOI = new Token(TokenType.END_OF_INPUT, null);
-        static final Token EOS = new Token(TokenType.END_OF_STATEMENT, null);
-        static final Token EOL = new Token(TokenType.END_OF_LINE, null);
-        static final Token WS = new Token(TokenType.WHITE_SPACE, null);
+        protected static final Token EOI = new Token(TokenType.END_OF_INPUT, null);
+        protected static final Token EOS = new Token(TokenType.END_OF_STATEMENT, null);
+        protected static final Token EOL = new Token(TokenType.END_OF_LINE, null);
+        protected static final Token WS = new Token(TokenType.WHITE_SPACE, null);
         
-        static final Token LITERAL_DATA_TYPE = new Token(TokenType.LITERAL_DATA_TYPE, null);
+        protected static final Token LITERAL_DATA_TYPE = new Token(TokenType.LITERAL_DATA_TYPE, null);
         
-        final TokenType type;
-        final String value;
+        private final TokenType type;
+        private final String value;
         
-        Token(TokenType type, String value) {
+        protected Token(TokenType type, String value) {
             this.type = type;
             this.value = value;
         }
         
-        TokenType getType() {
+        protected TokenType getType() {
             return type;
         }
 
-        String getValue() {
+        protected String getValue() {
             return value;
         }
     }

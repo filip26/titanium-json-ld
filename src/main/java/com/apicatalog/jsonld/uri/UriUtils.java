@@ -9,7 +9,7 @@ public final class UriUtils {
     private UriUtils() {
     }
 
-    public static final boolean isURI(String value) {
+    public static final boolean isURI(final String value) {
 
         return value != null 
                     && !value.isBlank() 
@@ -18,18 +18,20 @@ public final class UriUtils {
     }
 
     
-    public static final URI create(String uri) {
+    public static final URI create(final String uri) {
 
+        String uriValue = uri;
+        
         if (uri.endsWith(":")) {
-            uri += ".";
+            uriValue = uri + ".";
             
         } else if (uri.endsWith("[") || uri.endsWith("]")) {
-            uri = uri.substring(0, uri.length() - 1);
+            uriValue = uri.substring(0, uri.length() - 1);
         }
 
         try {
 
-            return URI.create(uri);
+            return URI.create(uriValue);
             
         } catch (IllegalArgumentException e) {
             return null;
@@ -67,9 +69,9 @@ public final class UriUtils {
         }
     }
     
-    static final String recompose(final String scheme, final String authority, final String path, final String query, final String fragment) {
+    protected static final String recompose(final String scheme, final String authority, final String path, final String query, final String fragment) {
 
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
 
         if (isDefined(scheme)) {
             builder.append(scheme);
@@ -93,11 +95,11 @@ public final class UriUtils {
         return builder.toString();
     }
     
-    static final boolean isDefined(final String value) {
+    protected static final boolean isDefined(final String value) {
         return value != null && !value.isBlank();
     }
 
-    static final boolean isNotDefined(final String value) {
+    protected static final boolean isNotDefined(final String value) {
         return value == null || value.isBlank();
     }
 

@@ -16,6 +16,9 @@ import com.apicatalog.rdf.RdfDataset;
 
 public final class JsonLd {
 
+    private static final String DOCUMENT_LOCATION_PARAM_NAME = "documentLocation";
+    private static final String DOCUMENT_URI_PARAM_NAME = "documentUri";
+
     private JsonLd() {
     }
     
@@ -138,8 +141,5 @@ public final class JsonLd {
         if (!uri.isAbsolute()) {
             throw new IllegalArgumentException("'" + param + "' is not an absolute URI [" + uri + "].");
         }
-    }
-    
-    private static final String DOCUMENT_LOCATION_PARAM_NAME = "documentLocation";
-    private static final String DOCUMENT_URI_PARAM_NAME = "documentUri";
+    }    
 }

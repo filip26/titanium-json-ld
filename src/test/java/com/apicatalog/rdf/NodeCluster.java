@@ -6,16 +6,16 @@ import java.util.Map;
 
 final class NodeCluster {
 
-    Map<String, Integer> source;
+    private Map<String, Integer> source;
     
-    String[] target;
+    private String[] target;
     
-    int[] indices;
-    int[] mapping;
+    private int[] indices;
+    private int[] mapping;
     
-    int iterator;
+    private int iterator;
 
-    int permutations;
+    private int permutations;
     
     public NodeCluster(Map<String, Integer> source, String[] target, int permutations) {
         this.source = source;

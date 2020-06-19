@@ -13,20 +13,16 @@ import java.util.stream.Collectors;
  */
 public final class UriResolver {
 
-    UriResolver() {
+    private UriResolver() {
     }
 
-    public static String resolve(URI base, String relative) {
+    public static final String resolve(final URI base, final String relative) {
         
         if (base == null) {
             return relative;
         }
 
-        if (relative.endsWith(":")) {
-            relative += ".";
-        }
-        
-        URI components = URI.create(relative);
+        URI components = UriUtils.create(relative);
 
         String basePath = base.getPath();        
         String baseAuthority = base.getAuthority();
@@ -106,7 +102,7 @@ public final class UriResolver {
      * @param path
      * @return
      */
-    static String removeDotSegments(final String path) {
+    private static final String removeDotSegments(final String path) {
 
         if (UriUtils.isNotDefined(path)) {
             return "";
@@ -128,7 +124,7 @@ public final class UriResolver {
             } else if (input.startsWith("/./")) {
                 input = "/".concat(input.substring(3));
 
-            } else if (input.equals("/.")) {
+            } else if ("/.".equals(input)) {
                 input = "/";
 
             // C.
@@ -138,14 +134,14 @@ public final class UriResolver {
                     output.remove(output.size() - 1);
                 }
 
-            } else if (input.equals("/..")) {
+            } else if ("/..".equals(input)) {
                 input = "/";
                 if (!output.isEmpty()) {
                     output.remove(output.size() - 1);
                 }
 
             // D.
-            } else if (input.equals("..") || input.equals(".")) {
+            } else if ("..".equals(input) || ".".equals(input)) {
                 input = "";
 
             // E.
@@ -175,7 +171,7 @@ public final class UriResolver {
      * @param path
      * @return
      */
-    static String merge(String basePath, String path) {
+    private static final String merge(String basePath, String path) {
         
         if (UriUtils.isNotDefined(basePath)) {
             return "/".concat(path);
