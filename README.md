@@ -31,15 +31,15 @@ TBD
 
 ## Roadmap
 
-  - [x] 0.1 - ~~[Expansion Algorithms](https://www.w3.org/TR/json-ld11-api/#expansion-algorithms)~~
-  - [x] 0.2 - ~~[Compaction Algorithms](https://www.w3.org/TR/json-ld11-api/#compaction-algorithms)~~
-  - [x] 0.3 - ~~[Flattening Algorithms](https://www.w3.org/TR/json-ld11-api/#flattening-algorithms)~~
-  - [x] 0.4 - ~~[JSON-LD to RDF](https://www.w3.org/TR/json-ld11-api/#deserialize-json-ld-to-rdf-algorithm)~~
-  - [x] 0.5 - ~~[RDF to JSON-LD](https://www.w3.org/TR/json-ld11-api/#serialize-rdf-as-json-ld-algorithm)~~
-  - [x] 0.6 - ~~[Framing](https://www.w3.org/TR/json-ld11-framing/)~~
-  - [x] 0.7 - ~~[Remote Document and Context Retrieval](https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval)~~
-  - [ ] 0.8 - [JSON-LD API](https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface)
-  - [ ] 1.0 - Documented, A+ code
+- [x] 0.1 ~~[Expansion Algorithms](https://www.w3.org/TR/json-ld11-api/#expansion-algorithms)~~
+- [x] 0.2 ~~[Compaction Algorithms](https://www.w3.org/TR/json-ld11-api/#compaction-algorithms)~~
+- [x] 0.3 ~~[Flattening Algorithms](https://www.w3.org/TR/json-ld11-api/#flattening-algorithms)~~
+- [x] 0.4 ~~[JSON-LD to RDF](https://www.w3.org/TR/json-ld11-api/#deserialize-json-ld-to-rdf-algorithm)~~
+- [x] 0.5 ~~[RDF to JSON-LD](https://www.w3.org/TR/json-ld11-api/#serialize-rdf-as-json-ld-algorithm)~~
+- [x] 0.6 ~~[Framing](https://www.w3.org/TR/json-ld11-framing/)~~
+- [x] 0.7 ~~[Remote Document and Context Retrieval](https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval)~~
+- [ ] 0.8 [JSON-LD API](https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface)
+- [ ] 1.0 Documented, A+ code
 
 ## Examples
 
