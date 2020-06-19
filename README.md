@@ -3,6 +3,7 @@
 An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-based Serialization for Linked Data) specification in Java utilizing [JSONP](https://javaee.github.io/jsonp/) (JSR 374 - Java API for JSON Processing).
 
 ![Java CI with Maven](https://github.com/filip26/titanium-json-ld/workflows/Java%20CI%20with%20Maven/badge.svg)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/b086b91949f24acdaf583c3adf41ff49)](https://app.codacy.com/manual/filip26/titanium-json-ld?utm_source=github.com&utm_medium=referral&utm_content=filip26/titanium-json-ld&utm_campaign=Badge_Grade_Settings)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f80f984ea5814bb8901110d1ebf64e3e)](https://app.codacy.com/manual/filip26/titanium-json-ld?utm_source=github.com&utm_medium=referral&utm_content=filip26/titanium-json-ld&utm_campaign=Badge_Grade_Settings)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
