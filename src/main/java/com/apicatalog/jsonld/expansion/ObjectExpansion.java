@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.json.Json;
@@ -79,122 +80,16 @@ public final class ObjectExpansion {
 
     public JsonValue expand() throws JsonLdError {
 
-        // 7. If active context has a previous context, the active context is not
-        // propagated.
-        // If from map is undefined or false, and element does not contain an entry
-        // expanding to @value,
-        // and element does not consist of a single entry expanding to @id (where
-        // entries are IRI expanded),
-        // set active context to previous context from active context,
-        // as the scope of a term-scoped context does not apply when processing new node
-        // objects.
-        if (activeContext.getPreviousContext() != null && !fromMap) {
+        initPreviousContext();
 
-            List<String> keys = new ArrayList<>(element.keySet());
-            Collections.sort(keys);
+        initPropertyContext();
 
-            boolean revert = true;
-
-            for (final String key : keys) {
-
-                String expandedKey = 
-                            activeContext
-                                .uriExpansion()
-                                .vocab(true)
-                                .expand(key);
-
-                if (Keywords.VALUE.equals(expandedKey) || (Keywords.ID.equals(expandedKey) && (element.size() == 1))) {
-                    revert = false;
-                    break;
-                }
-            }
-
-            if (revert) {
-                activeContext = activeContext.getPreviousContext();
-            }
-        }
-
-        // 8.
-        if (propertyContext != null) {
-            
-            activeContext = activeContext
-                                .newContext()
-                                .overrideProtected(true)
-                                .create(
-                                    propertyContext, 
-                                    activeContext
-                                            .getTerm(activeProperty)
-                                            .map(TermDefinition::getBaseUrl)
-                                            .orElse(null)    
-                                        );        
-        }
-
-        // 9.
-        if (element.containsKey(Keywords.CONTEXT)) {
-
-            activeContext = activeContext
-                                .newContext()
-                                .create(element.get(Keywords.CONTEXT), baseUrl);
-        }
-
-        // 10.
-        ActiveContext typeContext = activeContext;
-
-        List<String> keys = new ArrayList<>(element.keySet());
-
-        Collections.sort(keys);
+        initLocalContext();
         
-        String typeKey = null;
+        // 10.
+        final ActiveContext typeContext = activeContext;
 
-        // 11.
-        for (String key : keys) {
-
-            String expandedKey = 
-                        activeContext
-                            .uriExpansion()
-                            .vocab(true)
-                            .expand(key);
-
-            if (!Keywords.TYPE.equals(expandedKey)) {
-                continue;
-
-            } else if (typeKey == null) {
-                typeKey = key;
-            }
-
-            // 11.1
-            JsonValue value = JsonUtils.toJsonArray(element.get(key));
-
-            // 11.2
-            List<String> terms = value
-                                    .asJsonArray()
-                                    .stream()
-                                    .filter(JsonUtils::isString)
-                                    .map(JsonString.class::cast)
-                                    .map(JsonString::getString)
-                                    .sorted()
-                                    .collect(Collectors.toList());
-
-            for (final String term : terms) {
-
-                Optional<JsonValue> localContext = typeContext.getTerm(term).map(TermDefinition::getLocalContext);
-
-                if (localContext.isPresent()) {
-                    
-                    Optional<TermDefinition> valueDefinition = activeContext.getTerm(term);
-
-                    activeContext = 
-                            activeContext
-                                .newContext()
-                                .propagate(false)
-                                .create(localContext.get(), 
-                                        valueDefinition.isPresent()
-                                            ? valueDefinition.get().getBaseUrl()
-                                            : null
-                                        );
-                }
-            }
-        }
+        final String typeKey = processTypeScoped(element.keySet(), typeContext);
 
         // 12.
         Map<String, JsonValue> result = new LinkedHashMap<>();
@@ -248,71 +143,217 @@ public final class ObjectExpansion {
         // 15.
         if (result.containsKey(Keywords.VALUE)) {
 
-            // 15.1.
-            if (!Keywords.allMatch(result.keySet(), Keywords.DIRECTION, Keywords.INDEX, Keywords.LANGUAGE,
-                    Keywords.TYPE, Keywords.VALUE)) {
+            return  normalizeValue(result);
 
-                throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
-            }
-            if ((result.containsKey(Keywords.DIRECTION) || result.containsKey(Keywords.LANGUAGE))
-                    && result.keySet().contains(Keywords.TYPE)) {
-                
-                throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
-            }
-
-            // 15.2.
-            JsonValue type = result.get(Keywords.TYPE);
-
-            JsonValue value = result.get(Keywords.VALUE);
-
-            if (!JsonUtils.contains(Keywords.JSON, type)) {
-
-                // 15.3.
-                if (JsonUtils.isNull(value) || (JsonUtils.isArray(value) && value.asJsonArray().isEmpty())) {
-                    return JsonValue.NULL;
-    
-                // 15.4
-                } else if (JsonUtils.isNotString(value) && result.containsKey(Keywords.LANGUAGE) && !frameExpansion) {
-                    throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
-    
-                // 15.5
-                } else if (result.containsKey(Keywords.TYPE)
-                        && (JsonUtils.isNotString(type) || UriUtils.isNotURI(((JsonString) type).getString())) && !frameExpansion) {
-                    throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE);
-                }
-            }
-
-        // 16. Otherwise, if result contains the entry @type and its associated value is
-        // not an array,
-        // set it to an array containing only the associated value.
+        // 16.
         } else if (result.containsKey(Keywords.TYPE)) {
 
-            final JsonValue value = result.get(Keywords.TYPE);
-
-            if (JsonUtils.isNotArray(value) && JsonUtils.isNotNull(value)) {
-                result.put(Keywords.TYPE, Json.createArrayBuilder().add(value).build());
-            }
-
+            return normalizeType(result);
+            
         // 17.
         } else if (result.containsKey(Keywords.LIST) || result.containsKey(Keywords.SET)) {
 
-            // 17.1.
-            if (result.size() > 2 || result.size() == 2 && !result.containsKey(Keywords.INDEX)) {
-                throw new JsonLdError(JsonLdErrorCode.INVALID_SET_OR_LIST_OBJECT);
-            }
-
-            // 17.2.
-            if (result.containsKey(Keywords.SET)) {
-                JsonValue set = result.get(Keywords.SET);
-
-                if (JsonUtils.isNotObject(set)) {
-                    return set;
-                }
-
-                result = set.asJsonObject();
-            }
+            return normalizeContainer(result);
         }
 
+        return normalize(result);
+    }
+
+    private void initPropertyContext() throws JsonLdError {
+        // 8.
+        if (propertyContext != null) {
+            
+            activeContext = activeContext
+                                .newContext()
+                                .overrideProtected(true)
+                                .create(
+                                    propertyContext, 
+                                    activeContext
+                                            .getTerm(activeProperty)
+                                            .map(TermDefinition::getBaseUrl)
+                                            .orElse(null)    
+                                        );        
+        }
+    }
+    
+    private void initPreviousContext() throws JsonLdError {
+        
+        // 7. If active context has a previous context, the active context is not
+        // propagated.
+        // If from map is undefined or false, and element does not contain an entry
+        // expanding to @value,
+        // and element does not consist of a single entry expanding to @id (where
+        // entries are IRI expanded),
+        // set active context to previous context from active context,
+        // as the scope of a term-scoped context does not apply when processing new node
+        // objects.
+        if (activeContext.getPreviousContext() != null && !fromMap) {
+
+            List<String> keys = new ArrayList<>(element.keySet());
+            Collections.sort(keys);
+
+            boolean revert = true;
+
+            for (final String key : keys) {
+
+                String expandedKey = 
+                            activeContext
+                                .uriExpansion()
+                                .vocab(true)
+                                .expand(key);
+
+                if (Keywords.VALUE.equals(expandedKey) || (Keywords.ID.equals(expandedKey) && (element.size() == 1))) {
+                    revert = false;
+                    break;
+                }
+            }
+
+            if (revert) {
+                activeContext = activeContext.getPreviousContext();
+            }
+        }
+    }
+    
+    private void initLocalContext() throws JsonLdError {
+        // 9.
+        if (element.containsKey(Keywords.CONTEXT)) {
+
+            activeContext = activeContext
+                                .newContext()
+                                .create(element.get(Keywords.CONTEXT), baseUrl);
+        }
+    }
+
+    private String processTypeScoped(final Set<String> keys, final ActiveContext typeContext) throws JsonLdError {
+        
+        String typeKey = null;
+        
+        // 11.
+        for (final String key : keys.stream().sorted().collect(Collectors.toSet())) {
+
+            final String expandedKey = 
+                        activeContext
+                            .uriExpansion()
+                            .vocab(true)
+                            .expand(key);
+
+            if (!Keywords.TYPE.equals(expandedKey)) {
+                continue;
+
+            } else if (typeKey == null) {
+                typeKey = key;
+            }
+
+            // 11.1
+            JsonValue value = JsonUtils.toJsonArray(element.get(key));
+
+            // 11.2
+            List<String> terms = value
+                                    .asJsonArray()
+                                    .stream()
+                                    .filter(JsonUtils::isString)
+                                    .map(JsonString.class::cast)
+                                    .map(JsonString::getString)
+                                    .sorted()
+                                    .collect(Collectors.toList());
+
+            for (final String term : terms) {
+
+                Optional<JsonValue> localContext = typeContext.getTerm(term).map(TermDefinition::getLocalContext);
+
+                if (localContext.isPresent()) {
+                    
+                    Optional<TermDefinition> valueDefinition = activeContext.getTerm(term);
+
+                    activeContext = 
+                            activeContext
+                                .newContext()
+                                .propagate(false)
+                                .create(localContext.get(), 
+                                        valueDefinition.isPresent()
+                                            ? valueDefinition.get().getBaseUrl()
+                                            : null
+                                        );
+                }
+            }
+        }
+        
+        return typeKey;
+    }
+    
+    private JsonValue normalizeValue(final Map<String, JsonValue> result) throws JsonLdError {
+        
+        // 15.1.
+        if (!Keywords.allMatch(result.keySet(), Keywords.DIRECTION, Keywords.INDEX, Keywords.LANGUAGE,
+                Keywords.TYPE, Keywords.VALUE)) {
+
+            throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
+        }
+        if ((result.containsKey(Keywords.DIRECTION) || result.containsKey(Keywords.LANGUAGE))
+                && result.keySet().contains(Keywords.TYPE)) {
+            
+            throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
+        }
+
+        // 15.2.
+        final JsonValue type = result.get(Keywords.TYPE);
+
+        final JsonValue value = result.get(Keywords.VALUE);
+
+        if (!JsonUtils.contains(Keywords.JSON, type)) {
+
+            // 15.3.
+            if (JsonUtils.isNull(value) || (JsonUtils.isArray(value) && value.asJsonArray().isEmpty())) {
+                return JsonValue.NULL;
+
+            // 15.4
+            } else if (JsonUtils.isNotString(value) && result.containsKey(Keywords.LANGUAGE) && !frameExpansion) {
+                throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
+
+            // 15.5
+            } else if (result.containsKey(Keywords.TYPE)
+                    && (JsonUtils.isNotString(type) || UriUtils.isNotURI(((JsonString) type).getString())) && !frameExpansion) {
+                throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE);
+            }
+        }
+        
+        return normalize(result);
+    }
+
+    private JsonValue normalizeType(final Map<String, JsonValue> result) {
+        
+        final JsonValue value = result.get(Keywords.TYPE);
+
+        if (JsonUtils.isNotArray(value) && JsonUtils.isNotNull(value)) {
+            result.put(Keywords.TYPE, Json.createArrayBuilder().add(value).build());
+        }
+        return normalize(result);
+    }
+    
+    private JsonValue normalizeContainer(final Map<String, JsonValue> result) throws JsonLdError {
+        
+        // 17.1.
+        if (result.size() > 2 || result.size() == 2 && !result.containsKey(Keywords.INDEX)) {
+            throw new JsonLdError(JsonLdErrorCode.INVALID_SET_OR_LIST_OBJECT);
+        }
+    
+        // 17.2.
+        if (result.containsKey(Keywords.SET)) {
+            JsonValue set = result.get(Keywords.SET);
+    
+            if (JsonUtils.isNotObject(set)) {
+                return set;
+            }
+
+            return normalize(set.asJsonObject());
+        }
+        
+        return normalize(result);
+    }
+
+
+    private JsonValue normalize(final Map<String, JsonValue> result) {
+        
         // 18.
         if (result.size() == 1 && result.containsKey(Keywords.LANGUAGE)) {
             return JsonValue.NULL;
@@ -339,5 +380,5 @@ public final class ObjectExpansion {
         }
 
         return JsonUtils.toJsonObject(result);
-    }
+    }   
 }
