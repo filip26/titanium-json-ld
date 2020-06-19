@@ -185,8 +185,8 @@ final class Tokenizer {
 
                     } else if (ch == 'U') {
                         
-                        //TODO unicode
-                        unexpected(ch);
+                        value.append("\\U");
+                        value.append(readUnicode64());
                         
                     } else {
                         unexpected(ch);
@@ -239,8 +239,8 @@ final class Tokenizer {
                         
                     } else if (ch == 'U') {
                         
-                        //TODO unescape                        
-                        unexpected(ch);
+                        value.append("\\U");
+                        value.append(readUnicode64());
                         
                     } else {
                         unexpected(ch);
@@ -383,7 +383,17 @@ final class Tokenizer {
         }
         return (char)hex;
     }
-    
+
+    private String readUnicode64()  throws IOException, NQuadsReaderException {
+
+        char[] code = new char[8];
+
+        for (int i=0; i < code.length; i++) {
+            code[i] = readHex8();            
+        }
+        return String.valueOf(code);
+    }
+
     private static final int unescape(int symbol) {
         if (symbol == 't') {
             return 0x9;
