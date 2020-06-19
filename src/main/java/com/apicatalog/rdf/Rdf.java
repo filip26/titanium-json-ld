@@ -11,7 +11,7 @@ import com.apicatalog.rdf.io.RdfFormat;
 import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.RdfWriter;
 import com.apicatalog.rdf.io.error.UnsupportedFormatException;
-import com.apicatalog.rdf.lang.RdfContants;
+import com.apicatalog.rdf.lang.RdfConstants;
 import com.apicatalog.rdf.spi.RdfProvider;
 
 public final class Rdf {
@@ -132,7 +132,7 @@ public final class Rdf {
             throw new IllegalArgumentException();
         }
         
-        return RdfProvider.provider().createLiteral(lexicalForm, langTag, RdfContants.LANG_STRING);
+        return RdfProvider.provider().createLiteral(lexicalForm, langTag, RdfConstants.LANG_STRING);
     }
 
     public static RdfGraphName createGraphName(RdfGraphName.Type type, String value) {

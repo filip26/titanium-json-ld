@@ -1,6 +1,6 @@
 package com.apicatalog.rdf.lang;
 
-public final class XsdContants {
+public final class XsdConstants {
 
     public static final String STRING = "http://www.w3.org/2001/XMLSchema#string";
     
@@ -10,6 +10,6 @@ public final class XsdContants {
 
     public static final String INTEGER = "http://www.w3.org/2001/XMLSchema#integer"; 
 
-    private XsdContants() {
+    private XsdConstants() {
     }    
 }

@@ -16,7 +16,7 @@ import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfPredicate;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.RdfTriple;
-import com.apicatalog.rdf.lang.RdfContants;
+import com.apicatalog.rdf.lang.RdfConstants;
 
 /**
  * 
@@ -52,7 +52,7 @@ final class ListToRdf {
         
         // 1.
         if (JsonUtils.isEmptyArray(list)) {
-            return Rdf.createObject(RdfObject.Type.IRI, RdfContants.NIL);
+            return Rdf.createObject(RdfObject.Type.IRI, RdfConstants.NIL);
         }
 
         // 2.
@@ -80,19 +80,19 @@ final class ListToRdf {
             if (object != null) {
                 triples.add(Rdf.createTriple(
                                     Rdf.createSubject(RdfSubject.Type.BLANK_NODE, subject), 
-                                    Rdf.createPredicate(RdfPredicate.Type.IRI, RdfContants.FIRST), 
+                                    Rdf.createPredicate(RdfPredicate.Type.IRI, RdfConstants.FIRST), 
                                     object
                                     ));
             }
 
             // 3.4.
             RdfObject rest = (index < bnodes.length) ? Rdf.createObject(RdfObject.Type.BLANK_NODE, bnodes[index]) 
-                                        : Rdf.createObject(RdfObject.Type.IRI, RdfContants.NIL)
+                                        : Rdf.createObject(RdfObject.Type.IRI, RdfConstants.NIL)
                                         ;
             
             triples.add(Rdf.createTriple(
                                     Rdf.createSubject(RdfSubject.Type.BLANK_NODE, subject), 
-                                    Rdf.createPredicate(RdfPredicate.Type.IRI, RdfContants.REST), 
+                                    Rdf.createPredicate(RdfPredicate.Type.IRI, RdfConstants.REST), 
                                     rest
                                     ));
             

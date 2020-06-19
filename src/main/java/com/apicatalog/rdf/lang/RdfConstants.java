@@ -1,6 +1,6 @@
 package com.apicatalog.rdf.lang;
 
-public final class RdfContants {
+public final class RdfConstants {
 
     public static final String DIRECTION = "http://www.w3.org/1999/02/22-rdf-syntax-ns#direction";
     
@@ -24,7 +24,7 @@ public final class RdfContants {
     
     public static final String I18N_BASE = "https://www.w3.org/ns/i18n#";
 
-    private RdfContants() {
+    private RdfConstants() {
     }
        
 }

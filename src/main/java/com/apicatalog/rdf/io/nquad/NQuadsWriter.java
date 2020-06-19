@@ -11,7 +11,7 @@ import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfPredicate;
 import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.io.RdfWriter;
-import com.apicatalog.rdf.lang.XsdContants;
+import com.apicatalog.rdf.lang.XsdConstants;
 
 /**
  * 
@@ -94,7 +94,7 @@ public class NQuadsWriter implements RdfWriter {
             
         } else if (literal.getDatatype() != null) {
             
-            if (XsdContants.STRING.equals(literal.getDatatype())) {
+            if (XsdConstants.STRING.equals(literal.getDatatype())) {
                 return;
             }
             
