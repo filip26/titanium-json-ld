@@ -175,7 +175,7 @@ public final class RdfComparison {
     private static final boolean compareGraphName(RdfGraphName name1, RdfGraphName name2, Map<String, String> mapping) {
 
         if (name1 == null || name2 == null) {
-            return name1 == name2;            
+            return Objects.equals(name1, name2);            
         }
         
         if (name1.isBlankNode() && name2.isBlankNode()) { 

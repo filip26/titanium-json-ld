@@ -134,15 +134,9 @@ public final class JsonLdToRdf {
                         }
 
                     // 1.3.2.2.
-                    } else if (Keywords.contains(property)
-                            // 1.3.2.3.
-                            || (BlankNode.isWellFormed(property) && !produceGeneralizedRdf)
-
-
-                            ) {
-                        
-                    // 1.3.2.4.
-                    } else if (UriUtils.isURI(property)) {
+                    } else if (!Keywords.contains(property) 
+                                    && !(BlankNode.isWellFormed(property) && !produceGeneralizedRdf) 
+                                    && UriUtils.isURI(property)) {
 
                         // 1.3.2.5.
                         for (JsonValue item : nodeMap.get(graphName, subject, property).asJsonArray()) {

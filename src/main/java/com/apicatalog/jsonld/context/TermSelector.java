@@ -52,11 +52,9 @@ public final class TermSelector {
             for (final String item : preferredValues) {
                 
                 // 4.4.1.
-                if (inverseContext.doesNotContain(variable, container, typeLanguage, item)) {
-                    continue;
+                if (inverseContext.contains(variable, container, typeLanguage, item)) {
+                    return inverseContext.get(variable, container, typeLanguage, item);
                 }
-
-                return inverseContext.get(variable, container, typeLanguage, item);
             }
         }   
 

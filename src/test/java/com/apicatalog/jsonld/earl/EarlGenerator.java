@@ -54,7 +54,7 @@ public class EarlGenerator {
             testRemote(writer);
             testFromRdf(writer);
             testFrame(writer);
-        };
+        }
     }
     
     public void testExpand(PrintWriter writer) throws IOException {
