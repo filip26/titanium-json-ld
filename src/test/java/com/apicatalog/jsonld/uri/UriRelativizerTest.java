@@ -77,8 +77,5 @@ public class UriRelativizerTest {
         data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "../../g", "http://a/g"});
         
         return data;
-
     }
-
-    
 }
