@@ -45,7 +45,7 @@ final class LinkHeaderParser {
         for (int i=0; i < linkHeader.length; i++) {
     
             final char ch = linkHeader[i];
-            
+        
             switch (state) {
             case INIT:
                 initParser(ch, i);
@@ -92,7 +92,7 @@ final class LinkHeaderParser {
         Set<String> rel = Collections.emptySet();
         
         if (params.containsKey("rel") && params.get("rel") != null) {
-            rel = new HashSet<>(Arrays.asList(params.get("rel").split("(\\s\\t)+")));
+            rel = new HashSet<>(Arrays.asList(params.get("rel").split("[\\s\\t]+")));
         }
 
         return new Link(URI.create(uri), rel, params);
@@ -138,10 +138,13 @@ final class LinkHeaderParser {
     
     private final Set<Link> addLastLink() {
         if (paramName != null) {
-            if (stringValue.length() > 0) {
+            
+            final String paramValue = stringValue.toString().strip();
+
+            if (paramValue.isEmpty()) {
                 params.put(paramName, null);
             } else {
-                params.put(paramName, stringValue.toString());   
+                params.put(paramName, paramValue);   
             }
         }
         
@@ -154,7 +157,7 @@ final class LinkHeaderParser {
     
     private final void parseString(final char ch) {
         if (ch == '"') {
-            params.put(paramName, stringValue.toString());
+            params.put(paramName, stringValue.toString().strip());
             stringValue.setLength(0);
             paramName = null;
             state = State.PARAMS;
@@ -222,6 +225,14 @@ final class LinkHeaderParser {
     
     private final void parseParameters(final char ch, final int iterator) {
         if (Character.isSpaceChar(ch) || ch == '\t') {
+            return;
+        }
+        if (ch == ',') {
+            links.add(create(targetUri, params));
+            
+            targetUri = null;
+            params = new HashMap<>();            
+            state = State.INIT;
             return;
         }
         if (ch != ';') {

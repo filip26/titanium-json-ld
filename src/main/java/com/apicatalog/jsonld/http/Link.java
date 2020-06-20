@@ -22,13 +22,15 @@ public final class Link {
         this.parameters = parameters; 
     }
     
-    /**
-     * 
-     * @param linkHeader
-     * @return
-     * @see <a href=""></a>
-     */
-    public static final Collection<Link> valueOf(String linkHeader, URI baseUri) {
+    public static final Collection<Link> valueOf(final String linkHeader) {
+        return valueOf(linkHeader, null);
+    }
+    
+    public static final Collection<Link> valueOf(final String linkHeader, final URI baseUri) {
+        if (linkHeader == null) {
+            throw new IllegalArgumentException("Link header value cannot be null.");
+        }
+        
         return new LinkHeaderParser(linkHeader).parse(baseUri);
     }
     
@@ -42,6 +44,14 @@ public final class Link {
 
     public String type() {
         return parameters.get("type");
+    }
+    
+    public Set<String> paramNames() {
+        return parameters.keySet();
+    }
+    
+    public String paramValue(String name) {
+        return parameters.get(name);
     }
     
     @Override
