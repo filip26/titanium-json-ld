@@ -88,27 +88,7 @@ public final class UriExpansion {
             return null;
         }
 
-        /*
-         * 3. If local context is not null, it contains an entry with a key that equals
-         * value, and the value of the entry for value in defined is not true, invoke
-         * the Create Term Definition algorithm, passing active context, local context,
-         * value as term, and defined. This will ensure that a term definition is
-         * created for value in active context during Context Processing
-         */
-        if (localContext != null && localContext.containsKey(value)) {
-
-            JsonValue entryValue = localContext.get(value);
-
-            if (JsonUtils.isString(entryValue)) {
-
-                String entryValueString = ((JsonString) entryValue).getString();
-
-                if (!defined.containsKey(entryValueString) || Boolean.FALSE.equals(defined.get(entryValueString))) {
-                    activeContext.newTerm(localContext, defined).create(value);
-                }
-            }
-        }
-
+        initLocalContext(value);
         
         Optional<TermDefinition> definition = activeContext.getTerm(value); 
         
@@ -138,25 +118,7 @@ public final class UriExpansion {
                 return result;
             }
 
-            // 6.3.
-            if (localContext != null && localContext.containsKey(split[0])
-                    && (!defined.containsKey(split[0]) || !Boolean.TRUE.equals(defined.get(split[0])))) {
-
-                activeContext.newTerm(localContext,defined).create(split[0]);
-            }
-
-            // 6.4.
-            if (activeContext.containsTerm(split[0])) {
-
-                final Optional<TermDefinition> prefixDefinition = activeContext.getTerm(split[0]);
-
-                if (prefixDefinition.map(TermDefinition::getUriMapping).isPresent()
-                        && prefixDefinition.map(TermDefinition::isPrefix).orElse(false)) {
-                    
-                    result = prefixDefinition.map(TermDefinition::getUriMapping).map(m -> m.concat(split[1])).orElse(null);
-                }
-
-            }
+            result = initPropertyContext(split[0], split[1], result);
 
             // 6.5
             if (UriUtils.isAbsoluteUri(result) || BlankNode.hasPrefix(result)) {
@@ -164,6 +126,57 @@ public final class UriExpansion {
             }
         }
 
+        return expandResult(result);
+    }
+    
+    private void initLocalContext(final String value) throws JsonLdError {
+        /*
+         * 3. If local context is not null, it contains an entry with a key that equals
+         * value, and the value of the entry for value in defined is not true, invoke
+         * the Create Term Definition algorithm, passing active context, local context,
+         * value as term, and defined. This will ensure that a term definition is
+         * created for value in active context during Context Processing
+         */
+        if (localContext != null && localContext.containsKey(value)) {
+
+            JsonValue entryValue = localContext.get(value);
+
+            if (JsonUtils.isString(entryValue)) {
+
+                String entryValueString = ((JsonString) entryValue).getString();
+
+                if (!defined.containsKey(entryValueString) || Boolean.FALSE.equals(defined.get(entryValueString))) {
+                    activeContext.newTerm(localContext, defined).create(value);
+                }
+            }
+        }
+    }
+    
+    private String initPropertyContext(final String prefix, final String suffix, final String result) throws JsonLdError {
+        
+        // 6.3.
+        if (localContext != null && localContext.containsKey(prefix)
+                && (!defined.containsKey(prefix) || !Boolean.TRUE.equals(defined.get(prefix)))) {
+
+            activeContext.newTerm(localContext,defined).create(prefix);
+        }
+
+        // 6.4.
+        if (activeContext.containsTerm(prefix)) {
+
+            final Optional<TermDefinition> prefixDefinition = activeContext.getTerm(prefix);
+
+            if (prefixDefinition.map(TermDefinition::getUriMapping).isPresent()
+                    && prefixDefinition.map(TermDefinition::isPrefix).orElse(false)) {
+                
+                return prefixDefinition.map(TermDefinition::getUriMapping).map(m -> m.concat(suffix)).orElse(null);
+            }
+
+        }
+        return result;
+    }
+    
+    private String expandResult(final String result) {
         // 7. If vocab is true, and active context has a vocabulary mapping,
         // return the result of concatenating the vocabulary mapping with value.
         if (vocab && activeContext.getVocabularyMapping() != null) {
