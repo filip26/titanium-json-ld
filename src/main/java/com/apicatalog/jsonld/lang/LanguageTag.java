@@ -21,14 +21,18 @@ public final class LanguageTag {
             throw new IllegalArgumentException();
         }
 
-        if (label.length() < 1) {
+        if (label.isBlank()) {
             return false;
         }
 
-        int[] chars = label.codePoints().toArray();
+        int[] chars = label.trim().codePoints().toArray();
 
         if (RdfAlphabet.ASCII_ALPHA.negate().test(chars[0])) {
             return false;
+        }
+        
+        if (chars.length == 1) {
+            return true;
         }
 
         if (RdfAlphabet.ASCII_ALPHA_NUM.negate().test(chars[chars.length - 1])) {
@@ -36,5 +40,4 @@ public final class LanguageTag {
         }
         return IntStream.range(1, chars.length - 1).map(i -> chars[i]).allMatch(RdfAlphabet.ASCII_ALPHA_NUM.or(ch -> ch == '-'));
     }
-    
 }
