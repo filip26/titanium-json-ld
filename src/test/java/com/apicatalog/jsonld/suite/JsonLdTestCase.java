@@ -11,7 +11,7 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.http.MediaType;
+import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.ClassPathLoader;
@@ -99,7 +99,7 @@ public final class JsonLdTestCase {
         
         
         testCase.contentType = o.containsKey("option") && o.getJsonObject("option").containsKey("contentType") 
-                                    ? MediaType.valueOf(o.getJsonObject("option").getString("contentType"))
+                                    ? MediaType.of(o.getJsonObject("option").getString("contentType"))
                                     : null;
         
         if (testCase.contentType == null && testCase.input != null) {

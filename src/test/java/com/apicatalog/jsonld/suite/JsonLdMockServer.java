@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 
 import org.junit.Assert;
 
-import com.apicatalog.jsonld.http.MediaType;
 import com.apicatalog.jsonld.http.link.Link;
+import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.uri.UriResolver;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
@@ -60,7 +60,7 @@ public final class JsonLdMockServer {
                 
                 String linkValue = testCase.httpLink.iterator().next();
                 
-                Link link = Link.valueOf(linkValue, URI.create(".")).iterator().next();
+                Link link = Link.of(linkValue, URI.create(".")).iterator().next();
                 
                 MediaType contentType = link.type().orElse(null);
                 

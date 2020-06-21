@@ -1,9 +1,6 @@
-package com.apicatalog.jsonld.http;
+package com.apicatalog.jsonld.http.media;
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * 
@@ -28,18 +25,17 @@ public final class MediaType {
     
     private final String type;
     private final String subtype;
-    
-    private final Map<String, String> parameters;
 
-    protected MediaType(String type, String subtype, Map<String, String> parameters) {
+    private final MediaTypeParameters parameters;
+
+    protected MediaType(String type, String subtype, MediaTypeParameters parameters) {
         this.type = type;
         this.subtype = subtype;
         this.parameters = parameters;
-        
     }
 
-    public MediaType(String type, String subtype) {
-        this(type, subtype, Collections.emptyMap());
+    protected MediaType(String type, String subtype) {
+        this(type, subtype, MediaTypeParameters.EMPTY);
     }
 
     public boolean match(MediaType mediaType) {
@@ -50,30 +46,37 @@ public final class MediaType {
     }
 
     public String type() {
-        return subtype;
+        return type;
     }
 
     public String subtype() {
         return subtype;
     }
     
-    public Set<String> paramNames() {
-        return parameters.keySet();
-    }
-    
-    public String paramValue(String name) {
-        return parameters.get(name);
+    public MediaTypeParameters parameters() {
+        return parameters;
     }
     
     @Override
-        public String toString() {
-            return String.valueOf(type).concat("/").concat(subtype);
-        }
+    public String toString() {
+        return String.valueOf(type).concat("/").concat(subtype);
+    }
 
-    public static final MediaType valueOf(String contentTypeValue) {
-        if (contentTypeValue == null || contentTypeValue.isBlank()) {
+    public static final MediaType of(String type, String subtype) {
+        if (type == null || subtype == null) {
+            throw new IllegalArgumentException();
+        }
+        
+        return new MediaType(type, subtype);
+    }
+    
+    public static final MediaType of(final String value) {
+        if (value == null) {
+            throw new IllegalArgumentException();
+        }
+        if (value.isBlank()) {
             return null;
         }
-        return new MediaTypeParser(contentTypeValue).parse();
+        return new MediaTypeParser(value).parse();
     }
 }
