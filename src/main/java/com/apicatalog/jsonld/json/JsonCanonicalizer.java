@@ -7,7 +7,9 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.stream.Collectors;
 
+import javax.json.JsonArray;
 import javax.json.JsonNumber;
+import javax.json.JsonObject;
 import javax.json.JsonValue;
 
 import com.apicatalog.rdf.io.nquad.NQuadsWriter;
@@ -45,29 +47,8 @@ public final class JsonCanonicalizer {
         } else if (JsonUtils.isScalar(value)) {
                         
             if (JsonUtils.isNumber(value)) {
-                
-                JsonNumber number = ((JsonNumber)value);
-                
-                String numberString;
-                
-                if (number.bigDecimalValue().compareTo(BigDecimal.ZERO) == 0) {
-                    
-                    numberString = "0";
-                
-                } else if (number.bigDecimalValue().compareTo(BigDecimal.ONE.movePointRight(21)) >= 0) {
-                    
-                    numberString = (new DecimalFormat("0E00")).format(((JsonNumber)value).bigDecimalValue()).replace("E", "e+");
-                    
-                } else if (number.bigDecimalValue().compareTo(BigDecimal.ONE.movePointLeft(21)) <= 0) {
-                    
-                    numberString = (new DecimalFormat("0E00")).format(((JsonNumber)value).bigDecimalValue()).toLowerCase();
-                    
-                } else {
-                    
-                    numberString = (new DecimalFormat("0.#######")).format(((JsonNumber)value).bigDecimalValue());
-                }
-                
-                writer.write(numberString);
+
+                canonizalizeNumber((JsonNumber)value, writer);
                 
             } else {
 
@@ -75,50 +56,83 @@ public final class JsonCanonicalizer {
             }
             
         } else if (JsonUtils.isArray(value)) {
-         
-            boolean next = false;
-            
-            writer.write("[");
-            
-            for (JsonValue item : value.asJsonArray()) {
 
-                if (next) {
-                    writer.write(",");
-                }
-
-                canonicalize(item, writer);
-                
-                next = true;
-            }
-            
-            writer.write("]");
+            canonizalizeArray(value.asJsonArray(), writer);
             
         } else if (JsonUtils.isObject(value)) {
             
-            boolean next = false;
-            
-            writer.write("{");
-            
-            for (String propertyName : value.asJsonObject().keySet().stream().sorted().collect(Collectors.toList())) {
-                
-                if (next) {
-                    writer.write(",");
-                }
-                
-                writer.write("\"");
-                writer.write(NQuadsWriter.escape(propertyName));
-                writer.write("\":");
-                
-                JsonValue propertyValue = value.asJsonObject().get(propertyName);
-                
-                canonicalize(propertyValue, writer);
-                
-                next = true;
-            }
-            
-            writer.write("}");
+            canonizalizeObject(value.asJsonObject(), writer);
             
         }
+    }
+
+    private static final void canonizalizeNumber(final JsonNumber number, final Writer writer) throws IOException {
+        
+        String numberString;
+        
+        if (number.bigDecimalValue().compareTo(BigDecimal.ZERO) == 0) {
+            
+            numberString = "0";
+        
+        } else if (number.bigDecimalValue().compareTo(BigDecimal.ONE.movePointRight(21)) >= 0) {
+            
+            numberString = (new DecimalFormat("0E00")).format(number.bigDecimalValue()).replace("E", "e+");
+            
+        } else if (number.bigDecimalValue().compareTo(BigDecimal.ONE.movePointLeft(21)) <= 0) {
+            
+            numberString = (new DecimalFormat("0E00")).format(number.bigDecimalValue()).toLowerCase();
+            
+        } else {
+            
+            numberString = (new DecimalFormat("0.#######")).format(number.bigDecimalValue());
+        }
+        
+        writer.write(numberString);        
+    }
+    
+    private static final void canonizalizeArray(final JsonArray value, final Writer writer) throws IOException {
+        boolean next = false;
+        
+        writer.write("[");
+        
+        for (JsonValue item : value.asJsonArray()) {
+
+            if (next) {
+                writer.write(",");
+            }
+
+            canonicalize(item, writer);
+            
+            next = true;
+        }
+        
+        writer.write("]");
+
+    }    
+    
+    private static final void canonizalizeObject(final JsonObject value, final Writer writer) throws IOException {
+        boolean next = false;
+        
+        writer.write("{");
+        
+        for (String propertyName : value.keySet().stream().sorted().collect(Collectors.toList())) {
+            
+            if (next) {
+                writer.write(",");
+            }
+            
+            writer.write("\"");
+            writer.write(NQuadsWriter.escape(propertyName));
+            writer.write("\":");
+            
+            JsonValue propertyValue = value.get(propertyName);
+            
+            canonicalize(propertyValue, writer);
+            
+            next = true;
+        }
+        
+        writer.write("}");
     }
     
 }

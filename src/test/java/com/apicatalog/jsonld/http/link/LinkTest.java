@@ -36,7 +36,7 @@ public class LinkTest {
 
     @Test
     public void test1() {
-        Collection<Link> result = Link.of("<http://example.com/TheBook/chapter2>; rel=\"previous\"; title=\"previous chapter\"");
+        Collection<Link> result = Link.of("<http://example.com/TheBook/chapter2>; rel=\"previous\"\t; title=\"previous chapter\"");
         Assert.assertNotNull(result);
         Assert.assertEquals(1, result.size());
         
@@ -90,7 +90,7 @@ public class LinkTest {
     
     @Test
     public void test4() {
-        Collection<Link> result = Link.of("    <http://example.org/> ; rel=\" start     http://example.net/relation/other\" ");
+        Collection<Link> result = Link.of("    <http://example.org/> ; rel =  \" start     http://example.net/relation/other\" ");
         Assert.assertNotNull(result);
         Assert.assertEquals(1, result.size());
         
@@ -139,7 +139,7 @@ public class LinkTest {
 
     @Test
     public void test6() {
-        Collection<Link> result = Link.of("<>;rel=123");
+        Collection<Link> result = Link.of("<>;rel=123 ");
         Assert.assertNotNull(result);
         Assert.assertEquals(1, result.size());
         
@@ -186,7 +186,7 @@ public class LinkTest {
 
     @Test
     public void test8() {
-        Collection<Link> result = Link.of("<x>;x=ab;");
+        Collection<Link> result = Link.of("<x>;x\t=ab;");
         Assert.assertNotNull(result);
         Assert.assertEquals(1, result.size());
 
@@ -277,6 +277,62 @@ public class LinkTest {
         Assert.assertTrue(l1.type().isEmpty());
         Assert.assertTrue(l1.context().isPresent());
         Assert.assertEquals(URI.create("//a/anchor"), l1.context().get());
+    }
+
+    @Test
+    public void test13() {
+        Collection<Link> result = Link.of(" \t<#abc>  ;  x  =\t 123 \t;  x   ;y   , \t\t ");
+        Assert.assertNotNull(result);
+        Assert.assertEquals(1, result.size());
+        
+        Link l1 = result.iterator().next();
+        
+        Assert.assertEquals(URI.create("#abc"), l1.target());
+        Assert.assertEquals(new HashSet<>(Arrays.asList("x", "y")), l1.attributes().names());
+        
+        Assert.assertTrue(l1.attributes().firstValue("x").isPresent());
+        Assert.assertEquals("123", l1.attributes().firstValue("x").get().value());
+        
+        Assert.assertEquals(Arrays.asList(new LinkAttribute("x", "123"), new LinkAttribute("x", "x")), l1.attributes().values("x"));
+        Assert.assertEquals(Arrays.asList(new LinkAttribute("y", "y")), l1.attributes().values("y"));
+        
+        Assert.assertEquals(Collections.emptySet(), l1.relations());
+        Assert.assertTrue(l1.type().isEmpty());        
+        Assert.assertTrue(l1.context().isEmpty());
+    }
+
+    @Test
+    public void test14() {
+        Collection<Link> result = Link.of("<>;1=2");
+        Assert.assertNotNull(result);
+        Assert.assertEquals(1, result.size());
+        
+        Link l1 = result.iterator().next();
+        
+        Assert.assertEquals(URI.create(""), l1.target());
+            
+        Assert.assertEquals(Arrays.asList(new LinkAttribute("1", "2")), l1.attributes().values());
+
+        Assert.assertEquals(Collections.emptySet(), l1.relations());
+        Assert.assertTrue(l1.type().isEmpty());        
+        Assert.assertTrue(l1.context().isEmpty());
+    }
+
+    @Test
+    public void test15() {
+        Collection<Link> result = Link.of("<>;1=23");
+        Assert.assertNotNull(result);
+        Assert.assertEquals(1, result.size());
+        
+        Link l1 = result.iterator().next();
+        
+        Assert.assertEquals(URI.create(""), l1.target());
+
+        Assert.assertEquals(Arrays.asList(new LinkAttribute("1", "23")), l1.attributes().values());
+
+        Assert.assertEquals(Collections.emptySet(), l1.relations());
+        Assert.assertTrue(l1.type().isEmpty());        
+        Assert.assertTrue(l1.context().isEmpty());
     }
 
     @Test

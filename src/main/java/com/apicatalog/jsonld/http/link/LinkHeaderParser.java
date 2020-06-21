@@ -25,7 +25,8 @@ final class LinkHeaderParser {
     private static final String ANCHOR = "anchor";
     private static final String TYPE = "type";
     
-    private enum State { INIT, URI_REF, PARAMS, PARAM_NAME, PARAM_VALUE, STRING_VALUE, LITERAL_VALUE, ESCAPE, UNEXPECTED }
+    private enum State { INIT, URI_REF, PARAMS, PARAM_NAME_BEGIN, PARAM_NAME, PARAM_NAME_END, PARAM_VALUE, 
+            STRING_VALUE, LITERAL_VALUE, ESCAPE, UNEXPECTED }
     
     private URI baseUri;
     
@@ -66,11 +67,19 @@ final class LinkHeaderParser {
             case PARAMS:
                 parseParameters(ch);
                 break;
-                
+
+            case PARAM_NAME_BEGIN:
+                parseParamNameBegin(ch);
+                break;
+
             case PARAM_NAME:
                 parseParamName(ch);
                 break;
-                
+
+            case PARAM_NAME_END:
+                parseParamNameEnd(ch);
+                break;
+
             case PARAM_VALUE:
                 parseParamValue(ch);
                 break;
@@ -99,7 +108,9 @@ final class LinkHeaderParser {
 
     private final List<Link> sweep() {
         switch (state) {
+        case PARAM_NAME_BEGIN:
         case PARAM_NAME:
+        case PARAM_NAME_END:
             if (valueBuilder.length() > 0) {
                 attributeName = valueBuilder.toString().stripTrailing();
             }
@@ -132,11 +143,11 @@ final class LinkHeaderParser {
             MediaType type = null;
             
             if (attributes.containsKey(REL) && attributes.get(REL) != null) {
-                rel = new HashSet<>(Arrays.asList(attributes.get(REL).get(0).value().split("[\\s\\t]+")));
+                rel = new HashSet<>(Arrays.asList(attributes.get(REL).get(0).value().strip().split("[\\s\\t]+")));
                 attributes.remove(REL);
             }
             if (attributes.containsKey(ANCHOR) && attributes.get(ANCHOR) != null) {
-                context = URI.create(UriResolver.resolve(baseUri, attributes.get(ANCHOR).get(0).value()));
+                context = URI.create(UriResolver.resolve(baseUri, attributes.get(ANCHOR).get(0).value().strip()));
                 attributes.remove(ANCHOR);
             }
             if (attributes.containsKey(TYPE) && attributes.get(TYPE) != null) {
@@ -185,6 +196,7 @@ final class LinkHeaderParser {
     }
 
     private final void initParser(final char ch) {
+        // skip white-spaces
         if (HttpAlphabet.WHITESPACE.test(ch)) {
             return;
         }
@@ -198,57 +210,106 @@ final class LinkHeaderParser {
     
     private final void parseTargetUri(final char ch) {
         if (ch != '>') {
+            // skip leading white-spaces
             if (valueBuilder.length() > 0 || HttpAlphabet.WHITESPACE.negate().test(ch)) {
                 valueBuilder.append(ch);
             }
             return;
-        }
-        
+        }        
         targetUri = URI.create(UriResolver.resolve(baseUri, valueBuilder.toString().stripTrailing()));
         state = State.PARAMS;
     }
     
     private final void parseParameters(final char ch) {
+        // skip leading white-spaces
         if (HttpAlphabet.WHITESPACE.test(ch)) {
             return;
         }
+        // next link
         if (ch == ',') {
             addLink();
             state = State.INIT;
             return;
         }
+        // next attribute
         if (ch == ';') {
             valueBuilder.setLength(0);
-            state = State.PARAM_NAME;
+            state = State.PARAM_NAME_BEGIN;
             return;
         }
         addLink();
         state = State.UNEXPECTED;
     }
 
+    private final void parseParamNameBegin(final char ch) {
+        // skip leading white-spaces
+        if (HttpAlphabet.WHITESPACE.test(ch)) {
+            return;
+        }
+        if (HttpAlphabet.T_CHAR.test(ch)) {
+            valueBuilder.append(ch);
+            state = State.PARAM_NAME;
+            return;
+        }
+        addLink();
+        state = State.UNEXPECTED;        
+    }
+    
     private final void parseParamName(final char ch) {
         if (ch == '=') {
-            attributeName = valueBuilder.toString().stripTrailing();
+            attributeName = valueBuilder.toString();
             valueBuilder.setLength(0);
             state = State.PARAM_VALUE;
             return;
         }
         if (ch == ';') {
-            attributeName = valueBuilder.toString().stripTrailing();
+            attributeName = valueBuilder.toString();
             valueBuilder.setLength(0);
             addParameter();
             return;
         }
         if (ch == ',') {
-            attributeName = valueBuilder.toString().stripTrailing();
+            attributeName = valueBuilder.toString();
             addParameter();
             addLink();            
             state = State.INIT;
             return;
         }
-        if (valueBuilder.length() > 0 || HttpAlphabet.WHITESPACE.negate().test(ch)) {
+        if (HttpAlphabet.T_CHAR.test(ch)) {
             valueBuilder.append(ch);
+            return;
         }
+        if (HttpAlphabet.WHITESPACE.test(ch)) {
+            attributeName = valueBuilder.toString();
+            valueBuilder.setLength(0);
+            state = State.PARAM_NAME_END;
+            return;
+        }
+        addLink();
+        state = State.UNEXPECTED;
+    }
+    
+    private final void parseParamNameEnd(final char ch) {
+        if (HttpAlphabet.WHITESPACE.test(ch)) {
+            return;
+        }
+        if (ch == '=') {
+            state = State.PARAM_VALUE;
+            return;
+        }
+        if (ch == ';') {
+            addParameter();
+            state = State.PARAM_NAME_BEGIN;
+            return;
+        }
+        if (ch == ',') {
+            addParameter();
+            addLink();            
+            state = State.INIT;
+            return;
+        }
+        addLink();
+        state = State.UNEXPECTED;
     }
 
     private final void parseParamValue(final char ch) {
@@ -259,16 +320,19 @@ final class LinkHeaderParser {
             state = State.STRING_VALUE;
             return;
         }
-        if (valueBuilder.length() > 0 || HttpAlphabet.WHITESPACE.negate().test(ch)) {
+        if (HttpAlphabet.T_CHAR.test(ch)) {
             valueBuilder.append(ch);
+            state = State.LITERAL_VALUE;
+            return;
         }
-        state = State.LITERAL_VALUE;
+        addLink();
+        state = State.UNEXPECTED;
     }
     
 
     private final void parseString(final char ch) {
         if (ch == '"') {
-            attributeValue = valueBuilder.toString().stripTrailing();
+            attributeValue = valueBuilder.toString();
             addParameter();
             state = State.PARAMS;
             return;
@@ -277,30 +341,42 @@ final class LinkHeaderParser {
             state = State.ESCAPE;
             return;
         }
-        if (valueBuilder.length() > 0 || HttpAlphabet.WHITESPACE.negate().test(ch)) {
+        if (HttpAlphabet.QD_TEXT.test(ch)) {
             valueBuilder.append(ch);
+            return;
         }
+        addLink();
+        state = State.UNEXPECTED;
     }
     
     private final void parseLiteral(final char ch) {
 
         if (ch == ';') {
-            attributeValue = valueBuilder.toString().stripTrailing();
+            attributeValue = valueBuilder.toString();
             valueBuilder.setLength(0);
             addParameter();
             state = State.PARAM_NAME;
             return;
             
         } else if (ch == ',') {
-            attributeValue = valueBuilder.toString().stripTrailing();
+            attributeValue = valueBuilder.toString();
             addParameter();
             addLink();
             state = State.INIT;
             return;
         }
-        if (valueBuilder.length() > 0 || HttpAlphabet.WHITESPACE.negate().test(ch)) {
+        if (HttpAlphabet.T_CHAR.test(ch)) {
             valueBuilder.append(ch);
+            return;
         }
+        if (HttpAlphabet.WHITESPACE.test(ch)) {
+            attributeValue = valueBuilder.toString();
+            addParameter();            
+            state = State.PARAMS;
+            return;
+        }
+        addLink();
+        state = State.UNEXPECTED;
     }
         
     private final void escape(final char ch) {
