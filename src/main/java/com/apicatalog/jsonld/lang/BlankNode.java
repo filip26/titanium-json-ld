@@ -2,7 +2,7 @@ package com.apicatalog.jsonld.lang;
 
 import java.util.stream.IntStream;
 
-import com.apicatalog.rdf.lang.RdfGrammar;
+import com.apicatalog.rdf.lang.RdfCharacter;
 
 /**
  * 
@@ -40,8 +40,8 @@ public final class BlankNode {
 
         if (chars[0] != '_' 
                 || chars[1] != ':' 
-                || (RdfGrammar.IS_PN_CHARS_U.negate().test(chars[2])
-                        && RdfGrammar.IS_ASCII_DIGIT.negate().test(chars[2]))
+                || (RdfCharacter.IS_PN_CHARS_U.negate().test(chars[2])
+                        && RdfCharacter.IS_ASCII_DIGIT.negate().test(chars[2]))
                 || chars[chars.length - 1] == '.'
                         )  {
             return false;
@@ -51,6 +51,6 @@ public final class BlankNode {
             return true;
         }
         
-        return IntStream.range(3, chars.length - 1).map(i -> chars[i]).allMatch(RdfGrammar.IS_PN_CHARS.or(ch -> ch == '.'));        
+        return IntStream.range(3, chars.length - 1).map(i -> chars[i]).allMatch(RdfCharacter.IS_PN_CHARS.or(ch -> ch == '.'));        
     }
 }

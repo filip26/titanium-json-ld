@@ -2,7 +2,7 @@ package com.apicatalog.rdf.lang;
 
 import java.util.function.IntPredicate;
 
-public final class RdfGrammar {
+public final class RdfCharacter {
     
     public static final IntPredicate IS_ASCII_ALPHA =
             ch -> 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z'; 
@@ -43,6 +43,6 @@ public final class RdfGrammar {
                     || (0x203F <= ch && ch <= 0x2040)
                     );  
 
-    private RdfGrammar() {
+    private RdfCharacter() {
     }
 }
