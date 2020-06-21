@@ -3,6 +3,11 @@ package com.apicatalog.jsonld.http;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 
+ * @see <a href="https://tools.ietf.org/html/rfc6838#section-4.2">Media Type Specifications - </a>
+ *
+ */
 final class MediaTypeParser {
 
     private enum State { INIT, TYPE, SUBTYPE, PARAMS, PARAM_NAME, PARAM_VALUE, STRING_VALUE, LITERAL_VALUE, ESCAPE }
@@ -161,6 +166,9 @@ final class MediaTypeParser {
             } else {
                 params.put(paramName, stringValue.toString());   
             }
+        }
+        if (type == null || subtype == null) {
+            return null;
         }
         return new MediaType(type, subtype, params);
     }    

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.apicatalog.jsonld.http.HttpCharacter;
+import com.apicatalog.jsonld.http.HttpAlphabet;
 import com.apicatalog.jsonld.http.MediaType;
 import com.apicatalog.jsonld.uri.UriResolver;
 
@@ -104,13 +104,7 @@ final class LinkHeaderParser {
                 attributeName = valueBuilder.toString().stripTrailing();
             }
             break;
-            
-        case PARAM_VALUE:
-            if (valueBuilder.length() > 0) {
-                attributeValue = valueBuilder.toString().stripTrailing();
-            }
-            break;
-            
+                        
         case LITERAL_VALUE:
             if (valueBuilder.length() > 0) {
                 attributeValue = valueBuilder.toString().stripTrailing();
@@ -147,7 +141,9 @@ final class LinkHeaderParser {
             }
             if (attributes.containsKey(TYPE) && attributes.get(TYPE) != null) {
                 type = MediaType.valueOf(attributes.get(TYPE).get(0).value());
-                attributes.remove(TYPE);
+                if (type != null) {
+                    attributes.remove(TYPE);
+                }
             }
             
             links.add(new Link(context, targetUri, rel, type, new LinkAttributes(attributes)));
@@ -189,7 +185,7 @@ final class LinkHeaderParser {
     }
 
     private final void initParser(final char ch) {
-        if (HttpCharacter.WHITESPACE.test(ch)) {
+        if (HttpAlphabet.WHITESPACE.test(ch)) {
             return;
         }
         if (ch == '<') {
@@ -202,7 +198,7 @@ final class LinkHeaderParser {
     
     private final void parseTargetUri(final char ch) {
         if (ch != '>') {
-            if (valueBuilder.length() > 0 || HttpCharacter.WHITESPACE.negate().test(ch)) {
+            if (valueBuilder.length() > 0 || HttpAlphabet.WHITESPACE.negate().test(ch)) {
                 valueBuilder.append(ch);
             }
             return;
@@ -213,7 +209,7 @@ final class LinkHeaderParser {
     }
     
     private final void parseParameters(final char ch) {
-        if (HttpCharacter.WHITESPACE.test(ch)) {
+        if (HttpAlphabet.WHITESPACE.test(ch)) {
             return;
         }
         if (ch == ',') {
@@ -250,20 +246,20 @@ final class LinkHeaderParser {
             state = State.INIT;
             return;
         }
-        if (valueBuilder.length() > 0 || HttpCharacter.WHITESPACE.negate().test(ch)) {
+        if (valueBuilder.length() > 0 || HttpAlphabet.WHITESPACE.negate().test(ch)) {
             valueBuilder.append(ch);
         }
     }
 
     private final void parseParamValue(final char ch) {
-        if (HttpCharacter.WHITESPACE.test(ch)) {
+        if (HttpAlphabet.WHITESPACE.test(ch)) {
             return;
         }
         if (ch == '"') {
             state = State.STRING_VALUE;
             return;
         }
-        if (valueBuilder.length() > 0 || HttpCharacter.WHITESPACE.negate().test(ch)) {
+        if (valueBuilder.length() > 0 || HttpAlphabet.WHITESPACE.negate().test(ch)) {
             valueBuilder.append(ch);
         }
         state = State.LITERAL_VALUE;
@@ -281,7 +277,7 @@ final class LinkHeaderParser {
             state = State.ESCAPE;
             return;
         }
-        if (valueBuilder.length() > 0 || HttpCharacter.WHITESPACE.negate().test(ch)) {
+        if (valueBuilder.length() > 0 || HttpAlphabet.WHITESPACE.negate().test(ch)) {
             valueBuilder.append(ch);
         }
     }
@@ -302,7 +298,7 @@ final class LinkHeaderParser {
             state = State.INIT;
             return;
         }
-        if (valueBuilder.length() > 0 || HttpCharacter.WHITESPACE.negate().test(ch)) {
+        if (valueBuilder.length() > 0 || HttpAlphabet.WHITESPACE.negate().test(ch)) {
             valueBuilder.append(ch);
         }
     }

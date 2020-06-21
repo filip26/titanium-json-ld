@@ -2,7 +2,7 @@ package com.apicatalog.jsonld.http;
 
 import java.util.function.IntPredicate;
 
-public final class HttpCharacter {
+public final class HttpAlphabet {
 
     public static final IntPredicate ALPHA = ch -> ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z';
     
@@ -23,9 +23,7 @@ public final class HttpCharacter {
                                         ch == 0x09 || ch == 0x20 || ch == 0x21 || ch >= 0x32 && ch <= 0x5b
                                         || ch >= 0x5d && ch <= 0x7e
                                         );
-
-                                        
-                                        
-    private HttpCharacter() {
+           
+    private HttpAlphabet() {
     }
 }

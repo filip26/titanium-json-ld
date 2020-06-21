@@ -226,6 +226,58 @@ public class LinkTest {
         Assert.assertTrue(MediaType.HTML.match(l1.type().get()));
         Assert.assertTrue(l1.context().isEmpty());
     }
+    
+    @Test
+    public void test10() {
+        Collection<Link> result = Link.valueOf("</x>;", URI.create("https://a/b/c"));
+        Assert.assertNotNull(result);
+        Assert.assertEquals(1, result.size());
+
+        Iterator<Link> it = result.iterator(); 
+        
+        Link l1 = it.next();
+        
+        Assert.assertEquals(URI.create("https://a/x"), l1.target());
+        Assert.assertEquals(Collections.emptySet(), l1.attributes().names());
+        Assert.assertEquals(Collections.emptySet(), l1.relations());
+        Assert.assertTrue(l1.type().isEmpty());
+        Assert.assertTrue(l1.context().isEmpty());
+    }
+
+    @Test
+    public void test11() {
+        Collection<Link> result = Link.valueOf("<x>;abc,", URI.create("https://a/b/c"));
+        Assert.assertNotNull(result);
+        Assert.assertEquals(1, result.size());
+
+        Iterator<Link> it = result.iterator(); 
+        
+        Link l1 = it.next();
+        
+        Assert.assertEquals(URI.create("https://a/b/x"), l1.target());
+        Assert.assertEquals(new HashSet<>(Arrays.asList("abc")), l1.attributes().names());
+        Assert.assertEquals(Collections.emptySet(), l1.relations());
+        Assert.assertTrue(l1.type().isEmpty());
+        Assert.assertTrue(l1.context().isEmpty());
+    }
+
+    @Test
+    public void test12() {
+        Collection<Link> result = Link.valueOf("<x>;anchor=\"/anchor\"", URI.create("//a/b/c"));
+        Assert.assertNotNull(result);
+        Assert.assertEquals(1, result.size());
+
+        Iterator<Link> it = result.iterator(); 
+        
+        Link l1 = it.next();
+        
+        Assert.assertEquals(URI.create("//a/b/x"), l1.target());
+        Assert.assertEquals(Collections.emptySet(), l1.attributes().names());
+        Assert.assertEquals(Collections.emptySet(), l1.relations());
+        Assert.assertTrue(l1.type().isEmpty());
+        Assert.assertTrue(l1.context().isPresent());
+        Assert.assertEquals(URI.create("//a/anchor"), l1.context().get());
+    }
 
     @Test
     public void testI1() {
@@ -289,4 +341,26 @@ public class LinkTest {
         Assert.assertTrue(l1.type().isEmpty());        
         Assert.assertTrue(l1.context().isEmpty());
     }
+    
+    @Test
+    public void testI5() {
+        Collection<Link> result = Link.valueOf("<>;type=\"text\"");
+        Assert.assertNotNull(result);
+        Assert.assertEquals(1, result.size());
+
+        Iterator<Link> it = result.iterator(); 
+        
+        Link l1 = it.next();
+        
+        Assert.assertEquals(URI.create(""), l1.target());
+        Assert.assertEquals(new HashSet<>(Arrays.asList("type")), l1.attributes().names());
+        Assert.assertTrue(l1.attributes().firstValue("type").isPresent());
+        Assert.assertEquals("text", l1.attributes().firstValue("type").get().value());
+        
+        Assert.assertEquals(Collections.emptySet(), l1.relations());
+        Assert.assertTrue(l1.type().isEmpty());
+        Assert.assertTrue(l1.context().isEmpty());
+    }
+
+
 }
