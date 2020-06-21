@@ -677,7 +677,7 @@ public final class TermDefinitionBuilder {
         return false;
     }
     
-    private final boolean validateContaierArray(final JsonArray containers) {
+    private static final boolean validateContaierArray(final JsonArray containers) {
         
         if (containers.size() > 3) {
             return false;

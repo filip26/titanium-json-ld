@@ -173,7 +173,7 @@ public final class NQuadsReader implements RdfReader {
     }
 
     
-    private <T> T unexpected(Token token, TokenType ...types) throws NQuadsReaderException {
+    private static final <T> T unexpected(Token token, TokenType ...types) throws NQuadsReaderException {
         throw new NQuadsReaderException(
                     "Unexpected token " + token.getType() + "(" + token.getValue() + "). "
                     + "Expected one of " + Arrays.toString(types) + "."

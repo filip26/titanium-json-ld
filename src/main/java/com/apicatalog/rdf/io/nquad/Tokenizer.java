@@ -105,7 +105,7 @@ final class Tokenizer {
         throw new IllegalStateException();
     }
     
-    private void unexpected(int actual, String ...expected) throws NQuadsReaderException {
+    private static final void unexpected(int actual, String ...expected) throws NQuadsReaderException {
         throw new NQuadsReaderException(
                         actual != -1 
                             ? "Unexpected character [" + (char)actual  + "] expected " +  Arrays.toString(expected) + "." 
@@ -176,21 +176,8 @@ final class Tokenizer {
                 }
                 
                 if (ch == '\\') {
-                                        
-                    ch = reader.read();
 
-                    if (ch == 'u') {
-                     
-                        value.append(readUnicode());
-
-                    } else if (ch == 'U') {
-                        
-                        value.append("\\U");
-                        value.append(readUnicode64());
-                        
-                    } else {
-                        unexpected(ch);
-                    }
+                    readIriEscape(value);
                     
                 } else {
                     value.append((char)ch);
@@ -227,24 +214,7 @@ final class Tokenizer {
                 
                 if (ch == '\\') {
 
-                    ch = reader.read();
-                    
-                    if (ch == 't' || ch == 'b' || ch == 'n' || ch == 'r' || ch == 'f' || ch == '\'' || ch == '\\' || ch =='"') {
-
-                        value.appendCodePoint(unescape(ch));
-
-                    } else if (ch == 'u') {
-
-                        value.append(readUnicode());
-                        
-                    } else if (ch == 'U') {
-                        
-                        value.append("\\U");
-                        value.append(readUnicode64());
-                        
-                    } else {
-                        unexpected(ch);
-                    }
+                    readEscape(value);
                     
                 } else {
                     value.appendCodePoint(ch);
@@ -313,6 +283,44 @@ final class Tokenizer {
         } catch (IOException e) {
             throw new NQuadsReaderException(e);
         }    
+    }
+    
+    private void readIriEscape(final StringBuilder value) throws NQuadsReaderException, IOException {
+        int ch = reader.read();
+    
+        if (ch == 'u') {
+         
+            value.append(readUnicode());
+    
+        } else if (ch == 'U') {
+            
+            value.append("\\U");
+            value.append(readUnicode64());
+            
+        } else {
+            unexpected(ch);
+        }
+    }
+    
+    private void readEscape(final StringBuilder value) throws NQuadsReaderException, IOException {
+        int ch = reader.read();
+        
+        if (ch == 't' || ch == 'b' || ch == 'n' || ch == 'r' || ch == 'f' || ch == '\'' || ch == '\\' || ch =='"') {
+
+            value.appendCodePoint(unescape(ch));
+
+        } else if (ch == 'u') {
+
+            value.append(readUnicode());
+            
+        } else if (ch == 'U') {
+            
+            value.append("\\U");
+            value.append(readUnicode64());
+            
+        } else {
+            unexpected(ch);
+        }
     }
 
     private Token readBlankNode() throws NQuadsReaderException {
