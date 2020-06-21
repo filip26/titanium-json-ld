@@ -11,7 +11,7 @@ import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.apicatalog.jsonld.http.MediaType;
+import com.apicatalog.jsonld.http.media.MediaType;
 
 public class LinkTest {
 
@@ -19,7 +19,7 @@ public class LinkTest {
     public void testNullNull() {
         try {
         
-            Link.valueOf(null, null);
+            Link.of(null, null);
             Assert.fail();
             
         } catch (IllegalArgumentException e) {
@@ -29,14 +29,14 @@ public class LinkTest {
 
     @Test
     public void testEmptyNull() {
-        Collection<Link> result = Link.valueOf("", null);
+        Collection<Link> result = Link.of("", null);
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isEmpty());
     }
 
     @Test
     public void test1() {
-        Collection<Link> result = Link.valueOf("<http://example.com/TheBook/chapter2>; rel=\"previous\"; title=\"previous chapter\"");
+        Collection<Link> result = Link.of("<http://example.com/TheBook/chapter2>; rel=\"previous\"; title=\"previous chapter\"");
         Assert.assertNotNull(result);
         Assert.assertEquals(1, result.size());
         
@@ -55,7 +55,7 @@ public class LinkTest {
 
     @Test
     public void test2() {
-        Collection<Link> result = Link.valueOf("</>; rel=\"http://example.net/foo\"");
+        Collection<Link> result = Link.of("</>; rel=\"http://example.net/foo\"");
         Assert.assertNotNull(result);
         Assert.assertEquals(1, result.size());
         
@@ -72,7 +72,7 @@ public class LinkTest {
     
     @Test
     public void test3() {
-        Collection<Link> result = Link.valueOf("</terms> ;rel=\"copyright\"; anchor=\"#foo\"");
+        Collection<Link> result = Link.of("</terms> ;rel=\"copyright\"; anchor=\"#foo\"");
         Assert.assertNotNull(result);
         Assert.assertEquals(1, result.size());
         
@@ -90,7 +90,7 @@ public class LinkTest {
     
     @Test
     public void test4() {
-        Collection<Link> result = Link.valueOf("    <http://example.org/> ; rel=\" start     http://example.net/relation/other\" ");
+        Collection<Link> result = Link.of("    <http://example.org/> ; rel=\" start     http://example.net/relation/other\" ");
         Assert.assertNotNull(result);
         Assert.assertEquals(1, result.size());
         
@@ -108,7 +108,7 @@ public class LinkTest {
 
     @Test
     public void test5() {
-        Collection<Link> result = Link.valueOf("<https://example.org/>;rel=\"st\\\\art\",<https://example.org/index>;rel=\"in\\tdex\"");
+        Collection<Link> result = Link.of("<https://example.org/>;rel=\"st\\\\art\",<https://example.org/index>;rel=\"in\\tdex\"");
         Assert.assertNotNull(result);
         Assert.assertEquals(2, result.size());
         
@@ -139,7 +139,7 @@ public class LinkTest {
 
     @Test
     public void test6() {
-        Collection<Link> result = Link.valueOf("<>;rel=123");
+        Collection<Link> result = Link.of("<>;rel=123");
         Assert.assertNotNull(result);
         Assert.assertEquals(1, result.size());
         
@@ -156,7 +156,7 @@ public class LinkTest {
 
     @Test
     public void test7() {
-        Collection<Link> result = Link.valueOf("<>;x=1x10,</>");
+        Collection<Link> result = Link.of("<>;x=1x10,</>");
         Assert.assertNotNull(result);
         Assert.assertEquals(2, result.size());
 
@@ -186,7 +186,7 @@ public class LinkTest {
 
     @Test
     public void test8() {
-        Collection<Link> result = Link.valueOf("<x>;x=ab;");
+        Collection<Link> result = Link.of("<x>;x=ab;");
         Assert.assertNotNull(result);
         Assert.assertEquals(1, result.size());
 
@@ -211,7 +211,7 @@ public class LinkTest {
 
     @Test
     public void test9() {
-        Collection<Link> result = Link.valueOf("</>;type=\"text/html\"");
+        Collection<Link> result = Link.of("</>;type=\"text/html\"");
         Assert.assertNotNull(result);
         Assert.assertEquals(1, result.size());
 
@@ -229,7 +229,7 @@ public class LinkTest {
     
     @Test
     public void test10() {
-        Collection<Link> result = Link.valueOf("</x>;", URI.create("https://a/b/c"));
+        Collection<Link> result = Link.of("</x>;", URI.create("https://a/b/c"));
         Assert.assertNotNull(result);
         Assert.assertEquals(1, result.size());
 
@@ -246,7 +246,7 @@ public class LinkTest {
 
     @Test
     public void test11() {
-        Collection<Link> result = Link.valueOf("<x>;abc,", URI.create("https://a/b/c"));
+        Collection<Link> result = Link.of("<x>;abc,", URI.create("https://a/b/c"));
         Assert.assertNotNull(result);
         Assert.assertEquals(1, result.size());
 
@@ -263,7 +263,7 @@ public class LinkTest {
 
     @Test
     public void test12() {
-        Collection<Link> result = Link.valueOf("<x>;anchor=\"/anchor\"", URI.create("//a/b/c"));
+        Collection<Link> result = Link.of("<x>;anchor=\"/anchor\"", URI.create("//a/b/c"));
         Assert.assertNotNull(result);
         Assert.assertEquals(1, result.size());
 
@@ -281,21 +281,21 @@ public class LinkTest {
 
     @Test
     public void testI1() {
-        Collection<Link> result = Link.valueOf("<https://example.org/");
+        Collection<Link> result = Link.of("<https://example.org/");
         Assert.assertNotNull(result);
         Assert.assertEquals(0, result.size());        
     }
     
     @Test
     public void testI2() {
-        Collection<Link> result = Link.valueOf("https://example.org/");
+        Collection<Link> result = Link.of("https://example.org/");
         Assert.assertNotNull(result);
         Assert.assertEquals(0, result.size());        
     }
     
     @Test
     public void testI3() {
-        Collection<Link> result = Link.valueOf("<https://example.org/> #");
+        Collection<Link> result = Link.of("<https://example.org/> #");
         Assert.assertNotNull(result);
         Assert.assertEquals(1, result.size());
         
@@ -312,7 +312,7 @@ public class LinkTest {
     
     @Test
     public void testI4() {
-        Collection<Link> result = Link.valueOf("<https://example.org/>   ; x;y");
+        Collection<Link> result = Link.of("<https://example.org/>   ; x;y");
         Assert.assertNotNull(result);
         Assert.assertEquals(1, result.size());
         
@@ -344,7 +344,7 @@ public class LinkTest {
     
     @Test
     public void testI5() {
-        Collection<Link> result = Link.valueOf("<>;type=\"text\"");
+        Collection<Link> result = Link.of("<>;type=\"text\"");
         Assert.assertNotNull(result);
         Assert.assertEquals(1, result.size());
 

@@ -2,7 +2,7 @@ package com.apicatalog.jsonld.document;
 
 import java.net.URI;
 
-import com.apicatalog.jsonld.http.MediaType;
+import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 
 /**

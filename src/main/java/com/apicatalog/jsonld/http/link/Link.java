@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
-import com.apicatalog.jsonld.http.MediaType;
+import com.apicatalog.jsonld.http.media.MediaType;
 
 /**
  * 
@@ -33,11 +33,11 @@ public final class Link {
         this.attributes = attributes;
     }
 
-    public static final Collection<Link> valueOf(final String linkHeader) {
-        return valueOf(linkHeader, null);
+    public static final Collection<Link> of(final String linkHeader) {
+        return of(linkHeader, null);
     }
     
-    public static final Collection<Link> valueOf(final String linkHeader, final URI baseUri) {
+    public static final Collection<Link> of(final String linkHeader, final URI baseUri) {
         if (linkHeader == null) {
             throw new IllegalArgumentException("Link header value cannot be null.");
         }

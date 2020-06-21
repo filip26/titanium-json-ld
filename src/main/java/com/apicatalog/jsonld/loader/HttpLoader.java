@@ -21,7 +21,7 @@ import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.http.ProfileConstants;
 import com.apicatalog.jsonld.http.link.Link;
-import com.apicatalog.jsonld.http.MediaType;
+import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.uri.UriResolver;
 
 public class HttpLoader implements LoadDocumentCallback {
@@ -104,7 +104,7 @@ public class HttpLoader implements LoadDocumentCallback {
                 final Optional<String> contentTypeValue = response.headers().firstValue("Content-Type");
                 
                 if (contentTypeValue.isPresent()) {                    
-                    contentType = MediaType.valueOf(contentTypeValue.get());
+                    contentType = MediaType.of(contentTypeValue.get());
                 }
                 
                 final List<String> linkValues = response.headers().map().get("link");
@@ -121,7 +121,7 @@ public class HttpLoader implements LoadDocumentCallback {
 
                         Optional<Link> alternate = 
                                             linkValues.stream()
-                                                .flatMap(l -> Link.valueOf(l, baseUri).stream())
+                                                .flatMap(l -> Link.of(l, baseUri).stream())
                                                 .filter(l -> l.relations().contains("alternate")
                                                                 && l.type().isPresent()
                                                                 && MediaType.JSON_LD.match(l.type().get())
@@ -153,7 +153,7 @@ public class HttpLoader implements LoadDocumentCallback {
 
                         final List<Link> contextUri = 
                                         linkValues.stream()
-                                            .flatMap(l -> Link.valueOf(l, baseUri).stream())
+                                            .flatMap(l -> Link.of(l, baseUri).stream())
                                             .filter(l -> l.relations().contains(ProfileConstants.CONTEXT))
                                             .collect(Collectors.toList());
                         
@@ -193,9 +193,9 @@ public class HttpLoader implements LoadDocumentCallback {
                 remoteDocument.setDocumentUrl(targetUri);
             }
 
-            remoteDocument.setContentType(new MediaType(contentType.type(), contentType.subtype()));
+            remoteDocument.setContentType(MediaType.of(contentType.type(), contentType.subtype()));
             remoteDocument.setDocument(document);
-            remoteDocument.setProfile(contentType.paramValue("profile"));
+            remoteDocument.setProfile(contentType.parameters().firstValue("profile").orElse(null));
 
             return remoteDocument;
             

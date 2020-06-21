@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.apicatalog.jsonld.http.HttpAlphabet;
-import com.apicatalog.jsonld.http.MediaType;
+import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.uri.UriResolver;
 
 /**
@@ -140,7 +140,7 @@ final class LinkHeaderParser {
                 attributes.remove(ANCHOR);
             }
             if (attributes.containsKey(TYPE) && attributes.get(TYPE) != null) {
-                type = MediaType.valueOf(attributes.get(TYPE).get(0).value());
+                type = MediaType.of(attributes.get(TYPE).get(0).value());
                 if (type != null) {
                     attributes.remove(TYPE);
                 }
