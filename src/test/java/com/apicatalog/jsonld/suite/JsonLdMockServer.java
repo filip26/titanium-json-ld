@@ -17,8 +17,10 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
-import com.apicatalog.jsonld.http.Link;
+import org.junit.Assert;
+
 import com.apicatalog.jsonld.http.MediaType;
+import com.apicatalog.jsonld.http.link.Link;
 import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.uri.UriResolver;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
@@ -60,21 +62,23 @@ public final class JsonLdMockServer {
                 
                 Link link = Link.valueOf(linkValue, URI.create(".")).iterator().next();
                 
-                String contentType = link.type();
+                MediaType contentType = link.type().orElse(null);
                 
-                if (contentType == null || contentType.isBlank()) {
-                    if (link.uri().toString().endsWith(".html")) {
-                        contentType = MediaType.HTML.toString();
+                if (contentType == null) {
+                    if (link.target().toString().endsWith(".html")) {
+                        contentType = MediaType.HTML;
                         
-                    } else if (link.uri().toString().endsWith(".jsonld")) {
-                        contentType = MediaType.JSON_LD.toString();
+                    } else if (link.target().toString().endsWith(".jsonld")) {
+                        contentType = MediaType.JSON_LD;
                         
-                    } else if (link.uri().toString().endsWith(".json")) {
-                        contentType = MediaType.JSON.toString();
+                    } else if (link.target().toString().endsWith(".json")) {
+                        contentType = MediaType.JSON;
                     }
                 }
+                
+                Assert.assertNotNull(contentType);
 
-                String linkUri = UriResolver.resolve(testCase.input, link.uri().toString());
+                String linkUri = UriResolver.resolve(testCase.input, link.target().toString());
                 
                 try (InputStream lis = getClass().getResourceAsStream(JsonLdManifestLoader.JSON_LD_API_BASE + linkUri.substring(testCase.baseUri.length()))) {
 
@@ -85,7 +89,7 @@ public final class JsonLdMockServer {
                     stubFor(get(urlEqualTo(linkUri.substring(testBase.length())))
                             .willReturn(aResponse()
                                 .withStatus(200)
-                                .withHeader("Content-Type", contentType)
+                                .withHeader("Content-Type", contentType.toString())
                                 .withBody(inputContent)
                                     )); 
                 } 

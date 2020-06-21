@@ -2,7 +2,7 @@ package com.apicatalog.jsonld.lang;
 
 import java.util.stream.IntStream;
 
-import com.apicatalog.rdf.lang.RdfGrammar;
+import com.apicatalog.rdf.lang.RdfCharacter;
 
 public final class LanguageTag {
 
@@ -27,14 +27,14 @@ public final class LanguageTag {
 
         int[] chars = label.codePoints().toArray();
 
-        if (RdfGrammar.IS_ASCII_ALPHA.negate().test(chars[0])) {
+        if (RdfCharacter.IS_ASCII_ALPHA.negate().test(chars[0])) {
             return false;
         }
 
-        if (RdfGrammar.IS_ASCII_ALPHA_NUM.negate().test(chars[chars.length - 1])) {
+        if (RdfCharacter.IS_ASCII_ALPHA_NUM.negate().test(chars[chars.length - 1])) {
             return false;
         }
-        return IntStream.range(1, chars.length - 1).map(i -> chars[i]).allMatch(RdfGrammar.IS_ASCII_ALPHA_NUM.or(ch -> ch == '-'));
+        return IntStream.range(1, chars.length - 1).map(i -> chars[i]).allMatch(RdfCharacter.IS_ASCII_ALPHA_NUM.or(ch -> ch == '-'));
     }
     
 }

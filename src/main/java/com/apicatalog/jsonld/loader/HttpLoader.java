@@ -20,7 +20,7 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.http.ProfileConstants;
-import com.apicatalog.jsonld.http.Link;
+import com.apicatalog.jsonld.http.link.Link;
 import com.apicatalog.jsonld.http.MediaType;
 import com.apicatalog.jsonld.uri.UriResolver;
 
@@ -122,14 +122,15 @@ public class HttpLoader implements LoadDocumentCallback {
                         Optional<Link> alternate = 
                                             linkValues.stream()
                                                 .flatMap(l -> Link.valueOf(l, baseUri).stream())
-                                                .filter(l -> l.rel().contains("alternate")
-                                                                && MediaType.JSON_LD.toString().equals(l.type())
+                                                .filter(l -> l.relations().contains("alternate")
+                                                                && l.type().isPresent()
+                                                                && MediaType.JSON_LD.match(l.type().get())
                                                         )
                                                 .findFirst();
 
                         if (alternate.isPresent()) {
                         
-                            targetUri = alternate.get().uri();
+                            targetUri = alternate.get().target();
                             
                             redirection++;
                             
@@ -153,14 +154,14 @@ public class HttpLoader implements LoadDocumentCallback {
                         final List<Link> contextUri = 
                                         linkValues.stream()
                                             .flatMap(l -> Link.valueOf(l, baseUri).stream())
-                                            .filter(l -> l.rel().contains(ProfileConstants.CONTEXT))
+                                            .filter(l -> l.relations().contains(ProfileConstants.CONTEXT))
                                             .collect(Collectors.toList());
                         
                         if (contextUri.size() > 1) {
                             throw new JsonLdError(JsonLdErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS);
                             
                         } else if(contextUri.size() == 1) {
-                            remoteDocument.setContextUrl(contextUri.get(0).uri());
+                            remoteDocument.setContextUrl(contextUri.get(0).target());
                         }
                     }
                 }

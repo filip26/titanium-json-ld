@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
 
-import com.apicatalog.rdf.lang.RdfGrammar;
+import com.apicatalog.rdf.lang.RdfCharacter;
 
 /**
  * 
@@ -58,7 +58,7 @@ final class Tokenizer {
             }
             
             // WS
-            if (RdfGrammar.IS_WHITESPACE.test(ch)) {                
+            if (RdfCharacter.IS_WHITESPACE.test(ch)) {                
                 return skipWhitespaces();  
             }
             
@@ -74,7 +74,7 @@ final class Tokenizer {
                 return Token.EOS;
             }
             
-            if (RdfGrammar.IS_EOL.test(ch)) {
+            if (RdfCharacter.IS_EOL.test(ch)) {
                 return skipEol();
             }
             
@@ -119,7 +119,7 @@ final class Tokenizer {
             reader.mark(1);
             int ch = reader.read();
             
-            while (RdfGrammar.IS_WHITESPACE.test(ch)) {
+            while (RdfCharacter.IS_WHITESPACE.test(ch)) {
                 reader.mark(1);
                 ch = reader.read();
             }
@@ -139,7 +139,7 @@ final class Tokenizer {
             reader.mark(1);
             int ch = reader.read();
             
-            while (RdfGrammar.IS_EOL.test(ch)) {
+            while (RdfCharacter.IS_EOL.test(ch)) {
                 reader.mark(1);
                 ch = reader.read();
             }
@@ -270,7 +270,7 @@ final class Tokenizer {
             
             int ch = reader.read();
             
-            if (!RdfGrammar.IS_ASCII_ALPHA.test(ch) || ch == -1) {
+            if (!RdfCharacter.IS_ASCII_ALPHA.test(ch) || ch == -1) {
                 unexpected(ch);
             }
             value.append((char)ch);
@@ -278,7 +278,7 @@ final class Tokenizer {
             reader.mark(1);
             ch = reader.read();
             
-            while (RdfGrammar.IS_ASCII_ALPHA.test(ch)) {
+            while (RdfCharacter.IS_ASCII_ALPHA.test(ch)) {
                 
                 value.append((char)ch);
                 
@@ -292,7 +292,7 @@ final class Tokenizer {
             
             boolean delim = false;
             
-            while (RdfGrammar.IS_ASCII_ALPHA_NUM.test(ch) || ch == '-') {
+            while (RdfCharacter.IS_ASCII_ALPHA_NUM.test(ch) || ch == '-') {
 
                 value.append((char)ch);
                 
@@ -328,7 +328,7 @@ final class Tokenizer {
             
             ch = reader.read();
             
-            if (RdfGrammar.IS_PN_CHARS_U.negate().and(RdfGrammar.IS_ASCII_DIGIT.negate()).test(ch) || ch == -1) {
+            if (RdfCharacter.IS_PN_CHARS_U.negate().and(RdfCharacter.IS_ASCII_DIGIT.negate()).test(ch) || ch == -1) {
                 unexpected(ch);
             }
             
@@ -339,7 +339,7 @@ final class Tokenizer {
             
             boolean delim = false;
             
-            while (RdfGrammar.IS_PN_CHARS.test(ch) || ch == '.') {
+            while (RdfCharacter.IS_PN_CHARS.test(ch) || ch == '.') {
 
                 value.append((char)ch);
                 
@@ -378,7 +378,7 @@ final class Tokenizer {
         
         int hex = reader.read();
         
-        if (RdfGrammar.IS_HEX.negate().test(hex)) {
+        if (RdfCharacter.IS_HEX.negate().test(hex)) {
             unexpected(hex, "0-9", "a-f", "A-F");
         }
         return (char)hex;
