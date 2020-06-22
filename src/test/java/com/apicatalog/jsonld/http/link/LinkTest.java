@@ -108,7 +108,7 @@ public class LinkTest {
 
     @Test
     public void test5() {
-        Collection<Link> result = Link.of("<https://example.org/>;rel=\"st\\\\art\",<https://example.org/index>;rel=\"in\\tdex\"");
+        Collection<Link> result = Link.of("<https://example.org/>;rel=\"st\\\\art\",<https://example.org/index>;rel=\"i\\αn\\tdex\"");
         Assert.assertNotNull(result);
         Assert.assertEquals(2, result.size());
         
@@ -131,7 +131,7 @@ public class LinkTest {
         Assert.assertTrue(l2.attributes().isEmpty());
         Assert.assertEquals(Collections.emptySet(), l2.attributes().names());
         
-        Assert.assertEquals(new HashSet<>(Arrays.asList("in", "dex")), l2.relations());
+        Assert.assertEquals(new HashSet<>(Arrays.asList("iαn", "dex")), l2.relations());
         
         Assert.assertTrue(l2.type().isEmpty());        
         Assert.assertTrue(l2.context().isEmpty());
@@ -281,7 +281,7 @@ public class LinkTest {
 
     @Test
     public void test13() {
-        Collection<Link> result = Link.of(" \t<#abc>  ;  x  =\t 123 \t;  x   ;y   , \t\t ");
+        Collection<Link> result = Link.of(" \t<#abc>  ;   x  =\t 123 \t;  x   ;y   , \t\t ");
         Assert.assertNotNull(result);
         Assert.assertEquals(1, result.size());
         
