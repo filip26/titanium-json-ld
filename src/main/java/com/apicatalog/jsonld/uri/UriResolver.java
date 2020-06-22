@@ -98,7 +98,6 @@ public final class UriResolver {
      * @see <a href="https://tools.ietf.org/html/rfc3986#section-5.2.4">Remove Dot
      *      Segments</a>
      * 
-     * @param basePath
      * @param path
      * @return
      */
