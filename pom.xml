@@ -25,15 +25,7 @@
             <url>http://apache.org/licenses/LICENSE-2.0</url>
         </license>
     </licenses>    
-    
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>GitHub filip26 Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/filip26/titanium-json-ld</url>
-        </repository>
-    </distributionManagement>
-
+   
     <issueManagement>
         <system>github</system>
         <url>https://github.com/filip26/titanium-json-ld/issues</url>
@@ -42,7 +34,7 @@
     <scm>
         <connection>scm:git:git://github.com/filip26/titanium-json-ld.git</connection>
         <developerConnection>scm:git:git://github.com/filip26/titanium-json-ld.git</developerConnection>
-        <url>https://github.com/filip26/titanium-json-ld</url>
+        <url>https://github.com/filip26/titanium-json-ld/tree/master</url>
     </scm>
 
     <developers>
