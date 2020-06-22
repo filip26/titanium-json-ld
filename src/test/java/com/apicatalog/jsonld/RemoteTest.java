@@ -2,7 +2,6 @@ package com.apicatalog.jsonld;
 
 import static org.junit.Assume.assumeFalse;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -15,11 +14,11 @@ import org.junit.runners.Parameterized;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.loader.HttpLoader;
-import com.apicatalog.jsonld.loader.UriRewriter;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdMockServer;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
+import com.apicatalog.jsonld.suite.loader.UriRewriter;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 @RunWith(Parameterized.class)
@@ -72,13 +71,11 @@ public class RemoteTest {
         } catch (JsonLdError e) {
             Assert.fail(e.getMessage());
             
-        } catch (IOException e) {
-            Assert.fail(e.getMessage());
         }        
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")
-    public static Collection<Object[]> data() throws IOException {
+    public static Collection<Object[]> data() throws JsonLdError {
         return JsonLdManifestLoader
                     .load(JsonLdManifestLoader.JSON_LD_API_BASE, "remote-doc-manifest.jsonld")
                     .stream()            

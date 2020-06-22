@@ -3,7 +3,6 @@ package com.apicatalog.jsonld;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -54,11 +53,11 @@ public class CompactTest {
                 
                 Assert.assertNotNull(jsonContext);
                 Assert.assertNotNull(jsonContext.getDocument());
-                Assert.assertNotNull(jsonContext.getDocument().asJsonStructure());
+                Assert.assertNotNull(jsonContext.getDocument().getJsonStructure());
                                 
                 return JsonLd.compact(
                                     testCase.input, 
-                                    jsonContext.getDocument().asJsonStructure()
+                                    jsonContext.getDocument().getJsonStructure()
                                     )
                                 .options(options)
                                 .get();
@@ -70,7 +69,7 @@ public class CompactTest {
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")
-    public static Collection<Object[]> data() throws IOException {        
+    public static Collection<Object[]> data() throws JsonLdError {        
         return JsonLdManifestLoader
                 .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld")
                 .stream()            

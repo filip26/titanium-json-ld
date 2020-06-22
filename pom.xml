@@ -66,8 +66,6 @@
          <!--  test resources -->
         <junit.version>4.13</junit.version>
         <wiremock.version>2.26.3</wiremock.version>
-        <test-suite.version>20200518</test-suite.version>
-        <test-suite-framing.version>20200609</test-suite-framing.version>
     </properties>
 
     <dependencies>
@@ -89,20 +87,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        
-        <dependency>        
-            <groupId>com.github.w3c</groupId>
-            <artifactId>json-ld-test-suite</artifactId>
-            <version>${test-suite.version}</version>
-            <scope>test</scope>           
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.w3c</groupId>
-            <artifactId>json-ld-framing-test-suite</artifactId>
-            <version>${test-suite-framing.version}</version>
             <scope>test</scope>
         </dependency>
         
@@ -152,14 +136,5 @@
             </plugin>             
         </plugins>
     </build>
-
-    <repositories>    
-        <!--  Test Resources  -->
-        <repository>
-            <id>github</id>
-            <name>GitHub filip26 Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/filip26/json-ld-api</url>
-           </repository>
-    </repositories>
 
 </project>

@@ -1,10 +1,13 @@
-package com.apicatalog.jsonld.loader;
+package com.apicatalog.jsonld.suite.loader;
 
 import java.net.URI;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.loader.HttpLoader;
+import com.apicatalog.jsonld.loader.LoadDocumentCallback;
+import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 
 public final class UriRewriter implements LoadDocumentCallback {
 

@@ -16,14 +16,10 @@ public final class JsonDocument implements Document {
 
     private JsonStructure structure;
 
-    private JsonDocument(final JsonStructure structue) {
+    protected JsonDocument(final JsonStructure structue) {
         this.structure = structue;
     }
     
-    public static final Document of(JsonStructure structure) {
-        return new JsonDocument(structure);
-    }
-
     public static final Document parse(final Reader reader)  throws JsonLdError {
         
         try (final JsonParser parser = Json.createParser(reader)) {
@@ -53,8 +49,23 @@ public final class JsonDocument implements Document {
     
     
     @Override
-    public JsonStructure asJsonStructure() throws JsonLdError {
+    public JsonStructure getJsonStructure() throws JsonLdError {
         return structure;
+    }
+
+    @Override
+    public byte[] getRawPayload() throws JsonLdError {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isJsonStructure() {
+        return true;
+    }
+    
+    @Override
+    public boolean isRawPayload() {
+        return false;
     }
 
 }

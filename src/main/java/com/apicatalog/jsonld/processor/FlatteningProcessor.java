@@ -8,7 +8,7 @@ import javax.json.JsonStructure;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.flattening.Flattening;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -32,7 +32,7 @@ public final class FlatteningProcessor {
         
         RemoteDocument jsonContext = options.getDocumentLoader().loadDocument(context, new LoadDocumentOptions());
         
-        return flatten(input, jsonContext.getDocument().asJsonStructure(), options);        
+        return flatten(input, jsonContext.getDocument().getJsonStructure(), options);        
     }
     
     public static final JsonStructure flatten(final URI input, final JsonStructure context, final JsonLdOptions options) throws JsonLdError {
@@ -72,7 +72,7 @@ public final class FlatteningProcessor {
         if (JsonUtils.isNotNull(context)) {
          
             RemoteDocument document = new RemoteDocument();
-            document.setDocument(JsonDocument.of(flattenedOutput));
+            document.setDocument(Document.of(flattenedOutput));
             
             JsonLdOptions compactionOptions = new JsonLdOptions(options);
             

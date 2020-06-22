@@ -224,7 +224,7 @@ public class ActiveContextBuilder {
                                                     .loadDocument(URI.create(contextImportUri), loaderOptions)
                                                     ;
 
-                    importedStructure = remoteImport.getDocument().asJsonStructure();
+                    importedStructure = remoteImport.getDocument().getJsonStructure();
 
                     if (importedStructure == null) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE);
@@ -485,7 +485,7 @@ public class ActiveContextBuilder {
 
             documentUrl = remoteImport.getDocumentUrl();
 
-            importedStructure = remoteImport.getDocument().asJsonStructure();
+            importedStructure = remoteImport.getDocument().getJsonStructure();
 
             if (importedStructure == null) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");

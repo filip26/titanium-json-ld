@@ -19,11 +19,11 @@ import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
-import com.apicatalog.jsonld.loader.UriRewriter;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdMockServer;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerEarl;
+import com.apicatalog.jsonld.suite.loader.UriRewriter;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.RdfDataset;
@@ -38,11 +38,11 @@ public class EarlGenerator {
     public static final String VERSION = "0.7";
     public static final String RELEASE_DATE = "2020-06-17";
     
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws JsonLdError, IOException {
         (new EarlGenerator()).generate(Paths.get(FILE_NAME));
     }
 
-    public void generate(final Path path) throws IOException {
+    public void generate(final Path path) throws JsonLdError, IOException {
         
         try (PrintWriter writer = new PrintWriter(path.toFile())) {
             
@@ -57,7 +57,7 @@ public class EarlGenerator {
         }
     }
     
-    public void testExpand(PrintWriter writer) throws IOException {
+    public void testExpand(PrintWriter writer) throws JsonLdError {
 
         JsonLdManifestLoader
             .load(JsonLdManifestLoader.JSON_LD_API_BASE, "expand-manifest.jsonld")
@@ -72,7 +72,7 @@ public class EarlGenerator {
                     );
     }
 
-    public void testCompact(final PrintWriter writer) throws IOException {
+    public void testCompact(final PrintWriter writer) throws JsonLdError {
 
         JsonLdManifestLoader
             .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld")
@@ -86,7 +86,7 @@ public class EarlGenerator {
                                                                     
                                     return JsonLd.compact(
                                                         testCase.input, 
-                                                        jsonContext.getDocument().asJsonStructure()
+                                                        jsonContext.getDocument().getJsonStructure()
                                                         )
                                                     .options(options)
                                                     .get();
@@ -95,7 +95,7 @@ public class EarlGenerator {
                     );
     }
 
-    public void testFlatten(final PrintWriter writer) throws IOException {
+    public void testFlatten(final PrintWriter writer) throws JsonLdError {
 
         JsonLdManifestLoader
             .load(JsonLdManifestLoader.JSON_LD_API_BASE, "flatten-manifest.jsonld")
@@ -110,7 +110,7 @@ public class EarlGenerator {
                                  if (testCase.context != null) {
                                      jsonContext = options.getDocumentLoader().loadDocument(testCase.context, new LoadDocumentOptions());
                                      
-                                     if (jsonContext == null || jsonContext.getDocument() == null || jsonContext.getDocument().asJsonStructure() == null) {
+                                     if (jsonContext == null || jsonContext.getDocument() == null || jsonContext.getDocument().getJsonStructure() == null) {
                                          throw new IllegalStateException();
                                      }
 
@@ -118,7 +118,7 @@ public class EarlGenerator {
                                                  
                                  return JsonLd
                                              .flatten(testCase.input) 
-                                             .context(jsonContext != null ?  jsonContext.getDocument().asJsonStructure() : null)
+                                             .context(jsonContext != null ?  jsonContext.getDocument().getJsonStructure() : null)
                                              .options(options)
                                              .get();
                                  })
@@ -126,7 +126,7 @@ public class EarlGenerator {
                     );
     }
 
-    public void testToRdf(final PrintWriter writer) throws IOException {
+    public void testToRdf(final PrintWriter writer) throws JsonLdError {
 
         JsonLdManifestLoader
             .load(JsonLdManifestLoader.JSON_LD_API_BASE, "toRdf-manifest.jsonld")
@@ -135,7 +135,7 @@ public class EarlGenerator {
     }
 
 
-    public void testFromRdf(PrintWriter writer) throws IOException {
+    public void testFromRdf(PrintWriter writer) throws JsonLdError {
 
         JsonLdManifestLoader
             .load(JsonLdManifestLoader.JSON_LD_API_BASE, "fromRdf-manifest.jsonld")
@@ -163,7 +163,7 @@ public class EarlGenerator {
                     );
     }
 
-    public void testFrame(PrintWriter writer) throws IOException {
+    public void testFrame(PrintWriter writer) throws JsonLdError {
 
         JsonLdManifestLoader
             .load(JsonLdManifestLoader.JSON_LD_FRAMING_BASE, "frame-manifest.jsonld")
@@ -179,7 +179,7 @@ public class EarlGenerator {
     }
 
     
-    public void testRemote(PrintWriter writer) throws IOException {
+    public void testRemote(PrintWriter writer) throws JsonLdError {
 
         JsonLdManifestLoader
             .load(JsonLdManifestLoader.JSON_LD_API_BASE, "remote-doc-manifest.jsonld")

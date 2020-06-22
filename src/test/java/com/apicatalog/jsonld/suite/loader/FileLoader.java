@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.loader;
+package com.apicatalog.jsonld.suite.loader;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -9,6 +9,8 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.loader.LoadDocumentCallback;
+import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 
 public class FileLoader implements LoadDocumentCallback {
 

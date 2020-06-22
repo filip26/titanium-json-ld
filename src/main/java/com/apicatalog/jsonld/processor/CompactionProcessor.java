@@ -32,7 +32,7 @@ public final class CompactionProcessor {
         
         RemoteDocument jsonContext = options.getDocumentLoader().loadDocument(context, new LoadDocumentOptions());
         
-        return compact(input, jsonContext.getDocument().asJsonStructure(), options);        
+        return compact(input, jsonContext.getDocument().getJsonStructure(), options);        
     }
     
     public static final JsonObject compact(final URI input, final JsonStructure context, final JsonLdOptions options) throws JsonLdError {

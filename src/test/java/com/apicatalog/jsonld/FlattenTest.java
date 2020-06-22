@@ -2,7 +2,6 @@ package com.apicatalog.jsonld;
 
 import static org.junit.Assume.assumeFalse;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -51,12 +50,12 @@ public class FlattenTest {
                     
                     Assert.assertNotNull(jsonContext);
                     Assert.assertNotNull(jsonContext.getDocument());
-                    Assert.assertNotNull(jsonContext.getDocument().asJsonStructure());
+                    Assert.assertNotNull(jsonContext.getDocument().getJsonStructure());
                 }
                                 
                 return JsonLd
                         .flatten(testCase.input) 
-                        .context(jsonContext != null ?  jsonContext.getDocument().asJsonStructure() : null)
+                        .context(jsonContext != null ?  jsonContext.getDocument().getJsonStructure() : null)
                         .options(options)
                         .get();
 
@@ -68,7 +67,7 @@ public class FlattenTest {
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")
-    public static Collection<Object[]> data() throws IOException {        
+    public static Collection<Object[]> data() throws JsonLdError {        
         return JsonLdManifestLoader
                 .load(JsonLdManifestLoader.JSON_LD_API_BASE, "flatten-manifest.jsonld")
                 .stream()            

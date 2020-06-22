@@ -7,7 +7,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
 
-import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
 
 /**
@@ -31,7 +31,7 @@ public final class JsonLdInput {
     
     public static JsonLdInput of(final JsonObject...objects) {
         RemoteDocument document = new RemoteDocument();        
-        document.setDocument(JsonDocument.of(Json.createArrayBuilder(Arrays.asList(objects)).build()));
+        document.setDocument(Document.of(Json.createArrayBuilder(Arrays.asList(objects)).build()));
         return new JsonLdInput(document);
     }
 

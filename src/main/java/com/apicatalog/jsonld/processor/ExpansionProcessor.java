@@ -50,7 +50,7 @@ public final class ExpansionProcessor {
 
     public static final JsonArray expand(RemoteDocument input, final JsonLdOptions options, boolean frameExpansion) throws JsonLdError {
 
-        final JsonStructure jsonStructure = input.getDocument().asJsonStructure();
+        final JsonStructure jsonStructure = input.getDocument().getJsonStructure();
 
         // 5. Initialize a new empty active context. The base IRI and
         // original base URL of the active context is set to the documentUrl
