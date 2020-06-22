@@ -88,21 +88,10 @@ Fork and clone the project repository:
 > git clone git@github.com:filip26/titanium-json-ld.git
 ```
 
-#### Install test packages
-
-Download [json-ld-test-suite](https://github.com/filip26/json-ld-api/packages/248430) and [json-ld-framing-test-suite](https://github.com/filip26/json-ld-api/packages/261048). 
-
-```bash
-> mvn install:install-file -Dfile=<path-to-json-ld-test-suite> -DgroupId=com.github.w3c \
--DartifactId=json-ld-test-suite -Dversion=20200518 -Dpackaging=jar
-
-> mvn install:install-file -Dfile=<path-to-json-ld-framing-test-suite> -DgroupId=com.github.w3c \
--DartifactId=json-ld-framing-test-suite -Dversion=20200609 -Dpackaging=jar
-
-```
-#### Compile sources
+Compile sources
 
 ```bash
 > mvn package
 ```
+
 Each pull request must pass tests.

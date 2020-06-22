@@ -9,19 +9,17 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.stream.Collectors;
 
 import org.junit.Assert;
 
+import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.http.link.Link;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.HttpLoader;
+import com.apicatalog.jsonld.loader.LoadDocumentOptions;
+import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
 import com.apicatalog.jsonld.uri.UriResolver;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 
@@ -35,7 +33,7 @@ public final class JsonLdMockServer {
         this.testBase = testBase;
     }
     
-    public void start() throws IOException {
+    public void start() throws JsonLdError {
         
         String inputPath;
         
@@ -46,8 +44,7 @@ public final class JsonLdMockServer {
             inputPath = testCase.input.toString();
         }
 
-        try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.JSON_LD_API_BASE + inputPath.substring(testCase.baseUri.length()))) {
-
+        
             if (testCase.redirectTo != null) {
                 stubFor(get(urlEqualTo(testCase.input.toString().substring(testBase.length())))
                         .willReturn(aResponse()
@@ -79,45 +76,37 @@ public final class JsonLdMockServer {
                 Assert.assertNotNull(contentType);
 
                 String linkUri = UriResolver.resolve(testCase.input, link.target().toString());
-                
-                try (InputStream lis = getClass().getResourceAsStream(JsonLdManifestLoader.JSON_LD_API_BASE + linkUri.substring(testCase.baseUri.length()))) {
 
-                    String inputContent = new BufferedReader(new InputStreamReader(lis, StandardCharsets.UTF_8))
-                            .lines()
-                            .collect(Collectors.joining("\n"));
+                RemoteDocument linkedDocument = (new ZipResourceLoader(false)).loadDocument(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE +  linkUri.substring(testCase.baseUri.length())), new LoadDocumentOptions());
 
-                    stubFor(get(urlEqualTo(linkUri.substring(testBase.length())))
-                            .willReturn(aResponse()
-                                .withStatus(200)
-                                .withHeader("Content-Type", contentType.toString())
-                                .withBody(inputContent)
-                                    )); 
-                } 
+                stubFor(get(urlEqualTo(linkUri.substring(testBase.length())))
+                        .willReturn(aResponse()
+                            .withStatus(200)
+                            .withHeader("Content-Type", contentType.toString())
+                            .withBody(linkedDocument.getDocument().getRawPayload())
+                                ));  
             }
                 
             ResponseDefinitionBuilder mockResponseBuilder = aResponse();
+
+            RemoteDocument inputDocument = (new ZipResourceLoader(false)).loadDocument(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE + inputPath.substring(testCase.baseUri.length())), new LoadDocumentOptions());
             
-            if (is != null) {
+            if (inputDocument != null) {
                 mockResponseBuilder.withStatus(200);
                 
                 if (testCase.httpLink != null) {
                     testCase.httpLink.forEach(link -> mockResponseBuilder.withHeader("Link", link));
                 }
-                
-                String inputContent = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
-                                              .lines()
-                                              .collect(Collectors.joining("\n"));
-                
+                                
                 mockResponseBuilder
                         .withHeader("Content-Type", testCase.contentType.toString())
-                        .withBody(inputContent);
+                        .withBody(inputDocument.getDocument().getRawPayload());
                 
             } else {
                 mockResponseBuilder.withStatus(404);                  
             }
                 
             stubFor(get(urlEqualTo(inputPath.substring(testBase.length()))).willReturn(mockResponseBuilder));
-        }
         
     }
     

@@ -2,7 +2,6 @@ package com.apicatalog.jsonld;
 
 import static org.junit.Assume.assumeFalse;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -56,7 +55,7 @@ public class FrameTest {
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")
-    public static Collection<Object[]> data() throws IOException {
+    public static Collection<Object[]> data() throws JsonLdError {
         return JsonLdManifestLoader
                     .load(JsonLdManifestLoader.JSON_LD_FRAMING_BASE, "frame-manifest.jsonld")
                     .stream()            

@@ -2,8 +2,9 @@ package com.apicatalog.jsonld;
 
 import static org.junit.Assume.assumeFalse;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URI;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -13,10 +14,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.lang.Version;
+import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
+import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.io.RdfFormat;
@@ -50,12 +54,13 @@ public class RdfToJsonLdTest {
         try {
             
             (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
-                
-                try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.input.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
-            
-                    Assert.assertNotNull(is);
+
+                try {            
+                    RemoteDocument inputDocument = (new ZipResourceLoader(false)).loadDocument(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.input.toString().substring("https://w3c.github.io/json-ld-api/tests/".length())), new LoadDocumentOptions());
+
+                    Assert.assertNotNull(inputDocument);
                     
-                    RdfDataset input = Rdf.createReader(is, RdfFormat.N_QUADS).readDataset();
+                    RdfDataset input = Rdf.createReader(new ByteArrayInputStream(inputDocument.getDocument().getRawPayload()), RdfFormat.N_QUADS).readDataset();
                     
                     return JsonLd.fromRdf(input).options(options).get();
                 
@@ -73,7 +78,7 @@ public class RdfToJsonLdTest {
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")
-    public static Collection<Object[]> data() throws IOException {
+    public static Collection<Object[]> data() throws JsonLdError {
         return JsonLdManifestLoader
                     .load(JsonLdManifestLoader.JSON_LD_API_BASE, "fromRdf-manifest.jsonld")
                     .stream()            

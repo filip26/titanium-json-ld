@@ -29,7 +29,7 @@ final class LinkHeaderParser {
             STRING_VALUE, LITERAL_VALUE, ESCAPE, UNEXPECTED }
     
     private URI baseUri;
-    
+
     private final StringBuilder valueBuilder;
     
     private List<Link> links;
@@ -382,8 +382,9 @@ final class LinkHeaderParser {
     private final void escape(final char ch) {
         if (ch == 't') {
             valueBuilder.append('\t');
+            
         } else {
-            valueBuilder.append(ch);    
+            valueBuilder.append(ch);
         }
         
         state = State.STRING_VALUE;
