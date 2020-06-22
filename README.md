@@ -88,7 +88,7 @@ Fork and clone the project repository:
 > git clone git@github.com:filip26/titanium-json-ld.git
 ```
 
-Compile sources
+Compile sources:
 
 ```bash
 > mvn package
