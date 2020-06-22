@@ -86,7 +86,7 @@ public class ZipResourceLoader implements LoadDocumentCallback {
         byte[] buffer = new byte[16384];
         int readed;
         
-        while ((readed = is.read(buffer, 0, buffer.length)) > 0) {
+        while ((readed = is.read(buffer, 0, buffer.length)) != -1) {
             byteArrayStream.write(buffer, 0, readed);
         }
 

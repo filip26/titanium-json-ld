@@ -1,8 +1,9 @@
 package com.apicatalog.jsonld.earl;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -24,6 +25,7 @@ import com.apicatalog.jsonld.suite.JsonLdMockServer;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerEarl;
 import com.apicatalog.jsonld.suite.loader.UriRewriter;
+import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.RdfDataset;
@@ -134,33 +136,36 @@ public class EarlGenerator {
             .forEach(testCase -> printResult(writer, testCase.uri, testToRdf(testCase)));
     }
 
-
     public void testFromRdf(PrintWriter writer) throws JsonLdError {
 
         JsonLdManifestLoader
             .load(JsonLdManifestLoader.JSON_LD_API_BASE, "fromRdf-manifest.jsonld")
             .stream()
             .forEach(testCase ->                
-                        printResult(writer, testCase.uri,           
-                                (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
-                                
-                                    try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.input.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
-                                       
-                                        if (is == null) {
-                                            throw new IllegalStateException();
-                                        }
-                                        
-                                        RdfDataset input = Rdf.createReader(is, RdfFormat.N_QUADS).readDataset();
-                                        
-                                        return JsonLd.fromRdf(input).options(options).get();
-                                    
-                                    } catch (IOException | NQuadsReaderException | UnsupportedFormatException e) {
-                                        return null;
+                    printResult(writer, testCase.uri,           
+                            (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
+
+                                try {
+                                    RemoteDocument inputDocument = (new ZipResourceLoader(false)).loadDocument(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.input.toString().substring("https://w3c.github.io/json-ld-api/tests/".length())), new LoadDocumentOptions());
+
+                                    if (inputDocument == null) {
+                                        throw new IllegalStateException();
                                     }
                                     
-                                })
-                         )
-                    );
+                                    RdfDataset input = Rdf.createReader(
+                                                                new ByteArrayInputStream(inputDocument.getDocument().getRawPayload()), 
+                                                                RdfFormat.N_QUADS)
+                                                            .readDataset();
+                                    
+                                    return JsonLd.fromRdf(input).options(options).get();
+                                
+                                } catch (IOException | NQuadsReaderException | UnsupportedFormatException e) {
+                                    return null;
+                                }
+                                
+                            })
+                     )
+                );
     }
 
     public void testFrame(PrintWriter writer) throws JsonLdError {
@@ -308,10 +313,18 @@ public class EarlGenerator {
         if (testCase.expect == null) {
             return false;
         }
+        
+        try {
 
-        try (InputStream is = getClass().getResourceAsStream(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.expect.toString().substring("https://w3c.github.io/json-ld-api/tests/".length()))) {
-            
-            RdfDataset expected = Rdf.createReader(is, RdfFormat.N_QUADS).readDataset();
+            RemoteDocument expectedDocument = (new ZipResourceLoader(false)).loadDocument(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.expect.toString().substring("https://w3c.github.io/json-ld-api/tests/".length())), new LoadDocumentOptions());
+
+            if (expectedDocument == null) {
+                throw new IllegalStateException();
+            }
+
+            RdfDataset expected = Rdf.createReader(
+                                        new ByteArrayInputStream(expectedDocument.getDocument().getRawPayload()),
+                                        RdfFormat.N_QUADS).readDataset();
 
             if (expected == null) {
                 return false;
@@ -319,7 +332,7 @@ public class EarlGenerator {
 
             return RdfComparison.equals(expected, result);
 
-        } catch (NQuadsReaderException | IOException | UnsupportedFormatException e ) {
+        } catch (NQuadsReaderException | IOException | JsonLdError | UnsupportedFormatException e ) {
 
         }
         return false;
