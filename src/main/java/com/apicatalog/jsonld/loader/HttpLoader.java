@@ -186,18 +186,16 @@ public class HttpLoader implements LoadDocumentCallback {
                                             );
             }
 
-            // 7.   
-            final Document document = JsonDocument.parse(new InputStreamReader(response.body()));
-
             if (remoteDocument.getDocumentUrl() == null) {
                 remoteDocument.setDocumentUrl(targetUri);
             }
 
             remoteDocument.setContentType(MediaType.of(contentType.type(), contentType.subtype()));
-            remoteDocument.setDocument(document);
+            remoteDocument.setDocument(fetchDocument(response));
             remoteDocument.setProfile(contentType.parameters().firstValue("profile").orElse(null));
 
             return remoteDocument;
+
             
         } catch (InterruptedException e) {
             
@@ -232,5 +230,12 @@ public class HttpLoader implements LoadDocumentCallback {
         builder.append(MediaType.JSON.toString());
         builder.append(";q=0.9,*/*;q=0.8"); 
         return builder.toString();        
+    }
+    
+    public static final Document fetchDocument(final HttpResponse<InputStream> response) throws JsonLdError, IOException {
+                
+        try (InputStream is = response.body()) {
+            return JsonDocument.parse(new InputStreamReader(is));
+        }
     }
 }
