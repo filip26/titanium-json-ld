@@ -3,7 +3,7 @@
 An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-based Serialization for Linked Data) specification in Java utilizing [JSONP](https://javaee.github.io/jsonp/) (JSR 374 - Java API for JSON Processing).
 
 ![Build](https://github.com/filip26/titanium-json-ld/workflows/Java%20CI%20with%20Maven/badge.svg)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/c530c6b43b0243c08ce81521c5b4cf6a)](https://www.codacy.com/manual/filip26/titanium-json-ld?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=filip26/titanium-json-ld&amp;utm_campaign=Badge_Grade)
+[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/filip26/titanium-json-ld.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/filip26/titanium-json-ld/context:java)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/c530c6b43b0243c08ce81521c5b4cf6a)](https://www.codacy.com/manual/filip26/titanium-json-ld?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=filip26/titanium-json-ld&amp;utm_campaign=Badge_Coverage)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
@@ -27,9 +27,7 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 
 ## Installation
 
-### Maven Central
-
-#### Titanium JSON-LD
+**Titanium JSON-LD**
 
 Maven
 
@@ -44,11 +42,11 @@ Maven
 
 Gradle
 
-```
+```gradle
 compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '0.7.3'
 ```
 
-#### JSONP Provider
+**JSONP Provider**
 
 Add JSONP provider, if it is not on the classpath already. 
 
@@ -65,7 +63,7 @@ Maven
 
 Gradle
 
-```
+```gradle
 compile group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
 
 ```
