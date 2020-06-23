@@ -35,6 +35,7 @@ public class RemoteDocument {
     }
 
     /**
+     * The value of the HTTP Link header when profile attribute matches <code>http://www.w3.org/ns/json-ld#context</code>.
      * 
      * @return
      */
@@ -43,8 +44,7 @@ public class RemoteDocument {
     }
 
     /**
-     * The final URL of the loaded document. This is important to handle HTTP
-     * redirects properly.
+     * The final {@link URI} of the loaded document.
      * 
      * @return
      */

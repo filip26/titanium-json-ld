@@ -6,8 +6,8 @@ import com.apicatalog.jsonld.api.JsonLdProcessor;
 
 /**
  * The {@link RdfGraph} interface describes operations on an RDF graph used by
- * the {@link JsonLdProcessor#fromRdf() fromRdf()} and
- * {@link JsonLdProcessor#toRdf() toRdf()} methods in the
+ * the @link JsonLdProcessor#fromRdf() fromRdf() and
+ * JsonLdProcessor#toRdf() toRdf() methods in the
  * {@link JsonLdProcessor} interface. The interface may be used for constructing
  * a new {@link RdfGraph}, which is composed of zero or more {@link RdfTriple}
  * instances.
