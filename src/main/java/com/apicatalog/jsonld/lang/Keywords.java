@@ -96,8 +96,8 @@ public final class Keywords {
      * If value has the form of a keyword (i.e., it matches the ABNF rule "@"1*ALPHA
      * from [RFC5234])
      * 
-     * @param value
-     * @return
+     * @param value to check
+     * @return <code>true</code> if the provided value has keyword form
      */
     public static boolean matchForm(final String value) {
         return value.startsWith("@") && value.length() > 1

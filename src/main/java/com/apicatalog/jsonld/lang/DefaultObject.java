@@ -15,8 +15,8 @@ public final class DefaultObject {
      * @see <a href="https://www.w3.org/TR/json-ld11/#dfn-default-object">Default
      *      Object</a>
      * 
-     * @param value
-     * @return
+     * @param value to check
+     * @return <code>true</code> if the provided value is valid default object
      */
     public static final boolean isDefaultObject(JsonValue value) {
         return JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.DEFAULT);

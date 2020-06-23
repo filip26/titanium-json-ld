@@ -46,7 +46,7 @@ public class RemoteDocument {
     /**
      * The final {@link URI} of the loaded document.
      * 
-     * @return {@link} of the loaded document or <code>null</null> if not available
+     * @return {@link URI} of the loaded document or <code>null</code> if not available
      */
     public URI getDocumentUrl() {
         return documentUrl;

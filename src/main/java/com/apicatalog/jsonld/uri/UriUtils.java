@@ -39,10 +39,13 @@ public final class UriUtils {
     }
     
     /**
+     * Check if the provided URI ends with generic delimiter.
+     * 
      * @see <a href="https://tools.ietf.org/html/rfc3986#section-2.2">URI - Reserved
      *      Characters </a>
-     * @param uri
-     * @return
+     *      
+     * @param uri to check
+     * @return <code>true</code> if the provided URI ends with delimiter
      */
     public static final boolean endsWithGenDelim(final String uri) {
         return uri.endsWith(":") || uri.endsWith("/") || uri.endsWith("?") || uri.endsWith("#") || uri.endsWith("[")

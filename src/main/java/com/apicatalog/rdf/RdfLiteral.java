@@ -21,7 +21,7 @@ public interface RdfLiteral {
      * An absolute IRI denoting the datatype IRI of the literal. If the value is
      * rdf:langString, language MUST be specified.
      * 
-     * @return
+     * @return an absolute IRI, never <code>null</code>
      */
     String getDatatype();
 
@@ -29,7 +29,7 @@ public interface RdfLiteral {
      * An optional language tag as defined by [BCP47]. If this value is specified,
      * datatype MUST be rdf:langString.
      * 
-     * @return
+     * @return language tag or <code>null</code> if not set
      */
     String getLanguage();
     

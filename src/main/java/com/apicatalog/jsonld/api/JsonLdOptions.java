@@ -129,17 +129,21 @@ public final class JsonLdOptions {
      * The base IRI to use when expanding or
      * <a href="https://www.w3.org/TR/json-ld11-api/#dfn-compact">compacting</a> the
      * document. If set, this overrides the input document's IRI.
+     * 
+     * @return the base URI or <code>null</code>
      */
     public URI getBase() {
         return base;
     }
 
     /**
-     * If set to true, the {@link JsonLdProcessor} replaces arrays with just one
+     * If set to <code>true</code>, the {@link JsonLdProcessor} replaces arrays with just one
      * element with that element during
      * <a href="https://www.w3.org/TR/json-ld11-api/#dfn-compact">compaction</a>. If
      * set to false, all arrays will remain arrays even if they have just one
      * element.
+     * 
+     * @return <code>true</code> if array compaction is enabled
      */
     public boolean isCompactArrays() {
         return compactArrays;
@@ -149,6 +153,8 @@ public final class JsonLdOptions {
      * Determines if IRIs are compacted relative to the {@link #getBase()} option
      * or document location when
      * <a href="https://www.w3.org/TR/json-ld11-api/#dfn-compact">compacting</a>.
+     * 
+     * @return <code>true</code> if IRI relativization is enabled
      */
     public boolean isCompactToRelative() {
         return compactToRelative;
@@ -159,6 +165,8 @@ public final class JsonLdOptions {
      * contexts, implementing the {@link LoadDocumentCallback}. If specified, it is
      * used to retrieve remote documents and contexts; otherwise, if not specified,
      * the processor's built-in loader is used.
+     * 
+     * @return the loader or <code>null</code> is is not set
      */
     public LoadDocumentCallback getDocumentLoader() {
         return documentLoader;
@@ -172,6 +180,8 @@ public final class JsonLdOptions {
      * identifier</a> is targeted, extracts all encountered <a href=
      * "https://www.w3.org/TR/json-ld11-api/#dfn-json-ld-script-element">JSON-LD
      * script elements</a> using an array form, if necessary.
+     * 
+     * @return <code>true</code> if script extraction is enabled
      */
     public boolean isExtractAllScripts() {
         return extractAllScripts;
@@ -181,6 +191,8 @@ public final class JsonLdOptions {
      * If set to <code>true</code>, certain algorithm processing steps where
      * indicated are ordered lexicographically. If <code>false</code>, order is not
      * considered in processing.
+     * 
+     * @return <code>true</code> if array sorting is enabled
      */
     public boolean isOrdered() {
         return ordered;
