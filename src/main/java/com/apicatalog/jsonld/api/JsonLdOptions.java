@@ -12,7 +12,7 @@ import com.apicatalog.jsonld.loader.LoadDocumentCallback;
  * The {@link JsonLdOptions} type is used to pass various options to the
  * {@link JsonLdProcessor} methods.
  * 
- * @see <a href=https://www.w3.org/TR/json-ld11-api/#the-jsonldoptions-type">The
+ * @see <a href="https://www.w3.org/TR/json-ld11-api/#the-jsonldoptions-type">The
  *      JsonLdOptions Specification.</a>
  * 
  */
@@ -129,8 +129,6 @@ public final class JsonLdOptions {
      * The base IRI to use when expanding or
      * <a href="https://www.w3.org/TR/json-ld11-api/#dfn-compact">compacting</a> the
      * document. If set, this overrides the input document's IRI.
-     * 
-     * @return
      */
     public URI getBase() {
         return base;
@@ -142,8 +140,6 @@ public final class JsonLdOptions {
      * <a href="https://www.w3.org/TR/json-ld11-api/#dfn-compact">compaction</a>. If
      * set to false, all arrays will remain arrays even if they have just one
      * element.
-     * 
-     * @return
      */
     public boolean isCompactArrays() {
         return compactArrays;
@@ -153,8 +149,6 @@ public final class JsonLdOptions {
      * Determines if IRIs are compacted relative to the {@link #getBase()} option
      * or document location when
      * <a href="https://www.w3.org/TR/json-ld11-api/#dfn-compact">compacting</a>.
-     * 
-     * @return
      */
     public boolean isCompactToRelative() {
         return compactToRelative;
@@ -165,8 +159,6 @@ public final class JsonLdOptions {
      * contexts, implementing the {@link LoadDocumentCallback}. If specified, it is
      * used to retrieve remote documents and contexts; otherwise, if not specified,
      * the processor's built-in loader is used.
-     * 
-     * @return
      */
     public LoadDocumentCallback getDocumentLoader() {
         return documentLoader;
@@ -180,8 +172,6 @@ public final class JsonLdOptions {
      * identifier</a> is targeted, extracts all encountered <a href=
      * "https://www.w3.org/TR/json-ld11-api/#dfn-json-ld-script-element">JSON-LD
      * script elements</a> using an array form, if necessary.
-     * 
-     * @return
      */
     public boolean isExtractAllScripts() {
         return extractAllScripts;
@@ -191,8 +181,6 @@ public final class JsonLdOptions {
      * If set to <code>true</code>, certain algorithm processing steps where
      * indicated are ordered lexicographically. If <code>false</code>, order is not
      * considered in processing.
-     * 
-     * @return
      */
     public boolean isOrdered() {
         return ordered;

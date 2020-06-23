@@ -247,7 +247,7 @@ public enum JsonLdErrorCode {
     INVALID_FRAME,
     
     /**
-     * The value for <cpde>@embed</code> is not one recognized for the object embed flag.
+     * The value for <code>@embed</code> is not one recognized for the object embed flag.
      * 
      * @see <a href="https://www.w3.org/TR/json-ld11-framing/#dom-jsonldframingerrorcode-invalid-@embed-value">invalid @embed value</a>
      */

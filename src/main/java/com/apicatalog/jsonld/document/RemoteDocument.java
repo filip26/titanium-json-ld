@@ -28,7 +28,7 @@ public class RemoteDocument {
      * The <a href="https://tools.ietf.org/html/rfc2045#section-5">Content-Type</a>
      * of the loaded document, exclusive of any optional parameters.
      * 
-     * @return
+     * @return <code>Content-Type</code> of the loaded document or <code>null</code> if not avaiable
      */
     public MediaType getContentType() {
         return contentType;
@@ -37,7 +37,7 @@ public class RemoteDocument {
     /**
      * The value of the HTTP Link header when profile attribute matches <code>http://www.w3.org/ns/json-ld#context</code>.
      * 
-     * @return
+     * @return attached {@link URI} referencing document context or <code>null</code> 
      */
     public URI getContextUrl() {
         return contextUrl;
@@ -46,7 +46,7 @@ public class RemoteDocument {
     /**
      * The final {@link URI} of the loaded document.
      * 
-     * @return
+     * @return {@link} of the loaded document or <code>null</null> if not available
      */
     public URI getDocumentUrl() {
         return documentUrl;
@@ -60,7 +60,7 @@ public class RemoteDocument {
      * The value of any <code>profile</code> parameter retrieved as part of the
      * original {@link #getContentType()}.
      * 
-     * @return
+     * @return document profile or <code>null</code>
      */
     public String getProfile() {
         return profile;
@@ -70,7 +70,7 @@ public class RemoteDocument {
      * The retrieved document. This can either be the raw payload or the already
      * parsed document.
      * 
-     * @return
+     * @return parsed or raw document
      */
     public Document getDocument() {
         return document;
