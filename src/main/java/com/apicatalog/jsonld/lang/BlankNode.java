@@ -25,18 +25,20 @@ public final class BlankNode {
      * 
      * @see <a href="https://www.w3.org/TR/n-quads/#sec-grammar">N-Quads Grammar</a>
      * 
+     * @param blankNodeId to check
+     * @return <code>true</code> if the provided string is well formed blank node identifier
      */
-    public static boolean isWellFormed(final String label) {
+    public static boolean isWellFormed(final String blankNodeId) {
 
-        if (label == null) {
+        if (blankNodeId == null) {
             throw new IllegalArgumentException();
         }
         
-        if (label.length() < 3) {
+        if (blankNodeId.length() < 3) {
             return false;
         }
 
-        int[] chars = label.codePoints().toArray();
+        int[] chars = blankNodeId.codePoints().toArray();
 
         if (chars[0] != '_' 
                 || chars[1] != ':' 

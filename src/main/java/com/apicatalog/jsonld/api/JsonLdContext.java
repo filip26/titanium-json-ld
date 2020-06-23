@@ -9,6 +9,7 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
+import javax.json.JsonString;
 import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
@@ -16,7 +17,7 @@ import com.apicatalog.jsonld.json.JsonUtils;
 
 /**
  * The {@link JsonLdContext} interface is used to refer to a value that may be a
- * {@link JsonLdRecord}, a sequence of {@link JsonLdRecord}, or a string
+ * {@link JsonObject}, a sequence of {@link JsonObject}, or a {@link JsonString}
  * representing an <code>IRI</code>, which can be dereferenced to retrieve a
  * valid JSON document.
  * 

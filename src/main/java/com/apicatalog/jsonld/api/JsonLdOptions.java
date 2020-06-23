@@ -12,7 +12,7 @@ import com.apicatalog.jsonld.loader.LoadDocumentCallback;
  * The {@link JsonLdOptions} type is used to pass various options to the
  * {@link JsonLdProcessor} methods.
  * 
- * @see <a href=https://www.w3.org/TR/json-ld11-api/#the-jsonldoptions-type">The
+ * @see <a href="https://www.w3.org/TR/json-ld11-api/#the-jsonldoptions-type">The
  *      JsonLdOptions Specification.</a>
  * 
  */
@@ -130,20 +130,20 @@ public final class JsonLdOptions {
      * <a href="https://www.w3.org/TR/json-ld11-api/#dfn-compact">compacting</a> the
      * document. If set, this overrides the input document's IRI.
      * 
-     * @return
+     * @return the base URI or <code>null</code>
      */
     public URI getBase() {
         return base;
     }
 
     /**
-     * If set to true, the {@link JsonLdProcessor} replaces arrays with just one
+     * If set to <code>true</code>, the {@link JsonLdProcessor} replaces arrays with just one
      * element with that element during
      * <a href="https://www.w3.org/TR/json-ld11-api/#dfn-compact">compaction</a>. If
      * set to false, all arrays will remain arrays even if they have just one
      * element.
      * 
-     * @return
+     * @return <code>true</code> if array compaction is enabled
      */
     public boolean isCompactArrays() {
         return compactArrays;
@@ -154,7 +154,7 @@ public final class JsonLdOptions {
      * or document location when
      * <a href="https://www.w3.org/TR/json-ld11-api/#dfn-compact">compacting</a>.
      * 
-     * @return
+     * @return <code>true</code> if IRI relativization is enabled
      */
     public boolean isCompactToRelative() {
         return compactToRelative;
@@ -166,7 +166,7 @@ public final class JsonLdOptions {
      * used to retrieve remote documents and contexts; otherwise, if not specified,
      * the processor's built-in loader is used.
      * 
-     * @return
+     * @return the loader or <code>null</code> is is not set
      */
     public LoadDocumentCallback getDocumentLoader() {
         return documentLoader;
@@ -181,7 +181,7 @@ public final class JsonLdOptions {
      * "https://www.w3.org/TR/json-ld11-api/#dfn-json-ld-script-element">JSON-LD
      * script elements</a> using an array form, if necessary.
      * 
-     * @return
+     * @return <code>true</code> if script extraction is enabled
      */
     public boolean isExtractAllScripts() {
         return extractAllScripts;
@@ -192,7 +192,7 @@ public final class JsonLdOptions {
      * indicated are ordered lexicographically. If <code>false</code>, order is not
      * considered in processing.
      * 
-     * @return
+     * @return <code>true</code> if array sorting is enabled
      */
     public boolean isOrdered() {
         return ordered;

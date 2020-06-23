@@ -27,7 +27,48 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 
 ## Installation
 
-TBD
+### Maven Central
+
+#### Titanium JSON-LD
+
+Maven
+
+```xml
+<dependency>
+    <groupId>com.apicatalog</groupId>
+    <artifactId>titanium-json-ld</artifactId>
+    <version>0.7.3</version>
+</dependency>
+
+```
+
+Gradle
+
+```
+compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '0.7.3'
+```
+
+#### JSONP Provider
+
+Add JSONP provider, if it is not on the classpath already. 
+
+Maven
+
+```xml
+<dependency>
+    <groupId>org.glassfish</groupId>
+    <artifactId>javax.json</artifactId>
+    <version>1.1.4</version>
+</dependency>
+
+```
+
+Gradle
+
+```
+compile group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
+
+```
 
 ## Roadmap
 

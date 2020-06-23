@@ -13,7 +13,7 @@ public interface RdfTriple {
     /**
      * An absolute IRI or blank node identifier denoting the subject of the triple.
      * 
-     * @return
+     * @return an absolute URI or blank node
      */
     RdfSubject getSubject();
 
