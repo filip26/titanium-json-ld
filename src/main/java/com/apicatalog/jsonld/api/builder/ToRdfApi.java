@@ -5,6 +5,7 @@ import java.net.URI;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
+import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.processor.ToRdfProcessor;
@@ -13,16 +14,24 @@ import com.apicatalog.rdf.RdfDataset;
 public final class ToRdfApi {
 
     // required
-    private final URI document;
+    private final RemoteDocument document;
+    private final URI documentUri;
     
     // optional
     private JsonLdOptions options;
     
-    public ToRdfApi(URI document) {
-        this.document = document;
+    public ToRdfApi(URI documentUri) {
+        this.document = null;
+        this.documentUri = documentUri;
         this.options = new JsonLdOptions();
     }
-    
+
+    public ToRdfApi(RemoteDocument document) {
+        this.document = document;
+        this.documentUri = null;
+        this.options = new JsonLdOptions();
+    }
+
     public ToRdfApi options(JsonLdOptions options) {
         
         if (options == null) {
@@ -85,6 +94,14 @@ public final class ToRdfApi {
     }
     
     public RdfDataset get() throws JsonLdError {
-        return ToRdfProcessor.toRdf(document, options);
+        if (documentUri != null) {
+            return ToRdfProcessor.toRdf(documentUri, options);
+        }
+        
+        if (document != null) {
+            return ToRdfProcessor.toRdf(document, options);
+        }
+        
+        throw new IllegalArgumentException();
     }
 }

@@ -6,6 +6,7 @@ import javax.json.JsonStructure;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.processor.FlatteningProcessor;
@@ -13,16 +14,26 @@ import com.apicatalog.jsonld.processor.FlatteningProcessor;
 public final class FlatteningApi {
 
     // required
-    private final URI document;
+    private final URI documentUri;
+    private final RemoteDocument document;
     
     // optional
-    private JsonStructure jsonContext;
+    private RemoteDocument context;
     private URI contextUri;
     private JsonLdOptions options;
     
-    public FlatteningApi(URI document) {
+    public FlatteningApi(URI documentUri) {
+        this.document = null;
+        this.documentUri = documentUri;
+        this.context = null;
+        this.contextUri = null;
+        this.options = new JsonLdOptions();
+    }
+
+    public FlatteningApi(RemoteDocument document) {
         this.document = document;
-        this.jsonContext = null;
+        this.documentUri = null;
+        this.context = null;
         this.contextUri = null;
         this.options = new JsonLdOptions();
     }
@@ -83,20 +94,42 @@ public final class FlatteningApi {
         return context(URI.create(contextUri));
     }
 
-    public FlatteningApi context(JsonStructure jsonContext) {
-        this.jsonContext = jsonContext;
+    public FlatteningApi context(JsonStructure context) {
+        this.context = context != null ?  RemoteDocument.of(context) : null;
         return this;
     }
 
+    public FlatteningApi context(RemoteDocument context) {
+        this.context = context;
+        return this;
+    }
 
     public JsonStructure get() throws JsonLdError {
 
-        if (jsonContext != null) {
-            return FlatteningProcessor.flatten(document, jsonContext, options);
+        if (document != null && context != null) {
+            return FlatteningProcessor.flatten(document, context, options);
         }
-        if (contextUri != null) {
-            return FlatteningProcessor.flatten(document, jsonContext, options);
+
+        if (document != null && contextUri != null) {
+            return FlatteningProcessor.flatten(document, contextUri, options);
         }
-        return FlatteningProcessor.flatten(document, (JsonStructure)null, options);
+
+        if (document != null) {
+            return FlatteningProcessor.flatten(document, (RemoteDocument)null, options);
+        }
+
+        if (documentUri != null && context != null) {
+            return FlatteningProcessor.flatten(documentUri, context, options);
+        }
+
+        if (documentUri != null && contextUri != null) {
+            return FlatteningProcessor.flatten(documentUri, contextUri, options);
+        }
+
+        if (documentUri != null) {
+            return FlatteningProcessor.flatten(documentUri, (RemoteDocument)null, options);
+        }
+
+        throw new IllegalStateException();
     }
 }

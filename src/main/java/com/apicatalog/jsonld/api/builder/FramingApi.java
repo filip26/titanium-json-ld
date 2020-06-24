@@ -6,6 +6,7 @@ import javax.json.JsonObject;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.processor.FramingProcessor;
@@ -13,15 +14,27 @@ import com.apicatalog.jsonld.processor.FramingProcessor;
 public final class FramingApi {
 
     // required
+    private final RemoteDocument document;
     private final URI documentUri;
+    private final RemoteDocument frame;
     private final URI frameUri;
     
     // optional
     private JsonLdOptions options;
     
     public FramingApi(URI documentUri, URI frameUri) {
+        this.document = null;
         this.documentUri = documentUri;
+        this.frame = null;
         this.frameUri = frameUri;
+        this.options = new JsonLdOptions();
+    }
+
+    public FramingApi(RemoteDocument document, RemoteDocument frame) {
+        this.document = document;
+        this.documentUri = null;
+        this.frame = frame;
+        this.frameUri = null;
         this.options = new JsonLdOptions();
     }
 
@@ -72,7 +85,14 @@ public final class FramingApi {
         return ordered(true);
     }
     
-    public JsonObject get() throws JsonLdError {        
-        return FramingProcessor.frame(documentUri, frameUri, options);
+    public JsonObject get() throws JsonLdError {
+        if (documentUri != null && frameUri != null) {
+            return FramingProcessor.frame(documentUri, frameUri, options);
+        }
+        if (document != null && frame != null) {
+            return FramingProcessor.frame(document, frame, options);
+        }
+
+        throw new IllegalStateException();
     }
 }

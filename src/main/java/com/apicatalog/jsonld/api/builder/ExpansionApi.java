@@ -6,6 +6,7 @@ import javax.json.JsonArray;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.processor.ExpansionProcessor;
@@ -14,12 +15,20 @@ public final class ExpansionApi {
 
     // required
     private final URI documentUri;
+    private final RemoteDocument document;
     
     // optional
     private JsonLdOptions options;
     
     public ExpansionApi(URI documentUri) {
+        this.document = null;
         this.documentUri = documentUri;
+        this.options = new JsonLdOptions();
+    }
+
+    public ExpansionApi(RemoteDocument document) {
+        this.document = document;
+        this.documentUri = null;
         this.options = new JsonLdOptions();
     }
 
@@ -70,7 +79,13 @@ public final class ExpansionApi {
         return ordered(true);
     }
     
-    public JsonArray get() throws JsonLdError {        
-        return ExpansionProcessor.expand(documentUri, options);
+    public JsonArray get() throws JsonLdError {
+        if (document != null) {
+            return ExpansionProcessor.expand(document, options, false);
+            
+        } else if (documentUri != null) {
+            return ExpansionProcessor.expand(documentUri, options);
+        }
+        throw new IllegalStateException();
     }
 }

@@ -7,6 +7,7 @@ import javax.json.JsonStructure;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.processor.CompactionProcessor;
@@ -14,24 +15,35 @@ import com.apicatalog.jsonld.processor.CompactionProcessor;
 public final class CompactionApi {
 
     // required
-    private final URI document;
-    private final JsonStructure jsonContext;
+    private final RemoteDocument document;
+    private final URI documentUri;
+    private final RemoteDocument context;
     private final URI contextUri;
     
     // optional
     private JsonLdOptions options;
     
-    public CompactionApi(URI document, JsonStructure context) {
-        this.document = document;
-        this.jsonContext = context;
+    public CompactionApi(URI documentUri, JsonStructure context) {
+        this.document = null;
+        this.documentUri = documentUri;
+        this.context = RemoteDocument.of(context);
         this.contextUri = null;
         this.options = new JsonLdOptions();
     }
 
-    public CompactionApi(URI document, URI contextUri) {
-        this.document = document;
-        this.jsonContext = null;
+    public CompactionApi(URI documentUri, URI contextUri) {
+        this.document = null;
+        this.documentUri = documentUri;
+        this.context = null;
         this.contextUri = contextUri;
+        this.options = new JsonLdOptions();
+    }
+
+    public CompactionApi(RemoteDocument document, RemoteDocument context) {
+        this.document = document;
+        this.documentUri = null;
+        this.context = context;
+        this.contextUri = null;
         this.options = new JsonLdOptions();
     }
 
@@ -92,11 +104,14 @@ public final class CompactionApi {
     }
 
     public JsonObject get() throws JsonLdError {
-        if (jsonContext != null) {
-            return CompactionProcessor.compact(document, jsonContext, options);
+        if (documentUri != null && contextUri != null)  {
+            return CompactionProcessor.compact(documentUri, contextUri, options);
+        }        
+        if (documentUri != null && context != null)  {
+            return CompactionProcessor.compact(documentUri, context, options);
         }
-        if (contextUri != null) {
-            return CompactionProcessor.compact(document, jsonContext, options);
+        if (document != null && context != null)  {
+            return CompactionProcessor.compact(document, context, options);
         }
         throw new IllegalStateException();
     }

@@ -12,7 +12,6 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.flattening.Flattening;
 import com.apicatalog.jsonld.json.JsonContentProvider;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 
 /**
@@ -28,18 +27,32 @@ public final class FlatteningProcessor {
     public static final JsonStructure flatten(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError {
         
         if (context == null) {
-            return flatten(input, (JsonStructure)null, options);
+            return flatten(input, (RemoteDocument)null, options);
         }
         
         
-        JsonStructure contextStructure = JsonContentProvider
+        final RemoteDocument contextDocument = JsonContentProvider
                                                 .create(options.getDocumentLoader())
-                                                .fetchJsonStructure(context, new LoadDocumentOptions());
+                                                .fetchJsonDocument(context, new LoadDocumentOptions());
                 
-        return flatten(input, contextStructure, options);        
+        return flatten(input, contextDocument, options);        
     }
-    
-    public static final JsonStructure flatten(final URI input, final JsonStructure context, final JsonLdOptions options) throws JsonLdError {
+
+    public static final JsonStructure flatten(final RemoteDocument input, final URI context, final JsonLdOptions options) throws JsonLdError {
+        
+        if (context == null) {
+            return flatten(input, (RemoteDocument)null, options);
+        }
+        
+        
+        final RemoteDocument contextDocument = JsonContentProvider
+                                                .create(options.getDocumentLoader())
+                                                .fetchJsonDocument(context, new LoadDocumentOptions());
+                
+        return flatten(input, contextDocument, options);        
+    }
+
+    public static final JsonStructure flatten(final URI input, final RemoteDocument context, final JsonLdOptions options) throws JsonLdError {
         
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
@@ -59,21 +72,20 @@ public final class FlatteningProcessor {
         return flatten(remoteDocument, context, options);
     }
 
-    public static final JsonStructure flatten(final RemoteDocument input, final JsonStructure context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonStructure flatten(final RemoteDocument input, final RemoteDocument context, final JsonLdOptions options) throws JsonLdError {
         
         // 4.
-        JsonLdOptions expansionOptions = new JsonLdOptions(options);
+        final JsonLdOptions expansionOptions = new JsonLdOptions(options);
         expansionOptions.setOrdered(false);
         
-        JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
+        final JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
         
         // 5.
-        
         // 6.
         JsonStructure flattenedOutput = Flattening.with(expandedInput).ordered(options.isOrdered()).flatten();
 
         // 6.1.
-        if (JsonUtils.isNotNull(context)) {
+        if (context != null) {
          
             RemoteDocument document = new RemoteDocument();
             document.setDocument(Document.of(flattenedOutput));
