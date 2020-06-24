@@ -10,8 +10,9 @@ import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.processor.FlatteningProcessor;
+import com.apicatalog.jsonld.uri.UriUtils;
 
-public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<FlatteningApi> {
+public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<FlatteningApi>, ContextApi<FlatteningApi> {
 
     // required
     private final URI documentUri;
@@ -63,7 +64,7 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
 
     @Override
     public FlatteningApi base(String baseUri) {
-        return base(URI.create(baseUri));
+        return base(baseUri != null ? UriUtils.create(baseUri) : null);
     }
 
     public FlatteningApi compactArrays(boolean enable) {
@@ -91,21 +92,25 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
     public FlatteningApi ordered() {
         return ordered(true);
     }
-    
+
+    @Override
     public FlatteningApi context(URI contextUri) {
         this.contextUri = contextUri;
         return this;
     }
     
+    @Override
     public FlatteningApi context(String contextUri) {
-        return context(URI.create(contextUri));
+        return context(contextUri != null ? UriUtils.create(contextUri) : null);
     }
 
+    @Override
     public FlatteningApi context(JsonStructure context) {
         this.context = context != null ?  RemoteDocument.of(context) : null;
         return this;
     }
 
+    @Override
     public FlatteningApi context(RemoteDocument context) {
         this.context = context;
         return this;

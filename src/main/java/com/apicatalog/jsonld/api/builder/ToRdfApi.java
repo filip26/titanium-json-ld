@@ -2,6 +2,8 @@ package com.apicatalog.jsonld.api.builder;
 
 import java.net.URI;
 
+import javax.json.JsonStructure;
+
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
@@ -9,9 +11,10 @@ import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.processor.ToRdfProcessor;
+import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.RdfDataset;
 
-public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>{
+public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>, ContextApi<ToRdfApi>{
 
     // required
     private final RemoteDocument document;
@@ -43,13 +46,27 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>{
         return this;
     }
 
+    @Override
     public ToRdfApi context(URI contextUri) {
         options.setExpandContext(contextUri);
         return this;
     }
 
+    @Override
     public ToRdfApi context(String contextUri) {
-        return context(URI.create(contextUri));
+        return context(contextUri != null ? UriUtils.create(contextUri) : null);
+    }
+    
+    @Override
+    public ToRdfApi context(JsonStructure context) {
+        options.setExpandContext(context != null ? RemoteDocument.of(context) : null);
+        return this;
+    }
+
+    @Override
+    public ToRdfApi context(RemoteDocument context) {
+        options.setExpandContext(context);
+        return this;
     }
 
     public ToRdfApi produceGeneralizedRdf(RdfDirection rdfDirection) {

@@ -139,7 +139,7 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
     /**
      * Get the result of compaction.
      * 
-     * @return {@link JsonObject} representing a result of compaction
+     * @return {@link JsonObject} representing compacted document
      * @throws JsonLdError
      */
     public JsonObject get() throws JsonLdError {

@@ -2,8 +2,10 @@ package com.apicatalog.jsonld.api;
 
 import java.net.URI;
 
+import javax.json.Json;
 import javax.json.JsonObject;
 
+import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
@@ -51,7 +53,7 @@ public final class JsonLdOptions {
     /**
      * A context that is used to initialize the active context when expanding a document.
      */
-    private JsonLdContext expandContext;
+    private RemoteDocument expandContext;
     
     private boolean extractAllScripts;
     
@@ -222,7 +224,7 @@ public final class JsonLdOptions {
         return useRdfType;
     }
     
-    public JsonLdContext getExpandContext() {
+    public RemoteDocument getExpandContext() {
         return expandContext;
     }
 
@@ -270,16 +272,22 @@ public final class JsonLdOptions {
         this.useRdfType = useRdfType;
     }
 
-    public void setExpandContext(URI contextLocation) {
-        this.expandContext = JsonLdContext.of(contextLocation);
+    public void setExpandContext(String contextLocation) {
+        this.expandContext = RemoteDocument.of(
+                Json.createArrayBuilder()
+                    .add(Json.createValue(contextLocation)).build());        
     }
     
-    public void setExpandContext(JsonObject contextObject) {
-        this.expandContext = JsonLdContext.of(contextObject);
+    public void setExpandContext(URI contextUri) {
+        setExpandContext(contextUri.toString());
+    }
+
+    public void setExpandContext(JsonObject context) {
+        this.expandContext = RemoteDocument.of(context);
     }
     
-    public void setExpandContext(JsonLdContext expandContext) {
-        this.expandContext = expandContext;
+    public void setExpandContext(RemoteDocument context) {
+        this.expandContext = context;
     }
     
     // Framing
