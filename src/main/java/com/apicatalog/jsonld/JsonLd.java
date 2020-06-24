@@ -249,7 +249,7 @@ public final class JsonLd {
      *  Frames the remote input using given remote frame.
      *  
      * @param document containing parsed or raw <code>JSON</code> representing <code>JSON-LD</code> document to frame
-     * @param frameUri containing parsed or raw <code>JSON</code> representing <code>JSON-LD</code> frame
+     * @param frame containing parsed or raw <code>JSON</code> representing <code>JSON-LD</code> frame
      * @return {@link FramingApi} allowing to set additional parameters
      */
     public static final FramingApi frame(final RemoteDocument document, final RemoteDocument frame) {
