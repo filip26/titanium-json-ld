@@ -20,7 +20,10 @@ import com.apicatalog.jsonld.loader.LoadDocumentCallback;
  */
 public final class JsonLdOptions {
 
-    public enum RdfDirection { I18N_DATATYPE, COMPOUND_LITERAL }
+    public enum RdfDirection {        
+        I18N_DATATYPE,
+        COMPOUND_LITERAL 
+    }
     
     /**
      * The base IRI to use when expanding or compacting the document. 

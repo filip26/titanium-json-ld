@@ -69,17 +69,33 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
         return this;
     }
 
-    public ToRdfApi produceGeneralizedRdf(RdfDirection rdfDirection) {
-        options.setRdfDirection(rdfDirection);
+    /**
+     * If set to true, the JSON-LD processor may emit blank nodes for triple predicates, otherwise they will be omitted.
+     * @param enable
+     * @return builder instance
+     */
+    public ToRdfApi produceGeneralizedRdf(boolean enable) {
+        options.setProduceGeneralizedRdf(enable);
         return this;
     }
 
+    /**
+     * The JSON-LD processor may emit blank nodes for triple predicates.
+     * 
+     * @return builder instance
+     */    
     public ToRdfApi produceGeneralizedRdf() {
         return produceGeneralizedRdf(true);
     }
 
-    public ToRdfApi produceGeneralizedRdf(boolean enable) {
-        options.setProduceGeneralizedRdf(enable);
+    /**
+     * Determines how value objects containing a base direction are transformed to and from RDF.
+     * 
+     * @param direction
+     * @return builder instance
+     */
+    public ToRdfApi rdfDirection(RdfDirection direction) {
+        options.setRdfDirection(direction);
         return this;
     }
 
@@ -117,6 +133,12 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
         return ordered(true);
     }
     
+    /**
+     * Transform provided <code>JSON-LD</code> document into {@link RdfDataset}.
+     * 
+     * @return {@link RdfDataset} representing provided <code>JSON-LD</code> document
+     * @throws JsonLdError
+     */
     public RdfDataset get() throws JsonLdError {
         if (documentUri != null) {
             return ToRdfProcessor.toRdf(documentUri, options);

@@ -5,6 +5,7 @@ import java.net.URI;
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
 
+import com.apicatalog.jsonld.api.JsonLdEmbed;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.RemoteDocument;
@@ -107,7 +108,54 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
     public FramingApi ordered() {
         return ordered(true);
     }
+
+    public FramingApi embed(JsonLdEmbed value) {
+        options.setEmbed(value);
+        return this;
+    }
+
+    public FramingApi explicit(boolean enable) {
+        options.setExplicit(enable);
+        return this;
+    }
+
+    public FramingApi explicit() {
+        return explicit(true);
+    }
+
+    public FramingApi omitDefault(boolean enable) {
+        options.setOmitDefault(enable);
+        return this;
+    }
+
+    public FramingApi omitDefault() {
+        return omitDefault(true);
+    }
+
+    public FramingApi omitGraph(boolean enable) {
+        options.setOmitGraph(enable);
+        return this;
+    }
+
+    public FramingApi omitGraph() {
+        return omitGraph(true);
+    }
+
+    public FramingApi requiredAll(boolean enable) {
+        options.setRequiredAll(enable);
+        return this;
+    }
+
+    public FramingApi requiredAll() {
+        return requiredAll(true);
+    }
     
+    /**
+     * Get the result of framing.
+     * 
+     * @return {@link JsonObject} representing framed document
+     * @throws JsonLdError
+     */
     public JsonObject get() throws JsonLdError {
         if (documentUri != null && frameUri != null) {
             return FramingProcessor.frame(documentUri, frameUri, options);

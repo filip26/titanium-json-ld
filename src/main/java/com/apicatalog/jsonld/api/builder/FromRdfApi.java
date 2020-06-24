@@ -62,6 +62,12 @@ public final class FromRdfApi implements CommonApi<FromRdfApi> {
         return ordered(true);
     }
     
+    /**
+     * Get <code>JSON-LD</code> representation of the provided {@link RdfDataset}.
+     * 
+     * @return {@link JsonArray} representing <code>JSON-LD</code> document
+     * @throws JsonLdError
+     */
     public JsonArray get() throws JsonLdError {
         return FromRdfProcessor.fromRdf(dataset, options);
     }
