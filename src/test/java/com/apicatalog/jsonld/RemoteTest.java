@@ -41,6 +41,8 @@ public class RemoteTest {
     @Rule
     public final WireMockRule wireMockRule = new WireMockRule();
     
+    public static final HttpLoader HTTP_LOADER = new HttpLoader();
+    
     @Test
     public void testRemote() {
 
@@ -61,7 +63,7 @@ public class RemoteTest {
                                     new UriRewriter(
                                                 TESTS_BASE, 
                                                 wireMockRule.baseUrl(), 
-                                                new HttpLoader()));
+                                                HTTP_LOADER));
                 
                 return JsonLd.expand(testCase.input).options(expandOptions).get();
             });
