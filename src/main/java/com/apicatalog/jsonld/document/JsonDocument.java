@@ -2,6 +2,7 @@ package com.apicatalog.jsonld.document;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.Optional;
 
 import javax.json.Json;
 import javax.json.JsonException;
@@ -64,13 +65,13 @@ public final class JsonDocument implements Document {
     }
     
     @Override
-    public JsonStructure getJsonStructure() throws JsonLdError {
-        return structure;
+    public Optional<JsonStructure> getJsonStructure() {
+        return Optional.of(structure);
     }
 
     @Override
-    public byte[] getRawPayload() throws JsonLdError {
-        throw new UnsupportedOperationException();
+    public Optional<byte[]> getRawPayload() {
+        return Optional.empty();
     }
 
     @Override

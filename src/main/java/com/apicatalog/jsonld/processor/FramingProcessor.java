@@ -1,6 +1,5 @@
 package com.apicatalog.jsonld.processor;
 
-import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,13 +24,13 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.context.ActiveContext;
-import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.framing.Frame;
 import com.apicatalog.jsonld.framing.Framing;
 import com.apicatalog.jsonld.framing.FramingState;
+import com.apicatalog.jsonld.json.JsonContentProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -54,15 +53,8 @@ public final class FramingProcessor {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame or Frame.Document is null.");
         }
         
-        final JsonStructure frameStructure;
+        final JsonStructure frameStructure = JsonContentProvider.extractJsonStructure(frame);
         
-        if (frame.getDocument().isRawPayload()) {
-            frameStructure = JsonDocument.parse(new ByteArrayInputStream(frame.getDocument().getRawPayload())).getJsonStructure();
-            
-        } else {
-            frameStructure = frame.getDocument().getJsonStructure();    
-        }
-
         if (JsonUtils.isNotObject(frameStructure)) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not an object but [" + frame + "].");
         }

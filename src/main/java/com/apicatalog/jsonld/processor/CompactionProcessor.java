@@ -1,6 +1,5 @@
 package com.apicatalog.jsonld.processor;
 
-import java.io.ByteArrayInputStream;
 import java.net.URI;
 
 import javax.json.Json;
@@ -14,8 +13,8 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.context.ActiveContext;
-import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.json.JsonContentProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
@@ -31,27 +30,11 @@ public final class CompactionProcessor {
     }
     
     public static final JsonObject compact(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError {
-        
-        RemoteDocument jsonContext = options.getDocumentLoader().loadDocument(context, new LoadDocumentOptions());
-        
-        if (jsonContext == null || jsonContext.getDocument() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "RemoteDocument or Document is null.");
-        }
-        
-        JsonStructure contextStructure = null;
-        
-        if (jsonContext.getDocument().isRawPayload()) {
-            contextStructure = JsonDocument.parse(new ByteArrayInputStream(jsonContext.getDocument().getRawPayload())).getJsonStructure();
-            
-        } else {
-            contextStructure = jsonContext.getDocument().getJsonStructure();    
-        }
-        
-        return compact(input, contextStructure, options);        
+        return compact(input, JsonContentProvider.create(options.getDocumentLoader()).fetchJsonStructure(context, new LoadDocumentOptions()), options);
     }
     
     public static final JsonObject compact(final URI input, final JsonStructure context, final JsonLdOptions options) throws JsonLdError {
-        
+
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }

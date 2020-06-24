@@ -58,7 +58,11 @@ public class JsonLdTestRunnerJunit {
         Assert.assertNotNull(expectedDocument.getDocument());
 
         // compare expected with the result
-        boolean match = JsonLdComparison.equals(expectedDocument.getDocument().getJsonStructure(), result);
+        boolean match = false;
+        
+        if (expectedDocument.getDocument().getJsonStructure().isPresent()) {
+            match = JsonLdComparison.equals(expectedDocument.getDocument().getJsonStructure().get(), result);
+        }
         
         if (!match) {
             System.out.println("Test " + testCase.id + ": " + testCase.name);
@@ -72,7 +76,7 @@ public class JsonLdTestRunnerJunit {
             StringWriter writer = new StringWriter();
             
             JsonWriter jsonWriter1 = writerFactory.createWriter(writer);
-            jsonWriter1.write(expectedDocument.getDocument().getJsonStructure());
+            jsonWriter1.write(expectedDocument.getDocument().getJsonStructure().orElse(null));
             jsonWriter1.close();
 
             writer.append("\n\n");

@@ -59,9 +59,13 @@ public final class JsonLdMockServer {
                 
                 Link link = Link.of(linkValue, URI.create(".")).iterator().next();
                 
-                MediaType contentType = link.type().orElse(null);
+                final MediaType contentType;
                 
-                if (contentType == null) {
+                if (link.type().isPresent()) {
+                    
+                    contentType = link.type().get();
+                    
+                } else {
                     if (link.target().toString().endsWith(".html")) {
                         contentType = MediaType.HTML;
                         
@@ -70,6 +74,9 @@ public final class JsonLdMockServer {
                         
                     } else if (link.target().toString().endsWith(".json")) {
                         contentType = MediaType.JSON;
+                        
+                    } else {
+                        contentType = null;
                     }
                 }
                 
@@ -79,12 +86,18 @@ public final class JsonLdMockServer {
 
                 RemoteDocument linkedDocument = (new ZipResourceLoader(false)).loadDocument(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE +  linkUri.substring(testCase.baseUri.length())), new LoadDocumentOptions());
 
-                stubFor(get(urlEqualTo(linkUri.substring(testBase.length())))
-                        .willReturn(aResponse()
-                            .withStatus(200)
-                            .withHeader("Content-Type", contentType.toString())
-                            .withBody(linkedDocument.getDocument().getRawPayload())
-                                ));  
+                Assert.assertNotNull(linkedDocument);
+                Assert.assertNotNull(linkedDocument.getDocument());
+
+                linkedDocument.getDocument().getRawPayload().ifPresent(byteArray -> {
+                    
+                    stubFor(get(urlEqualTo(linkUri.substring(testBase.length())))
+                            .willReturn(aResponse()
+                                .withStatus(200)
+                                .withHeader("Content-Type", contentType.toString())
+                                .withBody(byteArray))
+                                    );                    
+                });                
             }
                 
             ResponseDefinitionBuilder mockResponseBuilder = aResponse();
@@ -98,9 +111,11 @@ public final class JsonLdMockServer {
                     testCase.httpLink.forEach(link -> mockResponseBuilder.withHeader("Link", link));
                 }
                                 
-                mockResponseBuilder
-                        .withHeader("Content-Type", testCase.contentType.toString())
-                        .withBody(inputDocument.getDocument().getRawPayload());
+                inputDocument.getDocument().getRawPayload().ifPresent(byteArray -> {
+                            mockResponseBuilder
+                                    .withHeader("Content-Type", testCase.contentType.toString())
+                                    .withBody(byteArray);
+                });
                 
             } else {
                 mockResponseBuilder.withStatus(404);                  

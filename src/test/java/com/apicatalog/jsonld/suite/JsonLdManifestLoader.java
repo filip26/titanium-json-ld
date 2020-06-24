@@ -9,7 +9,9 @@ import javax.json.JsonValue;
 import org.junit.Assert;
 
 import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
 
@@ -38,7 +40,11 @@ public final class JsonLdManifestLoader {
         Assert.assertNotNull(manifest);
         Assert.assertNotNull(manifest.getDocument());
 
-        final JsonObject manifestObject = (JsonObject)manifest.getDocument().getJsonStructure();
+        final JsonObject manifestObject = manifest
+                                                .getDocument().getJsonStructure()
+                                                .filter(JsonUtils::isObject)
+                                                .map(JsonObject.class::cast)
+                                                .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED));
         
         String baseUri = manifestObject.getString("baseIri");
         

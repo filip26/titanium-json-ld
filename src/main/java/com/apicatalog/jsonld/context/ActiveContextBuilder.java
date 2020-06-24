@@ -1,6 +1,5 @@
 package com.apicatalog.jsonld.context;
 
-import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,9 +15,9 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
-import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.http.ProfileConstants;
+import com.apicatalog.jsonld.json.JsonContentProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.DirectionType;
@@ -55,8 +54,9 @@ public class ActiveContextBuilder {
 
     // runtime
     private ActiveContext result;
+    private final JsonContentProvider jsonContentProvider;
 
-    private ActiveContextBuilder(final ActiveContext activeContext) {
+    private ActiveContextBuilder(final ActiveContext activeContext, final JsonContentProvider jsonContentProvider) {
 
         this.activeContext = activeContext;
 
@@ -68,10 +68,11 @@ public class ActiveContextBuilder {
         
         // runtime
         this.result = null;
+        this.jsonContentProvider = jsonContentProvider;
     }
 
-    public static final ActiveContextBuilder with(final ActiveContext activeContext) {
-        return new ActiveContextBuilder(activeContext);
+    public static final ActiveContextBuilder with(final ActiveContext activeContext) {        
+        return new ActiveContextBuilder(activeContext, JsonContentProvider.create(activeContext.getOptions().getDocumentLoader()));
     }
 
     public ActiveContextBuilder remoteContexts(Collection<String> value) {
@@ -221,21 +222,10 @@ public class ActiveContextBuilder {
                 JsonStructure importedStructure = null;
 
                 try {
-                    RemoteDocument remoteImport = activeContext.getOptions()
-                                                    .getDocumentLoader()
-                                                    .loadDocument(URI.create(contextImportUri), loaderOptions)
-                                                    ;
 
-                    if (remoteImport == null || remoteImport.getDocument() == null) {
-                        throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "RemoteDocument or Document is null.");
-                    }
-                    
-                    if (remoteImport.getDocument().isRawPayload()) {
-                        importedStructure = JsonDocument.parse(new ByteArrayInputStream(remoteImport.getDocument().getRawPayload())).getJsonStructure();
-                        
-                    } else {
-                        importedStructure = remoteImport.getDocument().getJsonStructure();    
-                    }
+                    importedStructure = JsonContentProvider
+                                            .create(activeContext.getOptions().getDocumentLoader())
+                                            .fetchJsonStructure(URI.create(contextImportUri), loaderOptions);
 
                     if (importedStructure == null) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE);
@@ -489,19 +479,14 @@ public class ActiveContextBuilder {
         URI documentUrl = null;
 
         try {
-            RemoteDocument remoteImport = 
-                                activeContext.getOptions()
-                                    .getDocumentLoader()
-                                    .loadDocument(URI.create(contextUri), loaderOptions);
+            
+            RemoteDocument remoteImport = jsonContentProvider.fetchJsonDocument(URI.create(contextUri), loaderOptions); 
 
             documentUrl = remoteImport.getDocumentUrl();
 
-            importedStructure = remoteImport.getDocument().getJsonStructure();
-
-            if (importedStructure == null) {
-                throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");
-            }
-
+            importedStructure = remoteImport.getDocument().getJsonStructure()
+                                    .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.")); 
+                                
         // 5.2.5.1.
         } catch (JsonLdError e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);

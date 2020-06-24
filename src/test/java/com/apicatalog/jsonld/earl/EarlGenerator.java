@@ -85,10 +85,10 @@ public class EarlGenerator {
                             
                                     //pre-load context
                                     RemoteDocument jsonContext = options.getDocumentLoader().loadDocument(testCase.context, new LoadDocumentOptions());
-                                                                    
+
                                     return JsonLd.compact(
                                                         testCase.input, 
-                                                        jsonContext.getDocument().getJsonStructure()
+                                                        jsonContext.getDocument().getJsonStructure().get()
                                                         )
                                                     .options(options)
                                                     .get();
@@ -112,7 +112,7 @@ public class EarlGenerator {
                                  if (testCase.context != null) {
                                      jsonContext = options.getDocumentLoader().loadDocument(testCase.context, new LoadDocumentOptions());
                                      
-                                     if (jsonContext == null || jsonContext.getDocument() == null || jsonContext.getDocument().getJsonStructure() == null) {
+                                     if (jsonContext == null || jsonContext.getDocument() == null || jsonContext.getDocument().getJsonStructure().isEmpty()) {
                                          throw new IllegalStateException();
                                      }
 
@@ -120,7 +120,7 @@ public class EarlGenerator {
                                                  
                                  return JsonLd
                                              .flatten(testCase.input) 
-                                             .context(jsonContext != null ?  jsonContext.getDocument().getJsonStructure() : null)
+                                             .context(jsonContext != null ?  jsonContext.getDocument().getJsonStructure().get() : null)
                                              .options(options)
                                              .get();
                                  })
@@ -153,7 +153,7 @@ public class EarlGenerator {
                                     }
                                     
                                     RdfDataset input = Rdf.createReader(
-                                                                new ByteArrayInputStream(inputDocument.getDocument().getRawPayload()), 
+                                                                new ByteArrayInputStream(inputDocument.getDocument().getRawPayload().get()), 
                                                                 RdfFormat.N_QUADS)
                                                             .readDataset();
                                     
@@ -323,7 +323,7 @@ public class EarlGenerator {
             }
 
             RdfDataset expected = Rdf.createReader(
-                                        new ByteArrayInputStream(expectedDocument.getDocument().getRawPayload()),
+                                        new ByteArrayInputStream(expectedDocument.getDocument().getRawPayload().get()),
                                         RdfFormat.N_QUADS).readDataset();
 
             if (expected == null) {

@@ -53,11 +53,11 @@ public class CompactTest {
                 
                 Assert.assertNotNull(jsonContext);
                 Assert.assertNotNull(jsonContext.getDocument());
-                Assert.assertNotNull(jsonContext.getDocument().getJsonStructure());
+                Assert.assertTrue(jsonContext.getDocument().getJsonStructure().isPresent());
                                 
                 return JsonLd.compact(
                                     testCase.input, 
-                                    jsonContext.getDocument().getJsonStructure()
+                                    jsonContext.getDocument().getJsonStructure().get()
                                     )
                                 .options(options)
                                 .get();
