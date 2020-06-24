@@ -10,7 +10,7 @@ import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.processor.FromRdfProcessor;
 import com.apicatalog.rdf.RdfDataset;
 
-public final class FromRdfApi {
+public final class FromRdfApi implements CommonApi<FromRdfApi> {
 
     // required
     private final RdfDataset dataset;
@@ -23,6 +23,7 @@ public final class FromRdfApi {
         this.options = new JsonLdOptions();
     }
     
+    @Override
     public FromRdfApi options(JsonLdOptions options) {
         
         if (options == null) {
@@ -33,25 +34,30 @@ public final class FromRdfApi {
         return this;
     }
     
+    @Override
     public FromRdfApi mode(Version processingMode) {
         options.setProcessingMode(processingMode);
         return this;
     }
 
+    @Override
     public FromRdfApi base(URI baseUri) {
         options.setBase(baseUri);
         return this;
     }
 
+    @Override
     public FromRdfApi base(String baseUri) {
         return base(URI.create(baseUri));
     }
 
+    @Override
     public FromRdfApi ordered(boolean enable) {
         options.setOrdered(enable);
         return this;
     }
     
+    @Override
     public FromRdfApi ordered() {
         return ordered(true);
     }

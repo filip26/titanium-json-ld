@@ -33,7 +33,7 @@ public final class JsonLd {
     private static final String FRAME_URI_PARAM_NAME = "frameUri";
     private static final String FRAME_PARAM_NAME = "frame";
 
-    private static final String NULL_CONTEXT_ERROR_MSG = "Provided ontext is null.";
+    private static final String NULL_CONTEXT_ERROR_MSG = "Provided context cannot be null.";
     
     private JsonLd() {
     }
@@ -341,6 +341,7 @@ public final class JsonLd {
         if (remoteDocument.getDocument() == null) {
             throw new IllegalArgumentException("'" + param + "' does not contain valid document but null.");
         }
+        
         if (!remoteDocument.getDocument().isJsonStructure() || !remoteDocument.getDocument().isRawPayload()) {
             throw new IllegalArgumentException("'" + param + "' does not contain valid JSON structure nor raw payload.");
         }

@@ -11,7 +11,7 @@ import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.processor.FramingProcessor;
 
-public final class FramingApi {
+public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<FramingApi> {
 
     // required
     private final RemoteDocument document;
@@ -38,6 +38,7 @@ public final class FramingApi {
         this.options = new JsonLdOptions();
     }
 
+    @Override
     public FramingApi options(JsonLdOptions options) {
         
         if (options == null) {
@@ -57,30 +58,36 @@ public final class FramingApi {
         return context(URI.create(contextUri));
     }
 
+    @Override
     public FramingApi mode(Version processingMode) {
         options.setProcessingMode(processingMode);
         return this;
     }
 
+    @Override
     public FramingApi base(URI baseUri) {
         options.setBase(baseUri);
         return this;
     }
 
+    @Override
     public FramingApi base(String baseUri) {
         return base(URI.create(baseUri));
     }
 
+    @Override
     public FramingApi loader(LoadDocumentCallback loader) {
         options.setDocumentLoader(loader);
         return this;
     }
 
+    @Override
     public FramingApi ordered(boolean enable) {
         options.setOrdered(enable);
         return this;
     }
     
+    @Override
     public FramingApi ordered() {
         return ordered(true);
     }

@@ -11,7 +11,7 @@ import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.processor.ExpansionProcessor;
 
-public final class ExpansionApi {
+public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<ExpansionApi> {
 
     // required
     private final URI documentUri;
@@ -32,6 +32,7 @@ public final class ExpansionApi {
         this.options = new JsonLdOptions();
     }
 
+    @Override
     public ExpansionApi options(JsonLdOptions options) {
         
         if (options == null) {
@@ -51,30 +52,36 @@ public final class ExpansionApi {
         return context(URI.create(contextUri));
     }
 
+    @Override
     public ExpansionApi mode(Version processingMode) {
         options.setProcessingMode(processingMode);
         return this;
     }
 
+    @Override
     public ExpansionApi base(URI baseUri) {
         options.setBase(baseUri);
         return this;
     }
 
+    @Override
     public ExpansionApi base(String baseUri) {
         return base(URI.create(baseUri));
     }
 
+    @Override
     public ExpansionApi loader(LoadDocumentCallback loader) {
         options.setDocumentLoader(loader);
         return this;
     }
 
+    @Override
     public ExpansionApi ordered(boolean enable) {
         options.setOrdered(enable);
         return this;
     }
     
+    @Override
     public ExpansionApi ordered() {
         return ordered(true);
     }

@@ -11,7 +11,7 @@ import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.processor.FlatteningProcessor;
 
-public final class FlatteningApi {
+public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<FlatteningApi> {
 
     // required
     private final URI documentUri;
@@ -38,6 +38,7 @@ public final class FlatteningApi {
         this.options = new JsonLdOptions();
     }
 
+    @Override
     public FlatteningApi options(JsonLdOptions options) {
         
         if (options == null) {
@@ -48,16 +49,19 @@ public final class FlatteningApi {
         return this;
     }
 
+    @Override
     public FlatteningApi mode(Version processingMode) {
         options.setProcessingMode(processingMode);
         return this;
     }
 
+    @Override
     public FlatteningApi base(URI baseUri) {
         options.setBase(baseUri);
         return this;
     }
 
+    @Override
     public FlatteningApi base(String baseUri) {
         return base(URI.create(baseUri));
     }
@@ -71,16 +75,19 @@ public final class FlatteningApi {
         return compactArrays(true);
     }
 
+    @Override
     public FlatteningApi loader(LoadDocumentCallback loader) {
         options.setDocumentLoader(loader);
         return this;
     }
 
+    @Override
     public FlatteningApi ordered(boolean enable) {
         options.setOrdered(enable);
         return this;
     }
 
+    @Override
     public FlatteningApi ordered() {
         return ordered(true);
     }

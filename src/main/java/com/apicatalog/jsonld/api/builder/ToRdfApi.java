@@ -11,7 +11,7 @@ import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.processor.ToRdfProcessor;
 import com.apicatalog.rdf.RdfDataset;
 
-public final class ToRdfApi {
+public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>{
 
     // required
     private final RemoteDocument document;
@@ -32,6 +32,7 @@ public final class ToRdfApi {
         this.options = new JsonLdOptions();
     }
 
+    @Override
     public ToRdfApi options(JsonLdOptions options) {
         
         if (options == null) {
@@ -41,7 +42,7 @@ public final class ToRdfApi {
         this.options = options;
         return this;
     }
-    
+
     public ToRdfApi context(URI contextUri) {
         options.setExpandContext(contextUri);
         return this;
@@ -65,30 +66,36 @@ public final class ToRdfApi {
         return this;
     }
 
+    @Override
     public ToRdfApi mode(Version processingMode) {
         options.setProcessingMode(processingMode);
         return this;
     }
 
+    @Override
     public ToRdfApi base(URI baseUri) {
         options.setBase(baseUri);
         return this;
     }
 
+    @Override
     public ToRdfApi base(String baseUri) {
         return base(URI.create(baseUri));
     }
 
+    @Override
     public ToRdfApi loader(LoadDocumentCallback loader) {
         options.setDocumentLoader(loader);
         return this;
     }
 
+    @Override
     public ToRdfApi ordered(boolean enable) {
         options.setOrdered(enable);
         return this;
     }
     
+    @Override
     public ToRdfApi ordered() {
         return ordered(true);
     }
