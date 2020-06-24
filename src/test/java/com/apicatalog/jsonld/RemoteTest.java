@@ -2,6 +2,7 @@ package com.apicatalog.jsonld;
 
 import static org.junit.Assume.assumeFalse;
 
+import java.net.http.HttpClient;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -40,9 +41,9 @@ public class RemoteTest {
     
     @Rule
     public final WireMockRule wireMockRule = new WireMockRule();
-    
-    public static final HttpLoader HTTP_LOADER = new HttpLoader();
-    
+
+    private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NEVER).build();
+
     @Test
     public void testRemote() {
 
@@ -62,8 +63,8 @@ public class RemoteTest {
                 expandOptions.setDocumentLoader(
                                     new UriBaseRewriter(
                                                 TESTS_BASE, 
-                                                wireMockRule.baseUrl(), 
-                                                HTTP_LOADER));
+                                                wireMockRule.baseUrl(),
+                                                new HttpLoader(HTTP_CLIENT, HttpLoader.MAX_REDIRECTIONS)));
                 
                 return JsonLd.expand(testCase.input).options(expandOptions).get();
             });
