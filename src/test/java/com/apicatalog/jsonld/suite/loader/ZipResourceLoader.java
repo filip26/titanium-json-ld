@@ -52,7 +52,7 @@ public class ZipResourceLoader implements LoadDocumentCallback {
         try (ZipFile zip = new ZipFile(zipFile)) {
             
             ZipEntry zipEntry = zip.getEntry(url.getPath().substring(1));
-            
+
             if (zipEntry == null) {
                 return null;
             }

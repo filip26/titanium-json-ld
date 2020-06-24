@@ -1,5 +1,6 @@
 package com.apicatalog.jsonld.context;
 
+import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +16,7 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.http.ProfileConstants;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -224,7 +226,16 @@ public class ActiveContextBuilder {
                                                     .loadDocument(URI.create(contextImportUri), loaderOptions)
                                                     ;
 
-                    importedStructure = remoteImport.getDocument().getJsonStructure();
+                    if (remoteImport == null || remoteImport.getDocument() == null) {
+                        throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "RemoteDocument or Document is null.");
+                    }
+                    
+                    if (remoteImport.getDocument().isRawPayload()) {
+                        importedStructure = JsonDocument.parse(new ByteArrayInputStream(remoteImport.getDocument().getRawPayload())).getJsonStructure();
+                        
+                    } else {
+                        importedStructure = remoteImport.getDocument().getJsonStructure();    
+                    }
 
                     if (importedStructure == null) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE);

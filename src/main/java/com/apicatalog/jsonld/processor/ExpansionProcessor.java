@@ -1,5 +1,6 @@
 package com.apicatalog.jsonld.processor;
 
+import java.io.ByteArrayInputStream;
 import java.net.URI;
 
 import javax.json.Json;
@@ -12,6 +13,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.expansion.Expansion;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -50,7 +52,18 @@ public final class ExpansionProcessor {
 
     public static final JsonArray expand(RemoteDocument input, final JsonLdOptions options, boolean frameExpansion) throws JsonLdError {
 
-        final JsonStructure jsonStructure = input.getDocument().getJsonStructure();
+        if (input == null || input.getDocument() == null) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "RemoteDocument or Document is null.");
+        }
+        
+        final JsonStructure jsonStructure;
+        
+        if (input.getDocument().isRawPayload()) {
+            jsonStructure = JsonDocument.parse(new ByteArrayInputStream(input.getDocument().getRawPayload())).getJsonStructure();
+            
+        } else {
+            jsonStructure = input.getDocument().getJsonStructure();    
+        }
 
         // 5. Initialize a new empty active context. The base IRI and
         // original base URL of the active context is set to the documentUrl

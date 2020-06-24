@@ -1,5 +1,6 @@
 package com.apicatalog.jsonld.processor;
 
+import java.io.ByteArrayInputStream;
 import java.net.URI;
 
 import javax.json.Json;
@@ -13,6 +14,7 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -32,7 +34,20 @@ public final class CompactionProcessor {
         
         RemoteDocument jsonContext = options.getDocumentLoader().loadDocument(context, new LoadDocumentOptions());
         
-        return compact(input, jsonContext.getDocument().getJsonStructure(), options);        
+        if (jsonContext == null || jsonContext.getDocument() == null) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "RemoteDocument or Document is null.");
+        }
+        
+        JsonStructure contextStructure = null;
+        
+        if (jsonContext.getDocument().isRawPayload()) {
+            contextStructure = JsonDocument.parse(new ByteArrayInputStream(jsonContext.getDocument().getRawPayload())).getJsonStructure();
+            
+        } else {
+            contextStructure = jsonContext.getDocument().getJsonStructure();    
+        }
+        
+        return compact(input, contextStructure, options);        
     }
     
     public static final JsonObject compact(final URI input, final JsonStructure context, final JsonLdOptions options) throws JsonLdError {
