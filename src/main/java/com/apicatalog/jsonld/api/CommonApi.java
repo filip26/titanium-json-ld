@@ -1,8 +1,7 @@
-package com.apicatalog.jsonld.api.builder;
+package com.apicatalog.jsonld.api;
 
 import java.net.URI;
 
-import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.lang.Version;
 
 public interface CommonApi<R> {

@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.api.builder;
+package com.apicatalog.jsonld.api;
 
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 

@@ -1,12 +1,14 @@
-package com.apicatalog.jsonld.api.builder;
+package com.apicatalog.jsonld.api.impl;
 
 import java.net.URI;
 
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
 
+import com.apicatalog.jsonld.api.CommonApi;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.api.LoaderApi;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
@@ -83,7 +85,7 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
      * element.
      *
      * @param enable 
-     * @return {@link CompactionApi} instance
+     * @return builder instance
      */
     public CompactionApi compactArrays(boolean enable) {
         options.setCompactArrays(enable);
@@ -103,7 +105,7 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
      * Determines if IRIs are compacted relative to the {@link #base(URI)} or document location 
      * 
      * @param enable
-     * @return {@link CompactionApi} instance
+     * @return builder instance
      */
     public CompactionApi compactToRelative(boolean enable) {
         options.setCompactToRelative(enable);
@@ -113,7 +115,7 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
     /**
      * IRIs are compacted relative to the {@link #base(URI)} or document location. 
      * 
-     * @return {@link CompactionApi} instance
+     * @return builder instance
      */
     public CompactionApi compactToRelative() {
         return compactToRelative(true);

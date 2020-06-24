@@ -7,21 +7,20 @@ import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonStructure;
 
-import com.apicatalog.jsonld.api.builder.CompactionApi;
-import com.apicatalog.jsonld.api.builder.ExpansionApi;
-import com.apicatalog.jsonld.api.builder.FlatteningApi;
-import com.apicatalog.jsonld.api.builder.FramingApi;
-import com.apicatalog.jsonld.api.builder.FromRdfApi;
-import com.apicatalog.jsonld.api.builder.ToRdfApi;
+import com.apicatalog.jsonld.api.impl.CompactionApi;
+import com.apicatalog.jsonld.api.impl.ExpansionApi;
+import com.apicatalog.jsonld.api.impl.FlatteningApi;
+import com.apicatalog.jsonld.api.impl.FramingApi;
+import com.apicatalog.jsonld.api.impl.FromRdfApi;
+import com.apicatalog.jsonld.api.impl.ToRdfApi;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.RdfDataset;
 
 /**
- * {@link JsonLd} is the main interface you should use to process JSON-LD with Titanium.
- * 
- *  This class provides all methods to process JSON-LD.
- *
+ * The {@link JsonLd} interface is the high-level programming structure
+ * that developers use to access the JSON-LD transformation methods.
+ * This class provides all methods to process JSON-LD.
  */
 public final class JsonLd {
 
