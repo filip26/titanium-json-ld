@@ -1,6 +1,7 @@
 package com.apicatalog.jsonld.suite;
 
 import java.net.URI;
+import java.net.http.HttpClient;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -14,11 +15,14 @@ import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
-import com.apicatalog.jsonld.suite.loader.UriRewriter;
+import com.apicatalog.jsonld.suite.loader.UriBaseRewriter;
 import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
 
 public final class JsonLdTestCase {
+
+    private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NEVER).build();
 
     public String id;
     
@@ -55,7 +59,7 @@ public final class JsonLdTestCase {
     public JsonLdTestCase(final String testsBase) {
         this.testsBase = testsBase;
     }
-    
+
     public static final JsonLdTestCase of(JsonObject o, String manifestUri, String manifestBase, String baseUri) {
         
         final JsonLdTestCase testCase = new JsonLdTestCase(manifestBase);
@@ -145,13 +149,13 @@ public final class JsonLdTestCase {
     public JsonLdOptions getOptions() {
         
         final LoadDocumentCallback loader = 
-                new UriRewriter(
+                new UriBaseRewriter(
                             baseUri, 
                             testsBase,
                             new ZipResourceLoader(true)
                         );
         
-        JsonLdOptions jsonLdOptions = new JsonLdOptions();
+        JsonLdOptions jsonLdOptions = new JsonLdOptions(new HttpLoader(HTTP_CLIENT, HttpLoader.MAX_REDIRECTIONS));
         jsonLdOptions.setOrdered(true);
         jsonLdOptions.setDocumentLoader(loader);
         

@@ -1,6 +1,8 @@
 package com.apicatalog.jsonld.document;
 
+import java.io.InputStream;
 import java.io.Reader;
+import java.util.Optional;
 
 import javax.json.Json;
 import javax.json.JsonException;
@@ -19,43 +21,57 @@ public final class JsonDocument implements Document {
     protected JsonDocument(final JsonStructure structue) {
         this.structure = structue;
     }
-    
-    public static final Document parse(final Reader reader)  throws JsonLdError {
-        
-        try (final JsonParser parser = Json.createParser(reader)) {
 
-            if (!parser.hasNext()) {
-                throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
-            }
+    public static final Document parse(final InputStream is)  throws JsonLdError {
+        try (final JsonParser parser = Json.createParser(is)) {
 
-            parser.next();
-
-            JsonValue root = parser.getValue();
-
-            if (JsonUtils.isArray(root)) {
-                return new JsonDocument(root.asJsonArray());
-            }
-
-            if (JsonUtils.isObject(root)) {
-                return new JsonDocument(root.asJsonObject());
-            }
-
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            return doParse(parser);
             
         } catch (JsonException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
     
+    public static final Document parse(final Reader reader)  throws JsonLdError {
+        
+        try (final JsonParser parser = Json.createParser(reader)) {
+
+            return doParse(parser);
+            
+        } catch (JsonException e) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+        }
+    }
+    
+    private static final Document doParse(final JsonParser parser) throws JsonLdError {
+        
+        if (!parser.hasNext()) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+        }
+
+        parser.next();
+
+        JsonValue root = parser.getValue();
+
+        if (JsonUtils.isArray(root)) {
+            return new JsonDocument(root.asJsonArray());
+        }
+
+        if (JsonUtils.isObject(root)) {
+            return new JsonDocument(root.asJsonObject());
+        }
+
+        throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+    }
     
     @Override
-    public JsonStructure getJsonStructure() throws JsonLdError {
-        return structure;
+    public Optional<JsonStructure> getJsonStructure() {
+        return Optional.of(structure);
     }
 
     @Override
-    public byte[] getRawPayload() throws JsonLdError {
-        throw new UnsupportedOperationException();
+    public Optional<byte[]> getRawPayload() {
+        return Optional.empty();
     }
 
     @Override

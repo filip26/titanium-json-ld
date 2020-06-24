@@ -9,18 +9,18 @@ import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 
-public final class UriRewriter implements LoadDocumentCallback {
+public final class UriBaseRewriter implements LoadDocumentCallback {
 
     private final String sourceBase;
     private final String targetBase;
     
     private final LoadDocumentCallback loader;
     
-    public UriRewriter(final String sourceBase, final String targetBase) {
+    public UriBaseRewriter(final String sourceBase, final String targetBase) {
         this(sourceBase, targetBase, new HttpLoader());
     }
     
-    public UriRewriter(final String sourceBase, final String targetBase, final LoadDocumentCallback loader) {
+    public UriBaseRewriter(final String sourceBase, final String targetBase, final LoadDocumentCallback loader) {
         this.sourceBase = sourceBase;
         this.targetBase = targetBase;
         

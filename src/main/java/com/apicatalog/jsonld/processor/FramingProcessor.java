@@ -16,6 +16,7 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
+import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
@@ -29,6 +30,7 @@ import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.framing.Frame;
 import com.apicatalog.jsonld.framing.Framing;
 import com.apicatalog.jsonld.framing.FramingState;
+import com.apicatalog.jsonld.json.JsonContentProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -47,6 +49,18 @@ public final class FramingProcessor {
     
     public static final JsonObject frame(final RemoteDocument input, final RemoteDocument frame, final JsonLdOptions options) throws JsonLdError {
 
+        if (frame == null || frame.getDocument() == null) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame or Frame.Document is null.");
+        }
+        
+        final JsonStructure frameStructure = JsonContentProvider.extractJsonStructure(frame);
+        
+        if (JsonUtils.isNotObject(frameStructure)) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not an object but [" + frame + "].");
+        }
+        
+        final JsonObject frameObject = frameStructure.asJsonObject();
+        
         // 4.
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
         expansionOptions.setOrdered(false);
@@ -56,9 +70,7 @@ public final class FramingProcessor {
         // 7.
         JsonArray expandedFrame = ExpansionProcessor.expand(frame, expansionOptions, true);
 
-        // 8.
-        final JsonObject frameObject = frame.getDocument().getJsonStructure().asJsonObject(); 
-
+        
         JsonValue context = JsonValue.EMPTY_JSON_OBJECT;
         
         if (frameObject.containsKey(Keywords.CONTEXT)    

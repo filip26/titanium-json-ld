@@ -89,7 +89,11 @@ public class JsonLdToRdfTest {
         try {
             RemoteDocument inputDocument = (new ZipResourceLoader(false)).loadDocument(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.expect.toString().substring("https://w3c.github.io/json-ld-api/tests/".length())), new LoadDocumentOptions());
         
-            RdfDataset expected = Rdf.createReader(new ByteArrayInputStream(inputDocument.getDocument().getRawPayload()), RdfFormat.N_QUADS).readDataset();
+            Assert.assertNotNull(inputDocument);
+            Assert.assertNotNull(inputDocument.getDocument());
+            Assert.assertTrue(inputDocument.getDocument().getRawPayload().isPresent());
+            
+            RdfDataset expected = Rdf.createReader(new ByteArrayInputStream(inputDocument.getDocument().getRawPayload().get()), RdfFormat.N_QUADS).readDataset();
 
             Assert.assertNotNull(expected);
 

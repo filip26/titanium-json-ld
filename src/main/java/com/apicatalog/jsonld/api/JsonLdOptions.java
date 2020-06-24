@@ -78,14 +78,18 @@ public final class JsonLdOptions {
     private Boolean omitGraph;
     
     private boolean requiredAll;
-    
+
     public JsonLdOptions() {
+        this(new HttpLoader());
+    }
+    
+    public JsonLdOptions(HttpLoader httpLoader) {
         
         // default values
         this.base = null;
         this.compactArrays = true;
         this.compactToRelative = true;
-        this.documentLoader = new HttpLoader();
+        this.documentLoader = httpLoader;
         this.expandContext = null;
         this.extractAllScripts = false;
         this.ordered = false;

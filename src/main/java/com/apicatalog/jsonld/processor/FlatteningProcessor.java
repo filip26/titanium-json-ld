@@ -11,6 +11,7 @@ import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.flattening.Flattening;
+import com.apicatalog.jsonld.json.JsonContentProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 
@@ -30,9 +31,12 @@ public final class FlatteningProcessor {
             return flatten(input, (JsonStructure)null, options);
         }
         
-        RemoteDocument jsonContext = options.getDocumentLoader().loadDocument(context, new LoadDocumentOptions());
         
-        return flatten(input, jsonContext.getDocument().getJsonStructure(), options);        
+        JsonStructure contextStructure = JsonContentProvider
+                                                .create(options.getDocumentLoader())
+                                                .fetchJsonStructure(context, new LoadDocumentOptions());
+                
+        return flatten(input, contextStructure, options);        
     }
     
     public static final JsonStructure flatten(final URI input, final JsonStructure context, final JsonLdOptions options) throws JsonLdError {

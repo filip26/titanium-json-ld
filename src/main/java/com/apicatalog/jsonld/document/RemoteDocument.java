@@ -14,7 +14,7 @@ import com.apicatalog.jsonld.loader.LoadDocumentCallback;
  *      Specification</a>
  *
  */
-public class RemoteDocument {
+public final class RemoteDocument {
 
     private MediaType contentType;
     private URI contextUrl;

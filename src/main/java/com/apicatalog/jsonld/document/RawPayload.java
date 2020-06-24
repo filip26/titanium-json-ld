@@ -1,8 +1,8 @@
 package com.apicatalog.jsonld.document;
 
-import javax.json.JsonStructure;
+import java.util.Optional;
 
-import com.apicatalog.jsonld.api.JsonLdError;
+import javax.json.JsonStructure;
 
 public final class RawPayload implements Document {
 
@@ -23,12 +23,12 @@ public final class RawPayload implements Document {
     }
 
     @Override
-    public JsonStructure getJsonStructure() throws JsonLdError {
-        throw new UnsupportedOperationException();
+    public Optional<JsonStructure> getJsonStructure() {
+        return Optional.empty();
     }
 
     @Override
-    public byte[] getRawPayload() throws JsonLdError {
-        return payload;
+    public Optional<byte[]> getRawPayload() {
+        return Optional.of(payload);
     }
 }

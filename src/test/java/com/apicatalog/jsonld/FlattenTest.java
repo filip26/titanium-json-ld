@@ -50,12 +50,12 @@ public class FlattenTest {
                     
                     Assert.assertNotNull(jsonContext);
                     Assert.assertNotNull(jsonContext.getDocument());
-                    Assert.assertNotNull(jsonContext.getDocument().getJsonStructure());
+                    Assert.assertTrue(jsonContext.getDocument().getJsonStructure().isPresent());
                 }
                                 
                 return JsonLd
                         .flatten(testCase.input) 
-                        .context(jsonContext != null ?  jsonContext.getDocument().getJsonStructure() : null)
+                        .context(jsonContext != null ?  jsonContext.getDocument().getJsonStructure().get() : null)
                         .options(options)
                         .get();
 
