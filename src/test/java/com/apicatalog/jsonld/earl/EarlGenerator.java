@@ -24,7 +24,7 @@ import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdMockServer;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerEarl;
-import com.apicatalog.jsonld.suite.loader.UriRewriter;
+import com.apicatalog.jsonld.suite.loader.UriBaseRewriter;
 import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfComparison;
@@ -207,7 +207,7 @@ public class EarlGenerator {
                             JsonLdOptions expandOptions = new JsonLdOptions(options);
                             
                             expandOptions.setDocumentLoader(
-                                                new UriRewriter(
+                                                new UriBaseRewriter(
                                                             RemoteTest.TESTS_BASE, 
                                                             wireMockServer.baseUrl(), 
                                                             new HttpLoader()));

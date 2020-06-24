@@ -18,7 +18,7 @@ import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdMockServer;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
-import com.apicatalog.jsonld.suite.loader.UriRewriter;
+import com.apicatalog.jsonld.suite.loader.UriBaseRewriter;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 @RunWith(Parameterized.class)
@@ -60,7 +60,7 @@ public class RemoteTest {
                 JsonLdOptions expandOptions = new JsonLdOptions(options);
                 
                 expandOptions.setDocumentLoader(
-                                    new UriRewriter(
+                                    new UriBaseRewriter(
                                                 TESTS_BASE, 
                                                 wireMockRule.baseUrl(), 
                                                 HTTP_LOADER));
