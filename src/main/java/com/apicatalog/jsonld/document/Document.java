@@ -18,7 +18,7 @@ public interface Document {
     /**
      * Get the document content as {@link JsonStructure}.
      * 
-     * @return {@link JsonStructure} or {@link Optional.empty()} if document content is not parsed
+     * @return {@link JsonStructure} or <code>Optional.empty()</code> if document content is not parsed
      * @throws JsonLdError
      */
     Optional<JsonStructure> getJsonStructure() throws JsonLdError;
@@ -27,7 +27,7 @@ public interface Document {
     /**
      * Get the document content as byte array.
      * 
-     * @return document content as byte array or {@link Optional.empty()} if raw payload is not available.
+     * @return document content as byte array or <code>Optional.empty()</code> if raw payload is not available.
      * @throws JsonLdError
      */
     Optional<byte[]> getRawPayload() throws JsonLdError;
@@ -45,7 +45,7 @@ public interface Document {
     /**
      * Create a new document from {@link JsonStructure}.
      * 
-     * @param payload representing parsed <code>JSON</code> content
+     * @param structure representing parsed <code>JSON</code> content
      * @return {@link Document} representing <code>JSON</code> content
      */
     public static Document of(final JsonStructure structure) {
