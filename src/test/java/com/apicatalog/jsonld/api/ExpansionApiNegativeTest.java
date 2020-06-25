@@ -9,7 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.RemoteContent;
 import com.apicatalog.jsonld.document.RemoteDocument;
 
 public class ExpansionApiNegativeTest {
@@ -80,7 +80,7 @@ public class ExpansionApiNegativeTest {
     @Test
     public void test8() {
         try {
-            JsonLd.expand(new RemoteDocument(new Document() {
+            JsonLd.expand(new RemoteDocument(new RemoteContent() {
                 
                 @Override
                 public boolean isRawPayload() {
@@ -111,7 +111,7 @@ public class ExpansionApiNegativeTest {
     @Test
     public void test9() {
         try {
-            JsonLd.expand(new RemoteDocument());
+            JsonLd.expand(new RemoteDocument(null));
             
             Assert.fail();
         

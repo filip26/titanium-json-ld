@@ -10,7 +10,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.RemoteContent;
 import com.apicatalog.jsonld.document.RemoteDocument;
 
 public class FramingApiNegativeTest {
@@ -153,7 +153,7 @@ public class FramingApiNegativeTest {
     @Test
     public void test16() {
         try {
-            JsonLd.frame(new RemoteDocument(new Document() {
+            JsonLd.frame(new RemoteDocument(new RemoteContent() {
                 
                 @Override
                 public boolean isRawPayload() {
@@ -186,7 +186,7 @@ public class FramingApiNegativeTest {
         try {
             JsonLd.frame(
                 RemoteDocument.of(Json.createArrayBuilder().build()),
-                new RemoteDocument(new Document() {
+                new RemoteDocument(new RemoteContent() {
                 
                 @Override
                 public boolean isRawPayload() {

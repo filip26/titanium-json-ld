@@ -38,10 +38,10 @@ public final class JsonLdManifestLoader {
         RemoteDocument manifest = new ZipResourceLoader(true).loadDocument(URI.create(manifestBase + manifestName), new LoadDocumentOptions());
 
         Assert.assertNotNull(manifest);
-        Assert.assertNotNull(manifest.getDocument());
+        Assert.assertNotNull(manifest.getContent());
 
         final JsonObject manifestObject = manifest
-                                                .getDocument().getJsonStructure()
+                                                .getContent().getJsonStructure()
                                                 .filter(JsonUtils::isObject)
                                                 .map(JsonObject.class::cast)
                                                 .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED));

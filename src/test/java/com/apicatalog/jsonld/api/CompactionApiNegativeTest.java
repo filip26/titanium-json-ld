@@ -10,7 +10,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.RemoteContent;
 import com.apicatalog.jsonld.document.RemoteDocument;
 
 public class CompactionApiNegativeTest {
@@ -153,7 +153,7 @@ public class CompactionApiNegativeTest {
     @Test
     public void test16() {
         try {
-            JsonLd.compact(new RemoteDocument(), Json.createArrayBuilder().build());
+            JsonLd.compact(new RemoteDocument(null), Json.createArrayBuilder().build());
             Assert.fail();
         
         } catch (IllegalArgumentException e) {}
@@ -162,7 +162,7 @@ public class CompactionApiNegativeTest {
     @Test
     public void test17() {
         try {
-            JsonLd.compact(new RemoteDocument(new Document() {
+            JsonLd.compact(new RemoteDocument(new RemoteContent() {
                 
                 @Override
                 public boolean isRawPayload() {
@@ -195,7 +195,7 @@ public class CompactionApiNegativeTest {
         try {
             JsonLd.compact(
                 RemoteDocument.of(Json.createArrayBuilder().build()),
-                new RemoteDocument(new Document() {
+                new RemoteDocument(new RemoteContent() {
                 
                 @Override
                 public boolean isRawPayload() {
@@ -225,7 +225,7 @@ public class CompactionApiNegativeTest {
     
     public void test19() {
         try {
-            JsonLd.compact(new RemoteDocument(new Document() {
+            JsonLd.compact(new RemoteDocument(new RemoteContent() {
                 
                 @Override
                 public boolean isRawPayload() {

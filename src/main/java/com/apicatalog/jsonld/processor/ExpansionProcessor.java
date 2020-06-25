@@ -52,7 +52,7 @@ public final class ExpansionProcessor {
 
     public static final JsonArray expand(RemoteDocument input, final JsonLdOptions options, boolean frameExpansion) throws JsonLdError {
 
-        if (input == null || input.getDocument() == null) {
+        if (input == null || input.getContent() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "RemoteDocument or Document is null.");
         }
         
@@ -88,7 +88,7 @@ public final class ExpansionProcessor {
         // instead for local context.
         if (options.getExpandContext() != null) {
             
-            final Optional<JsonStructure> contextValue = options.getExpandContext().getDocument().getJsonStructure();
+            final Optional<JsonStructure> contextValue = options.getExpandContext().getContent().getJsonStructure();
 
             if (contextValue.isPresent()) {
                 

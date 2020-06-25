@@ -35,8 +35,8 @@ public class JsonLdTestRunnerEarl {
             RemoteDocument expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new LoadDocumentOptions());
                                     
             // compare expected with the result
-            if (expectedDocument.getDocument().getJsonStructure().isPresent()) {
-                return JsonLdComparison.equals(expectedDocument.getDocument().getJsonStructure().get(), result);                
+            if (expectedDocument.getContent().getJsonStructure().isPresent()) {
+                return JsonLdComparison.equals(expectedDocument.getContent().getJsonStructure().get(), result);                
             }
             
             return false;

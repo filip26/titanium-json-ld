@@ -14,15 +14,15 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.json.JsonUtils;
 
-public final class JsonDocument implements Document {
+final class RemoteJsonContent implements RemoteContent {
 
     private JsonStructure structure;
 
-    protected JsonDocument(final JsonStructure structue) {
+    protected RemoteJsonContent(final JsonStructure structue) {
         this.structure = structue;
     }
 
-    public static final Document parse(final InputStream is)  throws JsonLdError {
+    public static final RemoteContent parse(final InputStream is)  throws JsonLdError {
         try (final JsonParser parser = Json.createParser(is)) {
 
             return doParse(parser);
@@ -32,7 +32,7 @@ public final class JsonDocument implements Document {
         }
     }
     
-    public static final Document parse(final Reader reader)  throws JsonLdError {
+    public static final RemoteContent parse(final Reader reader)  throws JsonLdError {
         
         try (final JsonParser parser = Json.createParser(reader)) {
 
@@ -43,10 +43,10 @@ public final class JsonDocument implements Document {
         }
     }
     
-    private static final Document doParse(final JsonParser parser) throws JsonLdError {
+    private static final RemoteContent doParse(final JsonParser parser) throws JsonLdError {
         
         if (!parser.hasNext()) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Nothing to read. Provided document is empty.");
         }
 
         parser.next();
@@ -54,14 +54,14 @@ public final class JsonDocument implements Document {
         JsonValue root = parser.getValue();
 
         if (JsonUtils.isArray(root)) {
-            return new JsonDocument(root.asJsonArray());
+            return new RemoteJsonContent(root.asJsonArray());
         }
 
         if (JsonUtils.isObject(root)) {
-            return new JsonDocument(root.asJsonObject());
+            return new RemoteJsonContent(root.asJsonObject());
         }
 
-        throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+        throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "JSON document's top level element must be JSON array or object.");
     }
     
     @Override
@@ -83,5 +83,4 @@ public final class JsonDocument implements Document {
     public boolean isRawPayload() {
         return false;
     }
-
 }

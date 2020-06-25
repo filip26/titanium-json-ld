@@ -9,7 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.RemoteContent;
 import com.apicatalog.jsonld.document.RemoteDocument;
 
 public class ToRdfApiNegativeTest {
@@ -80,7 +80,7 @@ public class ToRdfApiNegativeTest {
     @Test
     public void test8() {
         try {
-            JsonLd.toRdf(new RemoteDocument());
+            JsonLd.toRdf(new RemoteDocument(null));
             Assert.fail();
         
         } catch (IllegalArgumentException e) {}
@@ -89,7 +89,7 @@ public class ToRdfApiNegativeTest {
     @Test
     public void test9() {
         try {
-            JsonLd.toRdf(new RemoteDocument(new Document() {
+            JsonLd.toRdf(new RemoteDocument(new RemoteContent() {
                 
                 @Override
                 public boolean isRawPayload() {

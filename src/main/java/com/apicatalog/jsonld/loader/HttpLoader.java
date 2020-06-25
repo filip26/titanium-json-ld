@@ -15,8 +15,7 @@ import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.document.RemoteContent;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.http.ProfileConstants;
 import com.apicatalog.jsonld.http.link.Link;
@@ -47,7 +46,7 @@ public class HttpLoader implements LoadDocumentCallback {
 
         try {
 
-            final RemoteDocument remoteDocument = new RemoteDocument();
+            final RemoteDocument remoteDocument = new RemoteDocument(null);
             
             int redirection = 0;
             boolean done = false;
@@ -190,7 +189,7 @@ public class HttpLoader implements LoadDocumentCallback {
             }
 
             remoteDocument.setContentType(MediaType.of(contentType.type(), contentType.subtype()));
-            remoteDocument.setDocument(fetchDocument(response));
+            remoteDocument.setContent(fetchDocument(response));
             remoteDocument.setProfile(contentType.parameters().firstValue("profile").orElse(null));
 
             return remoteDocument;
@@ -231,9 +230,9 @@ public class HttpLoader implements LoadDocumentCallback {
         return builder.toString();        
     }
     
-    public static final Document fetchDocument(final HttpResponse<InputStream> response) throws JsonLdError, IOException {
+    public static final RemoteContent fetchDocument(final HttpResponse<InputStream> response) throws JsonLdError, IOException {
         try (InputStream is = response.body()) {
-            return JsonDocument.parse(is);
+            return RemoteContent.parseJson(is);
         }
     }
 }
