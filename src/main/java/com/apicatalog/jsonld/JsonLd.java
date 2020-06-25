@@ -118,7 +118,7 @@ public final class JsonLd {
         assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME);
         
         if (context == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(NULL_CONTEXT_ERROR_MSG);
         }
 
         return new CompactionApi(UriUtils.create(documentLocation), context);
@@ -157,7 +157,7 @@ public final class JsonLd {
             throw new IllegalArgumentException(NULL_CONTEXT_ERROR_MSG);
         }
 
-        return new CompactionApi(document, RemoteDocument.of(context));
+        return compact(document, RemoteDocument.of(context));
     }
 
     /**

@@ -39,6 +39,11 @@ public interface Document {
      * @return {@link Document} representing unparsed content
      */
     public static Document of(final byte[] payload) {
+        
+        if (payload == null) {
+            throw new IllegalArgumentException("The provided payload is null.");
+        }
+        
         return new RawPayload(payload);
     }
 
@@ -49,6 +54,11 @@ public interface Document {
      * @return {@link Document} representing <code>JSON</code> content
      */
     public static Document of(final JsonStructure structure) {
+        
+        if (structure == null) {
+            throw new IllegalArgumentException("The provided JSON structure is null.");
+        }
+        
         return new JsonDocument(structure);
     }
 }
