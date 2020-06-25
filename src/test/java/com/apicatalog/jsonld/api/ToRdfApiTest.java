@@ -69,5 +69,26 @@ public class ToRdfApiTest {
         RdfDataset result = JsonLd.toRdf("\thttps://example.com").context(RemoteDocument.of(Json.createObjectBuilder().build().toString().getBytes())).loader(MOCK_LOADER).ordered().get();
         Assert.assertNotNull(result);
         Assert.assertEquals(0, result.size());
+    }
+    
+    @Test    
+    public void test9() throws JsonLdError {
+        RdfDataset result = JsonLd.toRdf(RemoteDocument.of(Json.createObjectBuilder().build())).context(Json.createObjectBuilder().build()).loader(MOCK_LOADER).get();
+        Assert.assertNotNull(result);
+        Assert.assertEquals(0, result.size());
+    }
+        
+    @Test    
+    public void test10() throws JsonLdError {
+        RdfDataset result = JsonLd.toRdf(RemoteDocument.of(Json.createObjectBuilder().build())).context(RemoteDocument.of(Json.createObjectBuilder().build())).loader(MOCK_LOADER).ordered().get();
+        Assert.assertNotNull(result);
+        Assert.assertEquals(0, result.size());
     }    
+
+    @Test    
+    public void test11() throws JsonLdError {
+        RdfDataset result = JsonLd.toRdf(RemoteDocument.of(Json.createObjectBuilder().build())).context(RemoteDocument.of(Json.createObjectBuilder().build().toString().getBytes())).loader(MOCK_LOADER).ordered().get();
+        Assert.assertNotNull(result);
+        Assert.assertEquals(0, result.size());
+    }
 }
