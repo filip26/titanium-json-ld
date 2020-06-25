@@ -34,7 +34,7 @@ public interface RemoteContent {
     /**
      * Get the document content as {@link JsonStructure}.
      * 
-     * @return {@link JsonStructure} or {@link Optional#empty()) if document content is not parsed
+     * @return {@link JsonStructure} or {@link Optional#empty()} if document content is not parsed
      * @throws JsonLdError
      */
     Optional<JsonStructure> getJsonStructure() throws JsonLdError;
