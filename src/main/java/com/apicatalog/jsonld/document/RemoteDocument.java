@@ -115,7 +115,7 @@ public final class RemoteDocument {
     /**
      * Create an empty remote document holding just the given raw payload.
      * 
-     * @param structure {@link JsonStructure} to set as a content
+     * @param payload <code>byte[]</code> to set as raw/unparsed content
      * @return {@link RemoteDocument} 
      */
     public static RemoteDocument of(final byte[] payload) {

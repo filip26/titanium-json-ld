@@ -11,8 +11,7 @@ import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 
 /**
- * The {@link JsonLdOptions} type is used to pass various options to the
- * {@link JsonLdProcessor} methods.
+ * The {@link JsonLdOptions} type is used to pass various options to the processor.
  * 
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#the-jsonldoptions-type">The
  *      JsonLdOptions Specification.</a>
@@ -146,7 +145,7 @@ public final class JsonLdOptions {
     }
 
     /**
-     * If set to <code>true</code>, the {@link JsonLdProcessor} replaces arrays with just one
+     * If set to <code>true</code>, the processor replaces arrays with just one
      * element with that element during
      * <a href="https://www.w3.org/TR/json-ld11-api/#dfn-compact">compaction</a>. If
      * set to false, all arrays will remain arrays even if they have just one
