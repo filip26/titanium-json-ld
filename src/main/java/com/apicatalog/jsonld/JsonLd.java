@@ -341,7 +341,7 @@ public final class JsonLd {
             throw new IllegalArgumentException("'" + param + "' does not contain valid document but null.");
         }
         
-        if (!remoteDocument.getDocument().isJsonStructure() || !remoteDocument.getDocument().isRawPayload()) {
+        if (!remoteDocument.getDocument().isJsonStructure() && !remoteDocument.getDocument().isRawPayload()) {
             throw new IllegalArgumentException("'" + param + "' does not contain valid JSON structure nor raw payload.");
         }
     }
