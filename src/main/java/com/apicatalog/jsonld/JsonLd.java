@@ -298,7 +298,7 @@ public final class JsonLd {
         return new ToRdfApi(document);
     }
     /**
-     * Transforms an {@link RdfDataset} into a JSON-LD document in expanded form.
+     * Transforms {@link RdfDataset} into a JSON-LD document in expanded form.
      * 
      * @param dataset to transform
      * @return {@link FromRdfApi} allowing to set additional parameters
