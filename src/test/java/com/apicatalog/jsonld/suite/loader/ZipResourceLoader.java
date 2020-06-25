@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -63,7 +62,7 @@ public class ZipResourceLoader implements LoadDocumentCallback {
                 remoteDocument.setDocumentUrl(url); 
 
                 if (parseJson) {
-                    Document document = JsonDocument.parse(new InputStreamReader(is));
+                    Document document = JsonDocument.parse(is);
                     remoteDocument.setDocument(document);
                     
                 } else {

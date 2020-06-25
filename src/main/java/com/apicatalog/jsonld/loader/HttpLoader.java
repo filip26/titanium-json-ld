@@ -2,7 +2,6 @@ package com.apicatalog.jsonld.loader;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
@@ -233,9 +232,8 @@ public class HttpLoader implements LoadDocumentCallback {
     }
     
     public static final Document fetchDocument(final HttpResponse<InputStream> response) throws JsonLdError, IOException {
-                
         try (InputStream is = response.body()) {
-            return JsonDocument.parse(new InputStreamReader(is));
+            return JsonDocument.parse(is);
         }
     }
 }
