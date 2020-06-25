@@ -138,5 +138,3 @@ Compile sources:
 ```bash
 > mvn package
 ```
-
-Each pull request must pass tests.
