@@ -20,7 +20,11 @@ public final class UriUtils {
     
     public static final URI create(final String uri) {
 
-        String uriValue = uri;
+        if (uri == null) {
+            throw new IllegalArgumentException("The uri cannot be null.");
+        }
+
+        String uriValue = uri.strip();
         
         if (uri.endsWith(":")) {
             uriValue = uri + ".";

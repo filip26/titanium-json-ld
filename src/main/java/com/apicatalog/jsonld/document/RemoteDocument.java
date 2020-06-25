@@ -111,4 +111,14 @@ public final class RemoteDocument {
     public static RemoteDocument of(final JsonStructure structure) {
         return new RemoteDocument(Document.of(structure));
     }
+    
+    /**
+     * Create an empty remote document holding just the given raw payload.
+     * 
+     * @param structure {@link JsonStructure} to set as a content
+     * @return {@link RemoteDocument} 
+     */
+    public static RemoteDocument of(final byte[] payload) {
+        return new RemoteDocument(Document.of(payload));
+    }
 }
