@@ -13,8 +13,8 @@ public final class UriUtils {
 
         return value != null 
                     && !value.isBlank() 
-                    && !Keywords.matchForm(value)
-                    && create(value) != null;
+                    && !Keywords.matchForm(value.strip())
+                    && create(value.strip()) != null;
     }
 
     

@@ -66,8 +66,13 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
     }
 
     @Override
-    public FlatteningApi base(String baseUri) {
-        return base(baseUri != null ? UriUtils.create(baseUri) : null);
+    public FlatteningApi base(String baseLocation) {
+        
+        if (baseLocation != null && !UriUtils.isNotURI(baseLocation)) {
+            throw new IllegalArgumentException("Base location must be valid URI or null but is [" + baseLocation + ".");
+        }
+        
+        return base(baseLocation != null ? UriUtils.create(baseLocation) : null);
     }
 
     public FlatteningApi compactArrays(boolean enable) {
@@ -103,8 +108,13 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
     }
     
     @Override
-    public FlatteningApi context(String contextUri) {
-        return context(contextUri != null ? UriUtils.create(contextUri) : null);
+    public FlatteningApi context(final String contextLocation) {
+        
+        if (contextLocation != null && !UriUtils.isNotURI(contextLocation)) {
+            throw new IllegalArgumentException("Context location must be valid URI or null but is [" + contextLocation + ".");
+        }
+        
+        return context(contextLocation != null ? UriUtils.create(contextLocation) : null);
     }
 
     @Override

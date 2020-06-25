@@ -33,10 +33,10 @@ public interface CommonApi<R> {
     /**
      * Set the base {@link URI}. If set, this overrides the input document's IRI.
      *
-     * @param baseUri
+     * @param baseLocation
      * @return builder instance
      */
-    R base(String baseUri);
+    R base(String baseLocation);
 
     /**
      * If set to <code>true</code>, certain algorithm processing steps

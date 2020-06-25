@@ -38,7 +38,7 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
     }
 
     @Override
-    public ExpansionApi options(JsonLdOptions options) {
+    public ExpansionApi options(JsonLdOptions options) {    
         
         if (options == null) {
             throw new IllegalArgumentException("Parameter 'options' is null.");
@@ -56,6 +56,11 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
 
     @Override
     public ExpansionApi context(String contextLocation) {
+        
+        if (contextLocation != null && !UriUtils.isNotURI(contextLocation)) {
+            throw new IllegalArgumentException("Context location must be valid URI or null but is [" + contextLocation + ".");
+        }
+        
         return context(contextLocation != null ? UriUtils.create(contextLocation) : null);
     }
 
@@ -84,8 +89,13 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
     }
 
     @Override
-    public ExpansionApi base(String baseUri) {
-        return base(URI.create(baseUri));
+    public ExpansionApi base(String baseLocation) {
+        
+        if (baseLocation != null && !UriUtils.isNotURI(baseLocation)) {
+            throw new IllegalArgumentException("Base location must be valid URI or null but is [" + baseLocation + ".");
+        }
+        
+        return base(UriUtils.create(baseLocation));
     }
 
     @Override

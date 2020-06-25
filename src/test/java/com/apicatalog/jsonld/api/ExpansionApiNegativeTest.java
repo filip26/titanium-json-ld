@@ -117,4 +117,34 @@ public class ExpansionApiNegativeTest {
         
         } catch (IllegalArgumentException e) {}
     }    
+    
+    @Test
+    public void test10() {
+        try {
+            JsonLd.expand("http://example.org").base("!//");
+            
+            Assert.fail();
+        
+        } catch (IllegalArgumentException e) {}
+    }
+    
+    @Test
+    public void test11() {
+        try {
+            JsonLd.expand("http://example.org").context("~");
+            
+            Assert.fail();
+        
+        } catch (IllegalArgumentException e) {}
+    }
+    
+    @Test
+    public void test12() {
+        try {
+            JsonLd.expand("http://example.org").options(null);
+            
+            Assert.fail();
+        
+        } catch (IllegalArgumentException e) {}
+    }
 }

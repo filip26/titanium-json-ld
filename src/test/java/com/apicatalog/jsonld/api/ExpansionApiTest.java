@@ -45,9 +45,29 @@ public class ExpansionApiTest {
 
     @Test    
     public void test5() throws JsonLdError {
-        JsonArray expanded = JsonLd.expand("\thttps://example.com  ").loader(MOCK_LOADER).get();
+        JsonArray expanded = JsonLd.expand("\thttps://example.com  ").loader(MOCK_LOADER).ordered().get();
         Assert.assertNotNull(expanded);
         Assert.assertEquals(Json.createArrayBuilder().build(), expanded);
-
+    }
+    
+    @Test    
+    public void test6() throws JsonLdError {
+        JsonArray expanded = JsonLd.expand("\thttps://example.com").context(RemoteDocument.of(Json.createObjectBuilder().build())).loader(MOCK_LOADER).ordered().get();
+        Assert.assertNotNull(expanded);
+        Assert.assertEquals(Json.createArrayBuilder().build(), expanded);
     }    
+
+    @Test    
+    public void test7() throws JsonLdError {
+        JsonArray expanded = JsonLd.expand("\thttps://example.com").context(RemoteDocument.of(Json.createObjectBuilder().build().toString().getBytes())).loader(MOCK_LOADER).ordered().get();
+        Assert.assertNotNull(expanded);
+        Assert.assertEquals(Json.createArrayBuilder().build(), expanded);
+    }    
+
+    @Test    
+    public void test8() throws JsonLdError {
+        JsonArray expanded = JsonLd.expand("\thttps://example.com").context(Json.createObjectBuilder().build()).loader(MOCK_LOADER).ordered().get();
+        Assert.assertNotNull(expanded);
+        Assert.assertEquals(Json.createArrayBuilder().build(), expanded);
+    }
 }

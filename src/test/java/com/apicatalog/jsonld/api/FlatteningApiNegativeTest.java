@@ -117,4 +117,34 @@ public class FlatteningApiNegativeTest {
         
         } catch (IllegalArgumentException e) {}
     }    
+    
+    @Test
+    public void test10() {
+        try {
+
+            JsonLd.flatten("https://example.com").options(null);
+            Assert.fail();
+        
+        } catch (IllegalArgumentException e) {}
+    }
+    
+    @Test
+    public void test11() {
+        try {
+
+            JsonLd.flatten("https://example.com").base("!!");
+            Assert.fail();
+        
+        } catch (IllegalArgumentException e) {}
+    }
+    
+    @Test
+    public void test12() {
+        try {
+
+            JsonLd.flatten("https://example.com").context("#!");
+            Assert.fail();
+        
+        } catch (IllegalArgumentException e) {}
+    }
 }

@@ -114,5 +114,36 @@ public class ToRdfApiNegativeTest {
             Assert.fail();
         
         } catch (IllegalArgumentException e) {}
-    }    
+    }   
+    
+    
+    @Test
+    public void test10() {
+        try {
+            JsonLd.toRdf("http://example.org").base("!//");
+            
+            Assert.fail();
+        
+        } catch (IllegalArgumentException e) {}
+    }
+    
+    @Test
+    public void test11() {
+        try {
+            JsonLd.toRdf("http://example.org").context("~");
+            
+            Assert.fail();
+        
+        } catch (IllegalArgumentException e) {}
+    }
+    
+    @Test
+    public void test12() {
+        try {
+            JsonLd.toRdf("http://example.org").options(null);
+            
+            Assert.fail();
+        
+        } catch (IllegalArgumentException e) {}
+    }
 }
