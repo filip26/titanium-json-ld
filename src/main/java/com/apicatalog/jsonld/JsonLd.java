@@ -260,7 +260,7 @@ public final class JsonLd {
     }
 
     /**
-     * Transforms the given input into an {@link RdfDataset}.
+     * Transforms the given input into {@link RdfDataset}.
      * 
      * @param documentLocation {@code IRI} referencing JSON-LD document to transform
      * @return {@link ToRdfApi} allowing to set additional parameters
@@ -273,7 +273,7 @@ public final class JsonLd {
     }
 
     /**
-     * Transforms the given input into an {@link RdfDataset}.
+     * Transforms the given input into {@link RdfDataset}.
      * 
      * @param documentUri {@code URI} referencing JSON-LD document to transform
      * @return {@link ToRdfApi} allowing to set additional parameters
@@ -286,7 +286,7 @@ public final class JsonLd {
     }
 
     /**
-     * Transforms the remote input into an {@link RdfDataset}.
+     * Transforms the remote input into {@link RdfDataset}.
      * 
      * @param document containing parsed or raw <code>JSON</code> representing <code>JSON-LD</code> document to transform
      * @return {@link ToRdfApi} allowing to set additional parameters
