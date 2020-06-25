@@ -5,146 +5,93 @@ import java.util.Optional;
 
 import javax.json.JsonStructure;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.RemoteContent;
 import com.apicatalog.jsonld.document.RemoteDocument;
 
 public class FlatteningApiNegativeTest {
 
-    @Test    
+    @Test(expected = IllegalArgumentException.class)
     public void test1() {
-        try {
-            JsonLd.flatten((RemoteDocument)null);
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.flatten((RemoteDocument)null);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test2() {
-        try {
-            JsonLd.flatten((String)null);
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.flatten((String)null);
     }
     
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test3() {
-        try {
-            JsonLd.flatten((URI)null);
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.flatten((URI)null);
     }
     
-    @Test    
+    @Test(expected = IllegalArgumentException.class)
     public void test4() {
-        try {
-            JsonLd.flatten("");
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.flatten("");
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test5() {
-        try {
-            JsonLd.flatten("   ");
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.flatten("   ");
     }
     
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test6() {
-        try {
-            JsonLd.flatten("/relative");
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.flatten("/relative");
     }
     
-    @Test    
+    @Test(expected = IllegalArgumentException.class)    
     public void test7() {
-        try {
-            JsonLd.flatten(URI.create("relative"));
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.flatten(URI.create("relative"));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test8() {
-        try {
-            JsonLd.flatten(new RemoteDocument(new Document() {
-                
-                @Override
-                public boolean isRawPayload() {
-                    return false;
-                }
-                
-                @Override
-                public boolean isJsonStructure() {
-                    return false;
-                }
-                
-                @Override
-                public Optional<byte[]> getRawPayload() throws JsonLdError {
-                    return null;
-                }
-                
-                @Override
-                public Optional<JsonStructure> getJsonStructure() throws JsonLdError {
-                    return null;
-                }
-            }));
+        JsonLd.flatten(new RemoteDocument(new RemoteContent() {
             
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+            @Override
+            public boolean isRawPayload() {
+                return false;
+            }
+            
+            @Override
+            public boolean isJsonStructure() {
+                return false;
+            }
+            
+            @Override
+            public Optional<byte[]> getRawPayload() throws JsonLdError {
+                return null;
+            }
+            
+            @Override
+            public Optional<JsonStructure> getJsonStructure() throws JsonLdError {
+                return null;
+            }
+        }));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test9() {
-        try {
-            JsonLd.flatten(new RemoteDocument());
-            
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.flatten(new RemoteDocument(null));
     }    
     
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test10() {
-        try {
-
-            JsonLd.flatten("https://example.com").options(null);
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.flatten("https://example.com").options(null);
     }
     
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test11() {
-        try {
-
-            JsonLd.flatten("https://example.com").base("!!");
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.flatten("https://example.com").base("!!");
     }
     
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test12() {
-        try {
+        JsonLd.flatten("https://example.com").context("#!");
 
-            JsonLd.flatten("https://example.com").context("#!");
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
     }
 }

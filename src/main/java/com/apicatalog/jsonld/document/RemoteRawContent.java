@@ -4,11 +4,11 @@ import java.util.Optional;
 
 import javax.json.JsonStructure;
 
-public final class RawPayload implements Document {
+final class RemoteRawContent implements RemoteContent {
 
     private final byte[] payload;
     
-    protected RawPayload(final byte[] payload) {
+    protected RemoteRawContent(final byte[] payload) {
         this.payload = payload;
     }
     

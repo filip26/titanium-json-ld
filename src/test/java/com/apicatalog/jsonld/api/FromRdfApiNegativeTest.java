@@ -1,19 +1,14 @@
 package com.apicatalog.jsonld.api;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
 
 public class FromRdfApiNegativeTest {
 
-    @Test    
+    @Test(expected = IllegalArgumentException.class)
     public void test1() {
-        try {
-            JsonLd.fromRdf(null);
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.fromRdf(null);
     }
     
 }

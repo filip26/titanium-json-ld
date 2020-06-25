@@ -52,12 +52,12 @@ public class CompactTest {
                 RemoteDocument jsonContext = options.getDocumentLoader().loadDocument(testCase.context, new LoadDocumentOptions());
                 
                 Assert.assertNotNull(jsonContext);
-                Assert.assertNotNull(jsonContext.getDocument());
-                Assert.assertTrue(jsonContext.getDocument().getJsonStructure().isPresent());
+                Assert.assertNotNull(jsonContext.getContent());
+                Assert.assertTrue(jsonContext.getContent().getJsonStructure().isPresent());
                                 
                 return JsonLd.compact(
                                     testCase.input, 
-                                    jsonContext.getDocument().getJsonStructure().get()
+                                    jsonContext.getContent().getJsonStructure().get()
                                     )
                                 .options(options)
                                 .get();

@@ -21,18 +21,20 @@ public final class RemoteDocument {
     private MediaType contentType;
     private URI contextUrl;
 
-    private Document document;
+    private RemoteContent content;
 
     private URI documentUrl;
     private String profile;
 
-    public RemoteDocument() {
-        this(null);
+    public RemoteDocument(final RemoteContent document) {
+        this(document, null);
     }
-    
-    public RemoteDocument(Document document) {
-        this.document = document;
+
+    public RemoteDocument(final RemoteContent content, final URI documentUrl) {
+        this.content = content;
+        this.documentUrl = documentUrl;
     }
+
     
     /**
      * The <a href="https://tools.ietf.org/html/rfc2045#section-5">Content-Type</a>
@@ -82,12 +84,12 @@ public final class RemoteDocument {
      * 
      * @return parsed or raw document
      */
-    public Document getDocument() {
-        return document;
+    public RemoteContent getContent() {
+        return content;
     }
 
-    public void setDocument(Document document) {
-        this.document = document;
+    public void setContent(RemoteContent content) {
+        this.content = content;
     }   
     
     public void setContentType(MediaType contentType) {
@@ -109,7 +111,11 @@ public final class RemoteDocument {
      * @return {@link RemoteDocument} 
      */
     public static RemoteDocument of(final JsonStructure structure) {
-        return new RemoteDocument(Document.of(structure));
+        if (structure == null) {
+            throw new IllegalArgumentException("The JSON structure cannot be null.");
+        }
+        
+        return new RemoteDocument(RemoteContent.of(structure));
     }
     
     /**
@@ -119,6 +125,10 @@ public final class RemoteDocument {
      * @return {@link RemoteDocument} 
      */
     public static RemoteDocument of(final byte[] payload) {
-        return new RemoteDocument(Document.of(payload));
-    }
+        if (payload == null) {
+            throw new IllegalArgumentException("The JSON structure cannot be null.");
+        }
+
+        return new RemoteDocument(RemoteContent.of(payload));
+    }    
 }

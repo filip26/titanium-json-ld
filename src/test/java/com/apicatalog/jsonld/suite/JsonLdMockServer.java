@@ -87,9 +87,9 @@ public final class JsonLdMockServer {
                 RemoteDocument linkedDocument = (new ZipResourceLoader(false)).loadDocument(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE +  linkUri.substring(testCase.baseUri.length())), new LoadDocumentOptions());
 
                 Assert.assertNotNull(linkedDocument);
-                Assert.assertNotNull(linkedDocument.getDocument());
+                Assert.assertNotNull(linkedDocument.getContent());
 
-                linkedDocument.getDocument().getRawPayload().ifPresent(byteArray -> {
+                linkedDocument.getContent().getRawPayload().ifPresent(byteArray -> {
                     
                     stubFor(get(urlEqualTo(linkUri.substring(testBase.length())))
                             .willReturn(aResponse()
@@ -111,7 +111,7 @@ public final class JsonLdMockServer {
                     testCase.httpLink.forEach(link -> mockResponseBuilder.withHeader("Link", link));
                 }
                                 
-                inputDocument.getDocument().getRawPayload().ifPresent(byteArray -> {
+                inputDocument.getContent().getRawPayload().ifPresent(byteArray -> {
                             mockResponseBuilder
                                     .withHeader("Content-Type", testCase.contentType.toString())
                                     .withBody(byteArray);

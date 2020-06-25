@@ -1,5 +1,5 @@
 /**
- * Context Processing Algorithm.
+ * Context Processing Algorithms.
  *  
  */
 package com.apicatalog.jsonld.context;

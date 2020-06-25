@@ -49,7 +49,7 @@ public final class FramingProcessor {
     
     public static final JsonObject frame(final RemoteDocument input, final RemoteDocument frame, final JsonLdOptions options) throws JsonLdError {
 
-        if (frame == null || frame.getDocument() == null) {
+        if (frame == null || frame.getContent() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame or Frame.Document is null.");
         }
         

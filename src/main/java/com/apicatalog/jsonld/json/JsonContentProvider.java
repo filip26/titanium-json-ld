@@ -8,7 +8,7 @@ import javax.json.JsonStructure;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
-import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.document.RemoteContent;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
@@ -36,12 +36,12 @@ public final class JsonContentProvider {
         
         final RemoteDocument jsonContent = fetch(contentUri, options);
                 
-        if (jsonContent.getDocument().isRawPayload()) {
+        if (jsonContent.getContent().isRawPayload()) {
             
-            byte[] payload = jsonContent.getDocument().getRawPayload()
+            byte[] payload = jsonContent.getContent().getRawPayload()
                                 .orElseThrow(() -> error(contentUri, "RemoteDocument.Document.getRawPayload() is empty"));
             
-            jsonContent.setDocument(JsonDocument.parse(new ByteArrayInputStream(payload)));    
+            jsonContent.setContent(RemoteContent.parseJson(new ByteArrayInputStream(payload)));    
         }
 
         return jsonContent;
@@ -53,21 +53,21 @@ public final class JsonContentProvider {
             throw new IllegalArgumentException("Document paramater is null.");
         }
 
-        if (document.getDocument() == null) {
+        if (document.getContent() == null) {
             throw new IllegalArgumentException("Document content is null.");
         }
 
         final Optional<JsonStructure> contentStructure;
         
-        if (document.getDocument().isRawPayload()) {
+        if (document.getContent().isRawPayload()) {
             
-            byte[] payload = document.getDocument().getRawPayload()
+            byte[] payload = document.getContent().getRawPayload()
                                 .orElseThrow(() -> error(document.getDocumentUrl(), "RemoteDocument.Document.getRawPayload() is empty"));
             
-            contentStructure = JsonDocument.parse(new ByteArrayInputStream(payload)).getJsonStructure();
+            contentStructure = RemoteContent.parseJson(new ByteArrayInputStream(payload)).getJsonStructure();
                         
         } else {
-            contentStructure = document.getDocument().getJsonStructure();    
+            contentStructure = document.getContent().getJsonStructure();    
         }
 
         return contentStructure.orElseThrow(() -> error(document.getDocumentUrl(), ""));        
@@ -80,7 +80,7 @@ public final class JsonContentProvider {
             throw error(contentUri, "null has been returned");
         }
         
-        if (content.getDocument() == null) {
+        if (content.getContent() == null) {
             throw error(contentUri, "RemoteDocument.Document is null");
         }
         

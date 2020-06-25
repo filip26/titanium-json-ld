@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -13,8 +12,7 @@ import java.util.zip.ZipFile;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.document.RemoteContent;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
@@ -59,19 +57,16 @@ public class ZipResourceLoader implements LoadDocumentCallback {
 
             try (InputStream is = zip.getInputStream(zipEntry)) {
             
-                RemoteDocument remoteDocument = new RemoteDocument();
-                remoteDocument.setDocumentUrl(url); 
-
+                final RemoteContent document;
+                
                 if (parseJson) {
-                    Document document = JsonDocument.parse(new InputStreamReader(is));
-                    remoteDocument.setDocument(document);
+                    document = RemoteContent.parseJson(is);
                     
-                } else {
-                    Document document = Document.of(readAsByteArray(is));
-                    remoteDocument.setDocument(document);
+                } else {    
+                    document = RemoteContent.of(readAsByteArray(is));
                 }
-
-                return remoteDocument;
+                
+                return new RemoteDocument(document, url);
             }
             
         } catch (IOException e) {
