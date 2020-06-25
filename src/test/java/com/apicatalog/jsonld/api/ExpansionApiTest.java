@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.lang.Version;
 
 public class ExpansionApiTest {
 
@@ -31,14 +32,14 @@ public class ExpansionApiTest {
     
     @Test    
     public void test3() throws JsonLdError {
-        JsonArray expanded = JsonLd.expand("https://example.com").loader(MOCK_LOADER).get();
+        JsonArray expanded = JsonLd.expand("https://example.com").loader(MOCK_LOADER).base("").get();
         Assert.assertNotNull(expanded);
         Assert.assertEquals(Json.createArrayBuilder().build(), expanded);
     }
 
     @Test    
     public void test4() throws JsonLdError {
-        JsonArray expanded = JsonLd.expand(URI.create("https://example.com")).loader(MOCK_LOADER).get();
+        JsonArray expanded = JsonLd.expand(URI.create("https://example.com")).loader(MOCK_LOADER).mode(Version.V1_0).get();
         Assert.assertNotNull(expanded);
         Assert.assertEquals(Json.createArrayBuilder().build(), expanded);
     }

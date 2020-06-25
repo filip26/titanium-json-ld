@@ -6,7 +6,6 @@ import java.util.Optional;
 import javax.json.Json;
 import javax.json.JsonStructure;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
@@ -15,350 +14,223 @@ import com.apicatalog.jsonld.document.RemoteDocument;
 
 public class CompactionApiNegativeTest {
 
-    @Test    
+    @Test(expected = IllegalArgumentException.class)
     public void test1() {
-        try {
-            JsonLd.compact((RemoteDocument)null, (JsonStructure)null);
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact((RemoteDocument)null, (JsonStructure)null);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test2() {
-        try {
-            JsonLd.compact(RemoteDocument.of(Json.createArrayBuilder().build()), (JsonStructure)null);
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact(RemoteDocument.of(Json.createArrayBuilder().build()), (JsonStructure)null);
     }
     
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test3() {
-        try {
-            JsonLd.compact((RemoteDocument)null, Json.createArrayBuilder().build());
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact((RemoteDocument)null, Json.createArrayBuilder().build());
     }
     
-    @Test    
+    @Test(expected = IllegalArgumentException.class)
     public void test4() {
-        try {
-            JsonLd.compact((RemoteDocument)null, (RemoteDocument)null);
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact((RemoteDocument)null, (RemoteDocument)null);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test5() {
-        try {
-            JsonLd.compact(RemoteDocument.of(Json.createArrayBuilder().build()), (RemoteDocument)null);
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact(RemoteDocument.of(Json.createArrayBuilder().build()), (RemoteDocument)null);
     }
     
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test6() {
-        try {
-            JsonLd.compact((RemoteDocument)null, RemoteDocument.of(Json.createArrayBuilder().build()));
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact((RemoteDocument)null, RemoteDocument.of(Json.createArrayBuilder().build()));
     }
     
-    @Test    
+    @Test(expected = IllegalArgumentException.class)
     public void test7() {
-        try {
-            JsonLd.compact((String)null, (String)null);
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact((String)null, (String)null);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test8() {
-        try {
-            JsonLd.compact("http://example.org/", (String)null);
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact("http://example.org/", (String)null);
     }
     
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test9() {
-        try {
-            JsonLd.compact((String)null, "http://example.org");
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact((String)null, "http://example.org");
     }
     
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test10() {
-        try {
-            JsonLd.compact("http://example.org", "relative");
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact("http://example.org", "relative");
     }
     
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test11() {
-        try {
-            JsonLd.compact("relative", "http://example.org");
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact("relative", "http://example.org");
     }
     
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test12() {
-        try {
-            JsonLd.compact((String)null, Json.createArrayBuilder().build());
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact((String)null, Json.createArrayBuilder().build());
     }
     
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test13() {
-        try {
-            JsonLd.compact("http://example.org", (JsonStructure)null);
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact("http://example.org", (JsonStructure)null);
     }
     
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test14() {
-        try {
-            JsonLd.compact((String)null, (JsonStructure)null);
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact((String)null, (JsonStructure)null);
     }
     
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test15() {
-        try {
-            JsonLd.compact("/relative", Json.createArrayBuilder().build());
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact("/relative", Json.createArrayBuilder().build());
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test16() {
-        try {
-            JsonLd.compact(new RemoteDocument(null), Json.createArrayBuilder().build());
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact(new RemoteDocument(null), Json.createArrayBuilder().build());
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test17() {
-        try {
-            JsonLd.compact(new RemoteDocument(new RemoteContent() {
-                
-                @Override
-                public boolean isRawPayload() {
-                    return false;
-                }
-                
-                @Override
-                public boolean isJsonStructure() {
-                    return false;
-                }
-                
-                @Override
-                public Optional<byte[]> getRawPayload() throws JsonLdError {
-                    return null;
-                }
-                
-                @Override
-                public Optional<JsonStructure> getJsonStructure() throws JsonLdError {
-                    return null;
-                }
-            }), Json.createArrayBuilder().build());
+        JsonLd.compact(new RemoteDocument(new RemoteContent() {
             
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+            @Override
+            public boolean isRawPayload() {
+                return false;
+            }
+            
+            @Override
+            public boolean isJsonStructure() {
+                return false;
+            }
+            
+            @Override
+            public Optional<byte[]> getRawPayload() throws JsonLdError {
+                return null;
+            }
+            
+            @Override
+            public Optional<JsonStructure> getJsonStructure() throws JsonLdError {
+                return null;
+            }
+        }), Json.createArrayBuilder().build());
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test18() {
-        try {
-            JsonLd.compact(
-                RemoteDocument.of(Json.createArrayBuilder().build()),
-                new RemoteDocument(new RemoteContent() {
-                
-                @Override
-                public boolean isRawPayload() {
-                    return false;
-                }
-                
-                @Override
-                public boolean isJsonStructure() {
-                    return false;
-                }
-                
-                @Override
-                public Optional<byte[]> getRawPayload() throws JsonLdError {
-                    return null;
-                }
-                
-                @Override
-                public Optional<JsonStructure> getJsonStructure() throws JsonLdError {
-                    return null;
-                }
-            }));
+        JsonLd.compact(
+            RemoteDocument.of(Json.createArrayBuilder().build()),
+            new RemoteDocument(new RemoteContent() {
             
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+            @Override
+            public boolean isRawPayload() {
+                return false;
+            }
+            
+            @Override
+            public boolean isJsonStructure() {
+                return false;
+            }
+            
+            @Override
+            public Optional<byte[]> getRawPayload() throws JsonLdError {
+                return null;
+            }
+            
+            @Override
+            public Optional<JsonStructure> getJsonStructure() throws JsonLdError {
+                return null;
+            }
+        }));
     }
     
     public void test19() {
-        try {
-            JsonLd.compact(new RemoteDocument(new RemoteContent() {
-                
-                @Override
-                public boolean isRawPayload() {
-                    return false;
-                }
-                
-                @Override
-                public boolean isJsonStructure() {
-                    return false;
-                }
-                
-                @Override
-                public Optional<byte[]> getRawPayload() throws JsonLdError {
-                    return null;
-                }
-                
-                @Override
-                public Optional<JsonStructure> getJsonStructure() throws JsonLdError {
-                    return null;
-                }
-            }),
-            RemoteDocument.of(Json.createArrayBuilder().build()));
+        JsonLd.compact(new RemoteDocument(new RemoteContent() {
             
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+            @Override
+            public boolean isRawPayload() {
+                return false;
+            }
+            
+            @Override
+            public boolean isJsonStructure() {
+                return false;
+            }
+            
+            @Override
+            public Optional<byte[]> getRawPayload() throws JsonLdError {
+                return null;
+            }
+            
+            @Override
+            public Optional<JsonStructure> getJsonStructure() throws JsonLdError {
+                return null;
+            }
+        }),
+        RemoteDocument.of(Json.createArrayBuilder().build()));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test20() {
-        try {
-            JsonLd.compact((URI)null, (URI)null);
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact((URI)null, (URI)null);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test21() {
-        try {
-            JsonLd.compact(URI.create("http://example.com"), (URI)null);
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact(URI.create("http://example.com"), (URI)null);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test22() {
-        try {
-            JsonLd.compact((URI)null, URI.create("http://example.com"));
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact((URI)null, URI.create("http://example.com"));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test23() {
-        try {
-            JsonLd.compact(URI.create("http://example.com"), URI.create("/relative"));
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact(URI.create("http://example.com"), URI.create("/relative"));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test24() {
-        try {
-            JsonLd.compact(URI.create("/relative"), URI.create("http://example.com"));
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact(URI.create("/relative"), URI.create("http://example.com"));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test25() {
-        try {
-            JsonLd.compact((URI)null, (JsonStructure)null);
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact((URI)null, (JsonStructure)null);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test26() {
-        try {
-            JsonLd.compact(URI.create("http://example.com"), (JsonStructure)null);
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact(URI.create("http://example.com"), (JsonStructure)null);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test27() {
-        try {
-            JsonLd.compact((URI)null, Json.createArrayBuilder().build());
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact((URI)null, Json.createArrayBuilder().build());
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test28() {
-        try {
-            JsonLd.compact(URI.create("relative"), Json.createArrayBuilder().build());
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact(URI.create("relative"), Json.createArrayBuilder().build());
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test29() {
-        try {
-            JsonLd.compact("   ", Json.createArrayBuilder().build());
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact("   ", Json.createArrayBuilder().build());
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test30() {
-        try {
-            JsonLd.compact("http://example.com", "");
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact("http://example.com", "");
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test31() {
-        try {
-            JsonLd.compact("http://example.com", "\t");
-            Assert.fail();
-        
-        } catch (IllegalArgumentException e) {}
+        JsonLd.compact("http://example.com", "\t");
     }
 }
