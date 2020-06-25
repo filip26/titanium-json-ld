@@ -1,0 +1,166 @@
+package com.apicatalog.jsonld.api.impl;
+
+import java.net.URI;
+
+import javax.json.JsonStructure;
+
+import com.apicatalog.jsonld.api.CommonApi;
+import com.apicatalog.jsonld.api.ContextApi;
+import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.api.LoaderApi;
+import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
+import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.lang.Version;
+import com.apicatalog.jsonld.loader.LoadDocumentCallback;
+import com.apicatalog.jsonld.processor.ToRdfProcessor;
+import com.apicatalog.jsonld.uri.UriUtils;
+import com.apicatalog.rdf.RdfDataset;
+
+public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>, ContextApi<ToRdfApi>{
+
+    // required
+    private final RemoteDocument document;
+    private final URI documentUri;
+    
+    // optional
+    private JsonLdOptions options;
+    
+    public ToRdfApi(URI documentUri) {
+        this.document = null;
+        this.documentUri = documentUri;
+        this.options = new JsonLdOptions();
+    }
+
+    public ToRdfApi(RemoteDocument document) {
+        this.document = document;
+        this.documentUri = null;
+        this.options = new JsonLdOptions();
+    }
+
+    @Override
+    public ToRdfApi options(JsonLdOptions options) {
+        
+        if (options == null) {
+            throw new IllegalArgumentException("Parameter 'options' is null.");
+        }
+
+        this.options = options;
+        return this;
+    }
+
+    @Override
+    public ToRdfApi context(URI contextUri) {
+        options.setExpandContext(contextUri);
+        return this;
+    }
+
+    @Override
+    public ToRdfApi context(String contextLocation) {
+        
+        if (contextLocation != null && !UriUtils.isNotURI(contextLocation)) {
+            throw new IllegalArgumentException("Context location must be valid URI or null but is [" + contextLocation + ".");
+        }
+        
+        return context(contextLocation != null ? UriUtils.create(contextLocation) : null);
+    }
+    
+    @Override
+    public ToRdfApi context(JsonStructure context) {
+        options.setExpandContext(context != null ? RemoteDocument.of(context) : null);
+        return this;
+    }
+
+    @Override
+    public ToRdfApi context(RemoteDocument context) {
+        options.setExpandContext(context);
+        return this;
+    }
+
+    /**
+     * If set to true, the JSON-LD processor may emit blank nodes for triple predicates, otherwise they will be omitted.
+     * @param enable
+     * @return builder instance
+     */
+    public ToRdfApi produceGeneralizedRdf(boolean enable) {
+        options.setProduceGeneralizedRdf(enable);
+        return this;
+    }
+
+    /**
+     * The JSON-LD processor may emit blank nodes for triple predicates.
+     * 
+     * @return builder instance
+     */    
+    public ToRdfApi produceGeneralizedRdf() {
+        return produceGeneralizedRdf(true);
+    }
+
+    /**
+     * Determines how value objects containing a base direction are transformed to and from RDF.
+     * 
+     * @param direction
+     * @return builder instance
+     */
+    public ToRdfApi rdfDirection(RdfDirection direction) {
+        options.setRdfDirection(direction);
+        return this;
+    }
+
+    @Override
+    public ToRdfApi mode(Version processingMode) {
+        options.setProcessingMode(processingMode);
+        return this;
+    }
+
+    @Override
+    public ToRdfApi base(URI baseUri) {        
+        options.setBase(baseUri);
+        return this;
+    }
+
+    @Override
+    public ToRdfApi base(String baseLocation) {
+        
+        if (baseLocation != null && !UriUtils.isNotURI(baseLocation)) {
+            throw new IllegalArgumentException("Base location must be valid URI or null but is [" + baseLocation + ".");
+        }
+        
+        return base(UriUtils.create(baseLocation));
+    }
+
+    @Override
+    public ToRdfApi loader(LoadDocumentCallback loader) {
+        options.setDocumentLoader(loader);
+        return this;
+    }
+
+    @Override
+    public ToRdfApi ordered(boolean enable) {
+        options.setOrdered(enable);
+        return this;
+    }
+    
+    @Override
+    public ToRdfApi ordered() {
+        return ordered(true);
+    }
+    
+    /**
+     * Transform provided <code>JSON-LD</code> document into {@link RdfDataset}.
+     * 
+     * @return {@link RdfDataset} representing provided <code>JSON-LD</code> document
+     * @throws JsonLdError
+     */
+    public RdfDataset get() throws JsonLdError {
+        if (documentUri != null) {
+            return ToRdfProcessor.toRdf(documentUri, options);
+        }
+        
+        if (document != null) {
+            return ToRdfProcessor.toRdf(document, options);
+        }
+        
+        throw new IllegalArgumentException();
+    }
+}

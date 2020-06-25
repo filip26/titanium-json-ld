@@ -2,6 +2,8 @@ package com.apicatalog.jsonld.document;
 
 import java.net.URI;
 
+import javax.json.JsonStructure;
+
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 
@@ -24,6 +26,14 @@ public final class RemoteDocument {
     private URI documentUrl;
     private String profile;
 
+    public RemoteDocument() {
+        this(null);
+    }
+    
+    public RemoteDocument(Document document) {
+        this.document = document;
+    }
+    
     /**
      * The <a href="https://tools.ietf.org/html/rfc2045#section-5">Content-Type</a>
      * of the loaded document, exclusive of any optional parameters.
@@ -90,5 +100,25 @@ public final class RemoteDocument {
     
     public void setProfile(String profile) {
         this.profile = profile;
+    }
+
+    /**
+     * Create an empty remote document holding just the given content.
+     * 
+     * @param structure {@link JsonStructure} to set as a content
+     * @return {@link RemoteDocument} 
+     */
+    public static RemoteDocument of(final JsonStructure structure) {
+        return new RemoteDocument(Document.of(structure));
+    }
+    
+    /**
+     * Create an empty remote document holding just the given raw payload.
+     * 
+     * @param payload <code>byte[]</code> to set as raw/unparsed content
+     * @return {@link RemoteDocument} 
+     */
+    public static RemoteDocument of(final byte[] payload) {
+        return new RemoteDocument(Document.of(payload));
     }
 }

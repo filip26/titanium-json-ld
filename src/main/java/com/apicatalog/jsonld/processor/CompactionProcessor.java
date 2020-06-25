@@ -5,7 +5,6 @@ import java.net.URI;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
-import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
@@ -30,10 +29,13 @@ public final class CompactionProcessor {
     }
     
     public static final JsonObject compact(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError {
-        return compact(input, JsonContentProvider.create(options.getDocumentLoader()).fetchJsonStructure(context, new LoadDocumentOptions()), options);
+        return compact(input, 
+                        JsonContentProvider
+                                .create(options.getDocumentLoader())
+                                .fetchJsonDocument(context, new LoadDocumentOptions()), options);
     }
     
-    public static final JsonObject compact(final URI input, final JsonStructure context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonObject compact(final URI input, final RemoteDocument context, final JsonLdOptions options) throws JsonLdError {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
@@ -53,7 +55,7 @@ public final class CompactionProcessor {
         return compact(remoteDocument, context, options);
     }
 
-    public static final JsonObject compact(final RemoteDocument input, final JsonStructure context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonObject compact(final RemoteDocument input, final RemoteDocument context, final JsonLdOptions options) throws JsonLdError {
         
         // 4.
         JsonLdOptions expansionOptions = new JsonLdOptions(options);
@@ -69,9 +71,8 @@ public final class CompactionProcessor {
             contextBase = options.getBase();
         }
         
-        // 6.        
-        
-        JsonValue contextValue = context;
+        // 6.
+        JsonValue contextValue = JsonContentProvider.extractJsonStructure(context);
         
         if (JsonUtils.isArray(contextValue) && contextValue.asJsonArray().size() == 1) {
             contextValue = contextValue.asJsonArray().get(0);

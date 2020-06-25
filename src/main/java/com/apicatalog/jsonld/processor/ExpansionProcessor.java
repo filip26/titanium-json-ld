@@ -1,6 +1,7 @@
 package com.apicatalog.jsonld.processor;
 
 import java.net.URI;
+import java.util.Optional;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -87,21 +88,26 @@ public final class ExpansionProcessor {
         // instead for local context.
         if (options.getExpandContext() != null) {
             
-            final JsonArray expandedContext = options.getExpandContext().asJsonArray();
-            
-            if (expandedContext.size() == 1 
-                    && JsonUtils.isObject(expandedContext.get(0)) 
-                    && expandedContext.getJsonObject(0).containsKey(Keywords.CONTEXT)
-                    ) {
+            final Optional<JsonStructure> contextValue = options.getExpandContext().getDocument().getJsonStructure();
+
+            if (contextValue.isPresent()) {
                 
-                activeContext = activeContext
-                                    .newContext()
-                                        .create(
-                                            expandedContext.getJsonObject(0).get(Keywords.CONTEXT), 
-                                            baseUrl);
+                final JsonArray expandedContext = JsonUtils.toJsonArray(contextValue.get());
                 
-            } else {
-                activeContext = activeContext.newContext().create(expandedContext, baseUrl);   
+                if (expandedContext.size() == 1 
+                        && JsonUtils.isObject(expandedContext.get(0)) 
+                        && expandedContext.getJsonObject(0).containsKey(Keywords.CONTEXT)
+                        ) {
+                    
+                    activeContext = activeContext
+                                        .newContext()
+                                            .create(
+                                                expandedContext.getJsonObject(0).get(Keywords.CONTEXT), 
+                                                baseUrl);
+                    
+                } else {
+                    activeContext = activeContext.newContext().create(expandedContext, baseUrl);   
+                }
             }
         }
         

@@ -49,6 +49,14 @@ public final class JsonContentProvider {
     
     public static final JsonStructure extractJsonStructure(RemoteDocument document) throws JsonLdError {
         
+        if (document == null) {
+            throw new IllegalArgumentException("Document paramater is null.");
+        }
+
+        if (document.getDocument() == null) {
+            throw new IllegalArgumentException("Document content is null.");
+        }
+
         final Optional<JsonStructure> contentStructure;
         
         if (document.getDocument().isRawPayload()) {

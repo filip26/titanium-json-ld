@@ -85,14 +85,12 @@ compile group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
 - [x] 0.5 ~~[RDF to JSON-LD](https://www.w3.org/TR/json-ld11-api/#serialize-rdf-as-json-ld-algorithm)~~
 - [x] 0.6 ~~[Framing](https://www.w3.org/TR/json-ld11-framing/)~~
 - [x] 0.7 ~~[Remote Document and Context Retrieval](https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval)~~
-- [ ] 0.8 [JSON-LD API](https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface)
+- [ ] 0.8 JsonLd API
 - [ ] 1.0 Documented, A+ code
 
 ## Examples
 
-Titanium implements the [JsonLdProcessor](https://www.w3.org/TR/json-ld11-api/#the-jsonldprocessor-interface) interface and custom interface based on builder design pattern.
-
-### Builder API 
+Titanium provides high-level [JsonLd](https://github.com/filip26/titanium-json-ld/blob/master/src/main/java/com/apicatalog/jsonld/JsonLd.java) interface developers should use to interact with the processor.
 
 ```javascript
 

@@ -2,13 +2,14 @@ package com.apicatalog.rdf;
 
 import java.util.List;
 
-import com.apicatalog.jsonld.api.JsonLdProcessor;
+import com.apicatalog.jsonld.JsonLd;
+
 
 /**
  * The {@link RdfGraph} interface describes operations on an RDF graph used by
- * the @link JsonLdProcessor#fromRdf() fromRdf() and
- * JsonLdProcessor#toRdf() toRdf() methods in the
- * {@link JsonLdProcessor} interface. The interface may be used for constructing
+ * the @link {@link JsonLd#fromRdf(RdfDataset)} and
+ * {@link JsonLd#toRdf(java.net.URI)} methods in the
+ * {@link JsonLd} interface. The interface may be used for constructing
  * a new {@link RdfGraph}, which is composed of zero or more {@link RdfTriple}
  * instances.
  * 

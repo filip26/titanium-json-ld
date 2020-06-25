@@ -13,14 +13,18 @@ public final class UriUtils {
 
         return value != null 
                     && !value.isBlank() 
-                    && !Keywords.matchForm(value)
-                    && create(value) != null;
+                    && !Keywords.matchForm(value.strip())
+                    && create(value.strip()) != null;
     }
 
     
     public static final URI create(final String uri) {
 
-        String uriValue = uri;
+        if (uri == null) {
+            throw new IllegalArgumentException("The uri cannot be null.");
+        }
+
+        String uriValue = uri.strip();
         
         if (uri.endsWith(":")) {
             uriValue = uri + ".";
