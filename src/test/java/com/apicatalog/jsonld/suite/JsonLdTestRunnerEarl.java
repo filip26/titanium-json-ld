@@ -6,7 +6,7 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 
@@ -32,7 +32,7 @@ public class JsonLdTestRunnerEarl {
                 return false;
             }
             
-            RemoteDocument expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new LoadDocumentOptions());
+            Document expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new LoadDocumentOptions());
                                     
             // compare expected with the result
             if (expectedDocument.getJsonContent().isPresent()) {

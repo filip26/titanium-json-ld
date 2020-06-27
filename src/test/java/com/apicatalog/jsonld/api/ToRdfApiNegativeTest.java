@@ -5,13 +5,13 @@ import java.net.URI;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
 
 public class ToRdfApiNegativeTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void test1() {
-        JsonLd.toRdf((RemoteDocument)null);
+        JsonLd.toRdf((Document)null);
     }
 
     @Test(expected = IllegalArgumentException.class)

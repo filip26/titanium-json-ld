@@ -6,7 +6,7 @@ import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonStructure;
 
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
 
 public interface ContextApi<R> {
     
@@ -37,8 +37,8 @@ public interface ContextApi<R> {
     /**
      * A context that is used to initialize the active context.
      * 
-     * @param context {@link RemoteDocument} representing a context 
+     * @param context {@link Document} representing a context 
      * @return builder instance 
      */
-    R context(RemoteDocument context);
+    R context(Document context);
 }

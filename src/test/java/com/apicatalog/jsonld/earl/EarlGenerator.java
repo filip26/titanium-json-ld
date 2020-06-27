@@ -18,7 +18,7 @@ import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.RemoteTest;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
@@ -89,7 +89,7 @@ public class EarlGenerator {
                                         throw new IllegalStateException();
                                     }
                                     
-                                    RemoteDocument contextDocument = options.getDocumentLoader().loadDocument(testCase.context, new LoadDocumentOptions());
+                                    Document contextDocument = options.getDocumentLoader().loadDocument(testCase.context, new LoadDocumentOptions());
                                      
                                     if (contextDocument == null) {
                                         throw new IllegalStateException();
@@ -121,7 +121,7 @@ public class EarlGenerator {
                                  
                                  //pre-load context
                                  if (testCase.context != null) {
-                                     RemoteDocument contextDocument = options.getDocumentLoader().loadDocument(testCase.context, new LoadDocumentOptions());
+                                     Document contextDocument = options.getDocumentLoader().loadDocument(testCase.context, new LoadDocumentOptions());
                                      
                                      if (contextDocument == null) {
                                          throw new IllegalStateException();

@@ -24,7 +24,7 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.context.ActiveContext;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.framing.Frame;
@@ -46,7 +46,7 @@ public final class FramingProcessor {
     private FramingProcessor() {
     }
     
-    public static final JsonObject frame(final RemoteDocument input, final RemoteDocument frame, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonObject frame(final Document input, final Document frame, final JsonLdOptions options) throws JsonLdError {
 
         if (frame == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame or Frame.Document is null.");
@@ -205,12 +205,12 @@ public final class FramingProcessor {
         return frame(getDocument(input, options), getDocument(frame, options), options);
     }
     
-    private static RemoteDocument getDocument(final URI document, final JsonLdOptions options) throws JsonLdError {
+    private static Document getDocument(final URI document, final JsonLdOptions options) throws JsonLdError {
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
 
-        final RemoteDocument remoteDocument = 
+        final Document remoteDocument = 
                                 options
                                     .getDocumentLoader()
                                     .loadDocument(document,

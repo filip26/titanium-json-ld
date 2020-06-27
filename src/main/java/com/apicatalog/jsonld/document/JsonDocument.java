@@ -15,8 +15,9 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.rdf.RdfDataset;
 
-final class RemoteJsonDocument implements RemoteDocument {
+final class JsonDocument implements Document {
 
     private static final String PLUS_JSON = "+json";
         
@@ -27,24 +28,23 @@ final class RemoteJsonDocument implements RemoteDocument {
     private URI documentUrl;
     private URI contentUrl;
     
-    private RemoteJsonDocument(final MediaType type, final String profile, final JsonStructure structue) {
+    private JsonDocument(final MediaType type, final String profile, final JsonStructure structue) {
         this.contentType = type;
         this.profile = profile;
         this.structure = structue;
     }
 
-    public static final RemoteDocument of(final MediaType type, final JsonStructure structure) {
+    public static final Document of(final MediaType type, final JsonStructure structure) {
 
-        if (type == null) {
-            throw new IllegalArgumentException("Document content type must be null.");
-        }
+        assertContentType(type);
         
         final String profile = type.parameters().firstValue("profile").orElse(null);
         
-        return new RemoteJsonDocument(type, profile, structure);
+        return new JsonDocument(type, profile, structure);
     }
     
-    public static final RemoteDocument of(final MediaType type, final InputStream is)  throws JsonLdError {
+    public static final Document of(final MediaType type, final InputStream is)  throws JsonLdError {
+
         
         assertContentType(type);
         
@@ -57,7 +57,7 @@ final class RemoteJsonDocument implements RemoteDocument {
         }
     }
 
-    public static final RemoteDocument of(final MediaType type, final Reader reader)  throws JsonLdError {
+    public static final Document of(final MediaType type, final Reader reader)  throws JsonLdError {
         
         assertContentType(type);
         
@@ -70,7 +70,7 @@ final class RemoteJsonDocument implements RemoteDocument {
         }
     }
     
-    private static final RemoteDocument doParse(final MediaType type, final JsonParser parser) throws JsonLdError {
+    private static final Document doParse(final MediaType type, final JsonParser parser) throws JsonLdError {
         
         if (!parser.hasNext()) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Nothing to read. Provided document is empty.");
@@ -83,31 +83,30 @@ final class RemoteJsonDocument implements RemoteDocument {
         final String profile =type.parameters().firstValue("profile").orElse(null);
             
         if (JsonUtils.isArray(root)) {
-            return new RemoteJsonDocument(type, profile, root.asJsonArray());
+            return new JsonDocument(type, profile, root.asJsonArray());
         }
 
         if (JsonUtils.isObject(root)) {
-            return new RemoteJsonDocument(type, profile, root.asJsonObject());
+            return new JsonDocument(type, profile, root.asJsonObject());
         }
 
         throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "JSON document's top level element must be JSON array or object.");
     }
-
-    protected static final void assertContentType(MediaType contentType) throws JsonLdError {
-        if (contentType == null ||
-                (!MediaType.JSON_LD.match(contentType)
-                && !MediaType.JSON.match(contentType)
-                && !contentType.subtype().toLowerCase().endsWith(PLUS_JSON))  
-                ) {
-            
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, 
-                                        "Unsupported media type '" + contentType 
-                                        + "'. Supported content types are [" 
-                                        + MediaType.JSON_LD + ", " 
-                                        + MediaType.JSON  + ", "
-                                        + PLUS_JSON
-                                        + "]"
-                                        );
+    
+    public static final boolean accepts(final MediaType contentType) {
+        return contentType != null &&
+                (MediaType.JSON_LD.match(contentType)
+                || MediaType.JSON.match(contentType)
+                || contentType.subtype().toLowerCase().endsWith(PLUS_JSON));        
+    }
+    
+    private static final void assertContentType(final MediaType contentType) {
+        if (!accepts(contentType)) {
+            throw new IllegalArgumentException(
+                    "Unsupported media type '" + contentType 
+                    + "'. Supported content types are [" 
+                    + MediaType.JSON_LD + ", " 
+                    + MediaType.JSON  + ", +json]");
         }
     }
     
@@ -144,5 +143,10 @@ final class RemoteJsonDocument implements RemoteDocument {
     @Override
     public Optional<String> getProfile() {
         return Optional.ofNullable(profile);
+    }
+
+    @Override
+    public Optional<RdfDataset> getRdfContent() {
+        return Optional.empty();
     }
 }

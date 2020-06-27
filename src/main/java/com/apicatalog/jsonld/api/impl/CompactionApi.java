@@ -9,7 +9,7 @@ import com.apicatalog.jsonld.api.CommonApi;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.api.LoaderApi;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.processor.CompactionProcessor;
@@ -18,9 +18,9 @@ import com.apicatalog.jsonld.uri.UriUtils;
 public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<CompactionApi> {
 
     // required
-    private final RemoteDocument document;
+    private final Document document;
     private final URI documentUri;
-    private final RemoteDocument context;
+    private final Document context;
     private final URI contextUri;
     
     // optional
@@ -29,7 +29,7 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
     public CompactionApi(URI documentUri, JsonStructure context) {
         this.document = null;
         this.documentUri = documentUri;
-        this.context = RemoteDocument.of(context);
+        this.context = Document.of(context);
         this.contextUri = null;
         this.options = new JsonLdOptions();
     }
@@ -42,7 +42,7 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
         this.options = new JsonLdOptions();
     }
 
-    public CompactionApi(RemoteDocument document, RemoteDocument context) {
+    public CompactionApi(Document document, Document context) {
         this.document = document;
         this.documentUri = null;
         this.context = context;

@@ -15,7 +15,7 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.http.ProfileConstants;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
@@ -220,7 +220,7 @@ public class ActiveContextBuilder {
 
                 try {
 
-                    final RemoteDocument importedDocument = activeContext.getOptions().getDocumentLoader().loadDocument(URI.create(contextImportUri), loaderOptions);
+                    final Document importedDocument = activeContext.getOptions().getDocumentLoader().loadDocument(URI.create(contextImportUri), loaderOptions);
 
                     if (importedDocument == null) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context[" + contextImportUri + "] is null.");
@@ -479,7 +479,7 @@ public class ActiveContextBuilder {
 
         try {
             
-            final RemoteDocument remoteImport = activeContext.getOptions().getDocumentLoader().loadDocument(URI.create(contextUri), loaderOptions);
+            final Document remoteImport = activeContext.getOptions().getDocumentLoader().loadDocument(URI.create(contextUri), loaderOptions);
 
             if (remoteImport == null) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");

@@ -11,7 +11,7 @@ import com.apicatalog.jsonld.api.JsonLdEmbed;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.api.LoaderApi;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.processor.FramingProcessor;
@@ -20,9 +20,9 @@ import com.apicatalog.jsonld.uri.UriUtils;
 public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<FramingApi>, ContextApi<FramingApi> {
 
     // required
-    private final RemoteDocument document;
+    private final Document document;
     private final URI documentUri;
-    private final RemoteDocument frame;
+    private final Document frame;
     private final URI frameUri;
     
     // optional
@@ -36,7 +36,7 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
         this.options = new JsonLdOptions();
     }
 
-    public FramingApi(RemoteDocument document, RemoteDocument frame) {
+    public FramingApi(Document document, Document frame) {
         this.document = document;
         this.documentUri = null;
         this.frame = frame;
@@ -68,12 +68,12 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
 
     @Override
     public FramingApi context(JsonStructure context) {
-        options.setExpandContext(context != null ?  RemoteDocument.of(context) : null);
+        options.setExpandContext(context != null ?  Document.of(context) : null);
         return this;
     }
 
     @Override
-    public FramingApi context(RemoteDocument context) {
+    public FramingApi context(Document context) {
         options.setExpandContext(context);
         return this;
     }

@@ -5,10 +5,11 @@ import java.util.Optional;
 
 import javax.json.JsonStructure;
 
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.http.media.MediaType;
+import com.apicatalog.rdf.RdfDataset;
 
-public class NullRemoteDocument implements RemoteDocument {
+public class NullRemoteDocument implements Document {
 
     private final JsonStructure structure;
     
@@ -51,5 +52,11 @@ public class NullRemoteDocument implements RemoteDocument {
     @Override
     public Optional<JsonStructure> getJsonContent() throws JsonLdError {
         return Optional.ofNullable(structure);
+    }
+
+    @Override
+    public Optional<RdfDataset> getRdfContent() throws JsonLdError {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

@@ -7,23 +7,23 @@ import javax.json.Json;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
 
 public class FramingApiNegativeTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void test1() {
-        JsonLd.frame((RemoteDocument)null, (RemoteDocument)null);
+        JsonLd.frame((Document)null, (Document)null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void test2() {
-        JsonLd.frame(RemoteDocument.of(Json.createArrayBuilder().build()), (RemoteDocument)null);
+        JsonLd.frame(Document.of(Json.createArrayBuilder().build()), (Document)null);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void test3() {
-        JsonLd.frame((RemoteDocument)null, RemoteDocument.of(Json.createArrayBuilder().build()));
+        JsonLd.frame((Document)null, Document.of(Json.createArrayBuilder().build()));
     }
     
     @Test(expected = IllegalArgumentException.class)

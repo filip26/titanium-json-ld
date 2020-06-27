@@ -13,7 +13,7 @@ import com.apicatalog.jsonld.api.impl.FlatteningApi;
 import com.apicatalog.jsonld.api.impl.FramingApi;
 import com.apicatalog.jsonld.api.impl.FromRdfApi;
 import com.apicatalog.jsonld.api.impl.ToRdfApi;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.RdfDataset;
 
@@ -69,7 +69,7 @@ public final class JsonLd {
      * @param document containing JSON-LD document to expand
      * @return {@link ExpansionApi} allowing to set additional parameters 
      */
-    public static final ExpansionApi expand(final RemoteDocument document) {
+    public static final ExpansionApi expand(final Document document) {
 
         assertDocument(document, DOCUMENT_PARAM_NAME);
         
@@ -149,7 +149,7 @@ public final class JsonLd {
      * @param context {@link JsonObject} representing the context or {@link JsonArray} consisting of {@link JsonObject} and {@link JsonString} referencing the context to use when compacting the document
      * @return {@link CompactionApi} allowing to set additional parameters 
      */
-    public static final CompactionApi compact(final RemoteDocument document, final JsonStructure context) {
+    public static final CompactionApi compact(final Document document, final JsonStructure context) {
         
         assertDocument(document, DOCUMENT_PARAM_NAME);
         
@@ -157,17 +157,17 @@ public final class JsonLd {
             throw new IllegalArgumentException(NULL_CONTEXT_ERROR_MSG);
         }
 
-        return compact(document, RemoteDocument.of(context));
+        return compact(document, Document.of(context));
     }
 
     /**
      * Compacts the remote document using the remote context.
      * 
      * @param document {@code RemoteDocument} containing parsed JSON or raw payload representing JSON-LD document to compact
-     * @param context {@link RemoteDocument} containing parsed JSON or raw payload representing the context 
+     * @param context {@link Document} containing parsed JSON or raw payload representing the context 
      * @return {@link CompactionApi} allowing to set additional parameters 
      */
-    public static final CompactionApi compact(final RemoteDocument document, final RemoteDocument context) {
+    public static final CompactionApi compact(final Document document, final Document context) {
         
         assertDocument(document, DOCUMENT_PARAM_NAME);
         assertDocument(context, CONTEXT_PARAM_NAME);
@@ -207,7 +207,7 @@ public final class JsonLd {
      * @param document {@code RemoteDocument} containing parsed JSON or raw payload representing JSON-LD document to flatten
      * @return {@link FlatteningApi} allowing to set additional parameters
      */
-    public static final FlatteningApi flatten(final RemoteDocument document) {
+    public static final FlatteningApi flatten(final Document document) {
         
         assertDocument(document, DOCUMENT_PARAM_NAME);
         
@@ -251,7 +251,7 @@ public final class JsonLd {
      * @param frame containing parsed or raw <code>JSON</code> representing <code>JSON-LD</code> frame
      * @return {@link FramingApi} allowing to set additional parameters
      */
-    public static final FramingApi frame(final RemoteDocument document, final RemoteDocument frame) {
+    public static final FramingApi frame(final Document document, final Document frame) {
         
         assertDocument(document, DOCUMENT_PARAM_NAME);
         assertDocument(frame, FRAME_PARAM_NAME);
@@ -291,7 +291,7 @@ public final class JsonLd {
      * @param document containing parsed or raw <code>JSON</code> representing <code>JSON-LD</code> document to transform
      * @return {@link ToRdfApi} allowing to set additional parameters
      */
-    public static final ToRdfApi toRdf(final RemoteDocument document) {
+    public static final ToRdfApi toRdf(final Document document) {
         
         assertDocument(document, DOCUMENT_PARAM_NAME);
         
@@ -332,7 +332,7 @@ public final class JsonLd {
         }
     }    
     
-    private static final void assertDocument(final RemoteDocument remoteDocument, final String param) {
+    private static final void assertDocument(final Document remoteDocument, final String param) {
         if (remoteDocument == null) {
             throw new IllegalArgumentException("'" + param + "' is null.");
         }

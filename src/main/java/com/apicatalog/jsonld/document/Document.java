@@ -8,16 +8,17 @@ import java.util.Optional;
 import javax.json.JsonStructure;
 
 import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.http.media.MediaType;
-import com.apicatalog.jsonld.loader.LoadDocumentCallback;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
+import com.apicatalog.rdf.RdfDataset;
 
 /**
- * Represents a remote document 
+ * A document that can be processed by the processor. 
+ * 
+ * This can either be {@link JsonStructure}, representing JSON-LD or JSON document, 
+ * or {@link RdfDataset)
  *
  */
-public interface RemoteDocument {
+public interface Document {
     
     /**
      * The <a href="https://tools.ietf.org/html/rfc2045#section-5">Content-Type</a>
@@ -65,11 +66,11 @@ public interface RemoteDocument {
     /**
      * Get the document content as parsed {@link RdfDataset}.
      * 
-     * @return {@link JsonStructure} or {@link Optional#empty()} if document content is not in <code>application/n-quads</code> representation
+     * @return {@link RdfDataset} or {@link Optional#empty()} if document content is not in <code>application/n-quads</code> representation
      * 
      * @throws JsonLdError
      */
-    //Optional<RdfDataset> getRdfContent() throws JsonLdError; 
+    Optional<RdfDataset> getRdfContent() throws JsonLdError; 
     
     /**
      * Create a new document from {@link JsonStructure}. Sets {@link MediaType#JSON} as the content type.
@@ -77,7 +78,7 @@ public interface RemoteDocument {
      * @param structure representing parsed JSON content
      * @return {@link DocumentContent} representing JSON content
      */
-    public static RemoteDocument of(final JsonStructure structure) {
+    public static Document of(final JsonStructure structure) {
         return of(MediaType.JSON, structure);
     }
     
@@ -88,7 +89,7 @@ public interface RemoteDocument {
      * @param structure representing parsed JSON content
      * @return {@link DocumentContent} representing JSON content 
      */
-    public static RemoteDocument of(final MediaType contentType, final JsonStructure structure) {
+    public static Document of(final MediaType contentType, final JsonStructure structure) {
 
         if (contentType == null) {
             throw new IllegalArgumentException("The provided JSON type is null.");
@@ -97,7 +98,7 @@ public interface RemoteDocument {
             throw new IllegalArgumentException("The provided JSON structure is null.");
         }
         
-        return RemoteJsonDocument.of(contentType, structure);
+        return JsonDocument.of(contentType, structure);
     }
 
     /**
@@ -107,7 +108,7 @@ public interface RemoteDocument {
      * @param inputStream providing unparsed raw content described by {{@link MediaType}
      * @return {@link DocumentContent} representing unparsed content
      */
-    public static RemoteDocument of(final MediaType contentType, final InputStream inputStream)  throws JsonLdError {
+    public static Document of(final MediaType contentType, final InputStream inputStream)  throws JsonLdError {
         
         if (inputStream == null) {
             throw new IllegalArgumentException("The provided content InputStream is null.");
@@ -117,7 +118,7 @@ public interface RemoteDocument {
             throw new IllegalArgumentException("The provided content type is null.");
         }
                 
-        return RemoteJsonDocument.of(contentType, inputStream);
+        return DocumentParser.parse(contentType, inputStream);
     }
 
     /**
@@ -127,7 +128,7 @@ public interface RemoteDocument {
      * @param readed providing unparsed raw content described by {{@link MediaType}
      * @return {@link DocumentContent} representing unparsed content
      */
-    public static RemoteDocument of(final MediaType contentType, final Reader reader)  throws JsonLdError {
+    public static Document of(final MediaType contentType, final Reader reader)  throws JsonLdError {
         
         if (reader == null) {
             throw new IllegalArgumentException("The provided content reader is null.");
@@ -136,23 +137,7 @@ public interface RemoteDocument {
         if (contentType == null) {
             throw new IllegalArgumentException("The provided content type is null.");
         }
-//        Rdf.createReader(new ByteArrayInputStream(inputDocument.getContent().getBytes().get()), RdfFormat.N_QUADS).readDataset()
         
-        return RemoteJsonDocument.of(contentType, reader);
-    }
-    
-    public static RemoteDocument fetch(final URI contentUri, final LoadDocumentCallback loader, final LoadDocumentOptions options) throws JsonLdError {
-        
-        final RemoteDocument content = loader.loadDocument(contentUri, options);
-        
-        if (content == null) {
-            throw error(contentUri, "null has been returned");
-        }
-        
-        return content;
-    }
-    
-    private static JsonLdError error(final URI contentUri, final String details) {
-        return new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Cannot get [" + contentUri + "], ".concat(details).concat("."));
+        return DocumentParser.parse(contentType, reader);
     }
 }

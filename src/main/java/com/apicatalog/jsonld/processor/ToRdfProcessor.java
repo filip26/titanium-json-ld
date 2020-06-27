@@ -8,7 +8,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.deseralization.JsonLdToRdf;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
@@ -31,7 +31,7 @@ public final class ToRdfProcessor {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
 
-        final RemoteDocument remoteDocument = 
+        final Document remoteDocument = 
                                 options
                                     .getDocumentLoader()
                                     .loadDocument(input,
@@ -45,7 +45,7 @@ public final class ToRdfProcessor {
         return toRdf(remoteDocument, options);
     }
 
-    public static final RdfDataset toRdf(RemoteDocument input, final JsonLdOptions options) throws JsonLdError {
+    public static final RdfDataset toRdf(Document input, final JsonLdOptions options) throws JsonLdError {
 
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
         expansionOptions.setProcessingMode(options.getProcessingMode());

@@ -11,7 +11,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
@@ -42,7 +42,7 @@ public class FlattenTest {
         try {
             (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
                 
-                RemoteDocument jsonContext = null;
+                Document jsonContext = null;
                 
                 //pre-load context
                 if (testCase.context != null) {

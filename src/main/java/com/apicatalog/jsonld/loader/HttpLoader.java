@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.http.ProfileConstants;
 import com.apicatalog.jsonld.http.link.Link;
 import com.apicatalog.jsonld.http.media.MediaType;
@@ -41,7 +41,7 @@ public class HttpLoader implements LoadDocumentCallback {
     }
         
     @Override
-    public RemoteDocument loadDocument(final URI uri, final LoadDocumentOptions options) throws JsonLdError {
+    public Document loadDocument(final URI uri, final LoadDocumentOptions options) throws JsonLdError {
 
         try {
 
@@ -203,14 +203,14 @@ public class HttpLoader implements LoadDocumentCallback {
         return builder.toString();        
     }
     
-    public static final RemoteDocument createDocument(
+    public static final Document createDocument(
                                         final MediaType type,
                                         final URI targetUri,
                                         final URI contextUrl,
                                         final HttpResponse<InputStream> response) throws JsonLdError, IOException {
         try (final InputStream is = response.body()) {
             
-            final RemoteDocument remoteDocument = RemoteDocument.of(type, is);
+            final Document remoteDocument = Document.of(type, is);
         
             remoteDocument.setDocumentUrl(targetUri);
         

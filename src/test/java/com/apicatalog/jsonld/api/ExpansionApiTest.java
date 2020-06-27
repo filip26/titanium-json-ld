@@ -11,7 +11,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.lang.Version;
 
@@ -21,14 +21,14 @@ public class ExpansionApiTest {
     
     @Test    
     public void test1() throws JsonLdError {
-        JsonArray expanded = JsonLd.expand(RemoteDocument.of(Json.createObjectBuilder().build())).get();
+        JsonArray expanded = JsonLd.expand(Document.of(Json.createObjectBuilder().build())).get();
         Assert.assertNotNull(expanded);
         Assert.assertEquals(Json.createArrayBuilder().build(), expanded);
     }
     
     @Test    
     public void test2() throws JsonLdError {
-        JsonArray expanded = JsonLd.expand(RemoteDocument.of(MediaType.JSON, new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes()))).get();
+        JsonArray expanded = JsonLd.expand(Document.of(MediaType.JSON, new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes()))).get();
         Assert.assertNotNull(expanded);
         Assert.assertEquals(Json.createArrayBuilder().build(), expanded);
     }
@@ -56,14 +56,14 @@ public class ExpansionApiTest {
     
     @Test    
     public void test6() throws JsonLdError {
-        JsonArray expanded = JsonLd.expand("\thttps://example.com").context(RemoteDocument.of(Json.createObjectBuilder().build())).loader(MOCK_LOADER).ordered().get();
+        JsonArray expanded = JsonLd.expand("\thttps://example.com").context(Document.of(Json.createObjectBuilder().build())).loader(MOCK_LOADER).ordered().get();
         Assert.assertNotNull(expanded);
         Assert.assertEquals(Json.createArrayBuilder().build(), expanded);
     }
 
     @Test
     public void test7() throws JsonLdError {
-        JsonArray expanded = JsonLd.expand("\thttps://example.com").context(RemoteDocument.of(MediaType.JSON, new InputStreamReader(new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes())))).loader(MOCK_LOADER).ordered().get();
+        JsonArray expanded = JsonLd.expand("\thttps://example.com").context(Document.of(MediaType.JSON, new InputStreamReader(new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes())))).loader(MOCK_LOADER).ordered().get();
         Assert.assertNotNull(expanded);
         Assert.assertEquals(Json.createArrayBuilder().build(), expanded);
     }    

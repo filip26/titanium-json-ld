@@ -8,7 +8,7 @@ import javax.json.JsonStructure;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.flattening.Flattening;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
@@ -26,10 +26,10 @@ public final class FlatteningProcessor {
     public static final JsonStructure flatten(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError {
         
         if (context == null) {
-            return flatten(input, (RemoteDocument)null, options);
+            return flatten(input, (Document)null, options);
         }
 
-        final RemoteDocument contextDocument = options.getDocumentLoader().loadDocument(context, new LoadDocumentOptions());
+        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new LoadDocumentOptions());
 
         if (contextDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Context[" + context + "] is null.");
@@ -38,13 +38,13 @@ public final class FlatteningProcessor {
         return flatten(input, contextDocument, options);        
     }
 
-    public static final JsonStructure flatten(final RemoteDocument input, final URI context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonStructure flatten(final Document input, final URI context, final JsonLdOptions options) throws JsonLdError {
         
         if (context == null) {
-            return flatten(input, (RemoteDocument)null, options);
+            return flatten(input, (Document)null, options);
         }
                 
-        final RemoteDocument contextDocument = options.getDocumentLoader().loadDocument(context, new LoadDocumentOptions());
+        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new LoadDocumentOptions());
 
         if (contextDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Context[" + context + "] is null.");
@@ -53,13 +53,13 @@ public final class FlatteningProcessor {
         return flatten(input, contextDocument, options);        
     }
 
-    public static final JsonStructure flatten(final URI input, final RemoteDocument context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonStructure flatten(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError {
         
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
 
-        final RemoteDocument remoteDocument = 
+        final Document remoteDocument = 
                                 options
                                     .getDocumentLoader()
                                     .loadDocument(input,
@@ -73,7 +73,7 @@ public final class FlatteningProcessor {
         return flatten(remoteDocument, context, options);
     }
 
-    public static final JsonStructure flatten(final RemoteDocument input, final RemoteDocument context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonStructure flatten(final Document input, final Document context, final JsonLdOptions options) throws JsonLdError {
         
         // 4.
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
@@ -88,7 +88,7 @@ public final class FlatteningProcessor {
         // 6.1.
         if (context != null) {
          
-            final RemoteDocument document = RemoteDocument.of(MediaType.JSON_LD, flattenedOutput);
+            final Document document = Document.of(MediaType.JSON_LD, flattenedOutput);
             
             JsonLdOptions compactionOptions = new JsonLdOptions(options);
             

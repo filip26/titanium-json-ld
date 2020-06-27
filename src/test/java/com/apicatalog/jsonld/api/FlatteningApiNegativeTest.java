@@ -5,13 +5,13 @@ import java.net.URI;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
 
 public class FlatteningApiNegativeTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void test1() {
-        JsonLd.flatten((RemoteDocument)null);
+        JsonLd.flatten((Document)null);
     }
 
     @Test(expected = IllegalArgumentException.class)

@@ -1,5 +1,5 @@
 /**
- * Interfaces used to pass an information about a document and its content.
+ * Processable documents.
  * 
  */
 package com.apicatalog.jsonld.document;

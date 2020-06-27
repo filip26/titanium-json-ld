@@ -12,7 +12,7 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.context.ActiveContext;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
@@ -30,7 +30,7 @@ public final class CompactionProcessor {
     public static final JsonObject compact(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError {
         
         
-        final RemoteDocument contextDocument = options.getDocumentLoader().loadDocument(context, new LoadDocumentOptions());
+        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new LoadDocumentOptions());
 
         if (contextDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Context[" + context + "] is null.");
@@ -39,13 +39,13 @@ public final class CompactionProcessor {
         return compact(input, contextDocument, options);
     }
     
-    public static final JsonObject compact(final URI input, final RemoteDocument context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonObject compact(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
 
-        final RemoteDocument remoteDocument = 
+        final Document remoteDocument = 
                                 options
                                     .getDocumentLoader()
                                     .loadDocument(input,
@@ -59,7 +59,7 @@ public final class CompactionProcessor {
         return compact(remoteDocument, context, options);
     }
 
-    public static final JsonObject compact(final RemoteDocument input, final RemoteDocument context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonObject compact(final Document input, final Document context, final JsonLdOptions options) throws JsonLdError {
         
         // 4.
         JsonLdOptions expansionOptions = new JsonLdOptions(options);

@@ -2,7 +2,6 @@ package com.apicatalog.jsonld;
 
 import static org.junit.Assume.assumeFalse;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
@@ -15,7 +14,9 @@ import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.Version;
+import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
@@ -24,7 +25,6 @@ import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.io.RdfFormat;
 import com.apicatalog.rdf.io.error.UnsupportedFormatException;
-import com.apicatalog.rdf.io.nquad.NQuadsReaderException;
 import com.apicatalog.rdf.io.nquad.NQuadsWriterException;
 
 @RunWith(Parameterized.class)
@@ -85,11 +85,12 @@ public class JsonLdToRdfTest {
         Assert.assertNotNull("Test case does not define expected output nor expected error code.", testCase.expect);
 
         try {
-            byte[] inputDocument = (new ZipResourceLoader()).fetchBytes(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.expect.toString().substring("https://w3c.github.io/json-ld-api/tests/".length())));
+            Document inputDocument = (new ZipResourceLoader()).loadDocument(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.expect.toString().substring("https://w3c.github.io/json-ld-api/tests/".length())), new LoadDocumentOptions());
         
             Assert.assertNotNull(inputDocument);
+            Assert.assertTrue(inputDocument.getRdfContent().isPresent());
             
-            RdfDataset expected = Rdf.createReader(new ByteArrayInputStream(inputDocument), RdfFormat.N_QUADS).readDataset();
+            RdfDataset expected = inputDocument.getRdfContent().orElse(null);
 
             Assert.assertNotNull(expected);
 
@@ -111,7 +112,7 @@ public class JsonLdToRdfTest {
 
             Assert.assertTrue("The result does not match expected output.", match);
             
-        } catch (NQuadsWriterException | JsonLdError | UnsupportedFormatException | NQuadsReaderException e ) {
+        } catch (NQuadsWriterException | JsonLdError | UnsupportedFormatException e ) {
             Assert.fail(e.getMessage());
         }
     }
