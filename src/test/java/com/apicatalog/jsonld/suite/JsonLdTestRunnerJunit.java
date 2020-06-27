@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.json.Json;
-import javax.json.JsonValue;
+import javax.json.JsonStructure;
 import javax.json.JsonWriter;
 import javax.json.JsonWriterFactory;
 import javax.json.stream.JsonGenerator;
@@ -36,7 +36,7 @@ public class JsonLdTestRunnerJunit {
         Assert.assertNotNull(options);
         Assert.assertNotNull(options.getDocumentLoader());
         
-        JsonValue result = null;
+        Document result = null;
         
         try {
   
@@ -57,42 +57,47 @@ public class JsonLdTestRunnerJunit {
         Assert.assertNotNull(expectedDocument);
 
         // compare expected with the result
-        boolean match = false;
         
         if (expectedDocument.getJsonContent().isPresent()) {
-            match = JsonLdComparison.equals(expectedDocument.getJsonContent().get(), result);
+            
+            Assert.assertTrue("Expected JSON document but got " + result.getContentType(), result.getJsonContent().isPresent());
+            
+            compareJson(result.getJsonContent().get(), expectedDocument.getJsonContent().get());
+            return;
         }
         
-        if (!match) {
-            System.out.println("Test " + testCase.id + ": " + testCase.name);
-            System.out.println("Expected:");
+        Assert.assertTrue("Expected RDF document but got " + result.getContentType(), result.getRdfContent().isPresent());
+    }
 
-            Map<String, Object> properties = new HashMap<>(1);
-            properties.put(JsonGenerator.PRETTY_PRINTING, true);
-    
-            JsonWriterFactory writerFactory = Json.createWriterFactory(properties);
+    public void compareJson(JsonStructure result, JsonStructure expectedDocument) {
 
-            StringWriter writer = new StringWriter();
-            
-            JsonWriter jsonWriter1 = writerFactory.createWriter(writer);
-            jsonWriter1.write(expectedDocument.getJsonContent().orElse(null));
-            jsonWriter1.close();
-
-            writer.append("\n\n");
-            writer.append("Actual:\n");
-
-            JsonWriter jsonWriter2 = writerFactory.createWriter(writer);
-            jsonWriter2.write(result);
-            jsonWriter2.close();
-
-            System.out.print(writer.toString());
-            System.out.println();
-            System.out.println();
+        if (JsonLdComparison.equals(expectedDocument, result)) {
+            return;
         }
+        System.out.println("Test " + testCase.id + ": " + testCase.name);
+        System.out.println("Expected:");
 
-        Assert.assertTrue(
-                        "Expected " + expectedDocument.getJsonContent() + ", but was" + result,
-                        match
-                        );
+        Map<String, Object> properties = new HashMap<>(1);
+        properties.put(JsonGenerator.PRETTY_PRINTING, true);
+
+        JsonWriterFactory writerFactory = Json.createWriterFactory(properties);
+
+        StringWriter writer = new StringWriter();
+        
+        JsonWriter jsonWriter1 = writerFactory.createWriter(writer);
+        jsonWriter1.write(expectedDocument);
+        jsonWriter1.close();
+
+        writer.append("\n\n");
+        writer.append("Actual:\n");
+
+        JsonWriter jsonWriter2 = writerFactory.createWriter(writer);
+        jsonWriter2.write(result);
+        jsonWriter2.close();
+
+        System.out.print(writer.toString());
+        System.out.println();
+        System.out.println();
+        Assert.fail("Expected " + expectedDocument + ", but was" + result);
     }    
 }

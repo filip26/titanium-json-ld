@@ -11,14 +11,15 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
+import javax.json.JsonArray;
 import javax.json.JsonStructure;
-import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.RemoteTest;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
@@ -69,7 +70,7 @@ public class EarlGenerator {
                         printResult(writer, testCase.uri,           
                                 (new JsonLdTestRunnerEarl(testCase)).execute(options ->
                                 
-                                    JsonLd.expand(testCase.input).options(options).get()
+                                    JsonDocument.of(JsonLd.expand(testCase.input).options(options).get())
                                 )
                          )
                     );
@@ -91,18 +92,16 @@ public class EarlGenerator {
                                     
                                     Document contextDocument = options.getDocumentLoader().loadDocument(testCase.context, new LoadDocumentOptions());
                                      
-                                    if (contextDocument == null) {
+                                    if (contextDocument == null || contextDocument.getJsonContent().isEmpty()) {
                                         throw new IllegalStateException();
                                     }
                                 
-                                    JsonStructure jsonContext  = contextDocument.getJsonContent().orElseThrow(IllegalStateException::new);
-
-                                    return JsonLd.compact(
+                                    return JsonDocument.of(JsonLd.compact(
                                                         testCase.input, 
-                                                        jsonContext
+                                                        (JsonDocument)contextDocument
                                                         )
                                                     .options(options)
-                                                    .get();
+                                                    .get());
                                  })
                          )
                     );
@@ -130,11 +129,11 @@ public class EarlGenerator {
                                      jsonContext = contextDocument.getJsonContent().orElseThrow(IllegalStateException::new);
                                  }
                                                  
-                                 return JsonLd
+                                 return JsonDocument.of(JsonLd
                                              .flatten(testCase.input) 
                                              .context(jsonContext)
                                              .options(options)
-                                             .get();
+                                             .get());
                                  })
                          )
                     );
@@ -166,7 +165,7 @@ public class EarlGenerator {
                                 try {
                                     RdfDataset input = Rdf.createReader(new ByteArrayInputStream(inputDocument), RdfFormat.N_QUADS).readDataset();
                                     
-                                    return JsonLd.fromRdf(input).options(options).get();
+                                    return JsonDocument.of(JsonLd.fromRdf(input).options(options).get());
                                     
                                 } catch (NQuadsReaderException | IOException | UnsupportedFormatException e) {
                                     return null;
@@ -185,7 +184,7 @@ public class EarlGenerator {
                         printResult(writer, testCase.uri,           
                                 (new JsonLdTestRunnerEarl(testCase)).execute(options ->
                                 
-                                    JsonLd.frame(testCase.input, testCase.frame).options(options).get()
+                                    JsonDocument.of(JsonLd.frame(testCase.input, testCase.frame).options(options).get())
                                 )
                          )
                     );
@@ -220,9 +219,9 @@ public class EarlGenerator {
                                                             wireMockServer.baseUrl(), 
                                                             new HttpLoader()));
                             
-                            JsonValue r = JsonLd.expand(testCase.input).options(expandOptions).get();
+                            JsonArray r = JsonLd.expand(testCase.input).options(expandOptions).get();
                             
-                            return r;
+                            return JsonDocument.of(r);
                     });
                     
                     server.stop();

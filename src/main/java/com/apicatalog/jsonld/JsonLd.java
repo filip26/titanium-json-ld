@@ -112,17 +112,14 @@ public final class JsonLd {
      * Compacts the referenced document using the context.
      * 
      * @param documentLocation {@code IRI} referencing JSON-LD document to compact
-     * @param context {@link JsonObject} representing the context or {@link JsonArray} consisting of {@link JsonObject} and {@link JsonString} referencing the context to use when compacting the document
+     * @param context {@link JsonDocument} representing the context or {@link JsonArray} consisting of {@link JsonObject} and {@link JsonString} referencing the context to use when compacting the document
      * @return {@link CompactionApi} allowing to set additional parameters 
      */
-    public static final CompactionApi compact(final String documentLocation, final JsonStructure context) {
+    public static final CompactionApi compact(final String documentLocation, final JsonDocument context) {
         
         assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME);
+        assertDocument(context, CONTEXT_PARAM_NAME);
         
-        if (context == null) {
-            throw new IllegalArgumentException(NULL_CONTEXT_ERROR_MSG);
-        }
-
         return new CompactionApi(UriUtils.create(documentLocation), context);
     }
 
@@ -130,36 +127,15 @@ public final class JsonLd {
      * Compacts the referenced document using the context.
      * 
      * @param documentUri {@code URI} referencing JSON-LD document to compact
-     * @param context {@link JsonObject} representing the context or {@link JsonArray} consisting of one or many {@link JsonObject} and {@link JsonString} referencing the context to use when compacting the document
+     * @param context {@link JsonDocument} representing the context or {@link JsonArray} consisting of one or many {@link JsonObject} and {@link JsonString} referencing the context to use when compacting the document
      * @return {@link CompactionApi} allowing to set additional parameters 
      */
-    public static final CompactionApi compact(final URI documentUri, final JsonStructure context) {
+    public static final CompactionApi compact(final URI documentUri, final JsonDocument context) {
         
         assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
-        
-        if (context == null) {
-            throw new IllegalArgumentException(NULL_CONTEXT_ERROR_MSG);
-        }
+        assertDocument(context, CONTEXT_PARAM_NAME);
         
         return new CompactionApi(documentUri, context);
-    }
-
-    /**
-     * Compacts {@link JsonDocument} using the context.
-     * 
-     * @param document to compact
-     * @param context {@link JsonObject} representing the context or {@link JsonArray} consisting of {@link JsonObject} and {@link JsonString} referencing the context to use when compacting the document
-     * @return {@link CompactionApi} allowing to set additional parameters 
-     */
-    public static final CompactionApi compact(final JsonDocument document, final JsonStructure context) {
-        
-        assertDocument(document, DOCUMENT_PARAM_NAME);
-        
-        if (context == null) {
-            throw new IllegalArgumentException(NULL_CONTEXT_ERROR_MSG);
-        }
-
-        return compact(document, JsonDocument.of(context));
     }
 
     /**

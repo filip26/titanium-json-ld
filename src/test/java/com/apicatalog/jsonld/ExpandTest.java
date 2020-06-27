@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
@@ -38,9 +39,10 @@ public class ExpandTest {
         assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
         
         try {
+            
             (new JsonLdTestRunnerJunit(testCase)).execute(options ->
             
-                        JsonLd.expand(testCase.input).options(options).get()
+                JsonDocument.of(JsonLd.expand(testCase.input).options(options).get())
                         
             );
             

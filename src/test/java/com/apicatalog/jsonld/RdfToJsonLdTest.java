@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
@@ -41,7 +42,7 @@ public class RdfToJsonLdTest {
             
             (new JsonLdTestRunnerJunit(testCase)).execute(options -> 
 
-                JsonLd.fromRdf(testCase.input).options(options).get()
+                JsonDocument.of(JsonLd.fromRdf(testCase.input).options(options).get())
                 
             );
             

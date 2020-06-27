@@ -22,7 +22,7 @@ public class JsonLdTestRunnerEarl {
 
         JsonLdOptions options = testCase.getOptions();
         
-        JsonValue result = null;
+        Document result = null;
         
         try {
   
@@ -36,7 +36,7 @@ public class JsonLdTestRunnerEarl {
                                     
             // compare expected with the result
             if (expectedDocument.getJsonContent().isPresent()) {
-                return JsonLdComparison.equals(expectedDocument.getJsonContent().get(), result);                
+//FIXME                return JsonLdComparison.equals(expectedDocument.getJsonContent().get(), result);                
             }
             
             return false;
