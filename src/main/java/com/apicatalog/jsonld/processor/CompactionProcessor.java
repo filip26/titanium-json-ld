@@ -32,7 +32,7 @@ public final class CompactionProcessor {
         return compact(input, 
                         JsonContentProvider
                                 .create(options.getDocumentLoader())
-                                .fetchJsonDocument(context, new LoadDocumentOptions()), options);
+                                .fetch(context, new LoadDocumentOptions()), options);
     }
     
     public static final JsonObject compact(final URI input, final RemoteDocument context, final JsonLdOptions options) throws JsonLdError {
@@ -72,7 +72,7 @@ public final class CompactionProcessor {
         }
         
         // 6.
-        JsonValue contextValue = JsonContentProvider.extractJsonStructure(context);
+        JsonValue contextValue = context.getJsonContent().orElse(JsonValue.EMPTY_JSON_OBJECT);
         
         if (JsonUtils.isArray(contextValue) && contextValue.asJsonArray().size() == 1) {
             contextValue = contextValue.asJsonArray().get(0);

@@ -15,9 +15,7 @@ import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
@@ -87,13 +85,11 @@ public class JsonLdToRdfTest {
         Assert.assertNotNull("Test case does not define expected output nor expected error code.", testCase.expect);
 
         try {
-            RemoteDocument inputDocument = (new ZipResourceLoader(false)).loadDocument(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.expect.toString().substring("https://w3c.github.io/json-ld-api/tests/".length())), new LoadDocumentOptions());
+            byte[] inputDocument = (new ZipResourceLoader()).fetchBytes(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.expect.toString().substring("https://w3c.github.io/json-ld-api/tests/".length())));
         
             Assert.assertNotNull(inputDocument);
-            Assert.assertNotNull(inputDocument.getContent());
-            Assert.assertTrue(inputDocument.getContent().getRawPayload().isPresent());
             
-            RdfDataset expected = Rdf.createReader(new ByteArrayInputStream(inputDocument.getContent().getRawPayload().get()), RdfFormat.N_QUADS).readDataset();
+            RdfDataset expected = Rdf.createReader(new ByteArrayInputStream(inputDocument), RdfFormat.N_QUADS).readDataset();
 
             Assert.assertNotNull(expected);
 
@@ -115,7 +111,7 @@ public class JsonLdToRdfTest {
 
             Assert.assertTrue("The result does not match expected output.", match);
             
-        } catch (NQuadsReaderException | NQuadsWriterException | JsonLdError | UnsupportedFormatException e ) {
+        } catch (NQuadsWriterException | JsonLdError | UnsupportedFormatException | NQuadsReaderException e ) {
             Assert.fail(e.getMessage());
         }
     }

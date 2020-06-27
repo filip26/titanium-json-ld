@@ -1,15 +1,12 @@
 package com.apicatalog.jsonld.api;
 
 import java.net.URI;
-import java.util.Optional;
 
 import javax.json.Json;
-import javax.json.JsonStructure;
 
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.document.RemoteContent;
 import com.apicatalog.jsonld.document.RemoteDocument;
 
 public class FramingApiNegativeTest {
@@ -88,58 +85,4 @@ public class FramingApiNegativeTest {
     public void test15() {
         JsonLd.frame(URI.create("/relative"), URI.create("http://example.com"));
     }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void test16() {
-        JsonLd.frame(new RemoteDocument(new RemoteContent() {
-            
-            @Override
-            public boolean isRawPayload() {
-                return false;
-            }
-            
-            @Override
-            public boolean isJsonStructure() {
-                return false;
-            }
-            
-            @Override
-            public Optional<byte[]> getRawPayload() throws JsonLdError {
-                return null;
-            }
-            
-            @Override
-            public Optional<JsonStructure> getJsonStructure() throws JsonLdError {
-                return null;
-            }
-        }), RemoteDocument.of(Json.createArrayBuilder().build()));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void test17() {
-        JsonLd.frame(
-            RemoteDocument.of(Json.createArrayBuilder().build()),
-            new RemoteDocument(new RemoteContent() {
-            
-            @Override
-            public boolean isRawPayload() {
-                return false;
-            }
-            
-            @Override
-            public boolean isJsonStructure() {
-                return false;
-            }
-            
-            @Override
-            public Optional<byte[]> getRawPayload() throws JsonLdError {
-                return null;
-            }
-            
-            @Override
-            public Optional<JsonStructure> getJsonStructure() throws JsonLdError {
-                return null;
-            }
-        }));
-    }    
 }

@@ -225,12 +225,10 @@ public class ActiveContextBuilder {
 
                     importedStructure = JsonContentProvider
                                             .create(activeContext.getOptions().getDocumentLoader())
-                                            .fetchJsonStructure(URI.create(contextImportUri), loaderOptions);
-
-                    if (importedStructure == null) {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE);
-                    }
-
+                                            .fetch(URI.create(contextImportUri), loaderOptions)
+                                            .getJsonContent()
+                                            .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE));
+                    
                 // 5.6.5
                 } catch (JsonLdError e) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE, e);
@@ -480,11 +478,11 @@ public class ActiveContextBuilder {
 
         try {
             
-            RemoteDocument remoteImport = jsonContentProvider.fetchJsonDocument(URI.create(contextUri), loaderOptions); 
+            RemoteDocument remoteImport = jsonContentProvider.fetch(URI.create(contextUri), loaderOptions); 
 
             documentUrl = remoteImport.getDocumentUrl();
 
-            importedStructure = remoteImport.getContent().getJsonStructure()
+            importedStructure = remoteImport.getJsonContent()
                                     .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.")); 
                                 
         // 5.2.5.1.

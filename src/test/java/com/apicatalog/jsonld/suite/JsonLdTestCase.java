@@ -152,7 +152,7 @@ public final class JsonLdTestCase {
                 new UriBaseRewriter(
                             baseUri, 
                             testsBase,
-                            new ZipResourceLoader(true)
+                            new ZipResourceLoader()
                         );
         
         JsonLdOptions jsonLdOptions = new JsonLdOptions(new HttpLoader(HTTP_CLIENT, HttpLoader.MAX_REDIRECTIONS));

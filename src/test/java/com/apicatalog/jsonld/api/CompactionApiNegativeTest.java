@@ -1,7 +1,6 @@
 package com.apicatalog.jsonld.api;
 
 import java.net.URI;
-import java.util.Optional;
 
 import javax.json.Json;
 import javax.json.JsonStructure;
@@ -9,7 +8,6 @@ import javax.json.JsonStructure;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.document.RemoteContent;
 import com.apicatalog.jsonld.document.RemoteDocument;
 
 public class CompactionApiNegativeTest {
@@ -88,90 +86,9 @@ public class CompactionApiNegativeTest {
     public void test15() {
         JsonLd.compact("/relative", Json.createArrayBuilder().build());
     }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void test16() {
-        JsonLd.compact(new RemoteDocument(null), Json.createArrayBuilder().build());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void test17() {
-        JsonLd.compact(new RemoteDocument(new RemoteContent() {
-            
-            @Override
-            public boolean isRawPayload() {
-                return false;
-            }
-            
-            @Override
-            public boolean isJsonStructure() {
-                return false;
-            }
-            
-            @Override
-            public Optional<byte[]> getRawPayload() throws JsonLdError {
-                return null;
-            }
-            
-            @Override
-            public Optional<JsonStructure> getJsonStructure() throws JsonLdError {
-                return null;
-            }
-        }), Json.createArrayBuilder().build());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void test18() {
-        JsonLd.compact(
-            RemoteDocument.of(Json.createArrayBuilder().build()),
-            new RemoteDocument(new RemoteContent() {
-            
-            @Override
-            public boolean isRawPayload() {
-                return false;
-            }
-            
-            @Override
-            public boolean isJsonStructure() {
-                return false;
-            }
-            
-            @Override
-            public Optional<byte[]> getRawPayload() throws JsonLdError {
-                return null;
-            }
-            
-            @Override
-            public Optional<JsonStructure> getJsonStructure() throws JsonLdError {
-                return null;
-            }
-        }));
-    }
     
     public void test19() {
-        JsonLd.compact(new RemoteDocument(new RemoteContent() {
-            
-            @Override
-            public boolean isRawPayload() {
-                return false;
-            }
-            
-            @Override
-            public boolean isJsonStructure() {
-                return false;
-            }
-            
-            @Override
-            public Optional<byte[]> getRawPayload() throws JsonLdError {
-                return null;
-            }
-            
-            @Override
-            public Optional<JsonStructure> getJsonStructure() throws JsonLdError {
-                return null;
-            }
-        }),
-        RemoteDocument.of(Json.createArrayBuilder().build()));
+        JsonLd.compact(new NullRemoteDocument(), RemoteDocument.of(Json.createArrayBuilder().build()));
     }
 
     @Test(expected = IllegalArgumentException.class)

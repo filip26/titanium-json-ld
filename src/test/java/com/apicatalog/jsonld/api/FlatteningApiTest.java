@@ -1,5 +1,7 @@
 package com.apicatalog.jsonld.api;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 
 import javax.json.Json;
@@ -10,6 +12,7 @@ import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.http.media.MediaType;
 
 public class FlatteningApiTest {
 
@@ -25,7 +28,7 @@ public class FlatteningApiTest {
     
     @Test    
     public void test2() throws JsonLdError {
-        JsonStructure result = JsonLd.flatten(RemoteDocument.of(Json.createObjectBuilder().build().toString().getBytes())).get();
+        JsonStructure result = JsonLd.flatten(RemoteDocument.of(MediaType.JSON, new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes()))).get();
         
         Assert.assertNotNull(result);
         Assert.assertEquals(Json.createArrayBuilder().build(), result);
@@ -62,7 +65,7 @@ public class FlatteningApiTest {
 
     @Test    
     public void test7() throws JsonLdError {
-        JsonStructure result = JsonLd.flatten("https://example.com").context(RemoteDocument.of(Json.createObjectBuilder().build().toString().getBytes())).loader(MOCK_LOADER).ordered().get();
+        JsonStructure result = JsonLd.flatten("https://example.com").context(RemoteDocument.of(MediaType.JSON, new InputStreamReader(new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes())))).loader(MOCK_LOADER).ordered().get();
         Assert.assertNotNull(result);
         Assert.assertEquals(Json.createObjectBuilder().build(), result);
     }    

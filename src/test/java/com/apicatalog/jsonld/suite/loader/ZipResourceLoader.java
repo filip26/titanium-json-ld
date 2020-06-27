@@ -12,19 +12,13 @@ import java.util.zip.ZipFile;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
-import com.apicatalog.jsonld.document.RemoteContent;
 import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 
 public class ZipResourceLoader implements LoadDocumentCallback {
 
-    private final boolean parseJson;
-    
-    public ZipResourceLoader(boolean parseAsJson) {
-        this.parseJson = parseAsJson;
-    }
-    
     @Override
     public RemoteDocument loadDocument(URI url, LoadDocumentOptions options) throws JsonLdError {
         
@@ -55,19 +49,69 @@ public class ZipResourceLoader implements LoadDocumentCallback {
                 return null;
             }
 
-            try (InputStream is = zip.getInputStream(zipEntry)) {
-            
-                final RemoteContent document;
-                
-                if (parseJson) {
-                    document = RemoteContent.parseJson(is);
+            MediaType type = null; 
                     
-                } else {    
-                    document = RemoteContent.of(readAsByteArray(is));
-                }
+            if (zipEntry.getName().endsWith(".nq")) {
+                type = MediaType.N_QUADS;
                 
-                return new RemoteDocument(document, url);
+            } else if (zipEntry.getName().endsWith(".json")) {
+                type = MediaType.JSON;
+                
+            } else if (zipEntry.getName().endsWith(".jsonld")) {
+                type = MediaType.JSON_LD;
             }
+            
+            if (type == null) {
+                return null;
+            }
+
+            try (InputStream is = zip.getInputStream(zipEntry)) {
+
+                final RemoteDocument document = RemoteDocument.of(type, is);
+                document.setDocumentUrl(url);
+                
+                return document;
+            }
+            
+        } catch (IOException e) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+        }
+    }    
+    
+    public byte[] fetchBytes(URI url) throws JsonLdError {
+        
+        if (!"zip".equals(url.getScheme())) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+        }
+        
+        URL zipFileUrl = getClass().getResource("/" + url.getAuthority());
+
+        if (zipFileUrl == null) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+        }
+            
+        File zipFile = null;
+
+        try {
+            zipFile = new File(zipFileUrl.toURI());
+
+        } catch (URISyntaxException e) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+        }
+
+        try (ZipFile zip = new ZipFile(zipFile)) {
+            
+            ZipEntry zipEntry = zip.getEntry(url.getPath().substring(1));
+
+            if (zipEntry == null) {
+                return null;
+            }
+            
+            try (InputStream is = zip.getInputStream(zipEntry)) {
+
+                return readAsByteArray(is);
+            }
+
             
         } catch (IOException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);

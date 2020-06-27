@@ -14,11 +14,9 @@ import java.net.URI;
 import org.junit.Assert;
 
 import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.http.link.Link;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.HttpLoader;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
 import com.apicatalog.jsonld.uri.UriResolver;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
@@ -66,6 +64,7 @@ public final class JsonLdMockServer {
                     contentType = link.type().get();
                     
                 } else {
+                    
                     if (link.target().toString().endsWith(".html")) {
                         contentType = MediaType.HTML;
                         
@@ -84,38 +83,40 @@ public final class JsonLdMockServer {
 
                 String linkUri = UriResolver.resolve(testCase.input, link.target().toString());
 
-                RemoteDocument linkedDocument = (new ZipResourceLoader(false)).loadDocument(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE +  linkUri.substring(testCase.baseUri.length())), new LoadDocumentOptions());
-
-                Assert.assertNotNull(linkedDocument);
-                Assert.assertNotNull(linkedDocument.getContent());
-
-                linkedDocument.getContent().getRawPayload().ifPresent(byteArray -> {
+                byte[] content  = (new ZipResourceLoader()).fetchBytes(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE +  linkUri.substring(testCase.baseUri.length())));
                     
+                if (content != null) {
+//                    Assert.assertNotNull(linkedDocument);
+//                    Assert.assertNotNull(linkedDocument.getContent());
+
+//                    linkedDocument.getContent().getBytes().ifPresent(byteArray -> {
+                        
                     stubFor(get(urlEqualTo(linkUri.substring(testBase.length())))
                             .willReturn(aResponse()
                                 .withStatus(200)
                                 .withHeader("Content-Type", contentType.toString())
-                                .withBody(byteArray))
+                                .withBody(content))
                                     );                    
-                });                
+//                    });
+                }
             }
                 
             ResponseDefinitionBuilder mockResponseBuilder = aResponse();
 
-            RemoteDocument inputDocument = (new ZipResourceLoader(false)).loadDocument(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE + inputPath.substring(testCase.baseUri.length())), new LoadDocumentOptions());
+            byte[] content = (new ZipResourceLoader()).fetchBytes(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE + inputPath.substring(testCase.baseUri.length())));
             
-            if (inputDocument != null) {
+            if (content != null) {
                 mockResponseBuilder.withStatus(200);
                 
                 if (testCase.httpLink != null) {
                     testCase.httpLink.forEach(link -> mockResponseBuilder.withHeader("Link", link));
                 }
                                 
-                inputDocument.getContent().getRawPayload().ifPresent(byteArray -> {
+//                inputDocument.getContent().getBytes().ifPresent(byteArray -> {
                             mockResponseBuilder
                                     .withHeader("Content-Type", testCase.contentType.toString())
-                                    .withBody(byteArray);
-                });
+                                    .withBody(content);
+//                });
                 
             } else {
                 mockResponseBuilder.withStatus(404);                  

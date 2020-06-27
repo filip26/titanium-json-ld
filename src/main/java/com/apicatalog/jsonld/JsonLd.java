@@ -336,13 +336,5 @@ public final class JsonLd {
         if (remoteDocument == null) {
             throw new IllegalArgumentException("'" + param + "' is null.");
         }
-
-        if (remoteDocument.getContent() == null) {
-            throw new IllegalArgumentException("'" + param + "' does not contain valid document but null.");
-        }
-        
-        if (!remoteDocument.getContent().isJsonStructure() && !remoteDocument.getContent().isRawPayload()) {
-            throw new IllegalArgumentException("'" + param + "' does not contain valid JSON structure nor raw payload.");
-        }
     }
 }

@@ -1,14 +1,10 @@
 package com.apicatalog.jsonld.api;
 
 import java.net.URI;
-import java.util.Optional;
-
-import javax.json.JsonStructure;
 
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.document.RemoteContent;
 import com.apicatalog.jsonld.document.RemoteDocument;
 
 public class ExpansionApiNegativeTest {
@@ -47,37 +43,6 @@ public class ExpansionApiNegativeTest {
     public void test7() {
         JsonLd.expand(URI.create("relative"));
     }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void test8() {
-        JsonLd.expand(new RemoteDocument(new RemoteContent() {
-            
-            @Override
-            public boolean isRawPayload() {
-                return false;
-            }
-            
-            @Override
-            public boolean isJsonStructure() {
-                return false;
-            }
-            
-            @Override
-            public Optional<byte[]> getRawPayload() throws JsonLdError {
-                return null;
-            }
-            
-            @Override
-            public Optional<JsonStructure> getJsonStructure() throws JsonLdError {
-                return null;
-            }
-        }));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void test9() {
-        JsonLd.expand(new RemoteDocument(null));
-    }    
     
     @Test(expected = IllegalArgumentException.class)
     public void test10() {

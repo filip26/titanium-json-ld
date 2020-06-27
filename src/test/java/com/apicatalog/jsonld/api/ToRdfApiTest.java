@@ -1,5 +1,7 @@
 package com.apicatalog.jsonld.api;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 
 import javax.json.Json;
@@ -9,6 +11,7 @@ import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.RdfDataset;
 
 public class ToRdfApiTest {
@@ -24,7 +27,7 @@ public class ToRdfApiTest {
     
     @Test    
     public void test2() throws JsonLdError {
-        RdfDataset result = JsonLd.toRdf(RemoteDocument.of(Json.createObjectBuilder().build().toString().getBytes())).get();
+        RdfDataset result = JsonLd.toRdf(RemoteDocument.of(MediaType.JSON, new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes()))).get();
         Assert.assertNotNull(result);
         Assert.assertEquals(0, result.size());
     }
@@ -66,7 +69,7 @@ public class ToRdfApiTest {
 
     @Test    
     public void test8() throws JsonLdError {
-        RdfDataset result = JsonLd.toRdf("\thttps://example.com").context(RemoteDocument.of(Json.createObjectBuilder().build().toString().getBytes())).loader(MOCK_LOADER).ordered().get();
+        RdfDataset result = JsonLd.toRdf("\thttps://example.com").context(RemoteDocument.of(MediaType.JSON, new InputStreamReader(new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes())))).loader(MOCK_LOADER).ordered().get();
         Assert.assertNotNull(result);
         Assert.assertEquals(0, result.size());
     }
@@ -87,7 +90,7 @@ public class ToRdfApiTest {
 
     @Test    
     public void test11() throws JsonLdError {
-        RdfDataset result = JsonLd.toRdf(RemoteDocument.of(Json.createObjectBuilder().build())).context(RemoteDocument.of(Json.createObjectBuilder().build().toString().getBytes())).loader(MOCK_LOADER).ordered().get();
+        RdfDataset result = JsonLd.toRdf(RemoteDocument.of(Json.createObjectBuilder().build())).context(RemoteDocument.of(MediaType.JSON, new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes()))).loader(MOCK_LOADER).ordered().get();
         Assert.assertNotNull(result);
         Assert.assertEquals(0, result.size());
     }

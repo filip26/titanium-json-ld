@@ -14,9 +14,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
@@ -56,13 +54,11 @@ public class RdfToJsonLdTest {
             (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
 
                 try {            
-                    RemoteDocument inputDocument = (new ZipResourceLoader(false)).loadDocument(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.input.toString().substring("https://w3c.github.io/json-ld-api/tests/".length())), new LoadDocumentOptions());
+                    byte[] content = (new ZipResourceLoader()).fetchBytes(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.input.toString().substring("https://w3c.github.io/json-ld-api/tests/".length())));
 
-                    Assert.assertNotNull(inputDocument);
-                    Assert.assertNotNull(inputDocument.getContent());
-                    Assert.assertTrue(inputDocument.getContent().getRawPayload().isPresent());
+                    Assert.assertNotNull(content);
                     
-                    RdfDataset input = Rdf.createReader(new ByteArrayInputStream(inputDocument.getContent().getRawPayload().get()), RdfFormat.N_QUADS).readDataset();
+                    RdfDataset input = Rdf.createReader(new ByteArrayInputStream(content), RdfFormat.N_QUADS).readDataset();
                     
                     return JsonLd.fromRdf(input).options(options).get();
                 
