@@ -4,7 +4,6 @@ import java.net.URI;
 
 import javax.json.JsonArray;
 
-import com.apicatalog.jsonld.api.CommonApi;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.lang.Version;
@@ -15,12 +14,20 @@ public final class FromRdfApi implements CommonApi<FromRdfApi> {
 
     // required
     private final RdfDataset dataset;
+    private final URI documentUri;
     
     // optional
     private JsonLdOptions options;
     
     public FromRdfApi(RdfDataset dataset) {
         this.dataset = dataset;
+        this.documentUri = null;
+        this.options = new JsonLdOptions();
+    }
+
+    public FromRdfApi(URI documentUri) {
+        this.dataset = null;
+        this.documentUri = documentUri;
         this.options = new JsonLdOptions();
     }
     
@@ -70,6 +77,15 @@ public final class FromRdfApi implements CommonApi<FromRdfApi> {
      * @throws JsonLdError
      */
     public JsonArray get() throws JsonLdError {
-        return FromRdfProcessor.fromRdf(dataset, options);
+        
+        if (dataset != null) {
+            return FromRdfProcessor.fromRdf(dataset, options);
+        }
+        
+        if (documentUri != null) {
+            return FromRdfProcessor.fromRdf(documentUri, options);
+        }
+        
+        throw new IllegalStateException();
     }
 }

@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.RdfDataset;
 
@@ -20,14 +21,14 @@ public class ToRdfApiTest {
     
     @Test    
     public void test1() throws JsonLdError {
-        RdfDataset result = JsonLd.toRdf(Document.of(Json.createObjectBuilder().build())).get();
+        RdfDataset result = JsonLd.toRdf(JsonDocument.of(Json.createObjectBuilder().build())).get();
         Assert.assertNotNull(result);
         Assert.assertEquals(0, result.size());
     }
     
     @Test    
     public void test2() throws JsonLdError {
-        RdfDataset result = JsonLd.toRdf(Document.of(MediaType.JSON, new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes()))).get();
+        RdfDataset result = JsonLd.toRdf(JsonDocument.of(MediaType.JSON, new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes()))).get();
         Assert.assertNotNull(result);
         Assert.assertEquals(0, result.size());
     }
@@ -76,21 +77,21 @@ public class ToRdfApiTest {
     
     @Test    
     public void test9() throws JsonLdError {
-        RdfDataset result = JsonLd.toRdf(Document.of(Json.createObjectBuilder().build())).context(Json.createObjectBuilder().build()).loader(MOCK_LOADER).get();
+        RdfDataset result = JsonLd.toRdf(JsonDocument.of(Json.createObjectBuilder().build())).context(Json.createObjectBuilder().build()).loader(MOCK_LOADER).get();
         Assert.assertNotNull(result);
         Assert.assertEquals(0, result.size());
     }
         
     @Test    
     public void test10() throws JsonLdError {
-        RdfDataset result = JsonLd.toRdf(Document.of(Json.createObjectBuilder().build())).context(Document.of(Json.createObjectBuilder().build())).loader(MOCK_LOADER).ordered().get();
+        RdfDataset result = JsonLd.toRdf(JsonDocument.of(Json.createObjectBuilder().build())).context(Document.of(Json.createObjectBuilder().build())).loader(MOCK_LOADER).ordered().get();
         Assert.assertNotNull(result);
         Assert.assertEquals(0, result.size());
     }    
 
     @Test    
     public void test11() throws JsonLdError {
-        RdfDataset result = JsonLd.toRdf(Document.of(Json.createObjectBuilder().build())).context(Document.of(MediaType.JSON, new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes()))).loader(MOCK_LOADER).ordered().get();
+        RdfDataset result = JsonLd.toRdf(JsonDocument.of(Json.createObjectBuilder().build())).context(Document.of(MediaType.JSON, new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes()))).loader(MOCK_LOADER).ordered().get();
         Assert.assertNotNull(result);
         Assert.assertEquals(0, result.size());
     }

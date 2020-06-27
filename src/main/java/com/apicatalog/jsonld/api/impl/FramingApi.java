@@ -5,12 +5,9 @@ import java.net.URI;
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
 
-import com.apicatalog.jsonld.api.CommonApi;
-import com.apicatalog.jsonld.api.ContextApi;
 import com.apicatalog.jsonld.api.JsonLdEmbed;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.api.LoaderApi;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;

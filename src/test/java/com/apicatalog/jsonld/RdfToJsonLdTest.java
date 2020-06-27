@@ -2,7 +2,6 @@ package com.apicatalog.jsonld;
 
 import static org.junit.Assume.assumeFalse;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -12,14 +11,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
-import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
-import com.apicatalog.rdf.RdfDataset;
 
 @RunWith(Parameterized.class)
 public class RdfToJsonLdTest {
@@ -42,23 +37,13 @@ public class RdfToJsonLdTest {
         // skip specVersion == 1.0
         assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
         
-        // skip normative == false
-        //assumeTrue(testCase.options.normative == null || testCase.options.normative);
-
         try {
             
-            (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
+            (new JsonLdTestRunnerJunit(testCase)).execute(options -> 
 
-                Document inputDocument  = (new ZipResourceLoader()).loadDocument(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.input.toString().substring("https://w3c.github.io/json-ld-api/tests/".length())), new LoadDocumentOptions());
-
-                Assert.assertNotNull(inputDocument);
-                Assert.assertTrue(inputDocument.getRdfContent().isPresent());
+                JsonLd.fromRdf(testCase.input).options(options).get()
                 
-                RdfDataset input = inputDocument.getRdfContent().get();
-                
-                return JsonLd.fromRdf(input).options(options).get();
-                
-            });
+            );
             
         } catch (JsonLdError e) {
             Assert.fail(e.getMessage());

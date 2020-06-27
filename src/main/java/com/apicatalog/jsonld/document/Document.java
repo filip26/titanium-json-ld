@@ -58,19 +58,15 @@ public interface Document {
      * Get the document content as parsed {@link JsonStructure}.
      * 
      * @return {@link JsonStructure} or {@link Optional#empty()} if document content is not JSON based
-     * 
-     * @throws JsonLdError
      */
-    Optional<JsonStructure> getJsonContent() throws JsonLdError;
+    Optional<JsonStructure> getJsonContent();
 
     /**
      * Get the document content as parsed {@link RdfDataset}.
      * 
      * @return {@link RdfDataset} or {@link Optional#empty()} if document content is not in <code>application/n-quads</code> representation
-     * 
-     * @throws JsonLdError
      */
-    Optional<RdfDataset> getRdfContent() throws JsonLdError; 
+    Optional<RdfDataset> getRdfContent(); 
     
     /**
      * Create a new document from {@link JsonStructure}. Sets {@link MediaType#JSON} as the content type.

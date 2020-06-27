@@ -7,7 +7,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.http.media.MediaType;
 
-class DocumentParser {
+final class DocumentParser {
 
     private DocumentParser() {
     }

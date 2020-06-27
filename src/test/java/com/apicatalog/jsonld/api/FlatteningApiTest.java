@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.http.media.MediaType;
 
 public class FlatteningApiTest {
@@ -20,7 +21,7 @@ public class FlatteningApiTest {
     
     @Test    
     public void test1() throws JsonLdError {
-        JsonStructure result = JsonLd.flatten(Document.of(Json.createObjectBuilder().build())).get();
+        JsonStructure result = JsonLd.flatten(JsonDocument.of(Json.createObjectBuilder().build())).get();
         
         Assert.assertNotNull(result);
         Assert.assertEquals(Json.createArrayBuilder().build(), result);
@@ -28,7 +29,7 @@ public class FlatteningApiTest {
     
     @Test    
     public void test2() throws JsonLdError {
-        JsonStructure result = JsonLd.flatten(Document.of(MediaType.JSON, new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes()))).get();
+        JsonStructure result = JsonLd.flatten(JsonDocument.of(MediaType.JSON, new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes()))).get();
         
         Assert.assertNotNull(result);
         Assert.assertEquals(Json.createArrayBuilder().build(), result);

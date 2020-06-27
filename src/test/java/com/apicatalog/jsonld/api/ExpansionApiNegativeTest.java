@@ -5,13 +5,13 @@ import java.net.URI;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
 
 public class ExpansionApiNegativeTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void test1() {
-        JsonLd.expand((Document)null);
+        JsonLd.expand((JsonDocument)null);
     }
 
     @Test(expected = IllegalArgumentException.class)

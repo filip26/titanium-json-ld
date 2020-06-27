@@ -17,7 +17,7 @@ import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.rdf.RdfDataset;
 
-final class JsonDocument implements Document {
+public final class JsonDocument implements Document {
 
     private static final String PLUS_JSON = "+json";
         
@@ -34,7 +34,11 @@ final class JsonDocument implements Document {
         this.structure = structue;
     }
 
-    public static final Document of(final MediaType type, final JsonStructure structure) {
+    public static final JsonDocument of(final JsonStructure structure) {
+        return of(MediaType.JSON, structure);
+    }
+    
+    public static final JsonDocument of(final MediaType type, final JsonStructure structure) {
 
         assertContentType(type);
         
@@ -43,9 +47,8 @@ final class JsonDocument implements Document {
         return new JsonDocument(type, profile, structure);
     }
     
-    public static final Document of(final MediaType type, final InputStream is)  throws JsonLdError {
-
-        
+    public static final JsonDocument of(final MediaType type, final InputStream is)  throws JsonLdError {
+    
         assertContentType(type);
         
         try (final JsonParser parser = Json.createParser(is)) {
@@ -57,7 +60,7 @@ final class JsonDocument implements Document {
         }
     }
 
-    public static final Document of(final MediaType type, final Reader reader)  throws JsonLdError {
+    public static final JsonDocument of(final MediaType type, final Reader reader)  throws JsonLdError {
         
         assertContentType(type);
         
@@ -70,7 +73,7 @@ final class JsonDocument implements Document {
         }
     }
     
-    private static final Document doParse(final MediaType type, final JsonParser parser) throws JsonLdError {
+    private static final JsonDocument doParse(final MediaType type, final JsonParser parser) throws JsonLdError {
         
         if (!parser.hasNext()) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Nothing to read. Provided document is empty.");

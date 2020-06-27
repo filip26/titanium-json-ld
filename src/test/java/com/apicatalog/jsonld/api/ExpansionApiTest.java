@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.lang.Version;
 
@@ -21,14 +22,14 @@ public class ExpansionApiTest {
     
     @Test    
     public void test1() throws JsonLdError {
-        JsonArray expanded = JsonLd.expand(Document.of(Json.createObjectBuilder().build())).get();
+        JsonArray expanded = JsonLd.expand(JsonDocument.of(Json.createObjectBuilder().build())).get();
         Assert.assertNotNull(expanded);
         Assert.assertEquals(Json.createArrayBuilder().build(), expanded);
     }
     
     @Test    
     public void test2() throws JsonLdError {
-        JsonArray expanded = JsonLd.expand(Document.of(MediaType.JSON, new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes()))).get();
+        JsonArray expanded = JsonLd.expand(JsonDocument.of(MediaType.JSON, new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes()))).get();
         Assert.assertNotNull(expanded);
         Assert.assertEquals(Json.createArrayBuilder().build(), expanded);
     }

@@ -8,38 +8,38 @@ import javax.json.JsonStructure;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
 
 public class CompactionApiNegativeTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void test1() {
-        JsonLd.compact((Document)null, (JsonStructure)null);
+        JsonLd.compact((JsonDocument)null, (JsonStructure)null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void test2() {
-        JsonLd.compact(Document.of(Json.createArrayBuilder().build()), (JsonStructure)null);
+        JsonLd.compact(JsonDocument.of(Json.createArrayBuilder().build()), (JsonStructure)null);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void test3() {
-        JsonLd.compact((Document)null, Json.createArrayBuilder().build());
+        JsonLd.compact((JsonDocument)null, Json.createArrayBuilder().build());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void test4() {
-        JsonLd.compact((Document)null, (Document)null);
+        JsonLd.compact((JsonDocument)null, (JsonDocument)null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void test5() {
-        JsonLd.compact(Document.of(Json.createArrayBuilder().build()), (Document)null);
+        JsonLd.compact(JsonDocument.of(Json.createArrayBuilder().build()), (JsonDocument)null);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void test6() {
-        JsonLd.compact((Document)null, Document.of(Json.createArrayBuilder().build()));
+        JsonLd.compact((JsonDocument)null, JsonDocument.of(Json.createArrayBuilder().build()));
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -87,9 +87,9 @@ public class CompactionApiNegativeTest {
         JsonLd.compact("/relative", Json.createArrayBuilder().build());
     }
     
-    public void test19() {
-        JsonLd.compact(new NullRemoteDocument(), Document.of(Json.createArrayBuilder().build()));
-    }
+//    public void test19() {
+//        JsonLd.compact(new NullRemoteDocument(), JsonDocument.of(Json.createArrayBuilder().build()));
+//    }
 
     @Test(expected = IllegalArgumentException.class)
     public void test20() {

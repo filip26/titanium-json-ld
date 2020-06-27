@@ -18,7 +18,7 @@ import com.apicatalog.rdf.io.RdfFormat;
 import com.apicatalog.rdf.io.error.UnsupportedFormatException;
 import com.apicatalog.rdf.io.nquad.NQuadsReaderException;
 
-public class RdfDocument implements Document {
+public final class RdfDocument implements Document {
 
     private final MediaType contentType;
     private final RdfDataset dataset;
@@ -117,12 +117,12 @@ public class RdfDocument implements Document {
     }
 
     @Override
-    public Optional<JsonStructure> getJsonContent() throws JsonLdError {
+    public Optional<JsonStructure> getJsonContent() {
         return Optional.empty();
     }
 
     @Override
-    public Optional<RdfDataset> getRdfContent() throws JsonLdError {
+    public Optional<RdfDataset> getRdfContent() {
         return Optional.of(dataset);
     }
 }
