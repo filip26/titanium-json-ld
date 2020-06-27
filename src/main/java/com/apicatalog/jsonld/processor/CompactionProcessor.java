@@ -13,7 +13,6 @@ import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.json.JsonContentProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
@@ -29,10 +28,15 @@ public final class CompactionProcessor {
     }
     
     public static final JsonObject compact(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError {
-        return compact(input, 
-                        JsonContentProvider
-                                .create(options.getDocumentLoader())
-                                .fetch(context, new LoadDocumentOptions()), options);
+        
+        
+        final RemoteDocument contextDocument = options.getDocumentLoader().loadDocument(context, new LoadDocumentOptions());
+
+        if (contextDocument == null) {
+            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Context[" + context + "] is null.");
+        }
+
+        return compact(input, contextDocument, options);
     }
     
     public static final JsonObject compact(final URI input, final RemoteDocument context, final JsonLdOptions options) throws JsonLdError {

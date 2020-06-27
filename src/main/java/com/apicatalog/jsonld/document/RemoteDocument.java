@@ -8,7 +8,10 @@ import java.util.Optional;
 import javax.json.JsonStructure;
 
 import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.http.media.MediaType;
+import com.apicatalog.jsonld.loader.LoadDocumentCallback;
+import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 
 /**
  * Represents a remote document 
@@ -136,5 +139,20 @@ public interface RemoteDocument {
 //        Rdf.createReader(new ByteArrayInputStream(inputDocument.getContent().getBytes().get()), RdfFormat.N_QUADS).readDataset()
         
         return RemoteJsonDocument.of(contentType, reader);
+    }
+    
+    public static RemoteDocument fetch(final URI contentUri, final LoadDocumentCallback loader, final LoadDocumentOptions options) throws JsonLdError {
+        
+        final RemoteDocument content = loader.loadDocument(contentUri, options);
+        
+        if (content == null) {
+            throw error(contentUri, "null has been returned");
+        }
+        
+        return content;
+    }
+    
+    private static JsonLdError error(final URI contentUri, final String details) {
+        return new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Cannot get [" + contentUri + "], ".concat(details).concat("."));
     }
 }
