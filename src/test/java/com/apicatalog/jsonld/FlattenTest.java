@@ -11,9 +11,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
@@ -40,25 +38,11 @@ public class FlattenTest {
         assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
         
         try {
-            (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
-                
-                Document jsonContext = null;
-                
-                //pre-load context
-                if (testCase.context != null) {
-                    jsonContext = options.getDocumentLoader().loadDocument(testCase.context, new LoadDocumentOptions());
-                    
-                    Assert.assertNotNull(jsonContext);
-                    Assert.assertTrue(jsonContext.getJsonContent().isPresent());
-                }
-                                
-                return JsonLd
-                        .flatten(testCase.input) 
-                        .context(jsonContext != null ?  jsonContext.getJsonContent().get() : null)
-                        .options(options)
-                        .get();
+            (new JsonLdTestRunnerJunit(testCase)).execute(options -> 
 
-            });
+                JsonLd.flatten(testCase.input).context(testCase.context).options(options).get()
+
+            );
             
         } catch (JsonLdError e) {
             Assert.fail(e.getMessage());

@@ -12,9 +12,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
@@ -46,21 +44,11 @@ public class CompactTest {
         Assert.assertNotNull(testCase.context);
         
         try {
-            (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
+            (new JsonLdTestRunnerJunit(testCase)).execute(options ->
+            
+                JsonLd.compact(testCase.input, testCase.context).options(options).get()
                 
-                //pre-load context
-                Document jsonContext = options.getDocumentLoader().loadDocument(testCase.context, new LoadDocumentOptions());
-                
-                Assert.assertNotNull(jsonContext);
-                Assert.assertTrue(jsonContext.getJsonContent().isPresent());
-                                
-                return JsonLd.compact(
-                                    testCase.input, 
-                                    jsonContext.getJsonContent().get()
-                                    )
-                                .options(options)
-                                .get();
-            });
+            );
             
         } catch (JsonLdError e) {
             Assert.fail(e.getMessage());
