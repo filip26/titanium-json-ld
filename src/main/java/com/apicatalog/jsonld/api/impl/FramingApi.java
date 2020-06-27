@@ -9,6 +9,7 @@ import com.apicatalog.jsonld.api.JsonLdEmbed;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.processor.FramingProcessor;
@@ -65,7 +66,7 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
 
     @Override
     public FramingApi context(JsonStructure context) {
-        options.setExpandContext(context != null ?  Document.of(context) : null);
+        options.setExpandContext(context != null ?  JsonDocument.of(context) : null);
         return this;
     }
 

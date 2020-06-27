@@ -7,11 +7,19 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.http.media.MediaType;
 
-final class DocumentParser {
+public final class DocumentParser {
 
     private DocumentParser() {
     }
     
+    
+    /**
+     * Create a new document.
+     * 
+     * @param contentType {@link MediaType} of the raw content, must not be <code>null</code>
+     * @param inputStream providing unparsed raw content described by {{@link MediaType}
+     * @return {@link DocumentContent} representing unparsed content
+     */
     public static Document parse(final MediaType contentType, final InputStream inputStream)  throws JsonLdError {
         
         if (inputStream == null) {
@@ -33,6 +41,13 @@ final class DocumentParser {
         return fireUnsupportedMediaType(contentType);
     }
 
+    /**
+     * Create a new document.
+     * 
+     * @param contentType {@link MediaType} of the raw content, must not be <code>null</code>
+     * @param readed providing unparsed raw content described by {{@link MediaType}
+     * @return {@link DocumentContent} representing unparsed content
+     */
     public static Document parse(final MediaType contentType, final Reader reader)  throws JsonLdError {
         
         if (reader == null) {

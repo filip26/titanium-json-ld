@@ -5,6 +5,7 @@ import java.net.URI;
 import javax.json.JsonStructure;
 
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 
@@ -19,7 +20,7 @@ public class MockLoader implements LoadDocumentCallback {
     @Override
     public Document loadDocument(URI url, LoadDocumentOptions options) throws JsonLdError {
 
-        final Document remoteDocument = Document.of(response);
+        final Document remoteDocument = JsonDocument.of(response);
         remoteDocument.setDocumentUrl(url);
         
         return remoteDocument;

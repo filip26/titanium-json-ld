@@ -7,6 +7,7 @@ import javax.json.JsonStructure;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.processor.FlatteningProcessor;
@@ -116,7 +117,7 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
 
     @Override
     public FlatteningApi context(JsonStructure context) {
-        this.context = context != null ?  Document.of(context) : null;
+        this.context = context != null ?  JsonDocument.of(context) : null;
         return this;
     }
 

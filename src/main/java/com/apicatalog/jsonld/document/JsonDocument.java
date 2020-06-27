@@ -34,17 +34,38 @@ public final class JsonDocument implements Document {
         this.structure = structue;
     }
 
-    public static final JsonDocument of(final JsonStructure structure) {
+    /**
+     * Create a new document from {@link JsonStructure}. Sets {@link MediaType#JSON} as the content type.
+     *
+     * @param structure representing parsed JSON content
+     * @return {@link DocumentContent} representing JSON content
+     */
+    public static JsonDocument of(final JsonStructure structure) {
         return of(MediaType.JSON, structure);
     }
     
-    public static final JsonDocument of(final MediaType type, final JsonStructure structure) {
+    /**
+     * Create a new document from {@link JsonStructure}.
+     *
+     * @param contentType reflecting the provided {@link JsonStructure}, e.g. {@link MediaType#JSON_LD}, any JSON based media type is allowed
+     * @param structure representing parsed JSON content
+     * @return {@link DocumentContent} representing JSON content 
+     */
+    public static JsonDocument of(final MediaType contentType, final JsonStructure structure) {
 
-        assertContentType(type);
+        if (contentType == null) {
+            throw new IllegalArgumentException("The provided JSON type is null.");
+        }
+
+        assertContentType(contentType);
         
-        final String profile = type.parameters().firstValue("profile").orElse(null);
+        if (structure == null) {
+            throw new IllegalArgumentException("The provided JSON structure is null.");
+        }
         
-        return new JsonDocument(type, profile, structure);
+        final String profile = contentType.parameters().firstValue("profile").orElse(null);
+        
+        return new JsonDocument(contentType, profile, structure);
     }
     
     public static final JsonDocument of(final MediaType type, final InputStream is)  throws JsonLdError {

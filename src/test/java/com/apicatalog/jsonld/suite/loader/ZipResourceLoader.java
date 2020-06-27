@@ -13,6 +13,7 @@ import java.util.zip.ZipFile;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.DocumentParser;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
@@ -67,7 +68,7 @@ public class ZipResourceLoader implements LoadDocumentCallback {
 
             try (InputStream is = zip.getInputStream(zipEntry)) {
 
-                final Document document = Document.of(type, is);
+                final Document document = DocumentParser.parse(type, is);
                 document.setDocumentUrl(url);
                 
                 return document;

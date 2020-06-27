@@ -5,7 +5,6 @@ import java.net.URI;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonString;
-import javax.json.JsonStructure;
 
 import com.apicatalog.jsonld.api.impl.CompactionApi;
 import com.apicatalog.jsonld.api.impl.ExpansionApi;

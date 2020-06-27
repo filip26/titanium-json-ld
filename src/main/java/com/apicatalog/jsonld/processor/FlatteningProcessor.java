@@ -9,6 +9,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.flattening.Flattening;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
@@ -88,7 +89,7 @@ public final class FlatteningProcessor {
         // 6.1.
         if (context != null) {
          
-            final Document document = Document.of(MediaType.JSON_LD, flattenedOutput);
+            final Document document = JsonDocument.of(MediaType.JSON_LD, flattenedOutput);
             
             JsonLdOptions compactionOptions = new JsonLdOptions(options);
             

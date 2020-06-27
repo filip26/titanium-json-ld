@@ -6,6 +6,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
@@ -275,7 +276,7 @@ public final class JsonLdOptions {
     }
 
     public void setExpandContext(String contextLocation) {
-        this.expandContext = Document.of(
+        this.expandContext = JsonDocument.of(
                 Json.createArrayBuilder()
                     .add(Json.createValue(contextLocation)).build());        
     }
@@ -285,7 +286,7 @@ public final class JsonLdOptions {
     }
 
     public void setExpandContext(JsonObject context) {
-        this.expandContext = Document.of(context);
+        this.expandContext = JsonDocument.of(context);
     }
     
     public void setExpandContext(Document context) {

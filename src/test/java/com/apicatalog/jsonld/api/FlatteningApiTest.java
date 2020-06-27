@@ -11,7 +11,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.http.media.MediaType;
 
@@ -59,14 +58,14 @@ public class FlatteningApiTest {
     
     @Test    
     public void test6() throws JsonLdError {
-        JsonStructure result = JsonLd.flatten("https://example.com").context(Document.of(Json.createObjectBuilder().build())).loader(MOCK_LOADER).ordered().get();
+        JsonStructure result = JsonLd.flatten("https://example.com").context(JsonDocument.of(Json.createObjectBuilder().build())).loader(MOCK_LOADER).ordered().get();
         Assert.assertNotNull(result);
         Assert.assertEquals(Json.createObjectBuilder().build(), result);
     }    
 
     @Test    
     public void test7() throws JsonLdError {
-        JsonStructure result = JsonLd.flatten("https://example.com").context(Document.of(MediaType.JSON, new InputStreamReader(new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes())))).loader(MOCK_LOADER).ordered().get();
+        JsonStructure result = JsonLd.flatten("https://example.com").context(JsonDocument.of(MediaType.JSON, new InputStreamReader(new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes())))).loader(MOCK_LOADER).ordered().get();
         Assert.assertNotNull(result);
         Assert.assertEquals(Json.createObjectBuilder().build(), result);
     }    

@@ -8,6 +8,7 @@ import javax.json.JsonStructure;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.processor.ExpansionProcessor;
@@ -63,7 +64,7 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
 
     @Override
     public ExpansionApi context(JsonStructure context) {
-        options.setExpandContext(context != null ? Document.of(context) : null);
+        options.setExpandContext(context != null ? JsonDocument.of(context) : null);
         return this;
     }
 
