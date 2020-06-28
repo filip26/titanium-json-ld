@@ -12,7 +12,6 @@ import com.apicatalog.jsonld.api.impl.FlatteningApi;
 import com.apicatalog.jsonld.api.impl.FramingApi;
 import com.apicatalog.jsonld.api.impl.FromRdfApi;
 import com.apicatalog.jsonld.api.impl.ToRdfApi;
-import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.uri.UriUtils;
@@ -33,8 +32,6 @@ public final class JsonLd {
     private static final String FRAME_URI_PARAM_NAME = "frameUri";
     private static final String FRAME_PARAM_NAME = "frame";
 
-    private static final String NULL_CONTEXT_ERROR_MSG = "Provided context cannot be null.";
-    
     private JsonLd() {
     }
     
@@ -278,6 +275,19 @@ public final class JsonLd {
     /**
      * Transforms the referenced N-Quads document into a JSON-LD document in expanded form.
      * 
+     * @param documentLocation {@link URI} referencing N-Quads document to expand
+     * @return {@link FromRdfApi} allowing to set additional parameters
+     */
+    public static final FromRdfApi fromRdf(final String documentLocation) {
+        
+        assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME);
+
+        return new FromRdfApi(UriUtils.create(documentLocation));
+    }
+    
+    /**
+     * Transforms the referenced N-Quads document into a JSON-LD document in expanded form.
+     * 
      * @param documentUri {@link URI} referencing N-Quads document to expand
      * @return {@link FromRdfApi} allowing to set additional parameters
      */
@@ -288,22 +298,6 @@ public final class JsonLd {
         return new FromRdfApi(documentUri);
     }
     
-    /**
-     * Transforms {@link RdfDataset} into a JSON-LD document in expanded form.
-     * 
-     * @param dataset to transform
-     * @return {@link FromRdfApi} allowing to set additional parameters
-     */
-    @Deprecated(forRemoval = true, since = "v0.8")
-    public static final FromRdfApi fromRdf(final RdfDataset dataset) {
-        
-        if (dataset == null) {
-            throw new IllegalArgumentException("A dataset is null.");
-        }
-
-        return new FromRdfApi(dataset);
-    }
-
     /**
      * Transforms {@link RdfDocument} into a JSON-LD document in expanded form.
      * 
@@ -319,8 +313,11 @@ public final class JsonLd {
     }
 
     private static final void assertLocation(final String location, final String param) {
-        if (location == null || location.isBlank()) {
-            throw new IllegalArgumentException("'" + param + "' is null or blank string.");
+        
+        assertNotNull(location, param);
+
+        if (location.isBlank()) {
+            throw new IllegalArgumentException("'" + param + "' is blank string.");
         }
         
         if (UriUtils.isNotAbsoluteUri(location.strip())) {
@@ -329,17 +326,35 @@ public final class JsonLd {
     }
     
     private static final void assertUri(final URI uri, final String param) {
-        if (uri == null) {
-            throw new IllegalArgumentException("'" + param + "' is null.");
-        }
-
+        
+        assertNotNull(uri, param);
+        
         if (!uri.isAbsolute()) {
             throw new IllegalArgumentException("'" + param + "' is not an absolute URI [" + uri + "].");
         }
     }    
     
-    private static final void assertDocument(final Document document, final String param) {
-        if (document == null) {
+    private static final void assertDocument(final JsonDocument document, final String param) {
+        
+        assertNotNull(document, param);
+
+        
+        if (document.getJsonContent().isEmpty()) {
+            throw new IllegalArgumentException("'" + param + "' is not not JSON document but [" + document.getContentType() + "].");
+        }
+    }
+    
+    private static final void assertDocument(final RdfDocument document, final String param) {
+        
+        assertNotNull(document, param);
+        
+        if (document.getRdfContent().isEmpty()) {
+            throw new IllegalArgumentException("'" + param + "' is not not RDF document but [" + document.getContentType() + "].");
+        }
+    }
+    
+    private static final void assertNotNull(Object value, final String param) {
+        if (value == null) {
             throw new IllegalArgumentException("'" + param + "' is null.");
         }
     }

@@ -154,23 +154,11 @@ public class EarlGenerator {
             .stream()
             .forEach(testCase ->                
                     printResult(writer, testCase.uri,           
-                            (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
+                            (new JsonLdTestRunnerEarl(testCase)).execute(options ->
 
-                                byte[] inputDocument = (new ZipResourceLoader()).fetchBytes(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.input.toString().substring("https://w3c.github.io/json-ld-api/tests/".length())));
+                                JsonDocument.of(JsonLd.fromRdf(testCase.input).options(options).get())
 
-                                if (inputDocument == null)  {
-                                    throw new IllegalStateException();
-                                }
-
-                                try {
-                                    RdfDataset input = Rdf.createReader(new ByteArrayInputStream(inputDocument), RdfFormat.N_QUADS).readDataset();
-                                    
-                                    return JsonDocument.of(JsonLd.fromRdf(input).options(options).get());
-                                    
-                                } catch (NQuadsReaderException | IOException | UnsupportedFormatException e) {
-                                    return null;
-                                }
-                            })
+                            )
                      )
                 );
     }
