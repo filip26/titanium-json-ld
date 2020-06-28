@@ -8,10 +8,11 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.Version;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.FromRdfProcessor;
 import com.apicatalog.rdf.RdfDataset;
 
-public final class FromRdfApi implements CommonApi<FromRdfApi> {
+public final class FromRdfApi implements CommonApi<FromRdfApi>, LoaderApi<FromRdfApi> {
 
     // required
     private final Document document;
@@ -69,6 +70,12 @@ public final class FromRdfApi implements CommonApi<FromRdfApi> {
     @Override
     public FromRdfApi ordered() {
         return ordered(true);
+    }
+    
+    @Override
+    public FromRdfApi loader(DocumentLoader loader) {
+        options.setDocumentLoader(loader);
+        return this;
     }
     
     /**

@@ -9,7 +9,7 @@ import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.jsonld.loader.LoadDocumentCallback;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.FlatteningProcessor;
 import com.apicatalog.jsonld.uri.UriUtils;
 
@@ -83,7 +83,7 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
     }
 
     @Override
-    public FlatteningApi loader(LoadDocumentCallback loader) {
+    public FlatteningApi loader(DocumentLoader loader) {
         options.setDocumentLoader(loader);
         return this;
     }

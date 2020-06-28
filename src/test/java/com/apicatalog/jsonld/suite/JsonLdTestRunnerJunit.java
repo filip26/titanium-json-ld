@@ -17,7 +17,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.json.JsonLdComparison;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
+import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.RdfDataset;
@@ -71,7 +71,7 @@ public class JsonLdTestRunnerJunit {
         Assert.assertNotNull("Test case does not define expected output nor expected error code.", testCase.expect);
         
         try {
-            Document expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new LoadDocumentOptions());
+            Document expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new DocumentLoaderOptions());
                         
             Assert.assertNotNull(expectedDocument);
     

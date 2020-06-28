@@ -11,7 +11,7 @@ import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.jsonld.loader.LoadDocumentCallback;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.FramingProcessor;
 import com.apicatalog.jsonld.uri.UriUtils;
 
@@ -94,7 +94,7 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
     }
 
     @Override
-    public FramingApi loader(LoadDocumentCallback loader) {
+    public FramingApi loader(DocumentLoader loader) {
         options.setDocumentLoader(loader);
         return this;
     }

@@ -16,7 +16,7 @@ import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.HttpLoader;
-import com.apicatalog.jsonld.loader.LoadDocumentCallback;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.suite.loader.UriBaseRewriter;
 import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
 
@@ -148,7 +148,7 @@ public final class JsonLdTestCase {
         
     public JsonLdOptions getOptions() {
         
-        final LoadDocumentCallback loader = 
+        final DocumentLoader loader = 
                 new UriBaseRewriter(
                             baseUri, 
                             testsBase,

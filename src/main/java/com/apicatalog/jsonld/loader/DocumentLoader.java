@@ -6,7 +6,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 
 /**
- * The {@link LoadDocumentCallback} defines a callback that custom document
+ * The {@link DocumentLoader} defines a callback that custom document
  * loaders have to implement to be used to retrieve remote documents and
  * contexts. The callback returns a Promise resolving to a RemoteDocument. On
  * failure, the Promise with a JsonLdError having an appropriate error code.
@@ -16,8 +16,8 @@ import com.apicatalog.jsonld.document.Document;
  *      Specification</a>
  *
  */
-public interface LoadDocumentCallback {
+public interface DocumentLoader {
 
-    Document loadDocument(URI url, LoadDocumentOptions options) throws JsonLdError;
+    Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError;
 
 }

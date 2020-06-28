@@ -12,7 +12,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
+import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
 
 
@@ -35,7 +35,7 @@ public final class JsonLdManifestLoader {
     
     public Stream<JsonLdTestCase> stream() throws JsonLdError {
      
-        Document manifest = new ZipResourceLoader().loadDocument(URI.create(manifestBase + manifestName), new LoadDocumentOptions());
+        Document manifest = new ZipResourceLoader().loadDocument(URI.create(manifestBase + manifestName), new DocumentLoaderOptions());
 
         Assert.assertNotNull(manifest);
 

@@ -8,7 +8,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.jsonld.loader.LoadDocumentCallback;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.CompactionProcessor;
 import com.apicatalog.jsonld.uri.UriUtils;
 
@@ -119,7 +119,7 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
     }
     
     @Override
-    public CompactionApi loader(LoadDocumentCallback loader) {        
+    public CompactionApi loader(DocumentLoader loader) {        
         options.setDocumentLoader(loader);
         return this;
     }

@@ -22,7 +22,7 @@ import com.apicatalog.jsonld.http.link.Link;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.uri.UriResolver;
 
-public class HttpLoader implements LoadDocumentCallback {
+public class HttpLoader implements DocumentLoader {
 
     private static final String PLUS_JSON = "+json";
 
@@ -42,7 +42,7 @@ public class HttpLoader implements LoadDocumentCallback {
     }
         
     @Override
-    public Document loadDocument(final URI uri, final LoadDocumentOptions options) throws JsonLdError {
+    public Document loadDocument(final URI uri, final DocumentLoaderOptions options) throws JsonLdError {
 
         try {
 

@@ -15,13 +15,13 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.DocumentParser;
 import com.apicatalog.jsonld.http.media.MediaType;
-import com.apicatalog.jsonld.loader.LoadDocumentCallback;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
+import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
-public class ZipResourceLoader implements LoadDocumentCallback {
+public class ZipResourceLoader implements DocumentLoader {
 
     @Override
-    public Document loadDocument(URI url, LoadDocumentOptions options) throws JsonLdError {
+    public Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
         
         if (!"zip".equals(url.getScheme())) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);

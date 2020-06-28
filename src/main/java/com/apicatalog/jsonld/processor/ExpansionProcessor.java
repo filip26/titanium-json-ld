@@ -17,7 +17,7 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.expansion.Expansion;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
+import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
 /**
  * 
@@ -39,7 +39,7 @@ public final class ExpansionProcessor {
                                 options
                                     .getDocumentLoader()
                                     .loadDocument(input,
-                                            new LoadDocumentOptions()
+                                            new DocumentLoaderOptions()
                                                     .setExtractAllScripts(options.isExtractAllScripts()));
 
         if (remoteDocument == null) {

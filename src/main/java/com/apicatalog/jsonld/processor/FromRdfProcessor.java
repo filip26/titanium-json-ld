@@ -8,7 +8,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
+import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.jsonld.serialization.RdfToJsonld;
 
 public final class FromRdfProcessor {
@@ -38,7 +38,7 @@ public final class FromRdfProcessor {
                                 options
                                     .getDocumentLoader()
                                     .loadDocument(documentUri,
-                                            new LoadDocumentOptions()
+                                            new DocumentLoaderOptions()
                                                     );
 
         if (remoteDocument == null) {

@@ -6,24 +6,44 @@ import javax.json.JsonStructure;
 
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.loader.LoadDocumentCallback;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
+import com.apicatalog.jsonld.document.RdfDocument;
+import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
+import com.apicatalog.rdf.RdfDataset;
 
-public class MockLoader implements LoadDocumentCallback {
+public class MockLoader implements DocumentLoader {
 
-    private final JsonStructure response;
+    private final JsonStructure structure;
+    private final RdfDataset dataset;
     
     public MockLoader(final JsonStructure response) {
-        this.response = response;
+        this.structure = response;
+        this.dataset = null;
     }
 
+    public MockLoader(final RdfDataset dataset) {
+        this.structure = null;
+        this.dataset = dataset;
+    }
+    
     @Override
-    public Document loadDocument(URI url, LoadDocumentOptions options) throws JsonLdError {
+    public Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
 
-        final Document remoteDocument = JsonDocument.of(response);
-        remoteDocument.setDocumentUrl(url);
+        if (structure != null) {
+            final Document remoteDocument = JsonDocument.of(structure);
+            remoteDocument.setDocumentUrl(url);
+            
+            return remoteDocument;
+        }
+
+        if (dataset != null) {
+            final Document remoteDocument = RdfDocument.of(dataset);
+            remoteDocument.setDocumentUrl(url);
+            
+            return remoteDocument;            
+        }
         
-        return remoteDocument;
+        return null;
     }
     
     

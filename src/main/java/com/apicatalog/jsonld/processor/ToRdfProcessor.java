@@ -11,7 +11,7 @@ import com.apicatalog.jsonld.deseralization.JsonLdToRdf;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
+import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
 
@@ -35,7 +35,7 @@ public final class ToRdfProcessor {
                                 options
                                     .getDocumentLoader()
                                     .loadDocument(input,
-                                            new LoadDocumentOptions()
+                                            new DocumentLoaderOptions()
                                                     .setExtractAllScripts(options.isExtractAllScripts()));
 
         if (remoteDocument == null) {

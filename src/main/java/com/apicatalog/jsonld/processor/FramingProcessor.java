@@ -34,7 +34,7 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
+import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
 /**
  * 
@@ -58,7 +58,7 @@ public final class FramingProcessor {
                                         .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but null."));
         
         if (JsonUtils.isNotObject(frameStructure)) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but [" + frame + "].");
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but [" + frameStructure + "].");
         }
         
         final JsonObject frameObject = frameStructure.asJsonObject();
@@ -214,7 +214,7 @@ public final class FramingProcessor {
                                 options
                                     .getDocumentLoader()
                                     .loadDocument(document,
-                                            new LoadDocumentOptions()
+                                            new DocumentLoaderOptions()
                                                     .setExtractAllScripts(options.isExtractAllScripts()));
 
         if (remoteDocument == null) {

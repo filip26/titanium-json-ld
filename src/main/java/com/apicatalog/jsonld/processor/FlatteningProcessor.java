@@ -12,7 +12,7 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.flattening.Flattening;
 import com.apicatalog.jsonld.http.media.MediaType;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
+import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
 /**
  * 
@@ -30,7 +30,7 @@ public final class FlatteningProcessor {
             return flatten(input, (Document)null, options);
         }
 
-        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new LoadDocumentOptions());
+        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions());
 
         if (contextDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Context[" + context + "] is null.");
@@ -45,7 +45,7 @@ public final class FlatteningProcessor {
             return flatten(input, (Document)null, options);
         }
                 
-        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new LoadDocumentOptions());
+        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions());
 
         if (contextDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Context[" + context + "] is null.");
@@ -64,7 +64,7 @@ public final class FlatteningProcessor {
                                 options
                                     .getDocumentLoader()
                                     .loadDocument(input,
-                                            new LoadDocumentOptions()
+                                            new DocumentLoaderOptions()
                                                     .setExtractAllScripts(options.isExtractAllScripts()));
 
         if (remoteDocument == null) {

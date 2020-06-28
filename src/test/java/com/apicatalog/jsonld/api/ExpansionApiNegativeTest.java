@@ -6,6 +6,8 @@ import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.document.RdfDocument;
+import com.apicatalog.rdf.Rdf;
 
 public class ExpansionApiNegativeTest {
 
@@ -43,7 +45,12 @@ public class ExpansionApiNegativeTest {
     public void test7() {
         JsonLd.expand(URI.create("relative"));
     }
-    
+
+    @Test(expected = IllegalArgumentException.class)
+    public void test8() {
+        JsonLd.expand(RdfDocument.of(Rdf.createDataset()));
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void test10() {
         JsonLd.expand("http://example.org").base("!//");
