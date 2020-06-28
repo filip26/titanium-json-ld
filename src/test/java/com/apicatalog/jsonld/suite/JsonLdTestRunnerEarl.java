@@ -5,7 +5,9 @@ import java.util.Objects;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
+import com.apicatalog.rdf.RdfComparison;
 
 public class JsonLdTestRunnerEarl {
 
@@ -29,11 +31,38 @@ public class JsonLdTestRunnerEarl {
                 return false;
             }
             
+            if (result.getRdfContent().isPresent() && testCase.expect == null && testCase.type.contains("jld:PositiveSyntaxTest")) {
+                return true;
+                
+            } else if (testCase.expect == null) {
+                return false;
+            }
+            
             Document expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new LoadDocumentOptions());
+            
+            if (expectedDocument == null) {
+                return false;
+            }
+            
                                     
             // compare expected with the result
             if (expectedDocument.getJsonContent().isPresent()) {
-//FIXME                return JsonLdComparison.equals(expectedDocument.getJsonContent().get(), result);                
+                
+                return result.getJsonContent().isPresent() 
+                       && JsonLdComparison.equals(
+                                   expectedDocument.getJsonContent().get(), 
+                                   result.getJsonContent().get()
+                                   );
+                
+            } else if (expectedDocument.getRdfContent().isPresent()) {
+
+                return result.getRdfContent().isPresent() 
+                        && RdfComparison.equals(
+                                    expectedDocument.getRdfContent().get(), 
+                                    result.getRdfContent().get()
+                                    );
+
+                
             }
             
             return false;
@@ -46,5 +75,5 @@ public class JsonLdTestRunnerEarl {
          
         }
         return false;
-    }    
+    }
 }
