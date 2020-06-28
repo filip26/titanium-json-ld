@@ -1,4 +1,4 @@
-# JSON-LD 1.1 Processor & API
+# JSON-LD 1.1 Processor
 
 An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-based Serialization for Linked Data) specification in Java utilizing [JSONP](https://javaee.github.io/jsonp/) (JSR 374 - Java API for JSON Processing).
 
