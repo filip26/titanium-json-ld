@@ -5,14 +5,12 @@ import java.net.URI;
 import javax.json.JsonArray;
 import javax.json.JsonStructure;
 
-import com.apicatalog.jsonld.api.CommonApi;
-import com.apicatalog.jsonld.api.ContextApi;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.api.LoaderApi;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.jsonld.loader.LoadDocumentCallback;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.ExpansionProcessor;
 import com.apicatalog.jsonld.uri.UriUtils;
 
@@ -20,7 +18,7 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
 
     // required
     private final URI documentUri;
-    private final RemoteDocument document;
+    private final Document document;
     
     // optional
     private JsonLdOptions options;
@@ -31,7 +29,7 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
         this.options = new JsonLdOptions();
     }
 
-    public ExpansionApi(RemoteDocument document) {
+    public ExpansionApi(Document document) {
         this.document = document;
         this.documentUri = null;
         this.options = new JsonLdOptions();
@@ -66,12 +64,12 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
 
     @Override
     public ExpansionApi context(JsonStructure context) {
-        options.setExpandContext(context != null ? RemoteDocument.of(context) : null);
+        options.setExpandContext(context != null ? JsonDocument.of(context) : null);
         return this;
     }
 
     @Override
-    public ExpansionApi context(RemoteDocument context) {
+    public ExpansionApi context(Document context) {
         options.setExpandContext(context);
         return this;
     }
@@ -99,7 +97,7 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
     }
 
     @Override
-    public ExpansionApi loader(LoadDocumentCallback loader) {
+    public ExpansionApi loader(DocumentLoader loader) {
         options.setDocumentLoader(loader);
         return this;
     }

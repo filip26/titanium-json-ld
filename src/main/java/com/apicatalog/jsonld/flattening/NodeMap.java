@@ -63,7 +63,6 @@ public final class NodeMap {
         return null;
     }
 
-
     public boolean doesNotContain(String graphName, String subject) {
         return !index.containsKey(graphName) 
                 || !index.get(graphName).containsKey(subject)
@@ -168,7 +167,9 @@ public final class NodeMap {
             }
         }
         
-        index.put(Keywords.MERGED, result.index.get(Keywords.MERGED));
+        if (result.index.get(Keywords.MERGED) != null) {
+            index.put(Keywords.MERGED, result.index.get(Keywords.MERGED));
+        }
     }
 
     public boolean contains(String id) {

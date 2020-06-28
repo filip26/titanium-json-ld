@@ -5,7 +5,6 @@ import java.net.URI;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonString;
-import javax.json.JsonStructure;
 
 import com.apicatalog.jsonld.api.impl.CompactionApi;
 import com.apicatalog.jsonld.api.impl.ExpansionApi;
@@ -13,7 +12,7 @@ import com.apicatalog.jsonld.api.impl.FlatteningApi;
 import com.apicatalog.jsonld.api.impl.FramingApi;
 import com.apicatalog.jsonld.api.impl.FromRdfApi;
 import com.apicatalog.jsonld.api.impl.ToRdfApi;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.RdfDataset;
 
@@ -32,8 +31,6 @@ public final class JsonLd {
     private static final String FRAME_URI_PARAM_NAME = "frameUri";
     private static final String FRAME_PARAM_NAME = "frame";
 
-    private static final String NULL_CONTEXT_ERROR_MSG = "Provided context cannot be null.";
-    
     private JsonLd() {
     }
     
@@ -66,12 +63,12 @@ public final class JsonLd {
     /**
      * Expands the provided remote document.
      * 
-     * @param document containing JSON-LD document to expand
+     * @param document to expand
      * @return {@link ExpansionApi} allowing to set additional parameters 
      */
-    public static final ExpansionApi expand(final RemoteDocument document) {
+    public static final ExpansionApi expand(final Document document) {
 
-        assertDocument(document, DOCUMENT_PARAM_NAME);
+        assertJsonDocument(document, DOCUMENT_PARAM_NAME);
         
         return new ExpansionApi(document);
     }
@@ -110,17 +107,14 @@ public final class JsonLd {
      * Compacts the referenced document using the context.
      * 
      * @param documentLocation {@code IRI} referencing JSON-LD document to compact
-     * @param context {@link JsonObject} representing the context or {@link JsonArray} consisting of {@link JsonObject} and {@link JsonString} referencing the context to use when compacting the document
+     * @param context {@link Document} representing the context or {@link JsonArray} consisting of {@link JsonObject} and {@link JsonString} referencing the context to use when compacting the document
      * @return {@link CompactionApi} allowing to set additional parameters 
      */
-    public static final CompactionApi compact(final String documentLocation, final JsonStructure context) {
+    public static final CompactionApi compact(final String documentLocation, final Document context) {
         
         assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME);
+        assertJsonDocument(context, CONTEXT_PARAM_NAME);
         
-        if (context == null) {
-            throw new IllegalArgumentException(NULL_CONTEXT_ERROR_MSG);
-        }
-
         return new CompactionApi(UriUtils.create(documentLocation), context);
     }
 
@@ -128,49 +122,28 @@ public final class JsonLd {
      * Compacts the referenced document using the context.
      * 
      * @param documentUri {@code URI} referencing JSON-LD document to compact
-     * @param context {@link JsonObject} representing the context or {@link JsonArray} consisting of one or many {@link JsonObject} and {@link JsonString} referencing the context to use when compacting the document
+     * @param context {@link Document} representing the context or {@link JsonArray} consisting of one or many {@link JsonObject} and {@link JsonString} referencing the context to use when compacting the document
      * @return {@link CompactionApi} allowing to set additional parameters 
      */
-    public static final CompactionApi compact(final URI documentUri, final JsonStructure context) {
+    public static final CompactionApi compact(final URI documentUri, final Document context) {
         
         assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
-        
-        if (context == null) {
-            throw new IllegalArgumentException(NULL_CONTEXT_ERROR_MSG);
-        }
+        assertJsonDocument(context, CONTEXT_PARAM_NAME);
         
         return new CompactionApi(documentUri, context);
     }
 
     /**
-     * Compacts the remote document using the context.
+     * Compacts {@link Document} document using the context.
      * 
-     * @param document {@code RemoteDocument} containing parsed JSON or raw payload representing JSON-LD document to compact
-     * @param context {@link JsonObject} representing the context or {@link JsonArray} consisting of {@link JsonObject} and {@link JsonString} referencing the context to use when compacting the document
+     * @param document to compact
+     * @param context JSON-LD document 
      * @return {@link CompactionApi} allowing to set additional parameters 
      */
-    public static final CompactionApi compact(final RemoteDocument document, final JsonStructure context) {
+    public static final CompactionApi compact(final Document document, final Document context) {
         
-        assertDocument(document, DOCUMENT_PARAM_NAME);
-        
-        if (context == null) {
-            throw new IllegalArgumentException(NULL_CONTEXT_ERROR_MSG);
-        }
-
-        return compact(document, RemoteDocument.of(context));
-    }
-
-    /**
-     * Compacts the remote document using the remote context.
-     * 
-     * @param document {@code RemoteDocument} containing parsed JSON or raw payload representing JSON-LD document to compact
-     * @param context {@link RemoteDocument} containing parsed JSON or raw payload representing the context 
-     * @return {@link CompactionApi} allowing to set additional parameters 
-     */
-    public static final CompactionApi compact(final RemoteDocument document, final RemoteDocument context) {
-        
-        assertDocument(document, DOCUMENT_PARAM_NAME);
-        assertDocument(context, CONTEXT_PARAM_NAME);
+        assertJsonDocument(document, DOCUMENT_PARAM_NAME);
+        assertJsonDocument(context, CONTEXT_PARAM_NAME);
         
         return new CompactionApi(document, context);
     }
@@ -204,12 +177,12 @@ public final class JsonLd {
     /**
      * Flattens the remote input and optionally compacts it using context.
      * 
-     * @param document {@code RemoteDocument} containing parsed JSON or raw payload representing JSON-LD document to flatten
+     * @param document to flatten
      * @return {@link FlatteningApi} allowing to set additional parameters
      */
-    public static final FlatteningApi flatten(final RemoteDocument document) {
+    public static final FlatteningApi flatten(final Document document) {
         
-        assertDocument(document, DOCUMENT_PARAM_NAME);
+        assertJsonDocument(document, DOCUMENT_PARAM_NAME);
         
         return new FlatteningApi(document);
     }
@@ -247,14 +220,14 @@ public final class JsonLd {
     /**
      *  Frames the remote input using given remote frame.
      *  
-     * @param document containing parsed or raw <code>JSON</code> representing <code>JSON-LD</code> document to frame
-     * @param frame containing parsed or raw <code>JSON</code> representing <code>JSON-LD</code> frame
+     * @param document to frame
+     * @param frame JSON-LD definition
      * @return {@link FramingApi} allowing to set additional parameters
      */
-    public static final FramingApi frame(final RemoteDocument document, final RemoteDocument frame) {
+    public static final FramingApi frame(final Document document, final Document frame) {
         
-        assertDocument(document, DOCUMENT_PARAM_NAME);
-        assertDocument(frame, FRAME_PARAM_NAME);
+        assertJsonDocument(document, DOCUMENT_PARAM_NAME);
+        assertJsonDocument(frame, FRAME_PARAM_NAME);
         
         return new FramingApi(document, frame);
     }
@@ -286,35 +259,63 @@ public final class JsonLd {
     }
 
     /**
-     * Transforms the remote input into {@link RdfDataset}.
+     * Transforms {@link Document} into {@link RdfDataset}.
      * 
-     * @param document containing parsed or raw <code>JSON</code> representing <code>JSON-LD</code> document to transform
+     * @param document to transform
      * @return {@link ToRdfApi} allowing to set additional parameters
      */
-    public static final ToRdfApi toRdf(final RemoteDocument document) {
+    public static final ToRdfApi toRdf(final Document document) {
         
-        assertDocument(document, DOCUMENT_PARAM_NAME);
+        assertJsonDocument(document, DOCUMENT_PARAM_NAME);
         
         return new ToRdfApi(document);
     }
+
     /**
-     * Transforms {@link RdfDataset} into a JSON-LD document in expanded form.
+     * Transforms the referenced N-Quads document into a JSON-LD document in expanded form.
      * 
-     * @param dataset to transform
+     * @param documentLocation {@link URI} referencing N-Quads document to expand
      * @return {@link FromRdfApi} allowing to set additional parameters
      */
-    public static final FromRdfApi fromRdf(final RdfDataset dataset) {
+    public static final FromRdfApi fromRdf(final String documentLocation) {
         
-        if (dataset == null) {
-            throw new IllegalArgumentException("A dataset is null.");
-        }
+        assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME);
 
-        return new FromRdfApi(dataset);
+        return new FromRdfApi(UriUtils.create(documentLocation));
     }
     
+    /**
+     * Transforms the referenced N-Quads document into a JSON-LD document in expanded form.
+     * 
+     * @param documentUri {@link URI} referencing N-Quads document to expand
+     * @return {@link FromRdfApi} allowing to set additional parameters
+     */
+    public static final FromRdfApi fromRdf(final URI documentUri) {
+        
+        assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
+
+        return new FromRdfApi(documentUri);
+    }
+    
+    /**
+     * Transforms {@link Document} into a JSON-LD document in expanded form.
+     * 
+     * @param document to transform
+     * @return {@link FromRdfApi} allowing to set additional parameters
+     */
+    public static final FromRdfApi fromRdf(final Document document) {
+        
+        assertRdfDocument(document, DOCUMENT_PARAM_NAME);
+
+        return new FromRdfApi(document);
+    }
+
     private static final void assertLocation(final String location, final String param) {
-        if (location == null || location.isBlank()) {
-            throw new IllegalArgumentException("'" + param + "' is null or blank string.");
+        
+        assertNotNull(location, param);
+
+        if (location.isBlank()) {
+            throw new IllegalArgumentException("'" + param + "' is blank string.");
         }
         
         if (UriUtils.isNotAbsoluteUri(location.strip())) {
@@ -323,26 +324,35 @@ public final class JsonLd {
     }
     
     private static final void assertUri(final URI uri, final String param) {
-        if (uri == null) {
-            throw new IllegalArgumentException("'" + param + "' is null.");
-        }
-
+        
+        assertNotNull(uri, param);
+        
         if (!uri.isAbsolute()) {
             throw new IllegalArgumentException("'" + param + "' is not an absolute URI [" + uri + "].");
         }
     }    
     
-    private static final void assertDocument(final RemoteDocument remoteDocument, final String param) {
-        if (remoteDocument == null) {
-            throw new IllegalArgumentException("'" + param + "' is null.");
-        }
-
-        if (remoteDocument.getContent() == null) {
-            throw new IllegalArgumentException("'" + param + "' does not contain valid document but null.");
-        }
+    private static final void assertJsonDocument(final Document document, final String param) {
         
-        if (!remoteDocument.getContent().isJsonStructure() && !remoteDocument.getContent().isRawPayload()) {
-            throw new IllegalArgumentException("'" + param + "' does not contain valid JSON structure nor raw payload.");
+        assertNotNull(document, param);
+
+        if (document.getJsonContent().isEmpty()) {
+            throw new IllegalArgumentException("'" + param + "' is not not JSON document but [" + document.getContentType() + "].");
+        }
+    }
+    
+    private static final void assertRdfDocument(final Document document, final String param) {
+        
+        assertNotNull(document, param);
+        
+        if (document.getRdfContent().isEmpty()) {
+            throw new IllegalArgumentException("'" + param + "' is not not RDF document but [" + document.getContentType() + "].");
+        }
+    }
+    
+    private static final void assertNotNull(Object value, final String param) {
+        if (value == null) {
+            throw new IllegalArgumentException("'" + param + "' is null.");
         }
     }
 }

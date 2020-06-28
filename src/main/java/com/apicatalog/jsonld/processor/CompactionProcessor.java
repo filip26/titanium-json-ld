@@ -12,11 +12,10 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.context.ActiveContext;
-import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.json.JsonContentProvider;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
+import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
 /**
  * 
@@ -29,23 +28,31 @@ public final class CompactionProcessor {
     }
     
     public static final JsonObject compact(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError {
-        return compact(input, 
-                        JsonContentProvider
-                                .create(options.getDocumentLoader())
-                                .fetchJsonDocument(context, new LoadDocumentOptions()), options);
+
+        if (options.getDocumentLoader() == null) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+        }
+        
+        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions());
+
+        if (contextDocument == null) {
+            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Context[" + context + "] is null.");
+        }
+
+        return compact(input, contextDocument, options);
     }
     
-    public static final JsonObject compact(final URI input, final RemoteDocument context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonObject compact(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
 
-        final RemoteDocument remoteDocument = 
+        final Document remoteDocument = 
                                 options
                                     .getDocumentLoader()
                                     .loadDocument(input,
-                                            new LoadDocumentOptions()
+                                            new DocumentLoaderOptions()
                                                     .setExtractAllScripts(options.isExtractAllScripts()));
 
         if (remoteDocument == null) {
@@ -55,10 +62,10 @@ public final class CompactionProcessor {
         return compact(remoteDocument, context, options);
     }
 
-    public static final JsonObject compact(final RemoteDocument input, final RemoteDocument context, final JsonLdOptions options) throws JsonLdError {
-        
+    public static final JsonObject compact(final Document input, final Document context, final JsonLdOptions options) throws JsonLdError {
+
         // 4.
-        JsonLdOptions expansionOptions = new JsonLdOptions(options);
+        final JsonLdOptions expansionOptions = new JsonLdOptions(options);
         expansionOptions.setOrdered(false);
         expansionOptions.setExtractAllScripts(false);
         
@@ -72,7 +79,7 @@ public final class CompactionProcessor {
         }
         
         // 6.
-        JsonValue contextValue = JsonContentProvider.extractJsonStructure(context);
+        JsonValue contextValue = context.getJsonContent().orElse(JsonValue.EMPTY_JSON_OBJECT);
         
         if (JsonUtils.isArray(contextValue) && contextValue.asJsonArray().size() == 1) {
             contextValue = contextValue.asJsonArray().get(0);

@@ -1,7 +1,8 @@
-package com.apicatalog.jsonld.api;
+package com.apicatalog.jsonld.api.impl;
 
 import java.net.URI;
 
+import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.lang.Version;
 
 public interface CommonApi<R> {
@@ -17,7 +18,7 @@ public interface CommonApi<R> {
     /**
      * Set <code>JSON-LD</code> processing mode. JSON-LD 1.1 is set by default.
      *  
-     * @param processingMode
+     * @param processingMode to set
      * @return builder instance
      */
     R mode(Version processingMode);

@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
@@ -40,18 +41,11 @@ public class FrameTest {
         // @embed: @last - won't fix
         assumeFalse("#t0059".equals(testCase.id));
 
+        Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options ->
         
-        try {
-            (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
+            JsonDocument.of(JsonLd.frame(testCase.input, testCase.frame).options(options).get())
             
-                Assert.assertNotNull(testCase.frame);
-            
-                return JsonLd.frame(testCase.input, testCase.frame).options(options).get();
-            });
-            
-        } catch (JsonLdError e) {
-            Assert.fail(e.getMessage());
-        }
+        ));
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")

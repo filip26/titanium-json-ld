@@ -2,9 +2,6 @@ package com.apicatalog.jsonld;
 
 import static org.junit.Assume.assumeFalse;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.net.URI;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -14,18 +11,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
-import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
-import com.apicatalog.rdf.Rdf;
-import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.io.RdfFormat;
-import com.apicatalog.rdf.io.error.UnsupportedFormatException;
-import com.apicatalog.rdf.io.nquad.NQuadsReaderException;
 
 @RunWith(Parameterized.class)
 public class RdfToJsonLdTest {
@@ -47,36 +37,12 @@ public class RdfToJsonLdTest {
 
         // skip specVersion == 1.0
         assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
-        
-        // skip normative == false
-        //assumeTrue(testCase.options.normative == null || testCase.options.normative);
 
-        try {
+        Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options -> 
+
+            JsonDocument.of(JsonLd.fromRdf(testCase.input).options(options).get())
             
-            (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
-
-                try {            
-                    RemoteDocument inputDocument = (new ZipResourceLoader(false)).loadDocument(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.input.toString().substring("https://w3c.github.io/json-ld-api/tests/".length())), new LoadDocumentOptions());
-
-                    Assert.assertNotNull(inputDocument);
-                    Assert.assertNotNull(inputDocument.getContent());
-                    Assert.assertTrue(inputDocument.getContent().getRawPayload().isPresent());
-                    
-                    RdfDataset input = Rdf.createReader(new ByteArrayInputStream(inputDocument.getContent().getRawPayload().get()), RdfFormat.N_QUADS).readDataset();
-                    
-                    return JsonLd.fromRdf(input).options(options).get();
-                
-                } catch (IOException | NQuadsReaderException | UnsupportedFormatException e) {
-                    Assert.fail(e.getMessage());
-                }
-                
-                return null;
-                
-            });
-            
-        } catch (JsonLdError e) {
-            Assert.fail(e.getMessage());
-        }
+        ));            
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")

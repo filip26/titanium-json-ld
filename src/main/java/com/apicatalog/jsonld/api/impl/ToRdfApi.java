@@ -4,15 +4,13 @@ import java.net.URI;
 
 import javax.json.JsonStructure;
 
-import com.apicatalog.jsonld.api.CommonApi;
-import com.apicatalog.jsonld.api.ContextApi;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.api.LoaderApi;
 import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.jsonld.loader.LoadDocumentCallback;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.ToRdfProcessor;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.RdfDataset;
@@ -20,7 +18,7 @@ import com.apicatalog.rdf.RdfDataset;
 public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>, ContextApi<ToRdfApi>{
 
     // required
-    private final RemoteDocument document;
+    private final Document document;
     private final URI documentUri;
     
     // optional
@@ -32,7 +30,7 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
         this.options = new JsonLdOptions();
     }
 
-    public ToRdfApi(RemoteDocument document) {
+    public ToRdfApi(Document document) {
         this.document = document;
         this.documentUri = null;
         this.options = new JsonLdOptions();
@@ -67,12 +65,12 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
     
     @Override
     public ToRdfApi context(JsonStructure context) {
-        options.setExpandContext(context != null ? RemoteDocument.of(context) : null);
+        options.setExpandContext(context != null ? JsonDocument.of(context) : null);
         return this;
     }
 
     @Override
-    public ToRdfApi context(RemoteDocument context) {
+    public ToRdfApi context(Document context) {
         options.setExpandContext(context);
         return this;
     }
@@ -130,7 +128,7 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
     }
 
     @Override
-    public ToRdfApi loader(LoadDocumentCallback loader) {
+    public ToRdfApi loader(DocumentLoader loader) {
         options.setDocumentLoader(loader);
         return this;
     }

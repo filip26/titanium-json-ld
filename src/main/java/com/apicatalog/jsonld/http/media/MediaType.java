@@ -20,7 +20,9 @@ public final class MediaType {
     public static final MediaType JSON = new MediaType(TYPE_APPLICATION, "json");
 
     public static final MediaType XHTML = new MediaType(TYPE_APPLICATION, "xhtml+xml");
-    
+
+    public static final MediaType N_QUADS = new MediaType(TYPE_APPLICATION, "n-quads");
+
     public static final MediaType ANY = new MediaType(WILDCARD, WILDCARD);
     
     private final String type;

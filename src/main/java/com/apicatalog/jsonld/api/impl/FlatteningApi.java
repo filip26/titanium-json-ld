@@ -4,14 +4,12 @@ import java.net.URI;
 
 import javax.json.JsonStructure;
 
-import com.apicatalog.jsonld.api.CommonApi;
-import com.apicatalog.jsonld.api.ContextApi;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.api.LoaderApi;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.jsonld.loader.LoadDocumentCallback;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.FlatteningProcessor;
 import com.apicatalog.jsonld.uri.UriUtils;
 
@@ -19,10 +17,10 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
 
     // required
     private final URI documentUri;
-    private final RemoteDocument document;
+    private final Document document;
     
     // optional
-    private RemoteDocument context;
+    private Document context;
     private URI contextUri;
     private JsonLdOptions options;
     
@@ -34,7 +32,7 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
         this.options = new JsonLdOptions();
     }
 
-    public FlatteningApi(RemoteDocument document) {
+    public FlatteningApi(Document document) {
         this.document = document;
         this.documentUri = null;
         this.context = null;
@@ -85,7 +83,7 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
     }
 
     @Override
-    public FlatteningApi loader(LoadDocumentCallback loader) {
+    public FlatteningApi loader(DocumentLoader loader) {
         options.setDocumentLoader(loader);
         return this;
     }
@@ -119,12 +117,12 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
 
     @Override
     public FlatteningApi context(JsonStructure context) {
-        this.context = context != null ?  RemoteDocument.of(context) : null;
+        this.context = context != null ?  JsonDocument.of(context) : null;
         return this;
     }
 
     @Override
-    public FlatteningApi context(RemoteDocument context) {
+    public FlatteningApi context(Document context) {
         this.context = context;
         return this;
     }
@@ -146,7 +144,7 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
         }
 
         if (document != null) {
-            return FlatteningProcessor.flatten(document, (RemoteDocument)null, options);
+            return FlatteningProcessor.flatten(document, (Document)null, options);
         }
 
         if (documentUri != null && context != null) {
@@ -158,7 +156,7 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
         }
 
         if (documentUri != null) {
-            return FlatteningProcessor.flatten(documentUri, (RemoteDocument)null, options);
+            return FlatteningProcessor.flatten(documentUri, (Document)null, options);
         }
 
         throw new IllegalStateException();

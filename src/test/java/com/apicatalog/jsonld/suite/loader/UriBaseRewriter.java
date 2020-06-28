@@ -4,23 +4,23 @@ import java.net.URI;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.loader.HttpLoader;
-import com.apicatalog.jsonld.loader.LoadDocumentCallback;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
+import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
-public final class UriBaseRewriter implements LoadDocumentCallback {
+public final class UriBaseRewriter implements DocumentLoader {
 
     private final String sourceBase;
     private final String targetBase;
     
-    private final LoadDocumentCallback loader;
+    private final DocumentLoader loader;
     
     public UriBaseRewriter(final String sourceBase, final String targetBase) {
         this(sourceBase, targetBase, new HttpLoader());
     }
     
-    public UriBaseRewriter(final String sourceBase, final String targetBase, final LoadDocumentCallback loader) {
+    public UriBaseRewriter(final String sourceBase, final String targetBase, final DocumentLoader loader) {
         this.sourceBase = sourceBase;
         this.targetBase = targetBase;
         
@@ -28,7 +28,7 @@ public final class UriBaseRewriter implements LoadDocumentCallback {
     }
     
     @Override
-    public RemoteDocument loadDocument(final URI url, final LoadDocumentOptions options) throws JsonLdError {
+    public Document loadDocument(final URI url, final DocumentLoaderOptions options) throws JsonLdError {
 
         final String sourceUrl = url.toString();
         
@@ -38,7 +38,7 @@ public final class UriBaseRewriter implements LoadDocumentCallback {
 
         final String relativePath = sourceUrl.substring(sourceBase.length());
 
-        final RemoteDocument remoteDocument = loader.loadDocument(URI.create(targetBase + relativePath), options);
+        final Document remoteDocument = loader.loadDocument(URI.create(targetBase + relativePath), options);
         
         if (remoteDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);

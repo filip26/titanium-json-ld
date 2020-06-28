@@ -14,6 +14,7 @@ import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdMockServer;
@@ -66,7 +67,7 @@ public class RemoteTest {
                                                 wireMockRule.baseUrl(),
                                                 new HttpLoader(HTTP_CLIENT, HttpLoader.MAX_REDIRECTIONS)));
                 
-                return JsonLd.expand(testCase.input).options(expandOptions).get();
+                return JsonDocument.of(JsonLd.expand(testCase.input).options(expandOptions).get());
             });
 
             server.stop();

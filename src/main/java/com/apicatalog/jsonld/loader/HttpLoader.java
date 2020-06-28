@@ -15,18 +15,18 @@ import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
-import com.apicatalog.jsonld.document.RemoteContent;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.DocumentParser;
 import com.apicatalog.jsonld.http.ProfileConstants;
 import com.apicatalog.jsonld.http.link.Link;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.uri.UriResolver;
 
-public class HttpLoader implements LoadDocumentCallback {
+public class HttpLoader implements DocumentLoader {
+
+    private static final String PLUS_JSON = "+json";
 
     public static final int MAX_REDIRECTIONS = 10;
-    
-    private static final String PLUS_JSON = "+json";
     
     private int maxRedirections;
 
@@ -42,18 +42,18 @@ public class HttpLoader implements LoadDocumentCallback {
     }
         
     @Override
-    public RemoteDocument loadDocument(final URI uri, final LoadDocumentOptions options) throws JsonLdError {
+    public Document loadDocument(final URI uri, final DocumentLoaderOptions options) throws JsonLdError {
 
         try {
 
-            final RemoteDocument remoteDocument = new RemoteDocument(null);
-            
             int redirection = 0;
             boolean done = false;
             
             URI targetUri = uri;
             
             MediaType contentType = null;
+            
+            URI contextUri = null;
             
             HttpResponse<InputStream> response = null;
             
@@ -149,51 +149,25 @@ public class HttpLoader implements LoadDocumentCallback {
 
                         final URI baseUri = targetUri;
 
-                        final List<Link> contextUri = 
+                        final List<Link> contextUris = 
                                         linkValues.stream()
                                             .flatMap(l -> Link.of(l, baseUri).stream())
                                             .filter(l -> l.relations().contains(ProfileConstants.CONTEXT))
                                             .collect(Collectors.toList());
                         
-                        if (contextUri.size() > 1) {
+                        if (contextUris.size() > 1) {
                             throw new JsonLdError(JsonLdErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS);
                             
-                        } else if(contextUri.size() == 1) {
-                            remoteDocument.setContextUrl(contextUri.get(0).target());
+                        } else if(contextUris.size() == 1) {
+                            contextUri = contextUris.get(0).target();
                         }
                     }
                 }
                     
                 done = true;
             }
-            
-            // 6.
-            if (contentType == null ||
-                    (!MediaType.JSON_LD.match(contentType)
-                    && !MediaType.JSON.match(contentType)
-                    && !contentType.subtype().toLowerCase().endsWith(PLUS_JSON))  
-                    ) {
-                
-                throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, 
-                                            "Unsupported media type '" + contentType 
-                                            + "'. Supported content types are [" 
-                                            + MediaType.JSON_LD + ", " 
-                                            + MediaType.JSON  + ", "
-                                            + PLUS_JSON
-                                            + "]"
-                                            );
-            }
 
-            if (remoteDocument.getDocumentUrl() == null) {
-                remoteDocument.setDocumentUrl(targetUri);
-            }
-
-            remoteDocument.setContentType(MediaType.of(contentType.type(), contentType.subtype()));
-            remoteDocument.setContent(fetchDocument(response));
-            remoteDocument.setProfile(contentType.parameters().firstValue("profile").orElse(null));
-
-            return remoteDocument;
-
+            return createDocument(contentType, targetUri, contextUri, response);
             
         } catch (InterruptedException e) {
             
@@ -230,9 +204,20 @@ public class HttpLoader implements LoadDocumentCallback {
         return builder.toString();        
     }
     
-    public static final RemoteContent fetchDocument(final HttpResponse<InputStream> response) throws JsonLdError, IOException {
-        try (InputStream is = response.body()) {
-            return RemoteContent.parseJson(is);
+    public static final Document createDocument(
+                                        final MediaType type,
+                                        final URI targetUri,
+                                        final URI contextUrl,
+                                        final HttpResponse<InputStream> response) throws JsonLdError, IOException {
+        try (final InputStream is = response.body()) {
+            
+            final Document remoteDocument = DocumentParser.parse(type, is);
+        
+            remoteDocument.setDocumentUrl(targetUri);
+        
+            remoteDocument.setContextUrl(contextUrl);
+        
+            return remoteDocument;
         }
     }
 }

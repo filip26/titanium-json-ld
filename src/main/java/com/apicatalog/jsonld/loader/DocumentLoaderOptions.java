@@ -3,15 +3,15 @@ package com.apicatalog.jsonld.loader;
 import java.util.Collection;
 
 /**
- * The {@link LoadDocumentOptions} type is used to pass various options to the
- * {@link LoadDocumentCallback}.
+ * The {@link DocumentLoaderOptions} type is used to pass various options to the
+ * {@link DocumentLoader}.
  *
  * @see <a href=
  *      "https://www.w3.org/TR/json-ld11-api/#loaddocumentoptions">LoadDocumentOptions
  *      Specification</a>
  *
  */
-public class LoadDocumentOptions {
+public class DocumentLoaderOptions {
 
     private boolean extractAllScripts;
 
@@ -19,7 +19,7 @@ public class LoadDocumentOptions {
 
     private Collection<String> requestProfile;
 
-    public LoadDocumentOptions() {
+    public DocumentLoaderOptions() {
         this.extractAllScripts = false;
         this.profile = null;
         this.requestProfile = null;
@@ -29,7 +29,7 @@ public class LoadDocumentOptions {
         return extractAllScripts;
     }
 
-    public LoadDocumentOptions setExtractAllScripts(boolean extractAllScripts) {
+    public DocumentLoaderOptions setExtractAllScripts(boolean extractAllScripts) {
         this.extractAllScripts = extractAllScripts;
         return this;
     }

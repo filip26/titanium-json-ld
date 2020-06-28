@@ -1,21 +1,17 @@
 package com.apicatalog.jsonld.api;
 
 import java.net.URI;
-import java.util.Optional;
-
-import javax.json.JsonStructure;
 
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.document.RemoteContent;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.JsonDocument;
 
 public class FlatteningApiNegativeTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void test1() {
-        JsonLd.flatten((RemoteDocument)null);
+        JsonLd.flatten((JsonDocument)null);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -48,37 +44,6 @@ public class FlatteningApiNegativeTest {
         JsonLd.flatten(URI.create("relative"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void test8() {
-        JsonLd.flatten(new RemoteDocument(new RemoteContent() {
-            
-            @Override
-            public boolean isRawPayload() {
-                return false;
-            }
-            
-            @Override
-            public boolean isJsonStructure() {
-                return false;
-            }
-            
-            @Override
-            public Optional<byte[]> getRawPayload() throws JsonLdError {
-                return null;
-            }
-            
-            @Override
-            public Optional<JsonStructure> getJsonStructure() throws JsonLdError {
-                return null;
-            }
-        }));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void test9() {
-        JsonLd.flatten(new RemoteDocument(null));
-    }    
-    
     @Test(expected = IllegalArgumentException.class)
     public void test10() {
         JsonLd.flatten("https://example.com").options(null);

@@ -5,10 +5,11 @@ import java.net.URI;
 import javax.json.Json;
 import javax.json.JsonObject;
 
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.HttpLoader;
-import com.apicatalog.jsonld.loader.LoadDocumentCallback;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 
 /**
  * The {@link JsonLdOptions} type is used to pass various options to the processor.
@@ -50,12 +51,12 @@ public final class JsonLdOptions {
      *  remote documents and contexts; otherwise, if not specified, 
      *  the processor's built-in loader is used.
      */
-    private LoadDocumentCallback documentLoader;
+    private DocumentLoader documentLoader;
     
     /**
      * A context that is used to initialize the active context when expanding a document.
      */
-    private RemoteDocument expandContext;
+    private Document expandContext;
     
     private boolean extractAllScripts;
     
@@ -170,13 +171,13 @@ public final class JsonLdOptions {
 
     /**
      * The callback of the loader to be used to retrieve remote documents and
-     * contexts, implementing the {@link LoadDocumentCallback}. If specified, it is
+     * contexts, implementing the {@link DocumentLoader}. If specified, it is
      * used to retrieve remote documents and contexts; otherwise, if not specified,
      * the processor's built-in loader is used.
      * 
      * @return the loader or <code>null</code> is is not set
      */
-    public LoadDocumentCallback getDocumentLoader() {
+    public DocumentLoader getDocumentLoader() {
         return documentLoader;
     }
 
@@ -226,7 +227,7 @@ public final class JsonLdOptions {
         return useRdfType;
     }
     
-    public RemoteDocument getExpandContext() {
+    public Document getExpandContext() {
         return expandContext;
     }
 
@@ -242,7 +243,7 @@ public final class JsonLdOptions {
         this.compactToRelative = compactToRelative;
     }
 
-    public void setDocumentLoader(LoadDocumentCallback documentLoader) {
+    public void setDocumentLoader(DocumentLoader documentLoader) {
         this.documentLoader = documentLoader;
     }
 
@@ -275,7 +276,7 @@ public final class JsonLdOptions {
     }
 
     public void setExpandContext(String contextLocation) {
-        this.expandContext = RemoteDocument.of(
+        this.expandContext = JsonDocument.of(
                 Json.createArrayBuilder()
                     .add(Json.createValue(contextLocation)).build());        
     }
@@ -285,10 +286,10 @@ public final class JsonLdOptions {
     }
 
     public void setExpandContext(JsonObject context) {
-        this.expandContext = RemoteDocument.of(context);
+        this.expandContext = JsonDocument.of(context);
     }
     
-    public void setExpandContext(RemoteDocument context) {
+    public void setExpandContext(Document context) {
         this.expandContext = context;
     }
     

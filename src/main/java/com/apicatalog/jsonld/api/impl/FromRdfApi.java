@@ -4,23 +4,32 @@ import java.net.URI;
 
 import javax.json.JsonArray;
 
-import com.apicatalog.jsonld.api.CommonApi;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.Version;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.FromRdfProcessor;
 import com.apicatalog.rdf.RdfDataset;
 
-public final class FromRdfApi implements CommonApi<FromRdfApi> {
+public final class FromRdfApi implements CommonApi<FromRdfApi>, LoaderApi<FromRdfApi> {
 
     // required
-    private final RdfDataset dataset;
+    private final Document document;
+    private final URI documentUri;
     
     // optional
     private JsonLdOptions options;
     
-    public FromRdfApi(RdfDataset dataset) {
-        this.dataset = dataset;
+    public FromRdfApi(Document document) {
+        this.document = document;
+        this.documentUri = null;
+        this.options = new JsonLdOptions();
+    }
+
+    public FromRdfApi(URI documentUri) {
+        this.document = null;
+        this.documentUri = documentUri;
         this.options = new JsonLdOptions();
     }
     
@@ -63,6 +72,12 @@ public final class FromRdfApi implements CommonApi<FromRdfApi> {
         return ordered(true);
     }
     
+    @Override
+    public FromRdfApi loader(DocumentLoader loader) {
+        options.setDocumentLoader(loader);
+        return this;
+    }
+    
     /**
      * Get <code>JSON-LD</code> representation of the provided {@link RdfDataset}.
      * 
@@ -70,6 +85,15 @@ public final class FromRdfApi implements CommonApi<FromRdfApi> {
      * @throws JsonLdError
      */
     public JsonArray get() throws JsonLdError {
-        return FromRdfProcessor.fromRdf(dataset, options);
+        
+        if (document != null) {
+            return FromRdfProcessor.fromRdf(document, options);
+        }
+        
+        if (documentUri != null) {
+            return FromRdfProcessor.fromRdf(documentUri, options);
+        }
+        
+        throw new IllegalStateException();
     }
 }

@@ -1,7 +1,6 @@
 package com.apicatalog.jsonld;
 
 import static org.junit.Assume.assumeFalse;
-import static org.junit.Assume.assumeTrue;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -12,9 +11,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
@@ -40,32 +38,11 @@ public class CompactTest {
         // skip specVersion == 1.0
         assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
         
-        // skip normative == false
-        assumeTrue(testCase.options.normative == null || testCase.options.normative);
+        Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options ->
         
-        Assert.assertNotNull(testCase.context);
-        
-        try {
-            (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
-                
-                //pre-load context
-                RemoteDocument jsonContext = options.getDocumentLoader().loadDocument(testCase.context, new LoadDocumentOptions());
-                
-                Assert.assertNotNull(jsonContext);
-                Assert.assertNotNull(jsonContext.getContent());
-                Assert.assertTrue(jsonContext.getContent().getJsonStructure().isPresent());
-                                
-                return JsonLd.compact(
-                                    testCase.input, 
-                                    jsonContext.getContent().getJsonStructure().get()
-                                    )
-                                .options(options)
-                                .get();
-            });
+            JsonDocument.of(JsonLd.compact(testCase.input, testCase.context).options(options).get())
             
-        } catch (JsonLdError e) {
-            Assert.fail(e.getMessage());
-        }            
+        ));
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")

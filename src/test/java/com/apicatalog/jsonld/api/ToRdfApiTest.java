@@ -1,5 +1,7 @@
 package com.apicatalog.jsonld.api;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 
 import javax.json.Json;
@@ -8,7 +10,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.RdfDataset;
 
 public class ToRdfApiTest {
@@ -17,14 +20,14 @@ public class ToRdfApiTest {
     
     @Test    
     public void test1() throws JsonLdError {
-        RdfDataset result = JsonLd.toRdf(RemoteDocument.of(Json.createObjectBuilder().build())).get();
+        RdfDataset result = JsonLd.toRdf(JsonDocument.of(Json.createObjectBuilder().build())).get();
         Assert.assertNotNull(result);
         Assert.assertEquals(0, result.size());
     }
     
     @Test    
     public void test2() throws JsonLdError {
-        RdfDataset result = JsonLd.toRdf(RemoteDocument.of(Json.createObjectBuilder().build().toString().getBytes())).get();
+        RdfDataset result = JsonLd.toRdf(JsonDocument.of(MediaType.JSON, new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes()))).get();
         Assert.assertNotNull(result);
         Assert.assertEquals(0, result.size());
     }
@@ -59,35 +62,35 @@ public class ToRdfApiTest {
         
     @Test    
     public void test7() throws JsonLdError {
-        RdfDataset result = JsonLd.toRdf("\thttps://example.com").context(RemoteDocument.of(Json.createObjectBuilder().build())).loader(MOCK_LOADER).ordered().get();
+        RdfDataset result = JsonLd.toRdf("\thttps://example.com").context(JsonDocument.of(Json.createObjectBuilder().build())).loader(MOCK_LOADER).ordered().get();
         Assert.assertNotNull(result);
         Assert.assertEquals(0, result.size());
     }    
 
     @Test    
     public void test8() throws JsonLdError {
-        RdfDataset result = JsonLd.toRdf("\thttps://example.com").context(RemoteDocument.of(Json.createObjectBuilder().build().toString().getBytes())).loader(MOCK_LOADER).ordered().get();
+        RdfDataset result = JsonLd.toRdf("\thttps://example.com").context(JsonDocument.of(MediaType.JSON, new InputStreamReader(new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes())))).loader(MOCK_LOADER).ordered().get();
         Assert.assertNotNull(result);
         Assert.assertEquals(0, result.size());
     }
     
     @Test    
     public void test9() throws JsonLdError {
-        RdfDataset result = JsonLd.toRdf(RemoteDocument.of(Json.createObjectBuilder().build())).context(Json.createObjectBuilder().build()).loader(MOCK_LOADER).get();
+        RdfDataset result = JsonLd.toRdf(JsonDocument.of(Json.createObjectBuilder().build())).context(Json.createObjectBuilder().build()).loader(MOCK_LOADER).get();
         Assert.assertNotNull(result);
         Assert.assertEquals(0, result.size());
     }
         
     @Test    
     public void test10() throws JsonLdError {
-        RdfDataset result = JsonLd.toRdf(RemoteDocument.of(Json.createObjectBuilder().build())).context(RemoteDocument.of(Json.createObjectBuilder().build())).loader(MOCK_LOADER).ordered().get();
+        RdfDataset result = JsonLd.toRdf(JsonDocument.of(Json.createObjectBuilder().build())).context(JsonDocument.of(Json.createObjectBuilder().build())).loader(MOCK_LOADER).ordered().get();
         Assert.assertNotNull(result);
         Assert.assertEquals(0, result.size());
     }    
 
     @Test    
     public void test11() throws JsonLdError {
-        RdfDataset result = JsonLd.toRdf(RemoteDocument.of(Json.createObjectBuilder().build())).context(RemoteDocument.of(Json.createObjectBuilder().build().toString().getBytes())).loader(MOCK_LOADER).ordered().get();
+        RdfDataset result = JsonLd.toRdf(JsonDocument.of(Json.createObjectBuilder().build())).context(JsonDocument.of(MediaType.JSON, new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes()))).loader(MOCK_LOADER).ordered().get();
         Assert.assertNotNull(result);
         Assert.assertEquals(0, result.size());
     }

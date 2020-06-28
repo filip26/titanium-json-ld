@@ -1,37 +1,26 @@
 package com.apicatalog.jsonld.earl;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Objects;
 
-import javax.json.JsonValue;
+import javax.json.JsonArray;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.RemoteTest;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.loader.HttpLoader;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdMockServer;
-import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerEarl;
 import com.apicatalog.jsonld.suite.loader.UriBaseRewriter;
-import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
-import com.apicatalog.rdf.Rdf;
-import com.apicatalog.rdf.RdfComparison;
-import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.io.RdfFormat;
-import com.apicatalog.rdf.io.error.UnsupportedFormatException;
-import com.apicatalog.rdf.io.nquad.NQuadsReaderException;
 import com.github.tomakehurst.wiremock.WireMockServer;
 
 public class EarlGenerator {
@@ -68,7 +57,7 @@ public class EarlGenerator {
                         printResult(writer, testCase.uri,           
                                 (new JsonLdTestRunnerEarl(testCase)).execute(options ->
                                 
-                                    JsonLd.expand(testCase.input).options(options).get()
+                                    JsonDocument.of(JsonLd.expand(testCase.input).options(options).get())
                                 )
                          )
                     );
@@ -81,18 +70,15 @@ public class EarlGenerator {
             .stream()
             .forEach(testCase ->                
                         printResult(writer, testCase.uri,           
-                             (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
+                             new JsonLdTestRunnerEarl(testCase).execute(options ->
                             
-                                    //pre-load context
-                                    RemoteDocument jsonContext = options.getDocumentLoader().loadDocument(testCase.context, new LoadDocumentOptions());
-
-                                    return JsonLd.compact(
+                                    JsonDocument.of(JsonLd.compact(
                                                         testCase.input, 
-                                                        jsonContext.getContent().getJsonStructure().get()
+                                                        testCase.context
                                                         )
                                                     .options(options)
-                                                    .get();
-                                 })
+                                                    .get())
+                                 )
                          )
                     );
     }
@@ -104,36 +90,32 @@ public class EarlGenerator {
             .stream()
             .forEach(testCase ->                
                         printResult(writer, testCase.uri,           
-                             (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
-                            
-                                 RemoteDocument jsonContext = null;
-                                 
-                                 //pre-load context
-                                 if (testCase.context != null) {
-                                     jsonContext = options.getDocumentLoader().loadDocument(testCase.context, new LoadDocumentOptions());
-                                     
-                                     if (jsonContext == null || jsonContext.getContent() == null || jsonContext.getContent().getJsonStructure().isEmpty()) {
-                                         throw new IllegalStateException();
-                                     }
-
-                                 }
+                             new JsonLdTestRunnerEarl(testCase).execute(options -> 
                                                  
-                                 return JsonLd
+                                 JsonDocument.of(JsonLd
                                              .flatten(testCase.input) 
-                                             .context(jsonContext != null ?  jsonContext.getContent().getJsonStructure().get() : null)
+                                             .context(testCase.context)
                                              .options(options)
-                                             .get();
-                                 })
+                                             .get())
+                                 )
                          )
                     );
     }
 
     public void testToRdf(final PrintWriter writer) throws JsonLdError {
-
+        
         JsonLdManifestLoader
-            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "toRdf-manifest.jsonld")
-            .stream()
-            .forEach(testCase -> printResult(writer, testCase.uri, testToRdf(testCase)));
+        .load(JsonLdManifestLoader.JSON_LD_API_BASE, "toRdf-manifest.jsonld")
+        .stream()
+        .forEach(testCase ->                
+                printResult(writer, testCase.uri,           
+                        (new JsonLdTestRunnerEarl(testCase)).execute(options ->
+
+                            RdfDocument.of(JsonLd.toRdf(testCase.input).options(options).get())
+
+                        )
+                 )
+            );
     }
 
     public void testFromRdf(PrintWriter writer) throws JsonLdError {
@@ -143,27 +125,11 @@ public class EarlGenerator {
             .stream()
             .forEach(testCase ->                
                     printResult(writer, testCase.uri,           
-                            (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
+                            (new JsonLdTestRunnerEarl(testCase)).execute(options ->
 
-                                try {
-                                    RemoteDocument inputDocument = (new ZipResourceLoader(false)).loadDocument(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.input.toString().substring("https://w3c.github.io/json-ld-api/tests/".length())), new LoadDocumentOptions());
+                                JsonDocument.of(JsonLd.fromRdf(testCase.input).options(options).get())
 
-                                    if (inputDocument == null) {
-                                        throw new IllegalStateException();
-                                    }
-                                    
-                                    RdfDataset input = Rdf.createReader(
-                                                                new ByteArrayInputStream(inputDocument.getContent().getRawPayload().get()), 
-                                                                RdfFormat.N_QUADS)
-                                                            .readDataset();
-                                    
-                                    return JsonLd.fromRdf(input).options(options).get();
-                                
-                                } catch (IOException | NQuadsReaderException | UnsupportedFormatException e) {
-                                    return null;
-                                }
-                                
-                            })
+                            )
                      )
                 );
     }
@@ -177,7 +143,7 @@ public class EarlGenerator {
                         printResult(writer, testCase.uri,           
                                 (new JsonLdTestRunnerEarl(testCase)).execute(options ->
                                 
-                                    JsonLd.frame(testCase.input, testCase.frame).options(options).get()
+                                    JsonDocument.of(JsonLd.frame(testCase.input, testCase.frame).options(options).get())
                                 )
                          )
                     );
@@ -212,9 +178,9 @@ public class EarlGenerator {
                                                             wireMockServer.baseUrl(), 
                                                             new HttpLoader()));
                             
-                            JsonValue r = JsonLd.expand(testCase.input).options(expandOptions).get();
+                            JsonArray r = JsonLd.expand(testCase.input).options(expandOptions).get();
                             
-                            return r;
+                            return JsonDocument.of(r);
                     });
                     
                     server.stop();
@@ -281,61 +247,5 @@ public class EarlGenerator {
         writer.println("<https://github.com/filip26> a earl:Assertor, foaf:Person;");
         writer.println("  foaf:name \"Filip Kolarik\";");
         writer.println("  foaf:homepage <https://github.com/filip26>.");
-    }
-
-    private final boolean testToRdf(JsonLdTestCase testCase) {
-        
-        JsonLdOptions options = testCase.getOptions();
-        
-        RdfDataset result = null;
-
-        try {
-  
-            result = JsonLd.toRdf(testCase.input).options(options).get();
-            
-            if (result == null) {
-                return false;
-            }
-        
-        } catch (JsonLdError e) {
-            return Objects.equals(testCase.expectErrorCode, e.getCode());
-        }
-
-        if (testCase.expectErrorCode != null) {
-            return false;
-        }
-        
-        // A PositiveSyntaxTest succeeds when no error is found when processing.
-        if (testCase.expect == null && testCase.type.contains("jld:PositiveSyntaxTest")) {
-            return true;
-        }
-        
-        if (testCase.expect == null) {
-            return false;
-        }
-        
-        try {
-
-            RemoteDocument expectedDocument = (new ZipResourceLoader(false)).loadDocument(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.expect.toString().substring("https://w3c.github.io/json-ld-api/tests/".length())), new LoadDocumentOptions());
-
-            if (expectedDocument == null) {
-                throw new IllegalStateException();
-            }
-
-            RdfDataset expected = Rdf.createReader(
-                                        new ByteArrayInputStream(expectedDocument.getContent().getRawPayload().get()),
-                                        RdfFormat.N_QUADS).readDataset();
-
-            if (expected == null) {
-                return false;
-            }
-
-            return RdfComparison.equals(expected, result);
-
-        } catch (NQuadsReaderException | IOException | JsonLdError | UnsupportedFormatException e ) {
-
-        }
-        return false;
-    }
-    
+    }    
 }
