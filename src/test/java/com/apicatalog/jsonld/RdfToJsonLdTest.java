@@ -37,18 +37,12 @@ public class RdfToJsonLdTest {
 
         // skip specVersion == 1.0
         assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
-        
-        try {
-            
-            (new JsonLdTestRunnerJunit(testCase)).execute(options -> 
 
-                JsonDocument.of(JsonLd.fromRdf(testCase.input).options(options).get())
-                
-            );
+        Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options -> 
+
+            JsonDocument.of(JsonLd.fromRdf(testCase.input).options(options).get())
             
-        } catch (JsonLdError e) {
-            Assert.fail(e.getMessage());
-        }
+        ));            
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")

@@ -26,7 +26,7 @@ public class JsonLdTestRunnerJunit {
         this.testCase = testCase;
     }
     
-    public void execute(JsonLdTestCaseMethod method) throws JsonLdError {
+    public boolean execute(JsonLdTestCaseMethod method) {
 
         Assert.assertNotNull(testCase.baseUri);
         Assert.assertNotNull(testCase.input);
@@ -46,34 +46,45 @@ public class JsonLdTestRunnerJunit {
         
         } catch (JsonLdError e) {
             Assert.assertEquals(e.getMessage(), testCase.expectErrorCode, e.getCode());
-            return;
+            return true;
         }
-        
+
+        return validate(testCase, options, result);
+    }
+    
+    private boolean validate(final JsonLdTestCase testCase, final JsonLdOptions options, final Document result) {
+
         Assert.assertNull(testCase.expectErrorCode);
         Assert.assertNotNull(testCase.expect);
-        
-        Document expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new LoadDocumentOptions());
-                    
-        Assert.assertNotNull(expectedDocument);
 
-        // compare expected with the result
-        
-        if (expectedDocument.getJsonContent().isPresent()) {
+        try {
+            Document expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new LoadDocumentOptions());
+                        
+            Assert.assertNotNull(expectedDocument);
+    
+            // compare expected with the result
             
-            Assert.assertTrue("Expected JSON document but got " + result.getContentType(), result.getJsonContent().isPresent());
+            if (expectedDocument.getJsonContent().isPresent()) {
+                
+                Assert.assertTrue("Expected JSON document but got " + result.getContentType(), result.getJsonContent().isPresent());
+                
+                return compareJson(result.getJsonContent().get(), expectedDocument.getJsonContent().get());
+            }
             
-            compareJson(result.getJsonContent().get(), expectedDocument.getJsonContent().get());
-            return;
+            Assert.assertTrue("Expected RDF document but got " + result.getContentType(), result.getRdfContent().isPresent());
+            
+        } catch (JsonLdError e) {
+            Assert.fail(e.getMessage());
         }
-        
-        Assert.assertTrue("Expected RDF document but got " + result.getContentType(), result.getRdfContent().isPresent());
+        return false;
     }
 
-    public void compareJson(JsonStructure result, JsonStructure expectedDocument) {
+    private boolean compareJson(JsonStructure result, JsonStructure expectedDocument) {
 
         if (JsonLdComparison.equals(expectedDocument, result)) {
-            return;
+            return true;
         }
+        
         System.out.println("Test " + testCase.id + ": " + testCase.name);
         System.out.println("Expected:");
 
@@ -99,5 +110,7 @@ public class JsonLdTestRunnerJunit {
         System.out.println();
         System.out.println();
         Assert.fail("Expected " + expectedDocument + ", but was" + result);
+        
+        return false;
     }    
 }

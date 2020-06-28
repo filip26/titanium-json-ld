@@ -10,17 +10,16 @@ import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.serialization.RdfToJsonld;
-import com.apicatalog.rdf.RdfDataset;
 
 public final class FromRdfProcessor {
 
     private FromRdfProcessor() {
     }
     
-    public static final JsonArray fromRdf(final RdfDataset dataset, final JsonLdOptions options) throws JsonLdError {
-        
+    public static final JsonArray fromRdf(final Document document, final JsonLdOptions options) throws JsonLdError {
+
         return RdfToJsonld
-                    .with(dataset)
+                    .with(document.getRdfContent().orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Expected RDF document but got [" + document.getContentType() + "]")))
                     .ordered(options.isOrdered())
                     .rdfDirection(options.getRdfDirection())
                     .useNativeTypes(options.isUseNativeTypes())
@@ -46,6 +45,6 @@ public final class FromRdfProcessor {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
         
-        return fromRdf(remoteDocument.getRdfContent().orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED)), options);
+        return fromRdf(remoteDocument, options);
     }
 }

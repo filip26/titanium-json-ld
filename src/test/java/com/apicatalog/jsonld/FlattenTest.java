@@ -38,17 +38,11 @@ public class FlattenTest {
         // skip specVersion == 1.0
         assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
         
-        try {
-            
-            (new JsonLdTestRunnerJunit(testCase)).execute(options -> 
+        Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options -> 
 
-                JsonDocument.of(JsonLd.flatten(testCase.input).context(testCase.context).options(options).get())
+            JsonDocument.of(JsonLd.flatten(testCase.input).context(testCase.context).options(options).get())
 
-            );
-            
-        } catch (JsonLdError e) {
-            Assert.fail(e.getMessage());
-        }            
+        ));
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")

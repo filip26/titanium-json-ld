@@ -38,17 +38,11 @@ public class CompactTest {
         // skip specVersion == 1.0
         assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
         
-        try {
+        Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options ->
+        
+            JsonDocument.of(JsonLd.compact(testCase.input, testCase.context).options(options).get())
             
-            (new JsonLdTestRunnerJunit(testCase)).execute(options ->
-            
-                JsonDocument.of(JsonLd.compact(testCase.input, testCase.context).options(options).get())
-                
-            );
-            
-        } catch (JsonLdError e) {
-            Assert.fail(e.getMessage());
-        }            
+        ));
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")

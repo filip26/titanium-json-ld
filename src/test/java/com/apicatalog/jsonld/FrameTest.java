@@ -41,17 +41,11 @@ public class FrameTest {
         // @embed: @last - won't fix
         assumeFalse("#t0059".equals(testCase.id));
 
-        try {
+        Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options ->
+        
+            JsonDocument.of(JsonLd.frame(testCase.input, testCase.frame).options(options).get())
             
-            (new JsonLdTestRunnerJunit(testCase)).execute(options ->
-            
-                JsonDocument.of(JsonLd.frame(testCase.input, testCase.frame).options(options).get())
-                
-            );
-            
-        } catch (JsonLdError e) {
-            Assert.fail(e.getMessage());
-        }
+        ));
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")

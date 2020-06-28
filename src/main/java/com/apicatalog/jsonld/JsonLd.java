@@ -308,8 +308,7 @@ public final class JsonLd {
         
         assertDocument(document, DOCUMENT_PARAM_NAME);
 
-        return null;
-//        return new FromRdfApi(document);
+        return new FromRdfApi(document);
     }
 
     private static final void assertLocation(final String location, final String param) {

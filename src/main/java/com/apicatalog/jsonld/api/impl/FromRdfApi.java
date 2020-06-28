@@ -6,6 +6,7 @@ import javax.json.JsonArray;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.processor.FromRdfProcessor;
 import com.apicatalog.rdf.RdfDataset;
@@ -13,20 +14,20 @@ import com.apicatalog.rdf.RdfDataset;
 public final class FromRdfApi implements CommonApi<FromRdfApi> {
 
     // required
-    private final RdfDataset dataset;
+    private final RdfDocument document;
     private final URI documentUri;
     
     // optional
     private JsonLdOptions options;
     
-    public FromRdfApi(RdfDataset dataset) {
-        this.dataset = dataset;
+    public FromRdfApi(RdfDocument document) {
+        this.document = document;
         this.documentUri = null;
         this.options = new JsonLdOptions();
     }
 
     public FromRdfApi(URI documentUri) {
-        this.dataset = null;
+        this.document = null;
         this.documentUri = documentUri;
         this.options = new JsonLdOptions();
     }
@@ -78,8 +79,8 @@ public final class FromRdfApi implements CommonApi<FromRdfApi> {
      */
     public JsonArray get() throws JsonLdError {
         
-        if (dataset != null) {
-            return FromRdfProcessor.fromRdf(dataset, options);
+        if (document != null) {
+            return FromRdfProcessor.fromRdf(document, options);
         }
         
         if (documentUri != null) {
