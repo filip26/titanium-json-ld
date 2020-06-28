@@ -69,7 +69,7 @@ public final class DocumentParser {
         return fireUnsupportedMediaType(contentType);
     }
     
-    static final Document fireUnsupportedMediaType(MediaType contentType) throws JsonLdError {
+    private static final Document fireUnsupportedMediaType(MediaType contentType) throws JsonLdError {
         throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, 
                 "Unsupported media type '" + contentType 
                 + "'. Supported content types are [" 
