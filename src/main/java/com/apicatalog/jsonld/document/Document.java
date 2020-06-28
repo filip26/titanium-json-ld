@@ -14,7 +14,7 @@ import com.apicatalog.rdf.RdfDataset;
  * This can either be {@link JsonStructure}, representing JSON-LD or JSON document, 
  * or {@link RdfDataset}
  * 
- * @see {@link JsonDocument}, {@link RdfDocument}, {@link DocumentParser}
+ * Implemented by {@link JsonDocument}, {@link RdfDocument}, and provided by {@link DocumentParser}.
  *
  */
 public interface Document {

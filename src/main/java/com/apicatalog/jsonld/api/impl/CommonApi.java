@@ -18,7 +18,7 @@ public interface CommonApi<R> {
     /**
      * Set <code>JSON-LD</code> processing mode. JSON-LD 1.1 is set by default.
      *  
-     * @param processingMode
+     * @param processingMode to set
      * @return builder instance
      */
     R mode(Version processingMode);
