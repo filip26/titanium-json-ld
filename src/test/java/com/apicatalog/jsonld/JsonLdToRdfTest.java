@@ -3,7 +3,6 @@ package com.apicatalog.jsonld;
 import static org.junit.Assume.assumeFalse;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -13,19 +12,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.jsonld.loader.LoadDocumentOptions;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
-import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
-import com.apicatalog.rdf.Rdf;
-import com.apicatalog.rdf.RdfComparison;
-import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.io.RdfFormat;
-import com.apicatalog.rdf.io.error.UnsupportedFormatException;
-import com.apicatalog.rdf.io.nquad.NQuadsWriterException;
+import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
 
 @RunWith(Parameterized.class)
 public class JsonLdToRdfTest {
@@ -52,69 +43,12 @@ public class JsonLdToRdfTest {
         assumeFalse("#te075".equals(testCase.id));
         // invalid IRI/URI are not accepted - wont'fix
         assumeFalse("#tli12".equals(testCase.id));
-        
-        
-        Assert.assertNotNull(testCase.baseUri);
-        Assert.assertNotNull(testCase.input);
 
-        JsonLdOptions options = testCase.getOptions();
+        Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options -> 
+
+            RdfDocument.of(JsonLd.toRdf(testCase.input).options(options).get())
         
-        Assert.assertNotNull(options);
-        Assert.assertNotNull(options.getDocumentLoader());
-        
-        RdfDataset result = null;
-
-        try {
-  
-            result = JsonLd.toRdf(testCase.input).options(options).get();
-            
-            Assert.assertNotNull("A result is expected but got null.", result);
-        
-        } catch (JsonLdError e) {
-            Assert.assertEquals(testCase.expectErrorCode, e.getCode());
-            return;
-        }
-
-        Assert.assertTrue("Error code [" + testCase.expectErrorCode + "] is expected but no execption has been thrown. ", testCase.expectErrorCode == null);
-        
-        // A PositiveSyntaxTest succeeds when no error is found when processing.
-        if (testCase.expect == null && testCase.type.contains("jld:PositiveSyntaxTest")) {
-            return;
-        }
-        
-        Assert.assertNotNull("Test case does not define expected output nor expected error code.", testCase.expect);
-
-        try {
-            Document inputDocument = (new ZipResourceLoader()).loadDocument(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE + testCase.expect.toString().substring("https://w3c.github.io/json-ld-api/tests/".length())), new LoadDocumentOptions());
-        
-            Assert.assertNotNull(inputDocument);
-            Assert.assertTrue(inputDocument.getRdfContent().isPresent());
-            
-            RdfDataset expected = inputDocument.getRdfContent().orElse(null);
-
-            Assert.assertNotNull(expected);
-
-            boolean match = RdfComparison.equals(expected, result);
-
-            if (!match) {
-                System.out.println("Test " + testCase.id + ": " + testCase.name);
-                System.out.println("Expected:");
-                
-                Rdf.createWriter(System.out, RdfFormat.N_QUADS).write(expected);
-    
-                System.out.println();
-                System.out.println("Actual:");
-            
-                Rdf.createWriter(System.out, RdfFormat.N_QUADS).write(result);
-                
-                System.out.println();
-            }
-
-            Assert.assertTrue("The result does not match expected output.", match);
-            
-        } catch (NQuadsWriterException | JsonLdError | UnsupportedFormatException e ) {
-            Assert.fail(e.getMessage());
-        }
+        ));
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")

@@ -6,7 +6,7 @@ import javax.json.JsonObject;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.LoadDocumentCallback;
 import com.apicatalog.jsonld.processor.CompactionProcessor;
@@ -15,15 +15,15 @@ import com.apicatalog.jsonld.uri.UriUtils;
 public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<CompactionApi> {
 
     // required
-    private final JsonDocument document;
+    private final Document document;
     private final URI documentUri;
-    private final JsonDocument context;
+    private final Document context;
     private final URI contextUri;
     
     // optional
     private JsonLdOptions options;
     
-    public CompactionApi(URI documentUri, JsonDocument context) {
+    public CompactionApi(URI documentUri, Document context) {
         this.document = null;
         this.documentUri = documentUri;
         this.context = context;
@@ -39,7 +39,7 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
         this.options = new JsonLdOptions();
     }
 
-    public CompactionApi(JsonDocument document, JsonDocument context) {
+    public CompactionApi(Document document, Document context) {
         this.document = document;
         this.documentUri = null;
         this.context = context;
