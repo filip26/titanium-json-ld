@@ -18,7 +18,7 @@ public final class DocumentParser {
      * 
      * @param contentType {@link MediaType} of the raw content, must not be <code>null</code>
      * @param inputStream providing unparsed raw content described by {{@link MediaType}
-     * @return {@link DocumentContent} representing unparsed content
+     * @return {@link Document} representing unparsed content
      */
     public static Document parse(final MediaType contentType, final InputStream inputStream)  throws JsonLdError {
         
@@ -45,8 +45,8 @@ public final class DocumentParser {
      * Create a new document.
      * 
      * @param contentType {@link MediaType} of the raw content, must not be <code>null</code>
-     * @param readed providing unparsed raw content described by {{@link MediaType}
-     * @return {@link DocumentContent} representing unparsed content
+     * @param reader providing unparsed raw content described by {{@link MediaType}
+     * @return {@link Document} representing unparsed content
      */
     public static Document parse(final MediaType contentType, final Reader reader)  throws JsonLdError {
         

@@ -38,7 +38,7 @@ public final class JsonDocument implements Document {
      * Create a new document from {@link JsonStructure}. Sets {@link MediaType#JSON} as the content type.
      *
      * @param structure representing parsed JSON content
-     * @return {@link DocumentContent} representing JSON content
+     * @return {@link Document} representing JSON content
      */
     public static JsonDocument of(final JsonStructure structure) {
         return of(MediaType.JSON, structure);
@@ -49,7 +49,7 @@ public final class JsonDocument implements Document {
      *
      * @param contentType reflecting the provided {@link JsonStructure}, e.g. {@link MediaType#JSON_LD}, any JSON based media type is allowed
      * @param structure representing parsed JSON content
-     * @return {@link DocumentContent} representing JSON content 
+     * @return {@link Document} representing JSON content 
      */
     public static JsonDocument of(final MediaType contentType, final JsonStructure structure) {
 
