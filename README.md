@@ -90,7 +90,7 @@ compile group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
 
 ## Examples
 
-Titanium provides high-level [JsonLd](https://github.com/filip26/titanium-json-ld/blob/master/src/main/java/com/apicatalog/jsonld/JsonLd.java) interface developers should use to interact with the processor.
+Titanium provides high-level [JsonLd](https://github.com/filip26/titanium-json-ld/blob/master/src/main/java/com/apicatalog/jsonld/JsonLd.java) API to interact with the processor.
 
 ```javascript
 
