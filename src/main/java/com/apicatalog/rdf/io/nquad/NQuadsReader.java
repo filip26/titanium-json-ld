@@ -54,7 +54,7 @@ public final class NQuadsReader implements RdfReader {
         return dataset;
     }
     
-    public RdfNQuad reaStatement() throws NQuadsReaderException {
+    private RdfNQuad reaStatement() throws NQuadsReaderException {
   
         RdfSubject subject = readSubject();
   
@@ -134,7 +134,7 @@ public final class NQuadsReader implements RdfReader {
         return readLiteral();
     }
     
-    public RdfObject readLiteral()  throws NQuadsReaderException {
+    private RdfObject readLiteral()  throws NQuadsReaderException {
   
         Token value = tokenizer.token();
         
