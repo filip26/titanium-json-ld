@@ -43,6 +43,7 @@ public final class NQuadsReader implements RdfReader {
             // skip EOL and whitespace
             if (tokenizer.accept(Tokenizer.TokenType.END_OF_LINE)
                     || tokenizer.accept(Tokenizer.TokenType.WHITE_SPACE)
+                    || tokenizer.accept(Tokenizer.TokenType.COMMENT)
                     ) {
 
                 continue;
@@ -55,7 +56,7 @@ public final class NQuadsReader implements RdfReader {
     }
     
     private RdfNQuad reaStatement() throws NQuadsReaderException {
-  
+
         RdfSubject subject = readSubject();
   
         skipWhitespace(0);
