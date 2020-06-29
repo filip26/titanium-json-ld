@@ -324,12 +324,13 @@ final class Tokenizer {
     }
 
     private Token readBlankNode() throws NQuadsReaderException {
+        
         try {
 
             StringBuilder value = new StringBuilder();
             
             int ch = reader.read();
-            
+    
             if (ch != ':' || ch == -1) {
                 unexpected(ch);
             }
@@ -349,19 +350,31 @@ final class Tokenizer {
             
             while (RdfAlphabet.PN_CHARS.test(ch) || ch == '.') {
 
+                delim = ch == '.';
+                
                 value.append((char)ch);
                 
-                reader.mark(1);
+                if (delim) {
+                    reader.reset();
+                    reader.mark(2);
+                    reader.skip(1);
+                } else {
+                    reader.mark(1);
+                }
+                                
                 ch = reader.read();
-
-                delim = ch == '.';
+                
             }
             
-            if (ch == -1 || delim) {
+            if (ch == -1) {
                 unexpected(ch);
             }
             
             reader.reset();
+            
+            if (delim && value.length() > 0) {
+                value.setLength(value.length() - 1);
+            }
 
             return new Token(TokenType.BLANK_NODE_LABEL, value.toString());
             
@@ -451,6 +464,11 @@ final class Tokenizer {
 
         protected String getValue() {
             return value;
+        }
+
+        @Override
+        public String toString() {
+            return "Token [type=" + type + ", value=" + value + "]";
         }
     }
     

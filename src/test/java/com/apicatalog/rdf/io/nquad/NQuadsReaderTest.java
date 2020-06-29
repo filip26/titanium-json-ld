@@ -60,8 +60,8 @@ public class NQuadsReaderTest {
             } catch (NQuadsReaderException | IllegalArgumentException e) {
                 e.printStackTrace();
                 Assert.assertEquals(Type.NEGATIVE, testCase.getType());
-            }   
-        }        
+            }
+        }
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")

@@ -65,7 +65,7 @@ public final class NQuadsReader implements RdfReader {
         skipWhitespace(0);
   
         RdfObject object = readObject();
-        
+
         RdfGraphName graphName = null;
         
         skipWhitespace(0);
@@ -85,7 +85,7 @@ public final class NQuadsReader implements RdfReader {
         }
 
         if (TokenType.END_OF_STATEMENT != tokenizer.token().getType()) {
-            unexpected(tokenizer.token());
+            unexpected(tokenizer.token(), TokenType.END_OF_STATEMENT);
         }
         
         tokenizer.next();
@@ -175,7 +175,7 @@ public final class NQuadsReader implements RdfReader {
     
     private static final <T> T unexpected(Token token, TokenType ...types) throws NQuadsReaderException {
         throw new NQuadsReaderException(
-                    "Unexpected token " + token.getType() + "(" + token.getValue() + "). "
+                    "Unexpected token " + token.getType() + (token.getValue() != null ? "[" + token.getValue() + "]" : "" ) +  ". "
                     + "Expected one of " + Arrays.toString(types) + "."
                     );
     }
@@ -197,7 +197,6 @@ public final class NQuadsReader implements RdfReader {
     private void skipWhitespace(int min) throws NQuadsReaderException {
   
         Token token = tokenizer.token();
-        
         int count = 0;
         
         while (TokenType.WHITE_SPACE ==  token.getType()) {
