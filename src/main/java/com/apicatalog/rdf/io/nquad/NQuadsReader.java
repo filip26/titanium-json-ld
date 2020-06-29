@@ -62,7 +62,7 @@ public final class NQuadsReader implements RdfReader {
   
         skipWhitespace(0);
   
-        String predicate = readIri();
+        String predicate = readPredicate();
 
         skipWhitespace(0);
   
@@ -74,11 +74,9 @@ public final class NQuadsReader implements RdfReader {
         
         if (TokenType.IRI_REF == tokenizer.token().getType()) {
 
-            String graphNameIri = tokenizer.token().getValue();
-            
-            if (UriUtils.isNotAbsoluteUri(graphNameIri)) {
-                throw new NQuadsReaderException("Graph name must be an absolute IRI [" + graphNameIri  +  "]. ");
-            }
+            final String graphNameIri = tokenizer.token().getValue();
+
+            assertAbsoluteIri(graphNameIri, "Graph name");
             
             graphName = Rdf.createGraphName(RdfGraphName.Type.IRI, graphNameIri);
             tokenizer.next();
@@ -121,7 +119,11 @@ public final class NQuadsReader implements RdfReader {
             
             tokenizer.next();
             
-            return Rdf.createSubject(RdfSubject.Type.IRI, token.getValue());
+            final String iri = token.getValue();
+            
+            assertAbsoluteIri(iri, "Subject");
+
+            return Rdf.createSubject(RdfSubject.Type.IRI, iri);
         } 
 
         if (TokenType.BLANK_NODE_LABEL == token.getType()) {
@@ -141,7 +143,11 @@ public final class NQuadsReader implements RdfReader {
         if (TokenType.IRI_REF == token.getType()) {
             tokenizer.next();
             
-            return Rdf.createObject(RdfObject.Type.IRI, token.getValue());
+            final String iri = token.getValue();
+            
+            assertAbsoluteIri(iri, "Object");
+            
+            return Rdf.createObject(RdfObject.Type.IRI, iri);
         } 
 
         if (TokenType.BLANK_NODE_LABEL == token.getType()) {
@@ -182,8 +188,14 @@ public final class NQuadsReader implements RdfReader {
             Token attr = tokenizer.token();
                         
             if (TokenType.IRI_REF == attr.getType()) {
+                
                 tokenizer.next();
-                return Rdf.createObject(Rdf.createTypedString(value.getValue(), attr.getValue()));
+                
+                final String iri = attr.getValue();
+                
+                assertAbsoluteIri(iri, "DataType");
+
+                return Rdf.createObject(Rdf.createTypedString(value.getValue(), iri));
             }
                 
             unexpected(attr);
@@ -200,7 +212,7 @@ public final class NQuadsReader implements RdfReader {
                     );
     }
     
-    private String readIri()  throws NQuadsReaderException {
+    private String readPredicate()  throws NQuadsReaderException {
         
         Token token = tokenizer.token();
         
@@ -210,9 +222,12 @@ public final class NQuadsReader implements RdfReader {
         
         tokenizer.next();
         
-        return token.getValue();
-    }
+        final String iri = token.getValue();
+        
+        assertAbsoluteIri(iri, "Predicate");
 
+        return iri;
+    }
 
     private void skipWhitespace(int min) throws NQuadsReaderException {
   
@@ -227,5 +242,11 @@ public final class NQuadsReader implements RdfReader {
         if (count < min) {
             unexpected(token);
         }        
+    }
+    
+    private static final void assertAbsoluteIri(final String iri, final String what) throws NQuadsReaderException {
+        if (UriUtils.isNotAbsoluteUri(iri)) {
+            throw new NQuadsReaderException(what + " must be an absolute IRI [" + iri  +  "]. ");
+        }
     }
 }
