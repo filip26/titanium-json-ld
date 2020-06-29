@@ -3,6 +3,7 @@ package com.apicatalog.rdf.io.nquad;
 import java.io.Reader;
 import java.util.Arrays;
 
+import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraphName;
@@ -73,7 +74,13 @@ public final class NQuadsReader implements RdfReader {
         
         if (TokenType.IRI_REF == tokenizer.token().getType()) {
 
-            graphName = Rdf.createGraphName(RdfGraphName.Type.IRI, tokenizer.token().getValue());
+            String graphNameIri = tokenizer.token().getValue();
+            
+            if (UriUtils.isNotAbsoluteUri(graphNameIri)) {
+                throw new NQuadsReaderException("Graph name must be an absolute IRI [" + graphNameIri  +  "]. ");
+            }
+            
+            graphName = Rdf.createGraphName(RdfGraphName.Type.IRI, graphNameIri);
             tokenizer.next();
             skipWhitespace(0);
         }
