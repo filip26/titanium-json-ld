@@ -101,7 +101,7 @@ public final class Rdf {
 
     public static RdfObject createObject(RdfObject.Type type, String value) {
         
-        if (type == null || value == null || value.isBlank()) {
+        if (type == null || value == null /*|| value.isBlank()*/) {
             throw new IllegalArgumentException();
         }
         

@@ -62,6 +62,11 @@ final class Tokenizer {
                 return skipWhitespaces();  
             }
             
+            // Comment
+            if (ch == '#') {
+                return readComment();
+            }
+            
             if (ch == '<') {
                 return readIriRef();
             }
@@ -96,7 +101,7 @@ final class Tokenizer {
                 return Token.LITERAL_DATA_TYPE;
             }
 
-            unexpected(ch, "\\\t", "\\\n", "\\\r", "^", "@", "SPACE", ".", "<", "_", "\"");
+            unexpected(ch, "\\t", "\\n", "\\r", "^", "@", "SPACE", ".", "<", "_", "\"", "#");
             
         } catch (IOException e) {
             throw new NQuadsReaderException(e);
@@ -294,7 +299,6 @@ final class Tokenizer {
     
         } else if (ch == 'U') {
             
-            value.append("\\U");
             value.append(readUnicode64());
             
         } else {
@@ -315,7 +319,6 @@ final class Tokenizer {
             
         } else if (ch == 'U') {
             
-            value.append("\\U");
             value.append(readUnicode64());
             
         } else {
@@ -324,12 +327,13 @@ final class Tokenizer {
     }
 
     private Token readBlankNode() throws NQuadsReaderException {
+        
         try {
 
             StringBuilder value = new StringBuilder();
             
             int ch = reader.read();
-            
+    
             if (ch != ':' || ch == -1) {
                 unexpected(ch);
             }
@@ -349,19 +353,31 @@ final class Tokenizer {
             
             while (RdfAlphabet.PN_CHARS.test(ch) || ch == '.') {
 
+                delim = ch == '.';
+                
                 value.append((char)ch);
                 
-                reader.mark(1);
+                if (delim) {
+                    reader.reset();
+                    reader.mark(2);
+                    reader.skip(1);
+                } else {
+                    reader.mark(1);
+                }
+                                
                 ch = reader.read();
-
-                delim = ch == '.';
+                
             }
             
-            if (ch == -1 || delim) {
+            if (ch == -1) {
                 unexpected(ch);
             }
             
             reader.reset();
+            
+            if (delim && value.length() > 0) {
+                value.setLength(value.length() - 1);
+            }
 
             return new Token(TokenType.BLANK_NODE_LABEL, value.toString());
             
@@ -392,14 +408,15 @@ final class Tokenizer {
         return (char)hex;
     }
 
-    private String readUnicode64()  throws IOException, NQuadsReaderException {
+    private char[] readUnicode64()  throws IOException, NQuadsReaderException {
 
         char[] code = new char[8];
 
         for (int i=0; i < code.length; i++) {
             code[i] = readHex8();            
         }
-        return String.valueOf(code);
+        
+        return Character.toChars(Integer.parseInt(String.valueOf(code), 16));
     }
 
     private static final int unescape(int symbol) {
@@ -421,6 +438,26 @@ final class Tokenizer {
         return symbol;        
     }
 
+    private Token readComment() throws NQuadsReaderException {
+        try {
+
+            StringBuilder value = new StringBuilder();
+            
+            int ch = reader.read();
+            
+            while (RdfAlphabet.EOL.negate().test(ch) && ch != -1) {
+                
+                value.appendCodePoint(ch);
+                ch = reader.read();
+            }
+            
+            return new Token(TokenType.COMMENT, value.toString());
+            
+        } catch (IOException e) {
+            throw new NQuadsReaderException(e);
+        }    
+    }
+    
     public boolean hasNext() throws NQuadsReaderException {
         if (next == null) {
             next = doRead();
@@ -452,6 +489,11 @@ final class Tokenizer {
         protected String getValue() {
             return value;
         }
+
+        @Override
+        public String toString() {
+            return "Token [type=" + type + ", value=" + value + "]";
+        }
     }
     
     protected enum TokenType {
@@ -461,6 +503,7 @@ final class Tokenizer {
         BLANK_NODE_LABEL,
         WHITE_SPACE,
         LITERAL_DATA_TYPE,
+        COMMENT,
         END_OF_STATEMENT,
         END_OF_LINE,
         END_OF_INPUT,

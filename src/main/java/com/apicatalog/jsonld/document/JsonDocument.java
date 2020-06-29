@@ -63,38 +63,82 @@ public final class JsonDocument implements Document {
             throw new IllegalArgumentException("The provided JSON structure is null.");
         }
         
-        final String profile = contentType.parameters().firstValue("profile").orElse(null);
-        
-        return new JsonDocument(contentType, profile, structure);
+        return new JsonDocument(MediaType.of(contentType.type(), contentType.subtype()), contentType.parameters().firstValue("profile").orElse(null), structure);
     }
+
+    /**
+     * Create a new document from content provided by {@link InputStream}. Sets {@link MediaType#JSON} as the content type.
+     *
+     * @param is representing parsed JSON content
+     * @return {@link Document} representing JSON content
+     */
+    public static final JsonDocument of(final InputStream is)  throws JsonLdError {
+        return of(MediaType.JSON, is);
+    }
+
+    /**
+     * Create a new document from content provided by {@link InputStream}.
+     *
+     * @param contentType reflecting the provided {@link InputStream} content, e.g. {@link MediaType#JSON_LD}, any JSON based media type is allowed
+     * @param is providing JSON content
+     * @return {@link Document} representing JSON content
+     * 
+     * @throws JsonLdError
+     */
+    public static final JsonDocument of(final MediaType contentType, final InputStream is)  throws JsonLdError {
     
-    public static final JsonDocument of(final MediaType type, final InputStream is)  throws JsonLdError {
-    
-        assertContentType(type);
+        assertContentType(contentType);
+
+        if (is == null) {
+            throw new IllegalArgumentException("The input stream parameter cannot be null.");
+        }
         
         try (final JsonParser parser = Json.createParser(is)) {
 
-            return doParse(type, parser);
+            return doParse(contentType, parser);
             
         } catch (JsonException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
 
-    public static final JsonDocument of(final MediaType type, final Reader reader)  throws JsonLdError {
+    /**
+     * Create a new document from content provided by {@link Reader}. Sets {@link MediaType#JSON} as the content type.
+     *
+     * @param reader providing JSON content
+     * @return {@link Document} representing JSON content
+     */
+    public static final JsonDocument of(final Reader reader)  throws JsonLdError {
+        return of(MediaType.JSON, reader);
+    }
+    
+    /**
+     * Create a new document from content provided by {@link Reader}. 
+     *
+     * @param contentType reflecting the provided content, e.g. {@link MediaType#JSON_LD}, any JSON based media type is allowed
+     * @param reader providing JSON content
+     * @return {@link Document} representing JSON content
+     * 
+     * @throws JsonLdError
+     */
+    public static final JsonDocument of(final MediaType contentType, final Reader reader)  throws JsonLdError {
         
-        assertContentType(type);
+        assertContentType(contentType);
+        
+        if (reader == null) {
+            throw new IllegalArgumentException("The reader parameter cannot be null.");
+        }
         
         try (final JsonParser parser = Json.createParser(reader)) {
 
-            return doParse(type, parser);
+            return doParse(contentType, parser);
             
         } catch (JsonException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
     
-    private static final JsonDocument doParse(final MediaType type, final JsonParser parser) throws JsonLdError {
+    private static final JsonDocument doParse(final MediaType contentType, final JsonParser parser) throws JsonLdError {
         
         if (!parser.hasNext()) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Nothing to read. Provided document is empty.");
@@ -104,14 +148,14 @@ public final class JsonDocument implements Document {
 
         final JsonValue root = parser.getValue();
 
-        final String profile =type.parameters().firstValue("profile").orElse(null);
+        final String profile = contentType.parameters().firstValue("profile").orElse(null);
             
         if (JsonUtils.isArray(root)) {
-            return new JsonDocument(type, profile, root.asJsonArray());
+            return new JsonDocument(contentType, profile, root.asJsonArray());
         }
 
         if (JsonUtils.isObject(root)) {
-            return new JsonDocument(type, profile, root.asJsonObject());
+            return new JsonDocument(MediaType.of(contentType.type(), contentType.subtype()), profile, root.asJsonObject());
         }
 
         throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "JSON document's top level element must be JSON array or object.");

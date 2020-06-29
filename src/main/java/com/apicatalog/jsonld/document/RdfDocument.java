@@ -34,12 +34,22 @@ public final class RdfDocument implements Document {
     }
 
     public static final Document of(final RdfDataset dataset) {
+        return of(MediaType.N_QUADS, dataset);
+    }
+    
+    public static final Document of(final MediaType contentType, final RdfDataset dataset) {
+        
+        assertContentType(contentType);
         
         if (dataset == null) {
             throw new IllegalArgumentException("RDF dataset cannot be a null.");
         }
         
-        return new RdfDocument(MediaType.N_QUADS, null, dataset);
+        return new RdfDocument(contentType, null, dataset);
+    }
+
+    public static final Document of(final InputStream is)  throws JsonLdError {
+        return of(MediaType.N_QUADS, is);
     }
     
     public static final Document of(final MediaType type, final InputStream is)  throws JsonLdError {
@@ -57,6 +67,10 @@ public final class RdfDocument implements Document {
         }
     }
 
+    public static final Document of(final Reader reader)  throws JsonLdError {
+        return of(MediaType.N_QUADS, reader);
+    }
+    
     public static final Document of(final MediaType type, final Reader reader)  throws JsonLdError {
         
         assertContentType(type);
