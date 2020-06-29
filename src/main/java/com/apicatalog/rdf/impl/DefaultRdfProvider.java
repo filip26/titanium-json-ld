@@ -85,7 +85,7 @@ public final class DefaultRdfProvider extends RdfProvider {
     @Override
     public RdfSubject createSubject(Type type, String value) {
         
-        if (type == null || value == null || value.isBlank()) {
+        if (type == null || value == null || isBlank(value)) {
             throw new IllegalArgumentException();
         }
                 
@@ -105,7 +105,7 @@ public final class DefaultRdfProvider extends RdfProvider {
     @Override
     public RdfObject createObject(RdfObject.Type type, String value) {
         
-        if (type == null || value == null || value.isBlank()) {
+        if (type == null || value == null || isBlank(value)) {
             throw new IllegalArgumentException();
         }
         
@@ -140,5 +140,10 @@ public final class DefaultRdfProvider extends RdfProvider {
         }
 
         return new RdfObjectImpl(literal);
+    }
+    
+    private static final boolean isBlank(String value) {
+        return value.isEmpty() 
+                || value.isBlank() && !value.chars().anyMatch(ch -> ch == '\n' || ch == '\r' || ch == '\t' || ch == '\f');
     }
 }

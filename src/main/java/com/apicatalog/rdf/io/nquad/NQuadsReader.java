@@ -58,11 +58,11 @@ public final class NQuadsReader implements RdfReader {
   
         RdfSubject subject = readSubject();
   
-        skipWhitespace(1);
+        skipWhitespace(0);
   
         String predicate = readIri();
 
-        skipWhitespace(1);
+        skipWhitespace(0);
   
         RdfObject object = readObject();
         
