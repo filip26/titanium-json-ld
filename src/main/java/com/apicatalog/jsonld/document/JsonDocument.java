@@ -67,7 +67,7 @@ public final class JsonDocument implements Document {
     }
 
     /**
-     * Create a new document from {@link InputStream}. Sets {@link MediaType#JSON} as the content type.
+     * Create a new document from content provided by {@link InputStream}. Sets {@link MediaType#JSON} as the content type.
      *
      * @param is representing parsed JSON content
      * @return {@link Document} representing JSON content
@@ -77,7 +77,7 @@ public final class JsonDocument implements Document {
     }
 
     /**
-     * Create a new document from {@link InputStream}
+     * Create a new document from content provided by {@link InputStream}.
      *
      * @param contentType reflecting the provided {@link InputStream} content, e.g. {@link MediaType#JSON_LD}, any JSON based media type is allowed
      * @param is providing JSON content
@@ -103,7 +103,7 @@ public final class JsonDocument implements Document {
     }
 
     /**
-     * Create a new document from {@link Reader} content. Sets {@link MediaType#JSON} as the content type.
+     * Create a new document from content provided by {@link Reader}. Sets {@link MediaType#JSON} as the content type.
      *
      * @param reader providing JSON content
      * @return {@link Document} representing JSON content
@@ -113,9 +113,9 @@ public final class JsonDocument implements Document {
     }
     
     /**
-     * Create a new document from {@link Reader} content. 
+     * Create a new document from content provided by {@link Reader}. 
      *
-     * @param contentType reflecting the provided {@link } content, e.g. {@link MediaType#JSON_LD}, any JSON based media type is allowed
+     * @param contentType reflecting the provided content, e.g. {@link MediaType#JSON_LD}, any JSON based media type is allowed
      * @param reader providing JSON content
      * @return {@link Document} representing JSON content
      * 
