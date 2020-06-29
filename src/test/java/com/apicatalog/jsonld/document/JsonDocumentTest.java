@@ -109,6 +109,17 @@ public class JsonDocumentTest {
 
     @Test(expected = JsonLdError.class)
     public void testi8() throws JsonLdError {
-        JsonDocument.of(new InputStreamReader(new ByteArrayInputStream("10".getBytes())));
+        JsonDocument.of(new InputStreamReader(new ByteArrayInputStream("n".getBytes())));
     }
+    
+    @Test(expected = JsonLdError.class)
+    public void testi9() throws JsonLdError {
+        JsonDocument.of(new ByteArrayInputStream("   ".getBytes()));
+    }
+
+    @Test(expected = JsonLdError.class)
+    public void testi10() throws JsonLdError {
+        JsonDocument.of(new ByteArrayInputStream("true".getBytes()));
+    }
+
 }
