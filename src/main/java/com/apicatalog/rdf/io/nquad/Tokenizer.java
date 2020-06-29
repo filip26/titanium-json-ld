@@ -62,6 +62,11 @@ final class Tokenizer {
                 return skipWhitespaces();  
             }
             
+            // Comment
+            if (ch == '#') {
+                return readComment();
+            }
+            
             if (ch == '<') {
                 return readIriRef();
             }
@@ -96,7 +101,7 @@ final class Tokenizer {
                 return Token.LITERAL_DATA_TYPE;
             }
 
-            unexpected(ch, "\\\t", "\\\n", "\\\r", "^", "@", "SPACE", ".", "<", "_", "\"");
+            unexpected(ch, "\\t", "\\n", "\\r", "^", "@", "SPACE", ".", "<", "_", "\"", "#");
             
         } catch (IOException e) {
             throw new NQuadsReaderException(e);
@@ -434,6 +439,26 @@ final class Tokenizer {
         return symbol;        
     }
 
+    private Token readComment() throws NQuadsReaderException {
+        try {
+
+            StringBuilder value = new StringBuilder();
+            
+            int ch = reader.read();
+            
+            while (RdfAlphabet.EOL.negate().test(ch) && ch != -1) {
+                
+                value.appendCodePoint(ch);
+                ch = reader.read();
+            }
+            
+            return new Token(TokenType.COMMENT, value.toString());
+            
+        } catch (IOException e) {
+            throw new NQuadsReaderException(e);
+        }    
+    }
+    
     public boolean hasNext() throws NQuadsReaderException {
         if (next == null) {
             next = doRead();
@@ -479,6 +504,7 @@ final class Tokenizer {
         BLANK_NODE_LABEL,
         WHITE_SPACE,
         LITERAL_DATA_TYPE,
+        COMMENT,
         END_OF_STATEMENT,
         END_OF_LINE,
         END_OF_INPUT,

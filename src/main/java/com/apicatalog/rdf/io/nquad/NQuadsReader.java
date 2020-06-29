@@ -90,6 +90,18 @@ public final class NQuadsReader implements RdfReader {
         
         tokenizer.next();
 
+        skipWhitespace(0);
+
+        // skip comment
+        if (TokenType.COMMENT == tokenizer.token().getType()) {
+            tokenizer.next();
+
+        // skip end of line
+        } else if (TokenType.END_OF_LINE != tokenizer.token().getType() && TokenType.END_OF_INPUT != tokenizer.token().getType()) {
+            unexpected(tokenizer.token(), TokenType.END_OF_LINE, TokenType.END_OF_INPUT);
+            tokenizer.next();
+        }
+        
         return Rdf.createNQuad(subject, Rdf.createPredicate(RdfPredicate.Type.IRI, predicate), object, graphName);
     }
     
