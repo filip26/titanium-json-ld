@@ -90,24 +90,26 @@ JsonLd.expand("https://w3c.github.io/json-ld-api/tests/expand/0001-in.jsonld")
       .ordered()
       .get();
 
-JsonLd.expand("https://example.com/document.json")
-      .context("https://example.com/context.jsonld")  // external context
+JsonLd.expand("https://example/document.json")
+      .context("https://example/context.jsonld")  // external context
       .get();
 
 // Compaction
-JsonLd.compact("https://example.com/expanded.jsonld", "https://example.com/context.jsonld").get();
+JsonLd.compact("https://example/expanded.jsonld", "https://example/context.jsonld")
+      .compactToRelative(false)
+      .get();
 
 // Flattening
-JsonLd.flatten("https://example.com/document.jsonld").get();
+JsonLd.flatten("https://example/document.jsonld").get();
 
 // JSON-LD to RDF
-JsonLd.toRdf("https://example.com/document.jsonld").get();
+JsonLd.toRdf("https://example/document.jsonld").get();
 
 // RDF to JSON-LD
-JsonLd.fromRdf("https://example.com/document.nq").options(options).get();
+JsonLd.fromRdf("https://example/document.nq").options(options).get();
 
 // Framing
-JsonLd.frame("https://example.com/document.jsonld", "https://example.com/frame.jsonld").get();
+JsonLd.frame("https://example/document.jsonld", "https://example/frame.jsonld").get();
 
 ```
 
