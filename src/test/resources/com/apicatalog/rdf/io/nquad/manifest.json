@@ -1,0 +1,6 @@
+[
+{   "@id"   : "#01",
+    "name"  : "various literal values",
+    "expected": "literal-values.nq",
+    "input" : "literal-values.json" }
+]

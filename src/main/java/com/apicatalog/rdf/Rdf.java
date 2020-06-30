@@ -72,13 +72,19 @@ public final class Rdf {
         return RdfProvider.provider().createTriple(subject, predicate, object);
     }
 
-    public static final RdfNQuad createNQuad(RdfSubject object, RdfPredicate predicate, RdfObject subject, RdfGraphName graphName) {
+    public static final RdfNQuad createNQuad(RdfSubject subject, RdfPredicate predicate, RdfObject object, RdfGraphName graphName) {
         
-        if (subject == null || predicate == null || object == null) {
-            throw new IllegalArgumentException();
+        if (subject == null) {            
+            throw new IllegalArgumentException("Subject cannot be null.");
+        }
+        if (predicate == null) {
+            throw new IllegalArgumentException("Predicate cannot be null.");
+        }
+        if (object == null) {
+            throw new IllegalArgumentException("Object cannot be null.");            
         }
 
-        return RdfProvider.provider().createNQuad(object, predicate, subject, graphName);
+        return RdfProvider.provider().createNQuad(subject, predicate, object, graphName);
     }
 
     public static RdfSubject createSubject(RdfSubject.Type type, String value) {
