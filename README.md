@@ -51,7 +51,7 @@ Maven
 Gradle
 
 ```gradle
-compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '0.7.3'
+compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '0.8'
 ```
 
 **JSONP Provider**
