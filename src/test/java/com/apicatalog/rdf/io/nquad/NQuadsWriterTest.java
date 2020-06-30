@@ -109,17 +109,9 @@ public class NQuadsWriterTest {
     
     private static final RdfNQuad createStatement(final JsonObject value) {
         
-        RdfSubject.Type subjectType = UriUtils.isURI(value.getString("subject"))
-                ? RdfSubject.Type.IRI
-                : RdfSubject.Type.BLANK_NODE;
+        RdfSubject subject = Rdf.createSubject(value.getString("subject"));
 
-        RdfSubject subject = Rdf.createSubject(subjectType, value.getString("subject"));
-
-        RdfPredicate.Type predicateType = UriUtils.isURI(value.getString("predicate"))
-                ? RdfPredicate.Type.IRI
-                : RdfPredicate.Type.BLANK_NODE;
-
-        RdfPredicate predicate = Rdf.createPredicate(predicateType, value.getString("predicate"));
+        RdfPredicate predicate = Rdf.createPredicate(value.getString("predicate"));
 
         RdfObject object = createObject(value.get("object"));
                 

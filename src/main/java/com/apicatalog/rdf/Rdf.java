@@ -7,6 +7,8 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 
+import com.apicatalog.jsonld.lang.BlankNode;
+import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.io.RdfFormat;
 import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.RdfWriter;
@@ -87,6 +89,29 @@ public final class Rdf {
         return RdfProvider.provider().createNQuad(subject, predicate, object, graphName);
     }
 
+    /**
+     * Create a new {@link RdfSubject}.
+     * 
+     * @param subject an absolute IRI or blank node identifier
+     * @return {@link RdfSubject}
+     */
+    public static RdfSubject createSubject(final String subject) {
+
+        if (subject == null) {            
+            throw new IllegalArgumentException("The subject cannot be null.");
+        }
+        
+        if (UriUtils.isAbsoluteUri(subject)) {
+            return createSubject(RdfSubject.Type.IRI, subject);
+        }
+        
+        if (BlankNode.isWellFormed(subject)) {
+            return createSubject(RdfSubject.Type.BLANK_NODE, subject);
+        }
+        
+        throw new IllegalArgumentException("The subject must an absolute IRI or blank node identifier, but was [" + subject + "].");
+    }
+    
     public static RdfSubject createSubject(RdfSubject.Type type, String value) {
         
         if (type == null || value == null || value.isBlank()) {
@@ -94,6 +119,25 @@ public final class Rdf {
         }
         
         return RdfProvider.provider().createSubject(type, value);        
+    }
+
+    /**
+     * Create a new {@link RdfPredicate}.
+     * 
+     * @param predicate an absolute IRI
+     * @return {@link RdfPredicate}
+     */
+    public static RdfPredicate createPredicate(String predicate) {
+        
+        if (predicate == null) {            
+            throw new IllegalArgumentException("The predicate cannot be null.");
+        }
+        
+        if (UriUtils.isAbsoluteUri(predicate)) {
+            return createPredicate(RdfPredicate.Type.IRI, predicate);
+        }
+        
+        throw new IllegalArgumentException("The predicate must an absolute IRI, but was [" + predicate + "].");
     }
     
     public static RdfPredicate createPredicate(RdfPredicate.Type type, String value) {
