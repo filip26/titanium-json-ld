@@ -79,7 +79,7 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
     /**
      * If set to <code>true</code>, the processor replaces arrays with just one
      * element  If set to false, all arrays will remain arrays even if they have just one
-     * element.
+     * element. <code>true</code> by default.
      *
      * @param enable 
      * @return builder instance
@@ -99,7 +99,8 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
     }
     
     /**
-     * Determines if IRIs are compacted relative to the {@link #base(URI)} or document location 
+     * Determines if IRIs are compacted relative to the {@link #base(URI)} or document location . 
+     * <code>true</code> by default.
      * 
      * @param enable
      * @return builder instance
