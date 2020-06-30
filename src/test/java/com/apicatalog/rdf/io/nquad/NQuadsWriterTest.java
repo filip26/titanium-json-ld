@@ -27,6 +27,7 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
+import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfObject;
 import com.apicatalog.rdf.RdfObject.Type;
@@ -114,8 +115,14 @@ public class NQuadsWriterTest {
         RdfPredicate predicate = Rdf.createPredicate(value.getString("predicate"));
 
         RdfObject object = createObject(value.get("object"));
-                
-        return Rdf.createNQuad(subject, predicate, object, null);
+            
+        RdfGraphName graph = null;
+        
+        if (value.containsKey("graph")) {
+            graph = Rdf.createGraphName(value.getString("graph"));
+        }
+        
+        return Rdf.createNQuad(subject, predicate, object, graph);
     }   
     
     private static final RdfObject createObject(final JsonValue value) {

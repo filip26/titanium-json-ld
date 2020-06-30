@@ -185,6 +185,29 @@ public final class Rdf {
         return RdfProvider.provider().createLiteral(lexicalForm, langTag, RdfConstants.LANG_STRING);
     }
 
+    /**
+     * Create a new {@link RdfGraphName}.
+     * 
+     * @param graphName an absolute IRI or blank node identifier
+     * @return {@link RdfGraphName}
+     */
+    public static RdfGraphName createGraphName(String graphName) {
+        
+        if (graphName == null) {            
+            throw new IllegalArgumentException("The graph name cannot be null.");
+        }
+        
+        if (UriUtils.isAbsoluteUri(graphName)) {
+            return createGraphName(RdfGraphName.Type.IRI, graphName);
+        }
+        
+        if (BlankNode.isWellFormed(graphName)) {
+            return createGraphName(RdfGraphName.Type.BLANK_NODE, graphName);
+        }
+        
+        throw new IllegalArgumentException("The graph name must an absolute IRI or blank node identifier, but was [" + graphName + "].");        
+    }
+    
     public static RdfGraphName createGraphName(RdfGraphName.Type type, String value) {
         
         if (type == null || value == null || value.isBlank()) {
