@@ -1,0 +1,37 @@
+[
+    {
+        "subject"   : "http://example/s",
+        "predicate" : "http://example/p",
+        "object"    : "\t"
+    },
+    {
+        "subject"   : "http://example/s",
+        "predicate" : "http://example/p",
+        "object"    : "\f"
+    },
+    {
+        "subject"   : "http://example/s",
+        "predicate" : "http://example/p",
+        "object"    : "\""
+    },
+    {
+        "subject"   : "http://example/s",
+        "predicate" : "http://example/p",
+        "object"    : "\b"
+    },
+    {
+        "subject"   : "http://example/s",
+        "predicate" : "http://example/p",
+        "object"    : "\\\\"
+    },    
+    {
+        "subject"   : "http://example/s",
+        "predicate" : "http://example/p",
+        "object"    : { "@value" : "literal'\"", "@type" : "http://example/dt" }
+    },
+    {
+        "subject"   : "http://example/s",
+        "predicate" : "http://example/p",
+        "object"    : { "@value" : "\r\n", "@language" : "en" }
+    }
+]

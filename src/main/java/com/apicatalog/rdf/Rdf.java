@@ -109,7 +109,7 @@ public final class Rdf {
             return createSubject(RdfSubject.Type.BLANK_NODE, subject);
         }
         
-        throw new IllegalArgumentException("The subject must an absolute IRI or blank node identifier, but was [" + subject + "].");
+        throw new IllegalArgumentException("The subject must be an absolute IRI or blank node identifier, but was [" + subject + "].");
     }
     
     public static RdfSubject createSubject(RdfSubject.Type type, String value) {
@@ -124,7 +124,7 @@ public final class Rdf {
     /**
      * Create a new {@link RdfPredicate}.
      * 
-     * @param predicate an absolute IRI
+     * @param predicate an absolute IRI or blank node identifier
      * @return {@link RdfPredicate}
      */
     public static RdfPredicate createPredicate(String predicate) {
@@ -136,8 +136,12 @@ public final class Rdf {
         if (UriUtils.isAbsoluteUri(predicate)) {
             return createPredicate(RdfPredicate.Type.IRI, predicate);
         }
-        
-        throw new IllegalArgumentException("The predicate must an absolute IRI, but was [" + predicate + "].");
+
+        if (BlankNode.isWellFormed(predicate)) {
+            return createPredicate(RdfPredicate.Type.BLANK_NODE, predicate);
+        }
+
+        throw new IllegalArgumentException("The predicate must be an absolute IRI or blank node identifier, but was [" + predicate + "].");
     }
     
     public static RdfPredicate createPredicate(RdfPredicate.Type type, String value) {
@@ -205,7 +209,7 @@ public final class Rdf {
             return createGraphName(RdfGraphName.Type.BLANK_NODE, graphName);
         }
         
-        throw new IllegalArgumentException("The graph name must an absolute IRI or blank node identifier, but was [" + graphName + "].");        
+        throw new IllegalArgumentException("The graph name must be an absolute IRI or blank node identifier, but was [" + graphName + "].");        
     }
     
     public static RdfGraphName createGraphName(RdfGraphName.Type type, String value) {

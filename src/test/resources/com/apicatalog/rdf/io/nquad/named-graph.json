@@ -25,7 +25,7 @@
     },
     {
         "subject"   : "http://example/s",
-        "predicate" : "http://example/p",
+        "predicate" : "_:p",
         "object"    : { "@value" : "literal", "@language" : "cs-CZ" },
         "graph"     : "http://example/g2"
     }
