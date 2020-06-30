@@ -104,14 +104,13 @@ JsonLd.flatten("https://example.com/document.jsonld").get();
 JsonLd.toRdf("https://example.com/document.jsonld").get();
 
 // RDF to JSON-LD
-RdfDataset dataset = Rdf.createReader(reader, RdfFormat.N_QUADS).readDataset();
-
-JsonLd.fromRdf(dataset).options(options).get();
+JsonLd.fromRdf("https://example.com/document.nq").options(options).get();
 
 // Framing
 JsonLd.frame("https://example.com/document.jsonld", "https://example.com/frame.jsonld").get();
 
 ```
+
 ## Contributing
 
 Your contribution is welcome. 
