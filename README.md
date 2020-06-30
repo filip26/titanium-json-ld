@@ -85,7 +85,7 @@ compile group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
 - [x] 0.5 ~~[RDF to JSON-LD](https://www.w3.org/TR/json-ld11-api/#serialize-rdf-as-json-ld-algorithm)~~
 - [x] 0.6 ~~[Framing](https://www.w3.org/TR/json-ld11-framing/)~~
 - [x] 0.7 ~~[Remote Document and Context Retrieval](https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval)~~
-- [ ] 0.8 JsonLd API
+- [x] 0.8 ~~JsonLd API~~
 - [ ] 1.0 Documented, A+ code
 
 ## Examples
