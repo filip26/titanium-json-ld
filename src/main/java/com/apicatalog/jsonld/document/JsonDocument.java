@@ -70,7 +70,7 @@ public final class JsonDocument implements Document {
      * Create a new document from content provided by {@link InputStream}. Sets {@link MediaType#JSON} as the content type.
      *
      * @param is representing parsed JSON content
-     * @return {@link Document} representing JSON content
+     * @return {@link Document} representing JSON document
      */
     public static final JsonDocument of(final InputStream is)  throws JsonLdError {
         return of(MediaType.JSON, is);
@@ -81,7 +81,7 @@ public final class JsonDocument implements Document {
      *
      * @param contentType reflecting the provided {@link InputStream} content, e.g. {@link MediaType#JSON_LD}, any JSON based media type is allowed
      * @param is providing JSON content
-     * @return {@link Document} representing JSON content
+     * @return {@link Document} representing JSON document
      * 
      * @throws JsonLdError
      */
@@ -106,7 +106,7 @@ public final class JsonDocument implements Document {
      * Create a new document from content provided by {@link Reader}. Sets {@link MediaType#JSON} as the content type.
      *
      * @param reader providing JSON content
-     * @return {@link Document} representing JSON content
+     * @return {@link Document} representing JSON document
      */
     public static final JsonDocument of(final Reader reader)  throws JsonLdError {
         return of(MediaType.JSON, reader);
@@ -117,7 +117,7 @@ public final class JsonDocument implements Document {
      *
      * @param contentType reflecting the provided content, e.g. {@link MediaType#JSON_LD}, any JSON based media type is allowed
      * @param reader providing JSON content
-     * @return {@link Document} representing JSON content
+     * @return {@link Document} representing JSON document
      * 
      * @throws JsonLdError
      */

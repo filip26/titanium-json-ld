@@ -231,16 +231,14 @@ public final class NQuadsReader implements RdfReader {
 
     private void skipWhitespace(int min) throws NQuadsReaderException {
   
-        Token token = tokenizer.token();
         int count = 0;
         
-        while (TokenType.WHITE_SPACE ==  token.getType()) {
-            token = tokenizer.next();
+        while (tokenizer.accept(TokenType.WHITE_SPACE)) {
             count++;
         }
   
         if (count < min) {
-            unexpected(token);
+            unexpected(tokenizer.token());
         }        
     }
     

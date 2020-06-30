@@ -33,10 +33,23 @@ public final class RdfDocument implements Document {
         this.dataset = dataset;
     }
 
+    /**
+     * Create a new document from {@link RdfDataset}. Sets {@link MediaType#N_QUADS} as the content type.
+     *
+     * @param dataset representing parsed RDF content
+     * @return {@link Document} representing RDF document
+     */
     public static final Document of(final RdfDataset dataset) {
         return of(MediaType.N_QUADS, dataset);
     }
-    
+
+    /**
+     * Create a new document from {@link RdfDataset}.
+     *
+     * @param contentType reflecting the provided {@link RdfDataset}, only {@link MediaType#N_QUADS} is supported
+     * @param dataset representing parsed RDF content
+     * @return {@link Document} representing RDF document
+     */
     public static final Document of(final MediaType contentType, final RdfDataset dataset) {
         
         assertContentType(contentType);
@@ -48,6 +61,12 @@ public final class RdfDocument implements Document {
         return new RdfDocument(contentType, null, dataset);
     }
 
+    /**
+     * Create a new document from content provided by {@link InputStream}. Sets {@link MediaType#N_QUADS} as the content type.
+     *
+     * @param is representing parsed RDF content
+     * @return {@link Document} representing RDF document
+     */
     public static final Document of(final InputStream is)  throws JsonLdError {
         return of(MediaType.N_QUADS, is);
     }
@@ -67,6 +86,12 @@ public final class RdfDocument implements Document {
         }
     }
 
+    /**
+     * Create a new document from content provided by {@link Reader}. Sets {@link MediaType#N_QUADS} as the content type.
+     *
+     * @param reader providing RDF content
+     * @return {@link Document} representing RDF document
+     */
     public static final Document of(final Reader reader)  throws JsonLdError {
         return of(MediaType.N_QUADS, reader);
     }
