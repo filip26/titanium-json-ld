@@ -77,11 +77,13 @@ compile group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
 ```
 ## Documentation
 
+[Javadoc](https://filip26.github.io/titanium-json-ld/apidocs/)
+
 TBD
 
 ## Examples
 
-Titanium provides high-level [JsonLd](https://github.com/filip26/titanium-json-ld/blob/master/src/main/java/com/apicatalog/jsonld/JsonLd.java) API to interact with the processor.
+Titanium provides high-level [JsonLd](https://filip26.github.io/titanium-json-ld/apidocs/com/apicatalog/jsonld/JsonLd.html) API to interact with the processor.
 
 ```javascript
 
