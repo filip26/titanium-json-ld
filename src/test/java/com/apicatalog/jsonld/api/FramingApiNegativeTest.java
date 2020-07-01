@@ -4,85 +4,93 @@ import java.net.URI;
 
 import javax.json.Json;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 
 public class FramingApiNegativeTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test1() {
-        JsonLd.frame((JsonDocument)null, (JsonDocument)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.frame((JsonDocument)null, (JsonDocument)null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test2() {
-        JsonLd.frame(JsonDocument.of(Json.createArrayBuilder().build()), (JsonDocument)null);
+        final Document document = JsonDocument.of(Json.createArrayBuilder().build());
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.frame(document, (JsonDocument)null));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test3() {
-        JsonLd.frame((JsonDocument)null, JsonDocument.of(Json.createArrayBuilder().build()));
+        final Document document = JsonDocument.of(Json.createArrayBuilder().build());
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.frame((JsonDocument)null, document));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test4() {
-        JsonLd.frame((String)null, (String)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.frame((String)null, (String)null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test5() {
-        JsonLd.frame("https://example.org", null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.frame("https://example.org", null));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test6() {
-        JsonLd.frame(null, "http://example.com");
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.frame(null, "http://example.com"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test7() {
-        JsonLd.frame("", "http://example.com");
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.frame("", "http://example.com"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test8() {
-        JsonLd.frame("http://example.org/", "");
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.frame("http://example.org/", ""));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test9() {
-        JsonLd.frame("http://example.org", "   ");
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.frame("http://example.org", "   "));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test10() {
-        JsonLd.frame("http://example.org", "relative");
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.frame("http://example.org", "relative"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test11() {
-        JsonLd.frame("relative", "http://example.org");
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.frame("relative", "http://example.org"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test12() {
-        JsonLd.frame((URI)null, (URI)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.frame((URI)null, (URI)null));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test13() {
-        JsonLd.frame(URI.create("http://example.org"), null);
+        final URI uri = URI.create("http://example.org");
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.frame(uri, null));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test14() {
-        JsonLd.frame(null, URI.create("http://example.org"));
+        final URI uri = URI.create("http://example.org");
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.frame(null, uri));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test15() {
-        JsonLd.frame(URI.create("/relative"), URI.create("http://example.com"));
+        final URI uri1 = URI.create("/relative");
+        final URI uri2 = URI.create("http://example.com");
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.frame(uri1, uri2));
     }
 }

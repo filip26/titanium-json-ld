@@ -59,34 +59,35 @@ public class DocumentParserTest {
         Assert.assertTrue(document.getRdfContent().isEmpty());
     }
 
-    @Test(expected =  IllegalArgumentException.class)
+    @Test
     public void testI1() throws JsonLdError {
-        DocumentParser.parse(null, (InputStream)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> DocumentParser.parse(null, (InputStream)null));
     }
 
-    @Test(expected =  IllegalArgumentException.class)
+    @Test
     public void testI2() throws JsonLdError {
-        DocumentParser.parse(null, (Reader)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> DocumentParser.parse(null, (Reader)null));
     }
     
-    @Test(expected =  IllegalArgumentException.class)
+    @Test
     public void testI3() throws JsonLdError {
-        DocumentParser.parse(MediaType.JSON, (InputStream)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> DocumentParser.parse(MediaType.JSON, (InputStream)null));
     }
 
-    @Test(expected =  IllegalArgumentException.class)
+    @Test
     public void testI4() throws JsonLdError {
-        DocumentParser.parse(MediaType.N_QUADS, (Reader)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> DocumentParser.parse(MediaType.N_QUADS, (Reader)null));
     }
     
-    @Test(expected =  JsonLdError.class)
+    @Test
     public void testI5() throws JsonLdError {
-        DocumentParser.parse(MediaType.HTML, new ByteArrayInputStream("{}".getBytes()));
+        final InputStream inputStream = new ByteArrayInputStream("{}".getBytes());
+        Assert.assertThrows(JsonLdError.class, () -> DocumentParser.parse(MediaType.HTML, inputStream));
     }
 
-    @Test(expected =  JsonLdError.class)
+    @Test
     public void testI6() throws JsonLdError {
-        DocumentParser.parse(MediaType.XHTML, new InputStreamReader(new ByteArrayInputStream("{}".getBytes())));
+        final Reader reader = new InputStreamReader(new ByteArrayInputStream("{}".getBytes()));
+        Assert.assertThrows(JsonLdError.class, () -> DocumentParser.parse(MediaType.XHTML, reader));
     }
-
 }

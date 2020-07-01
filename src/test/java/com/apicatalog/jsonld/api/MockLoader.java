@@ -43,7 +43,7 @@ public class MockLoader implements DocumentLoader {
             return remoteDocument;            
         }
         
-        return null;
+        throw new IllegalStateException();
     }
     
     

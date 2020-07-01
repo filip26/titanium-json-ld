@@ -2,61 +2,67 @@ package com.apicatalog.jsonld.api;
 
 import java.net.URI;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
+import com.apicatalog.jsonld.api.impl.FlatteningApi;
 import com.apicatalog.jsonld.document.JsonDocument;
 
 public class FlatteningApiNegativeTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test1() {
-        JsonLd.flatten((JsonDocument)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.flatten((JsonDocument)null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test2() {
-        JsonLd.flatten((String)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.flatten((String)null));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test3() {
-        JsonLd.flatten((URI)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.flatten((URI)null));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test4() {
-        JsonLd.flatten("");
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.flatten(""));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test5() {
-        JsonLd.flatten("   ");
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.flatten("   "));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test6() {
-        JsonLd.flatten("/relative");
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.flatten("/relative"));
     }
     
-    @Test(expected = IllegalArgumentException.class)    
+    @Test    
     public void test7() {
-        JsonLd.flatten(URI.create("relative"));
+        final URI uri = URI.create("relative");
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.flatten(uri));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test10() {
-        JsonLd.flatten("https://example.com").options(null);
+        final FlatteningApi api = JsonLd.flatten("https://example.com");
+        Assert.assertThrows(IllegalArgumentException.class, () -> api.options(null));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test11() {
-        JsonLd.flatten("https://example.com").base("!!");
+        final FlatteningApi api = JsonLd.flatten("https://example.com");
+        Assert.assertThrows(IllegalArgumentException.class, () -> api.base("!!"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test12() {
-        JsonLd.flatten("https://example.com").context("#!");
+        final FlatteningApi api = JsonLd.flatten("https://example.com");
+        Assert.assertThrows(IllegalArgumentException.class, () -> api.context("#!"));
 
     }
 }
