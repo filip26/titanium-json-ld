@@ -58,13 +58,17 @@ public interface Document {
      * 
      * @return {@link JsonStructure} or {@link Optional#empty()} if document content is not JSON based
      */
-    Optional<JsonStructure> getJsonContent();
+    public default  Optional<JsonStructure> getJsonContent() {
+        return Optional.empty();
+    }
 
     /**
      * Get the document content as parsed {@link RdfDataset}.
      * 
      * @return {@link RdfDataset} or {@link Optional#empty()} if document content is not in <code>application/n-quads</code> representation
      */
-    Optional<RdfDataset> getRdfContent(); 
+    public default Optional<RdfDataset> getRdfContent() {
+        return Optional.empty();
+    }
 
 }
