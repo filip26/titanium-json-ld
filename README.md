@@ -1,10 +1,10 @@
-# JSON-LD 1.1 Processor
+# JSON-LD 1.1 Processor & API
 
 An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-based Serialization for Linked Data) specification in Java utilizing [JSONP](https://javaee.github.io/jsonp/) (JSR 374 - Java API for JSON Processing).
 
 ![Build](https://github.com/filip26/titanium-json-ld/workflows/Java%20CI%20with%20Maven/badge.svg)
 [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/filip26/titanium-json-ld.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/filip26/titanium-json-ld/context:java)
-[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/c530c6b43b0243c08ce81521c5b4cf6a)](https://www.codacy.com/manual/filip26/titanium-json-ld?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=filip26/titanium-json-ld&amp;utm_campaign=Badge_Coverage)
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/c530c6b43b0243c08ce81521c5b4cf6a)](https://www.codacy.com/manual/filip26/titanium-json-ld?utm_source=github.com&utm_medium=referral&utm_content=filip26/titanium-json-ld&utm_campaign=Badge_Coverage)
 [![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/titanium-json-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.apicatalog%22%20AND%20a:%22titanium-json-ld%22)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
@@ -51,7 +51,7 @@ Maven
 Gradle
 
 ```gradle
-compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '0.7.3'
+compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '0.8'
 ```
 
 **JSONP Provider**
@@ -75,6 +75,9 @@ Gradle
 compile group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
 
 ```
+## Documentation
+
+TBD
 
 ## Examples
 
@@ -87,28 +90,29 @@ JsonLd.expand("https://w3c.github.io/json-ld-api/tests/expand/0001-in.jsonld")
       .ordered()
       .get();
 
-JsonLd.expand("https://example.com/document.json")
-      .context("https://example.com/context.jsonld")  // external context
+JsonLd.expand("https://example/document.json")
+      .context("https://example/context.jsonld")  // external context
       .get();
 
 // Compaction
-JsonLd.compact("https://example.com/expanded.jsonld", "https://example.com/context.jsonld").get();
+JsonLd.compact("https://example/expanded.jsonld", "https://example/context.jsonld")
+      .compactToRelative(false)
+      .get();
 
 // Flattening
-JsonLd.flatten("https://example.com/document.jsonld").get();
+JsonLd.flatten("https://example/document.jsonld").get();
 
 // JSON-LD to RDF
-JsonLd.toRdf("https://example.com/document.jsonld").get();
+JsonLd.toRdf("https://example/document.jsonld").get();
 
 // RDF to JSON-LD
-RdfDataset dataset = Rdf.createReader(reader, RdfFormat.N_QUADS).readDataset();
-
-JsonLd.fromRdf(dataset).options(options).get();
+JsonLd.fromRdf("https://example/document.nq").options(options).get();
 
 // Framing
-JsonLd.frame("https://example.com/document.jsonld", "https://example.com/frame.jsonld").get();
+JsonLd.frame("https://example/document.jsonld", "https://example/frame.jsonld").get();
 
 ```
+
 ## Contributing
 
 Your contribution is welcome. 
