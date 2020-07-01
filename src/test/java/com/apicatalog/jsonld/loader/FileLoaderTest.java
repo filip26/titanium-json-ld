@@ -1,5 +1,6 @@
 package com.apicatalog.jsonld.loader;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
@@ -52,13 +53,18 @@ public class FileLoaderTest {
     }
 
     @Test
-    public void testLoadHtml() throws URISyntaxException, JsonLdError {
+    public void testLoadHtml() throws URISyntaxException {
         
         URL fileUrl = getClass().getResource("document.html");
         
         Assert.assertNotNull(fileUrl);
         
         Assert.assertThrows(JsonLdError.class, () -> new FileLoader().loadDocument(fileUrl.toURI(), new DocumentLoaderOptions()));
+    }
+
+    @Test
+    public void testUnsupportedScheme() throws URISyntaxException {        
+        Assert.assertThrows(JsonLdError.class, () -> new FileLoader().loadDocument(URI.create("https://github.com/"), new DocumentLoaderOptions()));
     }
 
 }

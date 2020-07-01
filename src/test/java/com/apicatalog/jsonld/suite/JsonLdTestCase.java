@@ -1,7 +1,6 @@
 package com.apicatalog.jsonld.suite;
 
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,14 +14,11 @@ import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.suite.loader.UriBaseRewriter;
 import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
 
 public final class JsonLdTestCase {
-
-    private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NEVER).build();
 
     public String id;
     
@@ -155,9 +151,8 @@ public final class JsonLdTestCase {
                             new ZipResourceLoader()
                         );
         
-        JsonLdOptions jsonLdOptions = new JsonLdOptions(new HttpLoader(HTTP_CLIENT, HttpLoader.MAX_REDIRECTIONS));
+        JsonLdOptions jsonLdOptions = new JsonLdOptions(loader);
         jsonLdOptions.setOrdered(true);
-        jsonLdOptions.setDocumentLoader(loader);
         
         options.setup(jsonLdOptions);
         
