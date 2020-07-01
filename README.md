@@ -113,6 +113,16 @@ JsonLd.frame("https://example/document.jsonld", "https://example/frame.jsonld").
 
 ```
 
+```javascript
+// Local document
+Document document = Document.of(InputStream) or Document.of(Reader) ...
+
+JsonLd.expand(document).get();
+
+JsonLd.compact(document, contextDocument).get();
+...
+```
+
 ## Contributing
 
 Your contribution is welcome. 
