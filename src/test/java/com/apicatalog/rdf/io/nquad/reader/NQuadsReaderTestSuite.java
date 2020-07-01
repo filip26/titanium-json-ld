@@ -1,4 +1,4 @@
-package com.apicatalog.rdf.io.nquad;
+package com.apicatalog.rdf.io.nquad.reader;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,18 +18,19 @@ import javax.json.stream.JsonParser;
 import org.junit.Assert;
 
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.rdf.io.nquad.NQuadsReaderTest;
 
-public final class NQuadsTestSuite {
+public final class NQuadsReaderTestSuite {
 
     private final String filePath;
     private final String manifestName;
     
-    public NQuadsTestSuite(final String filePath, final String manifestName) {
+    public NQuadsReaderTestSuite(final String filePath, final String manifestName) {
         this.filePath = filePath;
         this.manifestName = manifestName;
     }
     
-    public final Collection<NQuadsTestCase> load() throws ZipException, IOException, URISyntaxException {
+    public final Collection<NQuadsReaderTestCase> load() throws ZipException, IOException, URISyntaxException {
         
         final URL zipFileUrl =  (new NQuadsReaderTest()).getClass().getResource(filePath);
 
@@ -50,7 +51,7 @@ public final class NQuadsTestSuite {
                             .stream()
                             .filter(JsonUtils::isObject)
                             .map(JsonObject.class::cast)
-                            .map(NQuadsTestCase::of).collect(Collectors.toList());                
+                            .map(NQuadsReaderTestCase::of).collect(Collectors.toList());                
             }
         }
     }

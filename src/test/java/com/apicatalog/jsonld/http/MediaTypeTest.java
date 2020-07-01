@@ -11,16 +11,9 @@ import com.apicatalog.jsonld.http.media.MediaType;
 
 public class MediaTypeTest {
 
-
     @Test
     public void testNull() {
-        try {
-            MediaType.of(null);
-            Assert.fail();
-            
-        } catch (IllegalArgumentException e) {
-
-        }
+        Assert.assertThrows(IllegalArgumentException.class, () -> MediaType.of(null));
     }
     
     @Test
@@ -148,25 +141,14 @@ public class MediaTypeTest {
 
     @Test
     public void test14() {
-        try {
-            MediaType.of(null, "a");
-            Assert.fail();
-            
-        } catch (IllegalArgumentException e) {
-
-        }
+        Assert.assertThrows(IllegalArgumentException.class, () -> MediaType.of(null, "a"));
     }
 
     @Test
     public void test15() {
-        try {
-            MediaType.of("b", null);
-            Assert.fail();
-            
-        } catch (IllegalArgumentException e) {
-
-        }
+        Assert.assertThrows(IllegalArgumentException.class, () -> MediaType.of("b", null));
     }
+    
     @Test
     public void testM01() {
         Assert.assertTrue(MediaType.ANY.match(MediaType.HTML));
@@ -181,5 +163,4 @@ public class MediaTypeTest {
     public void testM03() {
         Assert.assertFalse(MediaType.JSON.match(MediaType.JSON_LD));
     }
-
 }

@@ -1,0 +1,27 @@
+[
+    {
+        "subject"   : "http://example/s",
+        "predicate" : "http://example/p",
+        "object"    : "http://example/o"
+    },
+    {
+        "subject"   : "http://example/s",
+        "predicate" : "http://example/p",
+        "object"    : "_:o"
+    },
+    {
+        "subject"   : "http://example/s",
+        "predicate" : "http://example/p",
+        "object"    : "o"
+    },
+    {
+        "subject"   : "http://example/s",
+        "predicate" : "http://example/p",
+        "object"    : { "@value" : "o", "@type" : "http://example/dt" }
+    },
+    {
+        "subject"   : "http://example/s",
+        "predicate" : "http://example/p",
+        "object"    : { "@value" : "o", "@language" : "en" }
+    }
+]

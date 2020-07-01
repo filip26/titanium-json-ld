@@ -8,8 +8,8 @@ import javax.json.JsonObject;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.SchemeRouter;
 
 /**
  * The {@link JsonLdOptions} type is used to pass various options to the processor.
@@ -85,16 +85,16 @@ public final class JsonLdOptions {
     private boolean requiredAll;
 
     public JsonLdOptions() {
-        this(new HttpLoader());
+        this(new SchemeRouter());
     }
     
-    public JsonLdOptions(HttpLoader httpLoader) {
+    public JsonLdOptions(DocumentLoader loader) {
         
         // default values
         this.base = null;
         this.compactArrays = true;
         this.compactToRelative = true;
-        this.documentLoader = httpLoader;
+        this.documentLoader = loader;
         this.expandContext = null;
         this.extractAllScripts = false;
         this.ordered = false;

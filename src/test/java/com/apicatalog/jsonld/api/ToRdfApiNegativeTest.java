@@ -2,60 +2,66 @@ package com.apicatalog.jsonld.api;
 
 import java.net.URI;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
+import com.apicatalog.jsonld.api.impl.ToRdfApi;
 import com.apicatalog.jsonld.document.JsonDocument;
 
 public class ToRdfApiNegativeTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test1() {
-        JsonLd.toRdf((JsonDocument)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.toRdf((JsonDocument)null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test2() {
-        JsonLd.toRdf((String)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.toRdf((String)null));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test3() {
-        JsonLd.toRdf((URI)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.toRdf((URI)null));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test4() {
-        JsonLd.toRdf(URI.create("/relative"));
+        final URI uri = URI.create("/relative");
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.toRdf(uri));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test5() {
-        JsonLd.toRdf("");
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.toRdf(""));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test6() {
-        JsonLd.toRdf("   ");
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.toRdf("   "));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test7() {
-        JsonLd.toRdf("relative");
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.toRdf("relative"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test10() {
-        JsonLd.toRdf("http://example.org").base("!//");
+        final ToRdfApi api = JsonLd.toRdf("http://example.org");
+        Assert.assertThrows(IllegalArgumentException.class, () -> api.base("!//"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test11() {
-        JsonLd.toRdf("http://example.org").context("~");
+        final ToRdfApi api = JsonLd.toRdf("http://example.org");
+        Assert.assertThrows(IllegalArgumentException.class, () -> api.context("~"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test12() {
-        JsonLd.toRdf("http://example.org").options(null);
+        final ToRdfApi api = JsonLd.toRdf("http://example.org");
+        Assert.assertThrows(IllegalArgumentException.class, () -> api.options(null));
     }
 }

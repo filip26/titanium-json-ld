@@ -1,0 +1,18 @@
+[
+{   "@id"   : "#01",
+    "name"  : "various literal values",
+    "expected": "literal-values.nq",
+    "input" : "literal-values.json" },
+{   "@id"   : "#02",
+    "name"  : "blank node id subject",
+    "expected": "blank-node-id-subject.nq",
+    "input" : "blank-node-id-subject.json" },
+{   "@id"   : "#03",
+    "name"  : "named graph",
+    "expected": "named-graph.nq",
+    "input" : "named-graph.json" },
+{   "@id"   : "#04",
+    "name"  : "escaped literals",
+    "expected": "escaped-literals.nq",
+    "input" : "escaped-literals.json" }    
+]

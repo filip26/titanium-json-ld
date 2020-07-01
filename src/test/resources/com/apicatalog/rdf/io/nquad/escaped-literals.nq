@@ -1,0 +1,7 @@
+<http://example/s> <http://example/p> "\t" .
+<http://example/s> <http://example/p> "\f" .
+<http://example/s> <http://example/p> "\"" .
+<http://example/s> <http://example/p> "\b" .
+<http://example/s> <http://example/p> "\\\\" .
+<http://example/s> <http://example/p> "literal'\""^^<http://example/dt> .
+<http://example/s> <http://example/p> "\r\n"@en .

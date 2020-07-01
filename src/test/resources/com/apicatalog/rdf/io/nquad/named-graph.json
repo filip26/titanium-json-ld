@@ -1,0 +1,32 @@
+[
+    {
+        "subject"   : "http://example/s",
+        "predicate" : "http://example/p",
+        "object"    : "http://example/o",
+        "graph"     : "http://example/g"
+    },
+    {
+        "subject"   : "_:s",
+        "predicate" : "http://example/p",
+        "object"    : "_:o",
+        "graph"     : "_:g"
+    },
+    {
+        "subject"   : "http://example/s",
+        "predicate" : "http://example/p",
+        "object"    : "literal",
+        "graph"     : "http://example/g"
+    },
+    {
+        "subject"   : "_:s",
+        "predicate" : "http://example/p",
+        "object"    : { "@value" : "literal", "@type" : "http://example/dt" },
+        "graph"     : "http://example/g2"
+    },
+    {
+        "subject"   : "http://example/s",
+        "predicate" : "_:p",
+        "object"    : { "@value" : "literal", "@language" : "cs-CZ" },
+        "graph"     : "http://example/g2"
+    }
+]

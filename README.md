@@ -90,8 +90,8 @@ JsonLd.expand("https://w3c.github.io/json-ld-api/tests/expand/0001-in.jsonld")
       .ordered()
       .get();
 
-JsonLd.expand("https://example/document.json")
-      .context("https://example/context.jsonld")  // external context
+JsonLd.expand("file:/home/filip/document.json")    // HTTP(S) and File schemes supported
+      .context("file:/home/filip/context.jsonld")  // external context
       .get();
 
 // Compaction

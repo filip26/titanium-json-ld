@@ -2,146 +2,196 @@ package com.apicatalog.jsonld.api;
 
 import java.net.URI;
 
-import javax.json.Json;
+import javax.json.JsonValue;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 
 public class CompactionApiNegativeTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    public static final Document EMPTY_ARRAY_JSON_DOCUMENT = JsonDocument.of(JsonValue.EMPTY_JSON_ARRAY);
+    
+    @Test
     public void test2() {
-        JsonLd.compact(JsonDocument.of(Json.createArrayBuilder().build()), (JsonDocument)null);
+        Assert.assertThrows(
+                    IllegalArgumentException.class, 
+                    () -> JsonLd.compact(EMPTY_ARRAY_JSON_DOCUMENT, (JsonDocument)null));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test3() {
-        JsonLd.compact((JsonDocument)null, JsonDocument.of(Json.createArrayBuilder().build()));
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact((JsonDocument)null, EMPTY_ARRAY_JSON_DOCUMENT));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test4() {
-        JsonLd.compact((JsonDocument)null, (JsonDocument)null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void test5() {
-        JsonLd.compact(JsonDocument.of(Json.createArrayBuilder().build()), (JsonDocument)null);
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact((JsonDocument)null, (JsonDocument)null));
     }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void test6() {
-        JsonLd.compact((JsonDocument)null, JsonDocument.of(Json.createArrayBuilder().build()));
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test7() {
-        JsonLd.compact((String)null, (String)null);
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact((String)null, (String)null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test8() {
-        JsonLd.compact("http://example.org/", (String)null);
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact("http://example.org/", (String)null));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test9() {
-        JsonLd.compact((String)null, "http://example.org");
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact((String)null, "http://example.org"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test10() {
-        JsonLd.compact("http://example.org", "relative");
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact("http://example.org", "relative"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test11() {
-        JsonLd.compact("relative", "http://example.org");
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact("relative", "http://example.org"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test12() {
-        JsonLd.compact((String)null, JsonDocument.of(Json.createArrayBuilder().build()));
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact((String)null, EMPTY_ARRAY_JSON_DOCUMENT));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test13() {
-        JsonLd.compact("http://example.org", (JsonDocument)null);
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact("http://example.org", (JsonDocument)null));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test14() {
-        JsonLd.compact((String)null, (JsonDocument)null);
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact((String)null, (JsonDocument)null));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test15() {
-        JsonLd.compact("/relative", JsonDocument.of(Json.createArrayBuilder().build()));
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact("/relative", EMPTY_ARRAY_JSON_DOCUMENT));
     }
     
-//    public void test19() {
-//        JsonLd.compact(new NullRemoteDocument(), JsonDocument.of(Json.createArrayBuilder().build()));
-//    }
-
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test20() {
-        JsonLd.compact((URI)null, (URI)null);
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact((URI)null, (URI)null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test21() {
-        JsonLd.compact(URI.create("http://example.com"), (URI)null);
+        final URI uri = URI.create("http://example.com");
+        
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact(uri, (URI)null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test22() {
-        JsonLd.compact((URI)null, URI.create("http://example.com"));
+        final URI uri = URI.create("http://example.com");
+        
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact((URI)null, uri));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test23() {
-        JsonLd.compact(URI.create("http://example.com"), URI.create("/relative"));
+        final URI uri1 = URI.create("http://example.com");
+        final URI uri2 = URI.create("/relative");
+
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact(uri1, uri2));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test24() {
-        JsonLd.compact(URI.create("/relative"), URI.create("http://example.com"));
+        final URI uri1 = URI.create("/relative");
+        final URI uri2 = URI.create("http://example.com");
+                
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact(uri1, uri2));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test25() {
-        JsonLd.compact((URI)null, (JsonDocument)null);
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact((URI)null, (JsonDocument)null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test26() {
-        JsonLd.compact(URI.create("http://example.com"), (JsonDocument)null);
+        final URI uri = URI.create("http://example.com");
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact(uri, (JsonDocument)null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test27() {
-        JsonLd.compact((URI)null, JsonDocument.of(Json.createArrayBuilder().build()));
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact((URI)null, EMPTY_ARRAY_JSON_DOCUMENT));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test28() {
-        JsonLd.compact(URI.create("relative"), JsonDocument.of(Json.createArrayBuilder().build()));
+        final URI uri = URI.create("relative");
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact(uri, EMPTY_ARRAY_JSON_DOCUMENT));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test29() {
-        JsonLd.compact("   ", JsonDocument.of(Json.createArrayBuilder().build()));
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact("   ", EMPTY_ARRAY_JSON_DOCUMENT));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test30() {
-        JsonLd.compact("http://example.com", "");
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact("http://example.com", ""));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test31() {
-        JsonLd.compact("http://example.com", "\t");
+        Assert.assertThrows(
+                IllegalArgumentException.class, 
+                () -> JsonLd.compact("http://example.com", "\t"));
     }
 }

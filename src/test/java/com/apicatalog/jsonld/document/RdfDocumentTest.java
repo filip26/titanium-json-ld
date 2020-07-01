@@ -63,49 +63,55 @@ public class RdfDocumentTest {
         Assert.assertEquals(1, document.getRdfContent().get().size());
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testi1() throws JsonLdError {
-        RdfDocument.of((InputStream)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> RdfDocument.of((InputStream)null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testi2() {
-        RdfDocument.of((RdfDataset)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> RdfDocument.of((RdfDataset)null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testi3() throws JsonLdError {
-        RdfDocument.of((Reader)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> RdfDocument.of((Reader)null));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testi4() throws JsonLdError {
-        RdfDocument.of(null, new ByteArrayInputStream(Json.createArrayBuilder().build().toString().getBytes()));
+        final InputStream is = new ByteArrayInputStream(Json.createArrayBuilder().build().toString().getBytes());
+        Assert.assertThrows(IllegalArgumentException.class, () -> RdfDocument.of(null, is));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testi5() {
-        RdfDocument.of(null, Rdf.createDataset());
+        final RdfDataset dataset = Rdf.createDataset();
+        Assert.assertThrows(IllegalArgumentException.class, () -> RdfDocument.of(null, dataset));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testi6() throws JsonLdError {
-        RdfDocument.of(null, new InputStreamReader(new ByteArrayInputStream(Json.createArrayBuilder().build().toString().getBytes())));
+        final Reader reader = new InputStreamReader(new ByteArrayInputStream(Json.createArrayBuilder().build().toString().getBytes()));
+        Assert.assertThrows(IllegalArgumentException.class, () -> RdfDocument.of(null, reader));
     }
     
-    @Test(expected = JsonLdError.class)
+    @Test
     public void testi7() throws JsonLdError {
-        RdfDocument.of(new ByteArrayInputStream("{ bad json".getBytes()));
+        final InputStream is = new ByteArrayInputStream("{ bad json".getBytes());
+        Assert.assertThrows(JsonLdError.class, () -> RdfDocument.of(is));
     }
 
-    @Test(expected = JsonLdError.class)
+    @Test
     public void testi8() throws JsonLdError {
-        RdfDocument.of(new InputStreamReader(new ByteArrayInputStream("n".getBytes())));
+        final Reader reader = new InputStreamReader(new ByteArrayInputStream("n".getBytes()));
+        Assert.assertThrows(JsonLdError.class, () -> RdfDocument.of(reader));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test9() {
-        RdfDocument.of(MediaType.of("application/custom+json;profile=https://example.org/profile"), Rdf.createDataset());
+        final MediaType mediaType = MediaType.of("application/custom+json;profile=https://example.org/profile");
+        final RdfDataset dataset = Rdf.createDataset();
+        Assert.assertThrows(IllegalArgumentException.class, () -> RdfDocument.of(mediaType, dataset));
     }
-
 }

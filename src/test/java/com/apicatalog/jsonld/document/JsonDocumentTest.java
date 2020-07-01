@@ -7,6 +7,7 @@ import java.io.Reader;
 
 import javax.json.Json;
 import javax.json.JsonStructure;
+import javax.json.JsonValue;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -72,54 +73,59 @@ public class JsonDocumentTest {
         Assert.assertEquals(Json.createObjectBuilder().build(), document.getJsonContent().get());
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testi1() throws JsonLdError {
-        JsonDocument.of((InputStream)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonDocument.of((InputStream)null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testi2() {
-        JsonDocument.of((JsonStructure)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonDocument.of((JsonStructure)null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testi3() throws JsonLdError {
-        JsonDocument.of((Reader)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonDocument.of((Reader)null));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testi4() throws JsonLdError {
-        JsonDocument.of(null, new ByteArrayInputStream(Json.createArrayBuilder().build().toString().getBytes()));
+        final InputStream is = new ByteArrayInputStream(Json.createArrayBuilder().build().toString().getBytes());
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonDocument.of(null, is));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testi5() {
-        JsonDocument.of(null, Json.createObjectBuilder().build());
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonDocument.of(null, JsonValue.EMPTY_JSON_OBJECT));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testi6() throws JsonLdError {
-        JsonDocument.of(null, new InputStreamReader(new ByteArrayInputStream(Json.createArrayBuilder().build().toString().getBytes())));
+        final Reader reader = new InputStreamReader(new ByteArrayInputStream(Json.createArrayBuilder().build().toString().getBytes()));
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonDocument.of(null, reader));
     }
     
-    @Test(expected = JsonLdError.class)
+    @Test
     public void testi7() throws JsonLdError {
-        JsonDocument.of(new ByteArrayInputStream("{ bad json".getBytes()));
+        final InputStream is = new ByteArrayInputStream("{ bad json".getBytes());
+        Assert.assertThrows(JsonLdError.class, () -> JsonDocument.of(is));
     }
 
-    @Test(expected = JsonLdError.class)
+    @Test
     public void testi8() throws JsonLdError {
-        JsonDocument.of(new InputStreamReader(new ByteArrayInputStream("n".getBytes())));
+        final Reader reader = new InputStreamReader(new ByteArrayInputStream("n".getBytes()));
+        Assert.assertThrows(JsonLdError.class, () -> JsonDocument.of(reader));
     }
     
-    @Test(expected = JsonLdError.class)
+    @Test
     public void testi9() throws JsonLdError {
-        JsonDocument.of(new ByteArrayInputStream("   ".getBytes()));
+        final InputStream is = new ByteArrayInputStream("   ".getBytes());
+        Assert.assertThrows(JsonLdError.class, () -> JsonDocument.of(is));
     }
 
-    @Test(expected = JsonLdError.class)
+    @Test
     public void testi10() throws JsonLdError {
-        JsonDocument.of(new ByteArrayInputStream("true".getBytes()));
+        final InputStream is = new ByteArrayInputStream("true".getBytes());
+        Assert.assertThrows(JsonLdError.class, () -> JsonDocument.of(is));
     }
-
 }

@@ -17,7 +17,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.io.nquad.NQuadsTestCase.Type;
+import com.apicatalog.rdf.io.nquad.reader.NQuadsReaderTestCase;
+import com.apicatalog.rdf.io.nquad.reader.NQuadsReaderTestSuite;
+import com.apicatalog.rdf.io.nquad.reader.NQuadsReaderTestCase.Type;
 
 @RunWith(Parameterized.class)
 public class NQuadsReaderTest {
@@ -26,7 +28,7 @@ public class NQuadsReaderTest {
     private final static String TEST_CASE_BASE_PATH = "nquads-test-suite/";
     
     @Parameterized.Parameter(0)
-    public NQuadsTestCase testCase;
+    public NQuadsReaderTestCase testCase;
 
     @Parameterized.Parameter(1)
     public String testType;
@@ -65,7 +67,7 @@ public class NQuadsReaderTest {
 
     @Parameterized.Parameters(name = "{1}: {2}")
     public static Collection<Object[]> data() throws ZipException, IOException, URISyntaxException {
-        return (new NQuadsTestSuite(TEST_SUITE_NAME, TEST_CASE_BASE_PATH + "manifest.json"))
+        return (new NQuadsReaderTestSuite(TEST_SUITE_NAME, TEST_CASE_BASE_PATH + "manifest.json"))
                 .load()
                 .stream()            
                 .map(o -> new Object[] {o, o.getType().name().toLowerCase(), o.getComment() + " : " + o.getName()})

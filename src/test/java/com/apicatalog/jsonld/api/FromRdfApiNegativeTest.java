@@ -4,26 +4,29 @@ import java.net.URI;
 
 import javax.json.Json;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
 
 public class FromRdfApiNegativeTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test1() {
-        JsonLd.fromRdf((URI)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.fromRdf((URI)null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test2() {
-        JsonLd.fromRdf(JsonDocument.of(Json.createArrayBuilder().build()));
+        final Document document = JsonDocument.of(Json.createArrayBuilder().build());
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.fromRdf(document));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test3() {
-        JsonLd.fromRdf((RdfDocument)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.fromRdf((RdfDocument)null));
     }
 }

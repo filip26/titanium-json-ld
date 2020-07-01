@@ -2,67 +2,75 @@ package com.apicatalog.jsonld.api;
 
 import java.net.URI;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
+import com.apicatalog.jsonld.api.impl.ExpansionApi;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.rdf.Rdf;
 
 public class ExpansionApiNegativeTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test1() {
-        JsonLd.expand((JsonDocument)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.expand((JsonDocument)null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test2() {
-        JsonLd.expand((String)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.expand((String)null));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test3() {
-        JsonLd.expand((URI)null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.expand((URI)null));
     }
     
-    @Test(expected = IllegalArgumentException.class)    
+    @Test    
     public void test4() {
-        JsonLd.expand("");
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.expand(""));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test5() {
-        JsonLd.expand("   ");
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.expand("   "));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test6() {
-        JsonLd.expand("/relative");
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.expand("/relative"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test7() {
-        JsonLd.expand(URI.create("relative"));
+        final URI uri = URI.create("relative");
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.expand(uri));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test8() {
-        JsonLd.expand(RdfDocument.of(Rdf.createDataset()));
+        final Document document = RdfDocument.of(Rdf.createDataset());
+        Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.expand(document));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test10() {
-        JsonLd.expand("http://example.org").base("!//");
+        final ExpansionApi api = JsonLd.expand("http://example.org");
+        Assert.assertThrows(IllegalArgumentException.class, () -> api.base("!//"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test11() {
-        JsonLd.expand("http://example.org").context("~");
+        final ExpansionApi api = JsonLd.expand("http://example.org");
+        Assert.assertThrows(IllegalArgumentException.class, () -> api.context("~"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test12() {
-        JsonLd.expand("http://example.org").options(null);
+        final ExpansionApi api = JsonLd.expand("http://example.org");
+        Assert.assertThrows(IllegalArgumentException.class, () -> api.options(null));
     }
 }

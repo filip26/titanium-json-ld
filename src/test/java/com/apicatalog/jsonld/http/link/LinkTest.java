@@ -17,14 +17,7 @@ public class LinkTest {
 
     @Test
     public void testNullNull() {
-        try {
-        
-            Link.of(null, null);
-            Assert.fail();
-            
-        } catch (IllegalArgumentException e) {
-            return;
-        }
+        Assert.assertThrows(IllegalArgumentException.class, () -> Link.of(null, null));
     }
 
     @Test
@@ -417,6 +410,4 @@ public class LinkTest {
         Assert.assertTrue(l1.type().isEmpty());
         Assert.assertTrue(l1.context().isEmpty());
     }
-
-
 }
