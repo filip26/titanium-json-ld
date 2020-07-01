@@ -85,7 +85,7 @@ public final class JsonLdOptions {
     private boolean requiredAll;
 
     public JsonLdOptions() {
-        this(new SchemeRouter());
+        this(SchemeRouter.defaultInstance());
     }
     
     public JsonLdOptions(DocumentLoader loader) {

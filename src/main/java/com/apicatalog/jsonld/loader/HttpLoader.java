@@ -24,29 +24,37 @@ import com.apicatalog.jsonld.uri.UriResolver;
 
 public class HttpLoader implements DocumentLoader {
 
-    private static final String PLUS_JSON = "+json";
+    private static final HttpClient CLIENT = HttpClient.newBuilder().followRedirects(Redirect.NEVER).build();
+    
+    private static final HttpLoader INSTANCE = new HttpLoader(CLIENT);
 
     public static final int MAX_REDIRECTIONS = 10;
+
+    private static final String PLUS_JSON = "+json";
     
-    private int maxRedirections;
+    private final int maxRedirections;
 
     private final HttpClient httpClient;
     
-    public HttpLoader() {
-        this(HttpClient.newBuilder().followRedirects(Redirect.NEVER).build(), MAX_REDIRECTIONS);
+    public HttpLoader(HttpClient httpClient) {
+        this(httpClient, MAX_REDIRECTIONS);
     }
     
     public HttpLoader(HttpClient httpClient, int maxRedirections) {
         this.httpClient = httpClient;
         this.maxRedirections = maxRedirections;
     }
-        
+
+    public static final DocumentLoader defaultInstance() {
+        return INSTANCE;
+    }
+
     @Override
     public Document loadDocument(final URI uri, final DocumentLoaderOptions options) throws JsonLdError {
 
         try {
-
             int redirection = 0;
+            
             boolean done = false;
             
             URI targetUri = uri;
@@ -179,10 +187,6 @@ public class HttpLoader implements DocumentLoader {
         }        
     }
 
-    public void setMaxRedirections(final int maxRedirections) {
-        this.maxRedirections = maxRedirections;
-    }
-    
     public static final String getAcceptHeader() {
         return getAcceptHeader(null);
     }
