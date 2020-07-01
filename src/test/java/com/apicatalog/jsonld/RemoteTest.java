@@ -2,7 +2,6 @@ package com.apicatalog.jsonld;
 
 import static org.junit.Assume.assumeFalse;
 
-import java.net.http.HttpClient;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -15,7 +14,7 @@ import org.junit.runners.Parameterized;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.loader.HttpLoader;
+import com.apicatalog.jsonld.loader.SchemeRouter;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdMockServer;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
@@ -43,8 +42,6 @@ public class RemoteTest {
     @Rule
     public final WireMockRule wireMockRule = new WireMockRule();
 
-    private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NEVER).build();
-
     @Test
     public void testRemote() {
 
@@ -65,7 +62,7 @@ public class RemoteTest {
                                     new UriBaseRewriter(
                                                 TESTS_BASE, 
                                                 wireMockRule.baseUrl(),
-                                                new HttpLoader(HTTP_CLIENT, HttpLoader.MAX_REDIRECTIONS)));
+                                                SchemeRouter.defaultInstance()));
                 
                 return JsonDocument.of(JsonLd.expand(testCase.input).options(expandOptions).get());
             });
@@ -73,6 +70,7 @@ public class RemoteTest {
             server.stop();
             
         } catch (JsonLdError e) {
+            e.printStackTrace();
             Assert.fail(e.getMessage());
             
         }        

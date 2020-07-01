@@ -10,20 +10,22 @@ import com.apicatalog.jsonld.document.Document;
 
 public final class SchemeRouter implements DocumentLoader {
 
+    private static final DocumentLoader INSTANCE = 
+                                new SchemeRouter()
+                                        .set("http", HttpLoader.defaultInstance())
+                                        .set("https", HttpLoader.defaultInstance())
+                                        .set("file", new FileLoader());
+    
     private final Map<String, DocumentLoader> loaders;
     
     public SchemeRouter() {
-        this(new HttpLoader());
-    }
-
-    public SchemeRouter(HttpLoader httpLoader) {
         this.loaders = new LinkedHashMap<>();
-        
-        loaders.put("http", httpLoader);
-        loaders.put("https", httpLoader);
-        loaders.put("file", new FileLoader());
     }
 
+    public static final DocumentLoader defaultInstance() {
+        return INSTANCE;
+    }
+    
     public SchemeRouter set(final String scheme, final DocumentLoader loader) {
         loaders.put(scheme, loader);
         return this;
