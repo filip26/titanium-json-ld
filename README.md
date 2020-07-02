@@ -139,6 +139,7 @@ Your contribution is welcome.
 - [x] 0.6 ~~[Framing](https://www.w3.org/TR/json-ld11-framing/)~~
 - [x] 0.7 ~~[Remote Document and Context Retrieval](https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval)~~
 - [x] 0.8 ~~JsonLd API~~
+- [ ] 0.9 [HTML](https://www.w3.org/TR/json-ld11-api/#html-content-algorithms)
 - [ ] 1.0 Documented, A+ code
 
 ### Building
@@ -152,5 +153,6 @@ Fork and clone the project repository:
 Compile sources:
 
 ```bash
+> co titanium-json-ld
 > mvn package
 ```
