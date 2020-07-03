@@ -153,6 +153,6 @@ Fork and clone the project repository:
 Compile sources:
 
 ```bash
-> co titanium-json-ld
+> cd titanium-json-ld
 > mvn package
 ```
