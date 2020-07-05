@@ -37,7 +37,7 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 
 ### Titanium JSON-LD
 
-#### Maven
+Maven
 
 ```xml
 <dependency>
@@ -48,7 +48,7 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 
 ```
 
-#### Gradle
+Gradle
 
 ```gradle
 compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '0.8'
@@ -58,19 +58,17 @@ compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '0.8'
 
 Add JSON-P provider, if it is not on the classpath already.
 
-#### Jakarta JSON-P
-
-##### Maven
+Maven
 
 ```xml
-    <dependency> -->
+    <dependency>
         <groupId>org.glassfish</groupId>
         <artifactId>jakarta.json</artifactId>
         <version>1.1.6</version>
     </dependency>
 ```
 
-##### Gradle
+Gradle
 
 ```gradle
 compile group: 'org.glassfish', name: 'jakarta.json', version: '1.1.6'
