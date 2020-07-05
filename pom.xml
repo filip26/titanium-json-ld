@@ -58,7 +58,7 @@
          
          <!--  test resources -->
         <junit.version>4.13</junit.version>
-        <wiremock.version>2.27.0</wiremock.version>
+        <wiremock.version>2.27.1</wiremock.version>
     </properties>
 
     <dependencies>

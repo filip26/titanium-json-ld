@@ -77,11 +77,13 @@ compile group: 'org.glassfish', name: 'jakarta.json', version: '1.1.6'
 
 ## Documentation
 
+[Javadoc](https://filip26.github.io/titanium-json-ld/apidocs/)
+
 TBD
 
 ## Examples
 
-Titanium provides high-level [JsonLd](https://github.com/filip26/titanium-json-ld/blob/master/src/main/java/com/apicatalog/jsonld/JsonLd.java) API to interact with the processor.
+Titanium provides high-level [JsonLd](https://filip26.github.io/titanium-json-ld/apidocs/com/apicatalog/jsonld/JsonLd.html) API to interact with the processor.
 
 ```javascript
 
@@ -113,6 +115,16 @@ JsonLd.frame("https://example/document.jsonld", "https://example/frame.jsonld").
 
 ```
 
+```javascript
+// Local document
+Document document = Document.of(InputStream) or Document.of(Reader) ...
+
+JsonLd.expand(document).get();
+
+JsonLd.compact(document, contextDocument).get();
+...
+```
+
 ## Contributing
 
 Your contribution is welcome. 
@@ -127,6 +139,7 @@ Your contribution is welcome.
 - [x] 0.6 ~~[Framing](https://www.w3.org/TR/json-ld11-framing/)~~
 - [x] 0.7 ~~[Remote Document and Context Retrieval](https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval)~~
 - [x] 0.8 ~~JsonLd API~~
+- [ ] 0.9 [HTML](https://www.w3.org/TR/json-ld11-api/#html-content-algorithms)
 - [ ] 1.0 Documented, A+ code
 
 ### Building
@@ -140,5 +153,6 @@ Fork and clone the project repository:
 Compile sources:
 
 ```bash
+> cd titanium-json-ld
 > mvn package
 ```
