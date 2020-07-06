@@ -180,7 +180,7 @@ public class ActiveContextBuilder {
                 // 5.5.1. If the associated value is not 1.1, an invalid @version value has been
                 // detected,
                 // and processing is aborted.
-                if (versionString == null || !"1.1".equals(versionString)) {
+                if (!"1.1".equals(versionString)) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_VERSION_VALUE);
                 }
 

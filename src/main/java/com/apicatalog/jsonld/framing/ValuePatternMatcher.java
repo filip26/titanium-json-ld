@@ -31,18 +31,12 @@ public final class ValuePatternMatcher {
     
     public boolean match() {
         
-        final JsonValue value2 = pattern.containsKey(Keywords.VALUE)
-                ? pattern.get(Keywords.VALUE)
-                : null;
+        final JsonValue value2 = pattern.getOrDefault(Keywords.VALUE, null);
         
-        final JsonValue type2 = pattern.containsKey(Keywords.TYPE)
-                ? pattern.get(Keywords.TYPE)
-                : null;
+        final JsonValue type2 = pattern.getOrDefault(Keywords.TYPE, null);
 
         
-        final JsonValue lang2 = pattern.containsKey(Keywords.LANGUAGE)
-                ? pattern.get(Keywords.LANGUAGE)
-                : null;
+        final JsonValue lang2 = pattern.getOrDefault(Keywords.LANGUAGE, null);
 
         if (value2 == null && type2 == null && lang2 == null) {
             return true;
@@ -53,9 +47,7 @@ public final class ValuePatternMatcher {
     
     private boolean matchValue(JsonValue value2) {
 
-        final JsonValue value1 = value.containsKey(Keywords.VALUE) 
-                                    ? value.get(Keywords.VALUE)
-                                    : null;
+        final JsonValue value1 = value.getOrDefault(Keywords.VALUE, null);
 
         return (JsonUtils.isNotNull(value1) && isWildcard(value2))
                     || (JsonUtils.isNotNull(value2) && JsonUtils.toJsonArray(value2).contains(value1))
@@ -64,9 +56,7 @@ public final class ValuePatternMatcher {
     
     private boolean matchType(JsonValue type2) {
         
-        final JsonValue type1 = value.containsKey(Keywords.TYPE) 
-                ? value.get(Keywords.TYPE)
-                : null;
+        final JsonValue type1 = value.getOrDefault(Keywords.TYPE, null);
 
         return (JsonUtils.isNotNull(type1) && isWildcard(type2))
                     || (JsonUtils.isNull(type1) && isNone(type2))
@@ -121,16 +111,14 @@ public final class ValuePatternMatcher {
             return false;
         }
 
-        return frame.isEmpty() || frame.keySet()
-                                        .stream()
-                                        .allMatch(Arrays.asList(
-                                                    Keywords.DEFAULT,
-                                                    Keywords.OMIT_DEFAULT, 
-                                                    Keywords.EMBED, 
-                                                    Keywords.EXPLICIT, 
-                                                    Keywords.REQUIRE_ALL,
-                                                    except
-                                                    )::contains);
+        return frame.isEmpty() || Arrays.asList(
+                Keywords.DEFAULT,
+                Keywords.OMIT_DEFAULT,
+                Keywords.EMBED,
+                Keywords.EXPLICIT,
+                Keywords.REQUIRE_ALL,
+                except
+        ).containsAll(frame.keySet());
     }
     
     protected static final boolean isNone(JsonValue value) {

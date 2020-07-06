@@ -50,57 +50,55 @@ final class LinkHeaderParser {
         resetState(baseUri);
     
         final char[] linkHeader = httpLink.toCharArray();
-        
-        for (int i=0; i < linkHeader.length; i++) {
-    
-            final char ch = linkHeader[i];
-        
+
+        for (final char ch : linkHeader) {
+
             switch (state) {
-            case INIT:
-                initParser(ch);
-                break;
-                
-            case URI_REF:
-                parseTargetUri(ch);
-                break;
-                
-            case PARAMS:
-                parseParameters(ch);
-                break;
+                case INIT:
+                    initParser(ch);
+                    break;
 
-            case PARAM_NAME_BEGIN:
-                parseParamNameBegin(ch);
-                break;
+                case URI_REF:
+                    parseTargetUri(ch);
+                    break;
 
-            case PARAM_NAME:
-                parseParamName(ch);
-                break;
+                case PARAMS:
+                    parseParameters(ch);
+                    break;
 
-            case PARAM_NAME_END:
-                parseParamNameEnd(ch);
-                break;
+                case PARAM_NAME_BEGIN:
+                    parseParamNameBegin(ch);
+                    break;
 
-            case PARAM_VALUE:
-                parseParamValue(ch);
-                break;
-            
-            case LITERAL_VALUE:
-                parseLiteral(ch);
-                break;                
+                case PARAM_NAME:
+                    parseParamName(ch);
+                    break;
 
-            case STRING_VALUE:
-                parseString(ch);
-                break;
-            
-            case ESCAPE:
-                escape(ch);
-                break;
-                
-            default:
-                addParameter();
-                addLink();
-                return links;
-            }            
+                case PARAM_NAME_END:
+                    parseParamNameEnd(ch);
+                    break;
+
+                case PARAM_VALUE:
+                    parseParamValue(ch);
+                    break;
+
+                case LITERAL_VALUE:
+                    parseLiteral(ch);
+                    break;
+
+                case STRING_VALUE:
+                    parseString(ch);
+                    break;
+
+                case ESCAPE:
+                    escape(ch);
+                    break;
+
+                default:
+                    addParameter();
+                    addLink();
+                    return links;
+            }
         }
 
         return sweep();

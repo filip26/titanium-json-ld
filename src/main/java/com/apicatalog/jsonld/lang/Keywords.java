@@ -109,10 +109,10 @@ public final class Keywords {
     }
 
     public static boolean anyMatch(final String key, final String... keywords) {
-        return Arrays.stream(keywords).anyMatch(key::equals);
+        return Arrays.asList(keywords).contains(key);
     }
 
     public static boolean allMatch(final Collection<String> values, final String... keywords) {
-        return values.stream().allMatch(v -> Arrays.asList(keywords).contains(v));
+        return Arrays.asList(keywords).containsAll(values);
     }
 }

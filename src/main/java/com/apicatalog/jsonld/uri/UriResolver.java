@@ -158,7 +158,7 @@ public final class UriResolver {
             }
         }
 
-        return output.stream().collect(Collectors.joining());
+        return String.join("", output);
     }
 
     /**
