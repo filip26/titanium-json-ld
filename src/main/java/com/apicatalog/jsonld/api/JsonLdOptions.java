@@ -276,16 +276,34 @@ public final class JsonLdOptions {
     }
 
     public void setExpandContext(String contextLocation) {
+        
+        if (contextLocation == null) {
+            this.expandContext = null;
+            return;
+        }
+        
         this.expandContext = JsonDocument.of(
                 Json.createArrayBuilder()
                     .add(Json.createValue(contextLocation)).build());        
     }
     
     public void setExpandContext(URI contextUri) {
+        
+        if (contextUri == null) {
+            this.expandContext = null;
+            return;
+        }
+        
         setExpandContext(contextUri.toString());
     }
 
     public void setExpandContext(JsonObject context) {
+        
+        if (context == null) {
+            this.expandContext = null;
+            return;
+        }
+        
         this.expandContext = JsonDocument.of(context);
     }
     
