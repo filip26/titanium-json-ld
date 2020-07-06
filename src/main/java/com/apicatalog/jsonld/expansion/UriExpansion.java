@@ -158,7 +158,7 @@ public final class UriExpansion {
         if (localContext != null && localContext.containsKey(prefix)
                 && (!defined.containsKey(prefix) || !Boolean.TRUE.equals(defined.get(prefix)))) {
 
-            activeContext.newTerm(localContext,defined).create(prefix);
+            activeContext.newTerm(localContext, defined).create(prefix);
         }
 
         // 6.4.
