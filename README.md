@@ -77,7 +77,7 @@ compile group: 'org.glassfish', name: 'jakarta.json', version: '1.1.6'
 
 ## Documentation
 
-[Javadoc](https://filip26.github.io/titanium-json-ld/apidocs/)
+[![javadoc](https://javadoc.io/badge2/com.apicatalog/titanium-json-ld/javadoc.svg)](https://javadoc.io/doc/com.apicatalog/titanium-json-ld)
 
 TBD
 
