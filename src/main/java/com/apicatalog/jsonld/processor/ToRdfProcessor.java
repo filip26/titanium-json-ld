@@ -28,7 +28,7 @@ public final class ToRdfProcessor {
     public static final RdfDataset toRdf(final URI input, final JsonLdOptions options) throws JsonLdError {
 
         if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
 
         final Document remoteDocument = 
@@ -48,6 +48,7 @@ public final class ToRdfProcessor {
     public static final RdfDataset toRdf(Document input, final JsonLdOptions options) throws JsonLdError {
 
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
+        
         expansionOptions.setProcessingMode(options.getProcessingMode());
         expansionOptions.setBase(options.getBase());
         expansionOptions.setExpandContext(options.getExpandContext());

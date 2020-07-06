@@ -29,6 +29,10 @@ public final class FlatteningProcessor {
         if (context == null) {
             return flatten(input, (Document)null, options);
         }
+        
+        if (options.getDocumentLoader() == null) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
+        }
 
         final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions());
 
@@ -44,7 +48,11 @@ public final class FlatteningProcessor {
         if (context == null) {
             return flatten(input, (Document)null, options);
         }
-                
+
+        if (options.getDocumentLoader() == null) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
+        }
+
         final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions());
 
         if (contextDocument == null) {
@@ -57,7 +65,7 @@ public final class FlatteningProcessor {
     public static final JsonStructure flatten(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError {
         
         if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
 
         final Document remoteDocument = 
