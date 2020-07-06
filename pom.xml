@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium-json-ld</artifactId>
-    <version>0.8.2</version>
+    <version>0.8.3</version>
     <packaging>jar</packaging>
 
     <name>Titanium JSON-LD 1.1</name>
@@ -52,8 +52,9 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-         
-         <json-p.version>1.1.4</json-p.version>
+        
+        <jakarta.json-p.version>1.1.6</jakarta.json-p.version> 
+        <json-p.version>1.1.4</json-p.version>
          
          <!--  test resources -->
         <junit.version>4.13</junit.version>
@@ -65,16 +66,25 @@
             <groupId>javax.json</groupId>
             <artifactId>javax.json-api</artifactId>
             <version>${json-p.version}</version>
+            <scope>provided</scope>
         </dependency>
         
         <!--  Tests -->
-       <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.json</artifactId>
-            <version>${json-p.version}</version>
-            <scope>test</scope>
-        </dependency>       
+<!--  profile -->
+<!--        <dependency> -->
+<!--             <groupId>org.glassfish</groupId> -->
+<!--             <artifactId>javax.json</artifactId> -->
+<!--             <version>${json-p.version}</version> -->
+<!--             <scope>test</scope> -->
+<!--         </dependency>       -->
          
+		<dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.json</artifactId>
+            <version>${jakarta.json-p.version}</version>
+            <scope>test</scope>
+		</dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

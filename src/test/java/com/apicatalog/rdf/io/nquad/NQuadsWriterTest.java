@@ -83,9 +83,9 @@ public class NQuadsWriterTest {
             result = os.toString().stripTrailing();
         }
         
-        try (InputStreamReader reader = new InputStreamReader(getClass().getResourceAsStream(testCase.getExpected()))) {
+        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(testCase.getExpected())))) {
             
-            String expected = new BufferedReader(reader).lines().collect(Collectors.joining("\n")).stripTrailing();
+            String expected = reader.lines().collect(Collectors.joining("\n")).stripTrailing();
             
             if (!Objects.equal(expected, result)) {
                 System.out.println("Expected: ");

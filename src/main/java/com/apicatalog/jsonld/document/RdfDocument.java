@@ -7,7 +7,6 @@ import java.net.URI;
 import java.util.Optional;
 
 import javax.json.JsonException;
-import javax.json.JsonStructure;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
@@ -153,11 +152,6 @@ public final class RdfDocument implements Document {
     @Override
     public Optional<String> getProfile() {
         return Optional.ofNullable(profile);
-    }
-
-    @Override
-    public Optional<JsonStructure> getJsonContent() {
-        return Optional.empty();
     }
 
     @Override

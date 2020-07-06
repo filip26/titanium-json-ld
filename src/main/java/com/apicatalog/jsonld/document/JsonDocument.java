@@ -15,7 +15,6 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.rdf.RdfDataset;
 
 public final class JsonDocument implements Document {
 
@@ -211,10 +210,5 @@ public final class JsonDocument implements Document {
     @Override
     public Optional<String> getProfile() {
         return Optional.ofNullable(profile);
-    }
-
-    @Override
-    public Optional<RdfDataset> getRdfContent() {
-        return Optional.empty();
     }
 }
