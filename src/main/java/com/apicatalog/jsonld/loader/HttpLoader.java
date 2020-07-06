@@ -198,7 +198,7 @@ public class HttpLoader implements DocumentLoader {
 
         if (profiles != null && !profiles.isEmpty()) {
             builder.append(";profile=\"");
-            builder.append(profiles.stream().collect(Collectors.joining(" ")));
+            builder.append(String.join(" ", profiles));
             builder.append("\"");
         }
         

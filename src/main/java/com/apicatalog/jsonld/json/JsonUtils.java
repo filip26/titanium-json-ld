@@ -113,7 +113,7 @@ public final class JsonUtils {
     public static JsonObject toJsonObject(Map<String, JsonValue> map) {
         final JsonObjectBuilder builder = Json.createObjectBuilder();
 
-        map.entrySet().stream().forEach(e -> builder.add(e.getKey(), e.getValue()));
+        map.entrySet().forEach(e -> builder.add(e.getKey(), e.getValue()));
 
         return builder.build();
     }
@@ -122,7 +122,7 @@ public final class JsonUtils {
         
         final JsonArrayBuilder builder = Json.createArrayBuilder();
 
-        collection.stream().forEach(builder::add);
+        collection.forEach(builder::add);
 
         return builder.build();
     }

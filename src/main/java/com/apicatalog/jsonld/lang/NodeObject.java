@@ -25,7 +25,7 @@ public final class NodeObject {
                                 && !value.asJsonObject().containsKey(Keywords.LIST) 
                                 && !value.asJsonObject().containsKey(Keywords.SET))
                             
-                        || value.asJsonObject().keySet().stream().allMatch(Arrays.asList(Keywords.CONTEXT, Keywords.GRAPH)::contains)
+                        || Arrays.asList(Keywords.CONTEXT, Keywords.GRAPH).containsAll(value.asJsonObject().keySet())
                         );
     }
     

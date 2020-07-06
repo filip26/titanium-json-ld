@@ -1,5 +1,6 @@
 package com.apicatalog.jsonld.lang;
 
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import com.apicatalog.rdf.lang.RdfAlphabet;
@@ -53,6 +54,6 @@ public final class BlankNode {
             return true;
         }
         
-        return IntStream.range(3, chars.length - 1).map(i -> chars[i]).allMatch(RdfAlphabet.PN_CHARS.or(ch -> ch == '.'));        
+        return Arrays.stream(chars, 3, chars.length - 1).allMatch(RdfAlphabet.PN_CHARS.or(ch -> ch == '.'));
     }
 }

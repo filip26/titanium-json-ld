@@ -65,9 +65,7 @@ public final class ValueCompaction {
         }
 
         if (direction == null) {
-            direction = activeContext.getDefaultBaseDirection() != null
-                    ? activeContext.getDefaultBaseDirection()
-                    : null;            
+            direction = activeContext.getDefaultBaseDirection();
         }
         
         // 6.
@@ -162,10 +160,8 @@ public final class ValueCompaction {
                                 ))
                                 )
                         )
-                    && ((value.containsKey(Keywords.INDEX)
-                            && activePropertyDefinition.isPresent()
-                            && activePropertyDefinition.get().hasContainerMapping(Keywords.INDEX))
-                        || !value.containsKey(Keywords.INDEX)
+                    && (!value.containsKey(Keywords.INDEX) || (activePropertyDefinition.isPresent()
+                && activePropertyDefinition.get().hasContainerMapping(Keywords.INDEX))
                             )
                 ){
 

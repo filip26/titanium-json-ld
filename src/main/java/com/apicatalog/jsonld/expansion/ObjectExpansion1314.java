@@ -357,7 +357,7 @@ final class ObjectExpansion1314 {
                             JsonArrayBuilder includes = Json
                                     .createArrayBuilder(result.get(Keywords.INCLUDED).asJsonArray());
 
-                            expandedValue.asJsonArray().stream().forEach(includes::add);
+                            expandedValue.asJsonArray().forEach(includes::add);
 
                             expandedValue = includes.build();
                         }
@@ -854,7 +854,7 @@ final class ObjectExpansion1314 {
 
                                 if (JsonUtils.isArray(existingType)) {
 
-                                    existingType.asJsonArray().stream().forEach(types::add);
+                                    existingType.asJsonArray().forEach(types::add);
 
                                 } else {
                                     types.add(existingType);

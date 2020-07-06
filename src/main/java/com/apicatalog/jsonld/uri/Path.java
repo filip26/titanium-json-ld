@@ -119,7 +119,7 @@ public final class Path {
         return (relative 
                     ? ""
                     : "/")
-                    .concat(segments.stream().collect(Collectors.joining("/")))
+                    .concat(String.join("/", segments))
                     .concat(segments.isEmpty() ? "" : "/")
                     .concat(last != null ? last : "")
                 ;
