@@ -302,7 +302,7 @@ public final class Framing {
             for (String property : frame.keys()) {
                 if (output.containsKey(property)
                         || !Keywords.TYPE.equals(property) && Keywords.matchForm(property)
-                        || Keywords.TYPE.equals(property) && !frame.isDefaultOjbect(property)
+                        || Keywords.TYPE.equals(property) && !frame.isDefaultObject(property)
                         ) {
                     continue;
                 }
@@ -365,7 +365,7 @@ public final class Framing {
 
                                 final Map<String, JsonValue> reverseMap;
                                 
-                                final Map<String, JsonValue> revereseResult = new LinkedHashMap<>();
+                                final Map<String, JsonValue> reverseResult = new LinkedHashMap<>();
                                 
                                 FramingState reverseState = new FramingState(state);
                                 reverseState.setEmbedded(true);
@@ -374,7 +374,7 @@ public final class Framing {
                                             reverseState, 
                                             Arrays.asList(subjectProperty), 
                                             Frame.of((JsonStructure)subframe),
-                                            revereseResult, 
+                                            reverseResult,
                                             null)
                                         .ordered(ordered)
                                         .frame();
@@ -386,7 +386,7 @@ public final class Framing {
                                     reverseMap = new LinkedHashMap<>();
                                 }
 
-                                JsonUtils.addValue(reverseMap, reverseProperty, JsonUtils.toJsonArray(revereseResult.values()), true);
+                                JsonUtils.addValue(reverseMap, reverseProperty, JsonUtils.toJsonArray(reverseResult.values()), true);
                                 output.put(Keywords.REVERSE, JsonUtils.toJsonObject(reverseMap));
                             }
                         }                        

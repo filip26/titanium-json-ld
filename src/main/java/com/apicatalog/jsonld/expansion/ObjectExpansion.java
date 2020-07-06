@@ -233,10 +233,10 @@ public final class ObjectExpansion {
                             activeContext
                                 .newContext()
                                 .propagate(false)
-                                .create(localContext.get(), 
-                                        valueDefinition.isPresent()
-                                            ? valueDefinition.get().getBaseUrl()
-                                            : null
+                                .create(localContext.get(),
+                                        valueDefinition
+                                                .map(TermDefinition::getBaseUrl)
+                                                .orElse(null)
                                         );
                 }
             }
@@ -262,8 +262,13 @@ public final class ObjectExpansion {
 
             if (JsonUtils.isArray(t)) {
 
-                List<String> sortedValues = new ArrayList<>(t.asJsonArray().stream().filter(JsonUtils::isString)
-                        .map(JsonString.class::cast).map(JsonString::getString).sorted().collect(Collectors.toList()));
+                List<String> sortedValues = t.asJsonArray()
+                        .stream()
+                        .filter(JsonUtils::isString)
+                        .map(JsonString.class::cast)
+                        .map(JsonString::getString)
+                        .sorted()
+                        .collect(Collectors.toList());
 
                 if (!sortedValues.isEmpty()) {
                     lastValue = sortedValues.get(sortedValues.size() - 1);
@@ -295,7 +300,7 @@ public final class ObjectExpansion {
             throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
         }
         if ((result.containsKey(Keywords.DIRECTION) || result.containsKey(Keywords.LANGUAGE))
-                && result.keySet().contains(Keywords.TYPE)) {
+                && result.containsKey(Keywords.TYPE)) {
             
             throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
         }

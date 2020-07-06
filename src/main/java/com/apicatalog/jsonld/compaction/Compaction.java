@@ -817,9 +817,9 @@ public final class Compaction {
                         // 12.8.9.8.4.
                         if (JsonUtils.isObject(compactedItem) && compactedItem.asJsonObject().size() == 1) {
                             
-                            String epandedKey = activeContext.uriExpansion().vocab(true).expand(compactedItem.asJsonObject().keySet().iterator().next());
+                            String expandedKey = activeContext.uriExpansion().vocab(true).expand(compactedItem.asJsonObject().keySet().iterator().next());
                             
-                            if (Keywords.ID.equals(epandedKey)) {
+                            if (Keywords.ID.equals(expandedKey)) {
 
                                 JsonObject map = Json.createObjectBuilder().add(Keywords.ID, expandedItem.asJsonObject().get(Keywords.ID)).build();
                                 

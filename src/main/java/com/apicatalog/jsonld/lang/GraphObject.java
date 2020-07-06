@@ -26,7 +26,7 @@ public final class GraphObject {
         }
         Set<String> allowed = new HashSet<>(Arrays.asList(Keywords.GRAPH, Keywords.ID, Keywords.INDEX, Keywords.CONTEXT));
 
-        return value.asJsonObject().keySet().stream().allMatch(allowed::contains);
+        return allowed.containsAll(value.asJsonObject().keySet());
     }
     
     public static final boolean isSimpleGraphObject(JsonValue value) {

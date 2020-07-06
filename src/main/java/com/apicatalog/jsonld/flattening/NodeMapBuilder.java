@@ -282,15 +282,15 @@ public final class NodeMapBuilder {
                 JsonValue nodeTypeValue = nodeMap.get(activeGraph, id, Keywords.TYPE);
                 
                 if (JsonUtils.isArray(nodeTypeValue)) {
-                    
-                    nodeTypeValue.asJsonArray().forEach(nodeType::add);
+
+                    nodeType.addAll(nodeTypeValue.asJsonArray());
 
                 } else if (JsonUtils.isNotNull(nodeTypeValue)) {
                     
                     nodeType.add(nodeTypeValue);    
                 }
-                
-                JsonUtils.toJsonArray(elementObject.get(Keywords.TYPE)).forEach(nodeType::add);
+
+                nodeType.addAll(JsonUtils.toJsonArray(elementObject.get(Keywords.TYPE)));
                 
                 nodeMap.set(activeGraph, id, Keywords.TYPE, JsonUtils.toJsonArray(nodeType));
                 

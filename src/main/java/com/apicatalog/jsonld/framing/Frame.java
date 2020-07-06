@@ -37,7 +37,7 @@ public final class Frame {
             if (structure.asJsonArray().size() != 1  
                     || JsonUtils.isNotObject(structure.asJsonArray().get(0))
                     ) {
-                throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame is not JSON object nor an array containg JSON object [" + structure + "]");
+                throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame is not JSON object nor an array containing JSON object [" + structure + "]");
             }
 
             frameObject = structure.asJsonArray().getJsonObject(0);
@@ -241,7 +241,7 @@ public final class Frame {
         return JsonUtils.isObject(value) && ValuePatternMatcher.with(frameObject, value.asJsonObject()).match();
     }
 
-    public boolean isDefaultOjbect(String property) {
+    public boolean isDefaultObject(String property) {
         return DefaultObject.isDefaultObject(frameObject.get(property))
                 || JsonUtils.isArray(frameObject.get(property))
                     && frameObject.get(property).asJsonArray().size() == 1

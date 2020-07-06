@@ -286,11 +286,11 @@ public final class FramingProcessor {
 
     private static final Collection<JsonValue> removeBlankId(Collection<JsonValue> array) {
         
-        Map<String, Integer> candiates = new HashMap<>();
+        Map<String, Integer> candidates = new HashMap<>();
         
-        array.stream().forEach(v -> findBlankNodes(v, candiates));
+        array.forEach(v -> findBlankNodes(v, candidates));
         
-        List<String> remove = candiates.entrySet().stream().filter(e -> e.getValue() == 1).map(Entry::getKey).collect(Collectors.toList());
+        List<String> remove = candidates.entrySet().stream().filter(e -> e.getValue() == 1).map(Entry::getKey).collect(Collectors.toList());
         
         if (remove.isEmpty()) {
             return array;
@@ -337,7 +337,7 @@ public final class FramingProcessor {
         if (JsonUtils.isString(value)) {
             
             if (BlankNode.isWellFormed(((JsonString)value).getString())) {
-                Integer count = blankNodes.computeIfAbsent(((JsonString)value).getString(), x -> Integer.valueOf(0));
+                Integer count = blankNodes.computeIfAbsent(((JsonString)value).getString(), x -> 0);
                 blankNodes.put(((JsonString)value).getString(), ++count);
             }            
             

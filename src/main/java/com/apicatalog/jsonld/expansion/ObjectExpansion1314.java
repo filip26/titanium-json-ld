@@ -357,7 +357,7 @@ final class ObjectExpansion1314 {
                             JsonArrayBuilder includes = Json
                                     .createArrayBuilder(result.get(Keywords.INCLUDED).asJsonArray());
 
-                            expandedValue.asJsonArray().stream().forEach(includes::add);
+                            expandedValue.asJsonArray().forEach(includes::add);
 
                             expandedValue = includes.build();
                         }
@@ -721,13 +721,13 @@ final class ObjectExpansion1314 {
                                             .orElse(Keywords.INDEX);
 
                 // 13.8.3.
-                final List<String> indicies = new ArrayList<>(value.asJsonObject().keySet());
+                final List<String> indices = new ArrayList<>(value.asJsonObject().keySet());
 
                 if (ordered) {
-                    Collections.sort(indicies);
+                    Collections.sort(indices);
                 }
 
-                for (final String index : indicies) {
+                for (final String index : indices) {
 
                     JsonValue indexValue = value.asJsonObject().get(index);
                     
@@ -854,7 +854,7 @@ final class ObjectExpansion1314 {
 
                                 if (JsonUtils.isArray(existingType)) {
 
-                                    existingType.asJsonArray().stream().forEach(types::add);
+                                    existingType.asJsonArray().forEach(types::add);
 
                                 } else {
                                     types.add(existingType);

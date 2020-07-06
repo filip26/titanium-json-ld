@@ -111,7 +111,7 @@ public final class RdfDocument implements Document {
     }
     
     public static final boolean accepts(final MediaType contentType) {
-        return contentType != null && MediaType.N_QUADS.match(contentType);        
+        return MediaType.N_QUADS.match(contentType);
     }
     
     private static final void assertContentType(final MediaType contentType) {

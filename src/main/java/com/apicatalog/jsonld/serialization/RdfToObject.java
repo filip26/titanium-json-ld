@@ -93,11 +93,11 @@ final class RdfToObject {
                 // 2.4.3.                
                 } else if (XsdConstants.INTEGER.equals(literal.getDatatype())) {
                     
-                    convertedValue = Json.createValue(Long.valueOf(literal.getValue()));
+                    convertedValue = Json.createValue(Long.parseLong(literal.getValue()));
                     
                 } else if (XsdConstants.DOUBLE.equals(literal.getDatatype())) {
                     
-                    convertedValue = Json.createValue(Double.valueOf(literal.getValue()));
+                    convertedValue = Json.createValue(Double.parseDouble(literal.getValue()));
                     
                 } else if (literal.getDatatype() != null) {
                     

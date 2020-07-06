@@ -22,10 +22,8 @@ jobs:
         java-version: 11
     - name: Build with Maven
       run: mvn -B package jacoco:report --file pom.xml
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Run codacy-coverage-reporter
-      uses: codacy/codacy-coverage-reporter-action@master
-      with:
-        project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-        coverage-reports: ./target/site/jacoco/jacoco.xml
+#    - name: Run codacy-coverage-reporter
+#      uses: codacy/codacy-coverage-reporter-action@master
+#      with:
+#        project-token: ${{secrets.CODACY_PROJECT_TOKEN}}
+#        coverage-reports: ./target/site/jacoco/jacoco.xml

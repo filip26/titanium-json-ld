@@ -1,5 +1,6 @@
 package com.apicatalog.jsonld.lang;
 
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import com.apicatalog.rdf.lang.RdfAlphabet;
@@ -41,6 +42,6 @@ public final class LanguageTag {
         if (RdfAlphabet.ASCII_ALPHA_NUM.negate().test(chars[chars.length - 1])) {
             return false;
         }
-        return IntStream.range(1, chars.length - 1).map(i -> chars[i]).allMatch(RdfAlphabet.ASCII_ALPHA_NUM.or(ch -> ch == '-'));
+        return Arrays.stream(chars, 1, chars.length - 1).allMatch(RdfAlphabet.ASCII_ALPHA_NUM.or(ch -> ch == '-'));
     }
 }

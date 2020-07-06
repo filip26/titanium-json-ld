@@ -86,7 +86,7 @@ public final class FrameMatcher {
 
                 if ((JsonUtils.isNotNull(nodeValue) && !nodeValue.asJsonArray().isEmpty() && frame.isWildCard(property))
                         || ((JsonUtils.isNull(nodeValue) || nodeValue.asJsonArray().isEmpty()) && frame.isNone(property))
-                        || frame.isDefaultOjbect(property)
+                        || frame.isDefaultObject(property)
                         || (JsonUtils.isNotNull(nodeValue) && frame.getCollection(property).stream().anyMatch(nodeValue.asJsonArray()::contains))
                         ){
 

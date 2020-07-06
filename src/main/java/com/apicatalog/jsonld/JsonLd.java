@@ -205,16 +205,16 @@ public final class JsonLd {
     /**
      *  Frames the given input using frame.
      *  
-     * @param documenLocation {@code IRI} referencing JSON-LD document to frame
+     * @param documentLocation {@code IRI} referencing JSON-LD document to frame
      * @param frameLocation {@code IRI} referencing JSON-LD frame
      * @return {@link FramingApi} allowing to set additional parameters
      */
-    public static final FramingApi frame(final String documenLocation, final String frameLocation) {
+    public static final FramingApi frame(final String documentLocation, final String frameLocation) {
 
-        assertLocation(documenLocation, DOCUMENT_URI_PARAM_NAME);
+        assertLocation(documentLocation, DOCUMENT_URI_PARAM_NAME);
         assertLocation(frameLocation, FRAME_LOCATION_PARAM_NAME);
 
-        return new FramingApi(UriUtils.create(documenLocation), UriUtils.create(frameLocation));
+        return new FramingApi(UriUtils.create(documentLocation), UriUtils.create(frameLocation));
     }
 
     /**

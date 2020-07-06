@@ -48,7 +48,7 @@ public final class JsonCanonicalizer {
                         
             if (JsonUtils.isNumber(value)) {
 
-                canonizalizeNumber((JsonNumber)value, writer);
+                canonicalizeNumber((JsonNumber)value, writer);
                 
             } else {
 
@@ -57,16 +57,16 @@ public final class JsonCanonicalizer {
             
         } else if (JsonUtils.isArray(value)) {
 
-            canonizalizeArray(value.asJsonArray(), writer);
+            canonicalizeArray(value.asJsonArray(), writer);
             
         } else if (JsonUtils.isObject(value)) {
             
-            canonizalizeObject(value.asJsonObject(), writer);
+            canonicalizeObject(value.asJsonObject(), writer);
             
         }
     }
 
-    private static final void canonizalizeNumber(final JsonNumber number, final Writer writer) throws IOException {
+    private static final void canonicalizeNumber(final JsonNumber number, final Writer writer) throws IOException {
         
         String numberString;
         
@@ -90,7 +90,7 @@ public final class JsonCanonicalizer {
         writer.write(numberString);        
     }
     
-    private static final void canonizalizeArray(final JsonArray value, final Writer writer) throws IOException {
+    private static final void canonicalizeArray(final JsonArray value, final Writer writer) throws IOException {
         boolean next = false;
         
         writer.write("[");
@@ -110,7 +110,7 @@ public final class JsonCanonicalizer {
 
     }    
     
-    private static final void canonizalizeObject(final JsonObject value, final Writer writer) throws IOException {
+    private static final void canonicalizeObject(final JsonObject value, final Writer writer) throws IOException {
         boolean next = false;
         
         writer.write("{");

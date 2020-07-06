@@ -144,6 +144,6 @@ public final class DefaultRdfProvider extends RdfProvider {
     
     private static final boolean isBlank(String value) {
         return value.isEmpty() 
-                || value.isBlank() && !value.chars().anyMatch(ch -> ch == '\n' || ch == '\r' || ch == '\t' || ch == '\f');
+                || value.isBlank() && value.chars().noneMatch(ch -> ch == '\n' || ch == '\r' || ch == '\t' || ch == '\f');
     }
 }
