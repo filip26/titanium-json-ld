@@ -484,23 +484,23 @@ public final class UriCompaction {
             }
 
             // 7.2.
-            String compacttUriCandidate = 
+            String compactUriCandidate =
                             termEntry.getKey()
                                     .concat(":")
                                     .concat(variable.substring(termDefinition.getUriMapping().length()));
 
             // 7.3.
-            if (((compactUri == null || (compacttUriCandidate.compareTo(compactUri) < 0))
-                            && !activeContext.containsTerm(compacttUriCandidate))
+            if (((compactUri == null || (compactUriCandidate.compareTo(compactUri) < 0))
+                            && !activeContext.containsTerm(compactUriCandidate))
                     || (activeContext
-                                .getTerm(compacttUriCandidate)
+                                .getTerm(compactUriCandidate)
                                 .map(TermDefinition::getUriMapping)
                                 .map(u -> u.equals(variable))
                                 .orElse(false)
                             && JsonUtils.isNull(value)
                             )
                     ) {
-                compactUri = compacttUriCandidate;
+                compactUri = compactUriCandidate;
             }
         }
 
