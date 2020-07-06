@@ -41,19 +41,25 @@ public final class InverseContextBuilder {
                                     : Keywords.NONE;
                                     
         // 3
-        for (final String term : activeContext.getTerms().stream().sorted().collect(Collectors.toList())) {
+        for (final String termName : activeContext.getTerms().stream().sorted().collect(Collectors.toList())) {
         
             // 3.1.
-            if (activeContext.getTerm(term).isEmpty()) {
+            if (activeContext.getTerm(termName).isEmpty()) {
                 continue;
             }
 
             // 3.3.
-            final Optional<String> variable = activeContext.getTerm(term).map(TermDefinition::getUriMapping);
+            final Optional<String> variable = activeContext.getTerm(termName).map(TermDefinition::getUriMapping);
+            
+            if (variable.isEmpty()) {
+                continue;
+            }
+            
+            final String variableValue = variable.get();
             
             final Optional<Collection<String>> containerMapping = 
                                                     activeContext
-                                                        .getTerm(term)
+                                                        .getTerm(termName)
                                                         .map(TermDefinition::getContainerMapping);
 
             // 3.2.
@@ -64,52 +70,54 @@ public final class InverseContextBuilder {
                                             .sorted()
                                             .collect(Collectors.joining());
             
-            variable.ifPresent(v -> result.setIfAbsent(v, container, Keywords.ANY, Keywords.NONE, term));
+            result.setIfAbsent(variableValue, container, Keywords.ANY, Keywords.NONE, termName);
 
             final Optional<JsonValue> languageMapping = activeContext
-                                                            .getTerm(term)
+                                                            .getTerm(termName)
                                                             .map(TermDefinition::getLanguageMapping);
             
             final Optional<DirectionType> directionMapping = activeContext
-                                                                .getTerm(term)
+                                                                .getTerm(termName)
                                                                 .map(TermDefinition::getDirectionMapping);
 
             // 3.10.
-            if (activeContext.getTerm(term).map(TermDefinition::isReverseProperty).orElse(false)) {
+            if (activeContext.getTerm(termName).map(TermDefinition::isReverseProperty).orElse(false)) {
 
                 // 3.10.1
-                variable.ifPresent(v -> result.setIfAbsent(v, container, Keywords.TYPE, Keywords.REVERSE, term));
+                result.setIfAbsent(variableValue, container, Keywords.TYPE, Keywords.REVERSE, termName);
+            
+                continue;
+            } 
+            
+            final Optional<String> typeMapping = activeContext.getTerm(termName).map(TermDefinition::getTypeMapping);
             
             // 3.11.
-            } else if (activeContext.getTerm(term)
-                                    .map(TermDefinition::getTypeMapping)
-                                    .map(Keywords.NONE::equals).orElse(false)) {
+            if (typeMapping.filter(Keywords.NONE::equals).isPresent()) {
                 
-                variable.ifPresent(v -> {
-                    // 3.11.1.
-                    result.setIfAbsent(v, container, Keywords.LANGUAGE, Keywords.ANY, term);
-                    // 3.11.2.
-                    result.setIfAbsent(v, container, Keywords.TYPE, Keywords.ANY, term);
-                });
+                // 3.11.1.
+                result.setIfAbsent(variableValue, container, Keywords.LANGUAGE, Keywords.ANY, termName);
+                // 3.11.2.
+                result.setIfAbsent(variableValue, container, Keywords.TYPE, Keywords.ANY, termName);
 
+                continue;
+            }
+                        
             // 3.12.
-            } else if (activeContext.getTerm(term).map(TermDefinition::getTypeMapping).isPresent()) {
-
+            if (typeMapping.isPresent()) {
+                
                 // 3.12.1
-                variable.ifPresent(v -> result.setIfAbsent(
-                                                    v, 
-                                                    container, 
-                                                    Keywords.TYPE, 
-                                                    activeContext
-                                                            .getTerm(term)
-                                                            .map(TermDefinition::getTypeMapping)
-                                                            .get(),
-                                                    term
-                                                )
-                                    );
-
+                result.setIfAbsent(
+                                variableValue, 
+                                container, 
+                                Keywords.TYPE, 
+                                typeMapping.get(),
+                                termName
+                                );
+                continue;
+            } 
+            
             // 3.13.
-            } else if (languageMapping.isPresent() && directionMapping.isPresent()) {
+            if (languageMapping.isPresent() && directionMapping.isPresent()) {
          
                 // 3.13.1.
                 final String langDir;
@@ -143,10 +151,13 @@ public final class InverseContextBuilder {
                 }
                 
                 // 3.13.5.
-                variable.ifPresent(v -> result.setIfAbsent(v, container, Keywords.LANGUAGE, langDir, term));
+                result.setIfAbsent(variableValue, container, Keywords.LANGUAGE, langDir, termName);
                 
+                continue;
+            } 
+            
             // 3.14.
-            } else if (languageMapping.isPresent()) {
+            if (languageMapping.isPresent()) {
 
                 /// 3.14.1.
                 final String language = JsonUtils.isString(languageMapping.get())
@@ -154,10 +165,13 @@ public final class InverseContextBuilder {
                                             : Keywords.NULL;
                               
                 // 3.14.2.
-                variable.ifPresent(v -> result.setIfAbsent(v, container, Keywords.LANGUAGE, language, term));
+                result.setIfAbsent(variableValue, container, Keywords.LANGUAGE, language, termName);
                 
+                continue;
+            } 
+            
             // 3.15.
-            } else if (directionMapping.isPresent()) {
+            if (directionMapping.isPresent()) {
 
                 // 3.15.1.
                 final String direction = (directionMapping.get() != DirectionType.NULL)
@@ -165,42 +179,39 @@ public final class InverseContextBuilder {
                                             : Keywords.NONE;
 
                 // 3.15.2.
-                variable.ifPresent(v -> result.setIfAbsent(v, container, Keywords.LANGUAGE, direction, term));
+                result.setIfAbsent(variableValue, container, Keywords.LANGUAGE, direction, termName);
 
+                continue;
+            } 
+            
             // 3.16.
-            } else if (activeContext.getDefaultBaseDirection() != null) {
+            if (activeContext.getDefaultBaseDirection() != null) {
                                 
-                variable.ifPresent(v -> {
-                    
-                    // 3.16.1.
-                    final String langDir = (activeContext.getDefaultLanguage() != null 
-                                                ? activeContext.getDefaultLanguage()
-                                                : ""
-                                                )
-                                        .concat("_")
-                                        .concat(activeContext.getDefaultBaseDirection().name())
-                                        .toLowerCase();
-    
-                    // 3.16.2.
-                    result.setIfAbsent(v, container, Keywords.LANGUAGE, langDir, term);
-                    // 3.16.3.
-                    result.setIfAbsent(v, container, Keywords.LANGUAGE, Keywords.NONE, term);
-                    // 3.16.4.
-                    result.setIfAbsent(v, container, Keywords.TYPE, Keywords.NONE, term);
-                });
+                // 3.16.1.
+                final String langDir = (activeContext.getDefaultLanguage() != null 
+                                            ? activeContext.getDefaultLanguage()
+                                            : ""
+                                            )
+                                    .concat("_")
+                                    .concat(activeContext.getDefaultBaseDirection().name())
+                                    .toLowerCase();
+
+                // 3.16.2.
+                result.setIfAbsent(variableValue, container, Keywords.LANGUAGE, langDir, termName);
+                // 3.16.3.
+                result.setIfAbsent(variableValue, container, Keywords.LANGUAGE, Keywords.NONE, termName);
+                // 3.16.4.
+                result.setIfAbsent(variableValue, container, Keywords.TYPE, Keywords.NONE, termName);
                 
-            // 3.17.
-            } else {
-                
-                variable.ifPresent(v -> {
-                    // 3.17.1.
-                    result.setIfAbsent(v, container, Keywords.LANGUAGE, defaultLanguage, term);
-                    // 3.17.2.                    
-                    result.setIfAbsent(v, container, Keywords.LANGUAGE, Keywords.NONE, term);
-                    // 3.17.2.                    
-                    result.setIfAbsent(v, container, Keywords.TYPE, Keywords.NONE, term);
-                });
+                continue;
             }
+
+            // 3.17.1.
+            result.setIfAbsent(variableValue, container, Keywords.LANGUAGE, defaultLanguage, termName);
+            // 3.17.2.                    
+            result.setIfAbsent(variableValue, container, Keywords.LANGUAGE, Keywords.NONE, termName);
+            // 3.17.2.                    
+            result.setIfAbsent(variableValue, container, Keywords.TYPE, Keywords.NONE, termName);
         }
         
         // 4.
