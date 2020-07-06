@@ -30,7 +30,7 @@ public final class Path {
                                                     ? path
                                                     : path.substring(1)
                                                     )
-                                                .split("\\/")
+                                                .split("/")
                                                 )
                                         );
         final String last = (path.length() > 1 && path.endsWith("/"))
