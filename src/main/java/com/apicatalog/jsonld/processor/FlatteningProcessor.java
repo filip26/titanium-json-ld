@@ -30,10 +30,8 @@ public final class FlatteningProcessor {
             return flatten(input, (Document)null, options);
         }
         
-        if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
-        }
-
+        assertDocumentLoader(options, input);
+        
         final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions());
 
         if (contextDocument == null) {
@@ -49,10 +47,8 @@ public final class FlatteningProcessor {
             return flatten(input, (Document)null, options);
         }
 
-        if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
-        }
-
+        assertDocumentLoader(options, context);
+        
         final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions());
 
         if (contextDocument == null) {
@@ -63,10 +59,8 @@ public final class FlatteningProcessor {
     }
 
     public static final JsonStructure flatten(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError {
-        
-        if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
-        }
+
+        assertDocumentLoader(options, input);
 
         final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
         loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
@@ -111,4 +105,11 @@ public final class FlatteningProcessor {
         
         return flattenedOutput;            
     }
+    
+    private static final void assertDocumentLoader(final JsonLdOptions options, final URI target) throws JsonLdError {
+        if (options.getDocumentLoader() == null) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + target + "].");
+        }
+    }
+    
 }
