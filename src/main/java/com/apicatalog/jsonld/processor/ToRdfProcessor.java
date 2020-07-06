@@ -30,13 +30,11 @@ public final class ToRdfProcessor {
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
+        
+        final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
+        loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
 
-        final Document remoteDocument = 
-                                options
-                                    .getDocumentLoader()
-                                    .loadDocument(input,
-                                            new DocumentLoaderOptions()
-                                                    .setExtractAllScripts(options.isExtractAllScripts()));
+        final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
 
         if (remoteDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
