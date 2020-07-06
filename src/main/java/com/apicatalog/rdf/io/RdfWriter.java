@@ -8,5 +8,5 @@ import com.apicatalog.rdf.io.nquad.NQuadsWriterException;
 public interface RdfWriter {
 
     void write(RdfDataset dataset) throws IOException, NQuadsWriterException;
-    
+
 }
