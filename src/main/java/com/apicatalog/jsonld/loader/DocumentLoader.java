@@ -17,6 +17,14 @@ import com.apicatalog.jsonld.document.Document;
  */
 public interface DocumentLoader {
 
+    /**
+     * Retrieve a remote document.
+     * 
+     * @param url of the remote document to fetch
+     * @param options to set the behavior of the loader
+     * @return {@link Document} representing a remote document 
+     * @throws JsonLdError
+     */
     Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError;
 
 }
