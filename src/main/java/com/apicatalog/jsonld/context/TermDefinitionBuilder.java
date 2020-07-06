@@ -671,13 +671,13 @@ public final class TermDefinitionBuilder {
         
         if (JsonUtils.isArray(container)) { 
 
-            return validateContaierArray(container.asJsonArray());
+            return validateContainerArray(container.asJsonArray());
         }
         
         return false;
     }
     
-    private static final boolean validateContaierArray(final JsonArray containers) {
+    private static final boolean validateContainerArray(final JsonArray containers) {
         
         if (containers.size() > 3) {
             return false;

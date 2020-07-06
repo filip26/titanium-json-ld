@@ -28,10 +28,10 @@ public final class JsonDocument implements Document {
     private URI documentUrl;
     private URI contentUrl;
     
-    private JsonDocument(final MediaType type, final String profile, final JsonStructure structue) {
+    private JsonDocument(final MediaType type, final String profile, final JsonStructure structure) {
         this.contentType = type;
         this.profile = profile;
-        this.structure = structue;
+        this.structure = structure;
     }
 
     /**
