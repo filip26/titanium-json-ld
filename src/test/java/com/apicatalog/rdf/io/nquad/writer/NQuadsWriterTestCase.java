@@ -37,5 +37,5 @@ public final class NQuadsWriterTestCase {
     
     public String getExpected() {
         return expected;
-    }
+    }    
 }
