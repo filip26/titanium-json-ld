@@ -28,15 +28,13 @@ public final class ToRdfProcessor {
     public static final RdfDataset toRdf(final URI input, final JsonLdOptions options) throws JsonLdError {
 
         if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
+        
+        final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
+        loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
 
-        final Document remoteDocument = 
-                                options
-                                    .getDocumentLoader()
-                                    .loadDocument(input,
-                                            new DocumentLoaderOptions()
-                                                    .setExtractAllScripts(options.isExtractAllScripts()));
+        final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
 
         if (remoteDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
@@ -48,6 +46,7 @@ public final class ToRdfProcessor {
     public static final RdfDataset toRdf(Document input, final JsonLdOptions options) throws JsonLdError {
 
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
+        
         expansionOptions.setProcessingMode(options.getProcessingMode());
         expansionOptions.setBase(options.getBase());
         expansionOptions.setExpandContext(options.getExpandContext());

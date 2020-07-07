@@ -23,6 +23,7 @@ import com.apicatalog.rdf.io.nquad.Tokenizer.TokenType;
 public final class NQuadsReader implements RdfReader {
 
     private final Tokenizer tokenizer;
+    
     private RdfDataset dataset;
     
     public NQuadsReader(final Reader reader) {

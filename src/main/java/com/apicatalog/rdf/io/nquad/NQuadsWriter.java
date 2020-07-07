@@ -2,6 +2,7 @@ package com.apicatalog.rdf.io.nquad;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Optional;
 
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraphName;
@@ -87,10 +88,13 @@ public class NQuadsWriter implements RdfWriter {
         writer.write('"');
         writer.write(escape(literal.getValue()));
         writer.write('"');
+
+        final Optional<String> language = literal.getLanguage();
         
-        if (literal.getLanguage() != null) {
+        if (language.isPresent()) {
+
             writer.write("@");
-            writer.write(literal.getLanguage());
+            writer.write(language.get());
             
         } else if (literal.getDatatype() != null) {
             

@@ -3,7 +3,7 @@ package com.apicatalog.jsonld.loader;
 import java.util.Collection;
 
 /**
- * The {@link DocumentLoaderOptions} type is used to pass various options to the
+ * The {@link DocumentLoaderOptions} is used to pass various options to the
  * {@link DocumentLoader}.
  *
  * @see <a href=
@@ -29,9 +29,8 @@ public class DocumentLoaderOptions {
         return extractAllScripts;
     }
 
-    public DocumentLoaderOptions setExtractAllScripts(boolean extractAllScripts) {
+    public void setExtractAllScripts(boolean extractAllScripts) {
         this.extractAllScripts = extractAllScripts;
-        return this;
     }
 
     public String getProfile() {

@@ -102,7 +102,6 @@ final class RdfToObject {
                 } else if (literal.getDatatype() != null) {
                     
                     type = literal.getDatatype();
-                    
                 }
             }
 
@@ -149,9 +148,10 @@ final class RdfToObject {
             }
             
         // 2.7. 
-        } else if (literal.getLanguage() != null) {
-            result.put(Keywords.LANGUAGE, Json.createValue(literal.getLanguage()));
-                     
+        } else if (literal.getLanguage().isPresent()) {
+            
+            result.put(Keywords.LANGUAGE, Json.createValue(literal.getLanguage().get()));
+
         // 2.8.   
         } else if (literal.getDatatype() != null 
                         && !XsdConstants.STRING.equals(literal.getDatatype())) {

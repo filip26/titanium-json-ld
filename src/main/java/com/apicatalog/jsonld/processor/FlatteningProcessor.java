@@ -29,7 +29,9 @@ public final class FlatteningProcessor {
         if (context == null) {
             return flatten(input, (Document)null, options);
         }
-
+        
+        assertDocumentLoader(options, input);
+        
         final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions());
 
         if (contextDocument == null) {
@@ -44,7 +46,9 @@ public final class FlatteningProcessor {
         if (context == null) {
             return flatten(input, (Document)null, options);
         }
-                
+
+        assertDocumentLoader(options, context);
+        
         final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions());
 
         if (contextDocument == null) {
@@ -55,17 +59,13 @@ public final class FlatteningProcessor {
     }
 
     public static final JsonStructure flatten(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError {
-        
-        if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
-        }
 
-        final Document remoteDocument = 
-                                options
-                                    .getDocumentLoader()
-                                    .loadDocument(input,
-                                            new DocumentLoaderOptions()
-                                                    .setExtractAllScripts(options.isExtractAllScripts()));
+        assertDocumentLoader(options, input);
+
+        final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
+        loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
+
+        final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
 
         if (remoteDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
@@ -105,4 +105,11 @@ public final class FlatteningProcessor {
         
         return flattenedOutput;            
     }
+    
+    private static final void assertDocumentLoader(final JsonLdOptions options, final URI target) throws JsonLdError {
+        if (options.getDocumentLoader() == null) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + target + "].");
+        }
+    }
+    
 }

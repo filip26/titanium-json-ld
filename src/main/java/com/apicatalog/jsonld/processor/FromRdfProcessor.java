@@ -31,7 +31,7 @@ public final class FromRdfProcessor {
     public static JsonArray fromRdf(URI documentUri, JsonLdOptions options) throws JsonLdError {
 
         if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + documentUri + "].");
         }
 
         final Document remoteDocument = 

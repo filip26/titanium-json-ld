@@ -463,11 +463,12 @@ public class ActiveContextBuilder {
         if (remoteContexts.size() > MAX_REMOTE_CONTEXTS) {
             throw new JsonLdError(JsonLdErrorCode.CONTEXT_OVERFLOW, "Too many contexts [>" + MAX_REMOTE_CONTEXTS + "].");
         }
+        
         remoteContexts.add(contextUri);
 
         // 5.2.5.
         if (activeContext.getOptions().getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Document loaded is null.");
+            throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Document loader is null. Cannot fetch [" + contextUri + "].");
         }
 
         DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();

@@ -30,7 +30,7 @@ public final class CompactionProcessor {
     public static final JsonObject compact(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError {
 
         if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
         
         final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions());
@@ -45,18 +45,16 @@ public final class CompactionProcessor {
     public static final JsonObject compact(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError {
 
         if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
 
-        final Document remoteDocument = 
-                                options
-                                    .getDocumentLoader()
-                                    .loadDocument(input,
-                                            new DocumentLoaderOptions()
-                                                    .setExtractAllScripts(options.isExtractAllScripts()));
+        final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
+        loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
+        
+        final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
 
         if (remoteDocument == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Returned document is null [" + input + "].");
         }
         
         return compact(remoteDocument, context, options);

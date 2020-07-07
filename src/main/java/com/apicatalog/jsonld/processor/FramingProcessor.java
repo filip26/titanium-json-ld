@@ -206,16 +206,15 @@ public final class FramingProcessor {
     }
     
     private static Document getDocument(final URI document, final JsonLdOptions options) throws JsonLdError {
+        
         if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + document + "].");
         }
 
-        final Document remoteDocument = 
-                                options
-                                    .getDocumentLoader()
-                                    .loadDocument(document,
-                                            new DocumentLoaderOptions()
-                                                    .setExtractAllScripts(options.isExtractAllScripts()));
+        final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
+        loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
+
+        final Document remoteDocument = options.getDocumentLoader().loadDocument(document, loaderOptions);
 
         if (remoteDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Cannot load document [" + document + "].");
