@@ -83,7 +83,7 @@ TBD
 
 ## Examples
 
-Titanium provides high-level [JsonLd](https://filip26.github.io/titanium-json-ld/apidocs/com/apicatalog/jsonld/JsonLd.html) API to interact with the processor.
+Titanium provides high-level [JsonLd](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/JsonLd.html) API to interact with the processor.
 
 ```javascript
 
