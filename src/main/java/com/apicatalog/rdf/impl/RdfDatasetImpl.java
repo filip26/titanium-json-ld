@@ -42,18 +42,21 @@ final class RdfDatasetImpl implements RdfDataset {
             throw new IllegalArgumentException();
         }
         
-        if (nquad.getGraphName() != null) {
+        final Optional<RdfResource> graphName = nquad.getGraphName(); 
+        
+        if (graphName.isPresent()) {
 
-            RdfGraphImpl graph = graphs.get(nquad.getGraphName());
+            RdfGraphImpl graph = graphs.get(graphName.get());
             
             if (graph == null) {
                 
                 graph = new RdfGraphImpl();
-                graphs.put(nquad.getGraphName(), graph);
+                graphs.put(graphName.get(), graph);
                 graph.add(nquad);
                 nquads.add(nquad);
                 
             } else if (!graph.contains(nquad)) {
+                
                 graph.add(nquad);
                 nquads.add(nquad);
             }

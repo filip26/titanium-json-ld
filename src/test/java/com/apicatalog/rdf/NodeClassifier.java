@@ -21,8 +21,8 @@ final class NodeClassifier {
         if (nquad.getObject().isBlankNode()) {
             addObject(nquad.getObject().toString(), nquad.getSubject().isIRI() ? nquad.getSubject().toString() : null);
         }                    
-        if (nquad.getGraphName() != null && nquad.getGraphName().isBlankNode()) {
-            addGraph(nquad.getGraphName().toString());
+        if (nquad.getGraphName().filter(RdfValue::isBlankNode).isPresent()) {
+            addGraph(nquad.getGraphName().get().toString());
         }
     }
     
