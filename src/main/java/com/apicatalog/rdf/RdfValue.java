@@ -9,7 +9,7 @@ package com.apicatalog.rdf;
 public interface RdfValue {
 
     /**
-     * Indicates if the value type is {@link ValueType#LITERAL}.
+     * Indicates if the value type is RDF literal.
      *
      * @return <code>true</code> if the value type is literal, <code>false</code> otherwise. 
      */
@@ -18,7 +18,7 @@ public interface RdfValue {
     }
 
     /**
-     * Indicates if the value type is {@link ValueType#IRI}.
+     * Indicates if the value type is an absolute IRI.
      *
      * @return <code>true</code> if the value type is IRI, <code>false</code> otherwise. 
      */
@@ -27,7 +27,7 @@ public interface RdfValue {
     }
 
     /**
-     * Indicates if the value type is {@link ValueType#BLANK_NODE}.
+     * Indicates if the value type is blank node identifier.
      *
      * @return <code>true</code> if the value type is blank node, <code>false</code> otherwise. 
      */

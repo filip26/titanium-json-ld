@@ -146,7 +146,8 @@ public final class Rdf {
      * Create a new {@link RdfResource}.
      * 
      * @param resource is an absolute IRI or blank node identifier
-     * @return {@link RdfGraphName}
+     * @return RDF resource 
+     * @throws IllegalArgumentException if the resource is not an absolute IRI or blank node identifier
      */
     public static RdfResource createResource(String resource) {
         
