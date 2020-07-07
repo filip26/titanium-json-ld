@@ -142,7 +142,7 @@ public final class RdfComparison {
                 ;
     }
 
-    private static final boolean compareSubject(RdfSubject subject1, RdfSubject subject2, Map<String, String> mapping) {
+    private static final boolean compareSubject(RdfResource subject1, RdfResource subject2, Map<String, String> mapping) {
          
         if (subject1.isBlankNode() && subject2.isBlankNode()) { 
             return Objects.equals(
@@ -158,7 +158,7 @@ public final class RdfComparison {
         return false;
     }
 
-    private static final boolean compareObject(RdfObject object1, RdfObject object2, Map<String, String> mapping) {
+    private static final boolean compareObject(RdfValue object1, RdfValue object2, Map<String, String> mapping) {
 
         if (object1.isBlankNode() && object2.isBlankNode()) {
 
@@ -173,12 +173,12 @@ public final class RdfComparison {
             return Objects.equals(object1.toString(), object2.toString());
             
         } else if (object1.isLiteral() && object2.isLiteral()) {
-            return Objects.equals(object1.getLiteral(), object2.getLiteral());
+            return Objects.equals(object1.asLiteral(), object2.asLiteral());
         }
         return false;
     }
 
-    private static final boolean compareGraphName(RdfGraphName name1, RdfGraphName name2, Map<String, String> mapping) {
+    private static final boolean compareGraphName(RdfResource name1, RdfResource name2, Map<String, String> mapping) {
 
         if (name1 == null || name2 == null) {
             return Objects.equals(name1, name2);            

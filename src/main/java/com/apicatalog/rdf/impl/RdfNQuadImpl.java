@@ -1,22 +1,20 @@
 package com.apicatalog.rdf.impl;
 
-import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfNQuad;
-import com.apicatalog.rdf.RdfObject;
-import com.apicatalog.rdf.RdfPredicate;
-import com.apicatalog.rdf.RdfSubject;
+import com.apicatalog.rdf.RdfResource;
+import com.apicatalog.rdf.RdfValue;
 
 final class RdfNQuadImpl extends RdfTripleImpl implements RdfNQuad {
 
-    private final RdfGraphName graphName;
+    private final RdfResource graphName;
     
-    protected RdfNQuadImpl(RdfSubject subject, RdfPredicate predicate, RdfObject object, RdfGraphName graphName) {
+    protected RdfNQuadImpl(RdfResource subject, RdfResource predicate, RdfValue object, RdfResource graphName) {
         super(subject, predicate, object);
         this.graphName = graphName;
     }
     
     @Override
-    public RdfGraphName getGraphName() {
+    public RdfResource getGraphName() {
         return graphName;
     }
 }

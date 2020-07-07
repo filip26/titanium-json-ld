@@ -36,6 +36,11 @@ final class RdfLiteralImpl implements RdfLiteral {
     }
 
     @Override
+    public boolean isLiteral() {
+        return true;
+    }
+    
+    @Override
     public Optional<String> getLanguage() {
         return Optional.ofNullable(langTag);
     }

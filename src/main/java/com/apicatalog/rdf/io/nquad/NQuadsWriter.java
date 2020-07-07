@@ -5,12 +5,9 @@ import java.io.Writer;
 import java.util.Optional;
 
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfNQuad;
-import com.apicatalog.rdf.RdfObject;
-import com.apicatalog.rdf.RdfPredicate;
-import com.apicatalog.rdf.RdfSubject;
+import com.apicatalog.rdf.RdfValue;
 import com.apicatalog.rdf.io.RdfWriter;
 import com.apicatalog.rdf.lang.XsdConstants;
 
@@ -39,24 +36,24 @@ public class NQuadsWriter implements RdfWriter {
     
     public void write(final RdfNQuad nquad) throws IOException {
         
-        write(nquad.getSubject());
+        writeValue(nquad.getSubject());
         writer.write(' ');
         
-        write(nquad.getPredicate());
+        writeValue(nquad.getPredicate());
         writer.write(' ');
         
-        write(nquad.getObject());
+        writeValue(nquad.getObject());
         writer.write(' ');
         
         if (nquad.getGraphName() != null) {
-            write(nquad.getGraphName());
+            writeValue(nquad.getGraphName());
             writer.write(' ');            
         }
         
         writer.write(".\n");
     }
 
-    public void write(RdfObject object) throws IOException {
+    public void writeValue(RdfValue object) throws IOException {
         if (object == null) {
             throw new IllegalArgumentException();
         }
@@ -67,7 +64,7 @@ public class NQuadsWriter implements RdfWriter {
         }
         
         if (object.isLiteral()) {
-            write(object.getLiteral());
+            write(object.asLiteral());
             return;
         }
         
@@ -155,63 +152,5 @@ public class NQuadsWriter implements RdfWriter {
         writer.write('<');
         writer.write(iri);
         writer.write('>');
-    }
-
-    public void write(RdfSubject subject) throws IOException {
-
-        if (subject == null) {
-            throw new IllegalArgumentException();
-        }
-            
-        if (subject.isIRI()) {
-            writeIri(subject.toString());
-            return;
-        }
-
-        if (subject.isBlankNode()) {
-            writer.write(subject.toString());
-            return;
-        }
-
-        throw new IllegalStateException();
-    }
-    
-    public void write(RdfPredicate subject) throws IOException {
-
-        if (subject == null) {
-            throw new IllegalArgumentException();
-        }
-            
-        if (subject.isIRI()) {
-            writeIri(subject.toString());
-            return;
-        }
-
-        if (subject.isBlankNode()) {
-            writer.write(subject.toString());
-            return;
-        }
-
-        throw new IllegalStateException();
-    }
-
-    
-    public void write(RdfGraphName graphName) throws IOException {
-
-        if (graphName == null) {
-            throw new IllegalArgumentException();
-        }
-            
-        if (graphName.isIRI()) {
-            writeIri(graphName.toString());
-            return;
-        }
-
-        if (graphName.isBlankNode()) {
-            writer.write(graphName.toString());
-            return;
-        }
-
-        throw new IllegalStateException();
     }
 }

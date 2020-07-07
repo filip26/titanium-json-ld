@@ -1,36 +1,35 @@
 package com.apicatalog.rdf.impl;
 
-import com.apicatalog.rdf.RdfObject;
-import com.apicatalog.rdf.RdfPredicate;
-import com.apicatalog.rdf.RdfSubject;
+import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfTriple;
+import com.apicatalog.rdf.RdfValue;
 
 class RdfTripleImpl implements RdfTriple {
 
-    private final RdfSubject subject;
+    private final RdfResource subject;
     
-    private final RdfPredicate predicate;
+    private final RdfResource predicate;
     
-    private final RdfObject object;
+    private final RdfValue object;
     
-    protected RdfTripleImpl(final RdfSubject subject, final RdfPredicate predicate, final RdfObject object) {
+    protected RdfTripleImpl(final RdfResource subject, final RdfResource predicate, final RdfValue object) {
         this.subject = subject;
         this.predicate = predicate; 
         this.object = object;
     }
 
     @Override
-    public RdfSubject getSubject() {
+    public RdfResource getSubject() {
         return subject;
     }
 
     @Override
-    public RdfPredicate getPredicate() {
+    public RdfResource getPredicate() {
         return predicate;
     }
 
     @Override
-    public RdfObject getObject() {
+    public RdfValue getObject() {
         return object;
     }
 }

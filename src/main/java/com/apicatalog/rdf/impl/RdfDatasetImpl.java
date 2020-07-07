@@ -8,12 +8,12 @@ import java.util.Set;
 
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
-import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfNQuad;
+import com.apicatalog.rdf.RdfResource;
 
 final class RdfDatasetImpl implements RdfDataset {
 
-    private final Map<RdfGraphName, RdfGraphImpl> graphs;
+    private final Map<RdfResource, RdfGraphImpl> graphs;
     
     private final List<RdfNQuad> nquads;
     
@@ -66,12 +66,12 @@ final class RdfDatasetImpl implements RdfDataset {
     }
     
     @Override
-    public Set<RdfGraphName> getGraphNames() {
+    public Set<RdfResource> getGraphNames() {
         return graphs.keySet();
     }
 
     @Override
-    public RdfGraph getGraph(final RdfGraphName graphName) {
+    public RdfGraph getGraph(final RdfResource graphName) {
         return graphs.get(graphName);
     }
 

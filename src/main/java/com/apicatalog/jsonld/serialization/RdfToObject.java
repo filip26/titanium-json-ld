@@ -16,21 +16,21 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.rdf.RdfLiteral;
-import com.apicatalog.rdf.RdfObject;
+import com.apicatalog.rdf.RdfValue;
 import com.apicatalog.rdf.lang.RdfConstants;
 import com.apicatalog.rdf.lang.XsdConstants;
 
 final class RdfToObject {
 
     // required
-    private RdfObject value;
+    private RdfValue value;
     private RdfDirection rdfDirection;
     private boolean useNativeTypes;
     
     // optional
     private Version processingMode;
     
-    private RdfToObject(final RdfObject object, final RdfDirection rdfDirection, final boolean useNativeTypes) {
+    private RdfToObject(final RdfValue object, final RdfDirection rdfDirection, final boolean useNativeTypes) {
         this.value = object;
         this.rdfDirection = rdfDirection;
         this.useNativeTypes = useNativeTypes;
@@ -38,7 +38,7 @@ final class RdfToObject {
         this.processingMode = null;
     }
     
-    public static final RdfToObject with(final RdfObject object, final RdfDirection rdfDirection, final boolean useNativeTypes) {
+    public static final RdfToObject with(final RdfValue object, final RdfDirection rdfDirection, final boolean useNativeTypes) {
         return new RdfToObject(object, rdfDirection, useNativeTypes);
     }
     
@@ -57,7 +57,7 @@ final class RdfToObject {
         final Map<String, JsonValue> result = new LinkedHashMap<>();
         
         // 2.
-        final RdfLiteral literal = value.getLiteral();
+        final RdfLiteral literal = value.asLiteral();
         
         // 2.2.
         JsonValue convertedValue = Json.createValue(literal.getValue());

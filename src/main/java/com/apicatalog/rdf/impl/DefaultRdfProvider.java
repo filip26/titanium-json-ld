@@ -5,14 +5,11 @@ import java.io.Writer;
 
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
-import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfNQuad;
-import com.apicatalog.rdf.RdfObject;
-import com.apicatalog.rdf.RdfPredicate;
-import com.apicatalog.rdf.RdfSubject;
-import com.apicatalog.rdf.RdfSubject.Type;
+import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfTriple;
+import com.apicatalog.rdf.RdfValue;
 import com.apicatalog.rdf.io.RdfFormat;
 import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.RdfWriter;
@@ -63,7 +60,7 @@ public final class DefaultRdfProvider extends RdfProvider {
     }
 
     @Override
-    public RdfTriple createTriple(RdfSubject subject, RdfPredicate predicate, RdfObject object) {
+    public RdfTriple createTriple(RdfResource subject, RdfResource predicate, RdfValue object) {
         
         if (subject == null || predicate == null || object == null) {
             throw new IllegalArgumentException();
@@ -73,7 +70,7 @@ public final class DefaultRdfProvider extends RdfProvider {
     }
 
     @Override
-    public RdfNQuad createNQuad(RdfSubject subject, RdfPredicate predicate, RdfObject object, RdfGraphName graphName) {
+    public RdfNQuad createNQuad(RdfResource subject, RdfResource predicate, RdfValue object, RdfResource graphName) {
         
         if (subject == null || predicate == null || object == null) {
             throw new IllegalArgumentException();
@@ -83,63 +80,39 @@ public final class DefaultRdfProvider extends RdfProvider {
     }
 
     @Override
-    public RdfSubject createSubject(Type type, String value) {
-        
-        if (type == null || value == null || isBlank(value)) {
-            throw new IllegalArgumentException();
-        }
-                
-        return new RdfSubjectImpl(type, value);
-    }
-
-    @Override
-    public RdfPredicate createPredicate(RdfPredicate.Type type, String value) {
-        
-        if (type == null || value == null || value.isBlank()) {
-            throw new IllegalArgumentException();
-        }
-                
-        return new RdfPredicateImpl(type, value);
-    }
-
-    @Override
-    public RdfObject createObject(RdfObject.Type type, String value) {
-        
-        if (type == null || value == null || isBlank(value)) {
+    public RdfResource createBlankNode(String value) {
+        if (value == null || isBlank(value)) {
             throw new IllegalArgumentException();
         }
         
-        return new RdfObjectImpl(type, value);
+        return new RdfResourceImpl(value, true);
     }
 
     @Override
-    public RdfLiteral createLiteral(String lexicalForm, String langTag, String dataType) {
+    public RdfResource createIRI(String value) {
+        if (value == null || isBlank(value)) {
+            throw new IllegalArgumentException();
+        }
         
+        return new RdfResourceImpl(value, false);            
+    }
+
+    @Override
+    public RdfLiteral createLangString(String lexicalForm, String langTag) {
         if (lexicalForm == null) {
             throw new IllegalArgumentException();
         }
         
-        return new RdfLiteralImpl(lexicalForm, langTag, dataType);
+        return new RdfLiteralImpl(lexicalForm, langTag, null);
     }
 
     @Override
-    public RdfGraphName createGraphName(RdfGraphName.Type type, String value) {
-        
-        if (type == null || value == null || value.isBlank()) {
+    public RdfLiteral createTypedString(String lexicalForm, String datatype) {
+        if (lexicalForm == null) {
             throw new IllegalArgumentException();
         }
-
-        return new RdfGraphNameImpl(type, value);
-    }
-
-    @Override
-    public RdfObject createObject(RdfLiteral literal) {
         
-        if (literal == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return new RdfObjectImpl(literal);
+        return new RdfLiteralImpl(lexicalForm, null, datatype);
     }
     
     private static final boolean isBlank(String value) {

@@ -10,13 +10,14 @@ import java.util.Optional;
  *      IDL</a>
  *
  */
-public interface RdfLiteral {
+public interface RdfLiteral extends RdfValue {
 
     /**
      * Get the lexical value of the literal
      * 
      * @return lexical value, never <code>null</code>
      */
+    @Override
     String getValue();
 
     /**
@@ -33,12 +34,20 @@ public interface RdfLiteral {
      * 
      * @return language tag or {@link Optional#empty()} if not set
      */
-    Optional<String> getLanguage();
+    Optional<String> getLanguage();    
     
     @Override
-    boolean equals(Object o);
-
-    @Override
-    int hashCode();
+    default boolean isIRI() {
+        return false;
+    }
     
+    @Override
+    default boolean isBlankNode() {
+        return false;
+    }
+    
+    @Override
+    default RdfLiteral asLiteral() {
+        return this;
+    }
 }

@@ -23,10 +23,9 @@ import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfLiteral;
-import com.apicatalog.rdf.RdfObject;
-import com.apicatalog.rdf.RdfPredicate;
-import com.apicatalog.rdf.RdfSubject;
+import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfTriple;
+import com.apicatalog.rdf.RdfValue;
 import com.apicatalog.rdf.lang.RdfConstants;
 import com.apicatalog.rdf.lang.XsdConstants;
 
@@ -63,7 +62,7 @@ final class ObjectToRdf {
         return this;
     }
     
-    public RdfObject build() throws JsonLdError {
+    public RdfValue build() throws JsonLdError {
 
         // 1. - 2.
         if (NodeObject.isNodeObject(item)) {
@@ -77,11 +76,12 @@ final class ObjectToRdf {
             String idString = ((JsonString)id).getString();
      
             if (BlankNode.isWellFormed(idString)) {
-                return Rdf.createObject(RdfObject.Type.BLANK_NODE, idString);
+                return Rdf.createBlankNode(idString);
                 
             } else if (UriUtils.isAbsoluteUri(idString)) {
-                return Rdf.createObject(RdfObject.Type.IRI, idString);
+                return Rdf.createIRI(idString);
             }
+            
             return null;
         }
         
@@ -214,32 +214,32 @@ final class ObjectToRdf {
                 final String blankNodeId = nodeMap.createIdentifier();
                 
                 // 13.3.1.                
-                final RdfSubject subject = Rdf.createSubject(RdfSubject.Type.BLANK_NODE, blankNodeId);
+                final RdfResource subject = Rdf.createBlankNode(blankNodeId);
                 
                 // 13.3.2.
                 triples.add(Rdf.createTriple(
                                     subject, 
-                                    Rdf.createPredicate(RdfPredicate.Type.IRI, RdfConstants.VALUE), 
-                                    Rdf.createObject(RdfObject.Type.LITERAL, valueString))
+                                    Rdf.createIRI(RdfConstants.VALUE), 
+                                    Rdf.createString(valueString))
                                     );
                 
                 // 13.3.3.
                 if (item.containsKey(Keywords.LANGUAGE) && JsonUtils.isString(item.get(Keywords.LANGUAGE))) {
                     triples.add(Rdf.createTriple(
                                     subject, 
-                                    Rdf.createPredicate(RdfPredicate.Type.IRI, RdfConstants.LANGUAGE), 
-                                    Rdf.createObject(RdfObject.Type.LITERAL, item.getString(Keywords.LANGUAGE).toLowerCase()))
+                                    Rdf.createIRI(RdfConstants.LANGUAGE), 
+                                    Rdf.createString(item.getString(Keywords.LANGUAGE).toLowerCase()))
                                     );
                 }
                 
                 // 13.3.4.
                 triples.add(Rdf.createTriple(
                                     subject, 
-                                    Rdf.createPredicate(RdfPredicate.Type.IRI, RdfConstants.DIRECTION), 
-                                    Rdf.createObject(RdfObject.Type.LITERAL, item.getString(Keywords.DIRECTION)))
+                                    Rdf.createIRI(RdfConstants.DIRECTION), 
+                                    Rdf.createString(item.getString(Keywords.DIRECTION)))
                                     );
                 
-                return Rdf.createObject(RdfObject.Type.BLANK_NODE, blankNodeId);
+                return Rdf.createBlankNode(blankNodeId);
             }
             
         // 14.
@@ -254,7 +254,7 @@ final class ObjectToRdf {
         }
         
         // 15.
-        return rdfLiteral != null ? Rdf.createObject(rdfLiteral) : null;
+        return rdfLiteral;
     }
     
     private static final String toXsdDouble(BigDecimal bigDecimal) {
