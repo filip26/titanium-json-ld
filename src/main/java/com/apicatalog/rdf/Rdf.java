@@ -89,6 +89,32 @@ public final class Rdf {
         return RdfProvider.provider().createNQuad(subject, predicate, object, graphName);
     }
 
+    public static final RdfNQuad createNQuad(RdfTriple triple, RdfResource graphName) {
+        
+        if (triple == null) {            
+            throw new IllegalArgumentException("Triple cannot be null.");
+        }
+
+        return RdfProvider.provider().createNQuad(triple.getSubject(), triple.getPredicate(), triple.getObject(), graphName);
+    }
+
+    public static RdfValue createValue(String value) {
+        
+        if (value == null) {
+            throw new IllegalArgumentException();
+        }
+        
+        if (UriUtils.isAbsoluteUri(value)) {
+            return RdfProvider.provider().createIRI(value);
+        }
+        
+        if (BlankNode.isWellFormed(value)) {
+            return RdfProvider.provider().createBlankNode(value);
+        }
+        
+        return RdfProvider.provider().createTypedString(value, XsdConstants.STRING);
+    }
+
     public static RdfLiteral createString(String lexicalForm) {
         
         if (lexicalForm == null) {
@@ -136,7 +162,7 @@ public final class Rdf {
             return RdfProvider.provider().createBlankNode(resource);
         }
         
-        throw new IllegalArgumentException("The graph name must be an absolute IRI or blank node identifier, but was [" + resource + "].");        
+        throw new IllegalArgumentException("The resource must be an absolute IRI or blank node identifier, but was [" + resource + "].");        
     }
     
     public static RdfResource createBlankNode(final String value) {

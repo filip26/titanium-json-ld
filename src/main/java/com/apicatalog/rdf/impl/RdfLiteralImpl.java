@@ -4,7 +4,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.apicatalog.rdf.RdfLiteral;
-import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.lang.RdfConstants;
 import com.apicatalog.rdf.lang.XsdConstants;
 
@@ -36,6 +35,11 @@ final class RdfLiteralImpl implements RdfLiteral {
         return dataType;
     }
 
+    @Override
+    public boolean isLiteral() {
+        return true;
+    }
+    
     @Override
     public Optional<String> getLanguage() {
         return Optional.ofNullable(langTag);
@@ -85,35 +89,5 @@ final class RdfLiteralImpl implements RdfLiteral {
             return datatype;
         }
         return langTag == null ? XsdConstants.STRING : RdfConstants.LANG_STRING;
-    }
-
-    @Override
-    public boolean isLiteral() {
-        return true;
-    }
-
-    @Override
-    public boolean isIRI() {
-        return false;
-    }
-
-    @Override
-    public boolean isBlankNode() {
-        return false;
-    }
-
-    @Override
-    public ValueType getValueType() {
-        return ValueType.LITERAL;
-    }
-
-    @Override
-    public RdfResource asResource() {
-        throw new ClassCastException();
-    }
-
-    @Override
-    public RdfLiteral asLiteral() {
-        return this;
     }
 }

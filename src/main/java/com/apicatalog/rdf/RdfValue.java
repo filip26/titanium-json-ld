@@ -2,54 +2,39 @@ package com.apicatalog.rdf;
 
 /**
  * 
- * Represents an immutable RDF value.
+ * Represents an immutable RDF statement's value.
  * 
  * @since 0.8.4
  */
 public interface RdfValue {
 
     /**
-     * The type of a {@link RdfValue}.
-     */
-    enum ValueType { IRI, BLANK_NODE, LITERAL }
-    
-    /**
      * Indicates if the value type is {@link ValueType#LITERAL}.
      *
      * @return <code>true</code> if the value type is literal, <code>false</code> otherwise. 
      */
-    boolean isLiteral();
+    default boolean isLiteral() {
+        return false;
+    }
 
     /**
      * Indicates if the value type is {@link ValueType#IRI}.
      *
      * @return <code>true</code> if the value type is IRI, <code>false</code> otherwise. 
      */
-    boolean isIRI();
+    default boolean isIRI() {
+        return false;
+    }
 
     /**
      * Indicates if the value type is {@link ValueType#BLANK_NODE}.
      *
      * @return <code>true</code> if the value type is blank node, <code>false</code> otherwise. 
      */
-    boolean isBlankNode();
-
-    /**
-     * Returns the value type of this RDF value.
-     *
-     * @return RDF value type
-     */
-    ValueType getValueType();
+    default boolean isBlankNode() {
+        return false;
+    }
     
-    /**
-     * Return the RdfValue as a RdfResource
-     *
-     * @return the RdfValue as a RdfResource
-     * @throws ClassCastException if the RdfValue is not a RdfResource
-     *
-     */
-    RdfResource asResource();
-
     /**
      * Return the RdfValue as a RdfLiteral
      *
@@ -59,9 +44,20 @@ public interface RdfValue {
      */
     RdfLiteral asLiteral();    
     
+    /**
+     * Returns raw {@link String} representation of the value.
+     * 
+     * @return  text representing the value.
+     */
+    String getValue();
+
+    
     @Override
     boolean equals(Object o);
 
     @Override
     int hashCode();
+    
+    @Override
+    String toString();
 }

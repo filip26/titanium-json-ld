@@ -22,9 +22,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfNQuad;
@@ -126,15 +124,9 @@ public class NQuadsWriterTest {
         
         if (JsonUtils.isString(value)) {
 
-            String stringValue = ((JsonString)value).getString();
+            final String stringValue = ((JsonString)value).getString();
             
-            if (UriUtils.isAbsoluteUri(stringValue)) {
-                return Rdf.createIRI(stringValue);
-            }
-            if (BlankNode.isWellFormed(stringValue)) {
-                return Rdf.createBlankNode(stringValue);
-            }
-            return Rdf.createString(stringValue);
+            return Rdf.createValue(stringValue);
         }
         
         JsonObject object = value.asJsonObject();
@@ -149,5 +141,4 @@ public class NQuadsWriterTest {
 
         throw new IllegalStateException();
     }
-    
 }

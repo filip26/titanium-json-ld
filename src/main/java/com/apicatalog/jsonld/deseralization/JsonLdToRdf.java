@@ -160,7 +160,7 @@ public final class JsonLdToRdf {
                             
                             // 1.3.2.5.3.
                             listTriples.stream()
-                                        .map(t -> Rdf.createNQuad(t.getSubject(), t.getPredicate(), t.getObject(), rdfGraphName))
+                                        .map(triple -> Rdf.createNQuad(triple, rdfGraphName))
                                         .forEach(dataset::add);
                         }
                     }   

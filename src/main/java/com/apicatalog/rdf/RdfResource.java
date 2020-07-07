@@ -2,11 +2,13 @@ package com.apicatalog.rdf;
 
 public interface RdfResource extends RdfValue {
 
-    /**
-     * Returns {@link String} representation of the value.
-     * 
-     * @return  text representing the value.
-     */
-    String getValue();
-    
+    @Override
+    default boolean isLiteral() {
+        return false;
+    }
+ 
+    @Override
+    default RdfLiteral asLiteral() {
+        throw new ClassCastException();
+    }
 }

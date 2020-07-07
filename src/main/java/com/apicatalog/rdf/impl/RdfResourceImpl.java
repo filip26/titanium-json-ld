@@ -2,50 +2,28 @@ package com.apicatalog.rdf.impl;
 
 import java.util.Objects;
 
-import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfResource;
-import com.apicatalog.rdf.RdfValue;
 
 final class RdfResourceImpl implements RdfResource {
 
-    private final RdfValue.ValueType type;
     private final String value;
+    private final boolean blankNode;
     
-    protected RdfResourceImpl(final RdfValue.ValueType type, final String value) {
-        this.type = type;
+    protected RdfResourceImpl(final String value, boolean isBlankNode) {
         this.value = value;
-    }
-    
-    @Override
-    public boolean isLiteral() {
-        return false;
-    }
-
-    @Override
-    public boolean isIRI() {
-        return RdfValue.ValueType.IRI.equals(type);
+        this.blankNode = isBlankNode;
     }
 
     @Override
     public boolean isBlankNode() {
-        return RdfValue.ValueType.BLANK_NODE.equals(type);
+        return blankNode;
     }
-
+    
     @Override
-    public ValueType getValueType() {
-        return type;
+    public boolean isIRI() {
+        return !blankNode;
     }
-
-    @Override
-    public RdfResource asResource() {
-        return this;
-    }
-
-    @Override
-    public RdfLiteral asLiteral() {
-        throw new ClassCastException();
-    }
-
+    
     @Override
     public String getValue() {
         return value;

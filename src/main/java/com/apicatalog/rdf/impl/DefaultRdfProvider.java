@@ -85,7 +85,7 @@ public final class DefaultRdfProvider extends RdfProvider {
             throw new IllegalArgumentException();
         }
         
-        return new RdfResourceImpl(RdfValue.ValueType.BLANK_NODE, value);
+        return new RdfResourceImpl(value, true);
     }
 
     @Override
@@ -94,7 +94,7 @@ public final class DefaultRdfProvider extends RdfProvider {
             throw new IllegalArgumentException();
         }
         
-        return new RdfResourceImpl(RdfValue.ValueType.IRI, value);            
+        return new RdfResourceImpl(value, false);            
     }
 
     @Override

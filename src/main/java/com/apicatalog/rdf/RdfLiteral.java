@@ -17,6 +17,7 @@ public interface RdfLiteral extends RdfValue {
      * 
      * @return lexical value, never <code>null</code>
      */
+    @Override
     String getValue();
 
     /**
@@ -34,4 +35,19 @@ public interface RdfLiteral extends RdfValue {
      * @return language tag or {@link Optional#empty()} if not set
      */
     Optional<String> getLanguage();    
+    
+    @Override
+    default boolean isIRI() {
+        return false;
+    }
+    
+    @Override
+    default boolean isBlankNode() {
+        return false;
+    }
+    
+    @Override
+    default RdfLiteral asLiteral() {
+        return this;
+    }
 }
