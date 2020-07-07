@@ -31,7 +31,7 @@ public interface RdfLiteral {
      * An optional language tag as defined by [BCP47]. If this value is specified,
      * datatype MUST be rdf:langString.
      * 
-     * @return language tag or {@link Optional::empty()} if not set
+     * @return language tag or {@link Optional#empty()} if not set
      */
     Optional<String> getLanguage();
     
