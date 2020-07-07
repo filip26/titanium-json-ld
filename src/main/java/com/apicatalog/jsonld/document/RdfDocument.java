@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.net.URI;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.json.JsonException;
 
@@ -75,7 +76,7 @@ public final class RdfDocument implements Document {
         
         try {
 
-            RdfDataset dataset  = Rdf.createReader(MediaType.N_QUADS, is).readDataset();
+            RdfDataset dataset  = Rdf.createReader(type, is).readDataset();
 
             return new RdfDocument(type, null, dataset);
             
@@ -100,7 +101,7 @@ public final class RdfDocument implements Document {
         
         try {
 
-            RdfDataset dataset  = Rdf.createReader(MediaType.N_QUADS, reader).readDataset();
+            RdfDataset dataset  = Rdf.createReader(type, reader).readDataset();
 
             return new RdfDocument(type, null, dataset);
             
@@ -110,7 +111,7 @@ public final class RdfDocument implements Document {
     }
     
     public static final boolean accepts(final MediaType contentType) {
-        return MediaType.N_QUADS.match(contentType);
+        return Rdf.canRead().contains(contentType);
     }
     
     private static final void assertContentType(final MediaType contentType) {
@@ -118,7 +119,7 @@ public final class RdfDocument implements Document {
             throw new IllegalArgumentException(
                     "Unsupported media type '" + contentType 
                     + "'. Supported content types are [" 
-                    + MediaType.N_QUADS 
+                    + (Rdf.canRead().stream().map(MediaType::toString).collect(Collectors.joining(", ")))
                     + "]");
         }
     }

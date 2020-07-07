@@ -2,6 +2,8 @@ package com.apicatalog.rdf.impl;
 
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Arrays;
+import java.util.Collection;
 
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.RdfDataset;
@@ -20,7 +22,9 @@ import com.apicatalog.rdf.spi.RdfProvider;
 
 public final class DefaultRdfProvider extends RdfProvider {
 
-    public static final RdfProvider INSTANCE = new DefaultRdfProvider(); 
+    public static final RdfProvider INSTANCE = new DefaultRdfProvider();
+    
+    private static final Collection<MediaType> CAN_READWRITE = Arrays.asList(MediaType.N_QUADS);
     
     @Override
     public RdfDataset createDataset() {
@@ -113,6 +117,16 @@ public final class DefaultRdfProvider extends RdfProvider {
         }
         
         return new RdfLiteralImpl(lexicalForm, null, datatype);
+    }
+    
+    @Override
+    public Collection<MediaType> canRead() {
+        return CAN_READWRITE;
+    }
+
+    @Override
+    public Collection<MediaType> canWrite() {
+        return CAN_READWRITE;
     }
     
     private static final boolean isBlank(String value) {

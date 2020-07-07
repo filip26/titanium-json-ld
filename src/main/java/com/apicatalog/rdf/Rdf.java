@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Collection;
 
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.lang.BlankNode;
@@ -25,6 +26,10 @@ public final class Rdf {
         return RdfProvider.provider().createGraph();
     }
 
+    public static final Collection<MediaType> canRead() {
+        return RdfProvider.provider().canRead();
+    }
+    
     public static final RdfReader createReader(final MediaType contentType, Reader reader) throws UnsupportedContentException {
 
         if (reader == null || contentType == null) {
@@ -43,6 +48,10 @@ public final class Rdf {
         return createReader(contentType, new InputStreamReader(is));
     }
 
+    public static final Collection<MediaType> canWrite() {
+        return RdfProvider.provider().canWrite();
+    }
+    
     public static final RdfWriter createWriter(final MediaType contentType, final Writer writer) throws UnsupportedContentException {
         
         if (writer == null || contentType == null) {

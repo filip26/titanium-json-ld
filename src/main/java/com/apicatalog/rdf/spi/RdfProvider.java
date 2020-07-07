@@ -2,6 +2,7 @@ package com.apicatalog.rdf.spi;
 
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Collection;
 
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.RdfDataset;
@@ -27,8 +28,12 @@ public abstract class RdfProvider {
 
     public abstract RdfDataset createDataset();
 
+    public abstract Collection<MediaType> canRead();
+    
     public abstract RdfReader createReader(MediaType contentType, Reader reader) throws UnsupportedContentException;
 
+    public abstract Collection<MediaType> canWrite();
+    
     public abstract RdfWriter createWriter(MediaType contentType, Writer writer) throws UnsupportedContentException;
 
     public abstract RdfGraph createGraph();
