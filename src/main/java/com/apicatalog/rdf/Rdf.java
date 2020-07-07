@@ -13,7 +13,7 @@ import com.apicatalog.rdf.io.RdfFormat;
 import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.RdfWriter;
 import com.apicatalog.rdf.io.error.UnsupportedFormatException;
-import com.apicatalog.rdf.lang.RdfConstants;
+import com.apicatalog.rdf.lang.XsdConstants;
 import com.apicatalog.rdf.spi.RdfProvider;
 
 public final class Rdf {
@@ -65,7 +65,7 @@ public final class Rdf {
         return RdfProvider.provider().createDataset();
     }
 
-    public static final RdfTriple createTriple(RdfSubject subject, RdfPredicate predicate, RdfObject object) {
+    public static final RdfTriple createTriple(RdfResource subject, RdfResource predicate, RdfValue object) {
         
         if (subject == null || predicate == null || object == null) {
             throw new IllegalArgumentException();
@@ -74,7 +74,7 @@ public final class Rdf {
         return RdfProvider.provider().createTriple(subject, predicate, object);
     }
 
-    public static final RdfNQuad createNQuad(RdfSubject subject, RdfPredicate predicate, RdfObject object, RdfGraphName graphName) {
+    public static final RdfNQuad createNQuad(RdfResource subject, RdfResource predicate, RdfValue object, RdfResource graphName) {
         
         if (subject == null) {            
             throw new IllegalArgumentException("Subject cannot be null.");
@@ -89,95 +89,22 @@ public final class Rdf {
         return RdfProvider.provider().createNQuad(subject, predicate, object, graphName);
     }
 
-    /**
-     * Create a new {@link RdfSubject}.
-     * 
-     * @param subject an absolute IRI or blank node identifier
-     * @return {@link RdfSubject}
-     */
-    public static RdfSubject createSubject(final String subject) {
-
-        if (subject == null) {            
-            throw new IllegalArgumentException("The subject cannot be null.");
-        }
+    public static RdfLiteral createString(String lexicalForm) {
         
-        if (UriUtils.isAbsoluteUri(subject)) {
-            return createSubject(RdfSubject.Type.IRI, subject);
-        }
-        
-        if (BlankNode.isWellFormed(subject)) {
-            return createSubject(RdfSubject.Type.BLANK_NODE, subject);
-        }
-        
-        throw new IllegalArgumentException("The subject must be an absolute IRI or blank node identifier, but was [" + subject + "].");
-    }
-    
-    public static RdfSubject createSubject(RdfSubject.Type type, String value) {
-        
-        if (type == null || value == null || value.isBlank()) {
+        if (lexicalForm == null) {
             throw new IllegalArgumentException();
         }
         
-        return RdfProvider.provider().createSubject(type, value);        
+        return RdfProvider.provider().createTypedString(lexicalForm, XsdConstants.STRING);
     }
 
-    /**
-     * Create a new {@link RdfPredicate}.
-     * 
-     * @param predicate an absolute IRI or blank node identifier
-     * @return {@link RdfPredicate}
-     */
-    public static RdfPredicate createPredicate(String predicate) {
-        
-        if (predicate == null) {            
-            throw new IllegalArgumentException("The predicate cannot be null.");
-        }
-        
-        if (UriUtils.isAbsoluteUri(predicate)) {
-            return createPredicate(RdfPredicate.Type.IRI, predicate);
-        }
-
-        if (BlankNode.isWellFormed(predicate)) {
-            return createPredicate(RdfPredicate.Type.BLANK_NODE, predicate);
-        }
-
-        throw new IllegalArgumentException("The predicate must be an absolute IRI or blank node identifier, but was [" + predicate + "].");
-    }
-    
-    public static RdfPredicate createPredicate(RdfPredicate.Type type, String value) {
-        
-        if (type == null || value == null || value.isBlank()) {
-            throw new IllegalArgumentException();
-        }
-        
-        return RdfProvider.provider().createPredicate(type, value);
-    }
-
-    public static RdfObject createObject(RdfObject.Type type, String value) {
-        
-        if (type == null || value == null /*|| value.isBlank()*/) {
-            throw new IllegalArgumentException();
-        }
-        
-        return RdfProvider.provider().createObject(type, value);
-    }
-    
-    public static RdfObject createObject(RdfLiteral literal) {
-        
-        if (literal == null) {
-            throw new IllegalArgumentException();
-        }
-        
-        return RdfProvider.provider().createObject(literal);
-    }
-    
     public static RdfLiteral createTypedString(String lexicalForm, String dataType) {
         
         if (lexicalForm == null) {
             throw new IllegalArgumentException();
         }
         
-        return RdfProvider.provider().createLiteral(lexicalForm, null, dataType);
+        return RdfProvider.provider().createTypedString(lexicalForm, dataType);
     }
     
     public static RdfLiteral createLangString(String lexicalForm, String langTag) {
@@ -186,38 +113,47 @@ public final class Rdf {
             throw new IllegalArgumentException();
         }
         
-        return RdfProvider.provider().createLiteral(lexicalForm, langTag, RdfConstants.LANG_STRING);
+        return RdfProvider.provider().createLangString(lexicalForm, langTag);
     }
 
     /**
-     * Create a new {@link RdfGraphName}.
+     * Create a new {@link RdfResource}.
      * 
-     * @param graphName an absolute IRI or blank node identifier
+     * @param resource is an absolute IRI or blank node identifier
      * @return {@link RdfGraphName}
      */
-    public static RdfGraphName createGraphName(String graphName) {
+    public static RdfResource createResource(String resource) {
         
-        if (graphName == null) {            
-            throw new IllegalArgumentException("The graph name cannot be null.");
+        if (resource == null) {
+            throw new IllegalArgumentException("The resource value cannot be null.");
         }
         
-        if (UriUtils.isAbsoluteUri(graphName)) {
-            return createGraphName(RdfGraphName.Type.IRI, graphName);
+        if (UriUtils.isAbsoluteUri(resource)) {
+            return RdfProvider.provider().createIRI(resource);
         }
         
-        if (BlankNode.isWellFormed(graphName)) {
-            return createGraphName(RdfGraphName.Type.BLANK_NODE, graphName);
+        if (BlankNode.isWellFormed(resource)) {
+            return RdfProvider.provider().createBlankNode(resource);
         }
         
-        throw new IllegalArgumentException("The graph name must be an absolute IRI or blank node identifier, but was [" + graphName + "].");        
+        throw new IllegalArgumentException("The graph name must be an absolute IRI or blank node identifier, but was [" + resource + "].");        
     }
     
-    public static RdfGraphName createGraphName(RdfGraphName.Type type, String value) {
+    public static RdfResource createBlankNode(final String value) {
         
-        if (type == null || value == null || value.isBlank()) {
+        if (value == null || value.isBlank()) {
             throw new IllegalArgumentException();
         }
 
-        return RdfProvider.provider().createGraphName(type, value);
+        return RdfProvider.provider().createBlankNode(value);
+    }
+    
+    public static RdfResource createIRI(final String value) {
+        
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException();
+        }
+
+        return RdfProvider.provider().createIRI(value);
     }
 }

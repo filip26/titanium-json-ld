@@ -12,10 +12,8 @@ import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.rdf.Rdf;
-import com.apicatalog.rdf.RdfObject;
-import com.apicatalog.rdf.RdfPredicate;
-import com.apicatalog.rdf.RdfSubject;
 import com.apicatalog.rdf.RdfTriple;
+import com.apicatalog.rdf.RdfValue;
 import com.apicatalog.rdf.lang.RdfConstants;
 
 /**
@@ -48,11 +46,11 @@ final class ListToRdf {
         return this;
     }
     
-    public RdfObject build() throws JsonLdError {
+    public RdfValue build() throws JsonLdError {
         
         // 1.
         if (JsonUtils.isEmptyArray(list)) {
-            return Rdf.createObject(RdfObject.Type.IRI, RdfConstants.NIL);
+            return Rdf.createIRI(RdfConstants.NIL);
         }
 
         // 2.
@@ -71,7 +69,7 @@ final class ListToRdf {
             List<RdfTriple> embeddedTriples = new ArrayList<>();
             
             // 3.2.
-            RdfObject object = ObjectToRdf
+            RdfValue object = ObjectToRdf
                                     .with(item.asJsonObject(), embeddedTriples, nodeMap)
                                     .rdfDirection(rdfDirection)
                                     .build();
@@ -79,20 +77,20 @@ final class ListToRdf {
             // 3.3.
             if (object != null) {
                 triples.add(Rdf.createTriple(
-                                    Rdf.createSubject(RdfSubject.Type.BLANK_NODE, subject), 
-                                    Rdf.createPredicate(RdfPredicate.Type.IRI, RdfConstants.FIRST), 
+                                    Rdf.createBlankNode(subject), 
+                                    Rdf.createIRI(RdfConstants.FIRST), 
                                     object
                                     ));
             }
 
             // 3.4.
-            RdfObject rest = (index < bnodes.length) ? Rdf.createObject(RdfObject.Type.BLANK_NODE, bnodes[index]) 
-                                        : Rdf.createObject(RdfObject.Type.IRI, RdfConstants.NIL)
+            RdfValue rest = (index < bnodes.length) ? Rdf.createBlankNode(bnodes[index]) 
+                                        : Rdf.createIRI(RdfConstants.NIL)
                                         ;
             
             triples.add(Rdf.createTriple(
-                                    Rdf.createSubject(RdfSubject.Type.BLANK_NODE, subject), 
-                                    Rdf.createPredicate(RdfPredicate.Type.IRI, RdfConstants.REST), 
+                                    Rdf.createBlankNode(subject), 
+                                    Rdf.createIRI(RdfConstants.REST), 
                                     rest
                                     ));
             
@@ -101,6 +99,6 @@ final class ListToRdf {
         }
         
         // 4.
-        return Rdf.createObject(RdfObject.Type.BLANK_NODE, bnodes[0]);
+        return Rdf.createBlankNode(bnodes[0]);
     }
 }

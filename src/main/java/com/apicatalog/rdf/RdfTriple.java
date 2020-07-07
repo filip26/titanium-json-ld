@@ -15,10 +15,10 @@ public interface RdfTriple {
      * 
      * @return an absolute URI or blank node
      */
-    RdfSubject getSubject();
+    RdfResource getSubject();
 
-    RdfPredicate getPredicate();
+    RdfResource getPredicate();
     
-    RdfObject getObject();
+    RdfValue getObject();
 
 }

@@ -27,12 +27,9 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfGraphName;
 import com.apicatalog.rdf.RdfNQuad;
-import com.apicatalog.rdf.RdfObject;
-import com.apicatalog.rdf.RdfObject.Type;
-import com.apicatalog.rdf.RdfPredicate;
-import com.apicatalog.rdf.RdfSubject;
+import com.apicatalog.rdf.RdfResource;
+import com.apicatalog.rdf.RdfValue;
 import com.apicatalog.rdf.io.RdfFormat;
 import com.apicatalog.rdf.io.error.UnsupportedFormatException;
 import com.apicatalog.rdf.io.nquad.writer.NQuadsWriterTestCase;
@@ -110,44 +107,44 @@ public class NQuadsWriterTest {
     
     private static final RdfNQuad createStatement(final JsonObject value) {
         
-        RdfSubject subject = Rdf.createSubject(value.getString("subject"));
+        RdfResource subject = Rdf.createResource(value.getString("subject"));
 
-        RdfPredicate predicate = Rdf.createPredicate(value.getString("predicate"));
+        RdfResource predicate = Rdf.createResource(value.getString("predicate"));
 
-        RdfObject object = createObject(value.get("object"));
+        RdfValue object = createObject(value.get("object"));
             
-        RdfGraphName graph = null;
+        RdfResource graph = null;
         
         if (value.containsKey("graph")) {
-            graph = Rdf.createGraphName(value.getString("graph"));
+            graph = Rdf.createResource(value.getString("graph"));
         }
         
         return Rdf.createNQuad(subject, predicate, object, graph);
     }   
     
-    private static final RdfObject createObject(final JsonValue value) {
+    private static final RdfValue createObject(final JsonValue value) {
         
         if (JsonUtils.isString(value)) {
 
             String stringValue = ((JsonString)value).getString();
             
             if (UriUtils.isAbsoluteUri(stringValue)) {
-                return Rdf.createObject(Type.IRI, stringValue);
+                return Rdf.createIRI(stringValue);
             }
             if (BlankNode.isWellFormed(stringValue)) {
-                return Rdf.createObject(Type.BLANK_NODE, stringValue);
+                return Rdf.createBlankNode(stringValue);
             }
-            return Rdf.createObject(Type.LITERAL, stringValue);
+            return Rdf.createString(stringValue);
         }
         
         JsonObject object = value.asJsonObject();
         
         if (object.containsKey(Keywords.TYPE)) {
-            return Rdf.createObject(Rdf.createTypedString(object.getString(Keywords.VALUE), object.getString(Keywords.TYPE)));
+            return Rdf.createTypedString(object.getString(Keywords.VALUE), object.getString(Keywords.TYPE));
         }
 
         if (object.containsKey(Keywords.LANGUAGE)) {
-            return Rdf.createObject(Rdf.createLangString(object.getString(Keywords.VALUE), object.getString(Keywords.LANGUAGE)));
+            return Rdf.createLangString(object.getString(Keywords.VALUE), object.getString(Keywords.LANGUAGE));
         }
 
         throw new IllegalStateException();

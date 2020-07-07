@@ -11,14 +11,13 @@ public interface RdfDataset {
         
     List<RdfNQuad> toList();
     
-    Set<RdfGraphName> getGraphNames();
+    Set<RdfResource> getGraphNames();
     
-    RdfGraph getGraph(RdfGraphName graphName);
+    RdfGraph getGraph(RdfResource graphName);
 
     /**
      * 
      * @return total number of n-quads in the dataset 
      */    
     int size();
-
 }

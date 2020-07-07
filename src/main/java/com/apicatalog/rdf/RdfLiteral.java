@@ -10,7 +10,7 @@ import java.util.Optional;
  *      IDL</a>
  *
  */
-public interface RdfLiteral {
+public interface RdfLiteral extends RdfValue {
 
     /**
      * Get the lexical value of the literal
@@ -33,12 +33,5 @@ public interface RdfLiteral {
      * 
      * @return language tag or {@link Optional#empty()} if not set
      */
-    Optional<String> getLanguage();
-    
-    @Override
-    boolean equals(Object o);
-
-    @Override
-    int hashCode();
-    
+    Optional<String> getLanguage();    
 }

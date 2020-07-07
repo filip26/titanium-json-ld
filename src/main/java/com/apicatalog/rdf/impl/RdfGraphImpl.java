@@ -8,14 +8,13 @@ import java.util.Map;
 import java.util.Set;
 
 import com.apicatalog.rdf.RdfGraph;
-import com.apicatalog.rdf.RdfObject;
-import com.apicatalog.rdf.RdfPredicate;
-import com.apicatalog.rdf.RdfSubject;
+import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfTriple;
+import com.apicatalog.rdf.RdfValue;
 
 final class RdfGraphImpl implements RdfGraph {
 
-    private final Map<RdfSubject, Map<RdfPredicate, Set<RdfObject>>> index;
+    private final Map<RdfResource, Map<RdfResource, Set<RdfValue>>> index;
     
     private final List<RdfTriple> triples;
     

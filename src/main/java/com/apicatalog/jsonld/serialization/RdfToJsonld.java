@@ -25,7 +25,7 @@ import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
-import com.apicatalog.rdf.RdfGraphName;
+import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.lang.RdfConstants;
 
@@ -101,8 +101,8 @@ public final class RdfToJsonld {
         // 5.
         step5(Keywords.DEFAULT, dataset.getDefaultGraph());
         
-        for (RdfGraphName graphName : dataset.getGraphNames()) {
-            step5(graphName.toString(), dataset.getGraph(graphName));            
+        for (RdfResource graphName : dataset.getGraphNames()) {
+            step5(graphName.asResource().getValue(), dataset.getGraph(graphName));            
         }
         
         // 6.
