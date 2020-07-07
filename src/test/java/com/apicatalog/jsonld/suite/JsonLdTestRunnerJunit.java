@@ -16,13 +16,13 @@ import org.junit.Assert;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.io.RdfFormat;
-import com.apicatalog.rdf.io.error.UnsupportedFormatException;
+import com.apicatalog.rdf.io.error.UnsupportedContentException;
 import com.apicatalog.rdf.io.nquad.NQuadsWriterException;
 
 public class JsonLdTestRunnerJunit {
@@ -143,12 +143,12 @@ public class JsonLdTestRunnerJunit {
                 System.out.println("Test " + testCase.id + ": " + testCase.name);
                 System.out.println("Expected:");
                 
-                Rdf.createWriter(System.out, RdfFormat.N_QUADS).write(expected);
+                Rdf.createWriter(MediaType.N_QUADS, System.out).write(expected);
     
                 System.out.println();
                 System.out.println("Actual:");
             
-                Rdf.createWriter(System.out, RdfFormat.N_QUADS).write(result);
+                Rdf.createWriter(MediaType.N_QUADS, System.out).write(result);
                 
                 System.out.println();
             }
@@ -157,7 +157,7 @@ public class JsonLdTestRunnerJunit {
             
             return match;
             
-        } catch (NQuadsWriterException | UnsupportedFormatException | IOException e ) {
+        } catch (NQuadsWriterException | UnsupportedContentException | IOException e ) {
             Assert.fail(e.getMessage());
         }
         return false;

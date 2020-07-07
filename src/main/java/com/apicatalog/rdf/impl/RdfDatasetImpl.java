@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import com.apicatalog.rdf.RdfDataset;
@@ -46,6 +47,7 @@ final class RdfDatasetImpl implements RdfDataset {
             RdfGraphImpl graph = graphs.get(nquad.getGraphName());
             
             if (graph == null) {
+                
                 graph = new RdfGraphImpl();
                 graphs.put(nquad.getGraphName(), graph);
                 graph.add(nquad);
@@ -57,6 +59,7 @@ final class RdfDatasetImpl implements RdfDataset {
             }
     
         } else {
+            
             // add to default graph
             if (!defaultGraph.contains(nquad)) {
                 defaultGraph.add(nquad);
@@ -71,8 +74,8 @@ final class RdfDatasetImpl implements RdfDataset {
     }
 
     @Override
-    public RdfGraph getGraph(final RdfResource graphName) {
-        return graphs.get(graphName);
+    public Optional<RdfGraph> getGraph(final RdfResource graphName) {
+        return Optional.ofNullable(graphs.get(graphName));
     }
 
     @Override

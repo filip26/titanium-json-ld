@@ -1,8 +1,7 @@
 package com.apicatalog.rdf;
 
-/**
- * 
- * Represents an immutable RDF statement's value.
+/** 
+ * An immutable RDF statement's value. Represents an absolute IRI or blank node identifier or RDF literal.
  * 
  * @since 0.8.4
  */

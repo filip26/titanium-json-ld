@@ -102,7 +102,7 @@ public final class RdfToJsonld {
         step5(Keywords.DEFAULT, dataset.getDefaultGraph());
         
         for (RdfResource graphName : dataset.getGraphNames()) {
-            step5(graphName.getValue(), dataset.getGraph(graphName));            
+            step5(graphName.getValue(), dataset.getGraph(graphName).orElse(null));            
         }
         
         // 6.

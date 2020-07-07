@@ -1,12 +1,7 @@
 package com.apicatalog.rdf;
 
 /**
- * The {@link RdfTriple} interface describes an triple.
- * 
- * @see <a href=
- *      "https://www.w3.org/TR/json-ld11-api/#webidl-1589662450">RdfTriple
- *      IDL</a>
- *
+ * The {@link RdfTriple} interface describes an immutable RDF triple. 
  */
 public interface RdfTriple {
 
@@ -17,8 +12,19 @@ public interface RdfTriple {
      */
     RdfResource getSubject();
 
+    /**
+     * An absolute IRI or blank node identifier denoting the predicate of the triple.
+     * 
+     * @return an absolute URI or blank node
+     */
     RdfResource getPredicate();
-    
+
+
+    /**
+     * An absolute IRI or blank node identifier or {@link RdfLiteral}.
+     * 
+     * @return {@link RdfValue}
+     */
     RdfValue getObject();
 
 }

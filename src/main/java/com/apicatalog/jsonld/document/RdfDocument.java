@@ -13,8 +13,7 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.io.RdfFormat;
-import com.apicatalog.rdf.io.error.UnsupportedFormatException;
+import com.apicatalog.rdf.io.error.UnsupportedContentException;
 import com.apicatalog.rdf.io.nquad.NQuadsReaderException;
 
 public final class RdfDocument implements Document {
@@ -76,11 +75,11 @@ public final class RdfDocument implements Document {
         
         try {
 
-            RdfDataset dataset  = Rdf.createReader(is, RdfFormat.N_QUADS).readDataset();
+            RdfDataset dataset  = Rdf.createReader(MediaType.N_QUADS, is).readDataset();
 
             return new RdfDocument(type, null, dataset);
             
-        } catch (JsonException | IOException | NQuadsReaderException | UnsupportedFormatException e) {
+        } catch (JsonException | IOException | NQuadsReaderException | UnsupportedContentException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
@@ -101,11 +100,11 @@ public final class RdfDocument implements Document {
         
         try {
 
-            RdfDataset dataset  = Rdf.createReader(reader, RdfFormat.N_QUADS).readDataset();
+            RdfDataset dataset  = Rdf.createReader(MediaType.N_QUADS, reader).readDataset();
 
             return new RdfDocument(type, null, dataset);
             
-        } catch (JsonException | IOException | NQuadsReaderException | UnsupportedFormatException e) {
+        } catch (JsonException | IOException | NQuadsReaderException | UnsupportedContentException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }

@@ -7,12 +7,12 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 
+import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.uri.UriUtils;
-import com.apicatalog.rdf.io.RdfFormat;
 import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.RdfWriter;
-import com.apicatalog.rdf.io.error.UnsupportedFormatException;
+import com.apicatalog.rdf.io.error.UnsupportedContentException;
 import com.apicatalog.rdf.lang.XsdConstants;
 import com.apicatalog.rdf.spi.RdfProvider;
 
@@ -25,40 +25,40 @@ public final class Rdf {
         return RdfProvider.provider().createGraph();
     }
 
-    public static final RdfReader createReader(Reader reader, RdfFormat format) throws UnsupportedFormatException {
+    public static final RdfReader createReader(final MediaType contentType, Reader reader) throws UnsupportedContentException {
 
-        if (reader == null || format == null) {
+        if (reader == null || contentType == null) {
             throw new IllegalArgumentException();
         }
 
-        return RdfProvider.provider().createReader(reader, format);
+        return RdfProvider.provider().createReader(contentType, reader);
     }
     
-    public static final RdfReader createReader(InputStream is, RdfFormat format) throws UnsupportedFormatException {
+    public static final RdfReader createReader(final MediaType contentType, final InputStream is) throws UnsupportedContentException {
         
-        if (is == null || format == null) {
+        if (is == null || contentType == null) {
             throw new IllegalArgumentException();
         }
 
-        return createReader(new InputStreamReader(is), format);
+        return createReader(contentType, new InputStreamReader(is));
     }
 
-    public static final RdfWriter createWriter(Writer writer, RdfFormat format) throws UnsupportedFormatException {
+    public static final RdfWriter createWriter(final MediaType contentType, final Writer writer) throws UnsupportedContentException {
         
-        if (writer == null || format == null) {
+        if (writer == null || contentType == null) {
             throw new IllegalArgumentException();
         }
 
-        return RdfProvider.provider().createWriter(writer, format);
+        return RdfProvider.provider().createWriter(contentType, writer);
     }
 
-    public static final RdfWriter createWriter(OutputStream os, RdfFormat format) throws UnsupportedFormatException {
+    public static final RdfWriter createWriter(final MediaType contentType, final OutputStream os) throws UnsupportedContentException {
         
-        if (os == null || format == null) {
+        if (os == null || contentType == null) {
             throw new IllegalArgumentException();
         }
 
-        return createWriter(new OutputStreamWriter(os), format);
+        return createWriter(contentType, new OutputStreamWriter(os));
     }
 
     public static final RdfDataset createDataset() {

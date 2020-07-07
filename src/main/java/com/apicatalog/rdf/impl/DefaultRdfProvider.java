@@ -3,6 +3,7 @@ package com.apicatalog.rdf.impl;
 import java.io.Reader;
 import java.io.Writer;
 
+import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
 import com.apicatalog.rdf.RdfLiteral;
@@ -10,10 +11,9 @@ import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.RdfValue;
-import com.apicatalog.rdf.io.RdfFormat;
 import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.RdfWriter;
-import com.apicatalog.rdf.io.error.UnsupportedFormatException;
+import com.apicatalog.rdf.io.error.UnsupportedContentException;
 import com.apicatalog.rdf.io.nquad.NQuadsReader;
 import com.apicatalog.rdf.io.nquad.NQuadsWriter;
 import com.apicatalog.rdf.spi.RdfProvider;
@@ -28,30 +28,30 @@ public final class DefaultRdfProvider extends RdfProvider {
     }
 
     @Override
-    public RdfReader createReader(Reader reader, RdfFormat format) throws UnsupportedFormatException {
+    public RdfReader createReader(final MediaType contentType, final Reader reader) throws UnsupportedContentException {
         
-        if (reader == null || format == null) {
+        if (reader == null || contentType == null) {
             throw new IllegalArgumentException();
         }
         
-        if (RdfFormat.N_QUADS.equals(format)) {
+        if (MediaType.N_QUADS.match(contentType)) {
             return new NQuadsReader(reader);            
         }
-        throw new UnsupportedFormatException(format);
+        throw new UnsupportedContentException(contentType.toString());
     }
 
     @Override
-    public RdfWriter createWriter(Writer writer, RdfFormat format) throws UnsupportedFormatException {
+    public RdfWriter createWriter(final MediaType contentType, final Writer writer) throws UnsupportedContentException {
 
-        if (writer == null || format == null) {
+        if (writer == null || contentType == null) {
             throw new IllegalArgumentException();
         }
 
-        if (RdfFormat.N_QUADS.equals(format)) {
+        if (MediaType.N_QUADS.match(contentType)) {
             return new NQuadsWriter(writer);            
         }
         
-        throw new UnsupportedFormatException(format);
+        throw new UnsupportedContentException(contentType.toString());
     }
 
     @Override
