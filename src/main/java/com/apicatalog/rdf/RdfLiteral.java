@@ -1,5 +1,7 @@
 package com.apicatalog.rdf;
 
+import java.util.Optional;
+
 /**
  * The {@link RdfLiteral} interface describes an <code>RDF Literal</code>.
  * 
@@ -13,7 +15,7 @@ public interface RdfLiteral {
     /**
      * Get the lexical value of the literal
      * 
-     * @return lexical value
+     * @return lexical value, never <code>null</code>
      */
     String getValue();
 
@@ -29,9 +31,9 @@ public interface RdfLiteral {
      * An optional language tag as defined by [BCP47]. If this value is specified,
      * datatype MUST be rdf:langString.
      * 
-     * @return language tag or <code>null</code> if not set
+     * @return language tag or {@link Optional::empty()} if not set
      */
-    String getLanguage();
+    Optional<String> getLanguage();
     
     @Override
     boolean equals(Object o);
