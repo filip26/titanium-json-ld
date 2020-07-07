@@ -22,8 +22,8 @@ import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.RdfDataset;
+import com.apicatalog.rdf.io.error.RdfWriterException;
 import com.apicatalog.rdf.io.error.UnsupportedContentException;
-import com.apicatalog.rdf.io.nquad.NQuadsWriterException;
 
 public class JsonLdTestRunnerJunit {
 
@@ -157,7 +157,7 @@ public class JsonLdTestRunnerJunit {
             
             return match;
             
-        } catch (NQuadsWriterException | UnsupportedContentException | IOException e ) {
+        } catch (RdfWriterException | UnsupportedContentException | IOException e ) {
             Assert.fail(e.getMessage());
         }
         return false;

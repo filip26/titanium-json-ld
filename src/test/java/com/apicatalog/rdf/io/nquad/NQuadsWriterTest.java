@@ -29,6 +29,7 @@ import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfValue;
+import com.apicatalog.rdf.io.error.RdfWriterException;
 import com.apicatalog.rdf.io.error.UnsupportedContentException;
 import com.apicatalog.rdf.io.nquad.writer.NQuadsWriterTestCase;
 import com.apicatalog.rdf.io.nquad.writer.NQuadsWriterTestSuite;
@@ -47,7 +48,7 @@ public class NQuadsWriterTest {
     public String testName;
 
     @Test
-    public void testWrite() throws IOException, URISyntaxException, NQuadsWriterException, UnsupportedContentException {
+    public void testWrite() throws IOException, URISyntaxException, RdfWriterException, UnsupportedContentException {
 
         Assert.assertNotNull(testCase);
         Assert.assertNotNull(testCase.getInput());

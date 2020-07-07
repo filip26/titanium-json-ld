@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
 
+import com.apicatalog.rdf.io.error.RdfReaderException;
 import com.apicatalog.rdf.lang.RdfAlphabet;
 
 /**
@@ -14,7 +15,7 @@ import com.apicatalog.rdf.lang.RdfAlphabet;
  */
 final class Tokenizer {
 
-    private static final int BUFFER_SIZE = 8192;
+    private static final int BUFFER_SIZE = 8192*2;
     
     private final Reader reader;
     
@@ -25,7 +26,7 @@ final class Tokenizer {
         this.next = null;
     }
     
-    public Token next() throws NQuadsReaderException {
+    public Token next() throws RdfReaderException {
         
         if (!hasNext()) {
             return next;
@@ -35,12 +36,12 @@ final class Tokenizer {
         return next;
     }
     
-    public Token token() throws NQuadsReaderException {        
+    public Token token() throws RdfReaderException {        
         hasNext();
         return next;
     }
     
-    public boolean accept(TokenType type) throws NQuadsReaderException {
+    public boolean accept(TokenType type) throws RdfReaderException {
         if (type == token().getType()) {
             next();
             return true;
@@ -48,7 +49,7 @@ final class Tokenizer {
         return false;
     }     
     
-    private Token doRead() throws NQuadsReaderException {
+    private Token doRead() throws RdfReaderException {
         
         try {
             int ch = reader.read();
@@ -104,21 +105,21 @@ final class Tokenizer {
             unexpected(ch, "\\t", "\\n", "\\r", "^", "@", "SPACE", ".", "<", "_", "\"", "#");
             
         } catch (IOException e) {
-            throw new NQuadsReaderException(e);
+            throw new RdfReaderException(e);
         }
         
         throw new IllegalStateException();
     }
     
-    private static final void unexpected(int actual, String ...expected) throws NQuadsReaderException {
-        throw new NQuadsReaderException(
+    private static final void unexpected(int actual, String ...expected) throws RdfReaderException {
+        throw new RdfReaderException(
                         actual != -1 
                             ? "Unexpected character [" + (char)actual  + "] expected " +  Arrays.toString(expected) + "." 
                             : "Unexpected end of input, expected " + Arrays.toString(expected) + "."
                             );
     }
     
-    private Token skipWhitespaces() throws NQuadsReaderException {
+    private Token skipWhitespaces() throws RdfReaderException {
 
         try {
             reader.mark(1);
@@ -134,11 +135,11 @@ final class Tokenizer {
             return Token.WS;
             
         } catch (IOException e) {
-            throw new NQuadsReaderException(e);
+            throw new RdfReaderException(e);
         }
     }
 
-    private Token skipEol() throws NQuadsReaderException {
+    private Token skipEol() throws RdfReaderException {
 
         try {
             reader.mark(1);
@@ -154,11 +155,11 @@ final class Tokenizer {
             return Token.EOL;
             
         } catch (IOException e) {
-            throw new NQuadsReaderException(e);
+            throw new RdfReaderException(e);
         }
     }
 
-    private Token readIriRef() throws NQuadsReaderException {
+    private Token readIriRef() throws RdfReaderException {
 
         try {
 
@@ -197,11 +198,11 @@ final class Tokenizer {
             return new Token(TokenType.IRI_REF, value.toString());
             
         } catch (IOException e) {
-            throw new NQuadsReaderException(e);
+            throw new RdfReaderException(e);
         }        
     }
     
-    private Token readString() throws NQuadsReaderException {
+    private Token readString() throws RdfReaderException {
         try {
 
             StringBuilder value = new StringBuilder();
@@ -234,11 +235,11 @@ final class Tokenizer {
             return new Token(TokenType.STRING_LITERAL_QUOTE, value.toString());
             
         } catch (IOException e) {
-            throw new NQuadsReaderException(e);
+            throw new RdfReaderException(e);
         }    
     }
 
-    private Token readLangTag() throws NQuadsReaderException {
+    private Token readLangTag() throws RdfReaderException {
         try {
 
             StringBuilder value = new StringBuilder();
@@ -286,11 +287,11 @@ final class Tokenizer {
             return new Token(TokenType.LANGTAG, value.toString());
             
         } catch (IOException e) {
-            throw new NQuadsReaderException(e);
+            throw new RdfReaderException(e);
         }    
     }
     
-    private void readIriEscape(final StringBuilder value) throws NQuadsReaderException, IOException {
+    private void readIriEscape(final StringBuilder value) throws RdfReaderException, IOException {
         int ch = reader.read();
     
         if (ch == 'u') {
@@ -306,7 +307,7 @@ final class Tokenizer {
         }
     }
     
-    private void readEscape(final StringBuilder value) throws NQuadsReaderException, IOException {
+    private void readEscape(final StringBuilder value) throws RdfReaderException, IOException {
         int ch = reader.read();
         
         if (ch == 't' || ch == 'b' || ch == 'n' || ch == 'r' || ch == 'f' || ch == '\'' || ch == '\\' || ch =='"') {
@@ -326,7 +327,7 @@ final class Tokenizer {
         }
     }
 
-    private Token readBlankNode() throws NQuadsReaderException {
+    private Token readBlankNode() throws RdfReaderException {
         
         try {
 
@@ -382,11 +383,11 @@ final class Tokenizer {
             return new Token(TokenType.BLANK_NODE_LABEL, value.toString());
             
         } catch (IOException e) {
-            throw new NQuadsReaderException(e);
+            throw new RdfReaderException(e);
         }    
     }
     
-    private char[] readUnicode() throws NQuadsReaderException, IOException {
+    private char[] readUnicode() throws RdfReaderException, IOException {
         
         char[] code = new char[4];
         
@@ -398,7 +399,7 @@ final class Tokenizer {
         return Character.toChars(Integer.parseInt(String.valueOf(code), 16));
     }
 
-    private char readHex8()  throws IOException, NQuadsReaderException {
+    private char readHex8()  throws IOException, RdfReaderException {
         
         int hex = reader.read();
         
@@ -408,7 +409,7 @@ final class Tokenizer {
         return (char)hex;
     }
 
-    private char[] readUnicode64()  throws IOException, NQuadsReaderException {
+    private char[] readUnicode64()  throws IOException, RdfReaderException {
 
         char[] code = new char[8];
 
@@ -438,7 +439,7 @@ final class Tokenizer {
         return symbol;        
     }
 
-    private Token readComment() throws NQuadsReaderException {
+    private Token readComment() throws RdfReaderException {
         try {
 
             StringBuilder value = new StringBuilder();
@@ -454,11 +455,11 @@ final class Tokenizer {
             return new Token(TokenType.COMMENT, value.toString());
             
         } catch (IOException e) {
-            throw new NQuadsReaderException(e);
+            throw new RdfReaderException(e);
         }    
     }
     
-    public boolean hasNext() throws NQuadsReaderException {
+    public boolean hasNext() throws RdfReaderException {
         if (next == null) {
             next = doRead();
         }

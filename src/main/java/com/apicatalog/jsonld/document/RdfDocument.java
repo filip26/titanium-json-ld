@@ -14,8 +14,8 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
+import com.apicatalog.rdf.io.error.RdfReaderException;
 import com.apicatalog.rdf.io.error.UnsupportedContentException;
-import com.apicatalog.rdf.io.nquad.NQuadsReaderException;
 
 public final class RdfDocument implements Document {
 
@@ -80,7 +80,7 @@ public final class RdfDocument implements Document {
 
             return new RdfDocument(type, null, dataset);
             
-        } catch (JsonException | IOException | NQuadsReaderException | UnsupportedContentException e) {
+        } catch (JsonException | IOException | RdfReaderException | UnsupportedContentException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
@@ -105,7 +105,7 @@ public final class RdfDocument implements Document {
 
             return new RdfDocument(type, null, dataset);
             
-        } catch (JsonException | IOException | NQuadsReaderException | UnsupportedContentException e) {
+        } catch (JsonException | IOException | RdfReaderException | UnsupportedContentException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }

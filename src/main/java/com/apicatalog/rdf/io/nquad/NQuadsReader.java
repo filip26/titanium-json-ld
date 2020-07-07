@@ -11,6 +11,7 @@ import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfValue;
 import com.apicatalog.rdf.io.RdfReader;
+import com.apicatalog.rdf.io.error.RdfReaderException;
 import com.apicatalog.rdf.io.nquad.Tokenizer.Token;
 import com.apicatalog.rdf.io.nquad.Tokenizer.TokenType;
 
@@ -31,7 +32,7 @@ public final class NQuadsReader implements RdfReader {
     }
     
     @Override
-    public RdfDataset readDataset() throws NQuadsReaderException {
+    public RdfDataset readDataset() throws RdfReaderException {
 
         if (dataset != null) {
             return dataset;
@@ -56,7 +57,7 @@ public final class NQuadsReader implements RdfReader {
         return dataset;
     }
     
-    private RdfNQuad reaStatement() throws NQuadsReaderException {
+    private RdfNQuad reaStatement() throws RdfReaderException {
 
         RdfResource subject = readResource("Subject");
   
@@ -111,7 +112,7 @@ public final class NQuadsReader implements RdfReader {
         return Rdf.createNQuad(subject, predicate, object, graphName);
     }
     
-    private RdfResource readResource(String name)  throws NQuadsReaderException {
+    private RdfResource readResource(String name)  throws RdfReaderException {
 
         final Token token = tokenizer.token();
         
@@ -136,7 +137,7 @@ public final class NQuadsReader implements RdfReader {
         return unexpected(token);
     }
     
-    private RdfValue readObject()  throws NQuadsReaderException {
+    private RdfValue readObject()  throws RdfReaderException {
         
         Token token = tokenizer.token();
         
@@ -160,7 +161,7 @@ public final class NQuadsReader implements RdfReader {
         return readLiteral();
     }
     
-    private RdfLiteral readLiteral()  throws NQuadsReaderException {
+    private RdfLiteral readLiteral()  throws RdfReaderException {
   
         Token value = tokenizer.token();
         
@@ -205,14 +206,14 @@ public final class NQuadsReader implements RdfReader {
     }
 
     
-    private static final <T> T unexpected(Token token, TokenType ...types) throws NQuadsReaderException {
-        throw new NQuadsReaderException(
+    private static final <T> T unexpected(Token token, TokenType ...types) throws RdfReaderException {
+        throw new RdfReaderException(
                     "Unexpected token " + token.getType() + (token.getValue() != null ? "[" + token.getValue() + "]" : "" ) +  ". "
                     + "Expected one of " + Arrays.toString(types) + "."
                     );
     }
     
-    private void skipWhitespace(int min) throws NQuadsReaderException {
+    private void skipWhitespace(int min) throws RdfReaderException {
   
         int count = 0;
         
@@ -225,9 +226,9 @@ public final class NQuadsReader implements RdfReader {
         }        
     }
     
-    private static final void assertAbsoluteIri(final String iri, final String what) throws NQuadsReaderException {
+    private static final void assertAbsoluteIri(final String iri, final String what) throws RdfReaderException {
         if (UriUtils.isNotAbsoluteUri(iri)) {
-            throw new NQuadsReaderException(what + " must be an absolute IRI [" + iri  +  "]. ");
+            throw new RdfReaderException(what + " must be an absolute IRI [" + iri  +  "]. ");
         }
     }
 }
