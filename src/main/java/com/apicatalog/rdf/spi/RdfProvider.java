@@ -19,11 +19,17 @@ import com.apicatalog.rdf.io.error.UnsupportedContentException;
 
 public abstract class RdfProvider {
 
+    private static RdfProvider provider = null;
+    
     protected RdfProvider() {   
     }
     
-    public static RdfProvider provider() {
-        return DefaultRdfProvider.INSTANCE;
+    public static final RdfProvider provider() {
+        return provider != null ? provider : DefaultRdfProvider.INSTANCE;
+    }
+    
+    public static final void setProvider(RdfProvider instance) {
+        provider = instance;
     }
 
     public abstract RdfDataset createDataset();
