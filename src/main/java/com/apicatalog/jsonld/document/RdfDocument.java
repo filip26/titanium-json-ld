@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.net.URI;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.json.JsonException;
 
@@ -13,9 +14,8 @@ import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.io.RdfFormat;
-import com.apicatalog.rdf.io.error.UnsupportedFormatException;
-import com.apicatalog.rdf.io.nquad.NQuadsReaderException;
+import com.apicatalog.rdf.io.error.RdfReaderException;
+import com.apicatalog.rdf.io.error.UnsupportedContentException;
 
 public final class RdfDocument implements Document {
 
@@ -76,11 +76,11 @@ public final class RdfDocument implements Document {
         
         try {
 
-            RdfDataset dataset  = Rdf.createReader(is, RdfFormat.N_QUADS).readDataset();
+            RdfDataset dataset  = Rdf.createReader(type, is).readDataset();
 
             return new RdfDocument(type, null, dataset);
             
-        } catch (JsonException | IOException | NQuadsReaderException | UnsupportedFormatException e) {
+        } catch (JsonException | IOException | RdfReaderException | UnsupportedContentException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
@@ -101,17 +101,17 @@ public final class RdfDocument implements Document {
         
         try {
 
-            RdfDataset dataset  = Rdf.createReader(reader, RdfFormat.N_QUADS).readDataset();
+            RdfDataset dataset  = Rdf.createReader(type, reader).readDataset();
 
             return new RdfDocument(type, null, dataset);
             
-        } catch (JsonException | IOException | NQuadsReaderException | UnsupportedFormatException e) {
+        } catch (JsonException | IOException | RdfReaderException | UnsupportedContentException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
     
     public static final boolean accepts(final MediaType contentType) {
-        return MediaType.N_QUADS.match(contentType);
+        return Rdf.canRead().contains(contentType);
     }
     
     private static final void assertContentType(final MediaType contentType) {
@@ -119,7 +119,7 @@ public final class RdfDocument implements Document {
             throw new IllegalArgumentException(
                     "Unsupported media type '" + contentType 
                     + "'. Supported content types are [" 
-                    + MediaType.N_QUADS 
+                    + (Rdf.canRead().stream().map(MediaType::toString).collect(Collectors.joining(", ")))
                     + "]");
         }
     }

@@ -12,7 +12,7 @@ public final class RdfComparison {
     private static final Predicate<RdfNQuad> HAS_BLANKS  = 
             t -> t.getObject().isBlankNode() 
                     || t.getSubject().isBlankNode()
-                    || t.getGraphName() != null && t.getGraphName().isBlankNode()
+                    || t.getGraphName().filter(RdfValue::isBlankNode).isPresent()
                     ;
             
     private final RdfDataset dataset1;
@@ -130,7 +130,7 @@ public final class RdfComparison {
     
     private static final boolean compareNQuad(final RdfNQuad nquad1, final RdfNQuad nquad2, final Map<String, String> mapping) {
         return compareTriple(nquad1, nquad2, mapping)
-                && compareGraphName(nquad1.getGraphName(), nquad2.getGraphName(), mapping)
+                && compareGraphName(nquad1.getGraphName().orElse(null), nquad2.getGraphName().orElse(null), mapping)
                 ;        
     }
         

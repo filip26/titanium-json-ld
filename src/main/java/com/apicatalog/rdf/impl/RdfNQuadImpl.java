@@ -1,5 +1,7 @@
 package com.apicatalog.rdf.impl;
 
+import java.util.Optional;
+
 import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfValue;
@@ -14,7 +16,7 @@ final class RdfNQuadImpl extends RdfTripleImpl implements RdfNQuad {
     }
     
     @Override
-    public RdfResource getGraphName() {
-        return graphName;
+    public Optional<RdfResource> getGraphName() {
+        return Optional.ofNullable(graphName);
     }
 }

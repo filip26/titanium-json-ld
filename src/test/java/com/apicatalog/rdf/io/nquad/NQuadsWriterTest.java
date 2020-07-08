@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.rdf.Rdf;
@@ -28,8 +29,8 @@ import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfValue;
-import com.apicatalog.rdf.io.RdfFormat;
-import com.apicatalog.rdf.io.error.UnsupportedFormatException;
+import com.apicatalog.rdf.io.error.RdfWriterException;
+import com.apicatalog.rdf.io.error.UnsupportedContentException;
 import com.apicatalog.rdf.io.nquad.writer.NQuadsWriterTestCase;
 import com.apicatalog.rdf.io.nquad.writer.NQuadsWriterTestSuite;
 import com.google.common.base.Objects;
@@ -47,7 +48,7 @@ public class NQuadsWriterTest {
     public String testName;
 
     @Test
-    public void testWrite() throws IOException, URISyntaxException, NQuadsWriterException, UnsupportedFormatException {
+    public void testWrite() throws IOException, URISyntaxException, RdfWriterException, UnsupportedContentException {
 
         Assert.assertNotNull(testCase);
         Assert.assertNotNull(testCase.getInput());
@@ -71,9 +72,9 @@ public class NQuadsWriterTest {
                 dataset.add(createStatement(statement.asJsonObject()));    
             }
             
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            final ByteArrayOutputStream os = new ByteArrayOutputStream();
             
-            Rdf.createWriter(os, RdfFormat.N_QUADS).write(dataset);
+            Rdf.createWriter(MediaType.N_QUADS, os).write(dataset);
             
             result = os.toString().stripTrailing();
         }

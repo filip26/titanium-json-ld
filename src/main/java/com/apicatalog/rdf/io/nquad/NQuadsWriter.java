@@ -7,6 +7,7 @@ import java.util.Optional;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfNQuad;
+import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfValue;
 import com.apicatalog.rdf.io.RdfWriter;
 import com.apicatalog.rdf.lang.XsdConstants;
@@ -45,8 +46,10 @@ public class NQuadsWriter implements RdfWriter {
         writeValue(nquad.getObject());
         writer.write(' ');
         
-        if (nquad.getGraphName() != null) {
-            writeValue(nquad.getGraphName());
+        final Optional<RdfResource> graphName = nquad.getGraphName();
+        
+        if (graphName.isPresent()) {
+            writeValue(graphName.get());
             writer.write(' ');            
         }
         

@@ -2,10 +2,12 @@ package com.apicatalog.jsonld.document;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.http.media.MediaType;
+import com.apicatalog.rdf.Rdf;
 
 public final class DocumentParser {
 
@@ -78,8 +80,8 @@ public final class DocumentParser {
                 "Unsupported media type '" + contentType 
                 + "'. Supported content types are [" 
                 + MediaType.JSON_LD + ", " 
-                + MediaType.JSON  + ", +json"
-                + MediaType.N_QUADS
+                + MediaType.JSON  + ", +json, "
+                + (Rdf.canRead().stream().map(MediaType::toString).collect(Collectors.joining(", ")))
                 + "]"
                 );
     }
