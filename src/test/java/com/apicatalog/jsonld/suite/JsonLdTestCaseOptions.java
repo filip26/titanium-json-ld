@@ -96,7 +96,7 @@ public class JsonLdTestCaseOptions {
         if (rdfDirection != null) {
             options.setRdfDirection(RdfDirection.valueOf(rdfDirection.toUpperCase().replace("-", "_")));
         }
-        
+
         if (produceGeneralizedRdf != null) {
             options.setProduceGeneralizedRdf(produceGeneralizedRdf);
         }
