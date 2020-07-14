@@ -53,6 +53,7 @@ public final class JsonLdToRdf {
     }
 
     public RdfDataset build() throws JsonLdError {
+        
         // 1.
         for (final String graphName : nodeMap.graphs(true)) {
 
@@ -100,7 +101,7 @@ public final class JsonLdToRdf {
                 
                 // 1.3.2.
                 for (final String property : nodeMap.properties(graphName, subject, true)) {
-                    
+
                     // 1.3.2.1.
                     if (Keywords.TYPE.equals(property)) {
                         
@@ -134,9 +135,9 @@ public final class JsonLdToRdf {
 
                     // 1.3.2.2.
                     } else if (!Keywords.contains(property) 
-                                    && !(BlankNode.isWellFormed(property) && !produceGeneralizedRdf) 
-                                    && UriUtils.isURI(property)) {
-
+//                                    && ((BlankNode.isWellFormed(property) && produceGeneralizedRdf) 
+                                     && UriUtils.isAbsoluteUri(property)) {
+                        
                         // 1.3.2.5.
                         for (JsonValue item : nodeMap.get(graphName, subject, property).asJsonArray()) {
                         
@@ -152,7 +153,7 @@ public final class JsonLdToRdf {
                             if (rdfObject != null) {
                                 dataset.add(Rdf.createNQuad(
                                                         rdfSubject,
-                                                        Rdf.createIRI(property),
+                                                        Rdf.createResource(property),
                                                         rdfObject,
                                                         rdfGraphName
                                                     ));
@@ -167,7 +168,6 @@ public final class JsonLdToRdf {
                 }   
             }
         }
-        
         return dataset;
     }
     

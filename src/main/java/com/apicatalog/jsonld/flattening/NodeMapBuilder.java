@@ -366,18 +366,18 @@ public final class NodeMapBuilder {
             // 6.12.
             for (String property : elementObject.keySet().stream().sorted().collect(Collectors.toList())) {
      
-                JsonStructure value = (JsonStructure)elementObject.get(property);
-           
+                 final JsonStructure value = (JsonStructure)elementObject.get(property);
+     
                 // 6.12.1.
                 if (BlankNode.hasPrefix(property)) {
                     property = nodeMap.createIdentifier(property);
                 }
-                
+           
                 // 6.12.2.
                 if (nodeMap.doesNotContain(activeGraph, id, property)) {
                     nodeMap.set(activeGraph, id, property, JsonValue.EMPTY_JSON_ARRAY);
                 }
-
+                
                 // 6.12.3.
                 NodeMapBuilder
                         .with(value, nodeMap)

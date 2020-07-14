@@ -16,7 +16,7 @@ public final class BlankNode {
         
     }
     
-    public static boolean hasPrefix(final String value) {        
+    public static boolean hasPrefix(final String value) {
         return value.startsWith("_:");
     }
 

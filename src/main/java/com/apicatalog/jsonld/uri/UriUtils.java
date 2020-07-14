@@ -56,11 +56,12 @@ public final class UriUtils {
                 || uri.endsWith("]") || uri.endsWith("@");
     }
 
-    public static final boolean isNotURI(final String expandedTypeString) {
-        return !isURI(expandedTypeString);
+    public static final boolean isNotURI(final String uri) {
+        return !isURI(uri);
     }
 
     public static final boolean isNotAbsoluteUri(final String uri) {
+
         try {
             return !URI.create(uri).isAbsolute();
         } catch (IllegalArgumentException e) {
@@ -69,6 +70,7 @@ public final class UriUtils {
     }
 
     public static final boolean isAbsoluteUri(final String uri) {
+        
         try {
             return URI.create(uri).isAbsolute();
         } catch (IllegalArgumentException e) {
