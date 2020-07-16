@@ -156,3 +156,6 @@ Compile sources:
 > cd titanium-json-ld
 > mvn package
 ```
+
+## Commercial Support
+Commercial support is available at filip26@gmail.com
