@@ -144,12 +144,7 @@ Your contribution is welcome.
 
 ### Building
 
-Fork and clone the project repository:
-
-```bash
-> git clone git@github.com:filip26/titanium-json-ld.git
-```
-
+Fork and clone the project repository.
 Compile sources:
 
 ```bash
