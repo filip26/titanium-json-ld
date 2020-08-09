@@ -45,7 +45,7 @@ Your contribution is welcome. There are many ways to motivate developers or spee
    - star, share, the project
    - write a tutorial
 - sponsor
-   - you'll receive a badge that shows you're a sponsor
+   - your requests get top priority
 
 ### Roadmap
 
