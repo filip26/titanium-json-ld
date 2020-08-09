@@ -60,15 +60,6 @@ Your contribution is welcome. There are many ways to motivate developers or spee
 - [ ] 0.9 [HTML](https://www.w3.org/TR/json-ld11-api/#html-content-algorithms)
 - [ ] 1.0 Documented, A+ code
 
-### Building
-
-Fork and clone the project repository.
-Compile sources:
-
-```bash
-> cd titanium-json-ld
-> mvn package
-```
 
 ## Installation
 
@@ -115,8 +106,6 @@ compile group: 'org.glassfish', name: 'jakarta.json', version: '1.1.6'
 ## Documentation
 
 [![javadoc](https://javadoc.io/badge2/com.apicatalog/titanium-json-ld/javadoc.svg)](https://javadoc.io/doc/com.apicatalog/titanium-json-ld)
-
-TBD
 
 ## Examples
 
