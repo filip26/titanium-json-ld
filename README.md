@@ -127,7 +127,16 @@ JsonLd.compact(document, contextDocument).get();
 
 ## Contributing
 
-Your contribution is welcome. 
+Your contribution is welcome. There are many ways to motivate developers and speed up the development:
+
+- develop
+  - implement a new feature 
+  - fix an existing issue
+  - write a documentation
+- promote
+   - star, share, the project
+   - write a tutorial
+- sponsor
 
 ### Roadmap
 
