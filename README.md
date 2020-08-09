@@ -33,6 +33,43 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 
 See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld-api/reports/#subj_Titanium_JSON_LD_Java) for more details.
 
+## Contributing
+
+Your contribution is welcome. There are many ways to motivate developers and speed up development:
+
+- develop
+  - implement a new feature 
+  - fix an existing issue, implement a test case
+  - write a documentation
+- promote
+   - star, share, the project
+   - write a tutorial
+- sponsor
+   - you'll receive a badge that shows you're a sponsor
+
+### Roadmap
+
+- [x] 0.1 ~~[Expansion Algorithms](https://www.w3.org/TR/json-ld11-api/#expansion-algorithms)~~
+- [x] 0.2 ~~[Compaction Algorithms](https://www.w3.org/TR/json-ld11-api/#compaction-algorithms)~~
+- [x] 0.3 ~~[Flattening Algorithms](https://www.w3.org/TR/json-ld11-api/#flattening-algorithms)~~
+- [x] 0.4 ~~[JSON-LD to RDF](https://www.w3.org/TR/json-ld11-api/#deserialize-json-ld-to-rdf-algorithm)~~
+- [x] 0.5 ~~[RDF to JSON-LD](https://www.w3.org/TR/json-ld11-api/#serialize-rdf-as-json-ld-algorithm)~~
+- [x] 0.6 ~~[Framing](https://www.w3.org/TR/json-ld11-framing/)~~
+- [x] 0.7 ~~[Remote Document and Context Retrieval](https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval)~~
+- [x] 0.8 ~~JsonLd API~~
+- [ ] 0.9 [HTML](https://www.w3.org/TR/json-ld11-api/#html-content-algorithms)
+- [ ] 1.0 Documented, A+ code
+
+### Building
+
+Fork and clone the project repository.
+Compile sources:
+
+```bash
+> cd titanium-json-ld
+> mvn package
+```
+
 ## Installation
 
 ### Titanium JSON-LD
@@ -123,43 +160,6 @@ JsonLd.expand(document).get();
 
 JsonLd.compact(document, contextDocument).get();
 ...
-```
-
-## Contributing
-
-Your contribution is welcome. There are many ways to motivate developers and speed up development:
-
-- develop
-  - implement a new feature 
-  - fix an existing issue, implement a test case
-  - write a documentation
-- promote
-   - star, share, the project
-   - write a tutorial
-- sponsor
-   - you'll receive a badge that shows you're a sponsor
-
-### Roadmap
-
-- [x] 0.1 ~~[Expansion Algorithms](https://www.w3.org/TR/json-ld11-api/#expansion-algorithms)~~
-- [x] 0.2 ~~[Compaction Algorithms](https://www.w3.org/TR/json-ld11-api/#compaction-algorithms)~~
-- [x] 0.3 ~~[Flattening Algorithms](https://www.w3.org/TR/json-ld11-api/#flattening-algorithms)~~
-- [x] 0.4 ~~[JSON-LD to RDF](https://www.w3.org/TR/json-ld11-api/#deserialize-json-ld-to-rdf-algorithm)~~
-- [x] 0.5 ~~[RDF to JSON-LD](https://www.w3.org/TR/json-ld11-api/#serialize-rdf-as-json-ld-algorithm)~~
-- [x] 0.6 ~~[Framing](https://www.w3.org/TR/json-ld11-framing/)~~
-- [x] 0.7 ~~[Remote Document and Context Retrieval](https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval)~~
-- [x] 0.8 ~~JsonLd API~~
-- [ ] 0.9 [HTML](https://www.w3.org/TR/json-ld11-api/#html-content-algorithms)
-- [ ] 1.0 Documented, A+ code
-
-### Building
-
-Fork and clone the project repository.
-Compile sources:
-
-```bash
-> cd titanium-json-ld
-> mvn package
 ```
 
 ## Commercial Support
