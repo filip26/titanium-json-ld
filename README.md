@@ -35,7 +35,7 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 
 ## Contributing
 
-Your contribution is welcome. There are many ways to motivate developers and speed up development:
+Your contribution is welcome. There are many ways to motivate developers or speed up development:
 
 - develop
   - implement a new feature 
