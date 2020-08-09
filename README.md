@@ -40,10 +40,10 @@ Your contribution is welcome. There are many ways to motivate developers or spee
 - develop
   - implement a new feature 
   - fix an existing issue, implement a test case
-  - write a documentation
+  - write/proofread a documentation
 - promote
    - star, share, the project
-   - write a tutorial
+   - write an article
 - sponsor
    - your requests get top priority
 
