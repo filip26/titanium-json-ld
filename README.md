@@ -1,6 +1,6 @@
 # JSON-LD 1.1 Processor & API
 
-An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-based Serialization for Linked Data) specification in Java utilizing [JSONP](https://javaee.github.io/jsonp/) (JSR 374 - Java API for JSON Processing).
+An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-based Serialization for Linked Data) specification in Java utilizing [JSON-P](https://javaee.github.io/jsonp/) (JSR 374 - Java API for JSON Processing).
 
 ![Build](https://github.com/filip26/titanium-json-ld/workflows/Java%20CI%20with%20Maven/badge.svg)
 [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/filip26/titanium-json-ld.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/filip26/titanium-json-ld/context:java)
