@@ -38,6 +38,12 @@ import com.apicatalog.rdf.io.nquad.NQuadsWriter;
  */
 public final class JsonCanonicalizer {
 
+    private static final DecimalFormat eFormatBigDecimal =
+            new DecimalFormat("0E00", new DecimalFormatSymbols(Locale.ENGLISH));
+
+    private static final DecimalFormat eFormat =
+            new DecimalFormat("0.#######", new DecimalFormatSymbols(Locale.ENGLISH));
+
     private JsonCanonicalizer() {
     }
     
@@ -82,12 +88,6 @@ public final class JsonCanonicalizer {
             
         }
     }
-
-    private static final DecimalFormat eFormatBigDecimal =
-            new DecimalFormat("0E00", new DecimalFormatSymbols(Locale.ENGLISH));
-
-    private static final DecimalFormat eFormat =
-            new DecimalFormat("0.#######", new DecimalFormatSymbols(Locale.ENGLISH));
 
     private static final void canonicalizeNumber(final JsonNumber number, final Writer writer) throws IOException {
         

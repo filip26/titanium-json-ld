@@ -53,6 +53,11 @@ import com.apicatalog.rdf.lang.XsdConstants;
  */
 final class ObjectToRdf {
 
+    private static final DecimalFormat eFormat =
+            new DecimalFormat("0.0##############E0", new DecimalFormatSymbols(Locale.ENGLISH));
+
+    static { eFormat.setMinimumFractionDigits(1); }
+
     // required
     private JsonObject item;
     private List<RdfTriple> triples;
@@ -273,11 +278,6 @@ final class ObjectToRdf {
         // 15.
         return rdfLiteral;
     }
-
-    private static final DecimalFormat eFormat =
-            new DecimalFormat("0.0##############E0", new DecimalFormatSymbols(Locale.ENGLISH));
-
-    static { eFormat.setMinimumFractionDigits(1); }
     
     private static final String toXsdDouble(BigDecimal bigDecimal) {
         
