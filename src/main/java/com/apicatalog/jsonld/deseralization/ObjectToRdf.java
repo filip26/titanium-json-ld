@@ -17,7 +17,9 @@ package com.apicatalog.jsonld.deseralization;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.List;
+import java.util.Locale;
 
 import javax.json.JsonNumber;
 import javax.json.JsonObject;
@@ -271,14 +273,15 @@ final class ObjectToRdf {
         // 15.
         return rdfLiteral;
     }
+
+    private static final DecimalFormat eFormat =
+            new DecimalFormat("0.0##############E0", new DecimalFormatSymbols(Locale.ENGLISH));
+
+    static { eFormat.setMinimumFractionDigits(1); }
     
     private static final String toXsdDouble(BigDecimal bigDecimal) {
         
-        if (bigDecimal.compareTo(BigDecimal.ZERO) == 0) {
-            return "0.0E0";
-        }
-        
-        return new DecimalFormat("0.0##############E0").format(bigDecimal);        
+        return eFormat.format(bigDecimal);        
     }
     
 }

@@ -19,6 +19,7 @@ import static org.junit.Assume.assumeFalse;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
@@ -50,6 +51,8 @@ public class JsonLdToRdfTest {
     
     @Test
     public void testToRdf() throws IOException {
+        // Force a locale to something different than US to be aware of DecimalFormat errors
+        Locale.setDefault(Locale.FRANCE);
 
         // skip specVersion == 1.0
         assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
