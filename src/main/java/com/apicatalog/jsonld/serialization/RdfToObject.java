@@ -87,7 +87,7 @@ final class RdfToObject {
             
                 // 2.4.1.
                 if (XsdConstants.STRING.equals(literal.getDatatype())) {
-                    convertedValue = Json.createValue(literal.toString());
+                    convertedValue = Json.createValue(literal.getValue());
     
                 // 2.4.2.
                 } else if (XsdConstants.BOOLEAN.equals(literal.getDatatype())) {

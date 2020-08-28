@@ -93,6 +93,15 @@ public final class FromRdfApi implements CommonApi<FromRdfApi>, LoaderApi<FromRd
         return this;
     }
     
+    public FromRdfApi nativeTypes() {
+        return nativeTypes(true);
+    }
+
+    public FromRdfApi nativeTypes(boolean useNativeTypes) {
+        options.setUseNativeTypes(useNativeTypes);
+        return this;
+    }
+    
     /**
      * Get <code>JSON-LD</code> representation of the provided {@link RdfDataset}.
      * 
