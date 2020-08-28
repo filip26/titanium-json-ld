@@ -66,18 +66,5 @@ public class FlatteningApiNegativeTest {
     public void test10() {
         final FlatteningApi api = JsonLd.flatten("https://example.com");
         Assert.assertThrows(IllegalArgumentException.class, () -> api.options(null));
-    }
-    
-    @Test
-    public void test11() {
-        final FlatteningApi api = JsonLd.flatten("https://example.com");
-        Assert.assertThrows(IllegalArgumentException.class, () -> api.base("!!"));
-    }
-    
-    @Test
-    public void test12() {
-        final FlatteningApi api = JsonLd.flatten("https://example.com");
-        Assert.assertThrows(IllegalArgumentException.class, () -> api.context("#!"));
-
-    }
+    }    
 }

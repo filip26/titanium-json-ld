@@ -71,16 +71,14 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
     public ExpansionApi context(String contextLocation) {
         
         if (contextLocation != null) {
-            if (!UriUtils.isNotURI(contextLocation)) {
+            
+            if (UriUtils.isNotURI(contextLocation)) {
                 throw new IllegalArgumentException("Context location must be valid URI or null but is [" + contextLocation + ".");
             }
-            options.setExpandContext(UriUtils.create(contextLocation));
-            
-        } else {
-            options.setExpandContext((Document)null);
+            return context(UriUtils.create(contextLocation));    
         }
         
-        return this;
+        return context((Document) null);
     }
 
     @Override
@@ -110,11 +108,15 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
     @Override
     public ExpansionApi base(String baseLocation) {
         
-        if (baseLocation != null && !UriUtils.isNotURI(baseLocation)) {
-            throw new IllegalArgumentException("Base location must be valid URI or null but is [" + baseLocation + ".");
-        }
+        if (baseLocation != null) {
+            
+            if (UriUtils.isNotURI(baseLocation)) {
+                throw new IllegalArgumentException("Base location must be valid URI or null but is [" + baseLocation + ".");
+            }
+            return base(UriUtils.create(baseLocation));
+        }        
         
-        return base(UriUtils.create(baseLocation));
+        return base((URI) null);        
     }
 
     @Override

@@ -63,19 +63,7 @@ public class ToRdfApiNegativeTest {
     }
 
     @Test
-    public void test10() {
-        final ToRdfApi api = JsonLd.toRdf("http://example.org");
-        Assert.assertThrows(IllegalArgumentException.class, () -> api.base("!//"));
-    }
-    
-    @Test
-    public void test11() {
-        final ToRdfApi api = JsonLd.toRdf("http://example.org");
-        Assert.assertThrows(IllegalArgumentException.class, () -> api.context("~"));
-    }
-    
-    @Test
-    public void test12() {
+    public void test8() {
         final ToRdfApi api = JsonLd.toRdf("http://example.org");
         Assert.assertThrows(IllegalArgumentException.class, () -> api.options(null));
     }

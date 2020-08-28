@@ -72,16 +72,15 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
     public ToRdfApi context(String contextLocation) {
         
         if (contextLocation != null) {
-            if (!UriUtils.isNotURI(contextLocation)) {
+            
+            if (UriUtils.isNotURI(contextLocation)) {
                 throw new IllegalArgumentException("Context location must be valid URI or null but is [" + contextLocation + ".");
             }
-            options.setExpandContext(UriUtils.create(contextLocation));
             
-        } else {
-            options.setExpandContext((Document)null);
+            return context(UriUtils.create(contextLocation));            
         }
         
-        return this;
+        return context((URI) null);
     }
     
     @Override
@@ -141,11 +140,16 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
     @Override
     public ToRdfApi base(String baseLocation) {
         
-        if (baseLocation != null && !UriUtils.isNotURI(baseLocation)) {
-            throw new IllegalArgumentException("Base location must be valid URI or null but is [" + baseLocation + ".");
+        if (baseLocation != null) {
+            
+            if (UriUtils.isNotURI(baseLocation)) {
+                throw new IllegalArgumentException("Base location must be valid URI or null but is [" + baseLocation + ".");
+            }
+            
+            return base(UriUtils.create(baseLocation));
         }
         
-        return base(UriUtils.create(baseLocation));
+        return base((URI) null);
     }
 
     @Override

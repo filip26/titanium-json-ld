@@ -81,11 +81,15 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
     @Override
     public FlatteningApi base(String baseLocation) {
         
-        if (baseLocation != null && !UriUtils.isNotURI(baseLocation)) {
-            throw new IllegalArgumentException("Base location must be valid URI or null but is [" + baseLocation + ".");
+        if (baseLocation != null) {
+            
+            if (UriUtils.isNotURI(baseLocation)) {
+                throw new IllegalArgumentException("Base location must be valid URI or null but is [" + baseLocation + ".");
+            }
+            return base(UriUtils.create(baseLocation));
         }
         
-        return base(baseLocation != null ? UriUtils.create(baseLocation) : null);
+        return base((URI) null);
     }
 
     public FlatteningApi compactArrays(boolean enable) {
@@ -123,11 +127,16 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
     @Override
     public FlatteningApi context(final String contextLocation) {
         
-        if (contextLocation != null && !UriUtils.isNotURI(contextLocation)) {
-            throw new IllegalArgumentException("Context location must be valid URI or null but is [" + contextLocation + ".");
+        if (contextLocation != null) {
+            
+            if (UriUtils.isNotURI(contextLocation)) {
+                throw new IllegalArgumentException("Context location must be valid URI or null but is [" + contextLocation + ".");
+            }
+            
+            return context(UriUtils.create(contextLocation));
         }
         
-        return context(contextLocation != null ? UriUtils.create(contextLocation) : null);
+        return context((URI) null);
     }
 
     @Override
