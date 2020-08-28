@@ -20,6 +20,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import javax.json.JsonArray;
@@ -35,6 +37,12 @@ import com.apicatalog.rdf.io.nquad.NQuadsWriter;
  *
  */
 public final class JsonCanonicalizer {
+
+    private static final DecimalFormat eFormatBigDecimal =
+            new DecimalFormat("0E00", new DecimalFormatSymbols(Locale.ENGLISH));
+
+    private static final DecimalFormat eFormat =
+            new DecimalFormat("0.#######", new DecimalFormatSymbols(Locale.ENGLISH));
 
     private JsonCanonicalizer() {
     }
@@ -91,15 +99,15 @@ public final class JsonCanonicalizer {
         
         } else if (number.bigDecimalValue().compareTo(BigDecimal.ONE.movePointRight(21)) >= 0) {
             
-            numberString = (new DecimalFormat("0E00")).format(number.bigDecimalValue()).replace("E", "e+");
+            numberString = eFormatBigDecimal.format(number.bigDecimalValue()).replace("E", "e+");
             
         } else if (number.bigDecimalValue().compareTo(BigDecimal.ONE.movePointLeft(21)) <= 0) {
             
-            numberString = (new DecimalFormat("0E00")).format(number.bigDecimalValue()).toLowerCase();
+            numberString = eFormatBigDecimal.format(number.bigDecimalValue()).toLowerCase();
             
         } else {
-            
-            numberString = (new DecimalFormat("0.#######")).format(number.bigDecimalValue());
+
+            numberString = eFormat.format(number.bigDecimalValue());
         }
         
         writer.write(numberString);        
