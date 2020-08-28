@@ -1,0 +1,39 @@
+[{
+	"@id": "http://example.org/graph1",
+	"@graph":[
+		{
+			"@id": "_:subject1",
+			"http://an.example/predicate1": [
+				{
+					"@value": "object1"
+				}
+			]
+		}
+	]
+},
+{
+	"@id": "http://example.org/graph3",
+	"@graph": [
+		{
+			"@id": "http://one.example/subject1",
+			"http://one.example/predicate1": [
+				{
+					"@id": "http://one.example/object1"
+				}
+			]
+		}
+	]
+},
+{
+	"@id": "http://example.org/graph5",
+	"@graph": [
+		{
+			"@id": "_:subject2",
+			"http://an.example/predicate2": [
+				{
+					"@value": 1
+				}
+			]
+		}
+	]
+}]
