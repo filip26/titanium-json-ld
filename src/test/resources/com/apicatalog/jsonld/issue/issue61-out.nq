@@ -1,0 +1,3 @@
+<https://api.inaturalist.org/v1/observations/54141546> <http://xmlns.com/foaf/0.1/maker> <https://www.inaturalist.org/users/3295956> . 
+<https://api.inaturalist.org/v1/observations/54141546> <http://www.w3.org/2000/01/rdf-schema#comment> "Aucune fleur ou fruit, glauque" .
+<https://www.inaturalist.org/users/3295956> <http://xmlns.com/foaf/0.1/img> <https://static.inaturalist.org/attachments/users/icons/3295956/thumb.jpg?1594113662> . 
