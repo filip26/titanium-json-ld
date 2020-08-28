@@ -89,4 +89,19 @@ public class ExpansionApiTest {
         Assert.assertNotNull(expanded);
         Assert.assertEquals(Json.createArrayBuilder().build(), expanded);
     }
+    
+    @Test
+    public void test9() throws JsonLdError {
+        JsonArray expanded = JsonLd.expand("file:/example.org").context("file:/example.org").loader(MOCK_LOADER).ordered().get();
+        Assert.assertNotNull(expanded);
+        Assert.assertEquals(Json.createArrayBuilder().build(), expanded);
+    }
+
+    @Test
+    public void test10() throws JsonLdError {
+        JsonArray expanded = JsonLd.expand("file:///example.org").context("file:///example.org").loader(MOCK_LOADER).ordered().get();
+        Assert.assertNotNull(expanded);
+        Assert.assertEquals(Json.createArrayBuilder().build(), expanded);
+    }
+
 }
