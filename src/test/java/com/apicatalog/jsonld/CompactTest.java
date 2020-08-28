@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld;
 
 import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeTrue;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -52,11 +53,25 @@ public class CompactTest {
 
         // skip specVersion == 1.0
         assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
-        
+
         Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options ->
         
             JsonDocument.of(JsonLd.compact(testCase.input, testCase.context).options(options).get())
             
+        ));
+    }
+
+    @Test
+    public void testCompactBase() {
+
+        // skip other tests
+        assumeTrue(testId.equals("#t0047"));
+        Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options ->
+
+                JsonDocument.of(
+                        JsonLd.compact(testCase.input, testCase.context).options(options).base("http://fake.com").get()
+                )
+
         ));
     }
 

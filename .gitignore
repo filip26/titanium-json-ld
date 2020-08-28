@@ -47,3 +47,14 @@ local.properties
 
 /target/
 
+# IDE
+.settings
+.idea
+.vscode
+.metals
+*.iml
+**/nbproject/
+**/logs/
+**/nbactions.xml
+META-INF
+
