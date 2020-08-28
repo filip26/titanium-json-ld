@@ -72,7 +72,10 @@ public final class UriUtils {
     }
 
     public static final boolean isNotURI(final String uri) {
-        return !isURI(uri);
+        return uri == null 
+                || (!uri.isBlank() 
+                        && (Keywords.matchForm(uri.strip())
+                        || create(uri.strip()) == null));
     }
 
     public static final boolean isNotAbsoluteUri(final String uri) {

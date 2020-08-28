@@ -26,6 +26,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
+import com.apicatalog.jsonld.api.impl.ExpansionApi;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.lang.Version;
@@ -89,4 +90,17 @@ public class ExpansionApiTest {
         Assert.assertNotNull(expanded);
         Assert.assertEquals(Json.createArrayBuilder().build(), expanded);
     }
+    
+    @Test
+    public void test9() throws JsonLdError {
+        ExpansionApi api = JsonLd.expand("file:/example.org").context("file:/example.org");
+        Assert.assertNotNull(api);
+    }
+
+    @Test
+    public void test10() throws JsonLdError {
+        ExpansionApi api = JsonLd.expand("file:///example.org").context("file:///example.org");
+        Assert.assertNotNull(api);
+    }
+
 }

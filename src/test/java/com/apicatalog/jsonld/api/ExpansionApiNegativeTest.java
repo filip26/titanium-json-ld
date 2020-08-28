@@ -72,19 +72,7 @@ public class ExpansionApiNegativeTest {
     }
 
     @Test
-    public void test10() {
-        final ExpansionApi api = JsonLd.expand("http://example.org");
-        Assert.assertThrows(IllegalArgumentException.class, () -> api.base("!//"));
-    }
-    
-    @Test
-    public void test11() {
-        final ExpansionApi api = JsonLd.expand("http://example.org");
-        Assert.assertThrows(IllegalArgumentException.class, () -> api.context("~"));
-    }
-    
-    @Test
-    public void test12() {
+    public void test9() {
         final ExpansionApi api = JsonLd.expand("http://example.org");
         Assert.assertThrows(IllegalArgumentException.class, () -> api.options(null));
     }
