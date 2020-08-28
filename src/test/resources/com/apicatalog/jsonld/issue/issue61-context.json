@@ -1,0 +1,17 @@
+{ 
+	"@context": {
+		"foaf": "http://xmlns.com/foaf/0.1/",
+		"rdfs" : "http://www.w3.org/2000/01/rdf-schema#",
+		"@base" : "https://api.inaturalist.org/v1/observations/",  
+		"uri": "@id",
+		"description" : "rdfs:comment" ,
+		"user" : {
+			"@id": "foaf:maker",
+			"@context": {
+				"icon" : { "@id": "foaf:img", "@type": "@id" },
+				"@base" : "https://www.inaturalist.org/users/",
+				"id" : "@id"
+			}
+		}
+	} 
+}
