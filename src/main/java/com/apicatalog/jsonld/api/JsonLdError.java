@@ -29,6 +29,7 @@ public final class JsonLdError extends Throwable {
     private final JsonLdErrorCode code;
 
     public JsonLdError(JsonLdErrorCode code) {
+        super(code.toMessage());
         this.code = code;
     }
 
@@ -38,7 +39,7 @@ public final class JsonLdError extends Throwable {
     }
 
     public JsonLdError(JsonLdErrorCode code, Throwable cause) {
-        super(cause);
+        super(code.toMessage(), cause);
         this.code = code;
     }
 
