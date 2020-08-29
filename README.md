@@ -39,13 +39,21 @@ Your contribution is welcome. There are many ways to motivate developers or spee
 
 - develop
   - implement a new feature 
-  - fix an existing issue, implement a test case
-  - write/proofread a documentation
+  - fix an existing issue
+  - improve an existing implementation
+- test
+  - report a bug
+  - implement a test case
+- document
+  - write javadoc
+  - write a tutorial
+  - proofread an existing documentation
 - promote
-   - star, share, the project
-   - write an article
+  - star, share, the project
+  - write an article
 - sponsor
-   - your requests get top priority
+  - your requests get top priority
+  - you will get a badge
 
 ### Roadmap
 
