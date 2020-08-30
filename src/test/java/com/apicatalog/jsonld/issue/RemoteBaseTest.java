@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 
 import org.junit.Test;
 
@@ -17,8 +18,9 @@ import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.RdfDataset;
+import com.apicatalog.rdf.io.nquad.NQuadsWriter;
 
-public class ToRdfIssue61Test {
+public class RemoteBaseTest {
 
     @Test
     public void testToRdfMissingTriples1() throws JsonLdError, IOException {
@@ -86,6 +88,25 @@ public class ToRdfIssue61Test {
         }
     }
 
+    @Test
+    public void testRemoteContext() throws JsonLdError, IOException {
+
+        final Document document = readDocument("issue63-in.json");
+        
+        final RdfDataset result = JsonLd.toRdf(document).loader(new ClasspathLoader()).get();
+        
+        assertNotNull(result);
+
+        try (final InputStream is = getClass().getResourceAsStream("issue63-out.nq")) {
+            
+            assertNotNull(is);
+
+            boolean match = RdfComparison.equals(result, RdfDocument.of(is).getRdfContent().orElse(null));
+                        
+            assertTrue(match);            
+        }
+    }
+    
     private final Document readDocument(final String name) throws JsonLdError, IOException {
         try (final InputStream is = getClass().getResourceAsStream(name)) {
             return JsonDocument.of(is);
