@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonStructure;
@@ -112,7 +113,7 @@ public class ActiveContextBuilder {
         // 1. Initialize result to the result of cloning active context, with inverse
         // context set to null.
         result = new ActiveContext(activeContext);
-        result.setInverseContext( null);
+        result.setInverseContext(null);
 
         // 2. If local context is an object containing the member @propagate,
         // its value MUST be boolean true or false, set propagate to that value.
@@ -275,7 +276,7 @@ public class ActiveContextBuilder {
 
             // 5.7. If context has an @base entry and remote contexts is empty,
             // i.e., the currently being processed context is not a remote context:
-            if (contextDefinition.containsKey(Keywords.BASE) && remoteContexts.isEmpty()) {
+            if (contextDefinition.containsKey(Keywords.BASE) /*&& remoteContexts.isEmpty()*/) {
                 // 5.7.1
                 JsonValue value = contextDefinition.get(Keywords.BASE);
 
@@ -448,7 +449,6 @@ public class ActiveContextBuilder {
                 }
             }
         }
-
         // 6.
         return result;
     }
@@ -518,13 +518,18 @@ public class ActiveContextBuilder {
 
         JsonValue importedContext = importedStructure.asJsonObject();
 
-        if (JsonUtils.isNotObject(importedContext) || !importedContext.asJsonObject().containsKey(Keywords.CONTEXT)) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT);
+        if (!importedContext.asJsonObject().containsKey(Keywords.CONTEXT)) {
+            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context does not contain @context key and is not valid JSON-LD context.");
         }
 
         // 5.2.5.3.
         importedContext = importedContext.asJsonObject().get(Keywords.CONTEXT);
 
+        // remote @base from a remote context
+        if (JsonUtils.isObject(importedContext) && importedContext.asJsonObject().containsKey(Keywords.BASE)) {
+            importedContext = Json.createObjectBuilder(importedContext.asJsonObject()).remove(Keywords.BASE).build();
+        }
+        
         // 5.2.6
         try {
             result = result
