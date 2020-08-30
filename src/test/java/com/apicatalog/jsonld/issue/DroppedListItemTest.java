@@ -45,7 +45,9 @@ public class DroppedListItemTest {
         
         assertNotNull(result);
         
-        boolean match = result.equals(document.getJsonContent().orElse(null));
+        final Document expected = readDocument("issue58-out.json");
+        
+        boolean match = result.equals(expected.getJsonContent().orElse(null));
         
         if (!match) {
             
@@ -60,7 +62,7 @@ public class DroppedListItemTest {
             StringWriter writer = new StringWriter();
             
             JsonWriter jsonWriter1 = writerFactory.createWriter(writer);
-            jsonWriter1.write(document.getJsonContent().orElse(null));
+            jsonWriter1.write(expected.getJsonContent().orElse(null));
             jsonWriter1.close();
 
             writer.append("\n\nActual:\n");

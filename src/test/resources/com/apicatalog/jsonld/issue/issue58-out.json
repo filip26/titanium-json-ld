@@ -1,0 +1,59 @@
+[
+  {
+    "@id": "_:b0",
+    "https://purl.org/geojson/vocab#coordinates": [
+      {
+        "@list": [
+          {
+            "@list": [
+              {
+                "@type": "http://www.w3.org/2001/XMLSchema#integer",
+                "@value": "10"
+              },
+              {
+                "@type": "http://www.w3.org/2001/XMLSchema#integer",
+                "@value": "-10"
+              }
+            ]
+          },
+          {
+            "@list": [
+              {
+                "@type": "http://www.w3.org/2001/XMLSchema#integer",
+                "@value": "9"
+              },
+              {
+                "@type": "http://www.w3.org/2001/XMLSchema#integer",
+                "@value": "-9"
+              }
+            ]
+          },
+          {
+            "@list": [
+              {
+                "@type": "http://www.w3.org/2001/XMLSchema#integer",
+                "@value": "8"
+              },
+              {
+                "@type": "http://www.w3.org/2001/XMLSchema#integer",
+                "@value": "-8"
+              }
+            ]
+          },
+          {
+            "@list": [
+              {
+                "@type": "http://www.w3.org/2001/XMLSchema#integer",
+                "@value": "7"
+              },
+              {
+                "@type": "http://www.w3.org/2001/XMLSchema#integer",
+                "@value": "-7"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
