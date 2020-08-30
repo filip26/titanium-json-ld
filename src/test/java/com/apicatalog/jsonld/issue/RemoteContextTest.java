@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 
 import org.junit.Test;
 
@@ -18,9 +17,8 @@ import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.io.nquad.NQuadsWriter;
 
-public class RemoteBaseTest {
+public class RemoteContextTest {
 
     @Test
     public void testToRdfMissingTriples1() throws JsonLdError, IOException {
