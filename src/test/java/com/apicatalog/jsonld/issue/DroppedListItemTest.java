@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.json.Json;
@@ -29,7 +28,7 @@ import com.apicatalog.rdf.io.nquad.NQuadsWriter;
 public class DroppedListItemTest {
 
     /**
-     * @see {@link https://github.com/filip26/titanium-json-ld/issues/58}
+     * @see <a href="https://github.com/filip26/titanium-json-ld/issues/58">Issue #58</a>
      * @throws JsonLdError
      * @throws IOException
      */
@@ -50,16 +49,13 @@ public class DroppedListItemTest {
         
         if (!match) {
             
-            System.out.println("intermediary:");
+            System.out.println("Intermediary:");
             
             (new NQuadsWriter(new PrintWriter(System.out))).write(dataset);
             
-            System.out.println("Expected:");
+            System.out.println("\nExpected:");
 
-            Map<String, Object> properties = new HashMap<>(1);
-            properties.put(JsonGenerator.PRETTY_PRINTING, true);
-
-            JsonWriterFactory writerFactory = Json.createWriterFactory(properties);
+            JsonWriterFactory writerFactory = Json.createWriterFactory(Map.of(JsonGenerator.PRETTY_PRINTING, true));
 
             StringWriter writer = new StringWriter();
             
@@ -67,8 +63,7 @@ public class DroppedListItemTest {
             jsonWriter1.write(document.getJsonContent().orElse(null));
             jsonWriter1.close();
 
-            writer.append("\n\n");
-            writer.append("Actual:\n");
+            writer.append("\n\nActual:\n");
 
             JsonWriter jsonWriter2 = writerFactory.createWriter(writer);
             jsonWriter2.write(result);
