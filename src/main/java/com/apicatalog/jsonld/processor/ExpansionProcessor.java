@@ -107,7 +107,7 @@ public final class ExpansionProcessor {
             if (contextValue.isPresent()) {
                 
                 final JsonArray expandedContext = JsonUtils.toJsonArray(contextValue.get());
-                
+
                 if (expandedContext.size() == 1 
                         && JsonUtils.isObject(expandedContext.get(0)) 
                         && expandedContext.getJsonObject(0).containsKey(Keywords.CONTEXT)
@@ -124,7 +124,7 @@ public final class ExpansionProcessor {
                 }
             }
         }
-        
+
         // 7.
         if (input.getContextUrl() != null) {
             activeContext = activeContext
