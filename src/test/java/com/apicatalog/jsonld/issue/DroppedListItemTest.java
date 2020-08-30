@@ -1,11 +1,11 @@
 package com.apicatalog.jsonld.issue;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +24,7 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.rdf.RdfDataset;
+import com.apicatalog.rdf.io.nquad.NQuadsWriter;
 
 public class DroppedListItemTest {
 
@@ -40,14 +41,19 @@ public class DroppedListItemTest {
         final RdfDataset dataset = JsonLd.toRdf(document).get();
         
         assertNotNull(dataset);
-        
-        final JsonArray result = JsonLd.fromRdf(RdfDocument.of(dataset)).get();
+                
+        final JsonArray result = JsonLd.fromRdf(RdfDocument.of(dataset)).nativeTypes().get();
         
         assertNotNull(result);
         
         boolean match = result.equals(document.getJsonContent().orElse(null));
         
         if (!match) {
+            
+            System.out.println("intermediary:");
+            
+            (new NQuadsWriter(new PrintWriter(System.out))).write(dataset);
+            
             System.out.println("Expected:");
 
             Map<String, Object> properties = new HashMap<>(1);
