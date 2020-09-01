@@ -35,9 +35,11 @@ public class DroppedListItemTest {
     @Test
     public void testJsonRdfJsonCycle() throws JsonLdError, IOException {
 
-        final Document document = readDocument("issue58-in.json");
+        final Document document = readDocument("issue58-2-in.json");
         
         final RdfDataset dataset = JsonLd.toRdf(document).get();
+        
+        (new NQuadsWriter(new PrintWriter(System.out))).write(dataset);
         
         assertNotNull(dataset);
                 
@@ -45,7 +47,7 @@ public class DroppedListItemTest {
         
         assertNotNull(result);
         
-        final Document expected = readDocument("issue58-out.json");
+        final Document expected = readDocument("issue58-2-out.json");
         
         boolean match = result.equals(expected.getJsonContent().orElse(null));
         
@@ -54,6 +56,51 @@ public class DroppedListItemTest {
             System.out.println("Intermediary:");
             
             (new NQuadsWriter(new PrintWriter(System.out))).write(dataset);
+            
+            System.out.println("\nExpected:");
+
+            JsonWriterFactory writerFactory = Json.createWriterFactory(Map.of(JsonGenerator.PRETTY_PRINTING, true));
+
+            StringWriter writer = new StringWriter();
+            
+            JsonWriter jsonWriter1 = writerFactory.createWriter(writer);
+            jsonWriter1.write(expected.getJsonContent().orElse(null));
+            jsonWriter1.close();
+
+            writer.append("\n\nActual:\n");
+
+            JsonWriter jsonWriter2 = writerFactory.createWriter(writer);
+            jsonWriter2.write(result);
+            jsonWriter2.close();
+
+            System.out.print(writer.toString());
+            System.out.println();
+            System.out.println();
+        }
+        
+        assertTrue(match);
+        
+    }
+
+    @Test
+    public void testFromRdfOneItemList() throws JsonLdError, IOException {
+
+        final JsonArray result;
+        
+        try (final InputStream is = getClass().getResourceAsStream("issue58-in.nq")) {
+            
+            assertNotNull(is);
+            
+            result = JsonLd.fromRdf(RdfDocument.of(is)).nativeTypes().get();
+
+            assertNotNull(result);
+        }
+                
+        final Document expected = readDocument("issue58-out.json");
+        
+        boolean match = result.equals(expected.getJsonContent().orElse(null));
+        
+        if (!match) {
             
             System.out.println("\nExpected:");
 
