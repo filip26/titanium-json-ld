@@ -25,11 +25,11 @@ import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 
-public class JsonObjectRef extends AbstractMap<String, JsonValue> implements JsonObject {
+final class RefJsonObject extends AbstractMap<String, JsonValue> implements JsonObject {
     
     private JsonObject jsonObject;
 
-    JsonObjectRef(JsonObject jsonObject) {
+    RefJsonObject(JsonObject jsonObject) {
         this.jsonObject = jsonObject;
     }
 

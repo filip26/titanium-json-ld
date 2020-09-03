@@ -64,7 +64,7 @@ final class RdfToObject {
 
         // 1.
         if (value.isIRI() || value.isBlankNode()) {
-            return new JsonObjectRef(Json.createObjectBuilder().add(Keywords.ID, value.getValue()).build());
+            return new RefJsonObject(Json.createObjectBuilder().add(Keywords.ID, value.getValue()).build());
         }
 
         final JsonObjectBuilder result = Json.createObjectBuilder();
