@@ -15,8 +15,6 @@
  */
 package com.apicatalog.jsonld.compaction;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -140,10 +138,7 @@ public final class ValueCompaction {
                     types.add(activeContext.uriCompaction().vocab(true).compact(((JsonString)type).getString()));                    
                 }
                 
-                Map<String, JsonValue> resultMap = new LinkedHashMap<>(result.asJsonObject());
-                resultMap.put(Keywords.TYPE, types.build());
-                
-                result = JsonUtils.toJsonObject(resultMap);
+                result = Json.createObjectBuilder(result.asJsonObject()).add(Keywords.TYPE, types.build()).build();
             }
             
         // 9.
