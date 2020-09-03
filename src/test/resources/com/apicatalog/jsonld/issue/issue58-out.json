@@ -1,0 +1,19 @@
+[
+  {
+    "@id": "_:b0",
+    "https://example.org/list": [
+      {
+        "@list": [
+          {
+            "@list": [
+              {
+                "@type": "http://www.w3.org/2001/XMLSchema#integer",
+                "@value": "123"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

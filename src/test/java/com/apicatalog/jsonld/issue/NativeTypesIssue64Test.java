@@ -18,7 +18,11 @@ import com.apicatalog.jsonld.document.RdfDocument;
 
 public class NativeTypesIssue64Test {
 
-    
+    /**
+     * @see <a href="https://github.com/filip26/titanium-json-ld/issues/64">Issue #64</a>
+     * @throws JsonLdError
+     * @throws IOException
+     */
     @Test
     public void testFromRdfNativeTypes() throws JsonLdError, IOException {
 

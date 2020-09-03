@@ -20,6 +20,11 @@ import com.apicatalog.rdf.RdfDataset;
 
 public class RemoteContextTest {
 
+    /**
+     * @see <a href="https://github.com/filip26/titanium-json-ld/issues/61">Issue #61</a>
+     * @throws JsonLdError
+     * @throws IOException
+     */
     @Test
     public void testToRdfMissingTriples1() throws JsonLdError, IOException {
 
@@ -40,6 +45,11 @@ public class RemoteContextTest {
         }
     }
 
+    /**
+     * @see <a href="https://github.com/filip26/titanium-json-ld/issues/61">Issue #61</a>
+     * @throws JsonLdError
+     * @throws IOException
+     */
     @Test
     public void testToRdfMissingTriples2() throws JsonLdError, IOException {
 
@@ -63,6 +73,11 @@ public class RemoteContextTest {
         }
     }
 
+    /**
+     * @see <a href="https://github.com/filip26/titanium-json-ld/issues/61">Issue #61</a>
+     * @throws JsonLdError
+     * @throws IOException
+     */
     @Test
     public void testToRdfMissingTriples3() throws JsonLdError, IOException {
 
@@ -86,6 +101,11 @@ public class RemoteContextTest {
         }
     }
 
+    /**
+     * @see <a href="https://github.com/filip26/titanium-json-ld/issues/63">Issue #63</a>
+     * @throws JsonLdError
+     * @throws IOException
+     */
     @Test
     public void testRemoteContext() throws JsonLdError, IOException {
 

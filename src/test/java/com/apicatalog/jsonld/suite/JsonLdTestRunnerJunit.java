@@ -17,7 +17,6 @@ package com.apicatalog.jsonld.suite;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.json.Json;
@@ -122,10 +121,7 @@ public class JsonLdTestRunnerJunit {
         System.out.println("Test " + testCase.id + ": " + testCase.name);
         System.out.println("Expected:");
 
-        Map<String, Object> properties = new HashMap<>(1);
-        properties.put(JsonGenerator.PRETTY_PRINTING, true);
-
-        JsonWriterFactory writerFactory = Json.createWriterFactory(properties);
+        JsonWriterFactory writerFactory = Json.createWriterFactory(Map.of(JsonGenerator.PRETTY_PRINTING, true));
 
         StringWriter writer = new StringWriter();
         

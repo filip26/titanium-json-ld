@@ -1,0 +1,51 @@
+[
+  {
+    "@id": "_:b0",
+    "https://purl.org/geojson/vocab#coordinates": [
+      {
+        "@list": [
+          {
+            "@list": [
+              {
+                "@value": 10
+              },
+              {
+                "@value": -10
+              }
+            ]
+          },
+          {
+            "@list": [
+              {
+                "@value": 9
+              },
+              {
+                "@value": -9
+              }
+            ]
+          },
+          {
+            "@list": [
+              {
+                "@value": 8
+              },
+              {
+                "@value": -8
+              }
+            ]
+          },
+          {
+            "@list": [
+              {
+                "@value": 7
+              },
+              {
+                "@value": -7
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

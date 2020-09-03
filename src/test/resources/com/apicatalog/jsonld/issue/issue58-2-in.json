@@ -1,0 +1,10 @@
+{
+	"https://purl.org/geojson/vocab#coordinates": [{
+		"@list": [
+			{"@list": [{"@value": 10.0}, {"@value": -10.0}]},
+			{"@list": [{"@value": 9.0}, {"@value": -9.0}]},
+			{"@list": [{"@value": 8.0}, {"@value": -8.0}]},
+			{"@list": [{"@value": 7.0}, {"@value": -7.0}]}			
+		]
+	}]
+}
