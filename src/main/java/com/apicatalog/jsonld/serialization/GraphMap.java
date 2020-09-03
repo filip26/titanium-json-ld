@@ -95,12 +95,5 @@ final class GraphMap {
 
     public void remove(String graphName, String subject) {
         index.get(graphName).remove(subject);
-    }  
-
-    public void removeUsage(String graphName, String nil) {
-        if (usages.containsKey(graphName)) {
-            usages.remove(nil);
-        }
-    }
-    
+    }    
 }
