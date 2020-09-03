@@ -16,18 +16,16 @@
 package com.apicatalog.jsonld.serialization;
 
 import java.io.StringReader;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.rdf.RdfLiteral;
@@ -63,14 +61,14 @@ final class RdfToObject {
     }
     
     public JsonObject build() throws JsonLdError {
-        
+
         // 1.
         if (value.isIRI() || value.isBlankNode()) {
-            return Json.createObjectBuilder().add(Keywords.ID, value.toString()).build();
+            return new JsonObjectRef(Json.createObjectBuilder().add(Keywords.ID, value.getValue()).build());
         }
 
-        final Map<String, JsonValue> result = new LinkedHashMap<>();
-        
+        final JsonObjectBuilder result = Json.createObjectBuilder();
+
         // 2.
         final RdfLiteral literal = value.asLiteral();
         
@@ -150,22 +148,22 @@ final class RdfToObject {
 
             if (directionIndex > 1) {
                 
-                result.put(Keywords.LANGUAGE, Json.createValue(langId.substring(0, directionIndex)));
-                result.put(Keywords.DIRECTION, Json.createValue(langId.substring(directionIndex + 1)));
+                result.add(Keywords.LANGUAGE, Json.createValue(langId.substring(0, directionIndex)));
+                result.add(Keywords.DIRECTION, Json.createValue(langId.substring(directionIndex + 1)));
                 
             } else if (directionIndex == 0) {
                 
-                result.put(Keywords.DIRECTION, Json.createValue(langId.substring(1)));
+                result.add(Keywords.DIRECTION, Json.createValue(langId.substring(1)));
                 
             } else  if (directionIndex == -1) {
                 
-                result.put(Keywords.LANGUAGE, Json.createValue(langId));
+                result.add(Keywords.LANGUAGE, Json.createValue(langId));
             }
             
         // 2.7. 
         } else if (literal.getLanguage().isPresent()) {
             
-            result.put(Keywords.LANGUAGE, Json.createValue(literal.getLanguage().get()));
+            result.add(Keywords.LANGUAGE, Json.createValue(literal.getLanguage().get()));
 
         // 2.8.   
         } else if (literal.getDatatype() != null 
@@ -175,14 +173,14 @@ final class RdfToObject {
         }        
 
         // 2.9.
-        result.put(Keywords.VALUE, convertedValue);
+        result.add(Keywords.VALUE, convertedValue);
    
         // 2.10.
         if (type != null) {
-            result.put(Keywords.TYPE, Json.createValue(type));
+            result.add(Keywords.TYPE, Json.createValue(type));
         }
-        
+
         // 2.11.
-        return JsonUtils.toJsonObject(result);
+        return result.build();
     }
 }

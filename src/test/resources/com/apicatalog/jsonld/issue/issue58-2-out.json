@@ -7,48 +7,40 @@
           {
             "@list": [
               {
-                "@type": "http://www.w3.org/2001/XMLSchema#integer",
-                "@value": "10"
+                "@value": 10
               },
               {
-                "@type": "http://www.w3.org/2001/XMLSchema#integer",
-                "@value": "-10"
+                "@value": -10
               }
             ]
           },
           {
             "@list": [
               {
-                "@type": "http://www.w3.org/2001/XMLSchema#integer",
-                "@value": "9"
+                "@value": 9
               },
               {
-                "@type": "http://www.w3.org/2001/XMLSchema#integer",
-                "@value": "-9"
+                "@value": -9
               }
             ]
           },
           {
             "@list": [
               {
-                "@type": "http://www.w3.org/2001/XMLSchema#integer",
-                "@value": "8"
+                "@value": 8
               },
               {
-                "@type": "http://www.w3.org/2001/XMLSchema#integer",
-                "@value": "-8"
+                "@value": -8
               }
             ]
           },
           {
             "@list": [
               {
-                "@type": "http://www.w3.org/2001/XMLSchema#integer",
-                "@value": "7"
+                "@value": 7
               },
               {
-                "@type": "http://www.w3.org/2001/XMLSchema#integer",
-                "@value": "-7"
+                "@value": -7
               }
             ]
           }

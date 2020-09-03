@@ -39,8 +39,6 @@ public class DroppedListItemTest {
         
         final RdfDataset dataset = JsonLd.toRdf(document).get();
         
-        (new NQuadsWriter(new PrintWriter(System.out))).write(dataset);
-        
         assertNotNull(dataset);
                 
         final JsonArray result = JsonLd.fromRdf(RdfDocument.of(dataset)).nativeTypes().get();
@@ -91,7 +89,7 @@ public class DroppedListItemTest {
             
             assertNotNull(is);
             
-            result = JsonLd.fromRdf(RdfDocument.of(is)).nativeTypes().get();
+            result = JsonLd.fromRdf(RdfDocument.of(is)).ordered().get();
 
             assertNotNull(result);
         }

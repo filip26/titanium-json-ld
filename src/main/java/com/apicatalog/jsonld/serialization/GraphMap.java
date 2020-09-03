@@ -15,9 +15,9 @@
  */
 package com.apicatalog.jsonld.serialization;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -88,12 +88,19 @@ final class GraphMap {
 
     public void addUsage(String graphName, String subject, Reference reference) {
         usages.computeIfAbsent(graphName, e -> new LinkedHashMap<>())
-            .computeIfAbsent(subject, e -> new ArrayList<>())
+            .computeIfAbsent(subject, e -> new LinkedList<>())
             .add(reference)
             ;
     }
 
     public void remove(String graphName, String subject) {
         index.get(graphName).remove(subject);
-    }   
+    }  
+
+    public void removeUsage(String graphName, String nil) {
+        if (usages.containsKey(graphName)) {
+            usages.remove(nil);
+        }
+    }
+    
 }

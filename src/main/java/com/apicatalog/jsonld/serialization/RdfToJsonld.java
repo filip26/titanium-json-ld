@@ -239,7 +239,7 @@ public final class RdfToJsonld {
                 List<String> listNodes = new ArrayList<>();
                 
                 String nodeId = ((JsonString)node.get(Keywords.ID)).getString();
-
+                
                 // 6.4.3.
                 while (RdfConstants.REST.equals(usage.property)
                         && BlankNode.isWellFormed(nodeId)
@@ -275,43 +275,23 @@ public final class RdfToJsonld {
    
                     // 6.4.3.5.
                     if (UriUtils.isAbsoluteUri(nodeId)) {
-
                         break;
                     }                    
                 }
                 
+                JsonObject head = usage.value;
 
+                // 6.4.4.
+                head.remove(Keywords.ID);
+
+                // 6.4.5.
                 Collections.reverse(list);
                 
-                if (graphMap.contains(usage.graphName, usage.subject, usage.property)) {
-                
-                    JsonArray headArray = graphMap
-                                            .get(usage.graphName, usage.subject, usage.property)
-                                            .asJsonArray(); 
-    
-                    JsonObject head = headArray.getJsonObject(usage.valueIndex);
-                    
-                    JsonArrayBuilder listArray;
-                    
-                    if (head.containsKey(Keywords.LIST)) {
-                        listArray = Json.createArrayBuilder(head.getJsonArray(Keywords.LIST));
-                        
-                    } else {
-                        listArray = Json.createArrayBuilder();
-                    }
-                    
-                    list.forEach(listArray::add);
-                    
-                    headArray = Json.createArrayBuilder(headArray).set(usage.valueIndex, 
-                                        Json.createObjectBuilder(head).remove(Keywords.ID)
-                                        .add(Keywords.LIST, listArray)
-                                            ).build();
-                    
-                    graphMap.set(usage.graphName, usage.subject, usage.property, headArray);
-                }
+                // 6.4.6.
+                head.put(Keywords.LIST, JsonUtils.toJsonArray(list));
                 
                 // 6.4.7.
-                listNodes.forEach(nid -> graphMap.remove(graphName, nid));
+                listNodes.forEach(nid -> graphMap.remove(graphName, nid));                
             }    
         }
         
@@ -424,20 +404,16 @@ public final class RdfToJsonld {
                             .with(triple.getObject(), rdfDirection, useNativeTypes)
                             .processingMode(processingMode)
                             .build();
-            
-            int valueIndex = 0;
-            
+
             // 5.7.7.
             if (!graphMap.contains(graphName, subject, predicate)) {
                 
                 graphMap.set(graphName, subject, predicate, Json.createArrayBuilder().add(value).build());
-                valueIndex = 0;
                 
             // 5.7.8.
             } else {
                 
                 JsonArray array = graphMap.get(graphName, subject, predicate).asJsonArray();
-                valueIndex = array.size();
                 
                 if (!array.contains(value)) {
                     graphMap.set(graphName, subject, predicate, Json.createArrayBuilder(array).add(value).build());
@@ -451,7 +427,7 @@ public final class RdfToJsonld {
                 reference.graphName = graphName;
                 reference.subject = subject;
                 reference.property = predicate;
-                reference.valueIndex = valueIndex;
+                reference.value = value;
 
                 graphMap.addUsage(graphName, triple.getObject().toString(), reference);
             
@@ -467,7 +443,7 @@ public final class RdfToJsonld {
                 reference.graphName = graphName;
                 reference.subject = subject;
                 reference.property = predicate;
-                reference.valueIndex = valueIndex;
+                reference.value = value;
                 
                 referenceOnce.put(triple.getObject().toString(), reference);
             }
@@ -478,6 +454,6 @@ public final class RdfToJsonld {
         private String graphName;
         private String subject;
         private String property;
-        private int valueIndex;
+        private JsonObject value;
     }
 }
