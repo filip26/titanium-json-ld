@@ -12,7 +12,7 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 - conformance to the specification
 - secure, stable, fast, A+ code
 - minimal external dependencies
-  - only `javax.json:javax.json-api` is required now
+  - only `javax.json:javax.json-api` is required
 - simple to use
 
 ## Conformance
