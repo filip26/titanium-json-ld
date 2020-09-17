@@ -85,7 +85,6 @@ public class RemoteTest {
             server.stop();
             
         } catch (JsonLdError e) {
-            e.printStackTrace();
             Assert.fail(e.getMessage());
             
         }        

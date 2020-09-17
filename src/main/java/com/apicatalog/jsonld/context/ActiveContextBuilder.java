@@ -49,7 +49,7 @@ import com.apicatalog.jsonld.uri.UriUtils;
  *      Processing Algorithm</a>
  * 
  */
-public class ActiveContextBuilder {
+public final class ActiveContextBuilder {
 
     private static final int MAX_REMOTE_CONTEXTS = 256; 
     
