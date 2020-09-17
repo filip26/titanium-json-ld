@@ -122,7 +122,7 @@ public final class TermDefinitionBuilder {
         defined.put(term, Boolean.FALSE);
 
         // 3.
-        JsonValue value = localContext.get(term);
+        final JsonValue value = localContext.get(term);
 
         // 4.
         if (Keywords.TYPE.equals(term)) {
@@ -133,7 +133,7 @@ public final class TermDefinitionBuilder {
 
             if (JsonUtils.isObject(value)) {
 
-                JsonObject map = value.asJsonObject();
+                final JsonObject map = value.asJsonObject();
 
                 if (map.size() == 1 && map.containsKey(Keywords.CONTAINER)) {
 
@@ -146,7 +146,8 @@ public final class TermDefinitionBuilder {
                 } else if (map.size() == 2 && map.containsKey(Keywords.CONTAINER)
                         && map.containsKey(Keywords.PROTECTED)) {
 
-                    JsonValue containerValue = map.get(Keywords.CONTAINER);
+                    final JsonValue containerValue = map.get(Keywords.CONTAINER);
+                    
                     if (!JsonUtils.contains(Keywords.SET, containerValue)) {
                         throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
                     }
@@ -172,7 +173,7 @@ public final class TermDefinitionBuilder {
         final Optional<TermDefinition> previousDefinition = activeContext.removeTerm(term);
 
         JsonObject valueObject = null;
-        Boolean simpleTerm = null;
+        boolean simpleTerm = false;
 
         // 7.
         if (JsonUtils.isNull(value)) {
@@ -189,7 +190,6 @@ public final class TermDefinitionBuilder {
         } else if (JsonUtils.isObject(value)) {
 
             valueObject = value.asJsonObject();
-            simpleTerm = false;
 
         } else {
             throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
@@ -290,7 +290,7 @@ public final class TermDefinitionBuilder {
             // 13.5.
             if (valueObject.containsKey(Keywords.CONTAINER)) {
 
-                JsonValue container = valueObject.get(Keywords.CONTAINER);
+                final JsonValue container = valueObject.get(Keywords.CONTAINER);
 
                 if (JsonUtils.isNotString(container) && JsonUtils.isNotNull(container)) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY);
@@ -379,7 +379,7 @@ public final class TermDefinitionBuilder {
                 }
 
                 // 14.2.5
-                if (!term.contains(":") && !term.contains("/") && Boolean.TRUE.equals(simpleTerm)
+                if (!term.contains(":") && !term.contains("/") && simpleTerm
                         && (definition.getUriMapping() != null && ((
                             UriUtils.endsWithGenDelim(definition.getUriMapping())
                                 && UriUtils.isURI(definition.getUriMapping().substring(0, definition.getUriMapping().length() - 1))
