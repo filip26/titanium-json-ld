@@ -114,7 +114,7 @@ public final class JsonUtils {
     }
 
     public static boolean isFalse(JsonValue value) {
-        return value == null || ValueType.FALSE.equals(value.getValueType());
+        return value != null && ValueType.FALSE.equals(value.getValueType());
     }
 
     public static boolean isEmptyObject(JsonValue value) {

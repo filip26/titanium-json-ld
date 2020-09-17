@@ -120,9 +120,16 @@ public final class ActiveContextBuilder {
         if (JsonUtils.isObject(localContext)) {
 
             final JsonObject localContextObject = localContext.asJsonObject();
-
+            
             if (localContextObject.containsKey(Keywords.PROPAGATE)) {
-                propagate = localContextObject.getBoolean(Keywords.PROPAGATE, this.propagate);
+                
+                final JsonValue propagateValue = localContextObject.get(Keywords.PROPAGATE);
+                
+                if (JsonUtils.isNotBoolean(propagateValue)) {
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_PROPAGATE_VALUE);
+                }
+                
+                propagate = JsonUtils.isTrue(propagateValue);
             }
         }
 
