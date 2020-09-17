@@ -665,11 +665,13 @@ public final class TermDefinitionBuilder {
     
         if (activeContext.inMode(Version.V1_0)) {
             
-            if (JsonUtils.isNotString(container)) {
-                return false;
-            }
-
-            return Keywords.noneMatch(((JsonString)container).getString(), Keywords.GRAPH, Keywords.ID, Keywords.TYPE);    
+            return JsonUtils.isString(container) 
+                        && Keywords.noneMatch(
+                                        ((JsonString)container).getString(), 
+                                        Keywords.GRAPH, 
+                                        Keywords.ID, 
+                                        Keywords.TYPE
+                                        );    
         } 
         
         if (JsonUtils.isArray(container) && container.asJsonArray().size() == 1) {
@@ -701,7 +703,8 @@ public final class TermDefinitionBuilder {
                 && JsonUtils.contains(Keywords.ID, containers)) {
 
             return containers.size() == 2 || JsonUtils.contains(Keywords.SET, containers);
-        } 
+        }
+        
         if (JsonUtils.contains(Keywords.GRAPH, containers)
                 && JsonUtils.contains(Keywords.INDEX, containers)) {
             
