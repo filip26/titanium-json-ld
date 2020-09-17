@@ -291,11 +291,8 @@ public final class ActiveContextBuilder {
                 if (JsonUtils.isNull(value)) {
                     result.setBaseUri(null);
 
-                } else if (JsonUtils.isNotString(value)) {
-                    throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);
+                } else if (JsonUtils.isString(value)) {
                     
-                } else {
-
                     final String valueString = ((JsonString) value).getString();
                     
                     if (UriUtils.isURI(valueString)) {
@@ -318,6 +315,9 @@ public final class ActiveContextBuilder {
                     } else if (!valueString.isBlank()) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);
                     }
+
+                } else {
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);                    
                 }
             }
 
@@ -332,10 +332,7 @@ public final class ActiveContextBuilder {
                     result.setVocabularyMapping(null);
 
                 // 5.8.3
-                } else if (JsonUtils.isNotString(value)) {
-                    throw new JsonLdError(JsonLdErrorCode.INVALID_VOCAB_MAPPING);
-                        
-                } else {
+                } else if (JsonUtils.isString(value)) {
 
                     final String valueString = ((JsonString) value).getString();
 
@@ -358,6 +355,9 @@ public final class ActiveContextBuilder {
                     } else {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_VOCAB_MAPPING);
                     }
+
+                } else {
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_VOCAB_MAPPING);
                 }
             }
 
@@ -372,16 +372,16 @@ public final class ActiveContextBuilder {
                     result.setDefaultLanguage(null);
 
                 // 5.9.3
-                } else if (JsonUtils.isNotString(value)) {                    
-                    throw new JsonLdError(JsonLdErrorCode.INVALID_DEFAULT_LANGUAGE);
-                    
-                } else {
+                } else if (JsonUtils.isString(value)) {
 
                     result.setDefaultLanguage(((JsonString)value).getString());
                     
                     if (!LanguageTag.isWellFormed(result.getDefaultLanguage())) {
                         LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", result.getDefaultLanguage());                        
                     }
+                    
+                } else {
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_DEFAULT_LANGUAGE);
                 }
             }
 
@@ -401,11 +401,7 @@ public final class ActiveContextBuilder {
                     result.setDefaultBaseDirection(DirectionType.NULL);
 
                 // 5.10.4.
-                } else if (JsonUtils.isNotString(value)) {
-                    
-                    throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
-                    
-                } else {
+                } else if (JsonUtils.isString(value)) {
 
                     final String direction = ((JsonString) value).getString();
 
@@ -417,7 +413,10 @@ public final class ActiveContextBuilder {
 
                     } else {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
-                    }
+                    }                    
+                    
+                } else {
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
                 }
             }
 
