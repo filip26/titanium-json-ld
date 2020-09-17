@@ -291,13 +291,12 @@ public final class ActiveContextBuilder {
                 if (JsonUtils.isNull(value)) {
                     result.setBaseUri(null);
 
+                } else if (JsonUtils.isNotString(value)) {
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);
+                    
                 } else {
 
-                    if (JsonUtils.isNotString(value)) {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);
-                    }
-
-                    String valueString = ((JsonString) value).getString();
+                    final String valueString = ((JsonString) value).getString();
                     
                     if (UriUtils.isURI(valueString)) {
 
@@ -334,7 +333,6 @@ public final class ActiveContextBuilder {
 
                 // 5.8.3
                 } else if (JsonUtils.isNotString(value)) {
-                    
                     throw new JsonLdError(JsonLdErrorCode.INVALID_VOCAB_MAPPING);
                         
                 } else {
@@ -374,11 +372,10 @@ public final class ActiveContextBuilder {
                     result.setDefaultLanguage(null);
 
                 // 5.9.3
+                } else if (JsonUtils.isNotString(value)) {                    
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_DEFAULT_LANGUAGE);
+                    
                 } else {
-
-                    if (JsonUtils.isNotString(value)) {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_DEFAULT_LANGUAGE);
-                    }
 
                     result.setDefaultLanguage(((JsonString)value).getString());
                     
