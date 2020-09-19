@@ -84,15 +84,17 @@ public final class Expansion {
             return JsonValue.NULL;
         }
 
-        // 2. If active property is @default, initialize the frameExpansion flag to
-        // false.
-        if (Keywords.DEFAULT.equals(activeProperty)) {
-            frameExpansion = false;
+
+        // 5. If element is an array,
+        if (JsonUtils.isArray(element)) {
+
+            return ArrayExpansion
+                        .with(activeContext, element.asJsonArray(), activeProperty, baseUrl)
+                        .expand();
         }
 
         // 3. If active property has a term definition in active context with a local
-        // context,
-        // initialize property-scoped context to that local context.
+        // context, initialize property-scoped context to that local context.
         final JsonValue propertyContext = activeContext
                                             .getTerm(activeProperty)
                                             .map(TermDefinition::getLocalContext)
@@ -106,18 +108,10 @@ public final class Expansion {
                         .expand();
         }
 
-        // 5. If element is an array,
-        if (JsonUtils.isArray(element)) {
-
-            return ArrayExpansion
-                        .with(activeContext, element.asJsonArray(), activeProperty, baseUrl)
-                        .expand();
-        }
-
         // 6. Otherwise element is a map
         return ObjectExpansion
                     .with(activeContext, propertyContext, element.asJsonObject(), activeProperty, baseUrl)
-                    .frameExpansion(frameExpansion)
+                    .frameExpansion(!Keywords.DEFAULT.equals(activeProperty) && frameExpansion)
                     .ordered(ordered)
                     .fromMap(fromMap)
                     .expand();
