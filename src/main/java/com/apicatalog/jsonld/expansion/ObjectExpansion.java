@@ -122,7 +122,7 @@ public final class ObjectExpansion {
         // 15.
         if (result.containsKey(Keywords.VALUE)) {
 
-            return  normalizeValue(result);
+            return normalizeValue(result);
 
         // 16.
         } else if (result.containsKey(Keywords.TYPE)) {
@@ -375,7 +375,6 @@ public final class ObjectExpansion {
         
         return normalize(result);
     }
-
 
     private JsonValue normalize(final Map<String, JsonValue> result) {
         

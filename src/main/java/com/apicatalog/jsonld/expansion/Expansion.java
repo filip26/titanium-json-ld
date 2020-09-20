@@ -84,7 +84,6 @@ public final class Expansion {
             return JsonValue.NULL;
         }
 
-
         // 5. If element is an array,
         if (JsonUtils.isArray(element)) {
 
@@ -111,7 +110,7 @@ public final class Expansion {
         // 6. Otherwise element is a map
         return ObjectExpansion
                     .with(activeContext, propertyContext, element.asJsonObject(), activeProperty, baseUrl)
-                    .frameExpansion(!Keywords.DEFAULT.equals(activeProperty) && frameExpansion)
+                    .frameExpansion(frameExpansion && !Keywords.DEFAULT.equals(activeProperty))
                     .ordered(ordered)
                     .fromMap(fromMap)
                     .expand();

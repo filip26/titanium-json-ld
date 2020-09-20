@@ -76,7 +76,6 @@ public final class JsonLdToRdf {
             final RdfResource rdfGraphName;
             
             if (Keywords.DEFAULT.equals(graphName)) {
-
                 rdfGraphName = null;
                 
             } else {
@@ -98,20 +97,17 @@ public final class JsonLdToRdf {
             // 1.3.
             for (final String subject : nodeMap.subjects(graphName, true)) {
                 
-                RdfResource rdfSubject = null;
+                final RdfResource rdfSubject;
 
                 // 1.3.1.
                 if (BlankNode.isWellFormed(subject)) {
-     
                     rdfSubject = Rdf.createBlankNode(subject);
                     
                 } else if (UriUtils.isAbsoluteUri(subject)) {
-                    
                     rdfSubject = Rdf.createIRI(subject);
-                }
-                
-                if (rdfSubject == null) {
-                    continue;
+                    
+                } else {
+                    continue;                    
                 }
                 
                 // 1.3.2.
@@ -128,7 +124,7 @@ public final class JsonLdToRdf {
                             
                             final String typeString = ((JsonString)type).getString();
 
-                            RdfValue rdfObject = null;
+                            final RdfValue rdfObject;
                             
                             if (BlankNode.isWellFormed(typeString)) {
                                 rdfObject = Rdf.createBlankNode(typeString);
@@ -157,23 +153,20 @@ public final class JsonLdToRdf {
                         for (JsonValue item : nodeMap.get(graphName, subject, property).asJsonArray()) {
                         
                             // 1.3.2.5.1.
-                            List<RdfTriple> listTriples = new LinkedList<>();
+                            final List<RdfTriple> listTriples = new LinkedList<>();
 
                             // 1.3.2.5.2.                            
-                            RdfValue rdfObject = ObjectToRdf
-                                                    .with(item.asJsonObject(), listTriples, nodeMap)
-                                                    .rdfDirection(rdfDirection)
-                                                    .build();
-                            
-                            if (rdfObject != null) {
-                                dataset.add(Rdf.createNQuad(
-                                                        rdfSubject,
-                                                        Rdf.createResource(property),
-                                                        rdfObject,
-                                                        rdfGraphName
-                                                    ));
-                            }
-                            
+                            ObjectToRdf
+                                    .with(item.asJsonObject(), listTriples, nodeMap)
+                                    .rdfDirection(rdfDirection)
+                                    .build()
+                                    .ifPresent(rdfObject ->
+                                                        dataset.add(Rdf.createNQuad(
+                                                                    rdfSubject,
+                                                                    Rdf.createResource(property),
+                                                                    rdfObject,
+                                                                    rdfGraphName
+                                                                    )));
                             // 1.3.2.5.3.
                             listTriples.stream()
                                         .map(triple -> Rdf.createNQuad(triple, rdfGraphName))
@@ -185,5 +178,4 @@ public final class JsonLdToRdf {
         }
         return dataset;
     }
-    
 }
