@@ -15,7 +15,7 @@
  */
 package com.apicatalog.jsonld.deseralization;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.json.JsonString;
@@ -153,7 +153,7 @@ public final class JsonLdToRdf {
                         for (JsonValue item : nodeMap.get(graphName, subject, property).asJsonArray()) {
                         
                             // 1.3.2.5.1.
-                            final List<RdfTriple> listTriples = new LinkedList<>();
+                            final List<RdfTriple> listTriples = new ArrayList<>();
 
                             // 1.3.2.5.2.                            
                             ObjectToRdf
