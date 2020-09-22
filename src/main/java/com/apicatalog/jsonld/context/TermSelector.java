@@ -56,7 +56,7 @@ public final class TermSelector {
 
         // 2. Initialize inverse context to the value of inverse context in active context.
         final InverseContext inverseContext = activeContext.getInverseContext();
-               
+ 
         // 4. For each item container in containers:
         for (final String container : containers) {
  

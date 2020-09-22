@@ -20,6 +20,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import javax.json.JsonNumber;
 import javax.json.JsonObject;
@@ -53,10 +54,10 @@ import com.apicatalog.rdf.lang.XsdConstants;
  */
 final class ObjectToRdf {
 
-    private static final DecimalFormat eFormat =
+    private static final DecimalFormat xsdNumberFormat =
             new DecimalFormat("0.0##############E0", new DecimalFormatSymbols(Locale.ENGLISH));
 
-    static { eFormat.setMinimumFractionDigits(1); }
+    static { xsdNumberFormat.setMinimumFractionDigits(1); }
 
     // required
     private JsonObject item;
@@ -84,7 +85,7 @@ final class ObjectToRdf {
         return this;
     }
     
-    public RdfValue build() throws JsonLdError {
+    public Optional<RdfValue> build() throws JsonLdError {
 
         // 1. - 2.
         if (NodeObject.isNodeObject(item)) {
@@ -92,46 +93,44 @@ final class ObjectToRdf {
             JsonValue id = item.get(Keywords.ID);
 
             if (JsonUtils.isNotString(id) || JsonUtils.isNull(id)) {
-                return null;
+                return Optional.empty();
             }
             
             String idString = ((JsonString)id).getString();
      
             if (BlankNode.isWellFormed(idString)) {
-                return Rdf.createBlankNode(idString);
+                return Optional.of(Rdf.createBlankNode(idString));
                 
             } else if (UriUtils.isAbsoluteUri(idString)) {
-                return Rdf.createIRI(idString);
+                return Optional.of(Rdf.createIRI(idString));
             }
             
-            return null;
+            return Optional.empty();
         }
         
         // 3.
         if (ListObject.isListObject(item)) {
-            return ListToRdf
+            return Optional.of(ListToRdf
                         .with(item.get(Keywords.LIST).asJsonArray(), triples, nodeMap)
                         .rdfDirection(rdfDirection)
-                        .build();
+                        .build());
         }
 
         // 4.
         if (!ValueObject.isValueObject(item)) {
-            return null;
+            return Optional.empty();
         }
         
-        JsonValue value = item.get(Keywords.VALUE);
+        final JsonValue value = item.get(Keywords.VALUE);
         
         // 5.
         String datatype = item.containsKey(Keywords.TYPE) && JsonUtils.isString(item.get(Keywords.TYPE))
                             ? item.getString(Keywords.TYPE)
                             : null;
         
-        String valueString = null;
-        
         // 6.
         if (datatype != null && !Keywords.JSON.equals(datatype) && !UriUtils.isAbsoluteUri(datatype)) {
-            return null;
+            return Optional.empty();
         }
         
         // 7.
@@ -139,8 +138,10 @@ final class ObjectToRdf {
                 || !LanguageTag.isWellFormed(item.getString(Keywords.LANGUAGE)))
                 ) {
             
-            return null;
+            return Optional.empty();
         }
+
+        String valueString = null;
         
         // 8.
         if (Keywords.JSON.equals(datatype)) {
@@ -206,7 +207,7 @@ final class ObjectToRdf {
         if (valueString == null) {
             
             if (JsonUtils.isNotString(value)) {
-                return null;
+                return Optional.empty();
             }
             
             valueString = ((JsonString)value).getString();
@@ -261,7 +262,7 @@ final class ObjectToRdf {
                                     Rdf.createString(item.getString(Keywords.DIRECTION)))
                                     );
                 
-                return Rdf.createBlankNode(blankNodeId);
+                return Optional.of(Rdf.createBlankNode(blankNodeId));
             }
             
         // 14.
@@ -276,12 +277,10 @@ final class ObjectToRdf {
         }
         
         // 15.
-        return rdfLiteral;
+        return Optional.ofNullable(rdfLiteral);
     }
     
     private static final String toXsdDouble(BigDecimal bigDecimal) {
-        
-        return eFormat.format(bigDecimal);        
+        return xsdNumberFormat.format(bigDecimal);        
     }
-    
 }

@@ -60,7 +60,8 @@ public final class JsonUtils {
     public static final boolean isScalar(final JsonValue value) {
         return value != null 
                     && !ValueType.ARRAY.equals(value.getValueType())
-                    && !ValueType.OBJECT.equals(value.getValueType());
+                    && !ValueType.OBJECT.equals(value.getValueType())
+                    && !ValueType.NULL.equals(value.getValueType());
     }
 
     public static final boolean isNotScalar(final JsonValue value) {
@@ -114,7 +115,7 @@ public final class JsonUtils {
     }
 
     public static boolean isFalse(JsonValue value) {
-        return value == null || ValueType.FALSE.equals(value.getValueType());
+        return value != null && ValueType.FALSE.equals(value.getValueType());
     }
 
     public static boolean isEmptyObject(JsonValue value) {
@@ -227,5 +228,4 @@ public final class JsonUtils {
     public static boolean isNotEmptyObject(JsonValue value) {
         return isNotObject(value) || !value.asJsonObject().isEmpty();
     }
-
 }

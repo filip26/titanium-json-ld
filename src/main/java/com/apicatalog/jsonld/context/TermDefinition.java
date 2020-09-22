@@ -182,6 +182,5 @@ public final class TermDefinition {
     
     public boolean hasContainerMapping(String value) {
         return containerMapping != null && containerMapping.contains(value);
-    }
-    
+    }  
 }

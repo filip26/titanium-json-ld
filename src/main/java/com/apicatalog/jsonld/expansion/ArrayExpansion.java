@@ -122,7 +122,7 @@ public final class ArrayExpansion {
                     result.add(expandedItem);
                 }
 
-                // append non-null element
+            // append non-null element
             } else if (JsonUtils.isNotNull(expanded)) {
                 result.add(expanded);
             }

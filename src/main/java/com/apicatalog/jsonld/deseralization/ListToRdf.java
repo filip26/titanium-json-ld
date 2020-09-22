@@ -69,37 +69,33 @@ final class ListToRdf {
         }
 
         // 2.
-        String[] bnodes = new String[list.size()];
+        final String[] bnodes = new String[list.size()];
 
         IntStream.range(0,  bnodes.length).forEach(i -> bnodes[i] = nodeMap.createIdentifier());
 
         // 3.
         int index = 0;
-        for (JsonValue item : list) {
+        for (final JsonValue item : list) {
             
-            String subject = bnodes[index];
+            final String subject = bnodes[index];
             index++;
             
             // 3.1.
-            List<RdfTriple> embeddedTriples = new ArrayList<>();
+            final List<RdfTriple> embeddedTriples = new ArrayList<>();
             
             // 3.2.
-            RdfValue object = ObjectToRdf
-                                    .with(item.asJsonObject(), embeddedTriples, nodeMap)
-                                    .rdfDirection(rdfDirection)
-                                    .build();
-                                           
-            // 3.3.
-            if (object != null) {
-                triples.add(Rdf.createTriple(
-                                    Rdf.createBlankNode(subject), 
-                                    Rdf.createIRI(RdfConstants.FIRST), 
-                                    object
-                                    ));
-            }
+            ObjectToRdf
+                .with(item.asJsonObject(), embeddedTriples, nodeMap)
+                .rdfDirection(rdfDirection)
+                .build()
+                .ifPresent(object -> 
+                                triples.add(Rdf.createTriple(
+                                                Rdf.createBlankNode(subject), 
+                                                Rdf.createIRI(RdfConstants.FIRST), 
+                                                object)));
 
             // 3.4.
-            RdfValue rest = (index < bnodes.length) ? Rdf.createBlankNode(bnodes[index]) 
+            final RdfValue rest = (index < bnodes.length) ? Rdf.createBlankNode(bnodes[index]) 
                                         : Rdf.createIRI(RdfConstants.NIL)
                                         ;
             

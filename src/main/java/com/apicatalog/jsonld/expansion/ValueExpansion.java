@@ -52,7 +52,7 @@ public final class ValueExpansion {
         return new ValueExpansion(activeContext);
     }
 
-    public JsonValue expand(final JsonValue value, final String activeProperty) throws JsonLdError {
+    public JsonObject expand(final JsonValue value, final String activeProperty) throws JsonLdError {
 
         definition = activeContext.getTerm(activeProperty);
 

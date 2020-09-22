@@ -122,7 +122,7 @@ public final class TermDefinitionBuilder {
         defined.put(term, Boolean.FALSE);
 
         // 3.
-        JsonValue value = localContext.get(term);
+        final JsonValue value = localContext.get(term);
 
         // 4.
         if (Keywords.TYPE.equals(term)) {
@@ -133,7 +133,7 @@ public final class TermDefinitionBuilder {
 
             if (JsonUtils.isObject(value)) {
 
-                JsonObject map = value.asJsonObject();
+                final JsonObject map = value.asJsonObject();
 
                 if (map.size() == 1 && map.containsKey(Keywords.CONTAINER)) {
 
@@ -146,7 +146,8 @@ public final class TermDefinitionBuilder {
                 } else if (map.size() == 2 && map.containsKey(Keywords.CONTAINER)
                         && map.containsKey(Keywords.PROTECTED)) {
 
-                    JsonValue containerValue = map.get(Keywords.CONTAINER);
+                    final JsonValue containerValue = map.get(Keywords.CONTAINER);
+                    
                     if (!JsonUtils.contains(Keywords.SET, containerValue)) {
                         throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
                     }
@@ -172,7 +173,7 @@ public final class TermDefinitionBuilder {
         final Optional<TermDefinition> previousDefinition = activeContext.removeTerm(term);
 
         JsonObject valueObject = null;
-        Boolean simpleTerm = null;
+        boolean simpleTerm = false;
 
         // 7.
         if (JsonUtils.isNull(value)) {
@@ -189,7 +190,6 @@ public final class TermDefinitionBuilder {
         } else if (JsonUtils.isObject(value)) {
 
             valueObject = value.asJsonObject();
-            simpleTerm = false;
 
         } else {
             throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
@@ -201,29 +201,32 @@ public final class TermDefinitionBuilder {
 
         // 11.
         if (valueObject.containsKey(Keywords.PROTECTED)) {
+            
             if (activeContext.inMode(Version.V1_0)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
 
-            if (JsonUtils.isNotBoolean(valueObject.get(Keywords.PROTECTED))) {
+            final JsonValue protectedValue = valueObject.get(Keywords.PROTECTED);
+            
+            if (JsonUtils.isNotBoolean(protectedValue)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_PROTECTED_VALUE);
             }
 
-            definition.setProtected(valueObject.getBoolean(Keywords.PROTECTED));
+            definition.setProtected(JsonUtils.isTrue(protectedValue));
         }
 
         // 12.
         if (valueObject.containsKey(Keywords.TYPE)) {
 
             // 12.1.
-            JsonValue type = valueObject.get(Keywords.TYPE);
+            final JsonValue type = valueObject.get(Keywords.TYPE);
 
             if (JsonUtils.isNotString(type)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING);
             }
 
             // 12.2.
-            String expandedTypeString = 
+            final String expandedTypeString = 
                         activeContext
                             .uriExpansion()                    
                             .localContext(localContext)
@@ -256,14 +259,14 @@ public final class TermDefinitionBuilder {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY);
             }
 
-            JsonValue reverse = valueObject.get(Keywords.REVERSE);
+            final JsonValue reverse = valueObject.get(Keywords.REVERSE);
 
             // 13.2.
             if (JsonUtils.isNotString(reverse)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
             }
 
-            String reverseString = ((JsonString) reverse).getString();
+            final String reverseString = ((JsonString) reverse).getString();
 
             // 13.3.
             if (Keywords.matchForm(reverseString)) {
@@ -287,7 +290,7 @@ public final class TermDefinitionBuilder {
             // 13.5.
             if (valueObject.containsKey(Keywords.CONTAINER)) {
 
-                JsonValue container = valueObject.get(Keywords.CONTAINER);
+                final JsonValue container = valueObject.get(Keywords.CONTAINER);
 
                 if (JsonUtils.isNotString(container) && JsonUtils.isNotNull(container)) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY);
@@ -295,7 +298,7 @@ public final class TermDefinitionBuilder {
 
                 if (JsonUtils.isString(container)) {
 
-                    String containerString = ((JsonString) container).getString();
+                    final String containerString = ((JsonString) container).getString();
 
                     if (Keywords.anyMatch(containerString, Keywords.SET, Keywords.INDEX)) {
                         definition.addContainerMapping(containerString);
@@ -315,7 +318,7 @@ public final class TermDefinitionBuilder {
             return;
         }
 
-        JsonValue idValue = valueObject.get(Keywords.ID);
+        final JsonValue idValue = valueObject.get(Keywords.ID);
 
         // 14.
         if (idValue != null && (JsonUtils.isNotString(idValue) || !term.equals(((JsonString) idValue).getString()))) {
@@ -328,7 +331,7 @@ public final class TermDefinitionBuilder {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
                 }
 
-                String idValueString = ((JsonString) idValue).getString();
+                final String idValueString = ((JsonString) idValue).getString();
 
                 // 14.2.2
                 if (!Keywords.contains(idValueString) && Keywords.matchForm(idValueString)) {
@@ -362,7 +365,7 @@ public final class TermDefinitionBuilder {
                     defined.put(term, Boolean.TRUE);
 
                     // 14.2.4.2
-                    String expandedTerm = 
+                    final String expandedTerm = 
                                 activeContext
                                     .uriExpansion()
                                     .localContext(localContext)
@@ -376,7 +379,7 @@ public final class TermDefinitionBuilder {
                 }
 
                 // 14.2.5
-                if (!term.contains(":") && !term.contains("/") && Boolean.TRUE.equals(simpleTerm)
+                if (!term.contains(":") && !term.contains("/") && simpleTerm
                         && (definition.getUriMapping() != null && ((
                             UriUtils.endsWithGenDelim(definition.getUriMapping())
                                 && UriUtils.isURI(definition.getUriMapping().substring(0, definition.getUriMapping().length() - 1))
@@ -424,7 +427,7 @@ public final class TermDefinitionBuilder {
                                 .vocab(true)
                                 .expand(term));
 
-            if (!UriUtils.isURI(definition.getUriMapping())) {
+            if (UriUtils.isNotURI(definition.getUriMapping())) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
             }
 
@@ -445,15 +448,15 @@ public final class TermDefinitionBuilder {
         if (valueObject.containsKey(Keywords.CONTAINER)) {
 
             // 19.1.
-            JsonValue containerValue = valueObject.get(Keywords.CONTAINER);
+            final JsonValue containerValue = valueObject.get(Keywords.CONTAINER);
 
             if (!validateContainer(containerValue)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
             }
 
             // 19.3.
-            for (JsonValue item : JsonUtils.toJsonArray(containerValue)) {
-                    definition.addContainerMapping(((JsonString)item).getString());
+            for (final JsonValue item : JsonUtils.toJsonArray(containerValue)) {
+                definition.addContainerMapping(((JsonString)item).getString());
             }
 
             // 19.4.
@@ -480,15 +483,15 @@ public final class TermDefinitionBuilder {
             }
 
             // 20.2.
-            JsonValue index = valueObject.get(Keywords.INDEX);
+            final JsonValue index = valueObject.get(Keywords.INDEX);
 
             if (JsonUtils.isNotString(index)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
 
-            String indexString = ((JsonString) index).getString();
+            final String indexString = ((JsonString) index).getString();
 
-            String expandedIndex =
+            final String expandedIndex =
                             activeContext
                                 .uriExpansion()
                                 .localContext(localContext)
@@ -512,7 +515,7 @@ public final class TermDefinitionBuilder {
             }
 
             // 21.2.
-            JsonValue context = valueObject.get(Keywords.CONTEXT);
+            final JsonValue context = valueObject.get(Keywords.CONTEXT);
 
             // 21.3.
             try {
@@ -536,7 +539,7 @@ public final class TermDefinitionBuilder {
         if (valueObject.containsKey(Keywords.LANGUAGE) && !valueObject.containsKey(Keywords.TYPE)) {
 
             // 22.1. - 2.
-            JsonValue language = valueObject.get(Keywords.LANGUAGE);
+            final JsonValue language = valueObject.get(Keywords.LANGUAGE);
 
             if (JsonUtils.isNull(language) || JsonUtils.isString(language)) {
                 
@@ -554,7 +557,7 @@ public final class TermDefinitionBuilder {
         // 23.
         if (valueObject.containsKey(Keywords.DIRECTION) && !valueObject.containsKey(Keywords.TYPE)) {
 
-            JsonValue direction = valueObject.get(Keywords.DIRECTION);
+            final JsonValue direction = valueObject.get(Keywords.DIRECTION);
 
             if (JsonUtils.isNull(direction)) {
                 definition.setDirectionMapping(DirectionType.NULL);
@@ -586,17 +589,18 @@ public final class TermDefinitionBuilder {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
 
-            JsonValue nest = valueObject.get(Keywords.NEST);
+            final JsonValue nest = valueObject.get(Keywords.NEST);
 
             if (JsonUtils.isNotString(nest)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
             }
 
-            String nestString = ((JsonString) nest).getString();
+            final String nestString = ((JsonString) nest).getString();
 
             if (Keywords.contains(nestString) && !Keywords.NEST.equals(nestString)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
             }
+            
             definition.setNestValue(nestString);
         }
 
@@ -609,12 +613,12 @@ public final class TermDefinitionBuilder {
             }
 
             // 25.2.
-            JsonValue prefix = valueObject.get(Keywords.PREFIX);
+            final JsonValue prefix = valueObject.get(Keywords.PREFIX);
 
             if (JsonUtils.isTrue(prefix)) {
                 definition.setPrefix(true);
 
-            } else if (JsonUtils.isFalse(prefix) && JsonUtils.isNotNull(prefix)) {
+            } else if (JsonUtils.isFalse(prefix)) {
                 definition.setPrefix(false);
 
             } else {
@@ -661,11 +665,13 @@ public final class TermDefinitionBuilder {
     
         if (activeContext.inMode(Version.V1_0)) {
             
-            if (JsonUtils.isNotString(container)) {
-                return false;
-            }
-
-            return Keywords.noneMatch(((JsonString)container).getString(), Keywords.GRAPH, Keywords.ID, Keywords.TYPE);    
+            return JsonUtils.isString(container) 
+                        && Keywords.noneMatch(
+                                        ((JsonString)container).getString(), 
+                                        Keywords.GRAPH, 
+                                        Keywords.ID, 
+                                        Keywords.TYPE
+                                        );    
         } 
         
         if (JsonUtils.isArray(container) && container.asJsonArray().size() == 1) {
@@ -683,13 +689,8 @@ public final class TermDefinitionBuilder {
                                 Keywords.SET, 
                                 Keywords.TYPE);
         }
-        
-        if (JsonUtils.isArray(container)) { 
 
-            return validateContainerArray(container.asJsonArray());
-        }
-        
-        return false;
+        return JsonUtils.isArray(container) && validateContainerArray(container.asJsonArray());
     }
     
     private static final boolean validateContainerArray(final JsonArray containers) {
@@ -702,27 +703,22 @@ public final class TermDefinitionBuilder {
                 && JsonUtils.contains(Keywords.ID, containers)) {
 
             return containers.size() == 2 || JsonUtils.contains(Keywords.SET, containers);
-        } 
+        }
+        
         if (JsonUtils.contains(Keywords.GRAPH, containers)
                 && JsonUtils.contains(Keywords.INDEX, containers)) {
             
             return containers.size() == 2 || JsonUtils.contains(Keywords.SET, containers);
         }
-        
-        if (containers.size() > 2) {
-            return false;
-        }
 
-        if (JsonUtils.contains(Keywords.SET, containers)) {
-            
-            return JsonUtils.contains(Keywords.GRAPH, containers)
-                    || JsonUtils.contains(Keywords.ID, containers)
-                    || JsonUtils.contains(Keywords.INDEX, containers)
-                    || JsonUtils.contains(Keywords.LANGUAGE, containers)
-                    || JsonUtils.contains(Keywords.TYPE, containers)
-                    ;
-        }            
-        return false;
+        return containers.size() <= 2
+                    && JsonUtils.contains(Keywords.SET, containers) 
+                    && (JsonUtils.contains(Keywords.GRAPH, containers)
+                        || JsonUtils.contains(Keywords.ID, containers)
+                        || JsonUtils.contains(Keywords.INDEX, containers)
+                        || JsonUtils.contains(Keywords.LANGUAGE, containers)
+                        || JsonUtils.contains(Keywords.TYPE, containers)
+                        );
     }
     
 }

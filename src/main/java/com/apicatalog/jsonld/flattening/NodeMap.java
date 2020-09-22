@@ -41,13 +41,6 @@ public final class NodeMap {
         this.index.put(Keywords.DEFAULT, new LinkedHashMap<>());
     }
     
-    public boolean doesNotContain(String graphName, String subject, String property) {
-        return !index.containsKey(graphName) 
-                    || !index.get(graphName).containsKey(subject)
-                    || !index.get(graphName).get(subject).containsKey(property)
-                    ;
-    }
-
     public void set(String graphName, String subject, String property, JsonValue value) {
 
         if (subject == null) {
@@ -78,10 +71,14 @@ public final class NodeMap {
         return null;
     }
 
-    public boolean doesNotContain(String graphName, String subject) {
-        return !index.containsKey(graphName) 
-                || !index.get(graphName).containsKey(subject)
-                ;
+    public boolean contains(String graphName, String subject) {
+        return index.containsKey(graphName) && index.get(graphName).containsKey(subject);
+    }
+
+    public boolean contains(String graphName, String subject, String property) {
+        return index.containsKey(graphName) 
+                    && index.get(graphName).containsKey(subject)
+                    && index.get(graphName).get(subject).containsKey(property);
     }
 
     public Map<String, JsonObject> get(String graphName) {
@@ -147,7 +144,7 @@ public final class NodeMap {
             for (final Map.Entry<String, Map<String, JsonValue>> subject : graphEntry.getValue().entrySet()) {
              
                 // 2.1.
-                if (result.doesNotContain(Keywords.MERGED, subject.getKey())) {
+                if (!result.contains(Keywords.MERGED, subject.getKey())) {
                     result.set(Keywords.MERGED, subject.getKey(), Keywords.ID, Json.createValue(subject.getKey()));
                 }
                                 
@@ -165,11 +162,11 @@ public final class NodeMap {
                         
                         final JsonArrayBuilder array;
                         
-                        if (result.doesNotContain(Keywords.MERGED, subject.getKey(), property.getKey())) {
-                            array = Json.createArrayBuilder();
+                        if (result.contains(Keywords.MERGED, subject.getKey(), property.getKey())) {
+                            array = Json.createArrayBuilder(JsonUtils.toJsonArray(result.get(Keywords.MERGED, subject.getKey(), property.getKey())));
                             
                         } else {
-                            array = Json.createArrayBuilder(JsonUtils.toJsonArray(result.get(Keywords.MERGED, subject.getKey(), property.getKey())));
+                            array = Json.createArrayBuilder();
                         }
                         
                         JsonUtils.toJsonArray(property.getValue()).forEach(array::add);

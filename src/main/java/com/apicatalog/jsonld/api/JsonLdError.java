@@ -22,7 +22,7 @@ package com.apicatalog.jsonld.api;
  *      Specification</a>
  * 
  */
-public final class JsonLdError extends Throwable {
+public final class JsonLdError extends Exception {
 
     private static final long serialVersionUID = -1912600269069309493L;
 

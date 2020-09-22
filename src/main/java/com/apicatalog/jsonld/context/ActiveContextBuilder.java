@@ -49,7 +49,7 @@ import com.apicatalog.jsonld.uri.UriUtils;
  *      Processing Algorithm</a>
  * 
  */
-public class ActiveContextBuilder {
+public final class ActiveContextBuilder {
 
     private static final int MAX_REMOTE_CONTEXTS = 256; 
     
@@ -120,9 +120,16 @@ public class ActiveContextBuilder {
         if (JsonUtils.isObject(localContext)) {
 
             final JsonObject localContextObject = localContext.asJsonObject();
-
+            
             if (localContextObject.containsKey(Keywords.PROPAGATE)) {
-                propagate = localContextObject.getBoolean(Keywords.PROPAGATE, this.propagate);
+                
+                final JsonValue propagateValue = localContextObject.get(Keywords.PROPAGATE);
+                
+                if (JsonUtils.isNotBoolean(propagateValue)) {
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_PROPAGATE_VALUE);
+                }
+                
+                propagate = JsonUtils.isTrue(propagateValue);
             }
         }
 
@@ -182,7 +189,7 @@ public class ActiveContextBuilder {
             // 5.5. If context has an @version
             if (contextDefinition.containsKey(Keywords.VERSION)) {
 
-                JsonValue version = contextDefinition.get(Keywords.VERSION);
+                final JsonValue version = contextDefinition.get(Keywords.VERSION);
 
                 String versionString = null;
 
@@ -194,8 +201,7 @@ public class ActiveContextBuilder {
                 }
 
                 // 5.5.1. If the associated value is not 1.1, an invalid @version value has been
-                // detected,
-                // and processing is aborted.
+                // detected, and processing is aborted.
                 if (!"1.1".equals(versionString)) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_VERSION_VALUE);
                 }
@@ -208,12 +214,13 @@ public class ActiveContextBuilder {
 
             // 5.6. If context has an @import
             if (contextDefinition.containsKey(Keywords.IMPORT)) {
+                
                 // 5.6.1.
                 if (activeContext.inMode(Version.V1_0)) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_CONTEXT_ENTRY);
                 }
 
-                JsonValue contextImport = contextDefinition.get(Keywords.IMPORT);
+                final JsonValue contextImport = contextDefinition.get(Keywords.IMPORT);
 
                 // 5.6.2.
                 if (JsonUtils.isNotString(contextImport)) {
@@ -221,14 +228,14 @@ public class ActiveContextBuilder {
                 }
 
                 // 5.6.3.
-                String contextImportUri = UriResolver.resolve(baseUrl, ((JsonString) contextImport).getString());
+                final String contextImportUri = UriResolver.resolve(baseUrl, ((JsonString) contextImport).getString());
 
                 // 5.6.4.
                 if (activeContext.getOptions().getDocumentLoader() == null) {
                     throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED);
                 }
 
-                DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
+                final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
                 loaderOptions.setProfile(ProfileConstants.CONTEXT);
                 loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
 
@@ -284,13 +291,9 @@ public class ActiveContextBuilder {
                 if (JsonUtils.isNull(value)) {
                     result.setBaseUri(null);
 
-                } else {
-
-                    if (JsonUtils.isNotString(value)) {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);
-                    }
-
-                    String valueString = ((JsonString) value).getString();
+                } else if (JsonUtils.isString(value)) {
+                    
+                    final String valueString = ((JsonString) value).getString();
                     
                     if (UriUtils.isURI(valueString)) {
 
@@ -312,6 +315,9 @@ public class ActiveContextBuilder {
                     } else if (!valueString.isBlank()) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);
                     }
+
+                } else {
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);                    
                 }
             }
 
@@ -319,20 +325,16 @@ public class ActiveContextBuilder {
             if (contextDefinition.containsKey(Keywords.VOCAB)) {
                 
                 // 5.8.1.
-                JsonValue value = contextDefinition.get(Keywords.VOCAB);
+                final JsonValue value = contextDefinition.get(Keywords.VOCAB);
 
                 // 5.8.2.
                 if (JsonUtils.isNull(value)) {
                     result.setVocabularyMapping(null);
 
                 // 5.8.3
-                } else {
+                } else if (JsonUtils.isString(value)) {
 
-                    if (JsonUtils.isNotString(value)) {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_VOCAB_MAPPING);
-                    }
-
-                    String valueString = ((JsonString) value).getString();
+                    final String valueString = ((JsonString) value).getString();
 
                     if (valueString.isBlank() || BlankNode.hasPrefix(valueString) || UriUtils.isURI(valueString)) {
 
@@ -353,30 +355,33 @@ public class ActiveContextBuilder {
                     } else {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_VOCAB_MAPPING);
                     }
+
+                } else {
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_VOCAB_MAPPING);
                 }
             }
 
             // 5.9.
             if (contextDefinition.containsKey(Keywords.LANGUAGE)) {
+                
                 // 5.9.1
-                JsonValue value = contextDefinition.get(Keywords.LANGUAGE);
+                final JsonValue value = contextDefinition.get(Keywords.LANGUAGE);
 
                 // 5.9.2.
                 if (JsonUtils.isNull(value)) {
                     result.setDefaultLanguage(null);
 
                 // 5.9.3
-                } else {
-
-                    if (JsonUtils.isNotString(value)) {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_DEFAULT_LANGUAGE);
-                    }
+                } else if (JsonUtils.isString(value)) {
 
                     result.setDefaultLanguage(((JsonString)value).getString());
                     
                     if (!LanguageTag.isWellFormed(result.getDefaultLanguage())) {
                         LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", result.getDefaultLanguage());                        
                     }
+                    
+                } else {
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_DEFAULT_LANGUAGE);
                 }
             }
 
@@ -389,30 +394,29 @@ public class ActiveContextBuilder {
                 }
 
                 // 5.10.2.
-                JsonValue value = contextDefinition.get(Keywords.DIRECTION);
+                final JsonValue value = contextDefinition.get(Keywords.DIRECTION);
 
                 // 5.10.3.
                 if (JsonUtils.isNull(value)) {
                     result.setDefaultBaseDirection(DirectionType.NULL);
 
                 // 5.10.4.
-                } else {
+                } else if (JsonUtils.isString(value)) {
 
-                    if (!JsonUtils.isString(value)) {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
-                    }
+                    final String direction = ((JsonString) value).getString();
 
-                    String direction = ((JsonString) value).getString();
-
-                    if ("ltr".equals(direction)) {
+                    if ("ltr".equalsIgnoreCase(direction)) {
                         result.setDefaultBaseDirection(DirectionType.LTR);
 
-                    } else if ("rtl".equals(direction)) {
+                    } else if ("rtl".equalsIgnoreCase(direction)) {
                         result.setDefaultBaseDirection(DirectionType.RTL);
 
                     } else {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
-                    }
+                    }                    
+                    
+                } else {
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
                 }
             }
 

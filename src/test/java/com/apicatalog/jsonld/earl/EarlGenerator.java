@@ -201,7 +201,7 @@ public class EarlGenerator {
                     server.stop();
                     wireMockServer.stop();
                     
-                } catch (Throwable e) {
+                } catch (JsonLdError e) {
                     result = false;
                 }
                 

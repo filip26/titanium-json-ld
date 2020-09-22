@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium-json-ld</artifactId>
-    <version>0.8.5</version>
+    <version>0.8.6-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Titanium JSON-LD 1.1</name>
@@ -45,6 +45,8 @@
           <roles><role>author</role></roles>
         </developer>
     </developers>
+    
+    <inceptionYear>2020</inceptionYear>
     
     <properties>
         <maven.compiler.target>11</maven.compiler.target>

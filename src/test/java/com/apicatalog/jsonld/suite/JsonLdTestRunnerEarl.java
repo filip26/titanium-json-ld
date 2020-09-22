@@ -86,9 +86,6 @@ public class JsonLdTestRunnerEarl {
             
             return Objects.equals(e.getCode(), testCase.expectErrorCode);
             
-        } catch (Throwable e ) {
-         
         }
-        return false;
     }
 }
