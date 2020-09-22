@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -134,7 +135,7 @@ public final class RdfToJsonld {
                     if (clEntry == null) {
                         continue;
                     }
-                                        
+
                     // 6.1.5.
                     final Map<String, JsonValue> clNode = graphMap.get(graphName, cl);
                     
@@ -147,7 +148,7 @@ public final class RdfToJsonld {
                     JsonArrayBuilder clArray = Json.createArrayBuilder();
                     
                     // 6.1.6.                    
-                    for (JsonValue clReference : graphMap.get(clEntry.graphName, clEntry.subject, clEntry.property).asJsonArray()) {
+                    for (JsonValue clReference : graphMap.get(clEntry.graphName, clEntry.subject, clEntry.property).orElse(JsonValue.EMPTY_JSON_ARRAY).asJsonArray()) {
                         
                         if (JsonUtils.isObject(clReference) 
                                 && clReference.asJsonObject().containsKey(Keywords.ID)
@@ -383,10 +384,12 @@ public final class RdfToJsonld {
             
             // 5.7.5.
             if (!useRdfType && RdfConstants.TYPE.equals(predicate) && !triple.getObject().isLiteral()) {
+
+                final Optional<JsonValue> type = graphMap.get(graphName, subject, Keywords.TYPE);
                 
-                if (graphMap.contains(graphName, subject, Keywords.TYPE)) {
+                if (type.isPresent()) {
                     
-                    JsonArray types = graphMap.get(graphName, subject, Keywords.TYPE).asJsonArray();
+                    JsonArray types = type.get().asJsonArray();
                     
                     graphMap.set(graphName, subject, Keywords.TYPE, Json.createArrayBuilder(types).add(triple.getObject().toString()).build());
                     
@@ -405,19 +408,20 @@ public final class RdfToJsonld {
                             .processingMode(processingMode)
                             .build();
 
+            final Optional<JsonValue> predicateValue = graphMap.get(graphName, subject, predicate);
+            
             // 5.7.7.
-            if (!graphMap.contains(graphName, subject, predicate)) {
+            if (predicateValue.isPresent()) {
                 
-                graphMap.set(graphName, subject, predicate, Json.createArrayBuilder().add(value).build());
-                
-            // 5.7.8.
-            } else {
-                
-                JsonArray array = graphMap.get(graphName, subject, predicate).asJsonArray();
+                JsonArray array = predicateValue.get().asJsonArray();
                 
                 if (!array.contains(value)) {
                     graphMap.set(graphName, subject, predicate, Json.createArrayBuilder(array).add(value).build());
                 }
+                
+            // 5.7.8.
+            } else {
+                graphMap.set(graphName, subject, predicate, Json.createArrayBuilder().add(value).build());
             }
             
             // 5.7.9.

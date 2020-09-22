@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.json.JsonValue;
@@ -29,8 +30,8 @@ import com.apicatalog.jsonld.serialization.RdfToJsonld.Reference;
 
 final class GraphMap {
 
-    //          graph,     subject,  predicate,  object
-    private Map<String, Map<String, Map<String, JsonValue>>> index;
+    //                 graph,     subject,  predicate,  object
+    private final Map<String, Map<String, Map<String, JsonValue>>> index;
     
     private final Map<String, Map<String, List<Reference>>> usages;
     
@@ -41,27 +42,32 @@ final class GraphMap {
         this.usages = new LinkedHashMap<>();
     }
 
-    public boolean contains(String graphName, String subject) {
+    public boolean contains(final String graphName, final String subject) {
         return index.containsKey(graphName) && index.get(graphName).containsKey(subject);
     }
 
-    public boolean contains(String graphName, String subject, String property) {
-        return index.containsKey(graphName) 
-                    && index.get(graphName).containsKey(subject)
-                    && index.get(graphName).get(subject).containsKey(property)
-                    ;
-    }
-
-    public void set(String graphName, String subject, String property, JsonValue value) {
+    public void set(final String graphName, final String subject, final String property, final JsonValue value) {
         index
             .computeIfAbsent(graphName, e -> new LinkedHashMap<>())
             .computeIfAbsent(subject, e -> new LinkedHashMap<>())
-            .put(property, value);
-        
+            .put(property, value);        
     }
 
-    public JsonValue get(String graphName, String subject, String property) {
-        return index.get(graphName).get(subject).get(property);
+    public Optional<JsonValue> get(final String graphName, final String subject, final String property) {
+        
+        final Map<String, Map<String, JsonValue>> graphMap = index.get(graphName);
+        
+        if (graphMap == null) {
+            return Optional.empty();
+        }
+        
+        final Map<String, JsonValue> subjectMap = graphMap.get(subject);
+        
+        if (subjectMap == null) {
+            return Optional.empty();
+        }
+        
+        return Optional.ofNullable(subjectMap.get(property));
     }
 
     public Set<String> keys(String graphName) {
