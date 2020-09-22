@@ -17,6 +17,7 @@ package com.apicatalog.jsonld.serialization;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -137,13 +138,15 @@ public final class RdfToJsonld {
                     }
 
                     // 6.1.5.
-                    final Map<String, JsonValue> clNode = graphMap.get(graphName, cl);
+                    final Optional<Map<String, JsonValue>> clNodeValue = graphMap.get(graphName, cl);
                     
                     graphMap.remove(graphName, cl);
                     
-                    if (clNode == null) {
+                    if (clNodeValue.isEmpty()) {
                         continue;
                     }
+                    
+                    final Map<String, JsonValue> clNode = clNodeValue.get();
                     
                     JsonArrayBuilder clArray = Json.createArrayBuilder();
                     
@@ -233,11 +236,11 @@ public final class RdfToJsonld {
             for (Reference usage : graphMap.getUsages(graphName, RdfConstants.NIL)) {
 
                 // 6.4.1.
-                Map<String, JsonValue> node = graphMap.get(usage.graphName, usage.subject); 
+                Map<String, JsonValue> node = graphMap.get(usage.graphName, usage.subject).orElse(Collections.emptyMap()); 
                                 
                 // 6.4.2.
-                List<JsonValue> list = new ArrayList<>();
-                List<String> listNodes = new ArrayList<>();
+                final List<JsonValue> list = new ArrayList<>();
+                final List<String> listNodes = new ArrayList<>();
                 
                 String nodeId = ((JsonString)node.get(Keywords.ID)).getString();
                 
@@ -266,9 +269,15 @@ public final class RdfToJsonld {
                     usage = referenceOnce.get(nodeId);
                     
                     // 6.4.3.4.
-                    node = graphMap.get(usage.graphName, usage.subject);
+                    final Optional<Map<String, JsonValue>> nextNode = graphMap.get(usage.graphName, usage.subject);
 
-                    if (node == null || !node.containsKey(Keywords.ID)) {
+                    if (nextNode.isEmpty()) {
+                        break;
+                    }
+                    
+                    node = nextNode.get();
+
+                    if (!node.containsKey(Keywords.ID)) {
                         break;
                     }
                     
@@ -308,7 +317,7 @@ public final class RdfToJsonld {
         
         for (final String subject : subjects) {
                         
-            final Map<String, JsonValue> node = graphMap.get(Keywords.DEFAULT, subject);
+            final Map<String, JsonValue> node = graphMap.get(Keywords.DEFAULT, subject).orElse(new HashMap<>());
         
             // 8.1.
             if (graphMap.contains(subject)) {
@@ -323,7 +332,7 @@ public final class RdfToJsonld {
                 
                 for (final String key : keys) {
                     
-                    final Map<String, JsonValue> entry = graphMap.get(subject, key);
+                    final Map<String, JsonValue> entry = graphMap.get(subject, key).orElse(Collections.emptyMap());
                     
                     if (entry.size() > 1 || !entry.containsKey(Keywords.ID)) {
                         array.add(JsonUtils.toJsonObject(entry));                        

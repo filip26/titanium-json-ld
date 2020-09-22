@@ -53,6 +53,17 @@ final class GraphMap {
             .put(property, value);        
     }
 
+    public Optional<Map<String, JsonValue>> get(final String graphName, final String subject) {
+        
+        final Map<String, Map<String, JsonValue>> graphMap = index.get(graphName);
+        
+        if (graphMap == null) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(graphMap.get(subject));
+    }
+
     public Optional<JsonValue> get(final String graphName, final String subject, final String property) {
         
         final Map<String, Map<String, JsonValue>> graphMap = index.get(graphName);
@@ -76,10 +87,6 @@ final class GraphMap {
 
     public boolean contains(String graphName) {
         return index.containsKey(graphName);
-    }
-
-    public Map<String, JsonValue> get(String graphName, String subject) {
-        return index.get(graphName).get(subject);
     }
 
     public Set<String> keys() {
