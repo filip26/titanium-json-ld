@@ -50,17 +50,13 @@ public final class ValuePatternMatcher {
         
         final JsonValue type2 = pattern.getOrDefault(Keywords.TYPE, null);
 
-        
         final JsonValue lang2 = pattern.getOrDefault(Keywords.LANGUAGE, null);
 
-        if (value2 == null && type2 == null && lang2 == null) {
-            return true;
-        }
-                
-        return matchValue(value2) && matchType(type2) && matchLanguage(lang2);
+        return (value2 == null && type2 == null && lang2 == null) 
+                || (matchValue(value2) && matchType(type2) && matchLanguage(lang2));
     }
     
-    private boolean matchValue(JsonValue value2) {
+    private boolean matchValue(final JsonValue value2) {
 
         final JsonValue value1 = value.getOrDefault(Keywords.VALUE, null);
 
@@ -69,7 +65,7 @@ public final class ValuePatternMatcher {
                     ;
     }
     
-    private boolean matchType(JsonValue type2) {
+    private boolean matchType(final JsonValue type2) {
         
         final JsonValue type1 = value.getOrDefault(Keywords.TYPE, null);
 
@@ -79,31 +75,23 @@ public final class ValuePatternMatcher {
                 ;
     }
     
-    private boolean matchLanguage(JsonValue lang2) {
+    private boolean matchLanguage(final JsonValue lang2) {
 
         final String lang1 = value.containsKey(Keywords.LANGUAGE) 
                                     ? value.getString(Keywords.LANGUAGE).toLowerCase()
                                     : null;
-                                
-        if ((lang1 != null && isWildcard(lang2))
-                || (lang1 == null && isNone(lang2))
-                ) {
-            return true;
-        }
 
-        if (lang1 == null || lang2 == null) {
-            return false;
-        }
-
-        return JsonUtils.isNotNull(lang2) 
-                    && JsonUtils.toJsonArray(lang2)
+        return ((lang1 != null && isWildcard(lang2)) || (lang1 == null && isNone(lang2)))
+                || (lang1 != null && lang2 != null
+                        && JsonUtils.isNotNull(lang2) 
+                        && JsonUtils.toJsonArray(lang2)
                                 .stream()
                                 .map(JsonString.class::cast)
                                 .map(JsonString::getString)
-                                .anyMatch(x -> x.equalsIgnoreCase(lang1));
+                                .anyMatch(x -> x.equalsIgnoreCase(lang1)));
     }
     
-    protected static final boolean isWildcard(JsonValue value, String...except) {
+    protected static final boolean isWildcard(final JsonValue value, final String...except) {
         
         if (JsonUtils.isEmptyObject(value)) {
             return true;
@@ -122,18 +110,14 @@ public final class ValuePatternMatcher {
             frame = value.asJsonArray().getJsonObject(0);
         }
 
-        if (frame == null) {
-            return false;
-        }
-
-        return frame.isEmpty() || Arrays.asList(
+        return frame != null && (frame.isEmpty() || Arrays.asList(
                 Keywords.DEFAULT,
                 Keywords.OMIT_DEFAULT,
                 Keywords.EMBED,
                 Keywords.EXPLICIT,
                 Keywords.REQUIRE_ALL,
                 except
-        ).containsAll(frame.keySet());
+        ).containsAll(frame.keySet()));
     }
     
     protected static final boolean isNone(JsonValue value) {
