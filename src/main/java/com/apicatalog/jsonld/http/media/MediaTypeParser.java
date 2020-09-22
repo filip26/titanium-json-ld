@@ -15,8 +15,8 @@
  */
 package com.apicatalog.jsonld.http.media;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.IntPredicate;
@@ -132,7 +132,7 @@ final class MediaTypeParser {
                 }
                 if (ch == ';') {
                     paramName = String.valueOf(input, index,  i - index).strip().toLowerCase();
-                    params.computeIfAbsent(paramName, p -> new LinkedList<>()).add(paramName);
+                    params.computeIfAbsent(paramName, p -> new ArrayList<>()).add(paramName);
                     index = i + 1;
                     break;                    
                 }
@@ -156,7 +156,7 @@ final class MediaTypeParser {
             case LITERAL_VALUE:
                 if (ch == ';') {
                     
-                    params.computeIfAbsent(paramName, p -> new LinkedList<>()).add(String.valueOf(input, index,  i - index).strip());
+                    params.computeIfAbsent(paramName, p -> new ArrayList<>()).add(String.valueOf(input, index,  i - index).strip());
                     index = i + 1;
                     paramName = null;
                     state = State.PARAM_NAME;
@@ -167,7 +167,7 @@ final class MediaTypeParser {
             case STRING_VALUE:
                 
                 if (ch == '"') {
-                    params.computeIfAbsent(paramName, p -> new LinkedList<>()).add(stringValue.toString());
+                    params.computeIfAbsent(paramName, p -> new ArrayList<>()).add(stringValue.toString());
                     stringValue.setLength(0);
                     paramName = null;
                     state = State.PARAMS;
@@ -202,7 +202,7 @@ final class MediaTypeParser {
             
         case LITERAL_VALUE:
             if (index < input.length) {
-                params.computeIfAbsent(paramName, p -> new LinkedList<>()).add(String.valueOf(input, index,  input.length - index).strip());
+                params.computeIfAbsent(paramName, p -> new ArrayList<>()).add(String.valueOf(input, index,  input.length - index).strip());
                 paramName = null;
             }
             break;
@@ -213,9 +213,9 @@ final class MediaTypeParser {
 
         if (paramName != null) {
             if (stringValue.length() > 0) {
-                params.computeIfAbsent(paramName, p -> new LinkedList<>()).add(stringValue.toString());
+                params.computeIfAbsent(paramName, p -> new ArrayList<>()).add(stringValue.toString());
             } else {
-                params.computeIfAbsent(paramName, p -> new LinkedList<>()).add(paramName);
+                params.computeIfAbsent(paramName, p -> new ArrayList<>()).add(paramName);
             }
         }
         if (type == null || subtype == null) {
