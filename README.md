@@ -151,7 +151,7 @@ JsonLd.frame("https://example/document.jsonld", "https://example/frame.jsonld").
 
 ```javascript
 // Local document
-Document document = Document.of(InputStream) or Document.of(Reader) ...
+Document document = JsonDocument.of(InputStream) or JsonDocument.of(Reader) ...
 
 JsonLd.expand(document).get();
 
