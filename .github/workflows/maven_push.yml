@@ -4,7 +4,7 @@
 name: Java CI with Maven
 
 on:
-  pull_request:
+  push:
     branches: [ master ]
 
 jobs:
@@ -19,4 +19,9 @@ jobs:
       with:
         java-version: 11
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn -B package jacoco:report --file pom.xml
+    - name: Run codacy-coverage-reporter
+      uses: codacy/codacy-coverage-reporter-action@master
+      with:
+        project-token: ${{secrets.CODACY_PROJECT_TOKEN}}
+        coverage-reports: ./target/site/jacoco/jacoco.xml
