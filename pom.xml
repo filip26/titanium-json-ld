@@ -59,7 +59,7 @@
         <json-p.version>1.1.4</json-p.version>
          
          <!--  test resources -->
-        <junit.version>4.13</junit.version>
+        <junit.version>4.13.1</junit.version>
         <wiremock.version>2.27.2</wiremock.version>
     </properties>
 
