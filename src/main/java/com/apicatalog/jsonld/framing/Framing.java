@@ -154,7 +154,7 @@ public final class Framing {
                     
                 // 4.5.2.
                 } else {
-                    recurse = !Keywords.ID.equals(id) && !Keywords.DEFAULT.equals(id);
+                    recurse = !Keywords.MERGED.equals(id) && !Keywords.DEFAULT.equals(id);
                     
                     if (JsonUtils.isObject(frame.get(Keywords.GRAPH))
                             || JsonUtils.isArray(frame.get(Keywords.GRAPH))
