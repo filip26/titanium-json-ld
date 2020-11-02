@@ -12,10 +12,11 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 - [Goals](#goals)  
 - [Conformance](#conformance)  
 - [Extensions](#extensions)  
+- [Usage](#usage)
+  * [Installation](#installation)
+  * [Documentation](#documentation)
+  * [Examples](#examples)
 - [Contributing](#contributing)
-- [Installation](#installation)
-- [Documentation](#documentation)
-- [Examples](#examples)
 - [Commercial Support](#commercial-support)
 
 
@@ -48,45 +49,11 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 
 - [Universal RDF Dataset Normalization Algorithm - URDNA2015](https://github.com/simon-greatrix/rdf-urdna)
 
-## Contributing
+## Usage
 
-Your contribution is welcome. There are many ways to motivate developers or speed up development:
+### Installation
 
-- develop
-  - implement a new feature 
-  - fix an existing issue
-  - improve an existing implementation
-- test
-  - report a bug
-  - implement a test case
-- document
-  - write javadoc
-  - write a tutorial
-  - proofread an existing documentation
-- promote
-  - star, share, the project
-  - write an article
-- sponsor
-  - your requests get top priority
-  - you will get a badge
-
-### Roadmap
-
-- [x] 0.1 ~~[Expansion Algorithms](https://www.w3.org/TR/json-ld11-api/#expansion-algorithms)~~
-- [x] 0.2 ~~[Compaction Algorithms](https://www.w3.org/TR/json-ld11-api/#compaction-algorithms)~~
-- [x] 0.3 ~~[Flattening Algorithms](https://www.w3.org/TR/json-ld11-api/#flattening-algorithms)~~
-- [x] 0.4 ~~[JSON-LD to RDF](https://www.w3.org/TR/json-ld11-api/#deserialize-json-ld-to-rdf-algorithm)~~
-- [x] 0.5 ~~[RDF to JSON-LD](https://www.w3.org/TR/json-ld11-api/#serialize-rdf-as-json-ld-algorithm)~~
-- [x] 0.6 ~~[Framing](https://www.w3.org/TR/json-ld11-framing/)~~
-- [x] 0.7 ~~[Remote Document and Context Retrieval](https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval)~~
-- [x] 0.8 ~~JsonLd API~~
-- [ ] 0.9 [HTML](https://www.w3.org/TR/json-ld11-api/#html-content-algorithms)
-- [ ] 1.0 Documented, A+ code
-
-
-## Installation
-
-### Titanium JSON-LD
+#### Titanium JSON-LD
 
 Maven
 
@@ -105,7 +72,7 @@ Gradle
 compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '0.8.5'
 ```
 
-### JSON-P Provider
+#### JSON-P Provider
 
 Add JSON-P provider, if it is not on the classpath already.
 
@@ -126,11 +93,11 @@ compile group: 'org.glassfish', name: 'jakarta.json', version: '1.1.6'
 
 ```
 
-## Documentation
+### Documentation
 
 [![javadoc](https://javadoc.io/badge2/com.apicatalog/titanium-json-ld/javadoc.svg)](https://javadoc.io/doc/com.apicatalog/titanium-json-ld)
 
-## Examples
+### Examples
 
 Titanium provides high-level [JsonLd](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/JsonLd.html) API to interact with the processor.
 
@@ -173,6 +140,42 @@ JsonLd.expand(document).get();
 JsonLd.compact(document, contextDocument).get();
 ...
 ```
+
+## Contributing
+
+Your contribution is welcome. There are many ways to motivate developers or speed up development:
+
+- develop
+  - implement a new feature 
+  - fix an existing issue
+  - improve an existing implementation
+- test
+  - report a bug
+  - implement a test case
+- document
+  - write javadoc
+  - write a tutorial
+  - proofread an existing documentation
+- promote
+  - star, share, the project
+  - write an article
+- sponsor
+  - your requests get top priority
+  - you will get a badge
+
+### Roadmap
+
+- [x] 0.1 ~~[Expansion Algorithms](https://www.w3.org/TR/json-ld11-api/#expansion-algorithms)~~
+- [x] 0.2 ~~[Compaction Algorithms](https://www.w3.org/TR/json-ld11-api/#compaction-algorithms)~~
+- [x] 0.3 ~~[Flattening Algorithms](https://www.w3.org/TR/json-ld11-api/#flattening-algorithms)~~
+- [x] 0.4 ~~[JSON-LD to RDF](https://www.w3.org/TR/json-ld11-api/#deserialize-json-ld-to-rdf-algorithm)~~
+- [x] 0.5 ~~[RDF to JSON-LD](https://www.w3.org/TR/json-ld11-api/#serialize-rdf-as-json-ld-algorithm)~~
+- [x] 0.6 ~~[Framing](https://www.w3.org/TR/json-ld11-framing/)~~
+- [x] 0.7 ~~[Remote Document and Context Retrieval](https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval)~~
+- [x] 0.8 ~~JsonLd API~~
+- [ ] 0.9 [HTML](https://www.w3.org/TR/json-ld11-api/#html-content-algorithms)
+- [ ] 1.0 Documented, A+ code
+
 
 ## Commercial Support
 Commercial support is available at filip26@gmail.com
