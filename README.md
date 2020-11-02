@@ -8,6 +8,17 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 [![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/titanium-json-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.apicatalog%22%20AND%20a:%22titanium-json-ld%22)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+## Table of Contents  
+- [Goals](#goals)  
+- [Conformance](#conformance)  
+- [Extensions](#extensions)  
+- [Contributing](#contributing)
+- [Installation](#installation)
+- [Documentation](#documentation)
+- [Examples](#examples)
+- [Commercial Support](#commercial-support)
+
+
 ## Goals
 - conformance to the specification
 - secure, stable, fast, A+ code
@@ -32,6 +43,10 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 | [Remote Document and Context Retrieval](https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval) | 18 | 17 | 94.4% | <ul><li>[t0013 - HTML document](https://w3c.github.io/json-ld-api/tests/remote-doc-manifest#t0013)</li></ul> |
 
 See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld-api/reports/#subj_Titanium_JSON_LD_Java) for more details.
+
+## Extensions
+
+- [Universal RDF Dataset Normalization Algorithm - URDNA2015](https://github.com/simon-greatrix/rdf-urdna)
 
 ## Contributing
 
