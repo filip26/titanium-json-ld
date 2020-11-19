@@ -57,4 +57,4 @@ local.properties
 **/logs/
 **/nbactions.xml
 META-INF
-
+/.mvn/
