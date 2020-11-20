@@ -62,7 +62,8 @@ final class ObjectExpansion1314 {
     private static final Logger LOGGER = Logger.getLogger(ObjectExpansion1314.class.getName());
     
     // mandatory
-    private final ActiveContext activeContext;
+    private ActiveContext activeContext;
+//    private final JsonValue propertyContext;
     private final JsonObject element;
     private final String activeProperty;
     private final URI baseUrl;
@@ -1002,17 +1003,45 @@ final class ObjectExpansion1314 {
                     }
                 }
 
-                // 14.2.2
+                // 14.2.2                
                 ObjectExpansion1314
-                        .with(activeContext, nestValue.asJsonObject(), activeProperty, baseUrl)
+                        .with(activeContext, nestValue.asJsonObject(), nestedKey, baseUrl)
                         .inputType(inputType)
                         .result(result)
                         .typeContext(typeContext)
                         .nest(new LinkedHashMap<>())
                         .frameExpansion(frameExpansion)
                         .ordered(ordered)
-                        .expand();
+                        .recursive();
             }
         }
+    }
+    
+    private void recursive() throws JsonLdError {
+        
+        // step 3
+        final JsonValue propertyContext = activeContext
+                .getTerm(activeProperty)
+                .map(TermDefinition::getLocalContext)
+                .orElse(null);
+
+        
+        // step 8
+        if (propertyContext != null) {
+            
+            activeContext = activeContext
+                                .newContext()
+                                .overrideProtected(true)
+                                .create(
+                                    propertyContext, 
+                                    activeContext
+                                            .getTerm(activeProperty)
+                                            .map(TermDefinition::getBaseUrl)
+                                            .orElse(null)    
+                                        );        
+        }
+
+        // steps 13-14
+        expand();
     }
 }
