@@ -177,5 +177,14 @@ Your contribution is welcome! There are many ways to motivate developers or spee
 - [ ] 1.0 Documented, A+ code
 
 
+### Building
+
+Fork and clone the project repository.
+
+```bash
+> cd titanium-json-ld
+> ./mvnw clean package
+```
+
 ## Commercial Support
 Commercial support is available at filip26@gmail.com
