@@ -379,14 +379,18 @@ public final class TermDefinitionBuilder {
                 }
 
                 // 14.2.5
-                if (!term.contains(":") && !term.contains("/") && simpleTerm
-                        && (definition.getUriMapping() != null && ((
-                            UriUtils.endsWithGenDelim(definition.getUriMapping())
-                                && UriUtils.isURI(definition.getUriMapping().substring(0, definition.getUriMapping().length() - 1))
-                                    )
-                            || BlankNode.hasPrefix(definition.getUriMapping())))) {
-                    
-                    definition.setPrefix(true);
+                if (definition.isNotPrefix()) {
+                    definition.setPrefix(!term.contains(":") 
+                                            && !term.contains("/") 
+                                            && simpleTerm
+                                            && (definition.getUriMapping() != null 
+                                                && ((
+                                                    UriUtils.endsWithGenDelim(definition.getUriMapping())
+                                                        && UriUtils.isURI(definition.getUriMapping().substring(0, definition.getUriMapping().length() - 1))
+                                                        )
+                                                    || BlankNode.hasPrefix(definition.getUriMapping()))
+                                                )        
+                                    );
                 }
             }
 
