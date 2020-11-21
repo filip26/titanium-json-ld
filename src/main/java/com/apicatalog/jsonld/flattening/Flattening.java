@@ -15,11 +15,8 @@
  */
 package com.apicatalog.jsonld.flattening;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import javax.json.Json;
@@ -33,6 +30,7 @@ import javax.json.JsonValue;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.Utils;
 
 public final class Flattening {
 
@@ -70,7 +68,7 @@ public final class Flattening {
         Map<String, JsonObject> defaultGraph = nodeMap.get(Keywords.DEFAULT);
 
         // 4.
-        for (String graphName : nodeMap.graphs(ordered)) {
+        for (String graphName : Utils.index(nodeMap.graphs(), ordered)) {
 
             if (Keywords.DEFAULT.equals(graphName)) {
                 continue;
@@ -90,13 +88,7 @@ public final class Flattening {
             JsonArrayBuilder graphArray =  Json.createArrayBuilder();
             
             // 4.4.
-            List<String> ids = new ArrayList<>(graph.keySet());
-            
-            if (ordered) {
-                Collections.sort(ids);
-            }
-            
-            for (String id : ids) {
+            for (String id : Utils.index(graph.keySet(), ordered)) {
                 JsonValue node = graph.get(id);
 
                 if (JsonUtils.isObject(node) && node.asJsonObject().size() == 1 && node.asJsonObject().containsKey(Keywords.ID)) {
@@ -112,16 +104,10 @@ public final class Flattening {
         }
         
         // 5.
-        Collection<JsonValue> flattened = new LinkedList<>();
+        final Collection<JsonValue> flattened = new LinkedList<>();
         
         // 6.
-        List<String> keys = new ArrayList<>(defaultGraph.keySet());
-        
-        if (ordered) {
-            Collections.sort(keys);
-        }
-
-        for (String id : keys) {
+        for (String id : Utils.index(defaultGraph.keySet(), ordered)) {
             
             JsonValue node = defaultGraph.get(id);
             

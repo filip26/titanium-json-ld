@@ -16,11 +16,9 @@
 package com.apicatalog.jsonld.expansion;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -46,6 +44,7 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.NodeObject;
+import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.uri.UriUtils;
@@ -63,7 +62,7 @@ final class ObjectExpansion1314 {
     
     // mandatory
     private ActiveContext activeContext;
-//    private final JsonValue propertyContext;
+
     private final JsonObject element;
     private final String activeProperty;
     private final URI baseUrl;
@@ -127,13 +126,7 @@ final class ObjectExpansion1314 {
     public void expand() throws JsonLdError {
 
         // 13.
-        List<String> keys = new ArrayList<>(element.keySet());
-
-        if (ordered) {
-            Collections.sort(keys);
-        }
-
-        for (final String key : keys) {
+        for (final String key : Utils.index(element.keySet(), ordered)) {
 
             // 13.1.
             if (Keywords.CONTEXT.equals(key)) {
@@ -664,13 +657,7 @@ final class ObjectExpansion1314 {
                 }
 
                 // 13.7.4.
-                List<String> langCodes = new ArrayList<>(value.asJsonObject().keySet());
-
-                if (ordered) {
-                    Collections.sort(langCodes);
-                }
-
-                for (String langCode : langCodes) {
+                for (String langCode : Utils.index(value.asJsonObject().keySet(), ordered)) {
 
                     JsonValue langValue = value.asJsonObject().get(langCode);
 
@@ -737,13 +724,7 @@ final class ObjectExpansion1314 {
                                             .orElse(Keywords.INDEX);
 
                 // 13.8.3.
-                final List<String> indices = new ArrayList<>(value.asJsonObject().keySet());
-
-                if (ordered) {
-                    Collections.sort(indices);
-                }
-
-                for (final String index : indices) {
+                for (final String index : Utils.index(value.asJsonObject().keySet(), ordered)) {
 
                     JsonValue indexValue = value.asJsonObject().get(index);
                     
@@ -967,13 +948,7 @@ final class ObjectExpansion1314 {
         }
 
         // 14.
-        List<String> nestedKeys = new ArrayList<>(nest.keySet());
-
-        if (ordered) {
-            Collections.sort(nestedKeys);
-        }
-
-        for (String nestedKey : nestedKeys) {
+        for (String nestedKey : Utils.index(nest.keySet(), ordered)) {
 
             // 14.1.
             JsonValue nestedValues = element.get(nestedKey);
