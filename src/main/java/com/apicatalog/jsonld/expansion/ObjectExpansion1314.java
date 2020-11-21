@@ -62,7 +62,7 @@ final class ObjectExpansion1314 {
     
     // mandatory
     private ActiveContext activeContext;
-//    private final JsonValue propertyContext;
+
     private final JsonObject element;
     private final String activeProperty;
     private final URI baseUrl;
