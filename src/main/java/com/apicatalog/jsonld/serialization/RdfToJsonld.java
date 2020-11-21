@@ -38,6 +38,7 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
+import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.RdfDataset;
@@ -309,28 +310,16 @@ public final class RdfToJsonld {
         final JsonArrayBuilder result = Json.createArrayBuilder();
         
         // 8.
-        final List<String> subjects = new ArrayList<>(graphMap.keys(Keywords.DEFAULT));
-        
-        if (ordered) {
-            Collections.sort(subjects);
-        }
-        
-        for (final String subject : subjects) {
+        for (final String subject : Utils.index(graphMap.keys(Keywords.DEFAULT), ordered)) {
                         
             final Map<String, JsonValue> node = graphMap.get(Keywords.DEFAULT, subject).orElse(new HashMap<>());
         
             // 8.1.
             if (graphMap.contains(subject)) {
 
-                final List<String> keys = new ArrayList<>(graphMap.keys(subject));
-                
-                if (ordered) {
-                    Collections.sort(keys);
-                }
-                
                 final JsonArrayBuilder array = Json.createArrayBuilder();
                 
-                for (final String key : keys) {
+                for (final String key : Utils.index(graphMap.keys(subject), ordered)) {
                     
                     final Map<String, JsonValue> entry = graphMap.get(subject, key).orElse(Collections.emptyMap());
                     

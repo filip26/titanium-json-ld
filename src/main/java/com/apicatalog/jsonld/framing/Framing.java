@@ -35,6 +35,7 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.NodeObject;
+import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.lang.ValueObject;
 
 /**
@@ -205,7 +206,7 @@ public final class Framing {
             }
 
             // 4.7.    
-            for (final String property : state.getGraphMap().properties(state.getGraphName(), id, ordered)) {
+            for (final String property : Utils.index(state.getGraphMap().properties(state.getGraphName(), id), ordered)) {
                 final JsonValue objects = state.getGraphMap().get(state.getGraphName(), id, property);
    
                 // 4.7.1.

@@ -104,29 +104,16 @@ public final class NodeMap {
         return generator.createIdentifier();
     }
 
-    public Collection<String> graphs(boolean sorted) {
-        return sorted 
-                    ? index.keySet().stream().sorted().collect(Collectors.toList())
-                    : index.keySet()
-                    ;
+    public Collection<String> graphs() {
+        return index.keySet();
     }
 
     public Collection<String> subjects(String graphName) {
-        return subjects(graphName, false);
-    }
-    
-    public Collection<String> subjects(String graphName, boolean sorted) {
-        return sorted 
-                ? index.getOrDefault(graphName, Collections.emptyMap()).keySet().stream().sorted().collect(Collectors.toList())
-                : index.getOrDefault(graphName, Collections.emptyMap()).keySet()
-                ;
+        return index.getOrDefault(graphName, Collections.emptyMap()).keySet();
     }
 
-    public Collection<String> properties(String graphName, String subject, boolean sorted) {
-        return sorted 
-                ? index.getOrDefault(graphName, Collections.emptyMap()).getOrDefault(subject, Collections.emptyMap()).keySet().stream().sorted().collect(Collectors.toList())
-                : index.getOrDefault(graphName, Collections.emptyMap()).getOrDefault(subject, Collections.emptyMap()).keySet()
-                ;
+    public Collection<String> properties(String graphName, String subject) {
+        return index.getOrDefault(graphName, Collections.emptyMap()).getOrDefault(subject, Collections.emptyMap()).keySet();
     }
     
     /**

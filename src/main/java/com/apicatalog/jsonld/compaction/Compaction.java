@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -40,6 +41,7 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.GraphObject;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
+import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.lang.Version;
 
 /**
@@ -226,13 +228,7 @@ public final class Compaction {
         }
 
         // 12.
-        final List<String> expandedProperties = new ArrayList<>(elementObject.keySet());
-        
-        if (ordered) {
-            Collections.sort(expandedProperties);
-        }
-        
-        for (final String expandedProperty : expandedProperties) {
+        for (final String expandedProperty : Utils.index(elementObject.keySet(), ordered)) {
 
             JsonValue expandedValue = elementObject.get(expandedProperty);
             
