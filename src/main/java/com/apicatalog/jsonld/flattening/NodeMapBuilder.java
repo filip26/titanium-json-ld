@@ -16,11 +16,9 @@
 package com.apicatalog.jsonld.flattening;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.json.Json;
@@ -33,6 +31,7 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
+import com.apicatalog.jsonld.json.JsonSetBuilder;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -135,7 +134,7 @@ public final class NodeMapBuilder {
             final JsonArrayBuilder types = Json.createArrayBuilder();
  
             // 3.1.
-            for (final JsonValue item : JsonUtils.toJsonArray(elementObject.get(Keywords.TYPE))) {
+            for (final JsonValue item : JsonUtils.toCollection(elementObject.get(Keywords.TYPE))) {
                 
                 if (JsonUtils.isString(item) && BlankNode.hasPrefix(((JsonString)item).getString())) {
                     types.add(Json.createValue(nodeMap.createIdentifier(((JsonString)item).getString())));
@@ -293,22 +292,27 @@ public final class NodeMapBuilder {
             // 6.7.
             if (elementObject.containsKey(Keywords.TYPE)) {
 
-                Set<JsonValue> nodeType = new LinkedHashSet<>();
+                final JsonSetBuilder nodeType = JsonSetBuilder.create();
                 
-                JsonValue nodeTypeValue = nodeMap.get(activeGraph, id, Keywords.TYPE);
+                final JsonValue nodeTypeValue = nodeMap.get(activeGraph, id, Keywords.TYPE);
                 
                 if (JsonUtils.isArray(nodeTypeValue)) {
-
-                    nodeType.addAll(nodeTypeValue.asJsonArray());
+                    nodeTypeValue.asJsonArray().stream().filter(JsonUtils::isNotNull).forEach(nodeType::add);
 
                 } else if (JsonUtils.isNotNull(nodeTypeValue)) {
-                    
                     nodeType.add(nodeTypeValue);    
                 }
 
-                nodeType.addAll(JsonUtils.toJsonArray(elementObject.get(Keywords.TYPE)));
+                final JsonValue typeValue = elementObject.get(Keywords.TYPE);
                 
-                nodeMap.set(activeGraph, id, Keywords.TYPE, JsonUtils.toJsonArray(nodeType));
+                if (JsonUtils.isArray(typeValue)) {                    
+                    typeValue.asJsonArray().stream().filter(JsonUtils::isNotNull).forEach(nodeType::add);
+                    
+                } else if (JsonUtils.isNotNull(typeValue)) {
+                    nodeType.add(typeValue);
+                }
+
+                nodeMap.set(activeGraph, id, Keywords.TYPE, nodeType.build());
                 
                 elementObject.remove(Keywords.TYPE);
             }

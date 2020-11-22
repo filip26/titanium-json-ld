@@ -105,7 +105,7 @@ public final class Framing {
                                 : null;
 
             // 4.1.
-            Map<String, JsonValue> output = new LinkedHashMap<>();
+            final Map<String, JsonValue> output = new LinkedHashMap<>();
             output.put(Keywords.ID, Json.createValue(id));
             
             
@@ -221,7 +221,7 @@ public final class Framing {
                 }
 
                 // 4.7.3.
-                for (final JsonValue item : JsonUtils.toJsonArray(objects)) {
+                for (final JsonValue item : JsonUtils.toCollection(objects)) {
 
                     JsonValue subframe = frame.get(property);
 
@@ -255,7 +255,7 @@ public final class Framing {
 
                             final JsonArrayBuilder list = Json.createArrayBuilder();
                             
-                            for (final JsonValue listItem : JsonUtils.toJsonArray(item.asJsonObject().get(Keywords.LIST))) {
+                            for (final JsonValue listItem : JsonUtils.toCollection(item.asJsonObject().get(Keywords.LIST))) {
 
                                 // 4.7.3.1.1.
                                 if (NodeObject.isNodeReference(listItem)) {
@@ -402,7 +402,11 @@ public final class Framing {
                                     reverseMap = new LinkedHashMap<>();
                                 }
 
-                                JsonUtils.addValue(reverseMap, reverseProperty, JsonUtils.toJsonArray(reverseResult.values()), true);
+                                final JsonArrayBuilder reversePropertyValue = Json.createArrayBuilder();
+                                
+                                reverseResult.values().forEach(reversePropertyValue::add);
+                                
+                                JsonUtils.addValue(reverseMap, reverseProperty, reversePropertyValue.build(), true);
                                 output.put(Keywords.REVERSE, JsonUtils.toJsonObject(reverseMap));
                             }
                         }                        

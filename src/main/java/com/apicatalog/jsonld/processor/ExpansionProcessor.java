@@ -105,23 +105,7 @@ public final class ExpansionProcessor {
             final Optional<JsonStructure> contextValue = options.getExpandContext().getJsonContent();
 
             if (contextValue.isPresent()) {
-                
-                final JsonArray expandedContext = JsonUtils.toJsonArray(contextValue.get());
-
-                if (expandedContext.size() == 1 
-                        && JsonUtils.isObject(expandedContext.get(0)) 
-                        && expandedContext.getJsonObject(0).containsKey(Keywords.CONTEXT)
-                        ) {
-                    
-                    activeContext = activeContext
-                                        .newContext()
-                                            .create(
-                                                expandedContext.getJsonObject(0).get(Keywords.CONTEXT), 
-                                                baseUrl);
-                    
-                } else {
-                    activeContext = activeContext.newContext().create(expandedContext, baseUrl);   
-                }
+                activeContext = updateContext(activeContext, contextValue.get(), baseUrl);
             }
         }
 
@@ -157,4 +141,37 @@ public final class ExpansionProcessor {
         // 8.3
         return JsonUtils.toJsonArray(expanded);
     }
+    
+    private static final ActiveContext updateContext(final ActiveContext activeContext, final JsonValue expandedContext, final URI baseUrl) throws JsonLdError {
+                
+      if (JsonUtils.isArray(expandedContext)) {
+          
+          if (expandedContext.asJsonArray().size() == 1) {
+              
+              JsonValue value = expandedContext.asJsonArray().iterator().next();
+
+              if (JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.CONTEXT)) {
+
+                  return activeContext
+                          .newContext()
+                              .create(
+                                  value.asJsonObject().get(Keywords.CONTEXT), 
+                                  baseUrl);
+              }
+          }
+          
+          return activeContext.newContext().create(expandedContext, baseUrl);
+          
+      } else if (JsonUtils.isObject(expandedContext) && expandedContext.asJsonObject().containsKey(Keywords.CONTEXT)) {
+
+          return activeContext
+                  .newContext()
+                      .create(
+                          expandedContext.asJsonObject().get(Keywords.CONTEXT), 
+                          baseUrl);
+
+      }
+      return activeContext.newContext().create(Json.createArrayBuilder().add(expandedContext).build(), baseUrl);
+    }
+    
 }

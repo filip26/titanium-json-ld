@@ -243,7 +243,7 @@ public final class RdfToJsonld {
                 Map<String, JsonValue> node = graphMap.get(usage.graphName, usage.subject).orElse(Collections.emptyMap()); 
                                 
                 // 6.4.2.
-                final List<JsonValue> list = new ArrayList<>();
+                final JsonArrayBuilder list = Json.createArrayBuilder();
                 final List<String> listNodes = new ArrayList<>();
                 
                 String nodeId = ((JsonString)node.get(Keywords.ID)).getString();
@@ -264,8 +264,8 @@ public final class RdfToJsonld {
                         ) {
 
                     // 6.4.3.1.
-                    list.add(node.get(RdfConstants.FIRST).asJsonArray().get(0));
-                    
+                    list.add(0, node.get(RdfConstants.FIRST).asJsonArray().get(0)); // reverse order -> index = 0 see 6.4.5.
+
                     // 6.4.3.2.
                     listNodes.add(nodeId);
                     
@@ -298,11 +298,8 @@ public final class RdfToJsonld {
                 // 6.4.4.
                 head.remove(Keywords.ID);
 
-                // 6.4.5.
-                Collections.reverse(list);
-                
                 // 6.4.6.
-                head.put(Keywords.LIST, JsonUtils.toJsonArray(list));
+                head.put(Keywords.LIST, list.build());
                 
                 // 6.4.7.
                 listNodes.forEach(nid -> graphMap.remove(graphName, nid));                

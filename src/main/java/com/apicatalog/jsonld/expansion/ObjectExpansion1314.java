@@ -209,7 +209,7 @@ final class ObjectExpansion1314 {
                         
                         final JsonArrayBuilder array = Json.createArrayBuilder();
                         
-                        for (final JsonValue item : JsonUtils.toJsonArray(value)) {
+                        for (final JsonValue item : JsonUtils.toCollection((value))) {
 
                             String expandedStringValue = 
                                     activeContext

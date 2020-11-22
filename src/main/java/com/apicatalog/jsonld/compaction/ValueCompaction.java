@@ -133,7 +133,7 @@ public final class ValueCompaction {
             final JsonValue resultTypes = result.asJsonObject().get(Keywords.TYPE);
             
             if (JsonUtils.isNotNull(resultTypes)) {
-                for (JsonValue type : JsonUtils.toJsonArray(resultTypes)) {
+                for (final JsonValue type : JsonUtils.toCollection(resultTypes)) {
     
                     types.add(activeContext.uriCompaction().vocab(true).compact(((JsonString)type).getString()));                    
                 }

@@ -155,14 +155,16 @@ public final class FramingProcessor {
         }
         
         // 18. - remove preserve
-        result = result.stream().map(FramingProcessor::removePreserve).collect(Collectors.toList());
+        final JsonArrayBuilder filtered = Json.createArrayBuilder();
+
+        result.stream().map(FramingProcessor::removePreserve).forEach(filtered::add);
         
         // 19.
         JsonValue compactedResults = Compaction
-                                                .with(activeContext)
-                                                .compactArrays(options.isCompactArrays())
-                                                .ordered(options.isOrdered())
-                                                .compact(JsonUtils.toJsonArray(result));
+                                            .with(activeContext)
+                                            .compactArrays(options.isCompactArrays())
+                                            .ordered(options.isOrdered())
+                                            .compact(filtered.build());
 
         // 19.1.
         if (JsonUtils.isEmptyArray(compactedResults)) {

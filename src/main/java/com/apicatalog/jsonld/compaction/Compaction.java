@@ -29,6 +29,7 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 
@@ -202,7 +203,7 @@ public final class Compaction {
             
             final List<String> compactedTypes = new ArrayList<>();
             
-            for (JsonValue type : JsonUtils.toJsonArray(elementObject.get(Keywords.TYPE))) {
+            for (final JsonValue type : JsonUtils.toCollection(elementObject.get(Keywords.TYPE))) {
                 
                 compactedTypes.add(activeContext.uriCompaction().vocab(true).compact(((JsonString)type).getString()));
                 
@@ -301,14 +302,15 @@ public final class Compaction {
             if (Keywords.REVERSE.equals(expandedProperty)) {
                 
                 // 12.3.1.
-                final Map<String, JsonValue> compactedMap = 
-                                new LinkedHashMap<>(
-                                        Compaction
-                                                .with(activeContext)
-                                                .compactArrays(compactArrays)
-                                                .ordered(ordered)
-                                                .compact(Keywords.REVERSE, expandedValue)
-                                                .asJsonObject());
+                final JsonObject compactedMap = Compaction
+                                                    .with(activeContext)
+                                                    .compactArrays(compactArrays)
+                                                    .ordered(ordered)
+                                                    .compact(Keywords.REVERSE, expandedValue)
+                                                    .asJsonObject();
+                
+                JsonObjectBuilder remaining = null;
+                
                 // 12.3.2.
                 for (final Entry<String, JsonValue> entry : compactedMap.entrySet()) {
                     
@@ -325,20 +327,25 @@ public final class Compaction {
                         // 12.3.2.1.2.
                         JsonUtils.addValue(result, entry.getKey(), entry.getValue(), asArray);
                         
-                        // 12.3.2.1.3.
-                        compactedMap.remove(entry.getKey());
+                    } else {
+                        
+                        if (remaining == null) {
+                            remaining = Json.createObjectBuilder();
+                        }
+                        
+                        remaining.add(entry.getKey(), entry.getValue());
                     }
                     
                 }
                 
                 // 12.8.3.
-                if (!compactedMap.isEmpty()) {
+                if (remaining != null) {
 
                     // 12.8.3.1.
                     String alias = activeContext.uriCompaction().vocab(true).compact(Keywords.REVERSE);
                     
                     // 12.8.3.2.                    
-                    result.put(alias, JsonUtils.toJsonObject(compactedMap));
+                    result.put(alias, remaining.build());
                 }
                 
                 // 12.8.4.
@@ -776,10 +783,7 @@ public final class Compaction {
 
                             mapKey = compactedItem.asJsonObject().getString(containerKey);
                             
-                            Map<String, JsonValue> compactedItemMap = new LinkedHashMap<>(compactedItem.asJsonObject());
-                            compactedItemMap.remove(containerKey);
-                            
-                            compactedItem = JsonUtils.toJsonObject(compactedItemMap);                            
+                            compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();                            
                         }
 
                     // 12.8.9.8.

@@ -15,8 +15,6 @@
  */
 package com.apicatalog.jsonld.flattening;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 
 import javax.json.Json;
@@ -105,7 +103,7 @@ public final class Flattening {
         }
         
         // 5.
-        final Collection<JsonValue> flattened = new LinkedList<>();
+        final JsonArrayBuilder flattened = Json.createArrayBuilder();
         
         // 6.
         for (String id : Utils.index(defaultGraph.keySet(), ordered)) {
@@ -120,7 +118,7 @@ public final class Flattening {
         }
         
         // 7.
-        return JsonUtils.toJsonArray(flattened);
+        return flattened.build();
     }
     
 }
