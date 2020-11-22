@@ -82,14 +82,15 @@ public final class Flattening {
             }
             
             // 4.2.
-            JsonObjectBuilder entry = Json.createObjectBuilder(defaultGraph.get(graphName).asJsonObject());
+            final JsonObjectBuilder entry = Json.createObjectBuilder(defaultGraph.get(graphName).asJsonObject());
             
             // 4.3.
-            JsonArrayBuilder graphArray =  Json.createArrayBuilder();
+            final JsonArrayBuilder graphArray =  Json.createArrayBuilder();
             
             // 4.4.
-            for (String id : Utils.index(graph.keySet(), ordered)) {
-                JsonValue node = graph.get(id);
+            for (final String id : Utils.index(graph.keySet(), ordered)) {
+                
+                final JsonValue node = graph.get(id);
 
                 if (JsonUtils.isObject(node) && node.asJsonObject().size() == 1 && node.asJsonObject().containsKey(Keywords.ID)) {
                     continue;

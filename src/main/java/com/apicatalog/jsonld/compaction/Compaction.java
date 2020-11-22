@@ -263,10 +263,10 @@ public final class Compaction {
                 } else if (JsonUtils.isArray(expandedValue)) {
 
                     // 12.2.2.1.
-                    JsonArrayBuilder compactedArray = Json.createArrayBuilder();
+                    final JsonArrayBuilder compactedArray = Json.createArrayBuilder();
                     
                     // 12.2.2.2.
-                    for (JsonValue expandedType : expandedValue.asJsonArray()) {
+                    for (final JsonValue expandedType : expandedValue.asJsonArray()) {
 
                         // 12.2.2.2.1.
                         String term = typeContext.uriCompaction().vocab(true).compact(((JsonString)expandedType).getString());

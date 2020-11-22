@@ -127,15 +127,15 @@ public final class NodeMapBuilder {
         }
         
         // 2.        
-        Map<String, JsonValue> elementObject = new LinkedHashMap<>(element.asJsonObject());
+        final Map<String, JsonValue> elementObject = new LinkedHashMap<>(element.asJsonObject());
         
         // 3.
         if (elementObject.containsKey(Keywords.TYPE)) {
             
-            JsonArrayBuilder types = Json.createArrayBuilder();
+            final JsonArrayBuilder types = Json.createArrayBuilder();
  
             // 3.1.
-            for (JsonValue item : JsonUtils.toJsonArray(elementObject.get(Keywords.TYPE))) {
+            for (final JsonValue item : JsonUtils.toJsonArray(elementObject.get(Keywords.TYPE))) {
                 
                 if (JsonUtils.isString(item) && BlankNode.hasPrefix(((JsonString)item).getString())) {
                     types.add(Json.createValue(nodeMap.createIdentifier(((JsonString)item).getString())));

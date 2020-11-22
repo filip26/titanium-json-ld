@@ -287,13 +287,13 @@ final class ObjectExpansion1314 {
 
                         } else if (JsonUtils.isArray(value)) {
 
-                            JsonArrayBuilder array = Json.createArrayBuilder();
+                            final JsonArrayBuilder array = Json.createArrayBuilder();
 
-                            for (JsonValue item : value.asJsonArray()) {
+                            for (final JsonValue item : value.asJsonArray()) {
 
                                 if (JsonUtils.isString(item)) {
 
-                                    String expandedStringValue =
+                                    final String expandedStringValue =
                                             typeContext
                                                 .uriExpansion()
                                                 .vocab(true)
@@ -363,7 +363,7 @@ final class ObjectExpansion1314 {
                         // 13.4.6.4
                         if (result.containsKey(Keywords.INCLUDED)) {
 
-                            JsonArrayBuilder includes = Json
+                            final JsonArrayBuilder includes = Json
                                     .createArrayBuilder(result.get(Keywords.INCLUDED).asJsonArray());
 
                             expandedValue.asJsonArray().forEach(includes::add);
@@ -680,7 +680,7 @@ final class ObjectExpansion1314 {
                         }
 
                         // 13.7.4.2.3.
-                        JsonObjectBuilder langMap = Json.createObjectBuilder().add(Keywords.VALUE, item);
+                        final JsonObjectBuilder langMap = Json.createObjectBuilder().add(Keywords.VALUE, item);
 
                         // 13.7.4.2.4.
                         if (!Keywords.NONE.equals(langCode)) {
@@ -790,16 +790,16 @@ final class ObjectExpansion1314 {
                                     .expand(Json.createValue(index), indexKey);
 
                             // 13.8.3.7.2.2.
-                            String expandedIndexKey = 
+                            final String expandedIndexKey = 
                                         activeContext
                                             .uriExpansion()
                                             .vocab(true)
                                             .expand(indexKey);
 
                             // 13.8.3.7.2.3.
-                            JsonArrayBuilder indexPropertyValues = Json.createArrayBuilder().add(reExpandedIndex);
+                            final JsonArrayBuilder indexPropertyValues = Json.createArrayBuilder().add(reExpandedIndex);
 
-                            JsonValue existingValues = item.asJsonObject().get(expandedIndexKey);
+                            final JsonValue existingValues = item.asJsonObject().get(expandedIndexKey);
 
                             if (JsonUtils.isNotNull(existingValues)) {
                                 if (JsonUtils.isArray(existingValues)) {
@@ -844,9 +844,10 @@ final class ObjectExpansion1314 {
                         // 13.8.3.7.5.
                         } else if (containerMapping.contains(Keywords.TYPE) && !Keywords.NONE.equals(expandedIndex)) {
 
-                            JsonArrayBuilder types = Json.createArrayBuilder().add(expandedIndex);
+                            final JsonArrayBuilder types = Json.createArrayBuilder().add(expandedIndex);
 
-                            JsonValue existingType = item.asJsonObject().get(Keywords.TYPE);
+                            final JsonValue existingType = item.asJsonObject().get(Keywords.TYPE);
+                            
                             if (JsonUtils.isNotNull(existingType)) {
 
                                 if (JsonUtils.isArray(existingType)) {
@@ -894,11 +895,9 @@ final class ObjectExpansion1314 {
 
                 expandedValue = JsonUtils.toJsonArray(expandedValue);
 
-                JsonArrayBuilder array = Json.createArrayBuilder();
+                final JsonArrayBuilder array = Json.createArrayBuilder();
 
-                for (JsonValue ev : expandedValue.asJsonArray()) {
-                        array.add(GraphObject.toGraphObject(ev));
-                }
+                expandedValue.asJsonArray().stream().map(GraphObject::toGraphObject).forEach(array::add);
 
                 expandedValue = array.build();
             }

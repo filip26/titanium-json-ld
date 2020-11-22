@@ -279,16 +279,16 @@ public final class FramingProcessor {
             
         } else if (JsonUtils.isArray(value)) {
             
-            JsonArrayBuilder array = Json.createArrayBuilder();
+            final JsonArrayBuilder array = Json.createArrayBuilder();
             
             value.asJsonArray().stream().map(FramingProcessor::replaceNull).forEach(array::add);
             
-            JsonArray result = array.build();
+            final JsonArray result = array.build();
             
             return result.size() != 1 || JsonUtils.isNotNull(result.get(0)) ? result : JsonValue.EMPTY_JSON_ARRAY;
         }
         
-        JsonObjectBuilder object = Json.createObjectBuilder();
+        final JsonObjectBuilder object = Json.createObjectBuilder();
         
         for (Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
             
@@ -318,20 +318,19 @@ public final class FramingProcessor {
         if (JsonUtils.isScalar(value)) {
             return value;
         }
+
         if (JsonUtils.isArray(value)) {
             
-            JsonArrayBuilder array = Json.createArrayBuilder();
+            final JsonArrayBuilder array = Json.createArrayBuilder();
             
-            for (JsonValue item : value.asJsonArray()) {
-                array.add(removeBlankIdKey(item, blankNodes));
-            }
+            value.asJsonArray().stream().map(item -> removeBlankIdKey(item, blankNodes)).forEach(array::add);
             
             return array.build();
         }
         
-        JsonObjectBuilder object = Json.createObjectBuilder();
+        final JsonObjectBuilder object = Json.createObjectBuilder();
         
-        for (Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
+        for (final Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
             
             if (Keywords.ID.equals(entry.getKey()) 
                     && JsonUtils.isString(entry.getValue())
