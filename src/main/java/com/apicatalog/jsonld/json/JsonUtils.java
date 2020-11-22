@@ -15,7 +15,9 @@
  */
 package com.apicatalog.jsonld.json;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.json.Json;
@@ -140,6 +142,19 @@ public final class JsonUtils {
         return toJsonObject(targetMap);
     }
 
+    public static Collection<JsonValue> toCollection(JsonValue value) {
+        
+        if (value == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (JsonValue.ValueType.ARRAY.equals(value.getValueType())) {
+            return value.asJsonArray();
+        }
+
+        return List.of(value); 
+    }
+    
     public static JsonArray toJsonArray(JsonValue value) {
        return JsonUtils.isArray(value) 
                     ? value.asJsonArray() 

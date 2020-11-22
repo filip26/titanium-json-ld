@@ -83,7 +83,7 @@ public final class FrameMatcher {
 
                 nodeValue = JsonUtils.toJsonArray(nodeValue);
                 
-                if (JsonUtils.toJsonArray(frame.get(property)).stream().anyMatch(nodeValue.asJsonArray()::contains)
+                if (JsonUtils.toCollection(frame.get(property)).stream().anyMatch(nodeValue.asJsonArray()::contains)
                         || frame.isWildCard(Keywords.ID) 
                         || frame.isNone(Keywords.ID)
                         ) {
@@ -191,7 +191,8 @@ public final class FrameMatcher {
                         if (ValueObject.isValueObject(listValue.asJsonArray().get(0))) {
     
                             boolean match = false;
-                            for (JsonValue value : JsonUtils.toJsonArray(nodeListValue)) {
+                            
+                            for (final JsonValue value : JsonUtils.toCollection(nodeListValue)) {
             
                                 match = Frame.of((JsonStructure)listValue).matchValue(value);
                                 if (match) {
@@ -210,7 +211,7 @@ public final class FrameMatcher {
                         } else if (NodeObject.isNodeObject(listValue.asJsonArray().get(0)) || NodeObject.isNodeReference(listValue.asJsonArray().get(0))) {
 
                             boolean match = false;
-                            for (JsonValue value : JsonUtils.toJsonArray(nodeListValue)) {
+                            for (final JsonValue value : JsonUtils.toCollection(nodeListValue)) {
             
                                 match = Frame.of((JsonStructure)listValue).matchNode(state, value, requireAll);
     

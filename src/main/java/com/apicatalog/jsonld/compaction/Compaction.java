@@ -203,7 +203,7 @@ public final class Compaction {
             
             final List<String> compactedTypes = new ArrayList<>();
             
-            for (JsonValue type : JsonUtils.toJsonArray(elementObject.get(Keywords.TYPE))) {
+            for (final JsonValue type : JsonUtils.toCollection(elementObject.get(Keywords.TYPE))) {
                 
                 compactedTypes.add(activeContext.uriCompaction().vocab(true).compact(((JsonString)type).getString()));
                 

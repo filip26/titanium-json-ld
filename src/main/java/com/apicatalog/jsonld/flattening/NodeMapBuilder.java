@@ -134,7 +134,7 @@ public final class NodeMapBuilder {
             final JsonArrayBuilder types = Json.createArrayBuilder();
  
             // 3.1.
-            for (final JsonValue item : JsonUtils.toJsonArray(elementObject.get(Keywords.TYPE))) {
+            for (final JsonValue item : JsonUtils.toCollection(elementObject.get(Keywords.TYPE))) {
                 
                 if (JsonUtils.isString(item) && BlankNode.hasPrefix(((JsonString)item).getString())) {
                     types.add(Json.createValue(nodeMap.createIdentifier(((JsonString)item).getString())));

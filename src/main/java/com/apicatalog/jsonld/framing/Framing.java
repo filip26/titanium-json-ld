@@ -221,7 +221,7 @@ public final class Framing {
                 }
 
                 // 4.7.3.
-                for (final JsonValue item : JsonUtils.toJsonArray(objects)) {
+                for (final JsonValue item : JsonUtils.toCollection(objects)) {
 
                     JsonValue subframe = frame.get(property);
 
@@ -255,7 +255,7 @@ public final class Framing {
 
                             final JsonArrayBuilder list = Json.createArrayBuilder();
                             
-                            for (final JsonValue listItem : JsonUtils.toJsonArray(item.asJsonObject().get(Keywords.LIST))) {
+                            for (final JsonValue listItem : JsonUtils.toCollection(item.asJsonObject().get(Keywords.LIST))) {
 
                                 // 4.7.3.1.1.
                                 if (NodeObject.isNodeReference(listItem)) {
