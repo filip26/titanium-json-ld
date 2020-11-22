@@ -256,7 +256,7 @@ public final class RdfToJsonld {
                         && node.containsKey(RdfConstants.REST)
                         && node.get(RdfConstants.FIRST).asJsonArray().size() == 1
                         && node.get(RdfConstants.REST).asJsonArray().size() == 1
-                        && (node.size() == 3
+                        && (node.size() == 3    /* keywords: @id, @first, @last */ 
                                 || (node.size() == 4 && node.containsKey(Keywords.TYPE)
                                     && node.get(Keywords.TYPE).asJsonArray().size() == 1
                                     && node.get(Keywords.TYPE).asJsonArray().contains(Json.createValue(RdfConstants.LIST))
