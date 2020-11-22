@@ -149,80 +149,83 @@ public final class RdfToJsonld {
                     
                     final Map<String, JsonValue> clNode = clNodeValue.get();
                     
-                    JsonArrayBuilder clArray = Json.createArrayBuilder();
+                    final JsonArrayBuilder clArray = Json.createArrayBuilder();
                     
                     // 6.1.6.                    
-                    for (JsonValue clReference : graphMap.get(clEntry.graphName, clEntry.subject, clEntry.property).orElse(JsonValue.EMPTY_JSON_ARRAY).asJsonArray()) {
+                    for (final JsonValue clReference : graphMap.get(clEntry.graphName, clEntry.subject, clEntry.property).map(JsonValue::asJsonArray).orElse(JsonValue.EMPTY_JSON_ARRAY)) {
                         
-                        if (JsonUtils.isObject(clReference) 
-                                && clReference.asJsonObject().containsKey(Keywords.ID)
-                                && cl.equals(clReference.asJsonObject().getString(Keywords.ID))
-                                ) {
-
-                            JsonObjectBuilder clObject = Json.createObjectBuilder(clReference.asJsonObject());
-                            
-                            // 6.1.6.1.
-                            clObject = clObject.remove(Keywords.ID);
-                            
-                            JsonValue value = clNode.get(RdfConstants.VALUE);
-                            
-                            // 6.1.6.2.
-                            if (JsonUtils.isArray(value) && value.asJsonArray().size() == 1) {
-                                value = value.asJsonArray().get(0);
-                            }
-                            
-                            if (JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.VALUE)) {
-                                value = value.asJsonObject().get(Keywords.VALUE);
-                            }
-
-                            clObject = clObject.add(Keywords.VALUE, value);
-
-                            // 6.1.6.3.
-                            if (clNode.containsKey(RdfConstants.LANGUAGE)) {
-                                
-                                JsonValue lang = clNode.get(RdfConstants.LANGUAGE);
-                                
-                                if (JsonUtils.isArray(lang)) {
-                                    lang = lang.asJsonArray().get(0);
-                                }
-                                
-                                if (JsonUtils.isObject(lang) && lang.asJsonObject().containsKey(Keywords.VALUE)) {
-                                    lang = lang.asJsonObject().get(Keywords.VALUE);
-                                }
-                                
-                                if (JsonUtils.isNotString(lang) || !LanguageTag.isWellFormed(((JsonString)lang).getString())) {
-                                    throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
-                                }
-                                
-                                clObject = clObject.add(Keywords.LANGUAGE, lang);
-                            }
-
-                            // 6.1.6.4.     
-                            if (clNode.containsKey(RdfConstants.DIRECTION)) {
-                                
-                                JsonValue direction = clNode.get(RdfConstants.DIRECTION);
-                                
-                                if (JsonUtils.isArray(direction)) {
-                                    direction = direction.asJsonArray().get(0);
-                                }
-                                
-                                if (JsonUtils.isObject(direction) && direction.asJsonObject().containsKey(Keywords.VALUE)) {
-                                    direction = direction.asJsonObject().get(Keywords.VALUE);
-                                }
-                                
-                                if (JsonUtils.isNotString(direction) 
-                                        || (!"ltr".equalsIgnoreCase(((JsonString)direction).getString())
-                                            && !"rtl".equalsIgnoreCase(((JsonString)direction).getString()))
-                                        ) {
-                                    throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
-                                }
-                                
-                                clObject = clObject.add(Keywords.DIRECTION, direction);
-                            }
-
-                            
-                            clArray = clArray.add(clObject);
+                        if (JsonUtils.isNotObject(clReference)) {
+                            continue;
                         }
+                        
+                        final JsonObject clReferenceObject = clReference.asJsonObject();
+                        
+                        if (!clReferenceObject.containsKey(Keywords.ID) || !cl.equals(clReference.asJsonObject().getString(Keywords.ID))) {
+                            continue;
+                        }
+
+                        final JsonObjectBuilder clObject = Json.createObjectBuilder(clReferenceObject);
+                        
+                        // 6.1.6.1.
+                        clObject.remove(Keywords.ID);
+                        
+                        JsonValue value = clNode.get(RdfConstants.VALUE);
+                        
+                        // 6.1.6.2.
+                        if (JsonUtils.isArray(value) && value.asJsonArray().size() == 1) {
+                            value = value.asJsonArray().get(0);
+                        }
+                        
+                        if (JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.VALUE)) {
+                            value = value.asJsonObject().get(Keywords.VALUE);
+                        }
+
+                        clObject.add(Keywords.VALUE, value);
+
+                        // 6.1.6.3.
+                        if (clNode.containsKey(RdfConstants.LANGUAGE)) {
+                            
+                            JsonValue lang = clNode.get(RdfConstants.LANGUAGE);
+                            
+                            if (JsonUtils.isArray(lang)) {
+                                lang = lang.asJsonArray().get(0);
+                            }
+                            
+                            if (JsonUtils.isObject(lang) && lang.asJsonObject().containsKey(Keywords.VALUE)) {
+                                lang = lang.asJsonObject().get(Keywords.VALUE);
+                            }
+                            
+                            if (JsonUtils.isNotString(lang) || !LanguageTag.isWellFormed(((JsonString)lang).getString())) {
+                                throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
+                            }
+                            
+                            clObject.add(Keywords.LANGUAGE, lang);
+                        }
+
+                        // 6.1.6.4.     
+                        if (clNode.containsKey(RdfConstants.DIRECTION)) {
+                            
+                            JsonValue direction = clNode.get(RdfConstants.DIRECTION);
+                            
+                            if (JsonUtils.isArray(direction)) {
+                                direction = direction.asJsonArray().get(0);
+                            }
+                            
+                            if (JsonUtils.isObject(direction) && direction.asJsonObject().containsKey(Keywords.VALUE)) {
+                                direction = direction.asJsonObject().get(Keywords.VALUE);
+                            }
+                            
+                            if (JsonUtils.isNotString(direction) 
+                                    || (!"ltr".equalsIgnoreCase(((JsonString)direction).getString())
+                                        && !"rtl".equalsIgnoreCase(((JsonString)direction).getString()))
+                                    ) {
+                                throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
+                            }
+                            
+                            clObject.add(Keywords.DIRECTION, direction);
+                        }
+
+                        clArray.add(clObject);
                     }
                     graphMap.set(clEntry.graphName, clEntry.subject, clEntry.property, clArray.build());
                 }                
@@ -253,7 +256,7 @@ public final class RdfToJsonld {
                         && node.containsKey(RdfConstants.REST)
                         && node.get(RdfConstants.FIRST).asJsonArray().size() == 1
                         && node.get(RdfConstants.REST).asJsonArray().size() == 1
-                        && (node.size() == 3
+                        && (node.size() == 3    /* keywords: @id, @first, @last */ 
                                 || (node.size() == 4 && node.containsKey(Keywords.TYPE)
                                     && node.get(Keywords.TYPE).asJsonArray().size() == 1
                                     && node.get(Keywords.TYPE).asJsonArray().contains(Json.createValue(RdfConstants.LIST))
