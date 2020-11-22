@@ -986,12 +986,12 @@ final class ObjectExpansion1314 {
                         .nest(new LinkedHashMap<>())
                         .frameExpansion(frameExpansion)
                         .ordered(ordered)
-                        .recursive();
+                        .recurse();
             }
         }
     }
     
-    private void recursive() throws JsonLdError {
+    private void recurse() throws JsonLdError {
         
         // step 3
         final JsonValue propertyContext = activeContext
