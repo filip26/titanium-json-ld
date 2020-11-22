@@ -105,7 +105,7 @@ public final class Framing {
                                 : null;
 
             // 4.1.
-            Map<String, JsonValue> output = new LinkedHashMap<>();
+            final Map<String, JsonValue> output = new LinkedHashMap<>();
             output.put(Keywords.ID, Json.createValue(id));
             
             

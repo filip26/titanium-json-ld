@@ -61,7 +61,7 @@ public final class JsonUtils {
         return value != null 
                     && !ValueType.ARRAY.equals(value.getValueType())
                     && !ValueType.OBJECT.equals(value.getValueType())
-                    && !ValueType.NULL.equals(value.getValueType());
+                    ;
     }
 
     public static final boolean isNotScalar(final JsonValue value) {
@@ -170,7 +170,7 @@ public final class JsonUtils {
     }    
     
     public static void addValue(Map<String, JsonValue> object, String key, JsonValue value, boolean asArray) {
-
+        
         // 1. If as array is true and the value of key in object does not exist or is
         // not an array,
         // set it to a new array containing any original value.
@@ -201,8 +201,14 @@ public final class JsonUtils {
         } else {
             
             // 3.1
-            if (!object.containsKey(key)) {                                
-                object.put(key, value);
+            if (!object.containsKey(key)) { 
+                
+                if (asArray) {
+                    object.put(key, Json.createArrayBuilder().add(value).build());
+                    
+                } else {
+                    object.put(key, value);
+                }
 
             // 3.2
             } else {
@@ -211,6 +217,7 @@ public final class JsonUtils {
 
                 // 3.2.1
                 if (JsonUtils.isNotArray(original)) {
+                   
                     object.put(key, Json.createArrayBuilder().add(original).add(value).build());
 
                 // 3.2.2
