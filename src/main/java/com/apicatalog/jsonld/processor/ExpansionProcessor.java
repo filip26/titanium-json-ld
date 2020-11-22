@@ -142,7 +142,7 @@ public final class ExpansionProcessor {
         return JsonUtils.toJsonArray(expanded);
     }
     
-    private final static ActiveContext updateContext(final ActiveContext activeContext, final JsonValue expandedContext, final URI baseUrl) throws JsonLdError {
+    private static final ActiveContext updateContext(final ActiveContext activeContext, final JsonValue expandedContext, final URI baseUrl) throws JsonLdError {
                 
       if (JsonUtils.isArray(expandedContext)) {
           
