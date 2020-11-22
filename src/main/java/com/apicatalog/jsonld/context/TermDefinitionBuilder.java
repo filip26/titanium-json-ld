@@ -704,18 +704,14 @@ public final class TermDefinitionBuilder {
         }
          
         if (JsonUtils.contains(Keywords.GRAPH, containers)
-                && JsonUtils.contains(Keywords.ID, containers)) {
+                && (JsonUtils.contains(Keywords.ID, containers) 
+                        || JsonUtils.contains(Keywords.INDEX, containers))
+                ) {
 
             return containers.size() == 2 || JsonUtils.contains(Keywords.SET, containers);
         }
-        
-        if (JsonUtils.contains(Keywords.GRAPH, containers)
-                && JsonUtils.contains(Keywords.INDEX, containers)) {
-            
-            return containers.size() == 2 || JsonUtils.contains(Keywords.SET, containers);
-        }
 
-        return containers.size() <= 2
+        return containers.size() == 2
                     && JsonUtils.contains(Keywords.SET, containers) 
                     && (JsonUtils.contains(Keywords.GRAPH, containers)
                         || JsonUtils.contains(Keywords.ID, containers)
