@@ -308,7 +308,7 @@ public final class NodeMapBuilder {
                 if (JsonUtils.isArray(typeValue)) {                    
                     typeValue.asJsonArray().stream().filter(JsonUtils::isNotNull).forEach(nodeType::add);
                     
-                } else {
+                } else if (JsonUtils.isNotNull(typeValue)) {
                     nodeType.add(typeValue);
                 }
 

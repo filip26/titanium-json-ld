@@ -402,7 +402,11 @@ public final class Framing {
                                     reverseMap = new LinkedHashMap<>();
                                 }
 
-                                JsonUtils.addValue(reverseMap, reverseProperty, JsonUtils.toJsonArray(reverseResult.values()), true);
+                                final JsonArrayBuilder reversePropertyValue = Json.createArrayBuilder();
+                                
+                                reverseResult.values().forEach(reversePropertyValue::add);
+                                
+                                JsonUtils.addValue(reverseMap, reverseProperty, reversePropertyValue.build(), true);
                                 output.put(Keywords.REVERSE, JsonUtils.toJsonObject(reverseMap));
                             }
                         }                        

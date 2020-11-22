@@ -15,13 +15,11 @@
  */
 package com.apicatalog.jsonld.json;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.json.Json;
 import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
@@ -134,15 +132,6 @@ public final class JsonUtils {
         return builder.build();
     }
 
-    public static JsonArray toJsonArray(Collection<JsonValue> collection) {
-        
-        final JsonArrayBuilder builder = Json.createArrayBuilder();
-
-        collection.forEach(builder::add);
-
-        return builder.build();
-    }
-
     public static JsonObject merge(JsonObject target, JsonObject source) {
         Map<String, JsonValue> targetMap = (new LinkedHashMap<>(target));
 
@@ -202,13 +191,7 @@ public final class JsonUtils {
             
             // 3.1
             if (!object.containsKey(key)) { 
-                
-                if (asArray) {
-                    object.put(key, Json.createArrayBuilder().add(value).build());
-                    
-                } else {
-                    object.put(key, value);
-                }
+                object.put(key, value);
 
             // 3.2
             } else {
