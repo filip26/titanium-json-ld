@@ -17,7 +17,6 @@ package com.apicatalog.jsonld.framing;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -31,6 +30,7 @@ import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.api.JsonLdEmbed;
 import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
@@ -49,14 +49,14 @@ public final class Framing {
     private final FramingState state;
     private final List<String> subjects;
     private final Frame frame;
-    private final Map<String, JsonValue> parent;
+    private final JsonMapBuilder parent;
     
     private String activeProperty;
     
     // optional
     private boolean ordered;
     
-    private Framing(FramingState state, List<String> subjects, Frame frame, Map<String, JsonValue> parent, String activeProperty) {
+    private Framing(FramingState state, List<String> subjects, Frame frame, JsonMapBuilder parent, String activeProperty) {
         this.state = state;
         this.subjects = subjects;
         this.frame = frame;
@@ -67,7 +67,7 @@ public final class Framing {
         this.ordered = false;
     }
     
-    public static final Framing with(FramingState state, List<String> subjects, Frame frame, Map<String, JsonValue> parent, String activeProperty) {
+    public static final Framing with(FramingState state, List<String> subjects, Frame frame, JsonMapBuilder parent, String activeProperty) {
         return new Framing(state, subjects, frame, parent, activeProperty);
     }
     
@@ -105,7 +105,7 @@ public final class Framing {
                                 : null;
 
             // 4.1.
-            final Map<String, JsonValue> output = new LinkedHashMap<>();
+            final JsonMapBuilder output = JsonMapBuilder.create();
             output.put(Keywords.ID, Json.createValue(id));
             
             
@@ -125,7 +125,7 @@ public final class Framing {
                             ) 
                     
                     ) {
-                addToResult(parent, activeProperty, JsonUtils.toJsonObject(output));
+                addToResult(parent, activeProperty, output.build());
                 continue;
             }
             
@@ -135,7 +135,7 @@ public final class Framing {
                     && state.isDone(id)
                     
                     ) {
-                addToResult(parent, activeProperty, JsonUtils.toJsonObject(output));
+                addToResult(parent, activeProperty, output.build());
                 continue;
             }
 
@@ -264,7 +264,7 @@ public final class Framing {
                                     listState.setEmbedded(true);
                                     
 
-                                    Map<String, JsonValue> listResult = new LinkedHashMap<>();
+                                    final JsonMapBuilder listResult = JsonMapBuilder.create();
                                     
                                     Framing.with(
                                                 listState, 
@@ -276,7 +276,7 @@ public final class Framing {
                                             .frame();
 
                                     if (listResult.containsKey(Keywords.LIST)) {
-                                        list.add(listResult.get(Keywords.LIST));
+                                        listResult.get(Keywords.LIST).ifPresent(list::add);
                                     }
                                     
                                 // 4.7.3.1.2.
@@ -284,8 +284,8 @@ public final class Framing {
                                     list.add(listItem);
                                 }
                             }                           
-                            output.put(property, Json.createArrayBuilder().add(Json.createObjectBuilder().add(Keywords.LIST, list)).build());
 
+                            output.add(property, Json.createObjectBuilder().add(Keywords.LIST, list));
                         
                     } else if (NodeObject.isNodeReference(item)) {
 
@@ -303,13 +303,11 @@ public final class Framing {
                         
                     } else if (ValueObject.isValueObject(item)) {                        
                         if ((Frame.of((JsonStructure)subframe)).matchValue(item)) {
-                            JsonUtils.addValue(output, property, item, true);
+                            output.add(property, item);
                         }
                         
                     } else {
-                        
-
-                        JsonUtils.addValue(output, property, item, true);
+                        output.add(property, item);
                     }
                 }                               
             }
@@ -346,12 +344,10 @@ public final class Framing {
                     defaultValue = Json.createValue(Keywords.NULL);
                 }
 
-                output.put(property, Json.createArrayBuilder()
-                                        .add(Json.createObjectBuilder()
+                output.add(property, Json.createObjectBuilder()
                                                     .add(Keywords.PRESERVE, 
                                                             Json.createArrayBuilder().add(
-                                                            defaultValue))).build());
-                
+                                                            defaultValue)));
             }
 
             // 4.7.5. - reverse properties
@@ -379,11 +375,9 @@ public final class Framing {
                                                 .anyMatch(vid -> Objects.equals(vid, id))
                                     ) {
 
-                                final Map<String, JsonValue> reverseMap;
+                                final JsonMapBuilder reverseResult = JsonMapBuilder.create();
                                 
-                                final Map<String, JsonValue> reverseResult = new LinkedHashMap<>();
-                                
-                                FramingState reverseState = new FramingState(state);
+                                final FramingState reverseState = new FramingState(state);
                                 reverseState.setEmbedded(true);
                                 
                                 Framing.with(
@@ -394,20 +388,12 @@ public final class Framing {
                                             null)
                                         .ordered(ordered)
                                         .frame();
-
-                                if (output.containsKey(Keywords.REVERSE)) {                        
-                                    reverseMap = new LinkedHashMap<>(output.get(Keywords.REVERSE).asJsonObject());
+                        
+                                final JsonMapBuilder reverseMap = output.getMapBuilder(Keywords.REVERSE)
+                                                                        .orElse(JsonMapBuilder.create());
                                     
-                                } else {
-                                    reverseMap = new LinkedHashMap<>();
-                                }
-
-                                final JsonArrayBuilder reversePropertyValue = Json.createArrayBuilder();
-                                
-                                reverseResult.values().forEach(reversePropertyValue::add);
-                                
-                                JsonUtils.addValue(reverseMap, reverseProperty, reversePropertyValue.build(), true);
-                                output.put(Keywords.REVERSE, JsonUtils.toJsonObject(reverseMap));
+                                reverseMap.add(reverseProperty, reverseResult.valuesToArray());
+                                output.put(Keywords.REVERSE, reverseMap);
                             }
                         }                        
                     }
@@ -417,16 +403,16 @@ public final class Framing {
             state.removeLastParent();
 
             // 4.8.
-            addToResult(parent, activeProperty, JsonUtils.toJsonObject(output));
+            addToResult(parent, activeProperty, output.build());
         }
     }
         
-    private static void addToResult(Map<String, JsonValue> result, String property, JsonValue value) {
+    private static void addToResult(JsonMapBuilder result, String property, JsonValue value) {
         if (property == null) {
             result.put(Integer.toHexString(result.size()), value);
             
         } else {
-            JsonUtils.addValue(result, property, value, true);
+            result.add(property, value);
         }        
     }
 }

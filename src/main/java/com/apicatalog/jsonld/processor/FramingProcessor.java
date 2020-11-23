@@ -19,7 +19,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -45,6 +44,7 @@ import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.framing.Frame;
 import com.apicatalog.jsonld.framing.Framing;
 import com.apicatalog.jsonld.framing.FramingState;
+import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -135,7 +135,7 @@ public final class FramingProcessor {
         }
         
         // 15.
-        Map<String, JsonValue> resultMap = new LinkedHashMap<>();
+        final JsonMapBuilder resultMap = JsonMapBuilder.create();
         
         // 16.
         Framing.with(state, 
@@ -147,7 +147,7 @@ public final class FramingProcessor {
                 .ordered(options.isOrdered())
                 .frame();
         
-        Collection<JsonValue> result = resultMap.values();        
+        Collection<JsonValue> result = resultMap.valuesToArray();
         
         // 17. - remove blank @id
         if (!activeContext.inMode(Version.V1_0)) {

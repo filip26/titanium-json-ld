@@ -36,6 +36,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.DefaultObject;
 import com.apicatalog.jsonld.lang.DirectionType;
@@ -68,7 +69,7 @@ final class ObjectExpansion1314 {
     private final URI baseUrl;
 
     private ActiveContext typeContext;
-    private Map<String, JsonValue> result;
+    private JsonMapBuilder result;
     private String inputType;
     private Map<String, JsonValue> nest;
 
@@ -113,7 +114,7 @@ final class ObjectExpansion1314 {
         return this;
     }
 
-    public ObjectExpansion1314 result(Map<String, JsonValue> result) {
+    public ObjectExpansion1314 result(JsonMapBuilder result) {
         this.result = result;
         return this;
     }
@@ -312,7 +313,7 @@ final class ObjectExpansion1314 {
                     // 13.4.4.5
                     if (result.containsKey(Keywords.TYPE)) {
 
-                        JsonValue typeValue = result.get(Keywords.TYPE);
+                        final JsonValue typeValue = result.get(Keywords.TYPE).orElse(null);
 
                         if (JsonUtils.isArray(typeValue)) {
                             expandedValue = Json.createArrayBuilder(typeValue.asJsonArray()).add(expandedValue).build();
@@ -363,12 +364,20 @@ final class ObjectExpansion1314 {
                         // 13.4.6.4
                         if (result.containsKey(Keywords.INCLUDED)) {
 
-                            final JsonArrayBuilder includes = Json
-                                    .createArrayBuilder(result.get(Keywords.INCLUDED).asJsonArray());
+                            final JsonValue includedValue = result.get(Keywords.INCLUDED).orElse(null);
+                            
+                            final JsonArrayBuilder included; 
+                            
+                            if (JsonUtils.isArray(includedValue)) {
+                                included = Json.createArrayBuilder(includedValue.asJsonArray());
+                                
+                            } else {
+                                included = Json.createArrayBuilder().add(includedValue);
+                            }
+                            
+                            expandedValue.asJsonArray().forEach(included::add);
 
-                            expandedValue.asJsonArray().forEach(includes::add);
-
-                            expandedValue = includes.build();
+                            expandedValue = included.build();
                         }
                     } else {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_INCLUDED_VALUE);
@@ -538,7 +547,7 @@ final class ObjectExpansion1314 {
 
                             for (Entry<String, JsonValue> entry : expandedValue.asJsonObject().get(Keywords.REVERSE).asJsonObject().entrySet()) {
                                 // 13.4.13.3.1.
-                                JsonUtils.addValue(result, entry.getKey(), entry.getValue(), true);
+                                result.add(entry.getKey(), entry.getValue());
                             }
                         }
 
@@ -547,16 +556,8 @@ final class ObjectExpansion1314 {
                                 || !expandedValue.asJsonObject().containsKey(Keywords.REVERSE)) {
 
                             
-                            Map<String, JsonValue> reverseMap = null;
-
-                            // 13.4.13.4.1
-                            if (result.containsKey(Keywords.REVERSE)) {
-                                reverseMap = new LinkedHashMap<>(result.get(Keywords.REVERSE).asJsonObject());
-                            }
-
-                            if (reverseMap == null) {
-                                reverseMap = new LinkedHashMap<>();
-                            }
+                            final JsonMapBuilder reverseMap = result.getMapBuilder(Keywords.REVERSE)
+                                                                    .orElse(JsonMapBuilder.create());
 
                             // 13.4.13.4.2
                             for (Entry<String, JsonValue> entry : expandedValue.asJsonObject().entrySet()) {
@@ -576,13 +577,13 @@ final class ObjectExpansion1314 {
                                         }
 
                                         // 13.4.13.4.2.1.1
-                                        JsonUtils.addValue(reverseMap, entry.getKey(), item, true);
+                                        reverseMap.add(entry.getKey(), item);
                                     }
                                 }
                             }
 
                             if (!reverseMap.isEmpty()) {
-                                result.put(Keywords.REVERSE, JsonUtils.toJsonObject(reverseMap));
+                                result.put(Keywords.REVERSE, reverseMap);
                             }
 
                         }
@@ -904,19 +905,9 @@ final class ObjectExpansion1314 {
 
             // 13.13.
             if (keyTermDefinition.isPresent() && keyTermDefinition.get().isReverseProperty()) {
-
-                // 13.13.1.
-                // 13.13.2.
                 
-                Map<String, JsonValue> reverseMap = null;
-                
-                if (result.containsKey(Keywords.REVERSE)) {
-                    reverseMap = new LinkedHashMap<>(result.get(Keywords.REVERSE).asJsonObject());
-                }
-
-                if (reverseMap == null) {
-                    reverseMap = new LinkedHashMap<>();
-                }
+                final JsonMapBuilder reverseMap = result.getMapBuilder(Keywords.REVERSE)
+                                                        .orElse(JsonMapBuilder.create());
 
                 // 13.13.3.
                 expandedValue = JsonUtils.toJsonArray(expandedValue);
@@ -929,20 +920,15 @@ final class ObjectExpansion1314 {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
                     }
 
-                    // 13.13.4.2.
-                    if (!reverseMap.containsKey(expandedProperty)) {
-                        reverseMap.put(expandedProperty, Json.createArrayBuilder().build());
-                    }
-
                     // 13.13.4.3.
-                    JsonUtils.addValue(reverseMap, expandedProperty, item, true);
+                    reverseMap.add(expandedProperty, item);
                 }
  
-                result.put(Keywords.REVERSE, JsonUtils.toJsonObject(reverseMap));
+                result.put(Keywords.REVERSE, reverseMap);
 
             // 13.14
             } else {
-                JsonUtils.addValue(result, expandedProperty, expandedValue, true);
+                result.add(expandedProperty, expandedValue);
             }
         }
 
