@@ -547,7 +547,7 @@ final class ObjectExpansion1314 {
 
                             for (Entry<String, JsonValue> entry : expandedValue.asJsonObject().get(Keywords.REVERSE).asJsonObject().entrySet()) {
                                 // 13.4.13.3.1.
-                                result.add(entry.getKey(), entry.getValue(), true);
+                                result.add(entry.getKey(), entry.getValue());
                             }
                         }
 
@@ -577,7 +577,7 @@ final class ObjectExpansion1314 {
                                         }
 
                                         // 13.4.13.4.2.1.1
-                                        reverseMap.add(entry.getKey(), item, true);
+                                        reverseMap.add(entry.getKey(), item);
                                     }
                                 }
                             }

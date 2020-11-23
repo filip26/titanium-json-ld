@@ -303,11 +303,11 @@ public final class Framing {
                         
                     } else if (ValueObject.isValueObject(item)) {                        
                         if ((Frame.of((JsonStructure)subframe)).matchValue(item)) {
-                            output.add(property, item, true);
+                            output.add(property, item);
                         }
                         
                     } else {
-                        output.add(property, item, true);
+                        output.add(property, item);
                     }
                 }                               
             }
@@ -392,7 +392,7 @@ public final class Framing {
                                 final JsonMapBuilder reverseMap = output.getMapBuilder(Keywords.REVERSE)
                                                                         .orElse(JsonMapBuilder.create());
                                     
-                                reverseMap.add(reverseProperty, reverseResult.valuesToArray(), true);
+                                reverseMap.add(reverseProperty, reverseResult.valuesToArray());
                                 output.put(Keywords.REVERSE, reverseMap);
                             }
                         }                        
@@ -412,7 +412,7 @@ public final class Framing {
             result.put(Integer.toHexString(result.size()), value);
             
         } else {
-            result.add(property, value, true);
+            result.add(property, value);
         }        
     }
 }

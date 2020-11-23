@@ -15,9 +15,9 @@ import com.apicatalog.jsonld.lang.Keywords;
 
 public final class JsonMapBuilder {
 
-    private final Map<String, JsonValue> map;
+    private final Map<String, Object> map;
     
-    private JsonMapBuilder(Map<String, JsonValue> map) {
+    private JsonMapBuilder(Map<String, Object> map) {
         this.map = map;
     }
     
@@ -25,8 +25,22 @@ public final class JsonMapBuilder {
         
         final JsonObjectBuilder builder = Json.createObjectBuilder();
 
-        map.entrySet().forEach(e -> builder.add(e.getKey(), e.getValue()));
-        
+        for (final Map.Entry<String, Object> entry : map.entrySet()) {
+            
+            if (entry.getValue() instanceof JsonValue) {
+                builder.add(entry.getKey(), (JsonValue)entry.getValue());
+                
+            } else if (entry.getValue() instanceof JsonArrayBuilder) {
+                builder.add(entry.getKey(), ((JsonArrayBuilder)entry.getValue()).build());
+
+            } else if (entry.getValue() instanceof JsonMapBuilder) {
+                builder.add(entry.getKey(), ((JsonMapBuilder)entry.getValue()).build());
+
+            } else {
+                throw new IllegalStateException();
+            }
+        }
+
         return builder.build();
     }
 
@@ -54,8 +68,24 @@ public final class JsonMapBuilder {
         return new JsonMapBuilder(new LinkedHashMap<>());
     }
 
-    public Optional<JsonValue> get(String key) {        
-        return Optional.ofNullable(map.get(key));
+    public Optional<JsonValue> get(String key) {
+
+        Object item = map.get(key);
+        
+        if (item == null) {
+            return Optional.empty();
+        }
+        
+        if (item instanceof JsonValue) {
+            return Optional.of((JsonValue)item);
+            
+        } else if (item instanceof JsonArrayBuilder) {
+            return Optional.of(((JsonArrayBuilder)item).build());
+
+        } else if (item instanceof JsonMapBuilder) {
+            return Optional.of(((JsonMapBuilder)item).build());
+        } 
+        throw new IllegalStateException();    
     }
 
     public boolean isNotValueObject() {
@@ -65,8 +95,22 @@ public final class JsonMapBuilder {
     public JsonArray valuesToArray() {
         final JsonArrayBuilder array = Json.createArrayBuilder();
 
-        map.values().forEach(array::add);
-        
+        for (final Object item : map.values()) {
+            
+            if (item instanceof JsonValue) {
+                array.add((JsonValue)item);
+                
+            } else if (item instanceof JsonArrayBuilder) {
+                array.add(((JsonArrayBuilder)item).build());
+                
+            } else if (item instanceof JsonMapBuilder) {
+                array.add(((JsonMapBuilder)item).build());
+
+            } else {
+                throw new IllegalStateException();
+            }
+        }
+
         return array.build();
     }
 
@@ -91,82 +135,93 @@ public final class JsonMapBuilder {
         // 3.
         } else {
 
-            final JsonValue original = map.get(key);
+            final Object original = map.get(key);
             
             // 3.1
             if (original != null) {
                 
-                if (JsonUtils.isArray(original)) {
-                    map.put(key, Json.createArrayBuilder(original.asJsonArray()).add(value).build());
+                if (original instanceof JsonValue) {
+                
+                    if (JsonUtils.isArray((JsonValue)original)) {
+                        map.put(key, Json.createArrayBuilder(((JsonValue)original).asJsonArray()).add(value));
+                        
+                    } else {
+                        map.put(key, Json.createArrayBuilder().add((JsonValue)original).add(value));
+                    }
                     
+                } else if (original instanceof JsonArrayBuilder) {
+                    ((JsonArrayBuilder)original).add(value);
+                    
+                } else if (original instanceof JsonMapBuilder) {
+                    map.put(key, Json.createArrayBuilder().add(((JsonMapBuilder)original).build()));
+                                        
                 } else {
-                    map.put(key, Json.createArrayBuilder().add(original).add(value).build());
+                    throw new IllegalStateException();
                 }
 
             // 3.2
             } else {
                 map.put(key, value);
-
             }
         }
     }
 
     public void add(String key, JsonObjectBuilder value) {
-        add(key, value.build(), true);
+        add(key, value.build());
     }
 
     private void toArray(String key) {
 
         if (map.containsKey(key)) {
             
-            JsonValue original = map.get(key);
+            final Object original = map.get(key);
 
-            if (JsonUtils.isArray(original)) {
-                map.put(key, Json.createArrayBuilder(original.asJsonArray()).build());
+            if (original instanceof JsonValue) {
+                
+                if (JsonUtils.isArray((JsonValue)original)) {
+                    map.put(key, Json.createArrayBuilder(((JsonValue)original).asJsonArray()));
+                    
+                } else {
+                    map.put(key, Json.createArrayBuilder().add((JsonValue)original));
+                }
+                
+            } else if (original instanceof JsonArrayBuilder) {
+                
+            } else if (original instanceof JsonMapBuilder) {
+                map.put(key, Json.createArrayBuilder().add(((JsonMapBuilder)original).build()));
                 
             } else {
-                map.put(key, Json.createArrayBuilder().add(original).build());
+                throw new IllegalStateException();
             }
             
             return;
         }
         
-        map.put(key, JsonValue.EMPTY_JSON_ARRAY);
-    }
-
-    public void put(String key, JsonObjectBuilder value) {
-        put(key, value.build());
+        map.put(key, Json.createArrayBuilder());
     }
 
     public void put(String key, JsonMapBuilder value) {
-        put(key, value.build());
+        map.put(key, value);
     }
     
     public Optional<JsonMapBuilder> getMapBuilder(final String key) {
         
-        final JsonValue value = map.get(key);
+        final Object value = map.get(key);
         
         if (value != null) {
-            return Optional.of(JsonMapBuilder.create(value.asJsonObject()));
+            
+            if (value instanceof JsonMapBuilder) {
+                return Optional.of((JsonMapBuilder)value);
+            }
+            
+            if (value instanceof JsonValue) {
+                return Optional.of(JsonMapBuilder.create(((JsonValue)value).asJsonObject()));                
+            }
+            
+           throw new IllegalStateException();
+
         }
         
         return Optional.empty();
     }
-    
-//    public Optional<JsonArrayBuilder> getArrayBuilder(final String key) {
-//        if (map.containsKey(key)) {
-//            JsonValue value = map.get(key);
-//            
-//            if (value != null) {
-//
-//                if (JsonUtils.isArray(value)) {
-//                    return Optional.of(Json.createArrayBuilder(value.asJsonArray()));
-//                }
-//                return Optional.of(Json.createArrayBuilder().add(value));
-//            }
-//            
-//        }
-//        return Optional.empty();
-//    }
-
 }

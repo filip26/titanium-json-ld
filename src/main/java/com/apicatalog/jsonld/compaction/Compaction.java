@@ -344,7 +344,7 @@ public final class Compaction {
                     final String alias = activeContext.uriCompaction().vocab(true).compact(Keywords.REVERSE);
                     
                     // 12.8.3.2.                    
-                    result.put(alias, remaining);
+                    result.put(alias, remaining.build());
                 }
                 
                 // 12.8.4.
@@ -417,13 +417,13 @@ public final class Compaction {
                     // 12.7.2.3.
                     final JsonMapBuilder nestResult = result.getMapBuilder(nestTerm).orElse(JsonMapBuilder.create());
                     
-                    nestResult.add(itemActiveProperty, JsonValue.EMPTY_JSON_ARRAY, true);
+                    nestResult.add(itemActiveProperty, JsonValue.EMPTY_JSON_ARRAY);
                     
-                    result.put(nestTerm, nestResult.build());
+                    result.put(nestTerm, nestResult);
 
                 // 12.7.3.                    
                 } else {
-                    result.add(itemActiveProperty, JsonValue.EMPTY_JSON_ARRAY, true);
+                    result.add(itemActiveProperty, JsonValue.EMPTY_JSON_ARRAY);
                 }
 
             }
@@ -551,7 +551,7 @@ public final class Compaction {
                         // 12.8.8.1.3.
                         mapObject.add(mapKey, compactedItem, asArray);
 
-                        nestResult.put(itemActiveProperty, mapObject.build());
+                        nestResult.put(itemActiveProperty, mapObject);
                         
                     // 12.8.8.2.
                     } else if (container.contains(Keywords.GRAPH) 
@@ -574,7 +574,7 @@ public final class Compaction {
                         // 12.8.8.2.3.
                         mapObject.add(mapKey, compactedItem, asArray);
 
-                        nestResult.put(itemActiveProperty, mapObject.build());
+                        nestResult.put(itemActiveProperty, mapObject);
                         
                     // 12.8.8.3.                        
                     } else if (container.contains(Keywords.GRAPH) 
@@ -826,7 +826,7 @@ public final class Compaction {
                     // 12.8.9.10.
                     mapObject.add(mapKey, compactedItem, asArray);
 
-                    nestResult.put(itemActiveProperty, mapObject.build());
+                    nestResult.put(itemActiveProperty, mapObject);
 
                 // 12.8.10.                    
                 } else {
@@ -834,7 +834,7 @@ public final class Compaction {
                 }
 
                 if (nestResult != null && nestResultKey != null) {
-                    result.put(nestResultKey, nestResult.build());
+                    result.put(nestResultKey, nestResult);
                 }
             }
         }
