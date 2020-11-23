@@ -70,6 +70,10 @@ public final class JsonMapBuilder {
         return array.build();
     }
 
+    public void add(String key, JsonValue value) {
+        add(key, value, true);
+    }
+    
     public void add(String key, JsonValue value, boolean asArray) {
 
         // 1. If as array is true and the value of key in object does not exist or is

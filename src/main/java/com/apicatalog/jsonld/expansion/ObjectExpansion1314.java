@@ -920,20 +920,15 @@ final class ObjectExpansion1314 {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
                     }
 
-                    // 13.13.4.2.
-//                    if (!reverseMap.containsKey(expandedProperty)) {
-//                        reverseMap.put(expandedProperty, Json.createArrayBuilder());
-//                    }
-
                     // 13.13.4.3.
-                    reverseMap.add(expandedProperty, item, true);
+                    reverseMap.add(expandedProperty, item);
                 }
  
                 result.put(Keywords.REVERSE, reverseMap);
 
             // 13.14
             } else {
-                result.add(expandedProperty, expandedValue, true);  //TODO add(1,2) true is implicit if not set
+                result.add(expandedProperty, expandedValue);
             }
         }
 
