@@ -18,10 +18,8 @@ package com.apicatalog.jsonld.compaction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -37,6 +35,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.GraphObject;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -196,7 +195,7 @@ public final class Compaction {
         final boolean insideReverse = Keywords.REVERSE.equals(activeProperty);
         
         // 10.
-        final Map<String, JsonValue> result = new LinkedHashMap<>();
+        final JsonMapBuilder result = JsonMapBuilder.create();
 
         // 11.
         if (elementObject.containsKey(Keywords.TYPE)) {
@@ -292,7 +291,7 @@ public final class Compaction {
                                            );
 
                 // 12.2.5.
-                JsonUtils.addValue(result, alias, compactedValue, asArray);
+                result.add(alias, compactedValue, asArray);
 
                 // 12.2.6.
                 continue;                
@@ -325,7 +324,7 @@ public final class Compaction {
                                                         .orElse(false);
 
                         // 12.3.2.1.2.
-                        JsonUtils.addValue(result, entry.getKey(), entry.getValue(), asArray);
+                        result.add(entry.getKey(), entry.getValue(), asArray);
                         
                     } else {
                         
@@ -345,7 +344,7 @@ public final class Compaction {
                     String alias = activeContext.uriCompaction().vocab(true).compact(Keywords.REVERSE);
                     
                     // 12.8.3.2.                    
-                    result.put(alias, remaining.build());
+                    result.put(alias, remaining);
                 }
                 
                 // 12.8.4.
@@ -415,22 +414,16 @@ public final class Compaction {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
                     
-                    // 12.7.2.2.
-                    if (!result.containsKey(nestTerm)) {
-                        result.put(nestTerm, JsonValue.EMPTY_JSON_OBJECT);
-                    }                    
-
                     // 12.7.2.3.
-                    Map<String, JsonValue> nestResult = new LinkedHashMap<>(result.get(nestTerm).asJsonObject());
-                    String nestResultKey = nestTerm;
+                    final JsonMapBuilder nestResult = result.getMapBuilder(nestTerm).orElse(JsonMapBuilder.create());
                     
-                    JsonUtils.addValue(nestResult, itemActiveProperty, JsonValue.EMPTY_JSON_ARRAY, true);
-                    result.put(nestResultKey, JsonUtils.toJsonObject(nestResult));
+                    nestResult.add(itemActiveProperty, JsonValue.EMPTY_JSON_ARRAY, true);
+                    
+                    result.put(nestTerm, nestResult.build());
 
                 // 12.7.3.                    
                 } else {
-                    Map<String, JsonValue> nestResult = result;
-                    JsonUtils.addValue(nestResult, itemActiveProperty, JsonValue.EMPTY_JSON_ARRAY, true);
+                    result.add(itemActiveProperty, JsonValue.EMPTY_JSON_ARRAY, true);
                 }
 
             }
@@ -446,7 +439,7 @@ public final class Compaction {
                                                 .reverse(insideReverse)
                                                 .compact(expandedProperty);
 
-                Map<String, JsonValue> nestResult = null;
+                JsonMapBuilder nestResult = null;
                 String nestResultKey = null;
 
                 // 12.8.2.
@@ -461,14 +454,9 @@ public final class Compaction {
                     if (!Keywords.NEST.equals(nestTerm) && !Keywords.NEST.equals(activeContext.uriExpansion().vocab(true).expand(nestTerm))) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
-                    
-                    // 12.8.2.2.
-                    if (!result.containsKey(nestTerm)) {
-                        result.put(nestTerm, JsonValue.EMPTY_JSON_OBJECT);
-                    }
 
                     // 12.8.2.3.
-                    nestResult = new LinkedHashMap<>(result.get(nestTerm).asJsonObject());
+                    nestResult = result.getMapBuilder(nestTerm).orElse(JsonMapBuilder.create());
                     nestResultKey = nestTerm;
 
                 // 12.8.3.                    
@@ -530,7 +518,7 @@ public final class Compaction {
                         }
 
                         // 12.8.7.2.3.
-                        JsonUtils.addValue(nestResult, itemActiveProperty, compactedItem, asArray);
+                        nestResult.add(itemActiveProperty, compactedItem, asArray);
 
                     // 12.8.7.3.
                     } else {
@@ -546,14 +534,9 @@ public final class Compaction {
                     if (container.contains(Keywords.GRAPH) && container.contains(Keywords.ID)) {
 
                         // 12.8.8.1.1.
-                        Map<String, JsonValue> mapObject =  nestResult.containsKey(itemActiveProperty) 
-                                                    ? new LinkedHashMap<>(nestResult.get(itemActiveProperty).asJsonObject())
-                                                    : null;
+                        final JsonMapBuilder mapObject = nestResult.getMapBuilder(itemActiveProperty)
+                                                                    .orElse(JsonMapBuilder.create());
                         
-                        if (mapObject == null) {
-                            mapObject = new LinkedHashMap<>();
-                        }
-
                         // 12.8.8.1.2.
                         String mapKey = null;
                         
@@ -566,9 +549,9 @@ public final class Compaction {
                         }
    
                         // 12.8.8.1.3.
-                        JsonUtils.addValue(mapObject, mapKey, compactedItem, asArray);
+                        mapObject.add(mapKey, compactedItem, asArray);
 
-                        nestResult.put(itemActiveProperty, JsonUtils.toJsonObject(mapObject));
+                        nestResult.put(itemActiveProperty, mapObject.build());
                         
                     // 12.8.8.2.
                     } else if (container.contains(Keywords.GRAPH) 
@@ -576,14 +559,9 @@ public final class Compaction {
                                     && GraphObject.isSimpleGraphObject(expandedItem)
                                             ) {
                         // 12.8.8.2.1.
-                        Map<String, JsonValue> mapObject = nestResult.containsKey(itemActiveProperty) 
-                                                    ? new LinkedHashMap<>(nestResult.get(itemActiveProperty).asJsonObject())
-                                                    : null;
-        
-                        if (mapObject == null) {
-                            mapObject = new LinkedHashMap<>();
-                        }
-                        
+                        final JsonMapBuilder mapObject = nestResult.getMapBuilder(itemActiveProperty)
+                                                                    .orElse(JsonMapBuilder.create());
+                                
                         // 12.8.8.2.2.
                         String mapKey  = expandedItem.asJsonObject().containsKey(Keywords.INDEX)
                                             ? expandedItem.asJsonObject().getString(Keywords.INDEX)
@@ -594,9 +572,9 @@ public final class Compaction {
                         }
    
                         // 12.8.8.2.3.
-                        JsonUtils.addValue(mapObject, mapKey, compactedItem, asArray);
+                        mapObject.add(mapKey, compactedItem, asArray);
 
-                        nestResult.put(itemActiveProperty, JsonUtils.toJsonObject(mapObject));
+                        nestResult.put(itemActiveProperty, mapObject.build());
                         
                     // 12.8.8.3.                        
                     } else if (container.contains(Keywords.GRAPH) 
@@ -615,8 +593,7 @@ public final class Compaction {
                         }
 
                         // 12.8.8.3.2.
-                        JsonUtils.addValue(nestResult, itemActiveProperty, compactedItem, asArray);
-                        
+                        nestResult.add(itemActiveProperty, compactedItem, asArray);
                         
                     } else {
                         followup = true;
@@ -662,7 +639,7 @@ public final class Compaction {
                         }
 
                         // 12.8.8.4.4.
-                        JsonUtils.addValue(nestResult, itemActiveProperty, compactedItem, asArray);
+                        nestResult.add(itemActiveProperty, compactedItem, asArray);
                     }
                     
                 // 12.8.9.                    
@@ -674,10 +651,9 @@ public final class Compaction {
                         ) {
 
                     // 12.8.9.1
-                    final Map<String, JsonValue> mapObject = nestResult.containsKey(itemActiveProperty)
-                                                            ? new LinkedHashMap<>(nestResult.get(itemActiveProperty).asJsonObject())
-                                                            : new LinkedHashMap<>()
-                                                            ;
+                    final JsonMapBuilder mapObject = nestResult.getMapBuilder(itemActiveProperty)
+                                                                .orElse(JsonMapBuilder.create());
+
                     // 12.8.9.2.
                     String keyToCompact = null;
                     
@@ -848,24 +824,24 @@ public final class Compaction {
                         mapKey = activeContext.uriCompaction().vocab(true).compact(Keywords.NONE);
                     } 
                     // 12.8.9.10.
-                    JsonUtils.addValue(mapObject, mapKey, compactedItem, asArray);
+                    mapObject.add(mapKey, compactedItem, asArray);
 
 
-                    nestResult.put(itemActiveProperty, JsonUtils.toJsonObject(mapObject));
+                    nestResult.put(itemActiveProperty, mapObject.build());
 
                 // 12.8.10.                    
                 } else {
-                    JsonUtils.addValue(nestResult, itemActiveProperty, compactedItem, asArray);
+                    nestResult.add(itemActiveProperty, compactedItem, asArray);
                     
                 }
 
                 if (nestResult != null && nestResultKey != null) {
-                    result.put(nestResultKey, JsonUtils.toJsonObject(nestResult));
+                    result.put(nestResultKey, nestResult.build());
                 }
             }
         }
 
         // 13.
-        return JsonUtils.toJsonObject(result);
+        return result.build();
     }   
 }

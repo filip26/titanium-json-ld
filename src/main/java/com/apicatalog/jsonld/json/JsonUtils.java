@@ -172,60 +172,7 @@ public final class JsonUtils {
                     : JsonValue.NULL
                     ;
     }    
-    
-    public static void addValue(Map<String, JsonValue> object, String key, JsonValue value, boolean asArray) {
-        
-        // 1. If as array is true and the value of key in object does not exist or is
-        // not an array,
-        // set it to a new array containing any original value.
-        if (asArray) {
-
-            if (!object.containsKey(key)) {
-                object.put(key, Json.createArrayBuilder().build());
-
-            } else {
-
-                JsonValue original = object.get(key);
-
-                if (JsonUtils.isNotArray(original)) {
-                    object.put(key, Json.createArrayBuilder().add(original).build());
-                }
-            }
-        }
-
-        // 2. If value is an array, then for each element v in value, use add value
-        // recursively to add v to key in entry.
-        if (JsonUtils.isArray(value)) {
-
-            for (JsonValue v : value.asJsonArray()) {
-                addValue(object, key, v, asArray);
-            }
-
-        // 3.
-        } else {
-            
-            // 3.1
-            if (!object.containsKey(key)) { 
-                object.put(key, value);
-
-            // 3.2
-            } else {
-
-                JsonValue original = object.get(key);
-
-                // 3.2.1
-                if (JsonUtils.isNotArray(original)) {
-                   
-                    object.put(key, Json.createArrayBuilder().add(original).add(value).build());
-
-                // 3.2.2
-                } else {
-                    object.put(key, Json.createArrayBuilder(original.asJsonArray()).add(value).build());
-                }
-            }
-        }
-    }
-
+ 
     public static boolean isNotEmptyArray(JsonValue value) {
         return isNotArray(value) || !value.asJsonArray().isEmpty();
     }
