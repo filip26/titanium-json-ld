@@ -65,6 +65,10 @@ public final class JsonMapBuilder {
         return new JsonMapBuilder(new LinkedHashMap<>(object));
     }
 
+    public static JsonMapBuilder create(Map<String, JsonValue> object) {        
+        return new JsonMapBuilder(new LinkedHashMap<>(object));
+    }
+
     public static JsonMapBuilder create() {
         return new JsonMapBuilder(new LinkedHashMap<>());
     }

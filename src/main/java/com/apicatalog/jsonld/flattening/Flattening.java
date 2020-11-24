@@ -15,12 +15,12 @@
  */
 package com.apicatalog.jsonld.flattening;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
 import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
@@ -79,7 +79,7 @@ public final class Flattening {
             }
             
             // 4.2.
-            final JsonObjectBuilder entry = Json.createObjectBuilder(JsonUtils.toJsonObject(defaultGraph.get(graphName)));
+            final Map<String, JsonValue> entry = new LinkedHashMap<>(defaultGraph.get(graphName));
             
             // 4.3.
             final JsonArrayBuilder graphArray =  Json.createArrayBuilder();
@@ -96,9 +96,9 @@ public final class Flattening {
                 graphArray.add(JsonUtils.toJsonObject(node));
             }
 
-            entry.add(Keywords.GRAPH, graphArray.build());
+            entry.put(Keywords.GRAPH, graphArray.build());
  
-            defaultGraph.put(graphName, entry.build());
+            defaultGraph.put(graphName, entry);
         }
         
         // 5.
