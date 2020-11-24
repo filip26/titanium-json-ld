@@ -19,6 +19,7 @@ public final class JsonMapBuilder {
     
     private JsonMapBuilder(Map<String, Object> map) {
         this.map = map;
+        
     }
     
     public JsonObject build() {
@@ -184,19 +185,19 @@ public final class JsonMapBuilder {
                 } else {
                     map.put(key, Json.createArrayBuilder().add((JsonValue)original));
                 }
+                return;
                 
             } else if (original instanceof JsonArrayBuilder) {
+                return;
                 
             } else if (original instanceof JsonMapBuilder) {
                 map.put(key, Json.createArrayBuilder().add(((JsonMapBuilder)original).build()));
+                return;
                 
-            } else {
-                throw new IllegalStateException();
             }
-            
-            return;
+            throw new IllegalStateException();
         }
-        
+
         map.put(key, Json.createArrayBuilder());
     }
 
@@ -204,24 +205,31 @@ public final class JsonMapBuilder {
         map.put(key, value);
     }
     
-    public Optional<JsonMapBuilder> getMapBuilder(final String key) {
+    public JsonMapBuilder getMapBuilder(final String key) {
         
         final Object value = map.get(key);
         
         if (value != null) {
             
             if (value instanceof JsonMapBuilder) {
-                return Optional.of((JsonMapBuilder)value);
+                return (JsonMapBuilder)value;
             }
             
             if (value instanceof JsonValue) {
-                return Optional.of(JsonMapBuilder.create(((JsonValue)value).asJsonObject()));                
+                return JsonMapBuilder.create(((JsonValue)value).asJsonObject());                
             }
             
            throw new IllegalStateException();
 
         }
-        
-        return Optional.empty();
+
+        final JsonMapBuilder result = JsonMapBuilder.create();
+        map.put(key, result);
+
+        return result;
+    }
+
+    public void remove(String key) {
+        map.remove(key);
     }
 }

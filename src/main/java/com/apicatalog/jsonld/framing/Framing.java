@@ -389,11 +389,10 @@ public final class Framing {
                                         .ordered(ordered)
                                         .frame();
                         
-                                final JsonMapBuilder reverseMap = output.getMapBuilder(Keywords.REVERSE)
-                                                                        .orElse(JsonMapBuilder.create());
-                                    
-                                reverseMap.add(reverseProperty, reverseResult.valuesToArray());
-                                output.put(Keywords.REVERSE, reverseMap);
+                                output
+                                    .getMapBuilder(Keywords.REVERSE)
+                                    .add(reverseProperty, reverseResult.valuesToArray());
+
                             }
                         }                        
                     }

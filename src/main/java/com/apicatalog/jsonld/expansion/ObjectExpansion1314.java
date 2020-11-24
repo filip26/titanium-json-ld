@@ -556,8 +556,7 @@ final class ObjectExpansion1314 {
                                 || !expandedValue.asJsonObject().containsKey(Keywords.REVERSE)) {
 
                             
-                            final JsonMapBuilder reverseMap = result.getMapBuilder(Keywords.REVERSE)
-                                                                    .orElse(JsonMapBuilder.create());
+                            final JsonMapBuilder reverseMap = result.getMapBuilder(Keywords.REVERSE);
 
                             // 13.4.13.4.2
                             for (Entry<String, JsonValue> entry : expandedValue.asJsonObject().entrySet()) {
@@ -582,10 +581,9 @@ final class ObjectExpansion1314 {
                                 }
                             }
 
-                            if (!reverseMap.isEmpty()) {
-                                result.put(Keywords.REVERSE, reverseMap);
+                            if (reverseMap.isEmpty()) {
+                                result.remove(Keywords.REVERSE);
                             }
-
                         }
                     }
 
@@ -906,9 +904,6 @@ final class ObjectExpansion1314 {
             // 13.13.
             if (keyTermDefinition.isPresent() && keyTermDefinition.get().isReverseProperty()) {
                 
-                final JsonMapBuilder reverseMap = result.getMapBuilder(Keywords.REVERSE)
-                                                        .orElse(JsonMapBuilder.create());
-
                 // 13.13.3.
                 expandedValue = JsonUtils.toJsonArray(expandedValue);
 
@@ -921,10 +916,9 @@ final class ObjectExpansion1314 {
                     }
 
                     // 13.13.4.3.
-                    reverseMap.add(expandedProperty, item);
+                    result.getMapBuilder(Keywords.REVERSE).add(expandedProperty, item);
                 }
  
-                result.put(Keywords.REVERSE, reverseMap);
 
             // 13.14
             } else {

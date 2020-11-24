@@ -415,11 +415,8 @@ public final class Compaction {
                     }
                     
                     // 12.7.2.3.
-                    final JsonMapBuilder nestResult = result.getMapBuilder(nestTerm).orElse(JsonMapBuilder.create());
+                    result.getMapBuilder(nestTerm).add(itemActiveProperty, JsonValue.EMPTY_JSON_ARRAY);
                     
-                    nestResult.add(itemActiveProperty, JsonValue.EMPTY_JSON_ARRAY);
-                    
-                    result.put(nestTerm, nestResult);
 
                 // 12.7.3.                    
                 } else {
@@ -456,7 +453,7 @@ public final class Compaction {
                     }
 
                     // 12.8.2.3.
-                    nestResult = result.getMapBuilder(nestTerm).orElse(JsonMapBuilder.create());
+                    nestResult = result.getMapBuilder(nestTerm);
                     nestResultKey = nestTerm;
 
                 // 12.8.3.                    
@@ -533,10 +530,6 @@ public final class Compaction {
                     // 12.8.8.1.
                     if (container.contains(Keywords.GRAPH) && container.contains(Keywords.ID)) {
 
-                        // 12.8.8.1.1.
-                        final JsonMapBuilder mapObject = nestResult.getMapBuilder(itemActiveProperty)
-                                                                    .orElse(JsonMapBuilder.create());
-                        
                         // 12.8.8.1.2.
                         String mapKey = null;
                         
@@ -549,18 +542,13 @@ public final class Compaction {
                         }
    
                         // 12.8.8.1.3.
-                        mapObject.add(mapKey, compactedItem, asArray);
-
-                        nestResult.put(itemActiveProperty, mapObject);
+                        nestResult.getMapBuilder(itemActiveProperty).add(mapKey, compactedItem, asArray);
                         
                     // 12.8.8.2.
                     } else if (container.contains(Keywords.GRAPH) 
                                     && container.contains(Keywords.INDEX)
                                     && GraphObject.isSimpleGraphObject(expandedItem)
                                             ) {
-                        // 12.8.8.2.1.
-                        final JsonMapBuilder mapObject = nestResult.getMapBuilder(itemActiveProperty)
-                                                                    .orElse(JsonMapBuilder.create());
                                 
                         // 12.8.8.2.2.
                         String mapKey  = expandedItem.asJsonObject().containsKey(Keywords.INDEX)
@@ -572,9 +560,7 @@ public final class Compaction {
                         }
    
                         // 12.8.8.2.3.
-                        mapObject.add(mapKey, compactedItem, asArray);
-
-                        nestResult.put(itemActiveProperty, mapObject);
+                        nestResult.getMapBuilder(itemActiveProperty).add(mapKey, compactedItem, asArray);
                         
                     // 12.8.8.3.                        
                     } else if (container.contains(Keywords.GRAPH) 
@@ -649,10 +635,6 @@ public final class Compaction {
                             || container.contains(Keywords.TYPE))
                             && !container.contains(Keywords.GRAPH)
                         ) {
-
-                    // 12.8.9.1
-                    final JsonMapBuilder mapObject = nestResult.getMapBuilder(itemActiveProperty)
-                                                                .orElse(JsonMapBuilder.create());
 
                     // 12.8.9.2.
                     String keyToCompact = null;
@@ -823,10 +805,9 @@ public final class Compaction {
                     if (mapKey == null) {
                         mapKey = activeContext.uriCompaction().vocab(true).compact(Keywords.NONE);
                     } 
+                    
                     // 12.8.9.10.
-                    mapObject.add(mapKey, compactedItem, asArray);
-
-                    nestResult.put(itemActiveProperty, mapObject);
+                    nestResult.getMapBuilder(itemActiveProperty).add(mapKey, compactedItem, asArray);
 
                 // 12.8.10.                    
                 } else {
