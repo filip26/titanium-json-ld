@@ -366,7 +366,7 @@ public final class Framing {
                             final JsonValue nodeValues = state.getGraphMap().get(state.getGraphName(), subjectProperty, reverseProperty);
 
                             if (nodeValues != null
-                                    && JsonUtils.toJsonArray(nodeValues)
+                                    && JsonUtils.toCollection(nodeValues)
                                                 .stream()
                                                 .filter(JsonUtils::isObject)
                                                 .map(JsonObject.class::cast)

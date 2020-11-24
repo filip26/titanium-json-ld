@@ -89,7 +89,7 @@ public final class Flattening {
                 
                 final Map<String, JsonValue> node = graph.get(id);
 
-                if (node.size() == 1 && node.containsKey(Keywords.ID)) {
+                if (node == null || node.size() == 1 && node.containsKey(Keywords.ID)) {
                     continue;
                 }
 
@@ -109,7 +109,7 @@ public final class Flattening {
             
             final Map<String, JsonValue> node = defaultGraph.get(id);
   
-            if (node.size() == 1 && node.containsKey(Keywords.ID)) {
+            if (node == null || node.size() == 1 && node.containsKey(Keywords.ID)) {
                 continue;
             }
             

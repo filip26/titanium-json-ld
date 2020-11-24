@@ -17,7 +17,6 @@ package com.apicatalog.jsonld.serialization;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -312,7 +311,7 @@ public final class RdfToJsonld {
         // 8.
         for (final String subject : Utils.index(graphMap.keys(Keywords.DEFAULT), ordered)) {
                         
-            final Map<String, JsonValue> node = graphMap.get(Keywords.DEFAULT, subject).orElse(new HashMap<>());
+            final Map<String, JsonValue> node = graphMap.get(Keywords.DEFAULT, subject).orElse(new LinkedHashMap<>());
         
             // 8.1.
             if (graphMap.contains(subject)) {

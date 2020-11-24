@@ -194,7 +194,7 @@ final class ObjectExpansion1314 {
                             expandedValue = Json.createValue(expandedStringValue);
                             
                             if (frameExpansion) {
-                                expandedValue = JsonUtils.toJsonArray(expandedValue);
+                                expandedValue = Json.createArrayBuilder().add(expandedValue).build();
                             }
                         }
                         
