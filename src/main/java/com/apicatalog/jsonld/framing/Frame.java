@@ -286,11 +286,7 @@ public final class Frame {
                         .get(state.getGraphName())
                         .map(graph -> graph.get(value.asJsonObject().getString(Keywords.ID)));
      
-        if (valueObject.isEmpty()) {
-            return false;
-        }
-        
-        return FrameMatcher.with(state, this, requireAll).match(valueObject.get());
+        return valueObject.isPresent() && FrameMatcher.with(state, this, requireAll).match(valueObject.get());
     }
 
     public boolean isListObject() {
