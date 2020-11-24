@@ -15,13 +15,12 @@
  */
 package com.apicatalog.jsonld.flattening;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
 import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
@@ -63,7 +62,7 @@ public final class Flattening {
         NodeMapBuilder.with(element, nodeMap).build();
         
         // 3.
-        Map<String, JsonObject> defaultGraph = nodeMap.get(Keywords.DEFAULT);
+        final Map<String, Map<String, JsonValue>> defaultGraph = nodeMap.get(Keywords.DEFAULT).orElseThrow(IllegalStateException::new);
 
         // 4.
         for (String graphName : Utils.index(nodeMap.graphs(), ordered)) {
@@ -72,7 +71,7 @@ public final class Flattening {
                 continue;
             }
             
-            Map<String, JsonObject> graph = nodeMap.get(graphName);
+            final Map<String, Map<String, JsonValue>> graph = nodeMap.get(graphName).orElseThrow(IllegalStateException::new);
             
             // 4.1.
             if (!defaultGraph.containsKey(graphName)) {
@@ -80,7 +79,7 @@ public final class Flattening {
             }
             
             // 4.2.
-            final JsonObjectBuilder entry = Json.createObjectBuilder(defaultGraph.get(graphName).asJsonObject());
+            final Map<String, JsonValue> entry = new LinkedHashMap<>(defaultGraph.get(graphName));
             
             // 4.3.
             final JsonArrayBuilder graphArray =  Json.createArrayBuilder();
@@ -88,18 +87,18 @@ public final class Flattening {
             // 4.4.
             for (final String id : Utils.index(graph.keySet(), ordered)) {
                 
-                final JsonValue node = graph.get(id);
+                final Map<String, JsonValue> node = graph.get(id);
 
-                if (JsonUtils.isObject(node) && node.asJsonObject().size() == 1 && node.asJsonObject().containsKey(Keywords.ID)) {
+                if (node == null || node.size() == 1 && node.containsKey(Keywords.ID)) {
                     continue;
                 }
 
-                graphArray.add(node);
+                graphArray.add(JsonUtils.toJsonObject(node));
             }
 
-            entry.add(Keywords.GRAPH, graphArray.build());
+            entry.put(Keywords.GRAPH, graphArray.build());
  
-            defaultGraph.put(graphName, entry.build());
+            defaultGraph.put(graphName, entry);
         }
         
         // 5.
@@ -108,13 +107,13 @@ public final class Flattening {
         // 6.
         for (String id : Utils.index(defaultGraph.keySet(), ordered)) {
             
-            JsonValue node = defaultGraph.get(id);
-            
-            if (JsonUtils.isObject(node) && node.asJsonObject().size() == 1 && node.asJsonObject().containsKey(Keywords.ID)) {
+            final Map<String, JsonValue> node = defaultGraph.get(id);
+  
+            if (node == null || node.size() == 1 && node.containsKey(Keywords.ID)) {
                 continue;
             }
             
-            flattened.add(node);
+            flattened.add(JsonUtils.toJsonObject(node));
         }
         
         // 7.

@@ -178,7 +178,7 @@ public final class Framing {
                     
                     Framing.with(
                                 graphState, 
-                                List.copyOf(state.getGraphMap().get(id).keySet()), 
+                                List.copyOf(state.getGraphMap().get(id).map(Map::keySet).orElse(Collections.emptySet())), 
                                 subframe, 
                                 output, 
                                 Keywords.GRAPH
@@ -361,12 +361,12 @@ public final class Framing {
                       
                         final JsonValue subframe = reverseObject.asJsonObject().get(reverseProperty);
                         
-                        for (final String subjectProperty : state.getGraphMap().get(state.getGraphName()).keySet()) {
-                         
+                        for (final String subjectProperty : state.getGraphMap().get(state.getGraphName()).map(Map::keySet).orElse(Collections.emptySet())) {
+
                             final JsonValue nodeValues = state.getGraphMap().get(state.getGraphName(), subjectProperty, reverseProperty);
 
                             if (nodeValues != null
-                                    && JsonUtils.toJsonArray(nodeValues)
+                                    && JsonUtils.toCollection(nodeValues)
                                                 .stream()
                                                 .filter(JsonUtils::isObject)
                                                 .map(JsonObject.class::cast)
@@ -389,11 +389,10 @@ public final class Framing {
                                         .ordered(ordered)
                                         .frame();
                         
-                                final JsonMapBuilder reverseMap = output.getMapBuilder(Keywords.REVERSE)
-                                                                        .orElse(JsonMapBuilder.create());
-                                    
-                                reverseMap.add(reverseProperty, reverseResult.valuesToArray());
-                                output.put(Keywords.REVERSE, reverseMap);
+                                output
+                                    .getMapBuilder(Keywords.REVERSE)
+                                    .add(reverseProperty, reverseResult.valuesToArray());
+
                             }
                         }                        
                     }

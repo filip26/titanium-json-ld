@@ -164,7 +164,10 @@ final class RdfToObject {
         // 2.7. 
         } else if (literal.getLanguage().isPresent()) {
             
-            result.add(Keywords.LANGUAGE, Json.createValue(literal.getLanguage().get()));
+            literal
+                .getLanguage()
+                .map(Json::createValue)
+                .ifPresent(language -> result.add(Keywords.LANGUAGE, language));
 
         // 2.8.   
         } else if (literal.getDatatype() != null 

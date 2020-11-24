@@ -97,7 +97,7 @@ public final class ValueExpansion {
         return result;
     }
     
-    private void buildStringValue() throws JsonLdError {
+    private void buildStringValue() {
 
         // 5.1.
         JsonValue language = null;

@@ -16,6 +16,8 @@
 package com.apicatalog.jsonld.framing;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.json.JsonObject;
@@ -273,18 +275,18 @@ public final class Frame {
     }
     
     public boolean matchNode(FramingState state, JsonValue value, boolean requireAll) throws JsonLdError {
+        
         if (JsonUtils.isNotObject(value) || !value.asJsonObject().containsKey(Keywords.ID)) {
             return false;
         }
         
-        JsonValue valueObject = state.getGraphMap().get(state.getGraphName())
-                .get(value.asJsonObject().getString(Keywords.ID));
+        final Optional<Map<String, JsonValue>> valueObject = 
+                    state
+                        .getGraphMap()
+                        .get(state.getGraphName())
+                        .map(graph -> graph.get(value.asJsonObject().getString(Keywords.ID)));
      
-        if (JsonUtils.isNotObject(valueObject)) {
-            return false;
-        }
-        
-        return FrameMatcher.with(state, this, requireAll).match(valueObject.asJsonObject());
+        return valueObject.isPresent() && FrameMatcher.with(state, this, requireAll).match(valueObject.get());
     }
 
     public boolean isListObject() {
