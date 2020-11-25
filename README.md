@@ -53,7 +53,7 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 
 ### Installation
 
-#### Titanium JSON-LD
+#### Titanium
 
 Maven
 
