@@ -551,14 +551,10 @@ public final class Compaction {
                                             ) {
                                 
                         // 12.8.8.2.2.
-                        String mapKey  = expandedItem.asJsonObject().containsKey(Keywords.INDEX)
+                        final String mapKey = expandedItem.asJsonObject().containsKey(Keywords.INDEX)
                                             ? expandedItem.asJsonObject().getString(Keywords.INDEX)
-                                            : null;
+                                            : Keywords.NONE;
                                             
-                        if (mapKey == null) {
-                            mapKey = Keywords.NONE;
-                        }
-   
                         // 12.8.8.2.3.
                         nestResult.getMapBuilder(itemActiveProperty).add(mapKey, compactedItem, asArray);
                         
