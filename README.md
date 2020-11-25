@@ -61,7 +61,7 @@ Maven
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium-json-ld</artifactId>
-    <version>0.8.5</version>
+    <version>0.8.6</version>
 </dependency>
 
 ```
@@ -69,7 +69,7 @@ Maven
 Gradle
 
 ```gradle
-compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '0.8.5'
+compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '0.8.6'
 ```
 
 #### JSON-P Provider
