@@ -163,20 +163,6 @@ Your contribution is welcome! There are many ways to motivate developers or spee
   - your requests get top priority
   - you will get a badge
 
-### Roadmap
-
-- [x] 0.1 ~~[Expansion Algorithms](https://www.w3.org/TR/json-ld11-api/#expansion-algorithms)~~
-- [x] 0.2 ~~[Compaction Algorithms](https://www.w3.org/TR/json-ld11-api/#compaction-algorithms)~~
-- [x] 0.3 ~~[Flattening Algorithms](https://www.w3.org/TR/json-ld11-api/#flattening-algorithms)~~
-- [x] 0.4 ~~[JSON-LD to RDF](https://www.w3.org/TR/json-ld11-api/#deserialize-json-ld-to-rdf-algorithm)~~
-- [x] 0.5 ~~[RDF to JSON-LD](https://www.w3.org/TR/json-ld11-api/#serialize-rdf-as-json-ld-algorithm)~~
-- [x] 0.6 ~~[Framing](https://www.w3.org/TR/json-ld11-framing/)~~
-- [x] 0.7 ~~[Remote Document and Context Retrieval](https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval)~~
-- [x] 0.8 ~~JsonLd API~~
-- [ ] 0.9 [HTML](https://www.w3.org/TR/json-ld11-api/#html-content-algorithms)
-- [ ] 1.0 Documented, A+ code
-
-
 ### Building
 
 Fork and clone the project repository.
