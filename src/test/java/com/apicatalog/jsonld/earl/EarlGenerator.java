@@ -23,8 +23,6 @@ import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
-import javax.json.JsonArray;
-
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.RemoteTest;
 import com.apicatalog.jsonld.api.JsonLdError;
@@ -37,6 +35,8 @@ import com.apicatalog.jsonld.suite.JsonLdMockServer;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerEarl;
 import com.apicatalog.jsonld.suite.loader.UriBaseRewriter;
 import com.github.tomakehurst.wiremock.WireMockServer;
+
+import jakarta.json.JsonArray;
 
 public class EarlGenerator {
     

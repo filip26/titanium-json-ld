@@ -24,12 +24,12 @@ import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import javax.json.JsonArray;
-import javax.json.JsonNumber;
-import javax.json.JsonObject;
-import javax.json.JsonValue;
-
 import com.apicatalog.rdf.io.nquad.NQuadsWriter;
+
+import jakarta.json.JsonArray;
+import jakarta.json.JsonNumber;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 
 /**
  * 

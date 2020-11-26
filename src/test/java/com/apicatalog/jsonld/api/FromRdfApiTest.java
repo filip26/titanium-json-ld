@@ -17,14 +17,14 @@ package com.apicatalog.jsonld.api;
 
 import java.net.URI;
 
-import javax.json.JsonArray;
-
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.rdf.Rdf;
+
+import jakarta.json.JsonArray;
 
 public class FromRdfApiTest {
 

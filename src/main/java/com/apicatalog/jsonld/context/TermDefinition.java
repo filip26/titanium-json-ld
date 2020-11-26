@@ -21,9 +21,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.json.JsonValue;
-
 import com.apicatalog.jsonld.lang.DirectionType;
+
+import jakarta.json.JsonValue;
 
 public final class TermDefinition {
 

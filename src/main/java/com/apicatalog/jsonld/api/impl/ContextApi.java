@@ -17,11 +17,11 @@ package com.apicatalog.jsonld.api.impl;
 
 import java.net.URI;
 
-import javax.json.JsonObject;
-import javax.json.JsonString;
-import javax.json.JsonStructure;
-
 import com.apicatalog.jsonld.document.Document;
+
+import jakarta.json.JsonObject;
+import jakarta.json.JsonString;
+import jakarta.json.JsonStructure;
 
 public interface ContextApi<R> {
     

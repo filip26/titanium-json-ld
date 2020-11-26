@@ -17,9 +17,6 @@ package com.apicatalog.jsonld.processor;
 
 import java.net.URI;
 
-import javax.json.JsonArray;
-import javax.json.JsonStructure;
-
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
@@ -28,6 +25,9 @@ import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.flattening.Flattening;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
+
+import jakarta.json.JsonArray;
+import jakarta.json.JsonStructure;
 
 /**
  * 

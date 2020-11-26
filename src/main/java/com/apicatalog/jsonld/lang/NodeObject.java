@@ -17,9 +17,9 @@ package com.apicatalog.jsonld.lang;
 
 import java.util.Arrays;
 
-import javax.json.JsonValue;
-
 import com.apicatalog.jsonld.json.JsonUtils;
+
+import jakarta.json.JsonValue;
 
 public final class NodeObject {
  

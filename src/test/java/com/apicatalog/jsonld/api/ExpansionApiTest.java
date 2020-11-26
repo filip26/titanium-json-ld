@@ -19,9 +19,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,6 +27,9 @@ import com.apicatalog.jsonld.api.impl.ExpansionApi;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.lang.Version;
+
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
 
 public class ExpansionApiTest {
 

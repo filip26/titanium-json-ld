@@ -34,8 +34,8 @@ import org.junit.runners.Parameterized;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.io.error.RdfReaderException;
 import com.apicatalog.rdf.io.nquad.reader.NQuadsReaderTestCase;
-import com.apicatalog.rdf.io.nquad.reader.NQuadsReaderTestSuite;
 import com.apicatalog.rdf.io.nquad.reader.NQuadsReaderTestCase.Type;
+import com.apicatalog.rdf.io.nquad.reader.NQuadsReaderTestSuite;
 
 @RunWith(Parameterized.class)
 public class NQuadsReaderTest {

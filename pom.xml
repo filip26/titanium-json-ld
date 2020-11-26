@@ -56,7 +56,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         
         <jakarta.json-p.version>2.0.0</jakarta.json-p.version> 
-        <json-p.version>1.1.4</json-p.version>
+        <json-p.version>2.0.0</json-p.version>
          
          <!--  test resources -->
         <junit.version>4.13.1</junit.version>
@@ -65,21 +65,13 @@
 
     <dependencies>
         <dependency>
-            <groupId>javax.json</groupId>
-            <artifactId>javax.json-api</artifactId>
+			<groupId>jakarta.json</groupId>
+    		<artifactId>jakarta.json-api</artifactId>
             <version>${json-p.version}</version>
             <scope>provided</scope>
         </dependency>
         
         <!--  Tests -->
-<!--  profile -->
-<!--        <dependency> -->
-<!--             <groupId>org.glassfish</groupId> -->
-<!--             <artifactId>javax.json</artifactId> -->
-<!--             <version>${json-p.version}</version> -->
-<!--             <scope>test</scope> -->
-<!--         </dependency>       -->
-         
 		<dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>jakarta.json</artifactId>
