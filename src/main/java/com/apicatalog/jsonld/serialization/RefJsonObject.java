@@ -18,12 +18,12 @@ package com.apicatalog.jsonld.serialization;
 import java.util.AbstractMap;
 import java.util.Set;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonNumber;
-import javax.json.JsonObject;
-import javax.json.JsonString;
-import javax.json.JsonValue;
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonNumber;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
 
 final class RefJsonObject extends AbstractMap<String, JsonValue> implements JsonObject {
     

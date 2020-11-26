@@ -17,12 +17,12 @@ package com.apicatalog.jsonld.suite;
 
 import java.net.URI;
 
-import javax.json.JsonObject;
-
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.uri.UriResolver;
+
+import jakarta.json.JsonObject;
 
 public class JsonLdTestCaseOptions {
 

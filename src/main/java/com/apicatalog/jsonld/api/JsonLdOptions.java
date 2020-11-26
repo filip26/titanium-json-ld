@@ -17,14 +17,14 @@ package com.apicatalog.jsonld.api;
 
 import java.net.URI;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.SchemeRouter;
+
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 
 /**
  * The {@link JsonLdOptions} type is used to pass various options to the processor.

@@ -21,16 +21,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.json.JsonArray;
-import javax.json.JsonStructure;
-import javax.json.JsonValue;
-
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.ValueObject;
+
+import jakarta.json.JsonArray;
+import jakarta.json.JsonStructure;
+import jakarta.json.JsonValue;
 
 public final class FrameMatcher {
 

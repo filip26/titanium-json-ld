@@ -17,14 +17,14 @@ package com.apicatalog.jsonld.api;
 
 import java.net.URI;
 
-import javax.json.JsonValue;
-
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
+
+import jakarta.json.JsonValue;
 
 public class CompactionApiNegativeTest {
 

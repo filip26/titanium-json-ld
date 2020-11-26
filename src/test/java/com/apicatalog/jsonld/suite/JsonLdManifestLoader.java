@@ -18,9 +18,6 @@ package com.apicatalog.jsonld.suite;
 import java.net.URI;
 import java.util.stream.Stream;
 
-import javax.json.JsonObject;
-import javax.json.JsonValue;
-
 import org.junit.Assert;
 
 import com.apicatalog.jsonld.api.JsonLdError;
@@ -29,6 +26,9 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
+
+import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 
 
 public final class JsonLdManifestLoader {

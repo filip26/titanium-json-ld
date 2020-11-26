@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.api;
 
 import static java.util.Map.entry;
+
 import java.util.Map;
 
 /**

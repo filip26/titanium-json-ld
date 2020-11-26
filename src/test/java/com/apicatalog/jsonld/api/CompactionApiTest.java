@@ -18,9 +18,6 @@ package com.apicatalog.jsonld.api;
 import java.io.ByteArrayInputStream;
 import java.net.URI;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -28,6 +25,9 @@ import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.lang.Version;
+
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 
 public class CompactionApiTest {
 

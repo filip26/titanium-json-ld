@@ -19,11 +19,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonValue;
-
 import com.apicatalog.jsonld.json.JsonUtils;
+
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 
 /**
  * 

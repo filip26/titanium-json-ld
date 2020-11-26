@@ -17,8 +17,6 @@ package com.apicatalog.jsonld.api.impl;
 
 import java.net.URI;
 
-import javax.json.JsonStructure;
-
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
@@ -29,6 +27,8 @@ import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.ToRdfProcessor;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.RdfDataset;
+
+import jakarta.json.JsonStructure;
 
 public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>, ContextApi<ToRdfApi>{
 

@@ -23,10 +23,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.json.JsonValue;
-
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.serialization.RdfToJsonld.Reference;
+
+import jakarta.json.JsonValue;
 
 final class GraphMap {
 

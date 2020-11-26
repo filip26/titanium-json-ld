@@ -19,12 +19,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
 
-import javax.json.Json;
-import javax.json.JsonStructure;
-import javax.json.JsonWriter;
-import javax.json.JsonWriterFactory;
-import javax.json.stream.JsonGenerator;
-
 import org.junit.Assert;
 
 import com.apicatalog.jsonld.api.JsonLdError;
@@ -38,6 +32,12 @@ import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.io.error.RdfWriterException;
 import com.apicatalog.rdf.io.error.UnsupportedContentException;
+
+import jakarta.json.Json;
+import jakarta.json.JsonStructure;
+import jakarta.json.JsonWriter;
+import jakarta.json.JsonWriterFactory;
+import jakarta.json.stream.JsonGenerator;
 
 public class JsonLdTestRunnerJunit {
 
