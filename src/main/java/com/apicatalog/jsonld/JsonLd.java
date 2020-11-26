@@ -34,7 +34,9 @@ import jakarta.json.JsonString;
 /**
  * The {@link JsonLd} interface is the high-level programming structure
  * that developers use to access the JSON-LD transformation methods.
- * This class provides all methods to process JSON-LD.
+ * This class provides methods to process JSON-LD.
+ *
+ * All the methods in this class are thread-safe.
  */
 public final class JsonLd {
 
