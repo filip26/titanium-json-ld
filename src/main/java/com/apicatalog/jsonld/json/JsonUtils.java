@@ -17,11 +17,11 @@ package com.apicatalog.jsonld.json;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.json.Json;
 import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
@@ -61,7 +61,7 @@ public final class JsonUtils {
         return value != null 
                     && !ValueType.ARRAY.equals(value.getValueType())
                     && !ValueType.OBJECT.equals(value.getValueType())
-                    && !ValueType.NULL.equals(value.getValueType());
+                    ;
     }
 
     public static final boolean isNotScalar(final JsonValue value) {
@@ -134,15 +134,6 @@ public final class JsonUtils {
         return builder.build();
     }
 
-    public static JsonArray toJsonArray(Collection<JsonValue> collection) {
-        
-        final JsonArrayBuilder builder = Json.createArrayBuilder();
-
-        collection.forEach(builder::add);
-
-        return builder.build();
-    }
-
     public static JsonObject merge(JsonObject target, JsonObject source) {
         Map<String, JsonValue> targetMap = (new LinkedHashMap<>(target));
 
@@ -151,6 +142,19 @@ public final class JsonUtils {
         return toJsonObject(targetMap);
     }
 
+    public static Collection<JsonValue> toCollection(JsonValue value) {
+        
+        if (value == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (JsonValue.ValueType.ARRAY.equals(value.getValueType())) {
+            return value.asJsonArray();
+        }
+
+        return List.of(value); 
+    }
+    
     public static JsonArray toJsonArray(JsonValue value) {
        return JsonUtils.isArray(value) 
                     ? value.asJsonArray() 
@@ -168,59 +172,7 @@ public final class JsonUtils {
                     : JsonValue.NULL
                     ;
     }    
-    
-    public static void addValue(Map<String, JsonValue> object, String key, JsonValue value, boolean asArray) {
-
-        // 1. If as array is true and the value of key in object does not exist or is
-        // not an array,
-        // set it to a new array containing any original value.
-        if (asArray) {
-
-            if (!object.containsKey(key)) {
-                object.put(key, Json.createArrayBuilder().build());
-
-            } else {
-
-                JsonValue original = object.get(key);
-
-                if (JsonUtils.isNotArray(original)) {
-                    object.put(key, Json.createArrayBuilder().add(original).build());
-                }
-            }
-        }
-
-        // 2. If value is an array, then for each element v in value, use add value
-        // recursively to add v to key in entry.
-        if (JsonUtils.isArray(value)) {
-
-            for (JsonValue v : value.asJsonArray()) {
-                addValue(object, key, v, asArray);
-            }
-
-        // 3.
-        } else {
-            
-            // 3.1
-            if (!object.containsKey(key)) {                                
-                object.put(key, value);
-
-            // 3.2
-            } else {
-
-                JsonValue original = object.get(key);
-
-                // 3.2.1
-                if (JsonUtils.isNotArray(original)) {
-                    object.put(key, Json.createArrayBuilder().add(original).add(value).build());
-
-                // 3.2.2
-                } else {
-                    object.put(key, Json.createArrayBuilder(original.asJsonArray()).add(value).build());
-                }
-            }
-        }
-    }
-
+ 
     public static boolean isNotEmptyArray(JsonValue value) {
         return isNotArray(value) || !value.asJsonArray().isEmpty();
     }

@@ -48,7 +48,8 @@ final class RdfToObject {
         this.rdfDirection = rdfDirection;
         this.useNativeTypes = useNativeTypes;
         
-        this.processingMode = null;
+        // default values
+        this.processingMode = Version.V1_1;
     }
     
     public static final RdfToObject with(final RdfValue object, final RdfDirection rdfDirection, final boolean useNativeTypes) {
@@ -73,7 +74,7 @@ final class RdfToObject {
         final RdfLiteral literal = value.asLiteral();
         
         // 2.2.
-        JsonValue convertedValue = Json.createValue(literal.getValue());
+        JsonValue convertedValue = null;
         
         // 2.3.
         String type = null;
@@ -163,7 +164,10 @@ final class RdfToObject {
         // 2.7. 
         } else if (literal.getLanguage().isPresent()) {
             
-            result.add(Keywords.LANGUAGE, Json.createValue(literal.getLanguage().get()));
+            literal
+                .getLanguage()
+                .map(Json::createValue)
+                .ifPresent(language -> result.add(Keywords.LANGUAGE, language));
 
         // 2.8.   
         } else if (literal.getDatatype() != null 
@@ -173,7 +177,9 @@ final class RdfToObject {
         }        
 
         // 2.9.
-        result.add(Keywords.VALUE, convertedValue);
+        result.add(Keywords.VALUE, (convertedValue != null)
+                                        ? convertedValue
+                                        : Json.createValue(literal.getValue()));
    
         // 2.10.
         if (type != null) {

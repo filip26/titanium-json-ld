@@ -20,11 +20,10 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
 import javax.json.JsonValue;
 
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -81,19 +80,8 @@ public final class NodeMap {
                     && index.get(graphName).get(subject).containsKey(property);
     }
 
-    public Map<String, JsonObject> get(String graphName) {
-        
-        if (!index.containsKey(graphName)) {
-            return null;
-        }
-
-        return index
-                    .get(graphName)
-                    .entrySet()
-                    .stream()
-                    .map(e -> new Object[] {e.getKey(), JsonUtils.toJsonObject(e.getValue())})
-                    .collect(Collectors.toMap(e -> (String)e[0], e -> (JsonObject)e[1]))                    
-                    ;
+    public Optional<Map<String, Map<String, JsonValue>>> get(String graphName) {        
+        return Optional.ofNullable(index.get(graphName));
     }
 
     public String createIdentifier(String name) {
@@ -104,29 +92,16 @@ public final class NodeMap {
         return generator.createIdentifier();
     }
 
-    public Collection<String> graphs(boolean sorted) {
-        return sorted 
-                    ? index.keySet().stream().sorted().collect(Collectors.toList())
-                    : index.keySet()
-                    ;
+    public Collection<String> graphs() {
+        return index.keySet();
     }
 
     public Collection<String> subjects(String graphName) {
-        return subjects(graphName, false);
-    }
-    
-    public Collection<String> subjects(String graphName, boolean sorted) {
-        return sorted 
-                ? index.getOrDefault(graphName, Collections.emptyMap()).keySet().stream().sorted().collect(Collectors.toList())
-                : index.getOrDefault(graphName, Collections.emptyMap()).keySet()
-                ;
+        return index.getOrDefault(graphName, Collections.emptyMap()).keySet();
     }
 
-    public Collection<String> properties(String graphName, String subject, boolean sorted) {
-        return sorted 
-                ? index.getOrDefault(graphName, Collections.emptyMap()).getOrDefault(subject, Collections.emptyMap()).keySet().stream().sorted().collect(Collectors.toList())
-                : index.getOrDefault(graphName, Collections.emptyMap()).getOrDefault(subject, Collections.emptyMap()).keySet()
-                ;
+    public Collection<String> properties(String graphName, String subject) {
+        return index.getOrDefault(graphName, Collections.emptyMap()).getOrDefault(subject, Collections.emptyMap()).keySet();
     }
     
     /**

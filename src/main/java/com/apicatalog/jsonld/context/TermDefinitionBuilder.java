@@ -379,14 +379,18 @@ public final class TermDefinitionBuilder {
                 }
 
                 // 14.2.5
-                if (!term.contains(":") && !term.contains("/") && simpleTerm
-                        && (definition.getUriMapping() != null && ((
-                            UriUtils.endsWithGenDelim(definition.getUriMapping())
-                                && UriUtils.isURI(definition.getUriMapping().substring(0, definition.getUriMapping().length() - 1))
-                                    )
-                            || BlankNode.hasPrefix(definition.getUriMapping())))) {
-                    
-                    definition.setPrefix(true);
+                if (definition.isNotPrefix()) {
+                    definition.setPrefix(!term.contains(":") 
+                                            && !term.contains("/") 
+                                            && simpleTerm
+                                            && (definition.getUriMapping() != null 
+                                                && ((
+                                                    UriUtils.endsWithGenDelim(definition.getUriMapping())
+                                                        && UriUtils.isURI(definition.getUriMapping().substring(0, definition.getUriMapping().length() - 1))
+                                                        )
+                                                    || BlankNode.hasPrefix(definition.getUriMapping()))
+                                                )        
+                                    );
                 }
             }
 
@@ -455,7 +459,7 @@ public final class TermDefinitionBuilder {
             }
 
             // 19.3.
-            for (final JsonValue item : JsonUtils.toJsonArray(containerValue)) {
+            for (final JsonValue item : JsonUtils.toCollection(containerValue)) {
                 definition.addContainerMapping(((JsonString)item).getString());
             }
 
@@ -700,18 +704,14 @@ public final class TermDefinitionBuilder {
         }
          
         if (JsonUtils.contains(Keywords.GRAPH, containers)
-                && JsonUtils.contains(Keywords.ID, containers)) {
+                && (JsonUtils.contains(Keywords.ID, containers) 
+                        || JsonUtils.contains(Keywords.INDEX, containers))
+                ) {
 
             return containers.size() == 2 || JsonUtils.contains(Keywords.SET, containers);
         }
-        
-        if (JsonUtils.contains(Keywords.GRAPH, containers)
-                && JsonUtils.contains(Keywords.INDEX, containers)) {
-            
-            return containers.size() == 2 || JsonUtils.contains(Keywords.SET, containers);
-        }
 
-        return containers.size() <= 2
+        return containers.size() == 2
                     && JsonUtils.contains(Keywords.SET, containers) 
                     && (JsonUtils.contains(Keywords.GRAPH, containers)
                         || JsonUtils.contains(Keywords.ID, containers)

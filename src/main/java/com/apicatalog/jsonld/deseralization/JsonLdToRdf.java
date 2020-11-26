@@ -27,6 +27,7 @@ import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
@@ -70,7 +71,7 @@ public final class JsonLdToRdf {
     public RdfDataset build() throws JsonLdError {
         
         // 1.
-        for (final String graphName : nodeMap.graphs(true)) {
+        for (final String graphName : Utils.index(nodeMap.graphs(), true)) {
 
             // 1.2.
             final RdfResource rdfGraphName;
@@ -95,7 +96,7 @@ public final class JsonLdToRdf {
             }
             
             // 1.3.
-            for (final String subject : nodeMap.subjects(graphName, true)) {
+            for (final String subject : Utils.index(nodeMap.subjects(graphName), true)) {
                 
                 final RdfResource rdfSubject;
 
@@ -111,7 +112,7 @@ public final class JsonLdToRdf {
                 }
                 
                 // 1.3.2.
-                for (final String property : nodeMap.properties(graphName, subject, true)) {
+                for (final String property : Utils.index(nodeMap.properties(graphName, subject), true)) {
 
                     // 1.3.2.1.
                     if (Keywords.TYPE.equals(property)) {

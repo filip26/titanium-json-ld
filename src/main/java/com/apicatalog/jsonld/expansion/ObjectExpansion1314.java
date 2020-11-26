@@ -16,11 +16,9 @@
 package com.apicatalog.jsonld.expansion;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -38,6 +36,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.DefaultObject;
 import com.apicatalog.jsonld.lang.DirectionType;
@@ -46,6 +45,7 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.NodeObject;
+import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.uri.UriUtils;
@@ -62,13 +62,14 @@ final class ObjectExpansion1314 {
     private static final Logger LOGGER = Logger.getLogger(ObjectExpansion1314.class.getName());
     
     // mandatory
-    private final ActiveContext activeContext;
+    private ActiveContext activeContext;
+
     private final JsonObject element;
     private final String activeProperty;
     private final URI baseUrl;
 
     private ActiveContext typeContext;
-    private Map<String, JsonValue> result;
+    private JsonMapBuilder result;
     private String inputType;
     private Map<String, JsonValue> nest;
 
@@ -113,7 +114,7 @@ final class ObjectExpansion1314 {
         return this;
     }
 
-    public ObjectExpansion1314 result(Map<String, JsonValue> result) {
+    public ObjectExpansion1314 result(JsonMapBuilder result) {
         this.result = result;
         return this;
     }
@@ -126,13 +127,7 @@ final class ObjectExpansion1314 {
     public void expand() throws JsonLdError {
 
         // 13.
-        List<String> keys = new ArrayList<>(element.keySet());
-
-        if (ordered) {
-            Collections.sort(keys);
-        }
-
-        for (final String key : keys) {
+        for (final String key : Utils.index(element.keySet(), ordered)) {
 
             // 13.1.
             if (Keywords.CONTEXT.equals(key)) {
@@ -199,7 +194,7 @@ final class ObjectExpansion1314 {
                             expandedValue = Json.createValue(expandedStringValue);
                             
                             if (frameExpansion) {
-                                expandedValue = JsonUtils.toJsonArray(expandedValue);
+                                expandedValue = Json.createArrayBuilder().add(expandedValue).build();
                             }
                         }
                         
@@ -215,7 +210,7 @@ final class ObjectExpansion1314 {
                         
                         final JsonArrayBuilder array = Json.createArrayBuilder();
                         
-                        for (final JsonValue item : JsonUtils.toJsonArray(value)) {
+                        for (final JsonValue item : JsonUtils.toCollection((value))) {
 
                             String expandedStringValue = 
                                     activeContext
@@ -293,13 +288,13 @@ final class ObjectExpansion1314 {
 
                         } else if (JsonUtils.isArray(value)) {
 
-                            JsonArrayBuilder array = Json.createArrayBuilder();
+                            final JsonArrayBuilder array = Json.createArrayBuilder();
 
-                            for (JsonValue item : value.asJsonArray()) {
+                            for (final JsonValue item : value.asJsonArray()) {
 
                                 if (JsonUtils.isString(item)) {
 
-                                    String expandedStringValue =
+                                    final String expandedStringValue =
                                             typeContext
                                                 .uriExpansion()
                                                 .vocab(true)
@@ -318,7 +313,7 @@ final class ObjectExpansion1314 {
                     // 13.4.4.5
                     if (result.containsKey(Keywords.TYPE)) {
 
-                        JsonValue typeValue = result.get(Keywords.TYPE);
+                        final JsonValue typeValue = result.get(Keywords.TYPE).orElse(null);
 
                         if (JsonUtils.isArray(typeValue)) {
                             expandedValue = Json.createArrayBuilder(typeValue.asJsonArray()).add(expandedValue).build();
@@ -369,12 +364,20 @@ final class ObjectExpansion1314 {
                         // 13.4.6.4
                         if (result.containsKey(Keywords.INCLUDED)) {
 
-                            JsonArrayBuilder includes = Json
-                                    .createArrayBuilder(result.get(Keywords.INCLUDED).asJsonArray());
+                            final JsonValue includedValue = result.get(Keywords.INCLUDED).orElse(null);
+                            
+                            final JsonArrayBuilder included; 
+                            
+                            if (JsonUtils.isArray(includedValue)) {
+                                included = Json.createArrayBuilder(includedValue.asJsonArray());
+                                
+                            } else {
+                                included = Json.createArrayBuilder().add(includedValue);
+                            }
+                            
+                            expandedValue.asJsonArray().forEach(included::add);
 
-                            expandedValue.asJsonArray().forEach(includes::add);
-
-                            expandedValue = includes.build();
+                            expandedValue = included.build();
                         }
                     } else {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_INCLUDED_VALUE);
@@ -544,7 +547,7 @@ final class ObjectExpansion1314 {
 
                             for (Entry<String, JsonValue> entry : expandedValue.asJsonObject().get(Keywords.REVERSE).asJsonObject().entrySet()) {
                                 // 13.4.13.3.1.
-                                JsonUtils.addValue(result, entry.getKey(), entry.getValue(), true);
+                                result.add(entry.getKey(), entry.getValue());
                             }
                         }
 
@@ -553,16 +556,7 @@ final class ObjectExpansion1314 {
                                 || !expandedValue.asJsonObject().containsKey(Keywords.REVERSE)) {
 
                             
-                            Map<String, JsonValue> reverseMap = null;
-
-                            // 13.4.13.4.1
-                            if (result.containsKey(Keywords.REVERSE)) {
-                                reverseMap = new LinkedHashMap<>(result.get(Keywords.REVERSE).asJsonObject());
-                            }
-
-                            if (reverseMap == null) {
-                                reverseMap = new LinkedHashMap<>();
-                            }
+                            final JsonMapBuilder reverseMap = result.getMapBuilder(Keywords.REVERSE);
 
                             // 13.4.13.4.2
                             for (Entry<String, JsonValue> entry : expandedValue.asJsonObject().entrySet()) {
@@ -582,15 +576,14 @@ final class ObjectExpansion1314 {
                                         }
 
                                         // 13.4.13.4.2.1.1
-                                        JsonUtils.addValue(reverseMap, entry.getKey(), item, true);
+                                        reverseMap.add(entry.getKey(), item);
                                     }
                                 }
                             }
 
-                            if (!reverseMap.isEmpty()) {
-                                result.put(Keywords.REVERSE, JsonUtils.toJsonObject(reverseMap));
+                            if (reverseMap.isEmpty()) {
+                                result.remove(Keywords.REVERSE);
                             }
-
                         }
                     }
 
@@ -663,13 +656,7 @@ final class ObjectExpansion1314 {
                 }
 
                 // 13.7.4.
-                List<String> langCodes = new ArrayList<>(value.asJsonObject().keySet());
-
-                if (ordered) {
-                    Collections.sort(langCodes);
-                }
-
-                for (String langCode : langCodes) {
+                for (String langCode : Utils.index(value.asJsonObject().keySet(), ordered)) {
 
                     JsonValue langValue = value.asJsonObject().get(langCode);
 
@@ -692,7 +679,7 @@ final class ObjectExpansion1314 {
                         }
 
                         // 13.7.4.2.3.
-                        JsonObjectBuilder langMap = Json.createObjectBuilder().add(Keywords.VALUE, item);
+                        final JsonObjectBuilder langMap = Json.createObjectBuilder().add(Keywords.VALUE, item);
 
                         // 13.7.4.2.4.
                         if (!Keywords.NONE.equals(langCode)) {
@@ -736,13 +723,7 @@ final class ObjectExpansion1314 {
                                             .orElse(Keywords.INDEX);
 
                 // 13.8.3.
-                final List<String> indices = new ArrayList<>(value.asJsonObject().keySet());
-
-                if (ordered) {
-                    Collections.sort(indices);
-                }
-
-                for (final String index : indices) {
+                for (final String index : Utils.index(value.asJsonObject().keySet(), ordered)) {
 
                     JsonValue indexValue = value.asJsonObject().get(index);
                     
@@ -808,16 +789,16 @@ final class ObjectExpansion1314 {
                                     .expand(Json.createValue(index), indexKey);
 
                             // 13.8.3.7.2.2.
-                            String expandedIndexKey = 
+                            final String expandedIndexKey = 
                                         activeContext
                                             .uriExpansion()
                                             .vocab(true)
                                             .expand(indexKey);
 
                             // 13.8.3.7.2.3.
-                            JsonArrayBuilder indexPropertyValues = Json.createArrayBuilder().add(reExpandedIndex);
+                            final JsonArrayBuilder indexPropertyValues = Json.createArrayBuilder().add(reExpandedIndex);
 
-                            JsonValue existingValues = item.asJsonObject().get(expandedIndexKey);
+                            final JsonValue existingValues = item.asJsonObject().get(expandedIndexKey);
 
                             if (JsonUtils.isNotNull(existingValues)) {
                                 if (JsonUtils.isArray(existingValues)) {
@@ -862,9 +843,10 @@ final class ObjectExpansion1314 {
                         // 13.8.3.7.5.
                         } else if (containerMapping.contains(Keywords.TYPE) && !Keywords.NONE.equals(expandedIndex)) {
 
-                            JsonArrayBuilder types = Json.createArrayBuilder().add(expandedIndex);
+                            final JsonArrayBuilder types = Json.createArrayBuilder().add(expandedIndex);
 
-                            JsonValue existingType = item.asJsonObject().get(Keywords.TYPE);
+                            final JsonValue existingType = item.asJsonObject().get(Keywords.TYPE);
+                            
                             if (JsonUtils.isNotNull(existingType)) {
 
                                 if (JsonUtils.isArray(existingType)) {
@@ -912,31 +894,16 @@ final class ObjectExpansion1314 {
 
                 expandedValue = JsonUtils.toJsonArray(expandedValue);
 
-                JsonArrayBuilder array = Json.createArrayBuilder();
+                final JsonArrayBuilder array = Json.createArrayBuilder();
 
-                for (JsonValue ev : expandedValue.asJsonArray()) {
-                        array.add(GraphObject.toGraphObject(ev));
-                }
+                expandedValue.asJsonArray().stream().map(GraphObject::toGraphObject).forEach(array::add);
 
                 expandedValue = array.build();
             }
 
             // 13.13.
             if (keyTermDefinition.isPresent() && keyTermDefinition.get().isReverseProperty()) {
-
-                // 13.13.1.
-                // 13.13.2.
                 
-                Map<String, JsonValue> reverseMap = null;
-                
-                if (result.containsKey(Keywords.REVERSE)) {
-                    reverseMap = new LinkedHashMap<>(result.get(Keywords.REVERSE).asJsonObject());
-                }
-
-                if (reverseMap == null) {
-                    reverseMap = new LinkedHashMap<>();
-                }
-
                 // 13.13.3.
                 expandedValue = JsonUtils.toJsonArray(expandedValue);
 
@@ -948,31 +915,19 @@ final class ObjectExpansion1314 {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
                     }
 
-                    // 13.13.4.2.
-                    if (!reverseMap.containsKey(expandedProperty)) {
-                        reverseMap.put(expandedProperty, Json.createArrayBuilder().build());
-                    }
-
                     // 13.13.4.3.
-                    JsonUtils.addValue(reverseMap, expandedProperty, item, true);
+                    result.getMapBuilder(Keywords.REVERSE).add(expandedProperty, item);
                 }
  
-                result.put(Keywords.REVERSE, JsonUtils.toJsonObject(reverseMap));
 
             // 13.14
             } else {
-                JsonUtils.addValue(result, expandedProperty, expandedValue, true);
+                result.add(expandedProperty, expandedValue);
             }
         }
 
         // 14.
-        List<String> nestedKeys = new ArrayList<>(nest.keySet());
-
-        if (ordered) {
-            Collections.sort(nestedKeys);
-        }
-
-        for (String nestedKey : nestedKeys) {
+        for (String nestedKey : Utils.index(nest.keySet(), ordered)) {
 
             // 14.1.
             JsonValue nestedValues = element.get(nestedKey);
@@ -1002,17 +957,45 @@ final class ObjectExpansion1314 {
                     }
                 }
 
-                // 14.2.2
+                // 14.2.2                
                 ObjectExpansion1314
-                        .with(activeContext, nestValue.asJsonObject(), activeProperty, baseUrl)
+                        .with(activeContext, nestValue.asJsonObject(), nestedKey, baseUrl)
                         .inputType(inputType)
                         .result(result)
                         .typeContext(typeContext)
                         .nest(new LinkedHashMap<>())
                         .frameExpansion(frameExpansion)
                         .ordered(ordered)
-                        .expand();
+                        .recurse();
             }
         }
+    }
+    
+    private void recurse() throws JsonLdError {
+        
+        // step 3
+        final JsonValue propertyContext = activeContext
+                .getTerm(activeProperty)
+                .map(TermDefinition::getLocalContext)
+                .orElse(null);
+
+        
+        // step 8
+        if (propertyContext != null) {
+            
+            activeContext = activeContext
+                                .newContext()
+                                .overrideProtected(true)
+                                .create(
+                                    propertyContext, 
+                                    activeContext
+                                            .getTerm(activeProperty)
+                                            .map(TermDefinition::getBaseUrl)
+                                            .orElse(null)    
+                                        );        
+        }
+
+        // steps 13-14
+        expand();
     }
 }

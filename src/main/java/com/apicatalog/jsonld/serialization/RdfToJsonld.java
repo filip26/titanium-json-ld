@@ -17,7 +17,6 @@ package com.apicatalog.jsonld.serialization;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +37,7 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
+import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.RdfDataset;
@@ -148,80 +148,83 @@ public final class RdfToJsonld {
                     
                     final Map<String, JsonValue> clNode = clNodeValue.get();
                     
-                    JsonArrayBuilder clArray = Json.createArrayBuilder();
+                    final JsonArrayBuilder clArray = Json.createArrayBuilder();
                     
                     // 6.1.6.                    
-                    for (JsonValue clReference : graphMap.get(clEntry.graphName, clEntry.subject, clEntry.property).orElse(JsonValue.EMPTY_JSON_ARRAY).asJsonArray()) {
+                    for (final JsonValue clReference : graphMap.get(clEntry.graphName, clEntry.subject, clEntry.property).map(JsonValue::asJsonArray).orElse(JsonValue.EMPTY_JSON_ARRAY)) {
                         
-                        if (JsonUtils.isObject(clReference) 
-                                && clReference.asJsonObject().containsKey(Keywords.ID)
-                                && cl.equals(clReference.asJsonObject().getString(Keywords.ID))
-                                ) {
-
-                            JsonObjectBuilder clObject = Json.createObjectBuilder(clReference.asJsonObject());
-                            
-                            // 6.1.6.1.
-                            clObject = clObject.remove(Keywords.ID);
-                            
-                            JsonValue value = clNode.get(RdfConstants.VALUE);
-                            
-                            // 6.1.6.2.
-                            if (JsonUtils.isArray(value) && value.asJsonArray().size() == 1) {
-                                value = value.asJsonArray().get(0);
-                            }
-                            
-                            if (JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.VALUE)) {
-                                value = value.asJsonObject().get(Keywords.VALUE);
-                            }
-
-                            clObject = clObject.add(Keywords.VALUE, value);
-
-                            // 6.1.6.3.
-                            if (clNode.containsKey(RdfConstants.LANGUAGE)) {
-                                
-                                JsonValue lang = clNode.get(RdfConstants.LANGUAGE);
-                                
-                                if (JsonUtils.isArray(lang)) {
-                                    lang = lang.asJsonArray().get(0);
-                                }
-                                
-                                if (JsonUtils.isObject(lang) && lang.asJsonObject().containsKey(Keywords.VALUE)) {
-                                    lang = lang.asJsonObject().get(Keywords.VALUE);
-                                }
-                                
-                                if (JsonUtils.isNotString(lang) || !LanguageTag.isWellFormed(((JsonString)lang).getString())) {
-                                    throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
-                                }
-                                
-                                clObject = clObject.add(Keywords.LANGUAGE, lang);
-                            }
-
-                            // 6.1.6.4.     
-                            if (clNode.containsKey(RdfConstants.DIRECTION)) {
-                                
-                                JsonValue direction = clNode.get(RdfConstants.DIRECTION);
-                                
-                                if (JsonUtils.isArray(direction)) {
-                                    direction = direction.asJsonArray().get(0);
-                                }
-                                
-                                if (JsonUtils.isObject(direction) && direction.asJsonObject().containsKey(Keywords.VALUE)) {
-                                    direction = direction.asJsonObject().get(Keywords.VALUE);
-                                }
-                                
-                                if (JsonUtils.isNotString(direction) 
-                                        || (!"ltr".equalsIgnoreCase(((JsonString)direction).getString())
-                                            && !"rtl".equalsIgnoreCase(((JsonString)direction).getString()))
-                                        ) {
-                                    throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
-                                }
-                                
-                                clObject = clObject.add(Keywords.DIRECTION, direction);
-                            }
-
-                            
-                            clArray = clArray.add(clObject);
+                        if (JsonUtils.isNotObject(clReference)) {
+                            continue;
                         }
+                        
+                        final JsonObject clReferenceObject = clReference.asJsonObject();
+                        
+                        if (!clReferenceObject.containsKey(Keywords.ID) || !cl.equals(clReference.asJsonObject().getString(Keywords.ID))) {
+                            continue;
+                        }
+
+                        final JsonObjectBuilder clObject = Json.createObjectBuilder(clReferenceObject);
+                        
+                        // 6.1.6.1.
+                        clObject.remove(Keywords.ID);
+                        
+                        JsonValue value = clNode.get(RdfConstants.VALUE);
+                        
+                        // 6.1.6.2.
+                        if (JsonUtils.isArray(value) && value.asJsonArray().size() == 1) {
+                            value = value.asJsonArray().get(0);
+                        }
+                        
+                        if (JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.VALUE)) {
+                            value = value.asJsonObject().get(Keywords.VALUE);
+                        }
+
+                        clObject.add(Keywords.VALUE, value);
+
+                        // 6.1.6.3.
+                        if (clNode.containsKey(RdfConstants.LANGUAGE)) {
+                            
+                            JsonValue lang = clNode.get(RdfConstants.LANGUAGE);
+                            
+                            if (JsonUtils.isArray(lang)) {
+                                lang = lang.asJsonArray().get(0);
+                            }
+                            
+                            if (JsonUtils.isObject(lang) && lang.asJsonObject().containsKey(Keywords.VALUE)) {
+                                lang = lang.asJsonObject().get(Keywords.VALUE);
+                            }
+                            
+                            if (JsonUtils.isNotString(lang) || !LanguageTag.isWellFormed(((JsonString)lang).getString())) {
+                                throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
+                            }
+                            
+                            clObject.add(Keywords.LANGUAGE, lang);
+                        }
+
+                        // 6.1.6.4.     
+                        if (clNode.containsKey(RdfConstants.DIRECTION)) {
+                            
+                            JsonValue direction = clNode.get(RdfConstants.DIRECTION);
+                            
+                            if (JsonUtils.isArray(direction)) {
+                                direction = direction.asJsonArray().get(0);
+                            }
+                            
+                            if (JsonUtils.isObject(direction) && direction.asJsonObject().containsKey(Keywords.VALUE)) {
+                                direction = direction.asJsonObject().get(Keywords.VALUE);
+                            }
+                            
+                            if (JsonUtils.isNotString(direction) 
+                                    || (!"ltr".equalsIgnoreCase(((JsonString)direction).getString())
+                                        && !"rtl".equalsIgnoreCase(((JsonString)direction).getString()))
+                                    ) {
+                                throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
+                            }
+                            
+                            clObject.add(Keywords.DIRECTION, direction);
+                        }
+
+                        clArray.add(clObject);
                     }
                     graphMap.set(clEntry.graphName, clEntry.subject, clEntry.property, clArray.build());
                 }                
@@ -239,7 +242,7 @@ public final class RdfToJsonld {
                 Map<String, JsonValue> node = graphMap.get(usage.graphName, usage.subject).orElse(Collections.emptyMap()); 
                                 
                 // 6.4.2.
-                final List<JsonValue> list = new ArrayList<>();
+                final JsonArrayBuilder list = Json.createArrayBuilder();
                 final List<String> listNodes = new ArrayList<>();
                 
                 String nodeId = ((JsonString)node.get(Keywords.ID)).getString();
@@ -252,7 +255,7 @@ public final class RdfToJsonld {
                         && node.containsKey(RdfConstants.REST)
                         && node.get(RdfConstants.FIRST).asJsonArray().size() == 1
                         && node.get(RdfConstants.REST).asJsonArray().size() == 1
-                        && (node.size() == 3
+                        && (node.size() == 3    /* keywords: @id, @first, @last */ 
                                 || (node.size() == 4 && node.containsKey(Keywords.TYPE)
                                     && node.get(Keywords.TYPE).asJsonArray().size() == 1
                                     && node.get(Keywords.TYPE).asJsonArray().contains(Json.createValue(RdfConstants.LIST))
@@ -260,8 +263,8 @@ public final class RdfToJsonld {
                         ) {
 
                     // 6.4.3.1.
-                    list.add(node.get(RdfConstants.FIRST).asJsonArray().get(0));
-                    
+                    list.add(0, node.get(RdfConstants.FIRST).asJsonArray().get(0)); // reverse order -> index = 0 see 6.4.5.
+
                     // 6.4.3.2.
                     listNodes.add(nodeId);
                     
@@ -294,11 +297,8 @@ public final class RdfToJsonld {
                 // 6.4.4.
                 head.remove(Keywords.ID);
 
-                // 6.4.5.
-                Collections.reverse(list);
-                
                 // 6.4.6.
-                head.put(Keywords.LIST, JsonUtils.toJsonArray(list));
+                head.put(Keywords.LIST, list.build());
                 
                 // 6.4.7.
                 listNodes.forEach(nid -> graphMap.remove(graphName, nid));                
@@ -309,28 +309,16 @@ public final class RdfToJsonld {
         final JsonArrayBuilder result = Json.createArrayBuilder();
         
         // 8.
-        final List<String> subjects = new ArrayList<>(graphMap.keys(Keywords.DEFAULT));
-        
-        if (ordered) {
-            Collections.sort(subjects);
-        }
-        
-        for (final String subject : subjects) {
+        for (final String subject : Utils.index(graphMap.keys(Keywords.DEFAULT), ordered)) {
                         
-            final Map<String, JsonValue> node = graphMap.get(Keywords.DEFAULT, subject).orElse(new HashMap<>());
+            final Map<String, JsonValue> node = graphMap.get(Keywords.DEFAULT, subject).orElse(new LinkedHashMap<>());
         
             // 8.1.
             if (graphMap.contains(subject)) {
 
-                final List<String> keys = new ArrayList<>(graphMap.keys(subject));
-                
-                if (ordered) {
-                    Collections.sort(keys);
-                }
-                
                 final JsonArrayBuilder array = Json.createArrayBuilder();
                 
-                for (final String key : keys) {
+                for (final String key : Utils.index(graphMap.keys(subject), ordered)) {
                     
                     final Map<String, JsonValue> entry = graphMap.get(subject, key).orElse(Collections.emptyMap());
                     

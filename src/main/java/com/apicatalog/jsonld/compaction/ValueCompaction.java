@@ -128,12 +128,12 @@ public final class ValueCompaction {
                 ) {
 
             // 8.1.
-            JsonArrayBuilder types = Json.createArrayBuilder();
+            final JsonArrayBuilder types = Json.createArrayBuilder();
             
-            JsonValue resultTypes = result.asJsonObject().get(Keywords.TYPE);
+            final JsonValue resultTypes = result.asJsonObject().get(Keywords.TYPE);
             
             if (JsonUtils.isNotNull(resultTypes)) {
-                for (JsonValue type : JsonUtils.toJsonArray(resultTypes)) {
+                for (final JsonValue type : JsonUtils.toCollection(resultTypes)) {
     
                     types.add(activeContext.uriCompaction().vocab(true).compact(((JsonString)type).getString()));                    
                 }
@@ -181,7 +181,7 @@ public final class ValueCompaction {
         // 11.
         if (JsonUtils.isObject(result)) {
 
-            JsonObjectBuilder resultBuilder = Json.createObjectBuilder();
+            final JsonObjectBuilder resultBuilder = Json.createObjectBuilder();
             
             for (Entry<String, JsonValue> entry : result.asJsonObject().entrySet()) {
                 resultBuilder.add(
