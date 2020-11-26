@@ -22,10 +22,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.json.JsonArray;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.ActiveContext;
@@ -40,6 +36,10 @@ import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.uri.UriRelativizer;
 import com.apicatalog.jsonld.uri.UriUtils;
+
+import jakarta.json.JsonArray;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
 
 /**
  * 

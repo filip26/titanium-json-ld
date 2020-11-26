@@ -18,9 +18,6 @@ package com.apicatalog.jsonld.deseralization;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.json.JsonString;
-import javax.json.JsonValue;
-
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
@@ -35,6 +32,9 @@ import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.RdfValue;
 import com.apicatalog.rdf.lang.RdfConstants;
+
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
 
 public final class JsonLdToRdf {
 

@@ -21,15 +21,15 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.json.JsonArray;
-import javax.json.JsonValue;
-
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
+
+import jakarta.json.JsonArray;
+import jakarta.json.JsonValue;
 
 public class NativeTypesIssue64Test {
 

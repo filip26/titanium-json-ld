@@ -17,8 +17,6 @@ package com.apicatalog.jsonld.api;
 
 import java.net.URI;
 
-import javax.json.Json;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -26,6 +24,8 @@ import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
+
+import jakarta.json.Json;
 
 public class FromRdfApiNegativeTest {
 

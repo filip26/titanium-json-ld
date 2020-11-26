@@ -19,15 +19,15 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 
-import javax.json.Json;
-import javax.json.JsonStructure;
-
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.http.media.MediaType;
+
+import jakarta.json.Json;
+import jakarta.json.JsonStructure;
 
 public class FlatteningApiTest {
 

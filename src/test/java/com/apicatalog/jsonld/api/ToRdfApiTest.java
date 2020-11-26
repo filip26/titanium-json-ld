@@ -19,8 +19,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 
-import javax.json.Json;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -28,6 +26,8 @@ import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.RdfDataset;
+
+import jakarta.json.Json;
 
 public class ToRdfApiTest {
 

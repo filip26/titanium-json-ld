@@ -18,10 +18,10 @@ package com.apicatalog.jsonld.document;
 import java.net.URI;
 import java.util.Optional;
 
-import javax.json.JsonStructure;
-
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.RdfDataset;
+
+import jakarta.json.JsonStructure;
 
 /**
  * A document that can be processed by the processor. 

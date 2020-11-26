@@ -22,14 +22,14 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.zip.ZipException;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.stream.JsonParser;
-
 import org.junit.Assert;
 
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.rdf.io.nquad.NQuadsWriterTest;
+
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.stream.JsonParser;
 
 public final class NQuadsWriterTestSuite {
 

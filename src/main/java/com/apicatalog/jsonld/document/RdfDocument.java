@@ -22,8 +22,6 @@ import java.net.URI;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.json.JsonException;
-
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.http.media.MediaType;
@@ -31,6 +29,8 @@ import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.io.error.RdfReaderException;
 import com.apicatalog.rdf.io.error.UnsupportedContentException;
+
+import jakarta.json.JsonException;
 
 public final class RdfDocument implements Document {
 

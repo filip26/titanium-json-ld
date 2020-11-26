@@ -17,8 +17,6 @@ package com.apicatalog.jsonld.api.impl;
 
 import java.net.URI;
 
-import javax.json.JsonStructure;
-
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
@@ -27,6 +25,8 @@ import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.FlatteningProcessor;
 import com.apicatalog.jsonld.uri.UriUtils;
+
+import jakarta.json.JsonStructure;
 
 public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<FlatteningApi>, ContextApi<FlatteningApi> {
 
