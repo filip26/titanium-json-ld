@@ -1,6 +1,6 @@
 # JSON-LD 1.1 Processor & API
 
-An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-based Serialization for Linked Data) specification in Java utilizing [Java API for JSON Processing](https://github.com/eclipse-ee4j/jsonp).
+An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-based Serialization for Linked Data) specification in Java utilizing [Jakarta JSON Processing](https://github.com/eclipse-ee4j/jsonp).
 
 ![Build](https://github.com/filip26/titanium-json-ld/workflows/Java%20CI%20with%20Maven/badge.svg)
 [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/filip26/titanium-json-ld.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/filip26/titanium-json-ld/context:java)
@@ -24,7 +24,7 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 - conformance to the specification
 - secure, stable, fast, A+ code
 - minimal external dependencies
-  - only `javax.json:javax.json-api` is required
+  - only `jakarta.json-api` is required
 - simple to use
 
 ## Conformance
