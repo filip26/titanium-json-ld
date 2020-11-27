@@ -67,7 +67,7 @@ public final class ToRdfProcessor {
         expansionOptions.setExpandContext(options.getExpandContext());
         
         final JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
-
+System.out.println(">>> " + expandedInput);
         return JsonLdToRdf
                         .with(
                             NodeMapBuilder.with(expandedInput, new NodeMap()).build(),
