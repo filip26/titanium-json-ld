@@ -81,11 +81,11 @@ public final class RdfDocument implements Document {
      * @param is representing parsed RDF content
      * @return {@link Document} representing RDF document
      */
-    public static final Document of(final InputStream is)  throws JsonLdError {
+    public static final RdfDocument of(final InputStream is)  throws JsonLdError {
         return of(MediaType.N_QUADS, is);
     }
     
-    public static final Document of(final MediaType type, final InputStream is)  throws JsonLdError {
+    public static final RdfDocument of(final MediaType type, final InputStream is)  throws JsonLdError {
         
         assertContentType(type);
         
