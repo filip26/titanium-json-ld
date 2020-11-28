@@ -36,6 +36,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
+import jakarta.json.JsonValue.ValueType;
 
 public final class NodeMapBuilder {
 
@@ -386,7 +387,12 @@ public final class NodeMapBuilder {
             // 6.12.
             for (String property : elementObject.keySet().stream().sorted().collect(Collectors.toList())) {
      
-                 final JsonStructure value = (JsonStructure)elementObject.get(property);
+                final JsonValue value = elementObject.get(property);
+                
+                // ignore invalid expanded values - see expansion test #122
+                if (value == null || !ValueType.ARRAY.equals(value.getValueType()) && !ValueType.OBJECT.equals(value.getValueType())) {
+                    continue;
+                }
      
                 // 6.12.1.
                 if (BlankNode.hasPrefix(property)) {
@@ -400,7 +406,7 @@ public final class NodeMapBuilder {
                 
                 // 6.12.3.
                 NodeMapBuilder
-                        .with(value, nodeMap)
+                        .with((JsonStructure)value, nodeMap)
                         .activeGraph(activeGraph)
                         .activeSubject(id)
                         .activeProperty(property)
