@@ -152,7 +152,7 @@ final class ObjectExpansion1314 {
             // 13.4. If expanded property is a keyword:
             if (Keywords.contains(expandedProperty)) {
 
-                JsonValue expandedValue = JsonValue.NULL;
+                JsonValue expandedValue = null;
 
                 // 13.4.1
                 if (Keywords.REVERSE.equals(activeProperty)) {
@@ -196,6 +196,8 @@ final class ObjectExpansion1314 {
                             if (frameExpansion) {
                                 expandedValue = Json.createArrayBuilder().add(expandedValue).build();
                             }
+                        } else {
+                            expandedValue = JsonValue.NULL;
                         }
                         
                     } else if (JsonUtils.isObject(value)) {
@@ -615,7 +617,7 @@ final class ObjectExpansion1314 {
                 }
 
                 // 13.4.16
-                if (/*JsonUtils.isNotNull(*/expandedValue != null
+                if (expandedValue != null
                         || (Keywords.VALUE.equals(expandedProperty) && Keywords.JSON.equals(inputType))) {
 
                     result.put(expandedProperty, expandedValue);

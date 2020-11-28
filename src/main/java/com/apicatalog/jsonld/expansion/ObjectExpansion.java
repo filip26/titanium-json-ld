@@ -118,7 +118,7 @@ public final class ObjectExpansion {
                     .frameExpansion(frameExpansion)
                     .ordered(ordered)
                     .expand();
-
+        
         // 15.
         if (result.containsKey(Keywords.VALUE)) {
 
