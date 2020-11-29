@@ -600,10 +600,10 @@ final class ObjectExpansion1314 {
                     
                     if (nest == null) {
                         nest = new LinkedHashMap<>();
-                        nest.put(key, Json.createArrayBuilder().build());
+                        nest.put(key, JsonValue.EMPTY_JSON_ARRAY);
                         
                     } else if (!nest.containsKey(key)) {
-                        nest.put(key, Json.createArrayBuilder().build());
+                        nest.put(key, JsonValue.EMPTY_JSON_ARRAY);
                     }
                     
                     continue;
