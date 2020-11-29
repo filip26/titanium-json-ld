@@ -25,7 +25,7 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
 
-import jakarta.json.Json;
+import jakarta.json.JsonValue;
 
 public class FromRdfApiNegativeTest {
 
@@ -36,7 +36,7 @@ public class FromRdfApiNegativeTest {
 
     @Test
     public void test2() {
-        final Document document = JsonDocument.of(Json.createArrayBuilder().build());
+        final Document document = JsonDocument.of(JsonValue.EMPTY_JSON_ARRAY);
         Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.fromRdf(document));
     }
     

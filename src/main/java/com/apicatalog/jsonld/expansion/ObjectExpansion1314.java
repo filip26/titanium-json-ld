@@ -649,7 +649,7 @@ final class ObjectExpansion1314 {
                     && Keywords.JSON.equals(keyTermDefinition.get().getTypeMapping())) {
 
                 expandedValue = Json.createObjectBuilder().add(Keywords.VALUE, value)
-                        .add(Keywords.TYPE, Json.createValue(Keywords.JSON)).build();
+                        .add(Keywords.TYPE, Keywords.JSON).build();
 
             // 13.7.
             } else if (containerMapping.contains(Keywords.LANGUAGE) && JsonUtils.isObject(value)) {
@@ -724,7 +724,7 @@ final class ObjectExpansion1314 {
                     || containerMapping.contains(Keywords.ID)) && JsonUtils.isObject(value)) {
 
                 // 13.8.1.
-                expandedValue = Json.createArrayBuilder().build();
+                expandedValue = JsonValue.EMPTY_JSON_ARRAY;
 
                 // 13.8.2.
                 final String indexKey = keyTermDefinition

@@ -28,7 +28,7 @@ import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
 
-import jakarta.json.Json;
+import jakarta.json.JsonValue;
 
 public class RdfDocumentTest {
     
@@ -95,7 +95,7 @@ public class RdfDocumentTest {
     
     @Test
     public void testi4() throws JsonLdError {
-        final InputStream is = new ByteArrayInputStream(Json.createArrayBuilder().build().toString().getBytes());
+        final InputStream is = new ByteArrayInputStream(JsonValue.EMPTY_JSON_ARRAY.toString().getBytes());
         Assert.assertThrows(IllegalArgumentException.class, () -> RdfDocument.of(null, is));
     }
 
@@ -107,7 +107,7 @@ public class RdfDocumentTest {
 
     @Test
     public void testi6() throws JsonLdError {
-        final Reader reader = new InputStreamReader(new ByteArrayInputStream(Json.createArrayBuilder().build().toString().getBytes()));
+        final Reader reader = new InputStreamReader(new ByteArrayInputStream(JsonValue.EMPTY_JSON_ARRAY.toString().getBytes()));
         Assert.assertThrows(IllegalArgumentException.class, () -> RdfDocument.of(null, reader));
     }
     

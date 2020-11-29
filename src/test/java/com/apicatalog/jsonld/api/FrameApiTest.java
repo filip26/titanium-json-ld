@@ -29,39 +29,40 @@ import com.apicatalog.jsonld.lang.Version;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 
 public class FrameApiTest {
 
-    public static final MockLoader MOCK_LOADER = new MockLoader(Json.createObjectBuilder().build());
+    public static final MockLoader MOCK_LOADER = new MockLoader(JsonValue.EMPTY_JSON_OBJECT);
     
     @Test    
     public void test1() throws JsonLdError {
-        JsonObject framed = JsonLd.frame(JsonDocument.of(Json.createObjectBuilder().build()), JsonDocument.of(Json.createObjectBuilder().build())).get();
+        JsonObject framed = JsonLd.frame(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT), JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).get();
         Assert.assertNotNull(framed);
-        Assert.assertEquals(Json.createObjectBuilder().build(), framed);
+        Assert.assertEquals(JsonValue.EMPTY_JSON_OBJECT, framed);
     }
     
     @Test    
     public void test2() throws JsonLdError {
-        JsonObject framed = JsonLd.frame(JsonDocument.of(MediaType.JSON, new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes())),
-                JsonDocument.of(Json.createObjectBuilder().build()))
-                .context(JsonDocument.of(Json.createObjectBuilder().build()))
+        JsonObject framed = JsonLd.frame(JsonDocument.of(MediaType.JSON, new ByteArrayInputStream(JsonValue.EMPTY_JSON_OBJECT.toString().getBytes())),
+                JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT))
+                .context(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT))
                 .get();
         Assert.assertNotNull(framed);
-        Assert.assertEquals(Json.createObjectBuilder().build(), framed);
+        Assert.assertEquals(JsonValue.EMPTY_JSON_OBJECT, framed);
     }
     
     @Test    
     public void test3() throws JsonLdError {
         JsonObject framed = JsonLd.frame("https://example.com", "https://example.com/frame").loader(MOCK_LOADER).base("").get();
         Assert.assertNotNull(framed);
-        Assert.assertEquals(Json.createObjectBuilder().build(), framed);
+        Assert.assertEquals(JsonValue.EMPTY_JSON_OBJECT, framed);
     }
 
     @Test    
     public void test4() throws JsonLdError {
         JsonObject framed = JsonLd.frame(URI.create("https://example.com"), URI.create("https://example.com/frame")).loader(MOCK_LOADER).mode(Version.V1_0).get();
         Assert.assertNotNull(framed);
-        Assert.assertEquals(Json.createObjectBuilder().add(Keywords.GRAPH, Json.createArrayBuilder()).build(), framed);
+        Assert.assertEquals(Json.createObjectBuilder().add(Keywords.GRAPH, JsonValue.EMPTY_JSON_ARRAY).build(), framed);
     }
 }

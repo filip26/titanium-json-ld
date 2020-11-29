@@ -290,15 +290,14 @@ public final class JsonLdOptions {
         this.useRdfType = useRdfType;
     }
 
-    public void setExpandContext(String contextLocation) {
+    public void setExpandContext(final String contextLocation) {
         
         if (contextLocation == null) {
             this.expandContext = null;
             return;
         }
-        this.expandContext = JsonDocument.of(
-                Json.createArrayBuilder()
-                    .add(Json.createValue(contextLocation)).build());
+
+        this.expandContext = JsonDocument.of(Json.createArrayBuilder().add(contextLocation).build());
     }
     
     public void setExpandContext(URI contextUri) {

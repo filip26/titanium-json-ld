@@ -26,48 +26,48 @@ import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.lang.Version;
 
-import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 
 public class CompactionApiTest {
 
-    public static final MockLoader MOCK_LOADER = new MockLoader(Json.createArrayBuilder().build());
+    public static final MockLoader MOCK_LOADER = new MockLoader(JsonValue.EMPTY_JSON_ARRAY);
     
     @Test    
     public void test1() throws JsonLdError {
-        JsonObject compacted = JsonLd.compact(JsonDocument.of(Json.createObjectBuilder().build()), JsonDocument.of(Json.createObjectBuilder().build())).get();
+        JsonObject compacted = JsonLd.compact(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT), JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).get();
         Assert.assertNotNull(compacted);
-        Assert.assertEquals(Json.createObjectBuilder().build(), compacted);
+        Assert.assertEquals(JsonValue.EMPTY_JSON_OBJECT, compacted);
     }
     
     @Test    
     public void test2() throws JsonLdError {
         JsonObject compacted = JsonLd.compact(
-                JsonDocument.of(MediaType.JSON, new ByteArrayInputStream(Json.createObjectBuilder().build().toString().getBytes())),
-                JsonDocument.of(Json.createObjectBuilder().build())
+                JsonDocument.of(MediaType.JSON, new ByteArrayInputStream(JsonValue.EMPTY_JSON_OBJECT.toString().getBytes())),
+                JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)
                         ).get();
         Assert.assertNotNull(compacted);
-        Assert.assertEquals(Json.createObjectBuilder().build(), compacted);
+        Assert.assertEquals(JsonValue.EMPTY_JSON_OBJECT, compacted);
     }
     
     @Test    
     public void test3() throws JsonLdError {
-        JsonObject compacted = JsonLd.compact("https://example.com", JsonDocument.of(Json.createObjectBuilder().build())).loader(MOCK_LOADER).base("").get();
+        JsonObject compacted = JsonLd.compact("https://example.com", JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).loader(MOCK_LOADER).base("").get();
         Assert.assertNotNull(compacted);
-        Assert.assertEquals(Json.createObjectBuilder().build(), compacted);
+        Assert.assertEquals(JsonValue.EMPTY_JSON_OBJECT, compacted);
     }
 
     @Test    
     public void test4() throws JsonLdError {
-        JsonObject compacted = JsonLd.compact(URI.create("https://example.com"), JsonDocument.of(Json.createObjectBuilder().build())).loader(MOCK_LOADER).mode(Version.V1_0).get();
+        JsonObject compacted = JsonLd.compact(URI.create("https://example.com"), JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).loader(MOCK_LOADER).mode(Version.V1_0).get();
         Assert.assertNotNull(compacted);
-        Assert.assertEquals(Json.createObjectBuilder().build(), compacted);
+        Assert.assertEquals(JsonValue.EMPTY_JSON_OBJECT, compacted);
     }
 
     @Test    
     public void test5() throws JsonLdError {
         JsonObject compacted = JsonLd.compact("\thttps://example.com  ", "https://ahoj.fk").loader(MOCK_LOADER).ordered().get();
         Assert.assertNotNull(compacted);
-        Assert.assertEquals(Json.createObjectBuilder().build(), compacted);
+        Assert.assertEquals(JsonValue.EMPTY_JSON_OBJECT, compacted);
     }
 }

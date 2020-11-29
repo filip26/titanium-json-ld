@@ -265,7 +265,7 @@ public final class NodeMapBuilder {
             } else if (activeProperty != null) {
                 
                 // 6.6.1.
-                JsonObject reference = Json.createObjectBuilder().add(Keywords.ID, Json.createValue(id)).build();
+                JsonObject reference = Json.createObjectBuilder().add(Keywords.ID, id).build();
                 
                 // 6.6.2.
                 if (list == null) {
