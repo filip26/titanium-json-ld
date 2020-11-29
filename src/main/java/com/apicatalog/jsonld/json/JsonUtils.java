@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.json;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -145,7 +146,7 @@ public final class JsonUtils {
     public static Collection<JsonValue> toCollection(JsonValue value) {
         
         if (value == null) {
-            throw new IllegalArgumentException();
+            return Collections.emptyList();
         }
 
         if (JsonValue.ValueType.ARRAY.equals(value.getValueType())) {
