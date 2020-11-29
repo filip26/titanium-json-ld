@@ -18,7 +18,6 @@ package com.apicatalog.jsonld.compaction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -462,10 +461,10 @@ public final class Compaction {
                 }
                 
                 // 12.8.4.
-                final Collection<String> container= activeContext
+                final Collection<String> container = activeContext
                                                         .getTerm(itemActiveProperty)
                                                         .map(TermDefinition::getContainerMapping)
-                                                        .orElse(new LinkedList<>());
+                                                        .orElse(Collections.emptyList());
                                                                     
                 // 12.8.5.
                 final boolean asArray = container.contains(Keywords.SET) 

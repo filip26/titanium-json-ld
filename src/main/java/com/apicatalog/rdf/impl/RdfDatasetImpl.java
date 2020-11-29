@@ -15,8 +15,8 @@
  */
 package com.apicatalog.rdf.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,7 +37,7 @@ final class RdfDatasetImpl implements RdfDataset {
     
     protected RdfDatasetImpl() {
         this.graphs = new HashMap<>();
-        this.nquads = new LinkedList<>();
+        this.nquads = new ArrayList<>();
         this.defaultGraph = new RdfGraphImpl();
     }
     

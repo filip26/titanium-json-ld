@@ -15,9 +15,9 @@
  */
 package com.apicatalog.jsonld.serialization;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -101,7 +101,7 @@ final class GraphMap {
 
     public void addUsage(String graphName, String subject, Reference reference) {
         usages.computeIfAbsent(graphName, e -> new LinkedHashMap<>())
-            .computeIfAbsent(subject, e -> new LinkedList<>())
+            .computeIfAbsent(subject, e -> new ArrayList<>())
             .add(reference)
             ;
     }
