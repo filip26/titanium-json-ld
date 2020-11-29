@@ -24,7 +24,7 @@ import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 
-import jakarta.json.Json;
+import jakarta.json.JsonValue;
 
 public class FramingApiNegativeTest {
 
@@ -35,13 +35,13 @@ public class FramingApiNegativeTest {
 
     @Test
     public void test2() {
-        final Document document = JsonDocument.of(Json.createArrayBuilder().build());
+        final Document document = JsonDocument.of(JsonValue.EMPTY_JSON_ARRAY);
         Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.frame(document, (JsonDocument)null));
     }
     
     @Test
     public void test3() {
-        final Document document = JsonDocument.of(Json.createArrayBuilder().build());
+        final Document document = JsonDocument.of(JsonValue.EMPTY_JSON_ARRAY);
         Assert.assertThrows(IllegalArgumentException.class, () -> JsonLd.frame((JsonDocument)null, document));
     }
     

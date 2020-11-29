@@ -26,7 +26,6 @@ import org.junit.Test;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.http.media.MediaType;
 
-import jakarta.json.Json;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 
@@ -34,58 +33,58 @@ public class JsonDocumentTest {
     
     @Test
     public void test1() {
-        Document document = JsonDocument.of(Json.createArrayBuilder().build());
+        Document document = JsonDocument.of(JsonValue.EMPTY_JSON_ARRAY);
         Assert.assertNotNull(document);
         Assert.assertTrue(MediaType.JSON.match(document.getContentType()));
         Assert.assertTrue(document.getRdfContent().isEmpty());
         Assert.assertTrue(document.getJsonContent().isPresent());
         Assert.assertTrue(document.getProfile().isEmpty());
-        Assert.assertEquals(Json.createArrayBuilder().build(), document.getJsonContent().get());
+        Assert.assertEquals(JsonValue.EMPTY_JSON_ARRAY, document.getJsonContent().get());
     }
 
     @Test
     public void test2() {
-        Document document = JsonDocument.of(MediaType.JSON_LD, Json.createObjectBuilder().build());
+        Document document = JsonDocument.of(MediaType.JSON_LD, JsonValue.EMPTY_JSON_OBJECT);
         Assert.assertNotNull(document);
         Assert.assertTrue(MediaType.JSON_LD.match(document.getContentType()));
         Assert.assertTrue(document.getRdfContent().isEmpty());
         Assert.assertTrue(document.getJsonContent().isPresent());
         Assert.assertTrue(document.getProfile().isEmpty());
-        Assert.assertEquals(Json.createObjectBuilder().build(), document.getJsonContent().get());
+        Assert.assertEquals(JsonValue.EMPTY_JSON_OBJECT, document.getJsonContent().get());
     }
 
     @Test
     public void test3() throws JsonLdError {
-        Document document = JsonDocument.of(new ByteArrayInputStream(Json.createArrayBuilder().build().toString().getBytes()));
+        Document document = JsonDocument.of(new ByteArrayInputStream(JsonValue.EMPTY_JSON_ARRAY.toString().getBytes()));
         Assert.assertNotNull(document);
         Assert.assertTrue(MediaType.JSON.match(document.getContentType()));
         Assert.assertTrue(document.getRdfContent().isEmpty());
         Assert.assertTrue(document.getJsonContent().isPresent());
         Assert.assertTrue(document.getProfile().isEmpty());
-        Assert.assertEquals(Json.createArrayBuilder().build(), document.getJsonContent().get());
+        Assert.assertEquals(JsonValue.EMPTY_JSON_ARRAY, document.getJsonContent().get());
     }
 
     @Test
     public void test4() throws JsonLdError {
-        Document document = JsonDocument.of(new InputStreamReader(new ByteArrayInputStream(Json.createArrayBuilder().build().toString().getBytes())));
+        Document document = JsonDocument.of(new InputStreamReader(new ByteArrayInputStream(JsonValue.EMPTY_JSON_ARRAY.toString().getBytes())));
         Assert.assertNotNull(document);
         Assert.assertTrue(MediaType.JSON.match(document.getContentType()));
         Assert.assertTrue(document.getRdfContent().isEmpty());
         Assert.assertTrue(document.getJsonContent().isPresent());
         Assert.assertTrue(document.getProfile().isEmpty());
-        Assert.assertEquals(Json.createArrayBuilder().build(), document.getJsonContent().get());
+        Assert.assertEquals(JsonValue.EMPTY_JSON_ARRAY, document.getJsonContent().get());
     }
 
     @Test
     public void test5() {
-        Document document = JsonDocument.of(MediaType.of("application/custom+json;profile=https://example.org/profile"), Json.createObjectBuilder().build());
+        Document document = JsonDocument.of(MediaType.of("application/custom+json;profile=https://example.org/profile"), JsonValue.EMPTY_JSON_OBJECT);
         Assert.assertNotNull(document);
         Assert.assertTrue(MediaType.of("application", "custom+json").match(document.getContentType()));
         Assert.assertTrue(document.getRdfContent().isEmpty());
         Assert.assertTrue(document.getJsonContent().isPresent());
         Assert.assertTrue(document.getProfile().isPresent());
         Assert.assertEquals("https://example.org/profile", document.getProfile().get());
-        Assert.assertEquals(Json.createObjectBuilder().build(), document.getJsonContent().get());
+        Assert.assertEquals(JsonValue.EMPTY_JSON_OBJECT, document.getJsonContent().get());
     }
     
     @Test
@@ -105,7 +104,7 @@ public class JsonDocumentTest {
     
     @Test
     public void testi4() throws JsonLdError {
-        final InputStream is = new ByteArrayInputStream(Json.createArrayBuilder().build().toString().getBytes());
+        final InputStream is = new ByteArrayInputStream(JsonValue.EMPTY_JSON_ARRAY.toString().getBytes());
         Assert.assertThrows(IllegalArgumentException.class, () -> JsonDocument.of(null, is));
     }
 
@@ -116,7 +115,7 @@ public class JsonDocumentTest {
 
     @Test
     public void testi6() throws JsonLdError {
-        final Reader reader = new InputStreamReader(new ByteArrayInputStream(Json.createArrayBuilder().build().toString().getBytes()));
+        final Reader reader = new InputStreamReader(new ByteArrayInputStream(JsonValue.EMPTY_JSON_ARRAY.toString().getBytes()));
         Assert.assertThrows(IllegalArgumentException.class, () -> JsonDocument.of(null, reader));
     }
     

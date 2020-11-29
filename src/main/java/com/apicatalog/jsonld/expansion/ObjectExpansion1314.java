@@ -724,7 +724,7 @@ final class ObjectExpansion1314 {
                     || containerMapping.contains(Keywords.ID)) && JsonUtils.isObject(value)) {
 
                 // 13.8.1.
-                expandedValue = Json.createArrayBuilder().build();
+                expandedValue = JsonValue.EMPTY_JSON_ARRAY;
 
                 // 13.8.2.
                 final String indexKey = keyTermDefinition
