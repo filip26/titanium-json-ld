@@ -63,6 +63,6 @@ public class FrameApiTest {
     public void test4() throws JsonLdError {
         JsonObject framed = JsonLd.frame(URI.create("https://example.com"), URI.create("https://example.com/frame")).loader(MOCK_LOADER).mode(Version.V1_0).get();
         Assert.assertNotNull(framed);
-        Assert.assertEquals(Json.createObjectBuilder().add(Keywords.GRAPH, Json.createArrayBuilder()).build(), framed);
+        Assert.assertEquals(Json.createObjectBuilder().add(Keywords.GRAPH, JsonValue.EMPTY_JSON_ARRAY).build(), framed);
     }
 }

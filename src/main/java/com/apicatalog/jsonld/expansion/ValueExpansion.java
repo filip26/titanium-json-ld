@@ -86,7 +86,7 @@ public final class ValueExpansion {
         if (typeMapping.isPresent() && !Keywords.ID.equals(typeMapping.get()) && !Keywords.VOCAB.equals(typeMapping.get())
                 && !Keywords.NONE.equals(typeMapping.get())) {
 
-            result = Json.createObjectBuilder(result).add(Keywords.TYPE, Json.createValue(typeMapping.get())).build();
+            result = Json.createObjectBuilder(result).add(Keywords.TYPE, typeMapping.get()).build();
 
             // 5.
         } else if (JsonUtils.isString(value)) {
