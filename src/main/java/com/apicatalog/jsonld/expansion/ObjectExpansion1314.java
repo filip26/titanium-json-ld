@@ -931,32 +931,23 @@ final class ObjectExpansion1314 {
         }
 
         // 14.
-        for (String nestedKey : Utils.index(nest.keySet(), ordered)) {
-
-            // 14.1.
-            JsonValue nestedValues = element.get(nestedKey);
-
-            if (JsonUtils.isNotArray(nestedValues)) {
-                nestedValues = Json.createArrayBuilder().add(nestedValues).build();
-            }
+        for (final String nestedKey : Utils.index(nest.keySet(), ordered)) {
 
             // 14.2.
-            for (JsonValue nestValue : nestedValues.asJsonArray()) {
+            for (final JsonValue nestValue : JsonUtils.toCollection(element.get(nestedKey))) {
 
                 // 14.2.1
                 if (JsonUtils.isNotObject(nestValue)) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                 }
 
-                for (String nestedValueKey : nestValue.asJsonObject().keySet()) {
+                for (final String nestedValueKey : nestValue.asJsonObject().keySet()) {
 
-                    String expandedNestedValueKey = 
-                                            typeContext
+                    if (Keywords.VALUE.equals(typeContext
                                                 .uriExpansion()
                                                 .vocab(true)
-                                                .expand(nestedValueKey);
-
-                    if (Keywords.VALUE.equals(expandedNestedValueKey)) {
+                                                .expand(nestedValueKey))) {
+                        
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
                 }
