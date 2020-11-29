@@ -894,11 +894,13 @@ final class ObjectExpansion1314 {
                     && !containerMapping.contains(Keywords.INDEX)) {
 
 
-                expandedValue = JsonUtils.toJsonArray(expandedValue);
-
                 final JsonArrayBuilder array = Json.createArrayBuilder();
 
-                expandedValue.asJsonArray().stream().map(GraphObject::toGraphObject).forEach(array::add);
+                JsonUtils
+                    .toCollection(expandedValue)
+                    .stream()
+                    .map(GraphObject::toGraphObject)
+                    .forEach(array::add);
 
                 expandedValue = array.build();
             }
