@@ -23,7 +23,7 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonValue;
 
-public class JsonSetBuilder {
+public final class JsonSetBuilder {
 
     private final JsonArrayBuilder builder;
     private final Set<JsonValue> set;

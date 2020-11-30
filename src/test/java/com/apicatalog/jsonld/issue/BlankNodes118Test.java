@@ -29,61 +29,42 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
+import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
 
 import jakarta.json.JsonArray;
 
-public class DroppedListItemTest {
+public class BlankNodes118Test {
 
     /**
-     * @see <a href="https://github.com/filip26/titanium-json-ld/issues/58">Issue #58</a>
+     * @see <a href="https://github.com/filip26/titanium-json-ld/issues/118">Issue #118</a>
      * @throws JsonLdError
      * @throws IOException
      */
     @Test
-    public void testJsonRdfJsonCycle() throws JsonLdError, IOException {
+    public void testBlankNodeNotation() throws JsonLdError, IOException {
 
-        final Document document = readDocument("issue58-2-in.json");
-        
-        final RdfDataset dataset = JsonLd.toRdf(document).get();
-        
-        assertNotNull(dataset);
-                
-        final JsonArray result = JsonLd.fromRdf(RdfDocument.of(dataset)).nativeTypes().get();
+        final RdfDataset dataset = Rdf.createDataset()
+                                        .add(Rdf.createTriple(
+                                                    Rdf.createIRI("urn:s1"), 
+                                                    Rdf.createIRI("urn:p1"),
+                                                    Rdf.createBlankNode("bn1")
+                                                ));
+
+        final JsonArray result = JsonLd.fromRdf(RdfDocument.of(dataset)).get();
         
         assertNotNull(result);
         
-        final Document expected = readDocument("issue58-2-out.json");
+        final Document expected = readDocument("issue118-out.json");
         
-        assertTrue(JsonLdTestRunnerJunit.compareJson("JSON to RDF to JSON", result, expected.getJsonContent().orElse(null)));
-        
-    }
-
-    @Test
-    public void testFromRdfOneItemList() throws JsonLdError, IOException {
-
-        final JsonArray result;
-        
-        try (final InputStream is = getClass().getResourceAsStream("issue58-in.nq")) {
-            
-            assertNotNull(is);
-            
-            result = JsonLd.fromRdf(RdfDocument.of(is)).ordered().get();
-
-            assertNotNull(result);
-        }
-                
-        final Document expected = readDocument("issue58-out.json");
-
         assertNotNull(expected);
         
-        assertTrue(JsonLdTestRunnerJunit.compareJson("fromRdf: one item list", result, expected.getJsonContent().orElse(null)));
-        
+        assertTrue(JsonLdTestRunnerJunit.compareJson("fromRdf: blank node", result, expected.getJsonContent().orElse(null)));
     }
-
+    
     private final Document readDocument(final String name) throws JsonLdError, IOException {
         try (final InputStream is = getClass().getResourceAsStream(name)) {
             return JsonDocument.of(is);
         }
-    }    
+    }
 }

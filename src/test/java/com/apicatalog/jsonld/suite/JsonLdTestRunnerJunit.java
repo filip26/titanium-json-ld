@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.suite;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
 
@@ -95,13 +96,13 @@ public class JsonLdTestRunnerJunit {
                 
                 Assert.assertTrue("Expected JSON document but was " + result.getContentType(), result.getJsonContent().isPresent());
                 
-                return compareJson(result.getJsonContent().get(), expectedDocument.getJsonContent().get());
+                return compareJson(testCase.id + ": " + testCase.name, result.getJsonContent().get(), expectedDocument.getJsonContent().get());
                 
             } else if (expectedDocument.getRdfContent().isPresent()) {
                 
                 Assert.assertTrue("Expected Rdf document but was " + result.getContentType(), result.getRdfContent().isPresent());
 
-                return compareRdf(result.getRdfContent().get(), expectedDocument.getRdfContent().get());
+                return compareRdf(testCase.id + ": " + testCase.name, result.getRdfContent().get(), expectedDocument.getRdfContent().get());
             }
             
             Assert.assertTrue("Expected " + expectedDocument.getContentType() + " document but was " + result.getContentType(), result.getRdfContent().isPresent());
@@ -112,56 +113,68 @@ public class JsonLdTestRunnerJunit {
         return false;
     }
 
-    private boolean compareJson(JsonStructure result, JsonStructure expectedDocument) {
+    public static final boolean compareJson(final String testName, final JsonStructure result, final JsonStructure expected) {
 
-        if (JsonLdComparison.equals(expectedDocument, result)) {
+        if (JsonLdComparison.equals(expected, result)) {
             return true;
         }
         
-        System.out.println("Test " + testCase.id + ": " + testCase.name);
-        System.out.println("Expected:");
-
-        JsonWriterFactory writerFactory = Json.createWriterFactory(Map.of(JsonGenerator.PRETTY_PRINTING, true));
-
-        StringWriter writer = new StringWriter();
+        final StringWriter stringWriter = new StringWriter();
         
-        JsonWriter jsonWriter1 = writerFactory.createWriter(writer);
-        jsonWriter1.write(expectedDocument);
-        jsonWriter1.close();
+        try (final PrintWriter writer = new PrintWriter(stringWriter)) {
+            writer.println("Test " + testName);
+            writer.println("Expected:");
+            
+            final JsonWriterFactory writerFactory = Json.createWriterFactory(Map.of(JsonGenerator.PRETTY_PRINTING, true));
+            
+            try (final JsonWriter jsonWriter = writerFactory.createWriter(writer)) {
+                jsonWriter.write(expected);
+            }
 
-        writer.append("\n\n");
-        writer.append("Actual:\n");
+            writer.println();
+            writer.println();
+            writer.println("Actual:");
 
-        JsonWriter jsonWriter2 = writerFactory.createWriter(writer);
-        jsonWriter2.write(result);
-        jsonWriter2.close();
+            try (final JsonWriter jsonWriter = writerFactory.createWriter(writer)) {
+                jsonWriter.write(result);                
+            }
 
-        System.out.print(writer.toString());
-        System.out.println();
-        System.out.println();
-        Assert.fail("Expected " + expectedDocument + ", but was" + result);
+            writer.println();
+            writer.println();
+        }
         
+        System.out.println(stringWriter.toString());
+
+        Assert.fail("Expected " + expected + ", but was" + result);        
         return false;
     }  
     
-    private boolean compareRdf(RdfDataset result, RdfDataset expected) {
+    public static final boolean compareRdf(final String testName, final RdfDataset result, final RdfDataset expected) {
 
         try {
 
             boolean match = RdfComparison.equals(expected, result);
 
             if (!match) {
-                System.out.println("Test " + testCase.id + ": " + testCase.name);
-                System.out.println("Expected:");
                 
-                Rdf.createWriter(MediaType.N_QUADS, System.out).write(expected);
-    
-                System.out.println();
-                System.out.println("Actual:");
-            
-                Rdf.createWriter(MediaType.N_QUADS, System.out).write(result);
+                final StringWriter stringWriter = new StringWriter();
                 
-                System.out.println();
+                try (final PrintWriter writer = new PrintWriter(stringWriter)) {
+                    writer.println("Test " + testName);
+                    writer.println("Expected:");
+                    
+                    Rdf.createWriter(MediaType.N_QUADS, writer).write(expected);
+        
+                    writer.println();
+                    writer.println("Actual:");
+                
+                    Rdf.createWriter(MediaType.N_QUADS, writer).write(result);
+                    
+                    writer.println();
+                    
+                }
+                
+                System.out.print(stringWriter.toString());
             }
 
             Assert.assertTrue("The result does not match expected output.", match);

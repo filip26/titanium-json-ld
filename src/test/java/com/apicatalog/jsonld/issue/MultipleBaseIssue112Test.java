@@ -20,8 +20,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
-import java.util.Map;
 
 import org.junit.Test;
 
@@ -30,20 +28,13 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
-import com.apicatalog.jsonld.http.media.MediaType;
-import com.apicatalog.jsonld.json.JsonLdComparison;
-import com.apicatalog.rdf.Rdf;
-import com.apicatalog.rdf.RdfComparison;
+import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.io.error.RdfWriterException;
 import com.apicatalog.rdf.io.error.UnsupportedContentException;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonStructure;
-import jakarta.json.JsonWriter;
-import jakarta.json.JsonWriterFactory;
-import jakarta.json.stream.JsonGenerator;
 
 public class MultipleBaseIssue112Test {
 
@@ -66,28 +57,8 @@ public class MultipleBaseIssue112Test {
         final RdfDataset expected = readRdfDocument("issue112-out.nq").getRdfContent().orElse(null);
         
         assertNotNull(expected);
-        
-        boolean match = RdfComparison.equals(dataset, expected);
-        
-        if (!match) {
-                        
-            System.out.println("\nExpected:");
 
-            StringWriter writer = new StringWriter();
-
-            Rdf.createWriter(MediaType.N_QUADS, writer).write(expected);
-
-            writer.append("\n\nActual:\n");
-
-            Rdf.createWriter(MediaType.N_QUADS, writer).write(dataset);
-
-            System.out.print(writer.toString());
-            System.out.println();
-            System.out.println();
-        }
-        
-        assertTrue(match);
-        
+        assertTrue(JsonLdTestRunnerJunit.compareRdf("toRdf: Mutiple @base", dataset, expected));        
     }
 
     @Test
@@ -103,30 +74,7 @@ public class MultipleBaseIssue112Test {
         
         assertNotNull(expected);
         
-        boolean match = JsonLdComparison.equals(expected, result);
-        
-        if (!match) {
-                        
-            JsonWriterFactory writerFactory = Json.createWriterFactory(Map.of(JsonGenerator.PRETTY_PRINTING, true));
-
-            StringWriter writer = new StringWriter();
-            
-            try (JsonWriter jsonWriter = writerFactory.createWriter(writer)) {
-                jsonWriter.write(expected);                
-            }
-
-            writer.append("\n\nActual:\n");
-
-            try (JsonWriter jsonWriter = writerFactory.createWriter(writer)) {
-                jsonWriter.write(result);
-            }
- 
-            System.out.print(writer.toString());
-            System.out.println();
-            System.out.println();
-        }
-        
-        assertTrue(match);        
+        assertTrue(JsonLdTestRunnerJunit.compareJson("expansion: Multiple @base", result, expected));        
     }
 
     private final JsonDocument readJsonDocument(final String name) throws JsonLdError, IOException {
