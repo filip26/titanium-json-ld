@@ -20,8 +20,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
-import java.util.Map;
 
 import org.junit.Test;
 
@@ -30,14 +28,11 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
+import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArray;
-import jakarta.json.JsonWriter;
-import jakarta.json.JsonWriterFactory;
-import jakarta.json.stream.JsonGenerator;
 
 public class BlankNodes118Test {
 
@@ -64,32 +59,7 @@ public class BlankNodes118Test {
         
         assertNotNull(expected);
         
-        boolean match = result.equals(expected.getJsonContent().orElse(null));
-        
-        if (!match) {
-            
-            System.out.println("\nExpected:");
-
-            JsonWriterFactory writerFactory = Json.createWriterFactory(Map.of(JsonGenerator.PRETTY_PRINTING, true));
-
-            StringWriter writer = new StringWriter();
-            
-            try (JsonWriter jsonWriter = writerFactory.createWriter(writer)) {
-                jsonWriter.write(expected.getJsonContent().orElse(null));
-            }
-
-            writer.append("\n\nActual:\n");
-
-            try (final JsonWriter jsonWriter = writerFactory.createWriter(writer)) {
-                jsonWriter.write(result);                
-            };
-            
-            System.out.print(writer.toString());
-            System.out.println();
-            System.out.println();
-        }
-        
-        assertTrue(match);
+        assertTrue(JsonLdTestRunnerJunit.compareJson("fromRdf: blank node", result, expected.getJsonContent().orElse(null)));
     }
     
     private final Document readDocument(final String name) throws JsonLdError, IOException {

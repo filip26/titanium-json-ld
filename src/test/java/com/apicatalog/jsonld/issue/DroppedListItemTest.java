@@ -20,9 +20,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Map;
 
 import org.junit.Test;
 
@@ -31,14 +28,10 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
+import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.io.nquad.NQuadsWriter;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArray;
-import jakarta.json.JsonWriter;
-import jakarta.json.JsonWriterFactory;
-import jakarta.json.stream.JsonGenerator;
 
 public class DroppedListItemTest {
 
@@ -62,36 +55,7 @@ public class DroppedListItemTest {
         
         final Document expected = readDocument("issue58-2-out.json");
         
-        boolean match = result.equals(expected.getJsonContent().orElse(null));
-        
-        if (!match) {
-            
-            System.out.println("Intermediary:");
-            
-            (new NQuadsWriter(new PrintWriter(System.out))).write(dataset);
-            
-            System.out.println("\nExpected:");
-
-            JsonWriterFactory writerFactory = Json.createWriterFactory(Map.of(JsonGenerator.PRETTY_PRINTING, true));
-
-            StringWriter writer = new StringWriter();
-            
-            JsonWriter jsonWriter1 = writerFactory.createWriter(writer);
-            jsonWriter1.write(expected.getJsonContent().orElse(null));
-            jsonWriter1.close();
-
-            writer.append("\n\nActual:\n");
-
-            JsonWriter jsonWriter2 = writerFactory.createWriter(writer);
-            jsonWriter2.write(result);
-            jsonWriter2.close();
-
-            System.out.print(writer.toString());
-            System.out.println();
-            System.out.println();
-        }
-        
-        assertTrue(match);
+        assertTrue(JsonLdTestRunnerJunit.compareJson("JSON to RDF to JSON", result, expected.getJsonContent().orElse(null)));
         
     }
 
@@ -110,33 +74,10 @@ public class DroppedListItemTest {
         }
                 
         final Document expected = readDocument("issue58-out.json");
+
+        assertNotNull(expected);
         
-        boolean match = result.equals(expected.getJsonContent().orElse(null));
-        
-        if (!match) {
-            
-            System.out.println("\nExpected:");
-
-            JsonWriterFactory writerFactory = Json.createWriterFactory(Map.of(JsonGenerator.PRETTY_PRINTING, true));
-
-            StringWriter writer = new StringWriter();
-            
-            try (final JsonWriter jsonWriter = writerFactory.createWriter(writer)) {
-                jsonWriter.write(expected.getJsonContent().orElse(null));                
-            }
-
-            writer.append("\n\nActual:\n");
-
-            try (JsonWriter jsonWriter = writerFactory.createWriter(writer)) {
-                jsonWriter.write(result);    
-            }
-
-            System.out.print(writer.toString());
-            System.out.println();
-            System.out.println();
-        }
-        
-        assertTrue(match);
+        assertTrue(JsonLdTestRunnerJunit.compareJson("fromRdf: one item list", result, expected.getJsonContent().orElse(null)));
         
     }
 
