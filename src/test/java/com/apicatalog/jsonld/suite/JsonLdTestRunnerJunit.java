@@ -139,10 +139,11 @@ public class JsonLdTestRunnerJunit {
                 jsonWriter.write(result);                
             }
 
-            writer.print(writer.toString());
             writer.println();
             writer.println();
         }
+        
+        System.out.println(stringWriter.toString());
 
         Assert.fail("Expected " + expected + ", but was" + result);        
         return false;
@@ -171,8 +172,9 @@ public class JsonLdTestRunnerJunit {
                     
                     writer.println();
                     
-                    System.out.print(writer.toString());
                 }
+                
+                System.out.print(stringWriter.toString());
             }
 
             Assert.assertTrue("The result does not match expected output.", match);
