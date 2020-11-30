@@ -26,6 +26,7 @@ import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
 import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfResource;
+import com.apicatalog.rdf.RdfTriple;
 
 final class RdfDatasetImpl implements RdfDataset {
 
@@ -51,7 +52,7 @@ final class RdfDatasetImpl implements RdfDataset {
         return nquads;
     }
     
-    public void add(final RdfNQuad nquad) {
+    public RdfDataset add(final RdfNQuad nquad) {
 
         if (nquad == null) {
             throw new IllegalArgumentException();
@@ -84,6 +85,7 @@ final class RdfDatasetImpl implements RdfDataset {
                 nquads.add(nquad);
             }
         }
+        return this;
     }
     
     @Override
@@ -99,5 +101,18 @@ final class RdfDatasetImpl implements RdfDataset {
     @Override
     public int size() {
         return nquads.size();           
+    }
+
+    @Override
+    public RdfDataset add(RdfTriple triple) {
+        
+        RdfNQuad nquad = new RdfNQuadImpl(triple.getSubject(), triple.getPredicate(), triple.getObject(), null);
+        
+        if (!defaultGraph.contains(nquad)) {
+            defaultGraph.add(nquad);
+            nquads.add(nquad);
+        }
+        
+        return this;
     }
 }

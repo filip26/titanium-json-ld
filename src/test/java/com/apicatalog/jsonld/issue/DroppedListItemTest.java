@@ -121,15 +121,15 @@ public class DroppedListItemTest {
 
             StringWriter writer = new StringWriter();
             
-            JsonWriter jsonWriter1 = writerFactory.createWriter(writer);
-            jsonWriter1.write(expected.getJsonContent().orElse(null));
-            jsonWriter1.close();
+            try (final JsonWriter jsonWriter = writerFactory.createWriter(writer)) {
+                jsonWriter.write(expected.getJsonContent().orElse(null));                
+            }
 
             writer.append("\n\nActual:\n");
 
-            JsonWriter jsonWriter2 = writerFactory.createWriter(writer);
-            jsonWriter2.write(result);
-            jsonWriter2.close();
+            try (JsonWriter jsonWriter = writerFactory.createWriter(writer)) {
+                jsonWriter.write(result);    
+            }
 
             System.out.print(writer.toString());
             System.out.println();

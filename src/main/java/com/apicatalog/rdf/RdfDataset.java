@@ -23,7 +23,9 @@ public interface RdfDataset {
 
     RdfGraph getDefaultGraph();
 
-    void add(RdfNQuad nquad);
+    RdfDataset add(RdfNQuad nquad);
+    
+    RdfDataset add(RdfTriple triple);
         
     List<RdfNQuad> toList();
     

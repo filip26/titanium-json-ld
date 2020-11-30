@@ -104,6 +104,10 @@ public final class DefaultRdfProvider extends RdfProvider {
             throw new IllegalArgumentException();
         }
         
+        if (!value.startsWith("_:")) {
+            return new RdfResourceImpl("_:" +value, true);
+        }
+        
         return new RdfResourceImpl(value, true);
     }
 
