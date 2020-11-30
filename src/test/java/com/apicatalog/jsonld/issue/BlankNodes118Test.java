@@ -30,11 +30,8 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
-import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.io.error.RdfWriterException;
-import com.apicatalog.rdf.io.error.UnsupportedContentException;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -48,11 +45,9 @@ public class BlankNodes118Test {
      * @see <a href="https://github.com/filip26/titanium-json-ld/issues/118">Issue #118</a>
      * @throws JsonLdError
      * @throws IOException
-     * @throws UnsupportedContentException 
-     * @throws RdfWriterException 
      */
     @Test
-    public void testBlankNodeNotation() throws JsonLdError, IOException, UnsupportedContentException, RdfWriterException {
+    public void testBlankNodeNotation() throws JsonLdError, IOException {
 
         final RdfDataset dataset = Rdf.createDataset()
                                         .add(Rdf.createTriple(
@@ -88,8 +83,6 @@ public class BlankNodes118Test {
             try (final JsonWriter jsonWriter = writerFactory.createWriter(writer)) {
                 jsonWriter.write(result);                
             };
-            
-            Rdf.createWriter(MediaType.N_QUADS, writer).write(dataset);;
             
             System.out.print(writer.toString());
             System.out.println();
