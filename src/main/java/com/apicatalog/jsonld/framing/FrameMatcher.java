@@ -17,7 +17,6 @@ package com.apicatalog.jsonld.framing;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +52,7 @@ public final class FrameMatcher {
    
         // 1. if frame is empty then all subject match
         if (frame.isWildCard()) {
-            return new LinkedList<>(subjects);
+            return new ArrayList<>(subjects);
         }
         
         final List<String> result = new ArrayList<>();
