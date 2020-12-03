@@ -42,7 +42,7 @@ public class NumericId120Test {
 
         final Document document = readJsonDocument("issue120-in.json");
         
-        final JsonArray result = JsonLd.expand(document).get();
+        final JsonArray result = JsonLd.expand(document).base("https://json-ld.org/playground/").numericId().get();
         
         assertNotNull(result);
                 

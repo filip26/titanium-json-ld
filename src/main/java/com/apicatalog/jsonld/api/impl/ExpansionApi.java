@@ -151,4 +151,14 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
         }
         throw new IllegalStateException();
     }
+
+    public ExpansionApi numericId() {
+        return numericId(true);
+    }
+    
+    public ExpansionApi numericId(boolean enable) {
+        options.setNumericId(enable);
+        return this;
+    }
+
 }

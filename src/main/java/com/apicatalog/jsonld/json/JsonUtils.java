@@ -110,7 +110,11 @@ public final class JsonUtils {
                 || (!ValueType.TRUE.equals(value.getValueType()) 
                         && !ValueType.FALSE.equals(value.getValueType()));
     }
-
+    
+    public static boolean isNotNumber(JsonValue value) {
+        return value == null || !ValueType.NUMBER.equals(value.getValueType());
+    }
+    
     public static boolean isTrue(JsonValue value) {
         return value != null && ValueType.TRUE.equals(value.getValueType());
     }
