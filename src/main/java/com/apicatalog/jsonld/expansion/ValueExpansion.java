@@ -62,21 +62,25 @@ public final class ValueExpansion {
         if (typeMapping.isPresent()) {
 
             // 1.
-            if (Keywords.ID.equals(typeMapping.get()) && JsonUtils.isString(value)) {
-
-                String expandedValue = activeContext.uriExpansion().documentRelative(true)
-                        .vocab(false).expand(((JsonString) value).getString());
-
-                return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();
+            if (Keywords.ID.equals(typeMapping.get())) {
                 
-            // custom extension allowing to process numeric ids
-            } else if (Keywords.ID.equals(typeMapping.get()) && activeContext.getOptions().isNumericId() && JsonUtils.isNumber(value)) {
+                String idValue = null;
+                
+                if (JsonUtils.isString(value)) {
+                    idValue = ((JsonString) value).getString();
 
-                String expandedValue = activeContext.uriExpansion().documentRelative(true)
-                        .vocab(false).expand(((JsonNumber) value).toString());
-
-                return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();                
-
+                // custom extension allowing to process numeric ids
+                } else if (activeContext.getOptions().isNumericId() && JsonUtils.isNumber(value)) {
+                    idValue = ((JsonNumber) value).toString();
+                }
+                
+                if (idValue != null) {
+                    final String expandedValue = activeContext.uriExpansion().documentRelative(true)
+                            .vocab(false).expand(idValue);
+                    
+                    return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();
+                }
+                
             // 2.
             } else if (Keywords.VOCAB.equals(typeMapping.get()) && JsonUtils.isString(value)) {
 
