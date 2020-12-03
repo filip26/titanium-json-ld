@@ -148,21 +148,12 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
     }
 
     /**
-     * Experimental: Accept numeric @id. 
+     * Experimental: Accept numeric @id. Disabled by default. 
      * 
      * @return builder instance
      */
     public ExpansionApi numericId() {
-        return numericId(true);
-    }
-    
-    /**
-     * Experimental: Enables/Disables numeric @id support. 
-     * 
-     * @return builder instance
-     */
-    public ExpansionApi numericId(boolean enable) {
-        options.setNumericId(enable);
+        options.setNumericId(true);
         return this;
-    }
+    }    
 }

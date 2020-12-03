@@ -183,21 +183,12 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
     }
 
     /**
-     * Experimental: Accept numeric @id. 
+     * Experimental: Accept numeric @id. Disabled by default. 
      * 
      * @return builder instance
      */
     public ToRdfApi numericId() {
-        return numericId(true);
-    }
-    
-    /**
-     * Experimental: Enables/Disables numeric @id support. 
-     * 
-     * @return builder instance
-     */
-    public ToRdfApi numericId(boolean enable) {
-        options.setNumericId(enable);
+        options.setNumericId(true);
         return this;
     }
 }
