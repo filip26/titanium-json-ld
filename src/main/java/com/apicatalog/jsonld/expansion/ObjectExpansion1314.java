@@ -45,6 +45,7 @@ import com.apicatalog.jsonld.uri.UriUtils;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonString;
@@ -169,7 +170,7 @@ final class ObjectExpansion1314 {
                 if (Keywords.ID.equals(expandedProperty)) {
 
                     // 13.4.3.1
-                    if (JsonUtils.isNotString(value) && !frameExpansion
+                    if (JsonUtils.isNotString(value) && !frameExpansion && (!activeContext.getOptions().isNumericId() || JsonUtils.isNotNumber(value))
                             || frameExpansion
                                     && JsonUtils.isNotString(value)
                                     && JsonUtils.isNotEmptyObject(value)
@@ -199,7 +200,27 @@ final class ObjectExpansion1314 {
                         } else {
                             expandedValue = JsonValue.NULL;
                         }
+
+                    } else if (JsonUtils.isNumber(value)) {
                         
+                        final String expandedStringValue = 
+                                    activeContext
+                                        .uriExpansion()
+                                        .documentRelative(true)
+                                        .vocab(false)
+                                        .expand(((JsonNumber) value).toString());
+
+                        if (expandedStringValue != null) {
+                            
+                            expandedValue = Json.createValue(expandedStringValue);
+                            
+                            if (frameExpansion) {
+                                expandedValue = Json.createArrayBuilder().add(expandedValue).build();
+                            }
+                        } else {
+                            expandedValue = JsonValue.NULL;
+                        }
+
                     } else if (JsonUtils.isObject(value)) {
                         
                         expandedValue = Json.createArrayBuilder().add(JsonValue.EMPTY_JSON_OBJECT).build();
@@ -231,7 +252,7 @@ final class ObjectExpansion1314 {
                 }
 
                 // 13.4.4
-                if (Keywords.TYPE.equals(expandedProperty)) {
+                else if (Keywords.TYPE.equals(expandedProperty)) {
 
                     // 13.4.4.1
                     if ((!frameExpansion 
@@ -327,7 +348,7 @@ final class ObjectExpansion1314 {
                 }
 
                 // 13.4.5
-                if (Keywords.GRAPH.equals(expandedProperty)) {
+                else if (Keywords.GRAPH.equals(expandedProperty)) {
 
                     expandedValue = JsonUtils.toJsonArray(Expansion
                                         .with(typeContext, value, Keywords.GRAPH, baseUrl)
@@ -338,7 +359,7 @@ final class ObjectExpansion1314 {
                 }
 
                 // 13.4.6
-                if (Keywords.INCLUDED.equals(expandedProperty)) {
+                else if (Keywords.INCLUDED.equals(expandedProperty)) {
 
                     // 13.4.6.1
                     if (activeContext.inMode(Version.V1_0)) {

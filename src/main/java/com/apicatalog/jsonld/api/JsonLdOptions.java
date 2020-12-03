@@ -98,6 +98,11 @@ public final class JsonLdOptions {
     private Boolean omitGraph;
     
     private boolean requiredAll;
+    
+    // custom 
+    
+    // allow numeric @id
+    private boolean numericId;
 
     public JsonLdOptions() {
         this(SchemeRouter.defaultInstance());
@@ -125,6 +130,9 @@ public final class JsonLdOptions {
         this.omitDefault = false;
         this.omitGraph = null;
         this.requiredAll = false;
+        
+        // custom
+        this.numericId = false;
     }
 
     public JsonLdOptions(JsonLdOptions options) {
@@ -147,6 +155,9 @@ public final class JsonLdOptions {
         this.omitDefault = options.omitDefault;
         this.omitGraph = options.omitGraph;
         this.requiredAll = options.requiredAll;
+        
+        // custom
+        this.numericId = options.numericId;
     }
 
     /**
@@ -364,5 +375,23 @@ public final class JsonLdOptions {
     
     public void setRequiredAll(boolean requiredAll) {
         this.requiredAll = requiredAll;
+    }
+
+    /**
+     * Experimental: Enables/Disables numeric @id support.
+     *  
+     * @param enable numeric @id support
+     */
+    public void setNumericId(boolean enable) {
+        this.numericId = enable;
+    }
+    
+    /**
+     * Experimental: Numeric @id support state. Disabled by default.
+     * 
+     * @return <code>true</code> if numeric @id support is enabled
+     */
+    public boolean isNumericId() {
+        return numericId;
     }
 }

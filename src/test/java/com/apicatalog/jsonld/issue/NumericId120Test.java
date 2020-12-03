@@ -36,45 +36,38 @@ import com.apicatalog.rdf.io.error.UnsupportedContentException;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonStructure;
 
-public class MultipleBaseIssue112Test {
-
-    /**
-     * @see <a href="https://github.com/filip26/titanium-json-ld/issues/112">Issue #112</a>
-     * @throws JsonLdError
-     * @throws IOException
-     * @throws UnsupportedContentException 
-     * @throws RdfWriterException 
-     */
-    @Test
-    public void testToRdf() throws JsonLdError, IOException, RdfWriterException, UnsupportedContentException {
-
-        final Document document = readJsonDocument("issue112-in.json");
-        
-        final RdfDataset dataset = JsonLd.toRdf(document).get();
-        
-        assertNotNull(dataset);
-                
-        final RdfDataset expected = readRdfDocument("issue112-out.nq").getRdfContent().orElse(null);
-        
-        assertNotNull(expected);
-
-        assertTrue(JsonLdTestRunnerJunit.compareRdf("toRdf: Mutiple @base", dataset, expected));        
-    }
+public class NumericId120Test {
 
     @Test
     public void testExpansion() throws JsonLdError, IOException, RdfWriterException, UnsupportedContentException {
 
-        final Document document = readJsonDocument("issue112-in.json");
+        final Document document = readJsonDocument("issue120-in.json");
         
-        final JsonArray result = JsonLd.expand(document).get();
+        final JsonArray result = JsonLd.expand(document).base("https://json-ld.org/playground/").numericId().get();
         
         assertNotNull(result);
                 
-        final JsonStructure expected = readJsonDocument("issue112-out.json").getJsonContent().orElse(null);
+        final JsonStructure expected = readJsonDocument("issue120-1-out.json").getJsonContent().orElse(null);
         
         assertNotNull(expected);
         
-        assertTrue(JsonLdTestRunnerJunit.compareJson("expansion: Multiple @base", result, expected));        
+        assertTrue(JsonLdTestRunnerJunit.compareJson("expansion: numeric @id", result, expected));        
+    }
+
+    @Test
+    public void testToRdf() throws JsonLdError, IOException, RdfWriterException, UnsupportedContentException {
+
+        final Document document = readJsonDocument("issue120-in.json");
+        
+        final RdfDataset result = JsonLd.toRdf(document).base("https://json-ld.org/playground/").numericId().get();
+        
+        assertNotNull(result);
+                
+        final RdfDataset expected = readRdfDocument("issue120-2-out.nq").getRdfContent().orElse(null);
+        
+        assertNotNull(expected);
+        
+        assertTrue(JsonLdTestRunnerJunit.compareRdf("expansion: numeric @id", result, expected));        
     }
 
     private final JsonDocument readJsonDocument(final String name) throws JsonLdError, IOException {

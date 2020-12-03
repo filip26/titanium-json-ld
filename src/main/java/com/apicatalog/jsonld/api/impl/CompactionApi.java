@@ -146,11 +146,6 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
         return this;
     }
 
-    @Override
-    public CompactionApi ordered() {
-        return ordered(true);
-    }
-
     /**
      * Get the result of compaction.
      * 

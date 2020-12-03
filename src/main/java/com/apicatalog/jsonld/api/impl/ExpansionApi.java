@@ -130,11 +130,6 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
         options.setOrdered(enable);
         return this;
     }
-    
-    @Override
-    public ExpansionApi ordered() {
-        return ordered(true);
-    }
 
     /**
      * Get the result of the document expansion.
@@ -151,4 +146,14 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
         }
         throw new IllegalStateException();
     }
+
+    /**
+     * Experimental: Accept numeric @id. Disabled by default. 
+     * 
+     * @return builder instance
+     */
+    public ExpansionApi numericId() {
+        options.setNumericId(true);
+        return this;
+    }    
 }

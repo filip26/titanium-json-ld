@@ -31,7 +31,7 @@ import com.apicatalog.jsonld.document.RdfDocument;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonValue;
 
-public class NativeTypesIssue64Test {
+public class NativeTypes64Test {
 
     /**
      * @see <a href="https://github.com/filip26/titanium-json-ld/issues/64">Issue #64</a>

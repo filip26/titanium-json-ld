@@ -127,18 +127,24 @@ public class JsonLdTestRunnerJunit {
             
             final JsonWriterFactory writerFactory = Json.createWriterFactory(Map.of(JsonGenerator.PRETTY_PRINTING, true));
             
-            try (final JsonWriter jsonWriter = writerFactory.createWriter(writer)) {
+            final StringWriter out1 = new StringWriter();
+            
+            try (final JsonWriter jsonWriter = writerFactory.createWriter(out1)) {
                 jsonWriter.write(expected);
             }
 
+            writer.write(out1.toString());
             writer.println();
             writer.println();
             writer.println("Actual:");
+            
+            final StringWriter out2 = new StringWriter();
 
-            try (final JsonWriter jsonWriter = writerFactory.createWriter(writer)) {
+            try (final JsonWriter jsonWriter = writerFactory.createWriter(out2)) {
                 jsonWriter.write(result);                
             }
 
+            writer.write(out2.toString());
             writer.println();
             writer.println();
         }

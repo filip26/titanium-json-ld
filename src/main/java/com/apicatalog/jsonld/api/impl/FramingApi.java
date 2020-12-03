@@ -130,11 +130,6 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
         return this;
     }
     
-    @Override
-    public FramingApi ordered() {
-        return ordered(true);
-    }
-
     public FramingApi embed(JsonLdEmbed value) {
         options.setEmbed(value);
         return this;
