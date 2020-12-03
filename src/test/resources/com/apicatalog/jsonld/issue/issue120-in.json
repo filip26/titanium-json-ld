@@ -1,0 +1,13 @@
+{ "@context": {
+  "id": "@id",
+  "dwciri": "http://rs.tdwg.org/dwc/iri/",
+  "taxonKey":{
+    "@context": {
+      "@base" : "https://api.gbif.org/v1/species/"
+    },
+    "@id": "dwciri:toTaxon", "@type": "@id"
+  }
+},
+"id": 123 ,
+"taxonKey": 7310533
+}
