@@ -186,4 +186,14 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
         
         throw new IllegalArgumentException();
     }
+
+    public ToRdfApi numericId() {
+        return numericId(true);
+    }
+    
+    public ToRdfApi numericId(boolean enable) {
+        options.setNumericId(enable);
+        return this;
+    }
+
 }

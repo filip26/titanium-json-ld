@@ -29,6 +29,7 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
+import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.io.error.RdfWriterException;
 import com.apicatalog.rdf.io.error.UnsupportedContentException;
 
@@ -51,6 +52,22 @@ public class NumericId120Test {
         assertNotNull(expected);
         
         assertTrue(JsonLdTestRunnerJunit.compareJson("expansion: numeric @id", result, expected));        
+    }
+
+    @Test
+    public void testToRdf() throws JsonLdError, IOException, RdfWriterException, UnsupportedContentException {
+
+        final Document document = readJsonDocument("issue120-in.json");
+        
+        final RdfDataset result = JsonLd.toRdf(document).base("https://json-ld.org/playground/").numericId().get();
+        
+        assertNotNull(result);
+                
+        final RdfDataset expected = readRdfDocument("issue120-2-out.nq").getRdfContent().orElse(null);
+        
+        assertNotNull(expected);
+        
+        assertTrue(JsonLdTestRunnerJunit.compareRdf("expansion: numeric @id", result, expected));        
     }
 
     private final JsonDocument readJsonDocument(final String name) throws JsonLdError, IOException {

@@ -3,7 +3,7 @@
     "@id": "https://json-ld.org/playground/123",
     "http://rs.tdwg.org/dwc/iri/toTaxon": [
       {
-        "@value": 7310533
+       "@id": "https://api.gbif.org/v1/species/7310533"
       }
     ]
   }
