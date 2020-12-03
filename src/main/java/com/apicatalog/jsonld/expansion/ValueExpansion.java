@@ -25,6 +25,7 @@ import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
 
 import jakarta.json.Json;
+import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
@@ -67,10 +68,17 @@ public final class ValueExpansion {
                         .vocab(false).expand(((JsonString) value).getString());
 
                 return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();
-            }
+                
+            // custom extension allowing to process numeric ids
+            } else if (Keywords.ID.equals(typeMapping.get()) && activeContext.getOptions().isNumericId() && JsonUtils.isNumber(value)) {
+
+                String expandedValue = activeContext.uriExpansion().documentRelative(true)
+                        .vocab(false).expand(((JsonNumber) value).toString());
+
+                return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();                
 
             // 2.
-            if (Keywords.VOCAB.equals(typeMapping.get()) && JsonUtils.isString(value)) {
+            } else if (Keywords.VOCAB.equals(typeMapping.get()) && JsonUtils.isString(value)) {
 
                 String expandedValue = activeContext.uriExpansion().documentRelative(true)
                         .vocab(true).expand(((JsonString) value).getString());
