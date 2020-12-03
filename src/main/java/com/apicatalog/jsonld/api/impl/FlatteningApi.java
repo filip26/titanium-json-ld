@@ -114,11 +114,6 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
     }
 
     @Override
-    public FlatteningApi ordered() {
-        return ordered(true);
-    }
-
-    @Override
     public FlatteningApi context(URI contextUri) {
         this.contextUri = contextUri;
         return this;

@@ -163,12 +163,7 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
         options.setOrdered(enable);
         return this;
     }
-    
-    @Override
-    public ToRdfApi ordered() {
-        return ordered(true);
-    }
-    
+        
     /**
      * Transform provided <code>JSON-LD</code> document into {@link RdfDataset}.
      * 
@@ -187,13 +182,22 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
         throw new IllegalArgumentException();
     }
 
+    /**
+     * Experimental: Accept numeric @id. 
+     * 
+     * @return builder instance
+     */
     public ToRdfApi numericId() {
         return numericId(true);
     }
     
+    /**
+     * Experimental: Enables/Disables numeric @id support. 
+     * 
+     * @return builder instance
+     */
     public ToRdfApi numericId(boolean enable) {
         options.setNumericId(enable);
         return this;
     }
-
 }

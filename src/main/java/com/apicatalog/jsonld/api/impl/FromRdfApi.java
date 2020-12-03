@@ -83,11 +83,6 @@ public final class FromRdfApi implements CommonApi<FromRdfApi>, LoaderApi<FromRd
     }
     
     @Override
-    public FromRdfApi ordered() {
-        return ordered(true);
-    }
-    
-    @Override
     public FromRdfApi loader(DocumentLoader loader) {
         options.setDocumentLoader(loader);
         return this;

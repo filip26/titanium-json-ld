@@ -377,10 +377,20 @@ public final class JsonLdOptions {
         this.requiredAll = requiredAll;
     }
 
+    /**
+     * Experimental: Enables/Disables numeric @id support. 
+     * 
+     * @return builder instance
+     */
     public void setNumericId(boolean enable) {
         this.numericId = enable;
     }
     
+    /**
+     * Experimental: Numeric @id support state. 
+     * 
+     * @return <code>true</code> if numeric @id support is enabled
+     */
     public boolean isNumericId() {
         return numericId;
     }

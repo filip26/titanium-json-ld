@@ -69,6 +69,7 @@ public interface CommonApi<R> {
      * 
      * @return builder instance
      */
-    R ordered();
-
+    default R ordered() {
+        return ordered(true);
+    }
 }
