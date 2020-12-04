@@ -81,13 +81,13 @@ public class JsonLdTestRunnerJunit {
         throw new IllegalStateException();
     }
     
-    public boolean execute(JsonLdTestCaseMethod method) {
+    public boolean execute(final JsonLdTestCaseMethod method) {
 
         Assert.assertNotNull(testCase.baseUri);
         Assert.assertNotNull(testCase.input);
 
-        JsonLdOptions options = testCase.getOptions();
-        
+        final JsonLdOptions options = testCase.getOptions();
+
         Assert.assertNotNull(options);
         Assert.assertNotNull(options.getDocumentLoader());
         

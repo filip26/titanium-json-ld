@@ -23,14 +23,33 @@
       "input": "issue112-in.json",
       "expect": "issue112-out.json"
     },
-{
+	{
       "@id": "#t0003",
       "@type": ["jld:PositiveEvaluationTest", "jld:ToRDFTest"],
       "name": "Issue #112: toRdf",
       "purpose": "toRdf two @base",
       "input": "issue112-in.json",
       "expect": "issue112-out.nq"
+    },
+            {
+      "@id": "#t0004",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "name": "Issue #120: expand",
+      "purpose": "expand numeric @id",
+      "input": "issue120-in.json",
+      "expect": "issue120-out.json",
+      "option": { "useNumericId" : true, "base": "https://json-ld.org/playground/" }
+    },
+	{
+      "@id": "#t0005",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ToRDFTest"],
+      "name": "Issue #120: toRdf",
+      "purpose": "toRdf numeric @id",
+      "input": "issue120-in.json",
+      "expect": "issue120-out.nq",
+      "option": { "useNumericId" : true, "base": "https://json-ld.org/playground/" }
     }    
+        
     
   ]
 }

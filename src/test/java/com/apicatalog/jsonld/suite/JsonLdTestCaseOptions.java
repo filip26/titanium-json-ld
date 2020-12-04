@@ -38,6 +38,7 @@ public class JsonLdTestCaseOptions {
     public Boolean useNativeTypes;
     public Boolean useRdfType;
     public Boolean omitGraph;
+    public Boolean numericId;
     
     public static final JsonLdTestCaseOptions of(JsonObject o, String baseUri) {
         
@@ -69,7 +70,7 @@ public class JsonLdTestCaseOptions {
         options.rdfDirection = o.getString("rdfDirection", null);
         
         if (o.containsKey("produceGeneralizedRdf")) {
-                options.produceGeneralizedRdf = o.getBoolean("produceGeneralizedRdf");
+            options.produceGeneralizedRdf = o.getBoolean("produceGeneralizedRdf");
         }
 
         if (o.containsKey("useNativeTypes")) {
@@ -83,6 +84,11 @@ public class JsonLdTestCaseOptions {
         if (o.containsKey("omitGraph")) {
             options.omitGraph = o.getBoolean("omitGraph");
         }
+        
+        if (o.containsKey("useNumericId")) {
+            options.numericId = o.getBoolean("useNumericId");
+        }
+
         return options;
     }
 
@@ -126,6 +132,10 @@ public class JsonLdTestCaseOptions {
         
         if (omitGraph != null) {
             options.setOmitGraph(omitGraph);
+        }
+        
+        if (numericId != null) {
+            options.setNumericId(numericId);
         }
         
     }
