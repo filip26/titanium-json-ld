@@ -26,7 +26,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
@@ -49,15 +48,10 @@ public class ExpandTest {
     
     @Test
     public void testExpand() {
-
         // skip specVersion == 1.0
         assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
         
-        Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options ->
-        
-            JsonDocument.of(JsonLd.expand(testCase.input).options(options).get())
-                    
-        ));            
+        Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute());            
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")

@@ -22,6 +22,7 @@ import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
+import com.apicatalog.jsonld.suite.JsonLdTestCase.Type;
 import com.apicatalog.rdf.RdfComparison;
 
 public class JsonLdTestRunnerEarl {
@@ -46,7 +47,7 @@ public class JsonLdTestRunnerEarl {
                 return false;
             }
             
-            if (result.getRdfContent().isPresent() && testCase.expect == null && testCase.type.contains("jld:PositiveSyntaxTest")) {
+            if (result.getRdfContent().isPresent() && testCase.expect == null && testCase.type.contains(Type.POSITIVE_SYNTAX_TEST)) {
                 return true;
                 
             } else if (testCase.expect == null) {

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld;
+package com.apicatalog.jsonld.issue;
 
-import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeTrue;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -25,16 +25,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
 
 @RunWith(Parameterized.class)
-public class RdfToJsonLdTest {
-    
+public class CompactBaseTest {
+
     @Parameterized.Parameter(0)
     public JsonLdTestCase testCase;
 
@@ -48,24 +48,26 @@ public class RdfToJsonLdTest {
     public String baseUri;
     
     @Test
-    public void testExpand() {
+    public void testCompactBase() {
 
-        // skip specVersion == 1.0
-        assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
+        // skip other tests
+        assumeTrue(testId.equals("#t0047"));
+        Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options ->
 
-        Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options -> 
+                JsonDocument.of(
+                        JsonLd.compact(testCase.input, testCase.context).options(options).base("http://fake.com").get()
+                )
 
-            JsonDocument.of(JsonLd.fromRdf(testCase.input).options(options).get())
-            
-        ));            
+        ));
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")
-    public static Collection<Object[]> data() throws JsonLdError {
+    public static Collection<Object[]> data() throws JsonLdError {        
         return JsonLdManifestLoader
-                    .load(JsonLdManifestLoader.JSON_LD_API_BASE, "fromRdf-manifest.jsonld")
-                    .stream()            
-                    .map(o -> new Object[] {o, o.id, o.name, o.baseUri})
-                    .collect(Collectors.toList());
+                .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld")
+                .stream()  
+                .filter(o -> "#t0047".equals(o.id))
+                .map(o -> new Object[] {o, o.id, o.name, o.baseUri})
+                .collect(Collectors.toList());
     }
 }
