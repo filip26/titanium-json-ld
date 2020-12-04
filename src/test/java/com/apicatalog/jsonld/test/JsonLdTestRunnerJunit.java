@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.suite;
+package com.apicatalog.jsonld.test;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -31,7 +31,7 @@ import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
-import com.apicatalog.jsonld.suite.JsonLdTestCase.Type;
+import com.apicatalog.jsonld.test.JsonLdTestCase.Type;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.RdfDataset;

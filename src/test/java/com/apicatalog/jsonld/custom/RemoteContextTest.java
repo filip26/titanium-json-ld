@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.issue;
+package com.apicatalog.jsonld.custom;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -43,14 +43,14 @@ public class RemoteContextTest {
     @Test
     public void testToRdfMissingTriples1() throws JsonLdError, IOException {
 
-        final Document document = readDocument("issue61-in.json");
-        final Document context = readDocument("issue61-context.json");
+        final Document document = readDocument("/com/apicatalog/jsonld/test/issue61-in.json");
+        final Document context = readDocument("/com/apicatalog/jsonld/test/issue61-context.json");
         
         final RdfDataset result = JsonLd.toRdf(document).context(context).get();
         
         assertNotNull(result);
 
-        try (final InputStream is = getClass().getResourceAsStream("issue61-out.nq")) {
+        try (final InputStream is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue61-out.nq")) {
             
             assertNotNull(is);
 
@@ -68,8 +68,8 @@ public class RemoteContextTest {
     @Test
     public void testToRdfMissingTriples2() throws JsonLdError, IOException {
 
-        final Document document = readDocument("issue61-in.json");
-        final Document context = readDocument("issue61-context.json");
+        final Document document = readDocument("/com/apicatalog/jsonld/test/issue61-in.json");
+        final Document context = readDocument("/com/apicatalog/jsonld/test/issue61-context.json");
         
         final JsonLdOptions options = new JsonLdOptions();
         options.setExpandContext(context);
@@ -78,7 +78,7 @@ public class RemoteContextTest {
         
         assertNotNull(result);
 
-        try (final InputStream is = getClass().getResourceAsStream("issue61-out.nq")) {
+        try (final InputStream is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue61-out.nq")) {
             
             assertNotNull(is);
 
@@ -98,15 +98,15 @@ public class RemoteContextTest {
 
         final RdfDataset result = 
                     JsonLd
-                        .toRdf("classpath:/com/apicatalog/jsonld/issue/issue61-in.json")
-                        .context("classpath:/com/apicatalog/jsonld/issue/issue61-context.json")
+                        .toRdf("classpath:/com/apicatalog/jsonld/test/issue61-in.json")
+                        .context("classpath:/com/apicatalog/jsonld/test/issue61-context.json")
                         .base("https://api.inaturalist.org/v1/observations/")
                         .loader(new ClasspathLoader())
                         .get();
 
         assertNotNull(result);
 
-        try (final InputStream is = getClass().getResourceAsStream("issue61-out.nq")) {
+        try (final InputStream is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue61-out.nq")) {
 
             assertNotNull(is);
 
@@ -124,13 +124,13 @@ public class RemoteContextTest {
     @Test
     public void testRemoteContext() throws JsonLdError, IOException {
 
-        final Document document = readDocument("issue63-in.json");
+        final Document document = readDocument("/com/apicatalog/jsonld/test/issue63-in.json");
         
         final RdfDataset result = JsonLd.toRdf(document).loader(new ClasspathLoader()).get();
         
         assertNotNull(result);
 
-        try (final InputStream is = getClass().getResourceAsStream("issue63-out.nq")) {
+        try (final InputStream is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue63-out.nq")) {
             
             assertNotNull(is);
 

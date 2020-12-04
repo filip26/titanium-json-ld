@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.issue;
+package com.apicatalog.jsonld.custom;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -28,7 +28,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
-import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
+import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 import com.apicatalog.rdf.RdfDataset;
 
 import jakarta.json.JsonArray;
@@ -43,7 +43,7 @@ public class DroppedListItemTest {
     @Test
     public void testJsonRdfJsonCycle() throws JsonLdError, IOException {
 
-        final Document document = readDocument("issue58-2-in.json");
+        final Document document = readDocument("/com/apicatalog/jsonld/test/issue58-2-in.json");
         
         final RdfDataset dataset = JsonLd.toRdf(document).get();
         
@@ -53,7 +53,7 @@ public class DroppedListItemTest {
         
         assertNotNull(result);
         
-        final Document expected = readDocument("issue58-2-out.json");
+        final Document expected = readDocument("/com/apicatalog/jsonld/test/issue58-2-out.json");
         
         assertTrue(JsonLdTestRunnerJunit.compareJson("JSON to RDF to JSON", result, expected.getJsonContent().orElse(null)));
         
@@ -64,7 +64,7 @@ public class DroppedListItemTest {
 
         final JsonArray result;
         
-        try (final InputStream is = getClass().getResourceAsStream("issue58-in.nq")) {
+        try (final InputStream is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue58-in.nq")) {
             
             assertNotNull(is);
             
@@ -73,7 +73,7 @@ public class DroppedListItemTest {
             assertNotNull(result);
         }
                 
-        final Document expected = readDocument("issue58-out.json");
+        final Document expected = readDocument("/com/apicatalog/jsonld/test/issue58-out.json");
 
         assertNotNull(expected);
         

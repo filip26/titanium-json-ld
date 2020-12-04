@@ -30,12 +30,12 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.SchemeRouter;
-import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
-import com.apicatalog.jsonld.suite.JsonLdMockServer;
-import com.apicatalog.jsonld.suite.JsonLdTestCase;
-import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
-import com.apicatalog.jsonld.suite.loader.UriBaseRewriter;
-import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
+import com.apicatalog.jsonld.test.JsonLdManifestLoader;
+import com.apicatalog.jsonld.test.JsonLdMockServer;
+import com.apicatalog.jsonld.test.JsonLdTestCase;
+import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
+import com.apicatalog.jsonld.test.loader.UriBaseRewriter;
+import com.apicatalog.jsonld.test.loader.ZipResourceLoader;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 @RunWith(Parameterized.class)

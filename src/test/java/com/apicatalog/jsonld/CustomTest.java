@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.issue;
+package com.apicatalog.jsonld;
 
 import static org.junit.Assume.assumeFalse;
 
@@ -28,9 +28,9 @@ import org.junit.runners.Parameterized;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.ClasspathLoader;
-import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
-import com.apicatalog.jsonld.suite.JsonLdTestCase;
-import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
+import com.apicatalog.jsonld.test.JsonLdManifestLoader;
+import com.apicatalog.jsonld.test.JsonLdTestCase;
+import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 
 @RunWith(Parameterized.class)
 public class CustomTest {
@@ -58,7 +58,7 @@ public class CustomTest {
     @Parameterized.Parameters(name = "{1}: {2}")
     public static Collection<Object[]> data() throws JsonLdError {
         return JsonLdManifestLoader
-                    .load("/com/apicatalog/jsonld/issue/", "manifest.json", new ClasspathLoader())
+                    .load("/com/apicatalog/jsonld/test/", "manifest.json", new ClasspathLoader())
                     .stream()            
                     .map(o -> new Object[] {o, o.id, o.name, o.baseUri})
                     .collect(Collectors.toList());

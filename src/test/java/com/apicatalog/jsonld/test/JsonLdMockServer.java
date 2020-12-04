@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.suite;
+package com.apicatalog.jsonld.test;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -32,7 +32,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.http.link.Link;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.HttpLoader;
-import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
+import com.apicatalog.jsonld.test.loader.ZipResourceLoader;
 import com.apicatalog.jsonld.uri.UriResolver;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 

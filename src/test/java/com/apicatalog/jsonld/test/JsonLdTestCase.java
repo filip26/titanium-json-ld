@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.suite;
+package com.apicatalog.jsonld.test;
 
 import java.net.URI;
 import java.util.HashSet;
@@ -26,7 +26,7 @@ import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.suite.loader.UriBaseRewriter;
+import com.apicatalog.jsonld.test.loader.UriBaseRewriter;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;

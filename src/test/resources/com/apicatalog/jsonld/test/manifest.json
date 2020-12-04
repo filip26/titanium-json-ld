@@ -4,7 +4,7 @@
   "@type": "mf:Manifest",
   "name": "Custom",
   "description": "Custom JSON-LD tests.",
-  "baseIri": "https://raw.githubusercontent.com/filip26/titanium-json-ld/master/src/test/resources/com/apicatalog/jsonld/tests/",
+  "baseIri": "https://raw.githubusercontent.com/filip26/titanium-json-ld/master/src/test/resources/com/apicatalog/jsonld/test/",
   "sequence": [
     {
       "@id": "#t0001",

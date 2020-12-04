@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.issue;
+package com.apicatalog.jsonld.custom;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -28,7 +28,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
-import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
+import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
 
@@ -55,7 +55,7 @@ public class BlankNodes118Test {
         
         assertNotNull(result);
         
-        final Document expected = readDocument("issue118-out.json");
+        final Document expected = readDocument("/com/apicatalog/jsonld/test/issue118-out.json");
         
         assertNotNull(expected);
         
