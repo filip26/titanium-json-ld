@@ -24,8 +24,8 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
-import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
@@ -39,20 +39,24 @@ public final class JsonLdManifestLoader {
     private final String manifestName;
     private final String manifestBase;
     
-    private JsonLdManifestLoader(final String manifestBase, final String manifestName) {
+    private final DocumentLoader loader;
+    
+    private JsonLdManifestLoader(final String manifestBase, final String manifestName, final DocumentLoader loader) {
         this.manifestBase = manifestBase;
         this.manifestName = manifestName;
+        
+        this.loader = loader;
     }
     
-    public static JsonLdManifestLoader load(final String manifestBase, final String manifestName) {
-        return new JsonLdManifestLoader(manifestBase, manifestName);
+    public static JsonLdManifestLoader load(final String manifestBase, final String manifestName, final DocumentLoader loader) {
+        return new JsonLdManifestLoader(manifestBase, manifestName, loader);
     }
     
     public Stream<JsonLdTestCase> stream() {
      
         try {
         
-            Document manifest = new ZipResourceLoader().loadDocument(URI.create(manifestBase + manifestName), new DocumentLoaderOptions());
+            Document manifest = loader.loadDocument(URI.create(manifestBase + manifestName), new DocumentLoaderOptions());
     
             Assert.assertNotNull(manifest);
     
@@ -68,7 +72,7 @@ public final class JsonLdManifestLoader {
                     .getJsonArray("sequence")
                         .stream()
                             .map(JsonValue::asJsonObject)
-                            .map(o -> JsonLdTestCase.of(o, manifestName, manifestBase, baseUri));
+                            .map(o -> JsonLdTestCase.of(o, manifestName, manifestBase, baseUri, loader));
             
         } catch (JsonLdError e) {
             Assert.fail(e.getMessage());

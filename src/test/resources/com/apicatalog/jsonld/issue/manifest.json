@@ -1,0 +1,36 @@
+{
+  "@context": ["context.jsonld", {"@base": "custom-manifest"}],
+  "@id": "",
+  "@type": "mf:Manifest",
+  "name": "Custom",
+  "description": "Custom JSON-LD tests.",
+  "baseIri": "https://raw.githubusercontent.com/filip26/titanium-json-ld/master/src/test/resources/com/apicatalog/jsonld/tests/",
+  "sequence": [
+    {
+      "@id": "#t0001",
+      "@type": ["jld:PositiveEvaluationTest", "jld:FromRDFTest"],
+      "name": "Issue #64",
+      "purpose": "Use native types generate an invalid json ld",
+      "input": "issue64-in.nq",
+      "expect": "issue64-out.json",
+      "option": { "useNativeTypes": true }
+    }, 
+    {
+      "@id": "#t0002",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "name": "Issue #112: expand",
+      "purpose": "Expand two @base",
+      "input": "issue112-in.json",
+      "expect": "issue112-out.json"
+    },
+{
+      "@id": "#t0003",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ToRDFTest"],
+      "name": "Issue #112: toRdf",
+      "purpose": "toRdf two @base",
+      "input": "issue112-in.json",
+      "expect": "issue112-out.nq"
+    }    
+    
+  ]
+}

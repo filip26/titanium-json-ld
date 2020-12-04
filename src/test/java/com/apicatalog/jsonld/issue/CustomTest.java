@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld;
+package com.apicatalog.jsonld.issue;
 
 import static org.junit.Assume.assumeFalse;
 
@@ -27,14 +27,14 @@ import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.lang.Version;
+import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
-import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
 
 @RunWith(Parameterized.class)
-public class FlattenTest {
-
+public class CustomTest {
+    
     @Parameterized.Parameter(0)
     public JsonLdTestCase testCase;
 
@@ -48,20 +48,19 @@ public class FlattenTest {
     public String baseUri;
     
     @Test
-    public void testFlatten() {
-
+    public void testCustom() {
         // skip specVersion == 1.0
         assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
         
-        Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
+        Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute());            
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")
-    public static Collection<Object[]> data() throws JsonLdError {        
+    public static Collection<Object[]> data() throws JsonLdError {
         return JsonLdManifestLoader
-                .load(JsonLdManifestLoader.JSON_LD_API_BASE, "flatten-manifest.jsonld", new ZipResourceLoader())
-                .stream()            
-                .map(o -> new Object[] {o, o.id, o.name, o.baseUri})
-                .collect(Collectors.toList());
+                    .load("/com/apicatalog/jsonld/issue/", "manifest.json", new ClasspathLoader())
+                    .stream()            
+                    .map(o -> new Object[] {o, o.id, o.name, o.baseUri})
+                    .collect(Collectors.toList());
     }
 }

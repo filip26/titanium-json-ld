@@ -30,6 +30,7 @@ import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
+import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
 
 @RunWith(Parameterized.class)
 public class CompactTest {
@@ -57,7 +58,7 @@ public class CompactTest {
     @Parameterized.Parameters(name = "{1}: {2}")
     public static Collection<Object[]> data() throws JsonLdError {        
         return JsonLdManifestLoader
-                .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld")
+                .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld", new ZipResourceLoader())
                 .stream()            
                 .map(o -> new Object[] {o, o.id, o.name, o.baseUri})
                 .collect(Collectors.toList());
