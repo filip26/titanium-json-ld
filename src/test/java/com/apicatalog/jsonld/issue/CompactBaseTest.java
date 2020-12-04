@@ -65,7 +65,8 @@ public class CompactBaseTest {
     public static Collection<Object[]> data() throws JsonLdError {        
         return JsonLdManifestLoader
                 .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld")
-                .stream()            
+                .stream()  
+                .filter(o -> "#t0047".equals(o.id))
                 .map(o -> new Object[] {o, o.id, o.name, o.baseUri})
                 .collect(Collectors.toList());
     }
