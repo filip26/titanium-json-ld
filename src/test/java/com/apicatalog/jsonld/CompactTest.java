@@ -16,7 +16,6 @@
 package com.apicatalog.jsonld;
 
 import static org.junit.Assume.assumeFalse;
-import static org.junit.Assume.assumeTrue;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -27,7 +26,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
@@ -50,29 +48,10 @@ public class CompactTest {
     
     @Test
     public void testCompact() {
-
         // skip specVersion == 1.0
         assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
 
-        Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options ->
-        
-            JsonDocument.of(JsonLd.compact(testCase.input, testCase.context).options(options).get())
-            
-        ));
-    }
-
-    @Test
-    public void testCompactBase() {
-
-        // skip other tests
-        assumeTrue(testId.equals("#t0047"));
-        Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options ->
-
-                JsonDocument.of(
-                        JsonLd.compact(testCase.input, testCase.context).options(options).base("http://fake.com").get()
-                )
-
-        ));
+        Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")

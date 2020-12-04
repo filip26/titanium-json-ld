@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld;
+package com.apicatalog.jsonld.issue;
 
-import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeTrue;
 
-import java.io.IOException;
 import java.util.Collection;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
@@ -27,16 +25,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.document.RdfDocument;
-import com.apicatalog.jsonld.lang.Version;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
 import com.apicatalog.jsonld.suite.JsonLdTestCase;
 import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
 
 @RunWith(Parameterized.class)
-public class JsonLdToRdfTest {
-    
+public class CompactBaseTest {
+
     @Parameterized.Parameter(0)
     public JsonLdTestCase testCase;
 
@@ -50,31 +48,25 @@ public class JsonLdToRdfTest {
     public String baseUri;
     
     @Test
-    public void testToRdf() throws IOException {
-        // Force a locale to something different than US to be aware of DecimalFormat errors
-        Locale.setDefault(Locale.FRANCE);
+    public void testCompactBase() {
 
-        // skip specVersion == 1.0
-        assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
+        // skip other tests
+        assumeTrue(testId.equals("#t0047"));
+        Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options ->
 
-        // blank nodes as predicates are not supported - wont'fix
-        assumeFalse("#te075".equals(testCase.id));
-        // invalid IRI/URI are not accepted - wont'fix
-        assumeFalse("#tli12".equals(testCase.id));
+                JsonDocument.of(
+                        JsonLd.compact(testCase.input, testCase.context).options(options).base("http://fake.com").get()
+                )
 
-        Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options -> 
-
-            RdfDocument.of(JsonLd.toRdf(testCase.input).options(options).get())
-        
         ));
     }
 
     @Parameterized.Parameters(name = "{1}: {2}")
-    public static Collection<Object[]> data() throws JsonLdError {
+    public static Collection<Object[]> data() throws JsonLdError {        
         return JsonLdManifestLoader
-                    .load(JsonLdManifestLoader.JSON_LD_API_BASE, "toRdf-manifest.jsonld")
-                    .stream()            
-                    .map(o -> new Object[] {o, o.id, o.name, o.baseUri})
-                    .collect(Collectors.toList());
+                .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld")
+                .stream()            
+                .map(o -> new Object[] {o, o.id, o.name, o.baseUri})
+                .collect(Collectors.toList());
     }
 }

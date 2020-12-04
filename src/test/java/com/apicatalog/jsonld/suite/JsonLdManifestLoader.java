@@ -48,24 +48,32 @@ public final class JsonLdManifestLoader {
         return new JsonLdManifestLoader(manifestBase, manifestName);
     }
     
-    public Stream<JsonLdTestCase> stream() throws JsonLdError {
+    public Stream<JsonLdTestCase> stream() {
      
-        Document manifest = new ZipResourceLoader().loadDocument(URI.create(manifestBase + manifestName), new DocumentLoaderOptions());
-
-        Assert.assertNotNull(manifest);
-
-        final JsonObject manifestObject = manifest
-                                                .getJsonContent()
-                                                .filter(JsonUtils::isObject)
-                                                .map(JsonObject.class::cast)
-                                                .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED));
+        try {
         
-        String baseUri = manifestObject.getString("baseIri");
+            Document manifest = new ZipResourceLoader().loadDocument(URI.create(manifestBase + manifestName), new DocumentLoaderOptions());
+    
+            Assert.assertNotNull(manifest);
+    
+            final JsonObject manifestObject = manifest
+                                                    .getJsonContent()
+                                                    .filter(JsonUtils::isObject)
+                                                    .map(JsonObject.class::cast)
+                                                    .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED));
+            
+            String baseUri = manifestObject.getString("baseIri");
+            
+            return manifestObject
+                    .getJsonArray("sequence")
+                        .stream()
+                            .map(JsonValue::asJsonObject)
+                            .map(o -> JsonLdTestCase.of(o, manifestName, manifestBase, baseUri));
+            
+        } catch (JsonLdError e) {
+            Assert.fail(e.getMessage());
+        }
         
-        return manifestObject
-                .getJsonArray("sequence")
-                    .stream()
-                        .map(JsonValue::asJsonObject)
-                        .map(o -> JsonLdTestCase.of(o, manifestName, manifestBase, baseUri));            
+        return Stream.empty();
     }
 }

@@ -35,6 +35,55 @@ import jakarta.json.JsonValue;
 
 public final class JsonLdTestCase {
 
+    public enum Type {
+
+        EXPAND_TEST,
+        COMPACT_TEST,
+        FLATTEN_TEST,
+        TO_RDF_TEST,
+        FROM_RDF_TEST,
+        FRAME_TEST,
+
+        POSITIVE_EVALUATION_TEST, 
+        NEGATIVE_EVALUATION_TEST,
+        POSITIVE_SYNTAX_TEST        
+        ;
+        
+        static Type of(String value) {
+            
+            if (value == null) {
+                throw new IllegalArgumentException("Test @type cannot be null.");
+            }
+            
+            switch (value) {
+            case "jld:ExpandTest":
+                return EXPAND_TEST;
+            case "jld:CompactTest":
+                return COMPACT_TEST;                
+            case "jld:FlattenTest":
+                return FLATTEN_TEST;
+            case "jld:ToRDFTest":
+                return TO_RDF_TEST;
+            case "jld:FromRDFTest":
+                return FROM_RDF_TEST;
+            case "jld:FrameTest":
+                return FRAME_TEST;
+            
+            case "jld:PositiveEvaluationTest":
+                return POSITIVE_EVALUATION_TEST;
+            case "jld:NegativeEvaluationTest":
+                return NEGATIVE_EVALUATION_TEST;
+
+            case "jld:PositiveSyntaxTest":
+                return POSITIVE_SYNTAX_TEST;
+            }
+            
+           throw new IllegalArgumentException("Unknown test @type '" + value + "'"); 
+        }
+        
+    }
+
+    
     public String id;
     
     public String name;
@@ -53,7 +102,7 @@ public final class JsonLdTestCase {
     
     public String uri;
     
-    public Set<String> type;
+    public Set<Type> type;
     
     public JsonLdTestCaseOptions options;
 
@@ -82,6 +131,7 @@ public final class JsonLdTestCase {
         testCase.type = o.get(Keywords.TYPE).asJsonArray().stream()
                             .map(JsonString.class::cast)
                             .map(JsonString::getString)
+                            .map(Type::of)
                             .collect(Collectors.toSet());
         
         testCase.name = o.getString("name");

@@ -22,12 +22,16 @@ import java.util.Map;
 
 import org.junit.Assert;
 
+import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
+import com.apicatalog.jsonld.suite.JsonLdTestCase.Type;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.RdfDataset;
@@ -46,6 +50,35 @@ public class JsonLdTestRunnerJunit {
     
     public JsonLdTestRunnerJunit(JsonLdTestCase testCase) {
         this.testCase = testCase;
+    }
+
+    public boolean execute() {
+        
+        if (testCase.type.contains(Type.COMPACT_TEST)) {
+            return execute(options -> JsonDocument.of(JsonLd.compact(testCase.input, testCase.context).options(options).get()));
+        }
+        
+        if (testCase.type.contains(Type.EXPAND_TEST)) {
+            return execute(options -> JsonDocument.of(JsonLd.expand(testCase.input).options(options).get()));
+        }
+        
+        if (testCase.type.contains(Type.FLATTEN_TEST)) {
+            return execute(options -> JsonDocument.of(JsonLd.flatten(testCase.input).context(testCase.context).options(options).get()));
+        }
+
+        if (testCase.type.contains(Type.TO_RDF_TEST)) {
+            return execute(options -> RdfDocument.of(JsonLd.toRdf(testCase.input).options(options).get()));
+        }
+        
+        if (testCase.type.contains(Type.FROM_RDF_TEST)) {
+            return execute(options -> JsonDocument.of(JsonLd.fromRdf(testCase.input).options(options).get()));
+        }
+        
+        if (testCase.type.contains(Type.FRAME_TEST)) {
+            return execute(options -> JsonDocument.of(JsonLd.frame(testCase.input, testCase.frame).options(options).get()));
+        }
+        
+        throw new IllegalStateException();
     }
     
     public boolean execute(JsonLdTestCaseMethod method) {
@@ -79,7 +112,7 @@ public class JsonLdTestRunnerJunit {
         Assert.assertNull(testCase.expectErrorCode);
 
         // A PositiveSyntaxTest succeeds when no error is found when processing.
-        if (result.getRdfContent().isPresent() && testCase.expect == null && testCase.type.contains("jld:PositiveSyntaxTest")) {
+        if (result.getRdfContent().isPresent() && testCase.expect == null && testCase.type.contains(Type.POSITIVE_SYNTAX_TEST)) {
             return true;
         }
         
