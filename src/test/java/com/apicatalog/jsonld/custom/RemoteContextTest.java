@@ -89,34 +89,6 @@ public class RemoteContextTest {
     }
 
     /**
-     * @see <a href="https://github.com/filip26/titanium-json-ld/issues/61">Issue #61</a>
-     * @throws JsonLdError
-     * @throws IOException
-     */
-    @Test
-    public void testToRdfMissingTriples3() throws JsonLdError, IOException {
-
-        final RdfDataset result = 
-                    JsonLd
-                        .toRdf("classpath:/com/apicatalog/jsonld/test/issue61-in.json")
-                        .context("classpath:/com/apicatalog/jsonld/test/issue61-context.json")
-                        .base("https://api.inaturalist.org/v1/observations/")
-                        .loader(new ClasspathLoader())
-                        .get();
-
-        assertNotNull(result);
-
-        try (final InputStream is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue61-out.nq")) {
-
-            assertNotNull(is);
-
-            boolean match = RdfComparison.equals(result, RdfDocument.of(is).getRdfContent().orElse(null));
-
-            assertTrue(match);
-        }
-    }
-
-    /**
      * @see <a href="https://github.com/filip26/titanium-json-ld/issues/63">Issue #63</a>
      * @throws JsonLdError
      * @throws IOException

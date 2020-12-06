@@ -19,7 +19,7 @@
       "@id": "#t0002",
       "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
       "name": "Issue #112: expand",
-      "purpose": "Expand two @base",
+      "purpose": "expand two @base",
       "input": "issue112-in.json",
       "expect": "issue112-out.json"
     },
@@ -52,11 +52,20 @@
     {
       "@id": "#t0006",
       "@type": ["jld:PositiveEvaluationTest", "jld:FromRDFTest"],
-      "name": "Issue #58: fromRdff",
-      "purpose": "fromRdf one item list",
+      "name": "Issue #58: fromRdf",
+      "purpose": "one item list",
       "input": "issue58-in.nq",
       "expect": "issue58-out.json",
       "option": { "ordered" : true }
+    },
+    {
+      "@id": "#t0007",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ToRDFTest"],
+      "name": "Issue #61: toRdf",
+      "purpose": "triples with aliased @id and @base",
+      "input": "issue61-in.json",
+      "expect": "issue61-out.nq",
+      "option": { "expandContext" : "issue61-context.json", "base": "https://api.inaturalist.org/v1/observations/" }
     }
   ]
 }
