@@ -179,7 +179,7 @@ public class EarlGenerator {
                     WireMockServer wireMockServer = new WireMockServer();
                     wireMockServer.start();
 
-                    JsonLdMockServer server = new JsonLdMockServer(testCase, RemoteTest.TESTS_BASE);
+                    JsonLdMockServer server = new JsonLdMockServer(testCase, RemoteTest.TESTS_BASE, JsonLdManifestLoader.JSON_LD_API_BASE, new ZipResourceLoader());
                     server.start();
                     
                     
