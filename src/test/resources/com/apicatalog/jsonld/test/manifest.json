@@ -48,8 +48,15 @@
       "input": "issue120-in.json",
       "expect": "issue120-out.nq",
       "option": { "useNumericId" : true, "base": "https://json-ld.org/playground/" }
-    }    
-        
-    
+    },
+    {
+      "@id": "#t0006",
+      "@type": ["jld:PositiveEvaluationTest", "jld:FromRDFTest"],
+      "name": "Issue #58: fromRdff",
+      "purpose": "fromRdf one item list",
+      "input": "issue58-in.nq",
+      "expect": "issue58-out.json",
+      "option": { "ordered" : true }
+    }
   ]
 }
