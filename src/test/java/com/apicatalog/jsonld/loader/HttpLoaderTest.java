@@ -15,71 +15,67 @@
  */
 package com.apicatalog.jsonld.loader;
 
-import java.net.URI;
+import static org.junit.Assert.assertEquals;
+
 import java.net.URISyntaxException;
-import java.net.URL;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 
+import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.http.media.MediaType;
+import com.apicatalog.jsonld.api.JsonLdErrorCode;
+import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.test.JsonLdManifestLoader;
+import com.apicatalog.jsonld.test.JsonLdMockServer;
+import com.apicatalog.jsonld.test.JsonLdTestCase;
+import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
+import com.apicatalog.jsonld.test.loader.ClasspathLoader;
+import com.apicatalog.jsonld.test.loader.UriBaseRewriter;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 public class HttpLoaderTest {
 
+    @Rule
+    public final WireMockRule wireMockRule = new WireMockRule();
+    
     @Test
-    public void testLoadNQuads() throws URISyntaxException, JsonLdError {
-        
-        URL fileUrl = getClass().getResource("document.nq");
-        
-        Assert.assertNotNull(fileUrl);
-        
-        Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions());
-        
-        Assert.assertNotNull(document);
-        Assert.assertTrue(MediaType.N_QUADS.match(document.getContentType()));
-    }
+    public void testMissingContentType() throws URISyntaxException, JsonLdError {
+     
+        final JsonLdTestCase testCase = JsonLdManifestLoader
+                .load("/com/apicatalog/jsonld/test/", "manifest.json", new ClasspathLoader())
+                .stream()
+                .filter(o -> !"t0008".equals(o.id))  // requires mock server
+                .findFirst().orElseThrow();
 
-    @Test
-    public void testLoadJson() throws URISyntaxException, JsonLdError {
-        
-        URL fileUrl = getClass().getResource("document.json");
-        
-        Assert.assertNotNull(fileUrl);
-        
-        Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions());
-        
-        Assert.assertNotNull(document);
-        Assert.assertTrue(MediaType.JSON.match(document.getContentType()));
-    }
+        JsonLdMockServer server = new JsonLdMockServer(testCase, testCase.baseUri.substring(0, testCase.baseUri.length() - 1), "/com/apicatalog/jsonld/test/", new ClasspathLoader());
 
-    @Test
-    public void testLoadJsonLd() throws URISyntaxException, JsonLdError {
-        
-        URL fileUrl = getClass().getResource("document.jsonld");
-        
-        Assert.assertNotNull(fileUrl);
-        
-        Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions());
-        
-        Assert.assertNotNull(document);
-        Assert.assertTrue(MediaType.JSON_LD.match(document.getContentType()));
-    }
+        try {
+            
+            server.start();
+            
+            (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
+                
+                JsonLdOptions expandOptions = new JsonLdOptions(options);
 
-    @Test
-    public void testLoadHtml() throws URISyntaxException {
-        
-        URL fileUrl = getClass().getResource("document.html");
-        
-        Assert.assertNotNull(fileUrl);
-        
-        Assert.assertThrows(JsonLdError.class, () -> new FileLoader().loadDocument(fileUrl.toURI(), new DocumentLoaderOptions()));
-    }
+                expandOptions.setDocumentLoader(
+                                    new UriBaseRewriter(
+                                                testCase.baseUri, 
+                                                wireMockRule.baseUrl() + "/",
+                                                SchemeRouter.defaultInstance()));
+                
+                return JsonDocument.of(JsonLd.expand(testCase.input).options(expandOptions).get());
+            });
 
-    @Test
-    public void testUnsupportedScheme() throws URISyntaxException {        
-        Assert.assertThrows(JsonLdError.class, () -> new FileLoader().loadDocument(URI.create("https://github.com/"), new DocumentLoaderOptions()));
+            server.stop();
+            Assert.fail();
+            
+        } catch (JsonLdError e) {
+            assertEquals(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e.getCode());            
+        }
+        
+        server.stop();
     }
-
 }

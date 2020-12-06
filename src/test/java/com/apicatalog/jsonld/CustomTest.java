@@ -59,7 +59,8 @@ public class CustomTest {
     public static Collection<Object[]> data() throws JsonLdError {
         return JsonLdManifestLoader
                     .load("/com/apicatalog/jsonld/test/", "manifest.json", new ClasspathLoader())
-                    .stream()            
+                    .stream()
+                    .filter(o -> !"t0008".equals(o.id))  // requires mock server
                     .map(o -> new Object[] {o, o.id, o.name, o.baseUri})
                     .collect(Collectors.toList());
     }

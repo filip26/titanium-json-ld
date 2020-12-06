@@ -27,7 +27,7 @@ import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
-public class ClasspathLoader implements DocumentLoader {
+public class ClasspathLoader implements DocumentLoader, TestLoader {
 
     @Override
     public Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
@@ -43,6 +43,19 @@ public class ClasspathLoader implements DocumentLoader {
         } catch (IOException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
+    }
+
+    @Override
+    public byte[] fetchBytes(URI url) throws JsonLdError {
+        
+        try (final InputStream is = getClass().getResourceAsStream(url.getPath())) {
+            
+            return ZipResourceLoader.readAsByteArray(is);
+            
+        } catch (IOException e) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+        }
+
     }
 
 }

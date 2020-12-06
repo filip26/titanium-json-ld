@@ -66,6 +66,16 @@
       "input": "issue61-in.json",
       "expect": "issue61-out.nq",
       "option": { "expandContext" : "issue61-context.json", "base": "https://api.inaturalist.org/v1/observations/" }
+    },
+    {
+      "@id": "#t0008",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ToRDFTest"],
+      "name": "Issue #61: toRdf",
+      "purpose": "triples with aliased @id and @base",
+      "input": "issue61-in.json",
+      "expect": "issue61-out.nq",
+      "option": { "expandContext" : "issue61-context.json", "base": "https://api.inaturalist.org/v1/observations/" }
     }
+    
   ]
 }
