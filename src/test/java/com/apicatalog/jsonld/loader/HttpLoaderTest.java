@@ -15,8 +15,6 @@
  */
 package com.apicatalog.jsonld.loader;
 
-import static org.junit.Assert.assertEquals;
-
 import java.net.URISyntaxException;
 
 import org.junit.Assert;
@@ -25,7 +23,6 @@ import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.test.JsonLdManifestLoader;
@@ -47,9 +44,27 @@ public class HttpLoaderTest {
         final JsonLdTestCase testCase = JsonLdManifestLoader
                 .load("/com/apicatalog/jsonld/test/", "manifest.json", new ClasspathLoader())
                 .stream()
-                .filter(o -> !"t0008".equals(o.id))  // requires mock server
+                .filter(o -> "#t0002".equals(o.id))
                 .findFirst().orElseThrow();
 
+        testCase.contentType = null;
+        
+        execute(testCase);
+    }
+
+    @Test
+    public void testPlainTextContentType() throws URISyntaxException, JsonLdError {
+     
+        final JsonLdTestCase testCase = JsonLdManifestLoader
+                .load("/com/apicatalog/jsonld/test/", "manifest.json", new ClasspathLoader())
+                .stream()
+                .filter(o -> "#t0008".equals(o.id))
+                .findFirst().orElseThrow();
+
+        execute(testCase);
+    }
+
+    void execute(JsonLdTestCase testCase) {
         JsonLdMockServer server = new JsonLdMockServer(testCase, testCase.baseUri.substring(0, testCase.baseUri.length() - 1), "/com/apicatalog/jsonld/test/", new ClasspathLoader());
 
         try {
@@ -70,12 +85,10 @@ public class HttpLoaderTest {
             });
 
             server.stop();
-            Assert.fail();
             
-        } catch (JsonLdError e) {
-            assertEquals(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e.getCode());            
+        } catch (Exception e) {
+            Assert.fail(e.getMessage());
         }
-        
-        server.stop();
     }
+    
 }
