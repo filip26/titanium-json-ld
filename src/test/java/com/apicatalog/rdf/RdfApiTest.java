@@ -35,10 +35,25 @@ public class RdfApiTest {
     @Test
     public void testBlankNodeNotation() throws JsonLdError, IOException {
 
-        final RdfResource node = Rdf.createBlankNode("bn1");
+        final RdfResource node = Rdf.createBlankNode("_:bn1");
         
         assertNotNull(node);
         assertTrue(node.isBlankNode());
         assertEquals("_:bn1", node.getValue());
     }    
+    
+    /**
+     * @see <a href="https://github.com/filip26/titanium-json-ld/issues/118">Issue #118</a>
+     * @throws JsonLdError
+     * @throws IOException
+     */
+    @Test
+    public void testBlankNodeLabel() throws JsonLdError, IOException {
+
+        final RdfResource node = Rdf.createBlankNode("bn1");
+        
+        assertNotNull(node);
+        assertTrue(node.isBlankNode());
+        assertEquals("_:bn1", node.getValue());
+    }
 }
