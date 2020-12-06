@@ -27,10 +27,10 @@ import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.jsonld.test.JsonLdManifestLoader;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
+import com.apicatalog.jsonld.test.loader.ClasspathLoader;
 
 @RunWith(Parameterized.class)
 public class CustomTest {
