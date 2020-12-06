@@ -33,7 +33,7 @@ import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
-public class ZipResourceLoader implements DocumentLoader {
+public class ZipResourceLoader implements DocumentLoader, TestLoader {
 
     @Override
     public Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
@@ -94,6 +94,7 @@ public class ZipResourceLoader implements DocumentLoader {
         }
     }    
     
+    @Override
     public byte[] fetchBytes(URI url) throws JsonLdError {
         
         if (!"zip".equals(url.getScheme())) {

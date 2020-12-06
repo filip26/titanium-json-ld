@@ -32,7 +32,7 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.http.link.Link;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.HttpLoader;
-import com.apicatalog.jsonld.test.loader.ZipResourceLoader;
+import com.apicatalog.jsonld.test.loader.TestLoader;
 import com.apicatalog.jsonld.uri.UriResolver;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 
@@ -40,10 +40,12 @@ public final class JsonLdMockServer {
 
     private final JsonLdTestCase testCase;
     private final String testBase;
+    private final TestLoader loader;
     
-    public JsonLdMockServer(JsonLdTestCase testCase, String testBase) {
+    public JsonLdMockServer(JsonLdTestCase testCase, String testBase, TestLoader loader) {
         this.testCase = testCase;
         this.testBase = testBase;
+        this.loader = loader;
     }
     
     public void start() throws JsonLdError {
@@ -98,7 +100,7 @@ public final class JsonLdMockServer {
 
                 String linkUri = UriResolver.resolve(testCase.input, link.target().toString());
 
-                byte[] content  = (new ZipResourceLoader()).fetchBytes(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE +  linkUri.substring(testCase.baseUri.length())));
+                byte[] content  = loader.fetchBytes(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE +  linkUri.substring(testCase.baseUri.length())));
                     
                 if (content != null) {
 //                    Assert.assertNotNull(linkedDocument);
@@ -118,7 +120,7 @@ public final class JsonLdMockServer {
                 
             ResponseDefinitionBuilder mockResponseBuilder = aResponse();
 
-            byte[] content = (new ZipResourceLoader()).fetchBytes(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE + inputPath.substring(testCase.baseUri.length())));
+            byte[] content = loader.fetchBytes(URI.create(JsonLdManifestLoader.JSON_LD_API_BASE + inputPath.substring(testCase.baseUri.length())));
             
             if (content != null) {
                 mockResponseBuilder.withStatus(200);

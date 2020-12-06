@@ -66,7 +66,7 @@ public class RemoteTest {
         
         try {
 
-            JsonLdMockServer server = new JsonLdMockServer(testCase, TESTS_BASE);
+            JsonLdMockServer server = new JsonLdMockServer(testCase, TESTS_BASE, new ZipResourceLoader());
             
             server.start();
             
