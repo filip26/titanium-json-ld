@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.suite;
+package com.apicatalog.jsonld.test;
 
 import java.net.URI;
 import java.util.HashSet;
@@ -26,63 +26,13 @@ import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.suite.loader.UriBaseRewriter;
-import com.apicatalog.jsonld.suite.loader.ZipResourceLoader;
+import com.apicatalog.jsonld.test.loader.UriBaseRewriter;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
 public final class JsonLdTestCase {
-
-    public enum Type {
-
-        EXPAND_TEST,
-        COMPACT_TEST,
-        FLATTEN_TEST,
-        TO_RDF_TEST,
-        FROM_RDF_TEST,
-        FRAME_TEST,
-
-        POSITIVE_EVALUATION_TEST, 
-        NEGATIVE_EVALUATION_TEST,
-        POSITIVE_SYNTAX_TEST        
-        ;
-        
-        static Type of(String value) {
-            
-            if (value == null) {
-                throw new IllegalArgumentException("Test @type cannot be null.");
-            }
-            
-            switch (value) {
-            case "jld:ExpandTest":
-                return EXPAND_TEST;
-            case "jld:CompactTest":
-                return COMPACT_TEST;                
-            case "jld:FlattenTest":
-                return FLATTEN_TEST;
-            case "jld:ToRDFTest":
-                return TO_RDF_TEST;
-            case "jld:FromRDFTest":
-                return FROM_RDF_TEST;
-            case "jld:FrameTest":
-                return FRAME_TEST;
-            
-            case "jld:PositiveEvaluationTest":
-                return POSITIVE_EVALUATION_TEST;
-            case "jld:NegativeEvaluationTest":
-                return NEGATIVE_EVALUATION_TEST;
-
-            case "jld:PositiveSyntaxTest":
-                return POSITIVE_SYNTAX_TEST;
-            }
-            
-           throw new IllegalArgumentException("Unknown test @type '" + value + "'"); 
-        }
-        
-    }
-
     
     public String id;
     
@@ -116,13 +66,16 @@ public final class JsonLdTestCase {
     
     private final String testsBase;
     
-    public JsonLdTestCase(final String testsBase) {
+    private final DocumentLoader loader;
+    
+    public JsonLdTestCase(final String testsBase, final DocumentLoader loader) {
         this.testsBase = testsBase;
+        this.loader = loader;
     }
 
-    public static final JsonLdTestCase of(JsonObject o, String manifestUri, String manifestBase, String baseUri) {
+    public static final JsonLdTestCase of(JsonObject o, String manifestUri, String manifestBase, String baseUri, final DocumentLoader loader) {
         
-        final JsonLdTestCase testCase = new JsonLdTestCase(manifestBase);
+        final JsonLdTestCase testCase = new JsonLdTestCase(manifestBase, loader);
         
         testCase.id = o.getString(Keywords.ID);
         
@@ -209,14 +162,14 @@ public final class JsonLdTestCase {
         
     public JsonLdOptions getOptions() {
         
-        final DocumentLoader loader = 
+        final DocumentLoader rewriter = 
                 new UriBaseRewriter(
                             baseUri, 
                             testsBase,
-                            new ZipResourceLoader()
+                            loader
                         );
         
-        JsonLdOptions jsonLdOptions = new JsonLdOptions(loader);
+        JsonLdOptions jsonLdOptions = new JsonLdOptions(rewriter);
         jsonLdOptions.setOrdered(true);
         
         options.setup(jsonLdOptions);
@@ -247,5 +200,52 @@ public final class JsonLdTestCase {
         }
 
         return JsonLdErrorCode.valueOf(errorCode.strip().toUpperCase().replace(" ", "_").replace("-", "_").replaceAll("\\_\\@", "_KEYWORD_" )); 
+    }
+    
+    public enum Type {
+
+        EXPAND_TEST,
+        COMPACT_TEST,
+        FLATTEN_TEST,
+        TO_RDF_TEST,
+        FROM_RDF_TEST,
+        FRAME_TEST,
+
+        POSITIVE_EVALUATION_TEST, 
+        NEGATIVE_EVALUATION_TEST,
+        POSITIVE_SYNTAX_TEST        
+        ;
+        
+        static Type of(String value) {
+            
+            if (value == null) {
+                throw new IllegalArgumentException("Test @type cannot be null.");
+            }
+            
+            switch (value) {
+            case "jld:ExpandTest":
+                return EXPAND_TEST;
+            case "jld:CompactTest":
+                return COMPACT_TEST;                
+            case "jld:FlattenTest":
+                return FLATTEN_TEST;
+            case "jld:ToRDFTest":
+                return TO_RDF_TEST;
+            case "jld:FromRDFTest":
+                return FROM_RDF_TEST;
+            case "jld:FrameTest":
+                return FRAME_TEST;
+            
+            case "jld:PositiveEvaluationTest":
+                return POSITIVE_EVALUATION_TEST;
+            case "jld:NegativeEvaluationTest":
+                return NEGATIVE_EVALUATION_TEST;
+
+            case "jld:PositiveSyntaxTest":
+                return POSITIVE_SYNTAX_TEST;
+            }
+            
+           throw new IllegalArgumentException("Unknown test @type '" + value + "'"); 
+        }   
     }
 }

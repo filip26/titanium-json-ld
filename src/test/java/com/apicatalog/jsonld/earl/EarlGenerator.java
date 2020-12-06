@@ -30,10 +30,11 @@ import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.loader.SchemeRouter;
-import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
-import com.apicatalog.jsonld.suite.JsonLdMockServer;
-import com.apicatalog.jsonld.suite.JsonLdTestRunnerEarl;
-import com.apicatalog.jsonld.suite.loader.UriBaseRewriter;
+import com.apicatalog.jsonld.test.JsonLdManifestLoader;
+import com.apicatalog.jsonld.test.JsonLdMockServer;
+import com.apicatalog.jsonld.test.JsonLdTestRunnerEarl;
+import com.apicatalog.jsonld.test.loader.UriBaseRewriter;
+import com.apicatalog.jsonld.test.loader.ZipResourceLoader;
 import com.github.tomakehurst.wiremock.WireMockServer;
 
 import jakarta.json.JsonArray;
@@ -66,7 +67,7 @@ public class EarlGenerator {
     public void testExpand(PrintWriter writer) throws JsonLdError {
 
         JsonLdManifestLoader
-            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "expand-manifest.jsonld")
+            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "expand-manifest.jsonld", new ZipResourceLoader())
             .stream()
             .forEach(testCase ->                
                         printResult(writer, testCase.uri,           
@@ -81,7 +82,7 @@ public class EarlGenerator {
     public void testCompact(final PrintWriter writer) throws JsonLdError {
 
         JsonLdManifestLoader
-            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld")
+            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld", new ZipResourceLoader())
             .stream()
             .forEach(testCase ->                
                         printResult(writer, testCase.uri,           
@@ -101,7 +102,7 @@ public class EarlGenerator {
     public void testFlatten(final PrintWriter writer) throws JsonLdError {
 
         JsonLdManifestLoader
-            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "flatten-manifest.jsonld")
+            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "flatten-manifest.jsonld", new ZipResourceLoader())
             .stream()
             .forEach(testCase ->                
                         printResult(writer, testCase.uri,           
@@ -120,7 +121,7 @@ public class EarlGenerator {
     public void testToRdf(final PrintWriter writer) throws JsonLdError {
         
         JsonLdManifestLoader
-        .load(JsonLdManifestLoader.JSON_LD_API_BASE, "toRdf-manifest.jsonld")
+        .load(JsonLdManifestLoader.JSON_LD_API_BASE, "toRdf-manifest.jsonld", new ZipResourceLoader())
         .stream()
         .forEach(testCase ->                
                 printResult(writer, testCase.uri,           
@@ -136,7 +137,7 @@ public class EarlGenerator {
     public void testFromRdf(PrintWriter writer) throws JsonLdError {
 
         JsonLdManifestLoader
-            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "fromRdf-manifest.jsonld")
+            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "fromRdf-manifest.jsonld", new ZipResourceLoader())
             .stream()
             .forEach(testCase ->                
                     printResult(writer, testCase.uri,           
@@ -152,7 +153,7 @@ public class EarlGenerator {
     public void testFrame(PrintWriter writer) throws JsonLdError {
 
         JsonLdManifestLoader
-            .load(JsonLdManifestLoader.JSON_LD_FRAMING_BASE, "frame-manifest.jsonld")
+            .load(JsonLdManifestLoader.JSON_LD_FRAMING_BASE, "frame-manifest.jsonld", new ZipResourceLoader())
             .stream()
             .forEach(testCase ->                
                         printResult(writer, testCase.uri,           
@@ -168,7 +169,7 @@ public class EarlGenerator {
     public void testRemote(PrintWriter writer) throws JsonLdError {
 
         JsonLdManifestLoader
-            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "remote-doc-manifest.jsonld")
+            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "remote-doc-manifest.jsonld", new ZipResourceLoader())
             .stream()
             .forEach(testCase -> {
                 

@@ -29,9 +29,10 @@ import org.junit.runners.Parameterized;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.lang.Version;
-import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
-import com.apicatalog.jsonld.suite.JsonLdTestCase;
-import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
+import com.apicatalog.jsonld.test.JsonLdManifestLoader;
+import com.apicatalog.jsonld.test.JsonLdTestCase;
+import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
+import com.apicatalog.jsonld.test.loader.ZipResourceLoader;
 
 @RunWith(Parameterized.class)
 public class ToRdfTest {
@@ -67,7 +68,7 @@ public class ToRdfTest {
     @Parameterized.Parameters(name = "{1}: {2}")
     public static Collection<Object[]> data() throws JsonLdError {
         return JsonLdManifestLoader
-                    .load(JsonLdManifestLoader.JSON_LD_API_BASE, "toRdf-manifest.jsonld")
+                    .load(JsonLdManifestLoader.JSON_LD_API_BASE, "toRdf-manifest.jsonld", new ZipResourceLoader())
                     .stream()            
                     .map(o -> new Object[] {o, o.id, o.name, o.baseUri})
                     .collect(Collectors.toList());

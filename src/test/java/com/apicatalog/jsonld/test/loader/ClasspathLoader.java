@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.loader;
+package com.apicatalog.jsonld.test.loader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +23,9 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.document.RdfDocument;
+import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
 public class ClasspathLoader implements DocumentLoader {
 
@@ -30,6 +33,10 @@ public class ClasspathLoader implements DocumentLoader {
     public Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
 
         try (final InputStream is = getClass().getResourceAsStream(url.getPath())) {
+            
+            if (url.toString().endsWith(".nq")) {
+                return RdfDocument.of(is);
+            }
             
             return JsonDocument.of(is);
             

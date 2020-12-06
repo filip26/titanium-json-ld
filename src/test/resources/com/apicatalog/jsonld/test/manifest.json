@@ -1,0 +1,71 @@
+{
+  "@context": ["context.jsonld", {"@base": "custom-manifest"}],
+  "@id": "",
+  "@type": "mf:Manifest",
+  "name": "Custom",
+  "description": "Custom JSON-LD tests.",
+  "baseIri": "https://raw.githubusercontent.com/filip26/titanium-json-ld/master/src/test/resources/com/apicatalog/jsonld/test/",
+  "sequence": [
+    {
+      "@id": "#t0001",
+      "@type": ["jld:PositiveEvaluationTest", "jld:FromRDFTest"],
+      "name": "Issue #64",
+      "purpose": "Use native types generate an invalid json ld",
+      "input": "issue64-in.nq",
+      "expect": "issue64-out.json",
+      "option": { "useNativeTypes": true }
+    }, 
+    {
+      "@id": "#t0002",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "name": "Issue #112: expand",
+      "purpose": "expand two @base",
+      "input": "issue112-in.json",
+      "expect": "issue112-out.json"
+    },
+	{
+      "@id": "#t0003",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ToRDFTest"],
+      "name": "Issue #112: toRdf",
+      "purpose": "toRdf two @base",
+      "input": "issue112-in.json",
+      "expect": "issue112-out.nq"
+    },
+            {
+      "@id": "#t0004",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "name": "Issue #120: expand",
+      "purpose": "expand numeric @id",
+      "input": "issue120-in.json",
+      "expect": "issue120-out.json",
+      "option": { "useNumericId" : true, "base": "https://json-ld.org/playground/" }
+    },
+	{
+      "@id": "#t0005",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ToRDFTest"],
+      "name": "Issue #120: toRdf",
+      "purpose": "toRdf numeric @id",
+      "input": "issue120-in.json",
+      "expect": "issue120-out.nq",
+      "option": { "useNumericId" : true, "base": "https://json-ld.org/playground/" }
+    },
+    {
+      "@id": "#t0006",
+      "@type": ["jld:PositiveEvaluationTest", "jld:FromRDFTest"],
+      "name": "Issue #58: fromRdf",
+      "purpose": "one item list",
+      "input": "issue58-in.nq",
+      "expect": "issue58-out.json",
+      "option": { "ordered" : true }
+    },
+    {
+      "@id": "#t0007",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ToRDFTest"],
+      "name": "Issue #61: toRdf",
+      "purpose": "triples with aliased @id and @base",
+      "input": "issue61-in.json",
+      "expect": "issue61-out.nq",
+      "option": { "expandContext" : "issue61-context.json", "base": "https://api.inaturalist.org/v1/observations/" }
+    }
+  ]
+}

@@ -30,11 +30,12 @@ import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.SchemeRouter;
-import com.apicatalog.jsonld.suite.JsonLdManifestLoader;
-import com.apicatalog.jsonld.suite.JsonLdMockServer;
-import com.apicatalog.jsonld.suite.JsonLdTestCase;
-import com.apicatalog.jsonld.suite.JsonLdTestRunnerJunit;
-import com.apicatalog.jsonld.suite.loader.UriBaseRewriter;
+import com.apicatalog.jsonld.test.JsonLdManifestLoader;
+import com.apicatalog.jsonld.test.JsonLdMockServer;
+import com.apicatalog.jsonld.test.JsonLdTestCase;
+import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
+import com.apicatalog.jsonld.test.loader.UriBaseRewriter;
+import com.apicatalog.jsonld.test.loader.ZipResourceLoader;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 @RunWith(Parameterized.class)
@@ -93,7 +94,7 @@ public class RemoteTest {
     @Parameterized.Parameters(name = "{1}: {2}")
     public static Collection<Object[]> data() throws JsonLdError {
         return JsonLdManifestLoader
-                    .load(JsonLdManifestLoader.JSON_LD_API_BASE, "remote-doc-manifest.jsonld")
+                    .load(JsonLdManifestLoader.JSON_LD_API_BASE, "remote-doc-manifest.jsonld", new ZipResourceLoader())
                     .stream()            
                     .map(o -> new Object[] {o, o.id, o.name, o.baseUri})
                     .collect(Collectors.toList());

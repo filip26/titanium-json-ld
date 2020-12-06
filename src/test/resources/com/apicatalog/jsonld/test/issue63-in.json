@@ -2,7 +2,7 @@
   "@id": "1",
   "test": "some-test",
   "@context": [
-    "classpath:/com/apicatalog/jsonld/issue/issue63-context.json",
+    "classpath:/com/apicatalog/jsonld/test/issue63-context.json",
     {
       "nodeRole": {
         "@type": "@id",
