@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.HashSet;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import com.apicatalog.jsonld.http.media.MediaType;
 
@@ -47,18 +49,13 @@ class MediaTypeTest {
         assertTrue(type.parameters().isEmpty());
     }
 
-    @Test
-    void test2() {
-        MediaType type = MediaType.of("text");
+    @ParameterizedTest
+    @ValueSource(strings = {"text", "text//xxx", "1/!", "   ", "&"})
+    void test2(String mediaType) {
+        MediaType type = MediaType.of(mediaType);
         assertNull(type);
     }
-
-    @Test
-    void test3() {
-        MediaType type = MediaType.of("text//xxx");
-        assertNull(type);
-    }
-
+    
     @Test
     void test4() {
         MediaType type = MediaType.of("  x/y+a  ");
@@ -69,12 +66,6 @@ class MediaTypeTest {
         assertTrue(type.parameters().isEmpty());
     }
 
-    @Test
-    void test5() {
-        MediaType type = MediaType.of("1/!");
-        assertNull(type);
-    }
-    
     @Test
     void test6() {
         MediaType type = MediaType.of("1/2.a;3=4;5");
@@ -115,12 +106,6 @@ class MediaTypeTest {
     }
 
     @Test
-    void test9() {
-        MediaType type = MediaType.of("   ");
-        assertNull(type);
-    }
-
-    @Test
     void test10() {
         MediaType type= MediaType.of("a/b !");
         assertNotNull(type);
@@ -152,12 +137,6 @@ class MediaTypeTest {
         assertTrue(type.parameters().firstValue("1").isPresent());
         assertEquals("a\tb", type.parameters().firstValue("1").get());
         assertEquals(Arrays.asList("a\tb"), type.parameters().values("1"));
-    }
-
-    @Test
-    void test13() {
-        MediaType type= MediaType.of("&");
-        assertNull(type);
     }
 
     @Test

@@ -16,7 +16,6 @@
 package com.apicatalog.jsonld;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.util.stream.Stream;
 
@@ -34,10 +33,7 @@ class CustomTest {
         
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")
-    void testCustom(JsonLdTestCase testCase) {
-        // skip specVersion == 1.0
-        assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
-        
+    void testCustom(JsonLdTestCase testCase) {        
         assertTrue(new JsonLdTestRunnerJunit(testCase).execute());            
     }
 
@@ -45,7 +41,8 @@ class CustomTest {
         return JsonLdManifestLoader
                     .load("/com/apicatalog/jsonld/test/", "manifest.json", new ClasspathLoader())
                     .stream()
-                    .filter(o -> !"#t0008".equals(o.id))  // requires mock server
+                    .filter(test -> !Version.V1_0.equals(test.options.specVersion)) // skip specVersion == 1.0
+                    .filter(test -> !"#t0008".equals(test.id))  // requires mock server
                     ;
     }
 }

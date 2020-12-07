@@ -37,11 +37,9 @@ class ToRdfTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")
     void testToRdf(final JsonLdTestCase testCase) throws IOException {
+        
         // Force a locale to something different than US to be aware of DecimalFormat errors
-        Locale.setDefault(Locale.FRANCE);
-
-        // skip specVersion == 1.0
-        assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
+        Locale.setDefault(Locale.GERMAN);
 
         // blank nodes as predicates are not supported - wont'fix
         assumeFalse("#te075".equals(testCase.id));
@@ -54,6 +52,8 @@ class ToRdfTest {
     static final Stream<JsonLdTestCase> data() throws JsonLdError {
         return JsonLdManifestLoader
                     .load(JsonLdManifestLoader.JSON_LD_API_BASE, "toRdf-manifest.jsonld", new ZipResourceLoader())
-                    .stream();            
+                    .stream()
+                    .filter(test -> !Version.V1_0.equals(test.options.specVersion)) // skip specVersion == 1.0
+                    ;
     }
 }

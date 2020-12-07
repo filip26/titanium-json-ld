@@ -34,6 +34,8 @@ import jakarta.json.JsonValue;
 
 public final class JsonLdTestCase {
     
+    public static final String TESTS_BASE = "https://w3c.github.io";
+    
     public String id;
     
     public String name;

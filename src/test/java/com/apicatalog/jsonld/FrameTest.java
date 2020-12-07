@@ -35,10 +35,7 @@ class FrameTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")
     void testFrame(JsonLdTestCase testCase) {
-
-        // skip specVersion == 1.0
-        assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
-
+        
         // @embed: @last - won't fix
         assumeFalse("#t0059".equals(testCase.id));
 
@@ -48,6 +45,8 @@ class FrameTest {
     static final Stream<JsonLdTestCase> data() throws JsonLdError {
         return JsonLdManifestLoader
                     .load(JsonLdManifestLoader.JSON_LD_FRAMING_BASE, "frame-manifest.jsonld", new ZipResourceLoader())
-                    .stream();
+                    .stream()
+                    .filter(test -> !Version.V1_0.equals(test.options.specVersion)) // skip specVersion == 1.0
+                    ;
     }
 }

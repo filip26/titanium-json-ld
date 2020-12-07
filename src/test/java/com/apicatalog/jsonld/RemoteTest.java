@@ -28,6 +28,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.SchemeRouter;
 import com.apicatalog.jsonld.test.JsonLdManifestLoader;
 import com.apicatalog.jsonld.test.JsonLdMockServer;
@@ -37,10 +38,9 @@ import com.apicatalog.jsonld.test.loader.UriBaseRewriter;
 import com.apicatalog.jsonld.test.loader.ZipResourceLoader;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-public class RemoteTest {
 
-    public static final String TESTS_BASE = "https://w3c.github.io";
- 
+class RemoteTest {
+    
     WireMockServer wireMockServer;
 
     @BeforeEach 
@@ -64,7 +64,7 @@ public class RemoteTest {
         
         try {
 
-            JsonLdMockServer server = new JsonLdMockServer(testCase, TESTS_BASE, JsonLdManifestLoader.JSON_LD_API_BASE, new ZipResourceLoader());
+            JsonLdMockServer server = new JsonLdMockServer(testCase, JsonLdTestCase.TESTS_BASE, JsonLdManifestLoader.JSON_LD_API_BASE, new ZipResourceLoader());
             
             server.start();
             
@@ -74,7 +74,7 @@ public class RemoteTest {
                 
                 expandOptions.setDocumentLoader(
                                     new UriBaseRewriter(
-                                                TESTS_BASE, 
+                                                JsonLdTestCase.TESTS_BASE, 
                                                 wireMockServer.baseUrl(),
                                                 SchemeRouter.defaultInstance()));
                 
@@ -92,6 +92,8 @@ public class RemoteTest {
     static final Stream<JsonLdTestCase> data() throws JsonLdError {
         return JsonLdManifestLoader
                     .load(JsonLdManifestLoader.JSON_LD_API_BASE, "remote-doc-manifest.jsonld", new ZipResourceLoader())
-                    .stream();
+                    .stream()
+                    .filter(test -> !Version.V1_0.equals(test.options.specVersion)) // skip specVersion == 1.0
+                    ;
     }
 }

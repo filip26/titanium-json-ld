@@ -16,7 +16,6 @@
 package com.apicatalog.jsonld;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.util.stream.Stream;
 
@@ -35,15 +34,15 @@ class CompactTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")
     void testCompact(JsonLdTestCase testCase) {
-        // skip specVersion == 1.0
-        assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
-
         assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
     }
 
     static final Stream<JsonLdTestCase> data() throws JsonLdError {        
         return JsonLdManifestLoader
                 .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld", new ZipResourceLoader())
-                .stream();            
+                .stream()
+                .filter(test -> !Version.V1_0.equals(test.options.specVersion)) // skip specVersion == 1.0
+                ;
+        
     }
 }

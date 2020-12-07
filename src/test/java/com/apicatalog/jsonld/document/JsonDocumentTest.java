@@ -26,6 +26,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.http.media.MediaType;
@@ -123,9 +125,10 @@ class JsonDocumentTest {
         assertThrows(IllegalArgumentException.class, () -> JsonDocument.of(null, reader));
     }
     
-    @Test
-    void testi7() throws JsonLdError {
-        final InputStream is = new ByteArrayInputStream("{ bad json".getBytes());
+    @ParameterizedTest
+    @ValueSource(strings = {"{ bad json", "   ", "true"})
+    void testi7(String content) throws JsonLdError {
+        final InputStream is = new ByteArrayInputStream(content.getBytes());
         assertThrows(JsonLdError.class, () -> JsonDocument.of(is));
     }
 
@@ -133,17 +136,5 @@ class JsonDocumentTest {
     void testi8() throws JsonLdError {
         final Reader reader = new InputStreamReader(new ByteArrayInputStream("n".getBytes()));
         assertThrows(JsonLdError.class, () -> JsonDocument.of(reader));
-    }
-    
-    @Test
-    void testi9() throws JsonLdError {
-        final InputStream is = new ByteArrayInputStream("   ".getBytes());
-        assertThrows(JsonLdError.class, () -> JsonDocument.of(is));
-    }
-
-    @Test
-    void testi10() throws JsonLdError {
-        final InputStream is = new ByteArrayInputStream("true".getBytes());
-        assertThrows(JsonLdError.class, () -> JsonDocument.of(is));
-    }
+    }    
 }
