@@ -33,7 +33,7 @@ class CompactBaseTest {
 
         final JsonLdTestCase testCase = JsonLdManifestLoader
                 .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld", new ZipResourceLoader())
-                .stream()  
+                .stream()
                 .filter(o -> "#t0047".equals(o.id))
                 .findFirst().orElseThrow();
                 

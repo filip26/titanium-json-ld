@@ -18,6 +18,7 @@ package com.apicatalog.jsonld.test;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
@@ -25,6 +26,7 @@ import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.test.loader.UriBaseRewriter;
 
@@ -35,6 +37,8 @@ import jakarta.json.JsonValue;
 public final class JsonLdTestCase {
     
     public static final String TESTS_BASE = "https://w3c.github.io";
+    
+    public static final Predicate<JsonLdTestCase> IS_NOT_V1_0 = Predicate.not(test -> Version.V1_0.equals(test.options.specVersion));
     
     public String id;
     

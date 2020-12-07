@@ -23,7 +23,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.test.JsonLdManifestLoader;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
@@ -41,7 +40,7 @@ class CustomTest {
         return JsonLdManifestLoader
                     .load("/com/apicatalog/jsonld/test/", "manifest.json", new ClasspathLoader())
                     .stream()
-                    .filter(test -> !Version.V1_0.equals(test.options.specVersion)) // skip specVersion == 1.0
+                    .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                     .filter(test -> !"#t0008".equals(test.id))  // requires mock server
                     ;
     }
