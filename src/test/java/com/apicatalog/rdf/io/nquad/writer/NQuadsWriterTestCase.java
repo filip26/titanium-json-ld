@@ -52,5 +52,10 @@ public final class NQuadsWriterTestCase {
     
     public String getExpected() {
         return expected;
-    }    
+    }
+    
+    @Override
+    public String toString() {
+        return id + ": " + name;
+    }
 }

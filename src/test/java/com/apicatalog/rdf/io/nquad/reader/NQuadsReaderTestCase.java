@@ -65,5 +65,8 @@ public final class NQuadsReaderTestCase {
         return new NQuadsReaderTestCase(name, comment, type);
     }
     
-    
+    @Override
+    public String toString() {
+        return type.name().toLowerCase() + ": " + comment;
+    }
 }

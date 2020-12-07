@@ -23,10 +23,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.net.URI;
-
-import org.junit.Assert;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.http.link.Link;
@@ -62,87 +61,86 @@ public final class JsonLdMockServer {
         }
 
         
-            if (testCase.redirectTo != null) {
-                stubFor(get(urlEqualTo(testCase.input.toString().substring(testBase.length())))
-                        .willReturn(aResponse()
-                            .withStatus(testCase.httpStatus)
-                            .withHeader("Location", testCase.redirectTo.toASCIIString().substring(testBase.length()))
-                                )); 
-            }
+        if (testCase.redirectTo != null) {
+            stubFor(get(urlEqualTo(testCase.input.toString().substring(testBase.length())))
+                    .willReturn(aResponse()
+                        .withStatus(testCase.httpStatus)
+                        .withHeader("Location", testCase.redirectTo.toASCIIString().substring(testBase.length()))
+                            )); 
+        }
+        
+        if (testCase.httpLink != null && testCase.httpLink.size() == 1) {
             
-            if (testCase.httpLink != null && testCase.httpLink.size() == 1) {
+            String linkValue = testCase.httpLink.iterator().next();
+            
+            Link link = Link.of(linkValue, URI.create(".")).iterator().next();
+            
+            final MediaType contentType;
+            
+            if (link.type().isPresent()) {
                 
-                String linkValue = testCase.httpLink.iterator().next();
+                contentType = link.type().get();
                 
-                Link link = Link.of(linkValue, URI.create(".")).iterator().next();
+            } else {
                 
-                final MediaType contentType;
-                
-                if (link.type().isPresent()) {
+                if (link.target().toString().endsWith(".html")) {
+                    contentType = MediaType.HTML;
                     
-                    contentType = link.type().get();
+                } else if (link.target().toString().endsWith(".jsonld")) {
+                    contentType = MediaType.JSON_LD;
+                    
+                } else if (link.target().toString().endsWith(".json")) {
+                    contentType = MediaType.JSON;
                     
                 } else {
-                    
-                    if (link.target().toString().endsWith(".html")) {
-                        contentType = MediaType.HTML;
-                        
-                    } else if (link.target().toString().endsWith(".jsonld")) {
-                        contentType = MediaType.JSON_LD;
-                        
-                    } else if (link.target().toString().endsWith(".json")) {
-                        contentType = MediaType.JSON;
-                        
-                    } else {
-                        contentType = null;
-                    }
+                    contentType = null;
                 }
+            }
+            
+            assertNotNull(contentType);
+
+            String linkUri = UriResolver.resolve(testCase.input, link.target().toString());
+
+            byte[] content  = loader.fetchBytes(URI.create(resourceBase +  linkUri.substring(testCase.baseUri.length())));
                 
-                Assert.assertNotNull(contentType);
-
-                String linkUri = UriResolver.resolve(testCase.input, link.target().toString());
-
-                byte[] content  = loader.fetchBytes(URI.create(resourceBase +  linkUri.substring(testCase.baseUri.length())));
-                    
-                if (content != null) {
+            if (content != null) {
 //                    Assert.assertNotNull(linkedDocument);
 //                    Assert.assertNotNull(linkedDocument.getContent());
 
 //                    linkedDocument.getContent().getBytes().ifPresent(byteArray -> {
-                        
-                    stubFor(get(urlEqualTo(linkUri.substring(testBase.length())))
-                            .willReturn(aResponse()
-                                .withStatus(200)
-                                .withHeader("Content-Type", contentType.toString())
-                                .withBody(content))
-                                    );                    
+                    
+                stubFor(get(urlEqualTo(linkUri.substring(testBase.length())))
+                        .willReturn(aResponse()
+                            .withStatus(200)
+                            .withHeader("Content-Type", contentType.toString())
+                            .withBody(content))
+                                );                    
 //                    });
-                }
             }
-                
-            ResponseDefinitionBuilder mockResponseBuilder = aResponse();
-
-            byte[] content = loader.fetchBytes(URI.create(resourceBase + inputPath.substring(testCase.baseUri.length())));
+        }
             
-            if (content != null) {
-                mockResponseBuilder.withStatus(200);
-                
-                if (testCase.httpLink != null) {
-                    testCase.httpLink.forEach(link -> mockResponseBuilder.withHeader("Link", link));
-                }
+        ResponseDefinitionBuilder mockResponseBuilder = aResponse();
 
-                if (testCase.contentType != null) {
-                    mockResponseBuilder.withHeader("Content-Type", testCase.contentType.toString());
-                }
-                
-                mockResponseBuilder.withBody(content);
-                
-            } else {
-                mockResponseBuilder.withStatus(404);                  
+        byte[] content = loader.fetchBytes(URI.create(resourceBase + inputPath.substring(testCase.baseUri.length())));
+        
+        if (content != null) {
+            mockResponseBuilder.withStatus(200);
+            
+            if (testCase.httpLink != null) {
+                testCase.httpLink.forEach(link -> mockResponseBuilder.withHeader("Link", link));
             }
 
-            stubFor(get(urlEqualTo(inputPath.substring(testBase.length()))).willReturn(mockResponseBuilder));
-        
+            if (testCase.contentType != null) {
+                mockResponseBuilder.withHeader("Content-Type", testCase.contentType.toString());
+            }
+            
+            mockResponseBuilder.withBody(content);
+            
+        } else {
+            mockResponseBuilder.withStatus(404);                  
+        }
+
+        stubFor(get(urlEqualTo(inputPath.substring(testBase.length()))).willReturn(mockResponseBuilder));        
     }
     
     public void stop() {

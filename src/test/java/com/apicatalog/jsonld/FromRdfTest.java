@@ -15,53 +15,33 @@
  */
 package com.apicatalog.jsonld;
 
-import static org.junit.Assume.assumeFalse;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.test.JsonLdManifestLoader;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 import com.apicatalog.jsonld.test.loader.ZipResourceLoader;
 
-@RunWith(Parameterized.class)
-public class FromRdfTest {
+class FromRdfTest {
     
-    @Parameterized.Parameter(0)
-    public JsonLdTestCase testCase;
-
-    @Parameterized.Parameter(1)
-    public String testId;
-    
-    @Parameterized.Parameter(2)
-    public String testName;
-        
-    @Parameterized.Parameter(3)
-    public String baseUri;
-    
-    @Test
-    public void testFromRdf() {
-
-        // skip specVersion == 1.0
-        assumeFalse(Version.V1_0.equals(testCase.options.specVersion));
-
-        Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute());            
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("data")
+    void testFromRdf(final JsonLdTestCase testCase) {
+        assertTrue(new JsonLdTestRunnerJunit(testCase).execute());            
     }
 
-    @Parameterized.Parameters(name = "{1}: {2}")
-    public static Collection<Object[]> data() throws JsonLdError {
+    static final Stream<JsonLdTestCase> data() throws JsonLdError {
         return JsonLdManifestLoader
                     .load(JsonLdManifestLoader.JSON_LD_API_BASE, "fromRdf-manifest.jsonld", new ZipResourceLoader())
-                    .stream()            
-                    .map(o -> new Object[] {o, o.id, o.name, o.baseUri})
-                    .collect(Collectors.toList());
+                    .stream()
+                    .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
+                    ;
     }
 }

@@ -15,21 +15,21 @@
  */
 package com.apicatalog.rdf.io.nquad;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.io.error.RdfReaderException;
@@ -37,56 +37,42 @@ import com.apicatalog.rdf.io.nquad.reader.NQuadsReaderTestCase;
 import com.apicatalog.rdf.io.nquad.reader.NQuadsReaderTestCase.Type;
 import com.apicatalog.rdf.io.nquad.reader.NQuadsReaderTestSuite;
 
-@RunWith(Parameterized.class)
-public class NQuadsReaderTest {
+class NQuadsReaderTest {
 
     private final static String TEST_SUITE_NAME = "/n-quads-test-suite-20200629.zip";
     private final static String TEST_CASE_BASE_PATH = "nquads-test-suite/";
     
-    @Parameterized.Parameter(0)
-    public NQuadsReaderTestCase testCase;
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("data")
+    void testRead(NQuadsReaderTestCase testCase) throws IOException, URISyntaxException {
 
-    @Parameterized.Parameter(1)
-    public String testType;
-    
-    @Parameterized.Parameter(2)
-    public String testName;
-
-    @Test
-    public void testRead() throws IOException, URISyntaxException {
-
-        Assert.assertNotNull(testCase);
-        Assert.assertNotNull(testCase.getName());
-        Assert.assertNotNull(testCase.getType());
+        assertNotNull(testCase);
+        assertNotNull(testCase.getName());
+        assertNotNull(testCase.getType());
         
         final URL zipFileUrl =  (new NQuadsReaderTest()).getClass().getResource(TEST_SUITE_NAME);
 
-        Assert.assertNotNull(zipFileUrl);
+        assertNotNull(zipFileUrl);
 
         try (final ZipFile zip = new ZipFile(new File(zipFileUrl.toURI()))) {
             
-            Assert.assertNotNull(zip);
+            assertNotNull(zip);
             
             try (final Reader reader = new InputStreamReader(zip.getInputStream(zip.getEntry(TEST_CASE_BASE_PATH + testCase.getName() + ".nq")))) {
 
                 RdfDataset dataset = (new NQuadsReader(reader)).readDataset();
                 
-                Assert.assertNotNull(dataset);
+                assertNotNull(dataset);
                 
-                Assert.assertEquals(Type.POSITIVE, testCase.getType());
+                assertEquals(Type.POSITIVE, testCase.getType());
                 
             } catch (RdfReaderException | IllegalArgumentException e) {
-                Assert.assertEquals(Type.NEGATIVE, testCase.getType());
+                assertEquals(Type.NEGATIVE, testCase.getType());
             }
         }
     }
 
-    @Parameterized.Parameters(name = "{1}: {2}")
-    public static Collection<Object[]> data() throws ZipException, IOException, URISyntaxException {
-        return (new NQuadsReaderTestSuite(TEST_SUITE_NAME, TEST_CASE_BASE_PATH + "manifest.json"))
-                .load()
-                .stream()            
-                .map(o -> new Object[] {o, o.getType().name().toLowerCase(), o.getComment() + " : " + o.getName()})
-                .collect(Collectors.toList());
+    static final Stream<NQuadsReaderTestCase> data() throws ZipException, IOException, URISyntaxException {
+        return (new NQuadsReaderTestSuite(TEST_SUITE_NAME, TEST_CASE_BASE_PATH + "manifest.json")).load();
     }
 }

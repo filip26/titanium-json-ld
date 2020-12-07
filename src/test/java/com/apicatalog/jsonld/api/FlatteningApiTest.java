@@ -15,12 +15,14 @@
  */
 package com.apicatalog.jsonld.api;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.document.JsonDocument;
@@ -29,67 +31,67 @@ import com.apicatalog.jsonld.http.media.MediaType;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 
-public class FlatteningApiTest {
+class FlatteningApiTest {
 
     public static final MockLoader MOCK_LOADER = new MockLoader(JsonValue.EMPTY_JSON_ARRAY);
     
     @Test    
-    public void test1() throws JsonLdError {
+    void test1() throws JsonLdError {
         JsonStructure result = JsonLd.flatten(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).get();
         
-        Assert.assertNotNull(result);
-        Assert.assertEquals(JsonValue.EMPTY_JSON_ARRAY, result);
+        assertNotNull(result);
+        assertEquals(JsonValue.EMPTY_JSON_ARRAY, result);
     }
     
     @Test    
-    public void test2() throws JsonLdError {
+    void test2() throws JsonLdError {
         JsonStructure result = JsonLd.flatten(JsonDocument.of(MediaType.JSON, new ByteArrayInputStream(JsonValue.EMPTY_JSON_OBJECT.toString().getBytes()))).get();
         
-        Assert.assertNotNull(result);
-        Assert.assertEquals(JsonValue.EMPTY_JSON_ARRAY, result);
+        assertNotNull(result);
+        assertEquals(JsonValue.EMPTY_JSON_ARRAY, result);
     }
     
     @Test    
-    public void test3() throws JsonLdError {
+    void test3() throws JsonLdError {
         JsonStructure result = JsonLd.flatten("https://example.com").loader(MOCK_LOADER).get();
-        Assert.assertNotNull(result);
-        Assert.assertEquals(JsonValue.EMPTY_JSON_ARRAY, result);
+        assertNotNull(result);
+        assertEquals(JsonValue.EMPTY_JSON_ARRAY, result);
     }
 
     @Test    
-    public void test4() throws JsonLdError {
+    void test4() throws JsonLdError {
         JsonStructure result = JsonLd.flatten(URI.create("https://example.com")).loader(MOCK_LOADER).get();
-        Assert.assertNotNull(result);
-        Assert.assertEquals(JsonValue.EMPTY_JSON_ARRAY, result);
+        assertNotNull(result);
+        assertEquals(JsonValue.EMPTY_JSON_ARRAY, result);
     }
 
     @Test    
-    public void test5() throws JsonLdError {
+    void test5() throws JsonLdError {
         JsonStructure result = JsonLd.flatten("\thttps://example.com  ").loader(MOCK_LOADER).get();
         
-        Assert.assertNotNull(result);
-        Assert.assertEquals(JsonValue.EMPTY_JSON_ARRAY, result);
+        assertNotNull(result);
+        assertEquals(JsonValue.EMPTY_JSON_ARRAY, result);
     }
     
     @Test    
-    public void test6() throws JsonLdError {
+    void test6() throws JsonLdError {
         JsonStructure result = JsonLd.flatten("https://example.com").context(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).loader(MOCK_LOADER).ordered().get();
-        Assert.assertNotNull(result);
-        Assert.assertEquals(JsonValue.EMPTY_JSON_OBJECT, result);
+        assertNotNull(result);
+        assertEquals(JsonValue.EMPTY_JSON_OBJECT, result);
     }    
 
     @Test    
-    public void test7() throws JsonLdError {
+    void test7() throws JsonLdError {
         JsonStructure result = JsonLd.flatten("https://example.com").context(JsonDocument.of(MediaType.JSON, new InputStreamReader(new ByteArrayInputStream(JsonValue.EMPTY_JSON_OBJECT.toString().getBytes())))).loader(MOCK_LOADER).ordered().get();
-        Assert.assertNotNull(result);
-        Assert.assertEquals(JsonValue.EMPTY_JSON_OBJECT, result);
+        assertNotNull(result);
+        assertEquals(JsonValue.EMPTY_JSON_OBJECT, result);
     }    
 
     @Test    
-    public void test8() throws JsonLdError {
+    void test8() throws JsonLdError {
         JsonStructure result = JsonLd.flatten("https://example.com").context(JsonValue.EMPTY_JSON_OBJECT).loader(MOCK_LOADER).ordered().get();
-        Assert.assertNotNull(result);
-        Assert.assertEquals(JsonValue.EMPTY_JSON_OBJECT, result);
+        assertNotNull(result);
+        assertEquals(JsonValue.EMPTY_JSON_OBJECT, result);
     }    
 
 }

@@ -24,7 +24,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.RemoteTest;
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.JsonDocument;
@@ -32,6 +31,7 @@ import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.loader.SchemeRouter;
 import com.apicatalog.jsonld.test.JsonLdManifestLoader;
 import com.apicatalog.jsonld.test.JsonLdMockServer;
+import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerEarl;
 import com.apicatalog.jsonld.test.loader.UriBaseRewriter;
 import com.apicatalog.jsonld.test.loader.ZipResourceLoader;
@@ -179,7 +179,7 @@ public class EarlGenerator {
                     WireMockServer wireMockServer = new WireMockServer();
                     wireMockServer.start();
 
-                    JsonLdMockServer server = new JsonLdMockServer(testCase, RemoteTest.TESTS_BASE, JsonLdManifestLoader.JSON_LD_API_BASE, new ZipResourceLoader());
+                    JsonLdMockServer server = new JsonLdMockServer(testCase, JsonLdTestCase.TESTS_BASE, JsonLdManifestLoader.JSON_LD_API_BASE, new ZipResourceLoader());
                     server.start();
                     
                     
@@ -190,7 +190,7 @@ public class EarlGenerator {
                             
                             expandOptions.setDocumentLoader(
                                                 new UriBaseRewriter(
-                                                            RemoteTest.TESTS_BASE, 
+                                                            JsonLdTestCase.TESTS_BASE, 
                                                             wireMockServer.baseUrl(), 
                                                             SchemeRouter.defaultInstance()));
                             

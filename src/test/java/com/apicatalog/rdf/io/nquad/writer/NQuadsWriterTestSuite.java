@@ -15,17 +15,15 @@
  */
 package com.apicatalog.rdf.io.nquad.writer;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipException;
 
-import org.junit.Assert;
-
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.rdf.io.nquad.NQuadsWriterTest;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
@@ -33,11 +31,11 @@ import jakarta.json.stream.JsonParser;
 
 public final class NQuadsWriterTestSuite {
 
-    public static final Collection<NQuadsWriterTestCase> load() throws ZipException, IOException, URISyntaxException {
+    public static final Stream<NQuadsWriterTestCase> load() throws ZipException, IOException, URISyntaxException {
         
-        try (final InputStream is = (new NQuadsWriterTest()).getClass().getResourceAsStream("manifest.json")) {
+        try (final InputStream is = NQuadsWriterTestSuite.class.getResourceAsStream("/com/apicatalog/rdf/io/nquad/manifest.json")) {
 
-            Assert.assertNotNull(is);
+            assertNotNull(is);
 
             final JsonParser parser = Json.createParser(is);
             
@@ -48,7 +46,7 @@ public final class NQuadsWriterTestSuite {
                         .stream()
                         .filter(JsonUtils::isObject)
                         .map(JsonObject.class::cast)
-                        .map(NQuadsWriterTestCase::of).collect(Collectors.toList());
+                        .map(NQuadsWriterTestCase::of);
         }
     }
 }

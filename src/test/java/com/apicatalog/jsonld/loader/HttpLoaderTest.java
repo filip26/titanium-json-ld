@@ -15,11 +15,13 @@
  */
 package com.apicatalog.jsonld.loader;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.net.URISyntaxException;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.api.JsonLdError;
@@ -31,15 +33,27 @@ import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 import com.apicatalog.jsonld.test.loader.ClasspathLoader;
 import com.apicatalog.jsonld.test.loader.UriBaseRewriter;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 
-public class HttpLoaderTest {
+class HttpLoaderTest {
 
-    @Rule
-    public final WireMockRule wireMockRule = new WireMockRule();
+    WireMockServer wireMockServer;
+
+    @BeforeEach 
+    void proxyToWireMock() {
+        wireMockServer = new WireMockServer(WireMockConfiguration.options());
+        wireMockServer.start();
+    }
+
+    @AfterEach 
+    void noMoreWireMock() {
+        wireMockServer.stop();
+        wireMockServer = null;
+    }
     
     @Test
-    public void testMissingContentType() throws URISyntaxException, JsonLdError {
+    void testMissingContentType() throws URISyntaxException, JsonLdError {
      
         final JsonLdTestCase testCase = JsonLdManifestLoader
                 .load("/com/apicatalog/jsonld/test/", "manifest.json", new ClasspathLoader())
@@ -53,7 +67,7 @@ public class HttpLoaderTest {
     }
 
     @Test
-    public void testPlainTextContentType() throws URISyntaxException, JsonLdError {
+    void testPlainTextContentType() throws URISyntaxException, JsonLdError {
      
         final JsonLdTestCase testCase = JsonLdManifestLoader
                 .load("/com/apicatalog/jsonld/test/", "manifest.json", new ClasspathLoader())
@@ -78,7 +92,7 @@ public class HttpLoaderTest {
                 expandOptions.setDocumentLoader(
                                     new UriBaseRewriter(
                                                 testCase.baseUri, 
-                                                wireMockRule.baseUrl() + "/",
+                                                wireMockServer.baseUrl() + "/",
                                                 SchemeRouter.defaultInstance()));
                 
                 return JsonDocument.of(JsonLd.expand(testCase.input).options(expandOptions).get());
@@ -87,7 +101,7 @@ public class HttpLoaderTest {
             server.stop();
             
         } catch (Exception e) {
-            Assert.fail(e.getMessage());
+            fail(e.getMessage());
         }
     }
     

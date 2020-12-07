@@ -15,12 +15,16 @@
  */
 package com.apicatalog.jsonld.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
-
-import org.junit.Assert;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.api.JsonLdError;
@@ -83,13 +87,13 @@ public class JsonLdTestRunnerJunit {
     
     public boolean execute(final JsonLdTestCaseMethod method) {
 
-        Assert.assertNotNull(testCase.baseUri);
-        Assert.assertNotNull(testCase.input);
+        assertNotNull(testCase.baseUri);
+        assertNotNull(testCase.input);
 
         final JsonLdOptions options = testCase.getOptions();
 
-        Assert.assertNotNull(options);
-        Assert.assertNotNull(options.getDocumentLoader());
+        assertNotNull(options);
+        assertNotNull(options.getDocumentLoader());
         
         Document result = null;
         
@@ -97,10 +101,10 @@ public class JsonLdTestRunnerJunit {
   
             result = method.invoke(options);
             
-            Assert.assertNotNull("A result is expected but got null", result);
+            assertNotNull(result, "A result is expected but got null");
         
         } catch (JsonLdError e) {
-            Assert.assertEquals(e.getMessage(), testCase.expectErrorCode, e.getCode());
+            assertEquals(testCase.expectErrorCode, e.getCode(), e.getMessage());
             return true;
         }
 
@@ -109,39 +113,39 @@ public class JsonLdTestRunnerJunit {
     
     private boolean validate(final JsonLdTestCase testCase, final JsonLdOptions options, final Document result) {
 
-        Assert.assertNull(testCase.expectErrorCode);
+        assertNull(testCase.expectErrorCode);
 
         // A PositiveSyntaxTest succeeds when no error is found when processing.
         if (result.getRdfContent().isPresent() && testCase.expect == null && testCase.type.contains(Type.POSITIVE_SYNTAX_TEST)) {
             return true;
         }
         
-        Assert.assertNotNull("Test case does not define expected output nor expected error code.", testCase.expect);
+        assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
         
         try {
             Document expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new DocumentLoaderOptions());
                         
-            Assert.assertNotNull(expectedDocument);
+            assertNotNull(expectedDocument);
     
             // compare expected with the result
             
             if (expectedDocument.getJsonContent().isPresent()) {
-                
-                Assert.assertTrue("Expected JSON document but was " + result.getContentType(), result.getJsonContent().isPresent());
-                
+
+                assertTrue(result.getJsonContent().isPresent(), "Expected JSON document but was " + result.getContentType());        
+
                 return compareJson(testCase.id + ": " + testCase.name, result.getJsonContent().get(), expectedDocument.getJsonContent().get());
                 
             } else if (expectedDocument.getRdfContent().isPresent()) {
-                
-                Assert.assertTrue("Expected Rdf document but was " + result.getContentType(), result.getRdfContent().isPresent());
+
+                assertTrue(result.getRdfContent().isPresent(), "Expected RDF document but was " + result.getContentType());        
 
                 return compareRdf(testCase.id + ": " + testCase.name, result.getRdfContent().get(), expectedDocument.getRdfContent().get());
             }
             
-            Assert.assertTrue("Expected " + expectedDocument.getContentType() + " document but was " + result.getContentType(), result.getRdfContent().isPresent());
+            assertTrue(result.getRdfContent().isPresent(), "Expected " + expectedDocument.getContentType() + " document but was " + result.getContentType());
             
         } catch (JsonLdError e) {
-            Assert.fail(e.getMessage());
+            fail(e.getMessage());
         }
         return false;
     }
@@ -184,7 +188,7 @@ public class JsonLdTestRunnerJunit {
         
         System.out.println(stringWriter.toString());
 
-        Assert.fail("Expected " + expected + ", but was" + result);        
+        fail("Expected " + expected + ", but was" + result);        
         return false;
     }  
     
@@ -216,12 +220,12 @@ public class JsonLdTestRunnerJunit {
                 System.out.print(stringWriter.toString());
             }
 
-            Assert.assertTrue("The result does not match expected output.", match);
+            assertTrue(match, "The result does not match expected output.");
             
             return match;
             
         } catch (RdfWriterException | UnsupportedContentException | IOException e ) {
-            Assert.fail(e.getMessage());
+            fail(e.getMessage());
         }
         return false;
     }

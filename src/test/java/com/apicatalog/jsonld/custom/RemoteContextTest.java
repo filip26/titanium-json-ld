@@ -15,13 +15,13 @@
  */
 package com.apicatalog.jsonld.custom;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.api.JsonLdError;
@@ -33,7 +33,7 @@ import com.apicatalog.jsonld.test.loader.ClasspathLoader;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.RdfDataset;
 
-public class RemoteContextTest {
+class RemoteContextTest {
 
     /**
      * @see <a href="https://github.com/filip26/titanium-json-ld/issues/61">Issue #61</a>
@@ -41,7 +41,7 @@ public class RemoteContextTest {
      * @throws IOException
      */
     @Test
-    public void testToRdfMissingTriples1() throws JsonLdError, IOException {
+    void testToRdfMissingTriples1() throws JsonLdError, IOException {
 
         final Document document = readDocument("/com/apicatalog/jsonld/test/issue61-in.json");
         final Document context = readDocument("/com/apicatalog/jsonld/test/issue61-context.json");
@@ -66,7 +66,7 @@ public class RemoteContextTest {
      * @throws IOException
      */
     @Test
-    public void testToRdfMissingTriples2() throws JsonLdError, IOException {
+    void testToRdfMissingTriples2() throws JsonLdError, IOException {
 
         final Document document = readDocument("/com/apicatalog/jsonld/test/issue61-in.json");
         final Document context = readDocument("/com/apicatalog/jsonld/test/issue61-context.json");
@@ -94,7 +94,7 @@ public class RemoteContextTest {
      * @throws IOException
      */
     @Test
-    public void testRemoteContext() throws JsonLdError, IOException {
+    void testRemoteContext() throws JsonLdError, IOException {
 
         final Document document = readDocument("/com/apicatalog/jsonld/test/issue63-in.json");
         
