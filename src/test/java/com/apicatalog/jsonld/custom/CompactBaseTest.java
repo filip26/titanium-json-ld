@@ -15,8 +15,9 @@
  */
 package com.apicatalog.jsonld.custom;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.document.JsonDocument;
@@ -25,10 +26,10 @@ import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 import com.apicatalog.jsonld.test.loader.ZipResourceLoader;
 
-public class CompactBaseTest {
+class CompactBaseTest {
 
     @Test
-    public void testCompactBase() {
+    void testCompactBase() {
 
         final JsonLdTestCase testCase = JsonLdManifestLoader
                 .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld", new ZipResourceLoader())
@@ -36,12 +37,9 @@ public class CompactBaseTest {
                 .filter(o -> "#t0047".equals(o.id))
                 .findFirst().orElseThrow();
                 
-        Assert.assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options ->
-
-                JsonDocument.of(
-                        JsonLd.compact(testCase.input, testCase.context).options(options).base("http://fake.com").get()
-                )
-
-        ));
+        assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options ->
+                        JsonDocument.of(
+                                JsonLd.compact(testCase.input, testCase.context).options(options).base("http://fake.com").get()
+        )));
     }
 }

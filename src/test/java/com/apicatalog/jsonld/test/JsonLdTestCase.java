@@ -248,4 +248,9 @@ public final class JsonLdTestCase {
            throw new IllegalArgumentException("Unknown test @type '" + value + "'"); 
         }   
     }
+    
+    @Override
+    public String toString() {
+        return id + ": " + name;
+    }
 }

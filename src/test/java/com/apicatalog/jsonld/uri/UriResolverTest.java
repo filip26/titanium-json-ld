@@ -15,66 +15,53 @@
  */
 package com.apicatalog.jsonld.uri;
 
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.stream.Stream;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Parameterized.class)
-public class UriResolverTest {
+class UriResolverTest {
 
-    @Parameterized.Parameter(0)
-    public URI base;
-
-    @Parameterized.Parameter(1)
-    public String relative;
-
-    @Parameterized.Parameter(2)
-    public String expected;
-
-    @Test
-    public void testResolve() {
-        Assert.assertEquals(expected, UriResolver.resolve(base, relative));
+    @ParameterizedTest(name = "resolve({0}, {1}) to {2}")
+    @MethodSource("data")
+    void testResolve(final String base, String relative, String expected) {
+        assertEquals(expected, UriResolver.resolve(URI.create(base), relative));
     }
     
-    @Parameterized.Parameters(name = "resolve({0}, {1}) to {2}")
-    public static Collection<Object[]> data() {        
-        List<Object[]> data = new ArrayList<>();
-        
-        data.add(new Object[] {URI.create("file:///a/bb/ccc/d;p?q,"), "g", "file:///a/bb/ccc/g"});
-        data.add(new Object[] {URI.create("file:///a/bb/ccc/d;p?q,"), "/g", "file:///g"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "g:h", "g:h"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "g", "http://a/b/c/g"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "./g", "http://a/b/c/g"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "g/", "http://a/b/c/g/"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "/g", "http://a/g"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "//g", "http://g"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "?y", "http://a/b/c/d;p?y"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "g?y", "http://a/b/c/g?y"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "#s", "http://a/b/c/d;p?q#s"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "g#s", "http://a/b/c/g#s"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "g?y#s", "http://a/b/c/g?y#s"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), ";x", "http://a/b/c/;x"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "g;x", "http://a/b/c/g;x"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "g;x?y#s", "http://a/b/c/g;x?y#s"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "", "http://a/b/c/d;p?q"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), ".", "http://a/b/c/"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "./", "http://a/b/c/"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "..", "http://a/b/"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "../", "http://a/b/"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "../g", "http://a/b/g"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "../..", "http://a/"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "../../", "http://a/"});
-        data.add(new Object[] {URI.create("http://a/b/c/d;p?q"), "../../g", "http://a/g"});
-        data.add(new Object[] {URI.create("http://a/"), "", "http://a/"});
-        data.add(new Object[] {URI.create("http://a/b/c"), "/b", "http://a/b"});
-        
-        return data;
-
+    static final Stream<Arguments> data() {        
+        return Stream.of(
+            arguments("file:///a/bb/ccc/d;p?q,", "g", "file:///a/bb/ccc/g"),
+            arguments("file:///a/bb/ccc/d;p?q,", "/g", "file:///g"),
+            arguments("http://a/b/c/d;p?q", "g:h", "g:h"),
+            arguments("http://a/b/c/d;p?q", "g", "http://a/b/c/g"),
+            arguments("http://a/b/c/d;p?q", "./g", "http://a/b/c/g"),
+            arguments("http://a/b/c/d;p?q", "g/", "http://a/b/c/g/"),
+            arguments("http://a/b/c/d;p?q", "/g", "http://a/g"),
+            arguments("http://a/b/c/d;p?q", "//g", "http://g"),
+            arguments("http://a/b/c/d;p?q", "?y", "http://a/b/c/d;p?y"),
+            arguments("http://a/b/c/d;p?q", "g?y", "http://a/b/c/g?y"),
+            arguments("http://a/b/c/d;p?q", "#s", "http://a/b/c/d;p?q#s"),
+            arguments("http://a/b/c/d;p?q", "g#s", "http://a/b/c/g#s"),
+            arguments("http://a/b/c/d;p?q", "g?y#s", "http://a/b/c/g?y#s"),
+            arguments("http://a/b/c/d;p?q", ";x", "http://a/b/c/;x"),
+            arguments("http://a/b/c/d;p?q", "g;x", "http://a/b/c/g;x"),
+            arguments("http://a/b/c/d;p?q", "g;x?y#s", "http://a/b/c/g;x?y#s"),
+            arguments("http://a/b/c/d;p?q", "", "http://a/b/c/d;p?q"),
+            arguments("http://a/b/c/d;p?q", ".", "http://a/b/c/"),
+            arguments("http://a/b/c/d;p?q", "./", "http://a/b/c/"),
+            arguments("http://a/b/c/d;p?q", "..", "http://a/b/"),
+            arguments("http://a/b/c/d;p?q", "../", "http://a/b/"),
+            arguments("http://a/b/c/d;p?q", "../g", "http://a/b/g"),
+            arguments("http://a/b/c/d;p?q", "../..", "http://a/"),
+            arguments("http://a/b/c/d;p?q", "../../", "http://a/"),
+            arguments("http://a/b/c/d;p?q", "../../g", "http://a/g"),
+            arguments("http://a/", "", "http://a/"),
+            arguments("http://a/b/c", "/b", "http://a/b")
+        );
     }
 }

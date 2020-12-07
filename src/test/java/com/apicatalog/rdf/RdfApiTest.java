@@ -15,17 +15,17 @@
  */
 package com.apicatalog.rdf;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 
-public class RdfApiTest {
+class RdfApiTest {
 
     /**
      * @see <a href="https://github.com/filip26/titanium-json-ld/issues/118">Issue #118</a>
@@ -33,7 +33,7 @@ public class RdfApiTest {
      * @throws IOException
      */
     @Test
-    public void testBlankNodeNotation() throws JsonLdError, IOException {
+    void testBlankNodeNotation() throws JsonLdError, IOException {
 
         final RdfResource node = Rdf.createBlankNode("_:bn1");
         
@@ -48,7 +48,7 @@ public class RdfApiTest {
      * @throws IOException
      */
     @Test
-    public void testBlankNodeLabel() throws JsonLdError, IOException {
+    void testBlankNodeLabel() throws JsonLdError, IOException {
 
         final RdfResource node = Rdf.createBlankNode("bn1");
         

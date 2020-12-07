@@ -58,7 +58,7 @@
         <jakarta.json.version>2.0.0</jakarta.json.version> 
          
          <!--  test resources -->
-        <junit.version>4.13.1</junit.version>
+        <junit.version>5.7.0</junit.version>
         <wiremock.version>2.27.2</wiremock.version>
     </properties>
 
@@ -78,13 +78,13 @@
             <scope>test</scope>
 		</dependency>
 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+		<dependency>
+		    <groupId>org.junit.jupiter</groupId>
+		    <artifactId>junit-jupiter</artifactId>
             <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        
+		    <scope>test</scope>
+		</dependency>
+		        
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock-jre8</artifactId>

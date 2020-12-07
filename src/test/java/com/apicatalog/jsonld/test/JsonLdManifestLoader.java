@@ -15,10 +15,11 @@
  */
 package com.apicatalog.jsonld.test;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.net.URI;
 import java.util.stream.Stream;
-
-import org.junit.Assert;
 
 import com.apicatalog.jsonld.api.JsonLdError;
 import com.apicatalog.jsonld.api.JsonLdErrorCode;
@@ -58,7 +59,7 @@ public final class JsonLdManifestLoader {
         
             Document manifest = loader.loadDocument(URI.create(manifestBase + manifestName), new DocumentLoaderOptions());
     
-            Assert.assertNotNull(manifest);
+            assertNotNull(manifest);
     
             final JsonObject manifestObject = manifest
                                                     .getJsonContent()
@@ -75,7 +76,7 @@ public final class JsonLdManifestLoader {
                             .map(o -> JsonLdTestCase.of(o, manifestName, manifestBase, baseUri, loader));
             
         } catch (JsonLdError e) {
-            Assert.fail(e.getMessage());
+            fail(e.getMessage());
         }
         
         return Stream.empty();
