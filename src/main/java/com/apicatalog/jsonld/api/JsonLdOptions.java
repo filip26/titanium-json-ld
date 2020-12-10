@@ -170,6 +170,7 @@ public final class JsonLdOptions {
         // custom
         this.numericId = options.numericId;
         this.contextCache = options.contextCache;
+        this.documentCache = options.documentCache;
     }
 
     /**
