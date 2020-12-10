@@ -95,7 +95,7 @@ public class HttpLoader implements DocumentLoader {
                                     .build();
                 
                 response = httpClient.send(request, BodyHandlers.ofInputStream());
-                                    
+    
                 // 3.
                 if (response.statusCode() == 301
                     || response.statusCode() == 302
@@ -185,7 +185,7 @@ public class HttpLoader implements DocumentLoader {
                         if (contextUris.size() > 1) {
                             throw new JsonLdError(JsonLdErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS);
                             
-                        } else if(contextUris.size() == 1) {
+                        } else if (contextUris.size() == 1) {
                             contextUri = contextUris.get(0).target();
                         }
                     }

@@ -17,6 +17,9 @@ package com.apicatalog.jsonld.api;
 
 import java.net.URI;
 
+import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.context.cache.Cache;
+import com.apicatalog.jsonld.context.cache.LruCache;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.lang.Version;
@@ -103,6 +106,12 @@ public final class JsonLdOptions {
     
     // allow numeric @id
     private boolean numericId;
+    
+    // context cache
+    private Cache<String, ActiveContext> contextCache;
+    
+    // document cache
+    private Cache<String, Document> documentCache;
 
     public JsonLdOptions() {
         this(SchemeRouter.defaultInstance());
@@ -133,6 +142,8 @@ public final class JsonLdOptions {
         
         // custom
         this.numericId = false;
+        this.contextCache = new LruCache<>(128);
+        this.documentCache =new LruCache<>(256); 
     }
 
     public JsonLdOptions(JsonLdOptions options) {
@@ -158,6 +169,7 @@ public final class JsonLdOptions {
         
         // custom
         this.numericId = options.numericId;
+        this.contextCache = options.contextCache;
     }
 
     /**
@@ -393,5 +405,21 @@ public final class JsonLdOptions {
      */
     public boolean isNumericId() {
         return numericId;
+    }
+
+    public Cache<String, ActiveContext> getContextCache() {
+        return contextCache;
+    }
+    
+    public void setContextCache(Cache<String, ActiveContext> contextCache) {
+        this.contextCache = contextCache;
+    }
+    
+    public Cache<String, Document> getDocumentCache() {
+        return documentCache;
+    }
+    
+    public void setDocumentCache(Cache<String, Document> documentCache) {
+        this.documentCache = documentCache;
     }
 }

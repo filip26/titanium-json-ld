@@ -15,12 +15,16 @@
  */
 package com.apicatalog.jsonld.custom;
 
+import static java.time.Duration.ofMinutes;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTimeout;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLd;
@@ -29,9 +33,12 @@ import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
+import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.test.loader.ClasspathLoader;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.RdfDataset;
+
+import jakarta.json.JsonArray;
 
 class RemoteContextTest {
 
@@ -110,6 +117,39 @@ class RemoteContextTest {
                         
             assertTrue(match);            
         }
+    }
+    
+    /**
+     * @see <a href="https://github.com/filip26/titanium-json-ld/issues/62">Issue #62</a>
+     *
+     * @throws JsonLdError
+     * @throws IOException
+     */
+    @Test
+    @Disabled("Run manually")
+    void testPerformance() throws JsonLdError, IOException {
+        
+        final Document document = readDocument("/com/apicatalog/jsonld/test/issue62-in.json");
+        assertNotNull(document);
+        
+        final Document expected = readDocument("/com/apicatalog/jsonld/test/issue62-out.json");
+        assertNotNull(expected);
+        
+        assertTimeout(ofMinutes(1), () -> {
+        
+            long start = System.nanoTime();
+            
+            final JsonArray result = JsonLd.expand(document).get();
+            
+            System.out.println("Time elapsed: " + Duration.ofNanos(System.nanoTime() - start));
+            
+            assertNotNull(result);
+           
+            boolean match = JsonLdComparison.equals(result, expected.getJsonContent().orElse(null));
+                            
+            assertTrue(match);            
+        });
+            
     }
     
     private final Document readDocument(final String name) throws JsonLdError, IOException {
