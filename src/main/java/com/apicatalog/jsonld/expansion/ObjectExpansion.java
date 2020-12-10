@@ -141,7 +141,7 @@ public final class ObjectExpansion {
     private void initPropertyContext() throws JsonLdError {
         // 8.
         if (propertyContext != null) {
-            
+
             activeContext = activeContext
                                 .newContext()
                                 .overrideProtected(true)

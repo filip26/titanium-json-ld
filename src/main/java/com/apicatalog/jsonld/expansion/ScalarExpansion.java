@@ -68,7 +68,6 @@ public final class ScalarExpansion {
          * property in active context.
          */
         if (propertyContext != null) {
-            
             activeContext = activeContext
                                 .newContext()
                                 .create(

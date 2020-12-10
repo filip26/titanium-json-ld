@@ -142,7 +142,7 @@ public final class ActiveContextBuilder {
         // 4. If local context is not an array, set local context to an array containing
         // only local context.
         // 5. For each item context in local context:
-        for (JsonValue itemContext : JsonUtils.toCollection(localContext)) {
+        for (final JsonValue itemContext : JsonUtils.toCollection(localContext)) {
 
             // 5.1. If context is null:
             if (JsonUtils.isNull(itemContext)) {
@@ -161,8 +161,7 @@ public final class ActiveContextBuilder {
                 // of result.
                 result = propagate
                         ? new ActiveContext(activeContext.getBaseUrl(), activeContext.getBaseUrl(), activeContext.getOptions())
-                        : new ActiveContext(activeContext.getBaseUrl(), activeContext.getBaseUrl(), result.getPreviousContext(),
-                                activeContext.getOptions());
+                        : new ActiveContext(activeContext.getBaseUrl(), activeContext.getBaseUrl(), result.getPreviousContext(), activeContext.getOptions());
 
                 // 5.1.3. Continue with the next context
                 continue;
@@ -460,7 +459,7 @@ public final class ActiveContextBuilder {
     private void fetch(final String context, final URI baseUrl) throws JsonLdError {
 
         String contextUri = context;
-        
+
         // 5.2.1
         if (baseUrl != null) {
             contextUri = UriResolver.resolve(baseUrl, contextUri);
@@ -485,35 +484,52 @@ public final class ActiveContextBuilder {
         
         remoteContexts.add(contextUri);
 
+        // if the context has been processed already
+        if (activeContext.getOptions() != null
+                && activeContext.getOptions().getContextCache() != null
+                && activeContext.getOptions().getContextCache().containsKey(contextUri) && !validateScopedContext) {
+            
+            // then return the context from a cache
+            result = activeContext.getOptions().getContextCache().get(contextUri);
+            return;
+        }
+
         // 5.2.5.
         if (activeContext.getOptions().getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Document loader is null. Cannot fetch [" + contextUri + "].");
         }
 
-        DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
-        loaderOptions.setProfile(ProfileConstants.CONTEXT);
-        loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
+        Document remoteImport = null;
 
-        JsonStructure importedStructure = null;
-        URI documentUrl = null;
-
-        try {
+        if (activeContext.getOptions() != null
+                && activeContext.getOptions().getDocumentCache() != null
+                && activeContext.getOptions().getDocumentCache().containsKey(contextUri)) {
             
-            final Document remoteImport = activeContext.getOptions().getDocumentLoader().loadDocument(URI.create(contextUri), loaderOptions);
-
+            remoteImport = activeContext.getOptions().getDocumentCache().get(contextUri);            
+        }
+        
+        if (remoteImport == null) {
+        
+            DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
+            loaderOptions.setProfile(ProfileConstants.CONTEXT);
+            loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
+    
+            try {
+    
+                remoteImport = activeContext.getOptions().getDocumentLoader().loadDocument(URI.create(contextUri), loaderOptions);
+                        
+            // 5.2.5.1.
+            } catch (JsonLdError e) {
+                throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
+            }
+            
             if (remoteImport == null) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");
             }
-
-            documentUrl = remoteImport.getDocumentUrl();
-
-            importedStructure = remoteImport.getJsonContent()
-                                    .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.")); 
-                                
-        // 5.2.5.1.
-        } catch (JsonLdError e) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
         }
+        
+        final JsonStructure importedStructure = remoteImport.getJsonContent()
+                                .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.")); 
 
         // 5.2.5.2.
         if (JsonUtils.isNotObject(importedStructure)) {
@@ -532,18 +548,28 @@ public final class ActiveContextBuilder {
         // remote @base from a remote context
         if (JsonUtils.isObject(importedContext) && importedContext.asJsonObject().containsKey(Keywords.BASE)) {
             importedContext = Json.createObjectBuilder(importedContext.asJsonObject()).remove(Keywords.BASE).build();
+        }            
+
+        if (activeContext.getOptions() != null
+                && activeContext.getOptions().getDocumentCache() != null) {
+         
+            activeContext.getOptions().getDocumentCache().put(contextUri, remoteImport);
         }
-        
+
         // 5.2.6
-        try {
+        try {            
             result = result
                         .newContext()
                         .remoteContexts(new ArrayList<>(remoteContexts))
                         .validateScopedContext(validateScopedContext)
-                        .create(importedContext, documentUrl);
+                        .create(importedContext, remoteImport.getDocumentUrl());
+
+            if (result.getOptions() != null && result.getOptions().getContextCache() != null) {
+                result.getOptions().getContextCache().put(contextUri, result);
+            }
 
         } catch (JsonLdError e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
         }
-    }
+    }    
 }
