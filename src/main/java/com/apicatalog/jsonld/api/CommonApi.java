@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.api.impl;
+package com.apicatalog.jsonld.api;
 
 import java.net.URI;
 
-import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.lang.Version;
+import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdVersion;
 
 public interface CommonApi<R> {
 
@@ -36,7 +36,7 @@ public interface CommonApi<R> {
      * @param processingMode to set
      * @return builder instance
      */
-    R mode(Version processingMode);
+    R mode(JsonLdVersion processingMode);
 
     /**
      * Set the base <code>IRI</code>. If set, this overrides the input document's IRI.

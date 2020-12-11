@@ -20,9 +20,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.apicatalog.jsonld.api.JsonLdEmbed;
-import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.api.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdEmbed;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.DefaultObject;
 import com.apicatalog.jsonld.lang.Keywords;

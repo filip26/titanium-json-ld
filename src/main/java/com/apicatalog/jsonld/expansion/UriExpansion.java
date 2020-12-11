@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;

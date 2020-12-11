@@ -25,8 +25,9 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.api.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonMapBuilder;
@@ -40,7 +41,6 @@ import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.lang.ValueObject;
-import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.uri.UriUtils;
 
 import jakarta.json.Json;
@@ -362,7 +362,7 @@ final class ObjectExpansion1314 {
                 else if (Keywords.INCLUDED.equals(expandedProperty)) {
 
                     // 13.4.6.1
-                    if (activeContext.inMode(Version.V1_0)) {
+                    if (activeContext.inMode(JsonLdVersion.V1_0)) {
                         continue;
                     }
 
@@ -413,7 +413,7 @@ final class ObjectExpansion1314 {
                     // 13.4.7.1
                     if (Keywords.JSON.equals(inputType)) {
 
-                        if (activeContext.inMode(Version.V1_0)) {
+                        if (activeContext.inMode(JsonLdVersion.V1_0)) {
                             throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
                         }
 
@@ -479,7 +479,7 @@ final class ObjectExpansion1314 {
                 // 13.4.9.
                 if (Keywords.DIRECTION.equals(expandedProperty)) {
                     // 13.4.9.1.
-                    if (activeContext.inMode(Version.V1_0)) {
+                    if (activeContext.inMode(JsonLdVersion.V1_0)) {
                         continue;
                     }
 

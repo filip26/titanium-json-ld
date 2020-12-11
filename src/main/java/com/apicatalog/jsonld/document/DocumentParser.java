@@ -19,8 +19,8 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.stream.Collectors;
 
-import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.api.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.Rdf;
 

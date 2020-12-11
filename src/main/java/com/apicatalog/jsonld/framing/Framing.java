@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.apicatalog.jsonld.api.JsonLdEmbed;
-import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.JsonLdEmbed;
+import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;

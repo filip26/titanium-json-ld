@@ -23,8 +23,9 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.api.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.http.ProfileConstants;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -32,7 +33,6 @@ import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
-import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.jsonld.uri.UriResolver;
 import com.apicatalog.jsonld.uri.UriUtils;
@@ -206,7 +206,7 @@ public final class ActiveContextBuilder {
                 }
 
                 // 5.5.2.
-                if (activeContext.inMode(Version.V1_0)) {
+                if (activeContext.inMode(JsonLdVersion.V1_0)) {
                     throw new JsonLdError(JsonLdErrorCode.PROCESSING_MODE_CONFLICT);
                 }
             }
@@ -215,7 +215,7 @@ public final class ActiveContextBuilder {
             if (contextDefinition.containsKey(Keywords.IMPORT)) {
                 
                 // 5.6.1.
-                if (activeContext.inMode(Version.V1_0)) {
+                if (activeContext.inMode(JsonLdVersion.V1_0)) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_CONTEXT_ENTRY);
                 }
 
@@ -388,7 +388,7 @@ public final class ActiveContextBuilder {
             if (contextDefinition.containsKey(Keywords.DIRECTION)) {
 
                 // 5.10.1.
-                if (activeContext.inMode(Version.V1_0)) {
+                if (activeContext.inMode(JsonLdVersion.V1_0)) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_CONTEXT_ENTRY);
                 }
 
@@ -422,7 +422,7 @@ public final class ActiveContextBuilder {
             // 5.11.
             if (contextDefinition.containsKey(Keywords.PROPAGATE)) {
                 // 5.11.1.
-                if (activeContext.inMode(Version.V1_0)) {
+                if (activeContext.inMode(JsonLdVersion.V1_0)) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_CONTEXT_ENTRY);
                 }
                 // 5.11.2.
@@ -564,7 +564,7 @@ public final class ActiveContextBuilder {
                         .validateScopedContext(validateScopedContext)
                         .create(importedContext, remoteImport.getDocumentUrl());
 
-            if (result.getOptions() != null && result.getOptions().getContextCache() != null) {
+            if (result.getOptions() != null && result.getOptions().getContextCache() != null && !validateScopedContext) {
                 result.getOptions().getContextCache().put(contextUri, result);
             }
 

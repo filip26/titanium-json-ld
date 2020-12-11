@@ -22,8 +22,9 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.api.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.InverseContext;
 import com.apicatalog.jsonld.context.TermDefinition;
@@ -33,7 +34,6 @@ import com.apicatalog.jsonld.lang.GraphObject;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.ValueObject;
-import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.uri.UriRelativizer;
 import com.apicatalog.jsonld.uri.UriUtils;
 
@@ -372,7 +372,7 @@ public final class UriCompaction {
             containers.add(Keywords.NONE);
             
             // 4.11.
-            if (!activeContext.inMode(Version.V1_0)
+            if (!activeContext.inMode(JsonLdVersion.V1_0)
                     && (JsonUtils.isNotObject(value)
                             || !value.asJsonObject().containsKey(Keywords.INDEX))
                     ) {
@@ -381,7 +381,7 @@ public final class UriCompaction {
             }
             
             // 4.12.
-            if (!activeContext.inMode(Version.V1_0)
+            if (!activeContext.inMode(JsonLdVersion.V1_0)
                     && JsonUtils.isObject(value)
                     && value.asJsonObject().containsKey(Keywords.VALUE)
                     && value.asJsonObject().size() == 1

@@ -20,7 +20,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.apicatalog.jsonld.api.JsonLdEmbed;
+import com.apicatalog.jsonld.JsonLdEmbed;
 import com.apicatalog.jsonld.flattening.NodeMap;
 
 public final class FramingState {

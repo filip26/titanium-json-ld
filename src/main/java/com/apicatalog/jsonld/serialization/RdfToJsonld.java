@@ -22,15 +22,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.api.JsonLdErrorCode;
-import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.lang.Utils;
-import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
@@ -57,7 +57,7 @@ public final class RdfToJsonld {
     private boolean useNativeTypes;
     private boolean useRdfType;
     
-    private Version processingMode;
+    private JsonLdVersion processingMode;
     
     // runtime
     private GraphMap graphMap;
@@ -100,7 +100,7 @@ public final class RdfToJsonld {
         return this;
     }
     
-    public RdfToJsonld processingMode(Version processingMode) {
+    public RdfToJsonld processingMode(JsonLdVersion processingMode) {
         this.processingMode = processingMode;
         return this;
     }

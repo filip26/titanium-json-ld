@@ -17,7 +17,7 @@ package com.apicatalog.jsonld.expansion;
 
 import java.net.URI;
 
-import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;

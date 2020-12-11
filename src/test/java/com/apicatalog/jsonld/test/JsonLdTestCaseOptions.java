@@ -17,16 +17,16 @@ package com.apicatalog.jsonld.test;
 
 import java.net.URI;
 
-import com.apicatalog.jsonld.api.JsonLdOptions;
-import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
-import com.apicatalog.jsonld.lang.Version;
+import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.uri.UriResolver;
 
 import jakarta.json.JsonObject;
 
 public class JsonLdTestCaseOptions {
 
-    public Version specVersion;
+    public JsonLdVersion specVersion;
     public String base;
     public String processingMode;
     public Boolean normative;
@@ -45,7 +45,7 @@ public class JsonLdTestCaseOptions {
         final JsonLdTestCaseOptions options = new JsonLdTestCaseOptions();
         
         if (o.containsKey("specVersion")) {
-            options.specVersion = Version.of(o.getString("specVersion"));
+            options.specVersion = JsonLdVersion.of(o.getString("specVersion"));
         }
         
         options.base = o.getString("base", null);
@@ -95,7 +95,7 @@ public class JsonLdTestCaseOptions {
     public void setup(JsonLdOptions options) {
 
         if (processingMode != null) {
-            options.setProcessingMode(Version.of(processingMode));
+            options.setProcessingMode(JsonLdVersion.of(processingMode));
         }
                 
         if (base != null) {

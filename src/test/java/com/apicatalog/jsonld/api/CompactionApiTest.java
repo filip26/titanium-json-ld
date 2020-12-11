@@ -24,9 +24,10 @@ import java.net.URI;
 import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLd;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.http.media.MediaType;
-import com.apicatalog.jsonld.lang.Version;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
@@ -61,7 +62,7 @@ class CompactionApiTest {
 
     @Test    
     void test4() throws JsonLdError {
-        JsonObject compacted = JsonLd.compact(URI.create("https://example.com"), JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).loader(MOCK_LOADER).mode(Version.V1_0).get();
+        JsonObject compacted = JsonLd.compact(URI.create("https://example.com"), JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).loader(MOCK_LOADER).mode(JsonLdVersion.V1_0).get();
         assertNotNull(compacted);
         assertEquals(JsonValue.EMPTY_JSON_OBJECT, compacted);
     }

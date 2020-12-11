@@ -17,12 +17,12 @@ package com.apicatalog.jsonld;
 
 import java.net.URI;
 
-import com.apicatalog.jsonld.api.impl.CompactionApi;
-import com.apicatalog.jsonld.api.impl.ExpansionApi;
-import com.apicatalog.jsonld.api.impl.FlatteningApi;
-import com.apicatalog.jsonld.api.impl.FramingApi;
-import com.apicatalog.jsonld.api.impl.FromRdfApi;
-import com.apicatalog.jsonld.api.impl.ToRdfApi;
+import com.apicatalog.jsonld.api.CompactionApi;
+import com.apicatalog.jsonld.api.ExpansionApi;
+import com.apicatalog.jsonld.api.FlatteningApi;
+import com.apicatalog.jsonld.api.FramingApi;
+import com.apicatalog.jsonld.api.FromRdfApi;
+import com.apicatalog.jsonld.api.ToRdfApi;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.RdfDataset;

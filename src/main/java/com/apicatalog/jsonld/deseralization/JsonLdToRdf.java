@@ -18,8 +18,8 @@ package com.apicatalog.jsonld.deseralization;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;

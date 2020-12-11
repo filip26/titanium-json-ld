@@ -24,10 +24,11 @@ import java.net.URI;
 import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLd;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.Version;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
@@ -63,7 +64,7 @@ class FrameApiTest {
 
     @Test    
     void test4() throws JsonLdError {
-        JsonObject framed = JsonLd.frame(URI.create("https://example.com"), URI.create("https://example.com/frame")).loader(MOCK_LOADER).mode(Version.V1_0).get();
+        JsonObject framed = JsonLd.frame(URI.create("https://example.com"), URI.create("https://example.com/frame")).loader(MOCK_LOADER).mode(JsonLdVersion.V1_0).get();
         assertNotNull(framed);
         assertEquals(Json.createObjectBuilder().add(Keywords.GRAPH, JsonValue.EMPTY_JSON_ARRAY).build(), framed);
     }

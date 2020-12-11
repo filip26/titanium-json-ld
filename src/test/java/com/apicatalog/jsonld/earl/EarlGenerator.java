@@ -24,8 +24,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.loader.SchemeRouter;

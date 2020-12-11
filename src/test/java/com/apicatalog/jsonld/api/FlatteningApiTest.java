@@ -25,6 +25,7 @@ import java.net.URI;
 import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLd;
+import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.http.media.MediaType;
 

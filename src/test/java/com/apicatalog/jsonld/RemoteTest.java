@@ -25,8 +25,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.api.JsonLdOptions;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.SchemeRouter;
 import com.apicatalog.jsonld.test.JsonLdManifestLoader;
