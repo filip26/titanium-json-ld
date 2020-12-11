@@ -61,7 +61,7 @@ Maven
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium-json-ld</artifactId>
-    <version>0.9</version>
+    <version>1.0.0</version>
 </dependency>
 
 ```
@@ -69,7 +69,7 @@ Maven
 Gradle
 
 ```gradle
-compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '0.9'
+compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '1.0.0'
 ```
 
 #### JSON-P Provider
@@ -82,14 +82,14 @@ Maven
     <dependency>
         <groupId>org.glassfish</groupId>
         <artifactId>jakarta.json</artifactId>
-        <version>1.1.6</version>
+        <version>2.0.0</version>
     </dependency>
 ```
 
 Gradle
 
 ```gradle
-compile group: 'org.glassfish', name: 'jakarta.json', version: '1.1.6'
+compile group: 'org.glassfish', name: 'jakarta.json', version: '2.0.0'
 
 ```
 
