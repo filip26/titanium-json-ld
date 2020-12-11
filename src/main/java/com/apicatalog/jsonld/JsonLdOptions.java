@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.api;
+package com.apicatalog.jsonld;
 
 import java.net.URI;
 
@@ -22,7 +22,6 @@ import com.apicatalog.jsonld.context.cache.Cache;
 import com.apicatalog.jsonld.context.cache.LruCache;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.SchemeRouter;
 
@@ -80,7 +79,7 @@ public final class JsonLdOptions {
     
     private boolean ordered;
     
-    private Version processingMode;
+    private JsonLdVersion processingMode;
     
     private boolean produceGeneralizedRdf;
     
@@ -127,7 +126,7 @@ public final class JsonLdOptions {
         this.expandContext = null;
         this.extractAllScripts = false;
         this.ordered = false;
-        this.processingMode = Version.V1_1;
+        this.processingMode = JsonLdVersion.V1_1;
         this.produceGeneralizedRdf = true;
         this.rdfDirection = null;
         this.useNativeTypes = false;
@@ -142,8 +141,8 @@ public final class JsonLdOptions {
         
         // custom
         this.numericId = false;
-        this.contextCache = new LruCache<>(128);
-        this.documentCache =new LruCache<>(256); 
+        this.contextCache = new LruCache<>(256);
+        this.documentCache = null; 
     }
 
     public JsonLdOptions(JsonLdOptions options) {
@@ -246,7 +245,7 @@ public final class JsonLdOptions {
         return ordered;
     }
 
-    public Version getProcessingMode() {
+    public JsonLdVersion getProcessingMode() {
         return processingMode;
     }
 
@@ -294,7 +293,7 @@ public final class JsonLdOptions {
         this.ordered = ordered;
     }
 
-    public void setProcessingMode(Version processingMode) {
+    public void setProcessingMode(JsonLdVersion processingMode) {
         this.processingMode = processingMode;
     }
 

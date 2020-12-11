@@ -17,11 +17,11 @@ package com.apicatalog.jsonld.serialization;
 
 import java.io.StringReader;
 
-import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.api.JsonLdErrorCode;
-import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfValue;
 import com.apicatalog.rdf.lang.RdfConstants;
@@ -41,7 +41,7 @@ final class RdfToObject {
     private boolean useNativeTypes;
     
     // optional
-    private Version processingMode;
+    private JsonLdVersion processingMode;
     
     private RdfToObject(final RdfValue object, final RdfDirection rdfDirection, final boolean useNativeTypes) {
         this.value = object;
@@ -49,14 +49,14 @@ final class RdfToObject {
         this.useNativeTypes = useNativeTypes;
         
         // default values
-        this.processingMode = Version.V1_1;
+        this.processingMode = JsonLdVersion.V1_1;
     }
     
     public static final RdfToObject with(final RdfValue object, final RdfDirection rdfDirection, final boolean useNativeTypes) {
         return new RdfToObject(object, rdfDirection, useNativeTypes);
     }
     
-    public RdfToObject processingMode(Version processingMode) {
+    public RdfToObject processingMode(JsonLdVersion processingMode) {
         this.processingMode = processingMode;
         return this;
     }
@@ -120,7 +120,7 @@ final class RdfToObject {
             }
 
         // 2.5.
-        } else if (processingMode != Version.V1_0 
+        } else if (processingMode != JsonLdVersion.V1_0 
                         && literal.getDatatype() != null 
                         && RdfConstants.JSON.equals(literal.getDatatype())) {
 

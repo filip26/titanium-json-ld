@@ -22,7 +22,7 @@ import java.net.URI;
 import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.api.impl.FlatteningApi;
+import com.apicatalog.jsonld.api.FlatteningApi;
 import com.apicatalog.jsonld.document.JsonDocument;
 
 class FlatteningApiNegativeTest {

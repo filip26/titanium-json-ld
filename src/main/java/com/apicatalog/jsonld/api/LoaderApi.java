@@ -13,35 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.lang;
+package com.apicatalog.jsonld.api;
 
-public enum Version {
+import com.apicatalog.jsonld.loader.DocumentLoader;
 
-    V1_0("json-ld-1.0"), V1_1("json-ld-1.1");
+public interface LoaderApi<R> {
 
-    private final String text;
-
-    Version(final String text) {
-        this.text = text;
-    }
-
-    public static Version of(String text) {
-
-        if (text == null) {
-            throw new IllegalArgumentException();
-        }
-
-        if (V1_0.text.equalsIgnoreCase(text)) {
-            return V1_0;
-        }
-        if (V1_1.text.equalsIgnoreCase(text)) {
-            return V1_1;
-        }
-        return null;
-    }
-
-    @Override
-    public String toString() {
-        return text;
-    }
+    /**
+     * Set the loader to be used to retrieve remote documents and
+     * contexts, implementing the {@link DocumentLoader}. If specified, it is
+     * used to retrieve remote documents and contexts; otherwise, if not specified,
+     * the processor's built-in loader is used.
+     * 
+     * @param loader
+     * @return builder instance
+     */
+    R loader(DocumentLoader loader);
+    
 }

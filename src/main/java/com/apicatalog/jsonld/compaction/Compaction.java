@@ -22,8 +22,9 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.api.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonMapBuilder;
@@ -32,7 +33,6 @@ import com.apicatalog.jsonld.lang.GraphObject;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.Utils;
-import com.apicatalog.jsonld.lang.Version;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -285,7 +285,7 @@ public final class Compaction {
 
                 // 12.2.4.
                 final boolean asArray = !compactArrays 
-                                        || (activeContext.inMode(Version.V1_1)
+                                        || (activeContext.inMode(JsonLdVersion.V1_1)
                                             && activeContext.getTerm(alias).map(t -> t.hasContainerMapping(Keywords.SET)).orElse(false)
                                            );
 

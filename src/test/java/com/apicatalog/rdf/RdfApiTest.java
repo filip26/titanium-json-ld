@@ -23,7 +23,7 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.JsonLdError;
 
 class RdfApiTest {
 

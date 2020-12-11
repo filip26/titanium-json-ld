@@ -21,12 +21,12 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.apicatalog.jsonld.api.JsonLdErrorCode;
-import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.test.loader.UriBaseRewriter;
 
@@ -38,7 +38,7 @@ public final class JsonLdTestCase {
     
     public static final String TESTS_BASE = "https://w3c.github.io";
     
-    public static final Predicate<JsonLdTestCase> IS_NOT_V1_0 = Predicate.not(test -> Version.V1_0.equals(test.options.specVersion));
+    public static final Predicate<JsonLdTestCase> IS_NOT_V1_0 = Predicate.not(test -> JsonLdVersion.V1_0.equals(test.options.specVersion));
     
     public String id;
     

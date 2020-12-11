@@ -25,10 +25,11 @@ import java.net.URI;
 import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.api.impl.ExpansionApi;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.api.ExpansionApi;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.http.media.MediaType;
-import com.apicatalog.jsonld.lang.Version;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonValue;
@@ -60,7 +61,7 @@ class ExpansionApiTest {
 
     @Test    
     void test4() throws JsonLdError {
-        JsonArray expanded = JsonLd.expand(URI.create("https://example.com")).loader(MOCK_LOADER).mode(Version.V1_0).get();
+        JsonArray expanded = JsonLd.expand(URI.create("https://example.com")).loader(MOCK_LOADER).mode(JsonLdVersion.V1_0).get();
         assertNotNull(expanded);
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, expanded);
     }

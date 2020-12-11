@@ -13,15 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.test;
+package com.apicatalog.jsonld;
 
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.document.Document;
+public enum JsonLdVersion {
 
-@FunctionalInterface
-public interface JsonLdTestCaseMethod {
+    V1_0("json-ld-1.0"), V1_1("json-ld-1.1");
 
-    Document invoke(JsonLdOptions options) throws JsonLdError;
-    
+    private final String text;
+
+    JsonLdVersion(final String text) {
+        this.text = text;
+    }
+
+    public static JsonLdVersion of(String text) {
+
+        if (text == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (V1_0.text.equalsIgnoreCase(text)) {
+            return V1_0;
+        }
+        if (V1_1.text.equalsIgnoreCase(text)) {
+            return V1_1;
+        }
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return text;
+    }
 }

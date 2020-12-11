@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.api.impl;
+package com.apicatalog.jsonld.api;
 
 import java.net.URI;
 
-import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.FromRdfProcessor;
 import com.apicatalog.rdf.RdfDataset;
@@ -60,7 +60,7 @@ public final class FromRdfApi implements CommonApi<FromRdfApi>, LoaderApi<FromRd
     }
     
     @Override
-    public FromRdfApi mode(Version processingMode) {
+    public FromRdfApi mode(JsonLdVersion processingMode) {
         options.setProcessingMode(processingMode);
         return this;
     }

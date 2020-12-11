@@ -24,9 +24,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.api.JsonLdErrorCode;
-import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.Document;
@@ -39,7 +40,6 @@ import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
 import jakarta.json.Json;
@@ -150,7 +150,7 @@ public final class FramingProcessor {
         Collection<JsonValue> result = resultMap.valuesToArray();
         
         // 17. - remove blank @id
-        if (!activeContext.inMode(Version.V1_0)) {
+        if (!activeContext.inMode(JsonLdVersion.V1_0)) {
             result = removeBlankId(result);
         }
         
@@ -187,7 +187,7 @@ public final class FramingProcessor {
         
         if (options.isOmitGraph() == null) {
             
-            omitGraph = activeContext.inMode(Version.V1_1);
+            omitGraph = activeContext.inMode(JsonLdVersion.V1_1);
             
         } else {
             omitGraph = options.isOmitGraph();

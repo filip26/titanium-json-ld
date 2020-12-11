@@ -14,7 +14,7 @@ public final class LruCache<K, V> implements Cache<K, V> {
 
             @Override
             protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
-                return size() > maxCapacity;
+                return this.size() > maxCapacity;
             }
         };
     }

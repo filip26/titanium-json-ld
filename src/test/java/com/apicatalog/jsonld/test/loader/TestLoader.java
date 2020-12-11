@@ -2,7 +2,7 @@ package com.apicatalog.jsonld.test.loader;
 
 import java.net.URI;
 
-import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.JsonLdError;
 
 public interface TestLoader {
 

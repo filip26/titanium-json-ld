@@ -21,13 +21,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.compaction.UriCompaction;
 import com.apicatalog.jsonld.compaction.ValueCompaction;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.expansion.ValueExpansion;
 import com.apicatalog.jsonld.lang.DirectionType;
-import com.apicatalog.jsonld.lang.Version;
 
 import jakarta.json.JsonObject;
 
@@ -132,7 +132,7 @@ public final class ActiveContext {
         return vocabularyMapping;
     }
 
-    public boolean inMode(final Version version) {
+    public boolean inMode(final JsonLdVersion version) {
         return options.getProcessingMode() != null && options.getProcessingMode().equals(version);
     }
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.api;
+package com.apicatalog.jsonld;
 
 /**
  * The {@link JsonLdError} type is used to report processing errors.
