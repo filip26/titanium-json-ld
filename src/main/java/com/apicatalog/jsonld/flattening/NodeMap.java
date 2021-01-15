@@ -20,15 +20,14 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
-
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
-import javax.json.JsonValue;
+import java.util.Optional;
 
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
+
+import jakarta.json.Json;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonValue;
 
 public final class NodeMap {
 
@@ -41,13 +40,6 @@ public final class NodeMap {
         this.index.put(Keywords.DEFAULT, new LinkedHashMap<>());
     }
     
-    public boolean doesNotContain(String graphName, String subject, String property) {
-        return !index.containsKey(graphName) 
-                    || !index.get(graphName).containsKey(subject)
-                    || !index.get(graphName).get(subject).containsKey(property)
-                    ;
-    }
-
     public void set(String graphName, String subject, String property, JsonValue value) {
 
         if (subject == null) {
@@ -78,25 +70,18 @@ public final class NodeMap {
         return null;
     }
 
-    public boolean doesNotContain(String graphName, String subject) {
-        return !index.containsKey(graphName) 
-                || !index.get(graphName).containsKey(subject)
-                ;
+    public boolean contains(String graphName, String subject) {
+        return index.containsKey(graphName) && index.get(graphName).containsKey(subject);
     }
 
-    public Map<String, JsonObject> get(String graphName) {
-        
-        if (!index.containsKey(graphName)) {
-            return null;
-        }
+    public boolean contains(String graphName, String subject, String property) {
+        return index.containsKey(graphName) 
+                    && index.get(graphName).containsKey(subject)
+                    && index.get(graphName).get(subject).containsKey(property);
+    }
 
-        return index
-                    .get(graphName)
-                    .entrySet()
-                    .stream()
-                    .map(e -> new Object[] {e.getKey(), JsonUtils.toJsonObject(e.getValue())})
-                    .collect(Collectors.toMap(e -> (String)e[0], e -> (JsonObject)e[1]))                    
-                    ;
+    public Optional<Map<String, Map<String, JsonValue>>> get(String graphName) {        
+        return Optional.ofNullable(index.get(graphName));
     }
 
     public String createIdentifier(String name) {
@@ -107,29 +92,16 @@ public final class NodeMap {
         return generator.createIdentifier();
     }
 
-    public Collection<String> graphs(boolean sorted) {
-        return sorted 
-                    ? index.keySet().stream().sorted().collect(Collectors.toList())
-                    : index.keySet()
-                    ;
+    public Collection<String> graphs() {
+        return index.keySet();
     }
 
     public Collection<String> subjects(String graphName) {
-        return subjects(graphName, false);
-    }
-    
-    public Collection<String> subjects(String graphName, boolean sorted) {
-        return sorted 
-                ? index.getOrDefault(graphName, Collections.emptyMap()).keySet().stream().sorted().collect(Collectors.toList())
-                : index.getOrDefault(graphName, Collections.emptyMap()).keySet()
-                ;
+        return index.getOrDefault(graphName, Collections.emptyMap()).keySet();
     }
 
-    public Collection<String> properties(String graphName, String subject, boolean sorted) {
-        return sorted 
-                ? index.getOrDefault(graphName, Collections.emptyMap()).getOrDefault(subject, Collections.emptyMap()).keySet().stream().sorted().collect(Collectors.toList())
-                : index.getOrDefault(graphName, Collections.emptyMap()).getOrDefault(subject, Collections.emptyMap()).keySet()
-                ;
+    public Collection<String> properties(String graphName, String subject) {
+        return index.getOrDefault(graphName, Collections.emptyMap()).getOrDefault(subject, Collections.emptyMap()).keySet();
     }
     
     /**
@@ -147,7 +119,7 @@ public final class NodeMap {
             for (final Map.Entry<String, Map<String, JsonValue>> subject : graphEntry.getValue().entrySet()) {
              
                 // 2.1.
-                if (result.doesNotContain(Keywords.MERGED, subject.getKey())) {
+                if (!result.contains(Keywords.MERGED, subject.getKey())) {
                     result.set(Keywords.MERGED, subject.getKey(), Keywords.ID, Json.createValue(subject.getKey()));
                 }
                                 
@@ -165,11 +137,11 @@ public final class NodeMap {
                         
                         final JsonArrayBuilder array;
                         
-                        if (result.doesNotContain(Keywords.MERGED, subject.getKey(), property.getKey())) {
-                            array = Json.createArrayBuilder();
+                        if (result.contains(Keywords.MERGED, subject.getKey(), property.getKey())) {
+                            array = Json.createArrayBuilder(JsonUtils.toJsonArray(result.get(Keywords.MERGED, subject.getKey(), property.getKey())));
                             
                         } else {
-                            array = Json.createArrayBuilder(JsonUtils.toJsonArray(result.get(Keywords.MERGED, subject.getKey(), property.getKey())));
+                            array = Json.createArrayBuilder();
                         }
                         
                         JsonUtils.toJsonArray(property.getValue()).forEach(array::add);

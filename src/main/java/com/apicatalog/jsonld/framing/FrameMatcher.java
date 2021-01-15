@@ -17,20 +17,19 @@ package com.apicatalog.jsonld.framing;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.json.JsonArray;
-import javax.json.JsonStructure;
-import javax.json.JsonValue;
-
-import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.ValueObject;
+
+import jakarta.json.JsonArray;
+import jakarta.json.JsonStructure;
+import jakarta.json.JsonValue;
 
 public final class FrameMatcher {
 
@@ -53,7 +52,7 @@ public final class FrameMatcher {
    
         // 1. if frame is empty then all subject match
         if (frame.isWildCard()) {
-            return new LinkedList<>(subjects);
+            return new ArrayList<>(subjects);
         }
         
         final List<String> result = new ArrayList<>();
@@ -83,7 +82,7 @@ public final class FrameMatcher {
 
                 nodeValue = JsonUtils.toJsonArray(nodeValue);
                 
-                if (JsonUtils.toJsonArray(frame.get(property)).stream().anyMatch(nodeValue.asJsonArray()::contains)
+                if (JsonUtils.toCollection(frame.get(property)).stream().anyMatch(nodeValue.asJsonArray()::contains)
                         || frame.isWildCard(Keywords.ID) 
                         || frame.isNone(Keywords.ID)
                         ) {
@@ -191,7 +190,8 @@ public final class FrameMatcher {
                         if (ValueObject.isValueObject(listValue.asJsonArray().get(0))) {
     
                             boolean match = false;
-                            for (JsonValue value : JsonUtils.toJsonArray(nodeListValue)) {
+                            
+                            for (final JsonValue value : JsonUtils.toCollection(nodeListValue)) {
             
                                 match = Frame.of((JsonStructure)listValue).matchValue(value);
                                 if (match) {
@@ -210,7 +210,7 @@ public final class FrameMatcher {
                         } else if (NodeObject.isNodeObject(listValue.asJsonArray().get(0)) || NodeObject.isNodeReference(listValue.asJsonArray().get(0))) {
 
                             boolean match = false;
-                            for (JsonValue value : JsonUtils.toJsonArray(nodeListValue)) {
+                            for (final JsonValue value : JsonUtils.toCollection(nodeListValue)) {
             
                                 match = Frame.of((JsonStructure)listValue).matchNode(state, value, requireAll);
     

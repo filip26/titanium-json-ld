@@ -18,7 +18,7 @@ package com.apicatalog.jsonld.http;
 /**
  * @see <a href="https://www.w3.org/TR/json-ld11/#iana-considerations">IANA Considerations</a>
  */
-public class ProfileConstants {
+public final class ProfileConstants {
 
     public static final String EXPANDED = "http://www.w3.org/ns/json-ld#expanded";
     

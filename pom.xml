@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium-json-ld</artifactId>
-    <version>0.8.5-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>Titanium JSON-LD 1.1</name>
@@ -46,6 +46,8 @@
         </developer>
     </developers>
     
+    <inceptionYear>2020</inceptionYear>
+    
     <properties>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
@@ -53,45 +55,42 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         
-        <jakarta.json-p.version>1.1.6</jakarta.json-p.version> 
-        <json-p.version>1.1.4</json-p.version>
-         
-         <!--  test resources -->
-        <junit.version>4.13</junit.version>
-        <wiremock.version>2.27.1</wiremock.version>
+        <jakarta.json.version>2.0.0</jakarta.json.version> 
+
+        <argLine>-Dfile.encoding=UTF-8</argLine>
+
+        <!--  test resources -->
+        <junit.version>5.7.0</junit.version>
+        <wiremock.version>2.27.2</wiremock.version>
+
+        <sonar.projectKey>filip26_titanium-json-ld</sonar.projectKey>
+        <sonar.organization>apicatalog</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>javax.json</groupId>
-            <artifactId>javax.json-api</artifactId>
-            <version>${json-p.version}</version>
+			<groupId>jakarta.json</groupId>
+    		<artifactId>jakarta.json-api</artifactId>
+            <version>${jakarta.json.version}</version>
             <scope>provided</scope>
         </dependency>
         
         <!--  Tests -->
-<!--  profile -->
-<!--        <dependency> -->
-<!--             <groupId>org.glassfish</groupId> -->
-<!--             <artifactId>javax.json</artifactId> -->
-<!--             <version>${json-p.version}</version> -->
-<!--             <scope>test</scope> -->
-<!--         </dependency>       -->
-         
 		<dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>jakarta.json</artifactId>
-            <version>${jakarta.json-p.version}</version>
+            <version>${jakarta.json.version}</version>
             <scope>test</scope>
 		</dependency>
 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+		<dependency>
+		    <groupId>org.junit.jupiter</groupId>
+		    <artifactId>junit-jupiter</artifactId>
             <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        
+		    <scope>test</scope>
+		</dependency>
+		        
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock-jre8</artifactId>
@@ -128,36 +127,11 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin> 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.6</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin> 
-			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.8</version>
-				<extensions>true</extensions>
-				<configuration>
-					<serverId>ossrh</serverId>
-					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-					<autoReleaseAfterClose>true</autoReleaseAfterClose>
-				</configuration>
-			</plugin>                      
+            </plugin>                    
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.5</version>
+                <version>0.8.6</version>
                 <executions>
                     <execution>
                         <id>default-prepare-agent</id>
@@ -173,14 +147,63 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>             
+            </plugin> 
+        	<plugin>
+            	<artifactId>maven-surefire-plugin</artifactId>
+            	<version>2.22.2</version>
+        	</plugin>
+        	<plugin>
+            	<artifactId>maven-failsafe-plugin</artifactId>
+            	<version>2.22.2</version>
+        	</plugin>            
         </plugins>
     </build>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
+	<profiles>
+		<profile>
+			<id>maven-central</id>
+
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+
+			<build>
+				<plugins>				
+		            <plugin>
+		                <groupId>org.apache.maven.plugins</groupId>
+		                <artifactId>maven-gpg-plugin</artifactId>
+		                <version>1.6</version>
+		                <executions>
+		                    <execution>
+		                        <id>sign-artifacts</id>
+		                        <phase>verify</phase>
+		                        <goals>
+		                            <goal>sign</goal>
+		                        </goals>
+		                    </execution>
+		                </executions>
+		            </plugin> 
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>1.6.8</version>
+						<extensions>true</extensions>
+						<configuration>
+							<serverId>ossrh</serverId>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<autoReleaseAfterClose>true</autoReleaseAfterClose>
+						</configuration>
+					</plugin>   				
+				</plugins>
+			</build>
+
+		    <distributionManagement>
+		        <snapshotRepository>
+		            <id>ossrh</id>
+		            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		        </snapshotRepository>
+		    </distributionManagement>		
+		</profile>
+	</profiles>
+
 </project>

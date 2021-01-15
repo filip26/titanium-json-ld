@@ -15,9 +15,9 @@
  */
 package com.apicatalog.rdf.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,7 +35,7 @@ final class RdfGraphImpl implements RdfGraph {
     
     protected RdfGraphImpl() {
         this.index = new HashMap<>();
-        this.triples = new LinkedList<>();
+        this.triples = new ArrayList<>();
     }
 
     public void add(final RdfTriple triple) {

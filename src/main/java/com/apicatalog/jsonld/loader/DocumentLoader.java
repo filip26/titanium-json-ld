@@ -17,7 +17,7 @@ package com.apicatalog.jsonld.loader;
 
 import java.net.URI;
 
-import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 
 /**

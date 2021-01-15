@@ -15,12 +15,12 @@
  */
 package com.apicatalog.jsonld.expansion;
 
-import javax.json.JsonValue;
-
-import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
+
+import jakarta.json.JsonValue;
 
 /**
  * Steps 4.1 - 4.3
@@ -68,7 +68,6 @@ public final class ScalarExpansion {
          * property in active context.
          */
         if (propertyContext != null) {
-            
             activeContext = activeContext
                                 .newContext()
                                 .create(

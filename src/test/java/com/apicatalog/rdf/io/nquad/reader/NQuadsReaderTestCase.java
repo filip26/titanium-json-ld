@@ -15,9 +15,9 @@
  */
 package com.apicatalog.rdf.io.nquad.reader;
 
-import javax.json.JsonObject;
-
 import com.apicatalog.jsonld.lang.Keywords;
+
+import jakarta.json.JsonObject;
 
 public final class NQuadsReaderTestCase {
 
@@ -65,5 +65,8 @@ public final class NQuadsReaderTestCase {
         return new NQuadsReaderTestCase(name, comment, type);
     }
     
-    
+    @Override
+    public String toString() {
+        return type.name().toLowerCase() + ": " + comment;
+    }
 }

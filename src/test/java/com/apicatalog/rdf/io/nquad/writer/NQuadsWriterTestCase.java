@@ -15,9 +15,9 @@
  */
 package com.apicatalog.rdf.io.nquad.writer;
 
-import javax.json.JsonObject;
-
 import com.apicatalog.jsonld.lang.Keywords;
+
+import jakarta.json.JsonObject;
 
 public final class NQuadsWriterTestCase {
 
@@ -27,9 +27,9 @@ public final class NQuadsWriterTestCase {
     private String expected;
 
     public static final NQuadsWriterTestCase of(final JsonObject json) {
-        
+
         final NQuadsWriterTestCase testCase = new NQuadsWriterTestCase();
-        
+
         testCase.id = json.getString(Keywords.ID);
         testCase.name = json.getString("name");
         testCase.input = json.getString("input");
@@ -52,5 +52,10 @@ public final class NQuadsWriterTestCase {
     
     public String getExpected() {
         return expected;
-    }    
+    }
+    
+    @Override
+    public String toString() {
+        return id + ": " + name;
+    }
 }

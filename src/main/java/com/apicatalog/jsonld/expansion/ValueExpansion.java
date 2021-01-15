@@ -17,17 +17,18 @@ package com.apicatalog.jsonld.expansion;
 
 import java.util.Optional;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-
-import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
+
+import jakarta.json.Json;
+import jakarta.json.JsonNumber;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
 
 /**
  * 
@@ -52,7 +53,7 @@ public final class ValueExpansion {
         return new ValueExpansion(activeContext);
     }
 
-    public JsonValue expand(final JsonValue value, final String activeProperty) throws JsonLdError {
+    public JsonObject expand(final JsonValue value, final String activeProperty) throws JsonLdError {
 
         definition = activeContext.getTerm(activeProperty);
 
@@ -61,16 +62,27 @@ public final class ValueExpansion {
         if (typeMapping.isPresent()) {
 
             // 1.
-            if (Keywords.ID.equals(typeMapping.get()) && JsonUtils.isString(value)) {
+            if (Keywords.ID.equals(typeMapping.get())) {
+                
+                String idValue = null;
+                
+                if (JsonUtils.isString(value)) {
+                    idValue = ((JsonString) value).getString();
 
-                String expandedValue = activeContext.uriExpansion().documentRelative(true)
-                        .vocab(false).expand(((JsonString) value).getString());
-
-                return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();
-            }
-
+                // custom extension allowing to process numeric ids
+                } else if (activeContext.getOptions().isNumericId() && JsonUtils.isNumber(value)) {
+                    idValue = ((JsonNumber) value).toString();
+                }
+                
+                if (idValue != null) {
+                    final String expandedValue = activeContext.uriExpansion().documentRelative(true)
+                            .vocab(false).expand(idValue);
+                    
+                    return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();
+                }
+                
             // 2.
-            if (Keywords.VOCAB.equals(typeMapping.get()) && JsonUtils.isString(value)) {
+            } else if (Keywords.VOCAB.equals(typeMapping.get()) && JsonUtils.isString(value)) {
 
                 String expandedValue = activeContext.uriExpansion().documentRelative(true)
                         .vocab(true).expand(((JsonString) value).getString());
@@ -86,7 +98,7 @@ public final class ValueExpansion {
         if (typeMapping.isPresent() && !Keywords.ID.equals(typeMapping.get()) && !Keywords.VOCAB.equals(typeMapping.get())
                 && !Keywords.NONE.equals(typeMapping.get())) {
 
-            result = Json.createObjectBuilder(result).add(Keywords.TYPE, Json.createValue(typeMapping.get())).build();
+            result = Json.createObjectBuilder(result).add(Keywords.TYPE, typeMapping.get()).build();
 
             // 5.
         } else if (JsonUtils.isString(value)) {
@@ -97,7 +109,7 @@ public final class ValueExpansion {
         return result;
     }
     
-    private void buildStringValue() throws JsonLdError {
+    private void buildStringValue() {
 
         // 5.1.
         JsonValue language = null;

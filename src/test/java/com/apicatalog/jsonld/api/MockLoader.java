@@ -17,14 +17,15 @@ package com.apicatalog.jsonld.api;
 
 import java.net.URI;
 
-import javax.json.JsonStructure;
-
+import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.rdf.RdfDataset;
+
+import jakarta.json.JsonStructure;
 
 public class MockLoader implements DocumentLoader {
 

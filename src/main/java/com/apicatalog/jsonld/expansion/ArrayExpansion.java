@@ -18,17 +18,17 @@ package com.apicatalog.jsonld.expansion;
 import java.net.URI;
 import java.util.Optional;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonValue;
-
-import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
+
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonValue;
 
 /**
  * 
@@ -122,7 +122,7 @@ public final class ArrayExpansion {
                     result.add(expandedItem);
                 }
 
-                // append non-null element
+            // append non-null element
             } else if (JsonUtils.isNotNull(expanded)) {
                 result.add(expanded);
             }

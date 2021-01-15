@@ -15,26 +15,20 @@
  */
 package com.apicatalog.rdf.io.nquad;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
-import java.util.Collection;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-import javax.json.stream.JsonParser;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -50,36 +44,34 @@ import com.apicatalog.rdf.io.nquad.writer.NQuadsWriterTestCase;
 import com.apicatalog.rdf.io.nquad.writer.NQuadsWriterTestSuite;
 import com.google.common.base.Objects;
 
-@RunWith(Parameterized.class)
-public class NQuadsWriterTest {
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
+import jakarta.json.stream.JsonParser;
 
-    @Parameterized.Parameter(0)
-    public NQuadsWriterTestCase testCase;
+class NQuadsWriterTest {
 
-    @Parameterized.Parameter(1)
-    public String testId;
-    
-    @Parameterized.Parameter(2)
-    public String testName;
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("data")
+    void testWrite(NQuadsWriterTestCase testCase) throws IOException, URISyntaxException, RdfWriterException, UnsupportedContentException {
 
-    @Test
-    public void testWrite() throws IOException, URISyntaxException, RdfWriterException, UnsupportedContentException {
-
-        Assert.assertNotNull(testCase);
-        Assert.assertNotNull(testCase.getInput());
-        Assert.assertNotNull(testCase.getExpected());
+        assertNotNull(testCase);
+        assertNotNull(testCase.getInput());
+        assertNotNull(testCase.getExpected());
         
         String result = null;
         
         try (final InputStream is = getClass().getResourceAsStream(testCase.getInput())) {
 
-            Assert.assertNotNull(is);
+            assertNotNull(is);
 
             JsonParser parser = Json.createParser(is);
             parser.next();
             
             JsonArray input = parser.getArray();
-            Assert.assertNotNull(input);
+            assertNotNull(input);
             
             final RdfDataset dataset = Rdf.createDataset();
             
@@ -106,17 +98,12 @@ public class NQuadsWriterTest {
                 System.out.println(result);
             }
             
-            Assert.assertEquals(expected, result);
+            assertEquals(expected, result);
         }
     }
 
-    @Parameterized.Parameters(name = "{1}: {2}")
-    public static Collection<Object[]> data() throws IOException, URISyntaxException {
-        return NQuadsWriterTestSuite
-                .load()
-                .stream()            
-                .map(o -> new Object[] {o, o.getId(), o.getName()})
-                .collect(Collectors.toList());
+    static final Stream<NQuadsWriterTestCase> data() throws IOException, URISyntaxException {
+        return NQuadsWriterTestSuite.load();
     }
     
     private static final RdfNQuad createStatement(final JsonObject value) {

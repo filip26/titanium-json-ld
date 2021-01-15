@@ -20,11 +20,11 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonValue;
-
 import com.apicatalog.jsonld.lang.Keywords;
+
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 
 /**
  * 

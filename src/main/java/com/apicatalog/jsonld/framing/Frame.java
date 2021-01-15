@@ -16,16 +16,13 @@
 package com.apicatalog.jsonld.framing;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
-import javax.json.JsonObject;
-import javax.json.JsonString;
-import javax.json.JsonStructure;
-import javax.json.JsonValue;
-
-import com.apicatalog.jsonld.api.JsonLdEmbed;
-import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.api.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdEmbed;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.DefaultObject;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -33,6 +30,11 @@ import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.jsonld.uri.UriUtils;
+
+import jakarta.json.JsonObject;
+import jakarta.json.JsonString;
+import jakarta.json.JsonStructure;
+import jakarta.json.JsonValue;
 
 public final class Frame {
 
@@ -273,18 +275,18 @@ public final class Frame {
     }
     
     public boolean matchNode(FramingState state, JsonValue value, boolean requireAll) throws JsonLdError {
+        
         if (JsonUtils.isNotObject(value) || !value.asJsonObject().containsKey(Keywords.ID)) {
             return false;
         }
         
-        JsonValue valueObject = state.getGraphMap().get(state.getGraphName())
-                .get(value.asJsonObject().getString(Keywords.ID));
+        final Optional<Map<String, JsonValue>> valueObject = 
+                    state
+                        .getGraphMap()
+                        .get(state.getGraphName())
+                        .map(graph -> graph.get(value.asJsonObject().getString(Keywords.ID)));
      
-        if (JsonUtils.isNotObject(valueObject)) {
-            return false;
-        }
-        
-        return FrameMatcher.with(state, this, requireAll).match(valueObject.asJsonObject());
+        return valueObject.isPresent() && FrameMatcher.with(state, this, requireAll).match(valueObject.get());
     }
 
     public boolean isListObject() {

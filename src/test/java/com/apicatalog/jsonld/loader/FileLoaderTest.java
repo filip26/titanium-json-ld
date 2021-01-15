@@ -15,71 +15,74 @@
  */
 package com.apicatalog.jsonld.loader;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.http.media.MediaType;
 
-public class FileLoaderTest {
+class FileLoaderTest {
 
     @Test
-    public void testLoadNQuads() throws URISyntaxException, JsonLdError {
+    void testLoadNQuads() throws URISyntaxException, JsonLdError {
         
         URL fileUrl = getClass().getResource("document.nq");
         
-        Assert.assertNotNull(fileUrl);
+        assertNotNull(fileUrl);
         
         Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions());
         
-        Assert.assertNotNull(document);
-        Assert.assertTrue(MediaType.N_QUADS.match(document.getContentType()));
+        assertNotNull(document);
+        assertTrue(MediaType.N_QUADS.match(document.getContentType()));
     }
 
     @Test
-    public void testLoadJson() throws URISyntaxException, JsonLdError {
+    void testLoadJson() throws URISyntaxException, JsonLdError {
         
         URL fileUrl = getClass().getResource("document.json");
         
-        Assert.assertNotNull(fileUrl);
+        assertNotNull(fileUrl);
         
         Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions());
         
-        Assert.assertNotNull(document);
-        Assert.assertTrue(MediaType.JSON.match(document.getContentType()));
+        assertNotNull(document);
+        assertTrue(MediaType.JSON.match(document.getContentType()));
     }
 
     @Test
-    public void testLoadJsonLd() throws URISyntaxException, JsonLdError {
+    void testLoadJsonLd() throws URISyntaxException, JsonLdError {
         
         URL fileUrl = getClass().getResource("document.jsonld");
         
-        Assert.assertNotNull(fileUrl);
+        assertNotNull(fileUrl);
         
         Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions());
         
-        Assert.assertNotNull(document);
-        Assert.assertTrue(MediaType.JSON_LD.match(document.getContentType()));
+        assertNotNull(document);
+        assertTrue(MediaType.JSON_LD.match(document.getContentType()));
     }
 
     @Test
-    public void testLoadHtml() throws URISyntaxException {
+    void testLoadHtml() throws URISyntaxException {
         
         URL fileUrl = getClass().getResource("document.html");
         
-        Assert.assertNotNull(fileUrl);
+        assertNotNull(fileUrl);
         
-        Assert.assertThrows(JsonLdError.class, () -> new FileLoader().loadDocument(fileUrl.toURI(), new DocumentLoaderOptions()));
+        assertThrows(JsonLdError.class, () -> new FileLoader().loadDocument(fileUrl.toURI(), new DocumentLoaderOptions()));
     }
 
     @Test
-    public void testUnsupportedScheme() throws URISyntaxException {        
-        Assert.assertThrows(JsonLdError.class, () -> new FileLoader().loadDocument(URI.create("https://github.com/"), new DocumentLoaderOptions()));
+    void testUnsupportedScheme() throws URISyntaxException {        
+        assertThrows(JsonLdError.class, () -> new FileLoader().loadDocument(URI.create("https://github.com/"), new DocumentLoaderOptions()));
     }
 
 }

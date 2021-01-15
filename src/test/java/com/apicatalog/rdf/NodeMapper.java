@@ -15,8 +15,8 @@
  */
 package com.apicatalog.rdf;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -64,7 +64,7 @@ final class NodeMapper {
             return new NodeMapper();
         }
 
-        List<NodeCluster> clusters = new LinkedList<>();
+        List<NodeCluster> clusters = new ArrayList<>();
 
         Map<String, NodeCluster> mapping = merge(reducedSource, reducedTarget, clusters);
            

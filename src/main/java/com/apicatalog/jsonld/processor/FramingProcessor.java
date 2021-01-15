@@ -19,24 +19,15 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonString;
-import javax.json.JsonStructure;
-import javax.json.JsonValue;
-
-import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.api.JsonLdErrorCode;
-import com.apicatalog.jsonld.api.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.Document;
@@ -45,11 +36,20 @@ import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.framing.Frame;
 import com.apicatalog.jsonld.framing.Framing;
 import com.apicatalog.jsonld.framing.FramingState;
+import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.Version;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
+
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonString;
+import jakarta.json.JsonStructure;
+import jakarta.json.JsonValue;
 
 /**
  * 
@@ -135,7 +135,7 @@ public final class FramingProcessor {
         }
         
         // 15.
-        Map<String, JsonValue> resultMap = new LinkedHashMap<>();
+        final JsonMapBuilder resultMap = JsonMapBuilder.create();
         
         // 16.
         Framing.with(state, 
@@ -147,22 +147,24 @@ public final class FramingProcessor {
                 .ordered(options.isOrdered())
                 .frame();
         
-        Collection<JsonValue> result = resultMap.values();        
+        Collection<JsonValue> result = resultMap.valuesToArray();
         
         // 17. - remove blank @id
-        if (!activeContext.inMode(Version.V1_0)) {
+        if (!activeContext.inMode(JsonLdVersion.V1_0)) {
             result = removeBlankId(result);
         }
         
         // 18. - remove preserve
-        result = result.stream().map(FramingProcessor::removePreserve).collect(Collectors.toList());
+        final JsonArrayBuilder filtered = Json.createArrayBuilder();
+
+        result.stream().map(FramingProcessor::removePreserve).forEach(filtered::add);
         
         // 19.
         JsonValue compactedResults = Compaction
-                                                .with(activeContext)
-                                                .compactArrays(options.isCompactArrays())
-                                                .ordered(options.isOrdered())
-                                                .compact(JsonUtils.toJsonArray(result));
+                                            .with(activeContext)
+                                            .compactArrays(options.isCompactArrays())
+                                            .ordered(options.isOrdered())
+                                            .compact(filtered.build());
 
         // 19.1.
         if (JsonUtils.isEmptyArray(compactedResults)) {
@@ -185,7 +187,7 @@ public final class FramingProcessor {
         
         if (options.isOmitGraph() == null) {
             
-            omitGraph = activeContext.inMode(Version.V1_1);
+            omitGraph = activeContext.inMode(JsonLdVersion.V1_1);
             
         } else {
             omitGraph = options.isOmitGraph();
@@ -279,16 +281,16 @@ public final class FramingProcessor {
             
         } else if (JsonUtils.isArray(value)) {
             
-            JsonArrayBuilder array = Json.createArrayBuilder();
+            final JsonArrayBuilder array = Json.createArrayBuilder();
             
             value.asJsonArray().stream().map(FramingProcessor::replaceNull).forEach(array::add);
             
-            JsonArray result = array.build();
+            final JsonArray result = array.build();
             
             return result.size() != 1 || JsonUtils.isNotNull(result.get(0)) ? result : JsonValue.EMPTY_JSON_ARRAY;
         }
         
-        JsonObjectBuilder object = Json.createObjectBuilder();
+        final JsonObjectBuilder object = Json.createObjectBuilder();
         
         for (Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
             
@@ -318,20 +320,19 @@ public final class FramingProcessor {
         if (JsonUtils.isScalar(value)) {
             return value;
         }
+
         if (JsonUtils.isArray(value)) {
             
-            JsonArrayBuilder array = Json.createArrayBuilder();
+            final JsonArrayBuilder array = Json.createArrayBuilder();
             
-            for (JsonValue item : value.asJsonArray()) {
-                array.add(removeBlankIdKey(item, blankNodes));
-            }
+            value.asJsonArray().stream().map(item -> removeBlankIdKey(item, blankNodes)).forEach(array::add);
             
             return array.build();
         }
         
-        JsonObjectBuilder object = Json.createObjectBuilder();
+        final JsonObjectBuilder object = Json.createObjectBuilder();
         
-        for (Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
+        for (final Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
             
             if (Keywords.ID.equals(entry.getKey()) 
                     && JsonUtils.isString(entry.getValue())

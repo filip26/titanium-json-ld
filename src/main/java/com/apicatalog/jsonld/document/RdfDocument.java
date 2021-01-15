@@ -22,15 +22,15 @@ import java.net.URI;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.json.JsonException;
-
-import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.api.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.io.error.RdfReaderException;
 import com.apicatalog.rdf.io.error.UnsupportedContentException;
+
+import jakarta.json.JsonException;
 
 public final class RdfDocument implements Document {
 
@@ -81,11 +81,11 @@ public final class RdfDocument implements Document {
      * @param is representing parsed RDF content
      * @return {@link Document} representing RDF document
      */
-    public static final Document of(final InputStream is)  throws JsonLdError {
+    public static final RdfDocument of(final InputStream is)  throws JsonLdError {
         return of(MediaType.N_QUADS, is);
     }
     
-    public static final Document of(final MediaType type, final InputStream is)  throws JsonLdError {
+    public static final RdfDocument of(final MediaType type, final InputStream is)  throws JsonLdError {
         
         assertContentType(type);
         

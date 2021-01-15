@@ -15,18 +15,16 @@
  */
 package com.apicatalog.jsonld.deseralization;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.json.JsonString;
-import javax.json.JsonValue;
-
-import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.api.JsonLdOptions.RdfDirection;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
@@ -34,6 +32,9 @@ import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.RdfValue;
 import com.apicatalog.rdf.lang.RdfConstants;
+
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
 
 public final class JsonLdToRdf {
 
@@ -70,13 +71,12 @@ public final class JsonLdToRdf {
     public RdfDataset build() throws JsonLdError {
         
         // 1.
-        for (final String graphName : nodeMap.graphs(true)) {
+        for (final String graphName : Utils.index(nodeMap.graphs(), true)) {
 
             // 1.2.
             final RdfResource rdfGraphName;
             
             if (Keywords.DEFAULT.equals(graphName)) {
-
                 rdfGraphName = null;
                 
             } else {
@@ -96,26 +96,23 @@ public final class JsonLdToRdf {
             }
             
             // 1.3.
-            for (final String subject : nodeMap.subjects(graphName, true)) {
+            for (final String subject : Utils.index(nodeMap.subjects(graphName), true)) {
                 
-                RdfResource rdfSubject = null;
+                final RdfResource rdfSubject;
 
                 // 1.3.1.
                 if (BlankNode.isWellFormed(subject)) {
-     
                     rdfSubject = Rdf.createBlankNode(subject);
                     
                 } else if (UriUtils.isAbsoluteUri(subject)) {
-                    
                     rdfSubject = Rdf.createIRI(subject);
-                }
-                
-                if (rdfSubject == null) {
-                    continue;
+                    
+                } else {
+                    continue;                    
                 }
                 
                 // 1.3.2.
-                for (final String property : nodeMap.properties(graphName, subject, true)) {
+                for (final String property : Utils.index(nodeMap.properties(graphName, subject), true)) {
 
                     // 1.3.2.1.
                     if (Keywords.TYPE.equals(property)) {
@@ -128,7 +125,7 @@ public final class JsonLdToRdf {
                             
                             final String typeString = ((JsonString)type).getString();
 
-                            RdfValue rdfObject = null;
+                            final RdfValue rdfObject;
                             
                             if (BlankNode.isWellFormed(typeString)) {
                                 rdfObject = Rdf.createBlankNode(typeString);
@@ -157,23 +154,20 @@ public final class JsonLdToRdf {
                         for (JsonValue item : nodeMap.get(graphName, subject, property).asJsonArray()) {
                         
                             // 1.3.2.5.1.
-                            List<RdfTriple> listTriples = new LinkedList<>();
+                            final List<RdfTriple> listTriples = new ArrayList<>();
 
                             // 1.3.2.5.2.                            
-                            RdfValue rdfObject = ObjectToRdf
-                                                    .with(item.asJsonObject(), listTriples, nodeMap)
-                                                    .rdfDirection(rdfDirection)
-                                                    .build();
-                            
-                            if (rdfObject != null) {
-                                dataset.add(Rdf.createNQuad(
-                                                        rdfSubject,
-                                                        Rdf.createResource(property),
-                                                        rdfObject,
-                                                        rdfGraphName
-                                                    ));
-                            }
-                            
+                            ObjectToRdf
+                                    .with(item.asJsonObject(), listTriples, nodeMap)
+                                    .rdfDirection(rdfDirection)
+                                    .build()
+                                    .ifPresent(rdfObject ->
+                                                        dataset.add(Rdf.createNQuad(
+                                                                    rdfSubject,
+                                                                    Rdf.createResource(property),
+                                                                    rdfObject,
+                                                                    rdfGraphName
+                                                                    )));
                             // 1.3.2.5.3.
                             listTriples.stream()
                                         .map(triple -> Rdf.createNQuad(triple, rdfGraphName))
@@ -185,5 +179,4 @@ public final class JsonLdToRdf {
         }
         return dataset;
     }
-    
 }

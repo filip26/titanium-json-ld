@@ -16,11 +16,11 @@
 package com.apicatalog.jsonld.http.link;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -181,7 +181,7 @@ final class LinkHeaderParser {
         if (attributeName != null) {
             if (attributeValue != null) {
                 attributes
-                        .computeIfAbsent(attributeName, l -> new LinkedList<>())
+                        .computeIfAbsent(attributeName, l -> new ArrayList<>())
                         .add(new LinkAttribute(attributeName, attributeValue));
                 
                 attributeValue = null;
@@ -189,7 +189,7 @@ final class LinkHeaderParser {
             } else {
 
                 attributes
-                        .computeIfAbsent(attributeName, l -> new LinkedList<>())
+                        .computeIfAbsent(attributeName, l -> new ArrayList<>())
                         .add(new LinkAttribute(attributeName));
             }
             
@@ -199,7 +199,7 @@ final class LinkHeaderParser {
 
     private final void resetState(URI baseUri) {
         this.baseUri = baseUri;
-        this.links = new LinkedList<>();
+        this.links = new ArrayList<>();
         this.attributes = new LinkedHashMap<>();
         this.state = State.INIT;
         

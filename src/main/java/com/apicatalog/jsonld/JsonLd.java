@@ -17,24 +17,26 @@ package com.apicatalog.jsonld;
 
 import java.net.URI;
 
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonString;
-
-import com.apicatalog.jsonld.api.impl.CompactionApi;
-import com.apicatalog.jsonld.api.impl.ExpansionApi;
-import com.apicatalog.jsonld.api.impl.FlatteningApi;
-import com.apicatalog.jsonld.api.impl.FramingApi;
-import com.apicatalog.jsonld.api.impl.FromRdfApi;
-import com.apicatalog.jsonld.api.impl.ToRdfApi;
+import com.apicatalog.jsonld.api.CompactionApi;
+import com.apicatalog.jsonld.api.ExpansionApi;
+import com.apicatalog.jsonld.api.FlatteningApi;
+import com.apicatalog.jsonld.api.FramingApi;
+import com.apicatalog.jsonld.api.FromRdfApi;
+import com.apicatalog.jsonld.api.ToRdfApi;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.RdfDataset;
 
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonString;
+
 /**
  * The {@link JsonLd} interface is the high-level programming structure
  * that developers use to access the JSON-LD transformation methods.
- * This class provides all methods to process JSON-LD.
+ * This class provides methods to process JSON-LD.
+ *
+ * All the methods in this class are thread-safe.
  */
 public final class JsonLd {
 

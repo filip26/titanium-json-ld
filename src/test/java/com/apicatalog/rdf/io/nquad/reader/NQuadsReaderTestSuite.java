@@ -15,25 +15,23 @@
  */
 package com.apicatalog.rdf.io.nquad.reader;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.stream.JsonParser;
-
-import org.junit.Assert;
-
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.rdf.io.nquad.NQuadsReaderTest;
+
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.stream.JsonParser;
 
 public final class NQuadsReaderTestSuite {
 
@@ -45,11 +43,11 @@ public final class NQuadsReaderTestSuite {
         this.manifestName = manifestName;
     }
     
-    public final Collection<NQuadsReaderTestCase> load() throws ZipException, IOException, URISyntaxException {
+    public final Stream<NQuadsReaderTestCase> load() throws ZipException, IOException, URISyntaxException {
         
-        final URL zipFileUrl =  (new NQuadsReaderTest()).getClass().getResource(filePath);
+        final URL zipFileUrl =  NQuadsReaderTestSuite.class.getResource(filePath);
 
-        Assert.assertNotNull(zipFileUrl);
+        assertNotNull(zipFileUrl);
 
         try (final ZipFile zip = new ZipFile(new File(zipFileUrl.toURI()))) {
 
@@ -66,8 +64,8 @@ public final class NQuadsReaderTestSuite {
                             .stream()
                             .filter(JsonUtils::isObject)
                             .map(JsonObject.class::cast)
-                            .map(NQuadsReaderTestCase::of).collect(Collectors.toList());                
+                            .map(NQuadsReaderTestCase::of);                
             }
         }
-    }
+    }    
 }

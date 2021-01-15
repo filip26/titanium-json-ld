@@ -15,24 +15,22 @@
  */
 package com.apicatalog.jsonld.compaction;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-
-import com.apicatalog.jsonld.api.JsonLdError;
+import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
+
+import jakarta.json.Json;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
 
 /**
  * 
@@ -130,20 +128,17 @@ public final class ValueCompaction {
                 ) {
 
             // 8.1.
-            JsonArrayBuilder types = Json.createArrayBuilder();
+            final JsonArrayBuilder types = Json.createArrayBuilder();
             
-            JsonValue resultTypes = result.asJsonObject().get(Keywords.TYPE);
+            final JsonValue resultTypes = result.asJsonObject().get(Keywords.TYPE);
             
             if (JsonUtils.isNotNull(resultTypes)) {
-                for (JsonValue type : JsonUtils.toJsonArray(resultTypes)) {
+                for (final JsonValue type : JsonUtils.toCollection(resultTypes)) {
     
                     types.add(activeContext.uriCompaction().vocab(true).compact(((JsonString)type).getString()));                    
                 }
                 
-                Map<String, JsonValue> resultMap = new LinkedHashMap<>(result.asJsonObject());
-                resultMap.put(Keywords.TYPE, types.build());
-                
-                result = JsonUtils.toJsonObject(resultMap);
+                result = Json.createObjectBuilder(result.asJsonObject()).add(Keywords.TYPE, types.build()).build();
             }
             
         // 9.
@@ -186,7 +181,7 @@ public final class ValueCompaction {
         // 11.
         if (JsonUtils.isObject(result)) {
 
-            JsonObjectBuilder resultBuilder = Json.createObjectBuilder();
+            final JsonObjectBuilder resultBuilder = Json.createObjectBuilder();
             
             for (Entry<String, JsonValue> entry : result.asJsonObject().entrySet()) {
                 resultBuilder.add(

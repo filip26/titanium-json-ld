@@ -1,0 +1,68 @@
+{
+  "@context": [
+    "https://fhircat.org/fhir-r5/rdf-r4/contexts/questionnaire.context.jsonld",
+    "https://fhircat.org/fhir-r5/rdf-r4/contexts/root.context.jsonld",
+    {
+      "@base": "http://hl7.org/fhir/",
+      "nodeRole": {
+        "@type": "@id",
+        "@id": "fhir:nodeRole"
+      },
+      "owl:imports": {
+        "@type": "@id"
+      },
+      "owl:versionIRI": {
+        "@type": "@id"
+      }
+    }
+  ],
+  "resourceType": "fhir:Questionnaire",
+  "item": [
+    {
+      "item": [
+        {
+          "extension": [
+            {
+              "url": {
+                "value": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl"
+              },
+              "valueCodeableConcept": {
+                "coding": [
+                  {
+                    "system": {
+                      "value": "http://hl7.org/fhir/questionnaire-item-control"
+                    },
+                    "code": {
+                      "value": "flyover"
+                    },
+                    "display": {
+                      "value": "Fly-over"
+                    },
+                    "index": 0,
+                    "@type": "http://hl7.org/fhir/questionnaire-item-control/flyover"
+                  }
+                ]
+              },
+              "index": 0
+            }
+          ],
+          "text": {
+            "value": "A financial tool for tracking value accrued for a particular purpose.  In the healthcare field, used to track charges for a patient, cost centers, etc."
+          },
+          "type": {
+            "value": "display"
+          },
+          "index": 0
+        }
+      ],
+      "index": 0
+    }
+  ],
+  "nodeRole": "fhir:treeRoot",
+  "@included": {
+    "@id": "undefined.ttl",
+    "owl:versionIRI": "undefined.ttl",
+    "owl:imports": "fhir:fhir.ttl",
+    "@type": "owl:Ontology"
+  }
+}

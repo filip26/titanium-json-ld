@@ -26,10 +26,12 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import com.apicatalog.jsonld.api.JsonLdError;
-import com.apicatalog.jsonld.api.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.DocumentParser;
 import com.apicatalog.jsonld.http.ProfileConstants;
@@ -39,6 +41,8 @@ import com.apicatalog.jsonld.uri.UriResolver;
 
 public class HttpLoader implements DocumentLoader {
 
+    private static final Logger LOGGER = Logger.getLogger(HttpLoader.class.getName());
+    
     private static final HttpClient CLIENT = HttpClient.newBuilder().followRedirects(Redirect.NEVER).build();
     
     private static final HttpLoader INSTANCE = new HttpLoader(CLIENT);
@@ -91,7 +95,7 @@ public class HttpLoader implements DocumentLoader {
                                     .build();
                 
                 response = httpClient.send(request, BodyHandlers.ofInputStream());
-                                    
+    
                 // 3.
                 if (response.statusCode() == 301
                     || response.statusCode() == 302
@@ -181,13 +185,18 @@ public class HttpLoader implements DocumentLoader {
                         if (contextUris.size() > 1) {
                             throw new JsonLdError(JsonLdErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS);
                             
-                        } else if(contextUris.size() == 1) {
+                        } else if (contextUris.size() == 1) {
                             contextUri = contextUris.get(0).target();
                         }
                     }
                 }
                     
                 done = true;
+            }
+
+            if (contentType == null) {
+                LOGGER.log(Level.WARNING, "GET on URL [{0}] does not return content-type header. Trying application/json.", uri);
+                contentType = MediaType.JSON;
             }
 
             return createDocument(contentType, targetUri, contextUri, response);

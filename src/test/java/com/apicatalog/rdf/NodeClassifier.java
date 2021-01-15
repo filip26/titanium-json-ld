@@ -15,8 +15,8 @@
  */
 package com.apicatalog.rdf;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -66,7 +66,7 @@ final class NodeClassifier {
             List<String> list = reduced.get(entry.getValue());
             
             if (list == null) {
-                list = new LinkedList<>();
+                list = new ArrayList<>();
                 reduced.put(entry.getValue(), list);
             }
             
