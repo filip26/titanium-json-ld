@@ -50,7 +50,9 @@ public final class FileLoader implements DocumentLoader {
                         
         try (final InputStream is = new FileInputStream(file)) {
             
-            return DocumentParser.parse(contentType, is);
+            final Document document = DocumentParser.parse(contentType, is);
+            document.setDocumentUrl(url);
+            return document;
             
         } catch (FileNotFoundException e) {
             

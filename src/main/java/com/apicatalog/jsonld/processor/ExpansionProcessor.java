@@ -92,7 +92,7 @@ public final class ExpansionProcessor {
         if (options.getBase() != null) {
             baseUri = options.getBase();
         }
-        
+    
         ActiveContext activeContext = new ActiveContext(baseUri, baseUrl, options);
 
         // 6. If the expandContext option in options is set, update the active context
