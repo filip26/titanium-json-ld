@@ -75,6 +75,21 @@
       "input": "plain.txt",
       "expectErrorCode": "loading document failed",
       "option": { "contentType": "text/plain" }
-    }
+    },
+    {
+      "@id": "#t0009",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "name": "Expand: relative base in local context",
+      "input": "relative-base-in.json",
+      "expect": "relative-base-out.json"
+    },
+	{
+      "@id": "#t0010",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ToRDFTest"],
+      "name": "ToRDF: relative base in local context",
+      "input": "relative-base-in.json",
+      "expect": "relative-base-out.nq"
+    }    
+        
   ]
 }

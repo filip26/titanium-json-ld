@@ -57,7 +57,7 @@ public class JsonLdTestRunnerJunit {
     }
 
     public boolean execute() {
-        
+
         if (testCase.type.contains(Type.COMPACT_TEST)) {
             return execute(options -> JsonDocument.of(JsonLd.compact(testCase.input, testCase.context).options(options).get()));
         }
