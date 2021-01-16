@@ -34,7 +34,7 @@ public final class JsonLdError extends Exception {
     }
 
     public JsonLdError(JsonLdErrorCode code, String message) {
-        super(message);
+        super(code.toMessage() + " - " + message);
         this.code = code;
     }
 

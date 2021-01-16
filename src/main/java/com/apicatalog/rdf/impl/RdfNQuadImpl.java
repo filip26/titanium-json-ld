@@ -34,4 +34,8 @@ final class RdfNQuadImpl extends RdfTripleImpl implements RdfNQuad {
     public Optional<RdfResource> getGraphName() {
         return Optional.ofNullable(graphName);
     }
+
+    public String toString() {
+      return super.toString() + ( graphName == null ? "" : " <" + graphName + ">" );
+    }
 }

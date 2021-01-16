@@ -219,4 +219,9 @@ public final class ActiveContext {
     protected void setTerm(final String term, final TermDefinition definition) {
         terms.put(term, definition);
     }
+
+    public String toString() {
+      return "ActiveContext: terms " + terms.toString() +
+	      " - previousContext " + previousContext;
+    }
 }

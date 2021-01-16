@@ -308,7 +308,13 @@ public final class ActiveContextBuilder {
                             result.setBaseUri(UriUtils.create(resolved));
                             
                         } else {
-                            throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);
+                            throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI,
+                              "valueString " + valueString +
+                              " - localContext " + localContext +
+                              " - baseUrl " + baseUrl +
+			      "\n - result.getBaseUri() " + result.getBaseUri() +
+                              " - UriUtils.isAbsoluteUri(valueString) " + UriUtils.isAbsoluteUri(valueString)
+			    );
                         }       
                         
                     } else if (!valueString.isBlank()) {

@@ -163,7 +163,11 @@ final class ObjectExpansion1314 {
                 // 13.4.2
                 if (result.containsKey(expandedProperty)
                         && Keywords.noneMatch(expandedProperty, Keywords.INCLUDED, Keywords.TYPE)) {
-                    throw new JsonLdError(JsonLdErrorCode.COLLIDING_KEYWORDS);
+                    throw new JsonLdError(JsonLdErrorCode.COLLIDING_KEYWORDS,
+                        "expandedProperty " + expandedProperty +
+                        " - inputType " + inputType +
+			"\n" + this
+                    );
                 }
 
                 // 13.4.3
@@ -1025,5 +1029,18 @@ final class ObjectExpansion1314 {
                         .recurse();
             }
         }
+    }
+
+    public String toString() {
+      return "ObjectExpansion1314: element " + element +
+        "activeContext " + activeContext +
+        " - activeProperty " + activeProperty +
+        " - baseUrl " + baseUrl +
+        " - typeContext " + typeContext +
+        // private JsonMapBuilder
+        " - result " + result +
+        " - inputType " + inputType +
+        // Map<String, JsonValue>
+        " - nest " + nest ;
     }
 }
