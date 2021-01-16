@@ -48,7 +48,11 @@ class RdfTripleImpl implements RdfTriple {
         return object;
     }
 
+    @Override
     public String toString() {
-        return "<"+ subject +"> <"+ predicate +"> "+ object;
+        return  "RdfTripleImpl[subject=" + subject 
+                    + ", predicate=" + predicate 
+                    + ", object=" + object 
+                    + "]";
     }
 }

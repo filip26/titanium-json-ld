@@ -184,10 +184,11 @@ public final class TermDefinition {
         return containerMapping != null && containerMapping.contains(value);
     }  
 
+    @Override
     public String toString() {
-      return "TermDefinition: uriMapping = <" + uriMapping + ">" +
-             ", localContext = " + localContext +
-             ", indexMapping = " + indexMapping +
-             ", typeMapping = " + typeMapping + "\n";
+        return "TermDefinition[uriMapping=" + uriMapping + ", "
+                    + "localContext=" + localContext + ", "
+                    + "indexMapping=" + indexMapping + ", "
+                    + "typeMapping=" + typeMapping + "]";
     }
 }

@@ -308,12 +308,13 @@ public final class ActiveContextBuilder {
                             result.setBaseUri(UriUtils.create(resolved));
                             
                         } else {
-                            LOGGER.log(Level.FINE, " 5.7.4: valueString = " + valueString +
-                              " - localContext = " + localContext +
-                              " - baseUrl = " + baseUrl );
+                            LOGGER.log(Level.FINE, 
+                                            "5.7.4: valueString = {0}, localContext = {1}, baseUrl = {2}", 
+                                            new Object[] {valueString, localContext, baseUrl});
+                            
                             throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI,
-                              "A relative base IRI cannot be resolved [@base = " + valueString +
-                              "]. Please set options.base to an absolute IRI");
+                                    "A relative base IRI cannot be resolved [@base = " + valueString +
+                                    "]. Please use JsonLdOptions.setBase() method to set an absolute IRI.");
                         }       
                         
                     } else if (!valueString.isBlank()) {

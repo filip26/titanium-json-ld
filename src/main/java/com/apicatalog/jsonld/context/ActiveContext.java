@@ -220,8 +220,8 @@ public final class ActiveContext {
         terms.put(term, definition);
     }
 
+    @Override
     public String toString() {
-      return "ActiveContext: terms = " + terms.toString() +
-	      ", previousContext = " + previousContext;
+        return "ActiveContext[terms=" + terms + ", previousContext=" + previousContext + "]";
     }
 }

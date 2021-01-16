@@ -252,7 +252,8 @@ public final class JsonMapBuilder {
         map.remove(key);
     }
 
+    @Override
     public String toString() {
-      return map.toString();
+        return map.toString();
     }
 }
