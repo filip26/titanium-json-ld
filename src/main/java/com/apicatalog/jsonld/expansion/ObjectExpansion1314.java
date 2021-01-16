@@ -163,11 +163,10 @@ final class ObjectExpansion1314 {
                 // 13.4.2
                 if (result.containsKey(expandedProperty)
                         && Keywords.noneMatch(expandedProperty, Keywords.INCLUDED, Keywords.TYPE)) {
+		    LOGGER.log(Level.FINE, "13.4.2 " + this.toString() );
                     throw new JsonLdError(JsonLdErrorCode.COLLIDING_KEYWORDS,
-                        "expandedProperty " + expandedProperty +
-                        " - inputType " + inputType +
-			"\n" + this
-                    );
+                      "Two properties which expand to the same keyword have been detected. A property '" + key +
+		      "' expands to '" + expandedProperty + "', but the '" + expandedProperty + "' property is already present" );
                 }
 
                 // 13.4.3
@@ -1032,15 +1031,13 @@ final class ObjectExpansion1314 {
     }
 
     public String toString() {
-      return "ObjectExpansion1314: element " + element +
-        "activeContext " + activeContext +
-        " - activeProperty " + activeProperty +
-        " - baseUrl " + baseUrl +
-        " - typeContext " + typeContext +
-        // private JsonMapBuilder
-        " - result " + result +
-        " - inputType " + inputType +
-        // Map<String, JsonValue>
-        " - nest " + nest ;
+      return "ObjectExpansion1314: element = " + element +
+        ", activeContext = " + activeContext +
+        ", activeProperty = " + activeProperty +
+        ", baseUrl = " + baseUrl +
+        ", typeContext = " + typeContext +
+        ", result = " + result +
+        ", inputType = " + inputType +
+        ", nest = " + nest ;
     }
 }

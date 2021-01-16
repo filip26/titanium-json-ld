@@ -185,9 +185,9 @@ public final class TermDefinition {
     }  
 
     public String toString() {
-      return "TermDefinition: uriMapping <" + uriMapping + ">" +
-              " - localContext " + localContext +
-	      " - indexMapping " + indexMapping +
-	      " - typeMapping " + typeMapping + "\n";
+      return "TermDefinition: uriMapping = <" + uriMapping + ">" +
+             ", localContext = " + localContext +
+             ", indexMapping = " + indexMapping +
+             ", typeMapping = " + typeMapping + "\n";
     }
 }

@@ -221,7 +221,7 @@ public final class ActiveContext {
     }
 
     public String toString() {
-      return "ActiveContext: terms " + terms.toString() +
-	      " - previousContext " + previousContext;
+      return "ActiveContext: terms = " + terms.toString() +
+	      ", previousContext = " + previousContext;
     }
 }
