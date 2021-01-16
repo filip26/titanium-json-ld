@@ -1,0 +1,11 @@
+{
+  
+  "@context": {
+    "@base": "../occurences/",
+    "@vocab": "v"
+  },
+  
+  "a": "1"
+  
+  
+}
