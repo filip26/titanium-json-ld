@@ -309,7 +309,7 @@ public final class ActiveContextBuilder {
                             
                         } else {
                             LOGGER.log(Level.FINE, 
-                                            "5.7.4: valueString = {0}, localContext = {1}, baseUrl = {2}", 
+                                            "5.7.4: valueString={0}, localContext={1}, baseUrl={2}", 
                                             new Object[] {valueString, localContext, baseUrl});
                             
                             throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI,
