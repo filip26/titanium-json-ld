@@ -46,4 +46,9 @@ public final class JsonLdError extends Exception {
     public JsonLdErrorCode getCode() {
         return code;
     }
+
+    @Override
+    public String toString() {
+        return "JsonLdError[code=" + code.toMessage() + ", message=" + getMessage() + "]";
+    }
 }

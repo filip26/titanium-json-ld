@@ -47,4 +47,12 @@ class RdfTripleImpl implements RdfTriple {
     public RdfValue getObject() {
         return object;
     }
+
+    @Override
+    public String toString() {
+        return  "RdfTripleImpl[subject=" + subject 
+                    + ", predicate=" + predicate 
+                    + ", object=" + object 
+                    + "]";
+    }
 }

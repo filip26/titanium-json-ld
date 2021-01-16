@@ -34,4 +34,13 @@ final class RdfNQuadImpl extends RdfTripleImpl implements RdfNQuad {
     public Optional<RdfResource> getGraphName() {
         return Optional.ofNullable(graphName);
     }
+
+    @Override
+    public String toString() {
+        return  "RdfNQuadImpl[subject=" + getSubject() 
+                    + ", predicate=" + getPredicate() 
+                    + ", object=" + getObject()
+                    + ", graph=" + graphName 
+                    + "]";
+    }
 }
