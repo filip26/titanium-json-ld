@@ -163,7 +163,10 @@ final class ObjectExpansion1314 {
                 // 13.4.2
                 if (result.containsKey(expandedProperty)
                         && Keywords.noneMatch(expandedProperty, Keywords.INCLUDED, Keywords.TYPE)) {
-                    throw new JsonLdError(JsonLdErrorCode.COLLIDING_KEYWORDS);
+		    LOGGER.log(Level.FINE, "13.4.2 " + this.toString() );
+                    throw new JsonLdError(JsonLdErrorCode.COLLIDING_KEYWORDS,
+                      "Two properties which expand to the same keyword have been detected. A property '" + key +
+		      "' expands to '" + expandedProperty + "', but the '" + expandedProperty + "' property is already present" );
                 }
 
                 // 13.4.3
@@ -1025,5 +1028,16 @@ final class ObjectExpansion1314 {
                         .recurse();
             }
         }
+    }
+
+    public String toString() {
+      return "ObjectExpansion1314: element = " + element +
+        ", activeContext = " + activeContext +
+        ", activeProperty = " + activeProperty +
+        ", baseUrl = " + baseUrl +
+        ", typeContext = " + typeContext +
+        ", result = " + result +
+        ", inputType = " + inputType +
+        ", nest = " + nest ;
     }
 }

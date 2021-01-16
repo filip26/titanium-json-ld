@@ -251,4 +251,8 @@ public final class JsonMapBuilder {
     public void remove(String key) {
         map.remove(key);
     }
+
+    public String toString() {
+      return map.toString();
+    }
 }
