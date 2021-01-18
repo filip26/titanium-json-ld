@@ -8,6 +8,8 @@ import java.util.function.Supplier;
 
 public interface Jdk8Compatibility {
 
+    Supplier<NoSuchElementException> noSuchElementException = () -> new NoSuchElementException("Optional is empty");
+
     static String strip(String s) {
         return StringUtils.strip(s);
     }
@@ -23,8 +25,6 @@ public interface Jdk8Compatibility {
     static <T> Boolean isEmpty(Optional<T> o) {
         return !o.isPresent();
     }
-
-    Supplier<NoSuchElementException> noSuchElementException = () -> new NoSuchElementException("Optional is empty");
 
     static <T> T orElseThrow(Optional<T> o) {
         return o.orElseThrow(noSuchElementException);
