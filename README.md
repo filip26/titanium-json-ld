@@ -143,8 +143,9 @@ JsonLd.compact(document, contextDocument).get();
 
 ## Contributing
 
-Your contribution is welcome! There are many ways to motivate developers or speed up development:
+Your contribution is welcome! Join [![Gitter](https://badges.gitter.im/titanium-json-ld/community.svg)](https://gitter.im/titanium-json-ld/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
+There are many ways to motivate developers or speed up development:
 - develop
   - implement a new feature 
   - fix an existing issue
