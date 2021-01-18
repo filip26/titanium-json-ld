@@ -23,8 +23,10 @@ import java.util.function.IntPredicate;
 
 import com.apicatalog.jsonld.http.HttpAlphabet;
 
+import static com.apicatalog.jdk8.Jdk8Compatibility.strip;
+
 /**
- * 
+ *
  * @see <a href="https://tools.ietf.org/html/rfc6838#section-4.2">Media Type Specifications - </a>
  *
  */
@@ -33,7 +35,7 @@ final class MediaTypeParser {
     protected static final IntPredicate NAME_FIRST = ch -> ch >= '0' && ch <= '9'
                                                     || ch >= 'a' && ch <= 'z'
                                                     || ch >= 'A' && ch <= 'Z';
-                                                    
+
     protected static final IntPredicate NAME_CHARS = ch -> ch >= '0' && ch <= '9'
                                                     || ch >= 'a' && ch <= 'z'
                                                     || ch >= 'A' && ch <= 'Z'
@@ -44,27 +46,27 @@ final class MediaTypeParser {
                                                     || ch == '+';
 
     private enum State { INIT, TYPE, SUBTYPE, PARAMS, PARAM_NAME, PARAM_VALUE, STRING_VALUE, LITERAL_VALUE, ESCAPE }
-    
+
     private final char[] input;
-    
+
     public MediaTypeParser(String input) {
         this.input = input.toCharArray();
     }
-    
+
     public MediaType parse() {
-        
+
         State state = State.INIT;
 
         String type = null;
         String subtype = null;
         String paramName = null;
-        
+
         StringBuilder stringValue = new StringBuilder();
-        
+
         Map<String, List<String>> params = new LinkedHashMap<>();
-        
+
         int index = -1;
-        
+
         for (int i=0; i < input.length; i++) {
 
             char ch = input[i];
@@ -80,13 +82,13 @@ final class MediaTypeParser {
                     break;
                 }
                 return null;
-                
+
             case TYPE:
                 if (NAME_CHARS.test(ch)) {
                     break;
                 }
                 if (ch == '/') {
-                    type = String.valueOf(input, index,  i - index).strip();
+                    type = strip(String.valueOf(input, index,  i - index));
                     state = State.SUBTYPE;
                     index = i + 1;
                     break;
@@ -100,14 +102,14 @@ final class MediaTypeParser {
                     break;
                 }
                 if (ch == ';') {
-                    subtype = String.valueOf(input, index,  i - index).strip();
+                    subtype = strip(String.valueOf(input, index,  i - index));
                     state = State.PARAM_NAME;
                     index = i + 1;
                     break;
                 }
                 if (HttpAlphabet.WHITESPACE.test(ch)) {
-                    subtype = String.valueOf(input, index,  i - index).strip();
-                    state = State.PARAMS;                 
+                    subtype = strip(String.valueOf(input, index,  i - index));
+                    state = State.PARAMS;
                     break;
                 }
 
@@ -123,21 +125,21 @@ final class MediaTypeParser {
                 state = State.PARAM_NAME;
                 index = i + 1;
                 break;
-                
+
             case PARAM_NAME:
                 if (ch == '=') {
-                    paramName = String.valueOf(input, index,  i - index).strip().toLowerCase();
+                    paramName = strip(String.valueOf(input, index,  i - index)).toLowerCase();
                     state = State.PARAM_VALUE;
                     break;
                 }
                 if (ch == ';') {
-                    paramName = String.valueOf(input, index,  i - index).strip().toLowerCase();
+                    paramName = strip(String.valueOf(input, index,  i - index)).toLowerCase();
                     params.computeIfAbsent(paramName, p -> new ArrayList<>()).add(paramName);
                     index = i + 1;
-                    break;                    
+                    break;
                 }
                 break;
-                
+
             case PARAM_VALUE:
                 if (Character.isSpaceChar(ch) || ch == '\t') {
                     break;
@@ -148,24 +150,24 @@ final class MediaTypeParser {
                     state = State.STRING_VALUE;
                     break;
                 }
-                
+
                 index = i;
                 state = State.LITERAL_VALUE;
                 break;
-            
+
             case LITERAL_VALUE:
                 if (ch == ';') {
-                    
-                    params.computeIfAbsent(paramName, p -> new ArrayList<>()).add(String.valueOf(input, index,  i - index).strip());
+
+                    params.computeIfAbsent(paramName, p -> new ArrayList<>()).add(strip(String.valueOf(input, index,  i - index)));
                     index = i + 1;
                     paramName = null;
                     state = State.PARAM_NAME;
-                    break;                    
+                    break;
                 }
-                break;                
+                break;
 
             case STRING_VALUE:
-                
+
                 if (ch == '"') {
                     params.computeIfAbsent(paramName, p -> new ArrayList<>()).add(stringValue.toString());
                     stringValue.setLength(0);
@@ -179,7 +181,7 @@ final class MediaTypeParser {
                 }
                 stringValue.append(ch);
                 break;
-            
+
             case ESCAPE:
                 stringValue.append(ch);
                 state = State.STRING_VALUE;
@@ -190,23 +192,23 @@ final class MediaTypeParser {
         switch (state) {
         case SUBTYPE:
             if (index < input.length) {
-                subtype = String.valueOf(input, index,  input.length - index).strip().toLowerCase();
+                subtype = strip(String.valueOf(input, index,  input.length - index)).toLowerCase();
             }
             break;
-            
+
         case PARAM_NAME:
             if (index < input.length) {
-                paramName = String.valueOf(input, index,  input.length - index).strip().toLowerCase();
+                paramName = strip(String.valueOf(input, index,  input.length - index)).toLowerCase();
             }
             break;
-            
+
         case LITERAL_VALUE:
             if (index < input.length) {
-                params.computeIfAbsent(paramName, p -> new ArrayList<>()).add(String.valueOf(input, index,  input.length - index).strip());
+                params.computeIfAbsent(paramName, p -> new ArrayList<>()).add(strip(String.valueOf(input, index,  input.length - index)));
                 paramName = null;
             }
             break;
-            
+
         default:
             break;
         }
@@ -222,5 +224,5 @@ final class MediaTypeParser {
             return null;
         }
         return new MediaType(type, subtype, new MediaTypeParameters(params));
-    }    
+    }
 }

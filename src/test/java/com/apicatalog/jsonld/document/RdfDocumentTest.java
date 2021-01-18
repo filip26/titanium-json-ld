@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.document;
 
+import static com.apicatalog.jdk8.Jdk8Compatibility.isEmpty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -25,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import com.apicatalog.jdk8.Jdk8Compatibility;
 import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -35,17 +37,17 @@ import com.apicatalog.rdf.RdfDataset;
 import jakarta.json.JsonValue;
 
 class RdfDocumentTest {
-    
+
     private static final String NQ_STATEMENT = "<http://example/s> <http://example/p> <http://example/o> <http://example/g> .";
-    
+
     @Test
     void test1() {
         Document document = RdfDocument.of(Rdf.createDataset());
         assertNotNull(document);
         assertTrue(MediaType.N_QUADS.match(document.getContentType()));
         assertTrue(document.getRdfContent().isPresent());
-        assertTrue(document.getJsonContent().isEmpty());
-        assertTrue(document.getProfile().isEmpty());
+        assertTrue(isEmpty(document.getJsonContent()));
+        assertTrue(isEmpty(document.getProfile()));
         assertEquals(0, document.getRdfContent().get().size());
     }
 
@@ -55,8 +57,8 @@ class RdfDocumentTest {
         assertNotNull(document);
         assertTrue(MediaType.N_QUADS.match(document.getContentType()));
         assertTrue(document.getRdfContent().isPresent());
-        assertTrue(document.getJsonContent().isEmpty());
-        assertTrue(document.getProfile().isEmpty());
+        assertTrue(isEmpty(document.getJsonContent()));
+        assertTrue(isEmpty(document.getProfile()));
         assertEquals(0, document.getRdfContent().get().size());
     }
 
@@ -66,8 +68,8 @@ class RdfDocumentTest {
         assertNotNull(document);
         assertTrue(MediaType.N_QUADS.match(document.getContentType()));
         assertTrue(document.getRdfContent().isPresent());
-        assertTrue(document.getJsonContent().isEmpty());
-        assertTrue(document.getProfile().isEmpty());
+        assertTrue(isEmpty(document.getJsonContent()));
+        assertTrue(isEmpty(document.getProfile()));
         assertEquals(1, document.getRdfContent().get().size());
     }
 
@@ -77,11 +79,11 @@ class RdfDocumentTest {
         assertNotNull(document);
         assertTrue(MediaType.N_QUADS.match(document.getContentType()));
         assertTrue(document.getRdfContent().isPresent());
-        assertTrue(document.getJsonContent().isEmpty());
-        assertTrue(document.getProfile().isEmpty());
+        assertTrue(isEmpty(document.getJsonContent()));
+        assertTrue(isEmpty(document.getProfile()));
         assertEquals(1, document.getRdfContent().get().size());
     }
-    
+
     @Test
     void testi1() throws JsonLdError {
         assertThrows(IllegalArgumentException.class, () -> RdfDocument.of((InputStream)null));
@@ -96,7 +98,7 @@ class RdfDocumentTest {
     void testi3() throws JsonLdError {
         assertThrows(IllegalArgumentException.class, () -> RdfDocument.of((Reader)null));
     }
-    
+
     @Test
     void testi4() throws JsonLdError {
         final InputStream is = new ByteArrayInputStream(JsonValue.EMPTY_JSON_ARRAY.toString().getBytes());
@@ -114,7 +116,7 @@ class RdfDocumentTest {
         final Reader reader = new InputStreamReader(new ByteArrayInputStream(JsonValue.EMPTY_JSON_ARRAY.toString().getBytes()));
         assertThrows(IllegalArgumentException.class, () -> RdfDocument.of(null, reader));
     }
-    
+
     @Test
     void testi7() throws JsonLdError {
         final InputStream is = new ByteArrayInputStream("{ bad json".getBytes());
@@ -126,7 +128,7 @@ class RdfDocumentTest {
         final Reader reader = new InputStreamReader(new ByteArrayInputStream("n".getBytes()));
         assertThrows(JsonLdError.class, () -> RdfDocument.of(reader));
     }
-    
+
     @Test
     void test9() {
         final MediaType mediaType = MediaType.of("application/custom+json;profile=https://example.org/profile");

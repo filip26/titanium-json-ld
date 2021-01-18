@@ -43,18 +43,20 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 
+import static com.apicatalog.jdk8.Jdk8Compatibility.isBlank;
+
 /**
  * @see <a href=
  *      "https://www.w3.org/TR/json-ld11-api/#context-processing-algorithms">Context
  *      Processing Algorithm</a>
- * 
+ *
  */
 public final class ActiveContextBuilder {
 
-    private static final int MAX_REMOTE_CONTEXTS = 256; 
-    
+    private static final int MAX_REMOTE_CONTEXTS = 256;
+
     private static final Logger LOGGER = Logger.getLogger(ActiveContextBuilder.class.getName());
-    
+
     // mandatory
     private final ActiveContext activeContext;
 
@@ -79,12 +81,12 @@ public final class ActiveContextBuilder {
         this.overrideProtected = false;
         this.propagate = true;
         this.validateScopedContext = true;
-        
+
         // runtime
         this.result = null;
     }
 
-    public static final ActiveContextBuilder with(final ActiveContext activeContext) {        
+    public static final ActiveContextBuilder with(final ActiveContext activeContext) {
         return new ActiveContextBuilder(activeContext);
     }
 
@@ -120,15 +122,15 @@ public final class ActiveContextBuilder {
         if (JsonUtils.isObject(localContext)) {
 
             final JsonObject localContextObject = localContext.asJsonObject();
-            
+
             if (localContextObject.containsKey(Keywords.PROPAGATE)) {
-                
+
                 final JsonValue propagateValue = localContextObject.get(Keywords.PROPAGATE);
-                
+
                 if (JsonUtils.isNotBoolean(propagateValue)) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_PROPAGATE_VALUE);
                 }
-                
+
                 propagate = JsonUtils.isTrue(propagateValue);
             }
         }
@@ -213,7 +215,7 @@ public final class ActiveContextBuilder {
 
             // 5.6. If context has an @import
             if (contextDefinition.containsKey(Keywords.IMPORT)) {
-                
+
                 // 5.6.1.
                 if (activeContext.inMode(JsonLdVersion.V1_0)) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_CONTEXT_ENTRY);
@@ -251,7 +253,7 @@ public final class ActiveContextBuilder {
                     importedStructure = importedDocument
                                             .getJsonContent()
                                             .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE));
-                    
+
                 // 5.6.5
                 } catch (JsonLdError e) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE, e);
@@ -291,9 +293,9 @@ public final class ActiveContextBuilder {
                     result.setBaseUri(null);
 
                 } else if (JsonUtils.isString(value)) {
-                    
+
                     final String valueString = ((JsonString) value).getString();
-                    
+
                     if (UriUtils.isURI(valueString)) {
 
                         // 5.7.3
@@ -304,31 +306,31 @@ public final class ActiveContextBuilder {
                         } else if (result.getBaseUri() != null) {
 
                             String resolved = UriResolver.resolve(result.getBaseUri(), valueString);
-                            
+
                             result.setBaseUri(UriUtils.create(resolved));
-                            
+
                         } else {
-                            LOGGER.log(Level.FINE, 
-                                            "5.7.4: valueString={0}, localContext={1}, baseUrl={2}", 
-                                            new Object[] {valueString, localContext, baseUrl});
-                            
+                            LOGGER.log(Level.FINE,
+                                    "5.7.4: valueString={0}, localContext={1}, baseUrl={2}",
+                                    new Object[] {valueString, localContext, baseUrl});
+
                             throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI,
                                     "A relative base IRI cannot be resolved [@base = " + valueString +
-                                    "]. Please use JsonLdOptions.setBase() method to set an absolute IRI.");
-                        }       
-                        
-                    } else if (!valueString.isBlank()) {
+                                            "]. Please use JsonLdOptions.setBase() method to set an absolute IRI.");
+                        }
+
+                    } else if (!isBlank(valueString)) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);
                     }
 
                 } else {
-                    throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);                    
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);
                 }
             }
 
             // 5.8.
             if (contextDefinition.containsKey(Keywords.VOCAB)) {
-                
+
                 // 5.8.1.
                 final JsonValue value = contextDefinition.get(Keywords.VOCAB);
 
@@ -341,7 +343,7 @@ public final class ActiveContextBuilder {
 
                     final String valueString = ((JsonString) value).getString();
 
-                    if (valueString.isBlank() || BlankNode.hasPrefix(valueString) || UriUtils.isURI(valueString)) {
+                    if (isBlank(valueString) || BlankNode.hasPrefix(valueString) || UriUtils.isURI(valueString)) {
 
                         String vocabularyMapping =
                                     result
@@ -368,7 +370,7 @@ public final class ActiveContextBuilder {
 
             // 5.9.
             if (contextDefinition.containsKey(Keywords.LANGUAGE)) {
-                
+
                 // 5.9.1
                 final JsonValue value = contextDefinition.get(Keywords.LANGUAGE);
 
@@ -380,11 +382,11 @@ public final class ActiveContextBuilder {
                 } else if (JsonUtils.isString(value)) {
 
                     result.setDefaultLanguage(((JsonString)value).getString());
-                    
+
                     if (!LanguageTag.isWellFormed(result.getDefaultLanguage())) {
-                        LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", result.getDefaultLanguage());                        
+                        LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", result.getDefaultLanguage());
                     }
-                    
+
                 } else {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_DEFAULT_LANGUAGE);
                 }
@@ -418,8 +420,8 @@ public final class ActiveContextBuilder {
 
                     } else {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
-                    }                    
-                    
+                    }
+
                 } else {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
                 }
@@ -461,7 +463,7 @@ public final class ActiveContextBuilder {
         // 6.
         return result;
     }
-    
+
     private void fetch(final String context, final URI baseUrl) throws JsonLdError {
 
         String contextUri = context;
@@ -469,7 +471,7 @@ public final class ActiveContextBuilder {
         // 5.2.1
         if (baseUrl != null) {
             contextUri = UriResolver.resolve(baseUrl, contextUri);
-            
+
         } else if (UriUtils.isNotURI(contextUri)) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Context URI is not URI [" + contextUri + "].");
         }
@@ -487,14 +489,14 @@ public final class ActiveContextBuilder {
         if (remoteContexts.size() > MAX_REMOTE_CONTEXTS) {
             throw new JsonLdError(JsonLdErrorCode.CONTEXT_OVERFLOW, "Too many contexts [>" + MAX_REMOTE_CONTEXTS + "].");
         }
-        
+
         remoteContexts.add(contextUri);
 
         // if the context has been processed already
         if (activeContext.getOptions() != null
                 && activeContext.getOptions().getContextCache() != null
                 && activeContext.getOptions().getContextCache().containsKey(contextUri) && !validateScopedContext) {
-            
+
             // then return the context from a cache
             result = activeContext.getOptions().getContextCache().get(contextUri);
             return;
@@ -510,32 +512,32 @@ public final class ActiveContextBuilder {
         if (activeContext.getOptions() != null
                 && activeContext.getOptions().getDocumentCache() != null
                 && activeContext.getOptions().getDocumentCache().containsKey(contextUri)) {
-            
-            remoteImport = activeContext.getOptions().getDocumentCache().get(contextUri);            
+
+            remoteImport = activeContext.getOptions().getDocumentCache().get(contextUri);
         }
-        
+
         if (remoteImport == null) {
-        
+
             DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
             loaderOptions.setProfile(ProfileConstants.CONTEXT);
             loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
-    
+
             try {
-    
+
                 remoteImport = activeContext.getOptions().getDocumentLoader().loadDocument(URI.create(contextUri), loaderOptions);
-                        
+
             // 5.2.5.1.
             } catch (JsonLdError e) {
                 throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
             }
-            
+
             if (remoteImport == null) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");
             }
         }
-        
+
         final JsonStructure importedStructure = remoteImport.getJsonContent()
-                                .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.")); 
+                                .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null."));
 
         // 5.2.5.2.
         if (JsonUtils.isNotObject(importedStructure)) {
@@ -554,16 +556,16 @@ public final class ActiveContextBuilder {
         // remote @base from a remote context
         if (JsonUtils.isObject(importedContext) && importedContext.asJsonObject().containsKey(Keywords.BASE)) {
             importedContext = Json.createObjectBuilder(importedContext.asJsonObject()).remove(Keywords.BASE).build();
-        }            
+        }
 
         if (activeContext.getOptions() != null
                 && activeContext.getOptions().getDocumentCache() != null) {
-         
+
             activeContext.getOptions().getDocumentCache().put(contextUri, remoteImport);
         }
 
         // 5.2.6
-        try {            
+        try {
             result = result
                         .newContext()
                         .remoteContexts(new ArrayList<>(remoteContexts))
@@ -577,5 +579,5 @@ public final class ActiveContextBuilder {
         } catch (JsonLdError e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
         }
-    }    
+    }
 }

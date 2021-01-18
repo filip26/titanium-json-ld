@@ -35,12 +35,14 @@ import com.apicatalog.rdf.io.nquad.NQuadsReader;
 import com.apicatalog.rdf.io.nquad.NQuadsWriter;
 import com.apicatalog.rdf.spi.RdfProvider;
 
+import static com.apicatalog.jdk8.Jdk8Compatibility.isBlank;
+
 public final class DefaultRdfProvider extends RdfProvider {
 
     public static final RdfProvider INSTANCE = new DefaultRdfProvider();
-    
+
     private static final Collection<MediaType> CAN_READWRITE = Arrays.asList(MediaType.N_QUADS);
-    
+
     @Override
     public RdfDataset createDataset() {
         return new RdfDatasetImpl();
@@ -48,13 +50,13 @@ public final class DefaultRdfProvider extends RdfProvider {
 
     @Override
     public RdfReader createReader(final MediaType contentType, final Reader reader) throws UnsupportedContentException {
-        
+
         if (reader == null || contentType == null) {
             throw new IllegalArgumentException();
         }
-        
+
         if (MediaType.N_QUADS.match(contentType)) {
-            return new NQuadsReader(reader);            
+            return new NQuadsReader(reader);
         }
         throw new UnsupportedContentException(contentType.toString());
     }
@@ -67,9 +69,9 @@ public final class DefaultRdfProvider extends RdfProvider {
         }
 
         if (MediaType.N_QUADS.match(contentType)) {
-            return new NQuadsWriter(writer);            
+            return new NQuadsWriter(writer);
         }
-        
+
         throw new UnsupportedContentException(contentType.toString());
     }
 
@@ -80,7 +82,7 @@ public final class DefaultRdfProvider extends RdfProvider {
 
     @Override
     public RdfTriple createTriple(RdfResource subject, RdfResource predicate, RdfValue object) {
-        
+
         if (subject == null || predicate == null || object == null) {
             throw new IllegalArgumentException();
         }
@@ -90,11 +92,11 @@ public final class DefaultRdfProvider extends RdfProvider {
 
     @Override
     public RdfNQuad createNQuad(RdfResource subject, RdfResource predicate, RdfValue object, RdfResource graphName) {
-        
+
         if (subject == null || predicate == null || object == null) {
             throw new IllegalArgumentException();
         }
-        
+
         return new RdfNQuadImpl(subject, predicate, object, graphName);
     }
 
@@ -103,11 +105,11 @@ public final class DefaultRdfProvider extends RdfProvider {
         if (value == null || isBlank(value)) {
             throw new IllegalArgumentException();
         }
-        
+
         if (!value.startsWith("_:")) {
             return new RdfResourceImpl("_:" +value, true);
         }
-        
+
         return new RdfResourceImpl(value, true);
     }
 
@@ -116,8 +118,8 @@ public final class DefaultRdfProvider extends RdfProvider {
         if (value == null || isBlank(value)) {
             throw new IllegalArgumentException();
         }
-        
-        return new RdfResourceImpl(value, false);            
+
+        return new RdfResourceImpl(value, false);
     }
 
     @Override
@@ -125,7 +127,7 @@ public final class DefaultRdfProvider extends RdfProvider {
         if (lexicalForm == null) {
             throw new IllegalArgumentException();
         }
-        
+
         return new RdfLiteralImpl(lexicalForm, langTag, null);
     }
 
@@ -134,10 +136,10 @@ public final class DefaultRdfProvider extends RdfProvider {
         if (lexicalForm == null) {
             throw new IllegalArgumentException();
         }
-        
+
         return new RdfLiteralImpl(lexicalForm, null, datatype);
     }
-    
+
     @Override
     public Collection<MediaType> canRead() {
         return CAN_READWRITE;
@@ -146,10 +148,5 @@ public final class DefaultRdfProvider extends RdfProvider {
     @Override
     public Collection<MediaType> canWrite() {
         return CAN_READWRITE;
-    }
-    
-    private static final boolean isBlank(String value) {
-        return value.isEmpty() 
-                || value.isBlank() && value.chars().noneMatch(ch -> ch == '\n' || ch == '\r' || ch == '\t' || ch == '\f');
     }
 }

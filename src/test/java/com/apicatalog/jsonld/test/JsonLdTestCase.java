@@ -34,75 +34,78 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.strip;
+
 public final class JsonLdTestCase {
-    
+
     public static final String TESTS_BASE = "https://w3c.github.io";
-    
-    public static final Predicate<JsonLdTestCase> IS_NOT_V1_0 = Predicate.not(test -> JsonLdVersion.V1_0.equals(test.options.specVersion));
-    
+
+    public static final Predicate<JsonLdTestCase> IS_NOT_V1_0 = test -> !JsonLdVersion.V1_0.equals(test.options.specVersion);
+
     public String id;
-    
+
     public String name;
-    
+
     public URI input;
-    
+
     public URI context;
-    
+
     public URI expect;
-    
+
     public URI frame;
-    
+
     public JsonLdErrorCode expectErrorCode;
-    
+
     public String baseUri;
-    
+
     public String uri;
-    
+
     public Set<Type> type;
-    
+
     public JsonLdTestCaseOptions options;
 
     public MediaType contentType;
-    
+
     public URI redirectTo;
-    
+
     public Integer httpStatus;
-    
+
     public Set<String> httpLink;
-    
+
     private final String testsBase;
-    
+
     private final DocumentLoader loader;
-    
+
     public JsonLdTestCase(final String testsBase, final DocumentLoader loader) {
         this.testsBase = testsBase;
         this.loader = loader;
     }
 
     public static final JsonLdTestCase of(JsonObject o, String manifestUri, String manifestBase, String baseUri, final DocumentLoader loader) {
-        
+
         final JsonLdTestCase testCase = new JsonLdTestCase(manifestBase, loader);
-        
+
         testCase.id = o.getString(Keywords.ID);
-        
+
         testCase.uri = baseUri + manifestUri.substring(0, manifestUri.length() - ".jsonld".length()) + testCase.id;
-        
+
         testCase.type = o.get(Keywords.TYPE).asJsonArray().stream()
                             .map(JsonString.class::cast)
                             .map(JsonString::getString)
                             .map(Type::of)
                             .collect(Collectors.toSet());
-        
+
         testCase.name = o.getString("name");
-        
+
         testCase.input = o.containsKey("input")
                             ? URI.create(baseUri + o.getString("input"))
                             : null;
-        
+
         testCase.context = o.containsKey("context")
                                 ? URI.create(baseUri + o.getString("context"))
                                 : null;
-                                
+
         testCase.expect = o.containsKey("expect")
                                 ? URI.create(baseUri + o.getString("expect"))
                                 : null;
@@ -114,44 +117,44 @@ public final class JsonLdTestCase {
         testCase.expectErrorCode = o.containsKey("expectErrorCode")
                                             ? errorCode((o.getString("expectErrorCode")))
                                             : null;
-        
+
         testCase.options = o.containsKey("option")
                                 ? JsonLdTestCaseOptions.of(o.getJsonObject("option"), baseUri)
                                 : new JsonLdTestCaseOptions();
-                                
+
         testCase.baseUri = baseUri;
-        
-        
-        testCase.contentType = o.containsKey("option") && o.getJsonObject("option").containsKey("contentType") 
+
+
+        testCase.contentType = o.containsKey("option") && o.getJsonObject("option").containsKey("contentType")
                                     ? MediaType.of(o.getJsonObject("option").getString("contentType"))
                                     : null;
-        
+
         if (testCase.contentType == null && testCase.input != null) {
-            
+
             if (testCase.input.toString().endsWith(".jsonld")) {
                 testCase.contentType = MediaType.JSON_LD;
-                
+
             } else if (testCase.input.toString().endsWith(".json")) {
                 testCase.contentType = MediaType.JSON;
-                
+
             } else if (testCase.input.toString().endsWith(".html")) {
                 testCase.contentType = MediaType.HTML;
             }
         }
-        
+
         testCase.redirectTo = o.containsKey("option") && o.getJsonObject("option").containsKey("redirectTo")
                                 ? URI.create(baseUri + o.getJsonObject("option").getString("redirectTo"))
                                 : null;
-        
-        testCase.httpStatus = o.containsKey("option")  
+
+        testCase.httpStatus = o.containsKey("option")
                                     ? o.getJsonObject("option").getInt("httpStatus", 301)
                                     : null
                                     ;
 
         if (o.containsKey("option") &&  o.getJsonObject("option").containsKey("httpLink")) {
-            
+
             JsonValue links = o.getJsonObject("option").get("httpLink");
-            
+
             if (JsonUtils.isArray(links)) {
                 testCase.httpLink = links.asJsonArray().stream()
                                             .map(JsonString.class::cast)
@@ -162,37 +165,37 @@ public final class JsonLdTestCase {
                 testCase.httpLink.add(((JsonString)links).getString());
             }
         }
-        
+
         return testCase;
     }
-        
+
     public JsonLdOptions getOptions() {
-        
-        final DocumentLoader rewriter = 
+
+        final DocumentLoader rewriter =
                 new UriBaseRewriter(
-                            baseUri, 
+                            baseUri,
                             testsBase,
                             loader
                         );
-        
+
         JsonLdOptions jsonLdOptions = new JsonLdOptions(rewriter);
         jsonLdOptions.setOrdered(true);
-        
+
         options.setup(jsonLdOptions);
-        
+
         return jsonLdOptions;
     }
-    
+
     public static final JsonLdErrorCode errorCode(String errorCode) {
-        
-        if (errorCode == null || errorCode.isBlank()) {
+
+        if (errorCode == null || isBlank(errorCode)) {
             return null;
         }
-        
+
         /*
-         * Because scoped contexts can lead to contexts being reloaded, 
+         * Because scoped contexts can lead to contexts being reloaded,
          * replace the recursive context inclusion error with a context overflow error.
-         * 
+         *
          * @see <a href="https://www.w3.org/TR/json-ld11-api/#changes-from-cg">Changes since JSON-LD Community Group Final Report</a>
          */
         if ("recursive context inclusion".equalsIgnoreCase(errorCode)) {
@@ -205,9 +208,9 @@ public final class JsonLdTestCase {
             return JsonLdErrorCode.UNSPECIFIED;
         }
 
-        return JsonLdErrorCode.valueOf(errorCode.strip().toUpperCase().replace(" ", "_").replace("-", "_").replaceAll("\\_\\@", "_KEYWORD_" )); 
+        return JsonLdErrorCode.valueOf(strip(errorCode).toUpperCase().replace(" ", "_").replace("-", "_").replaceAll("\\_\\@", "_KEYWORD_" ));
     }
-    
+
     public enum Type {
 
         EXPAND_TEST,
@@ -217,22 +220,22 @@ public final class JsonLdTestCase {
         FROM_RDF_TEST,
         FRAME_TEST,
 
-        POSITIVE_EVALUATION_TEST, 
+        POSITIVE_EVALUATION_TEST,
         NEGATIVE_EVALUATION_TEST,
-        POSITIVE_SYNTAX_TEST        
+        POSITIVE_SYNTAX_TEST
         ;
-        
+
         static Type of(String value) {
-            
+
             if (value == null) {
                 throw new IllegalArgumentException("Test @type cannot be null.");
             }
-            
+
             switch (value) {
             case "jld:ExpandTest":
                 return EXPAND_TEST;
             case "jld:CompactTest":
-                return COMPACT_TEST;                
+                return COMPACT_TEST;
             case "jld:FlattenTest":
                 return FLATTEN_TEST;
             case "jld:ToRDFTest":
@@ -241,7 +244,7 @@ public final class JsonLdTestCase {
                 return FROM_RDF_TEST;
             case "jld:FrameTest":
                 return FRAME_TEST;
-            
+
             case "jld:PositiveEvaluationTest":
                 return POSITIVE_EVALUATION_TEST;
             case "jld:NegativeEvaluationTest":
@@ -250,11 +253,11 @@ public final class JsonLdTestCase {
             case "jld:PositiveSyntaxTest":
                 return POSITIVE_SYNTAX_TEST;
             }
-            
-           throw new IllegalArgumentException("Unknown test @type '" + value + "'"); 
-        }   
+
+           throw new IllegalArgumentException("Unknown test @type '" + value + "'");
+        }
     }
-    
+
     @Override
     public String toString() {
         return id + ": " + name;

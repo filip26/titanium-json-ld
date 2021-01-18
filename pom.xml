@@ -12,25 +12,25 @@
     <packaging>jar</packaging>
 
     <name>Titanium JSON-LD 1.1</name>
-    
+
     <description>
         A JSON-LD 1.1 Processor &amp; API
     </description>
-    
+
     <url>https://github.com/filip26/titanium-json-ld</url>
-    
+
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
             <url>http://apache.org/licenses/LICENSE-2.0</url>
         </license>
-    </licenses>    
-   
+    </licenses>
+
     <issueManagement>
         <system>github</system>
         <url>https://github.com/filip26/titanium-json-ld/issues</url>
     </issueManagement>
-    
+
     <scm>
         <connection>scm:git:git://github.com/filip26/titanium-json-ld.git</connection>
         <developerConnection>scm:git:git://github.com/filip26/titanium-json-ld.git</developerConnection>
@@ -45,17 +45,17 @@
           <roles><role>author</role></roles>
         </developer>
     </developers>
-    
+
     <inceptionYear>2020</inceptionYear>
-    
+
     <properties>
-        <maven.compiler.target>11</maven.compiler.target>
-        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.source>8</maven.compiler.source>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        
-        <jakarta.json.version>2.0.0</jakarta.json.version> 
+
+        <jakarta.json.version>2.0.0</jakarta.json.version>
 
         <argLine>-Dfile.encoding=UTF-8</argLine>
 
@@ -70,14 +70,33 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.8.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.11</version>
+        </dependency>
+
+        <dependency>
 			<groupId>jakarta.json</groupId>
     		<artifactId>jakarta.json-api</artifactId>
             <version>${jakarta.json.version}</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <!--  Tests -->
-		<dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>30.1-jre</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>jakarta.json</artifactId>
             <version>${jakarta.json.version}</version>
@@ -90,7 +109,7 @@
             <version>${junit.version}</version>
 		    <scope>test</scope>
 		</dependency>
-		        
+
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock-jre8</artifactId>
@@ -100,7 +119,7 @@
 
     </dependencies>
 
-    <build>        
+    <build>
         <plugins>
                <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -114,7 +133,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin> 
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -127,7 +146,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>                    
+            </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -147,7 +166,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin> 
+            </plugin>
         	<plugin>
             	<artifactId>maven-surefire-plugin</artifactId>
             	<version>2.22.2</version>
@@ -155,7 +174,7 @@
         	<plugin>
             	<artifactId>maven-failsafe-plugin</artifactId>
             	<version>2.22.2</version>
-        	</plugin>            
+        	</plugin>
         </plugins>
     </build>
 
@@ -168,7 +187,7 @@
 			</activation>
 
 			<build>
-				<plugins>				
+				<plugins>
 		            <plugin>
 		                <groupId>org.apache.maven.plugins</groupId>
 		                <artifactId>maven-gpg-plugin</artifactId>
@@ -182,7 +201,7 @@
 		                        </goals>
 		                    </execution>
 		                </executions>
-		            </plugin> 
+		            </plugin>
 					<plugin>
 						<groupId>org.sonatype.plugins</groupId>
 						<artifactId>nexus-staging-maven-plugin</artifactId>
@@ -193,7 +212,7 @@
 							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
 							<autoReleaseAfterClose>true</autoReleaseAfterClose>
 						</configuration>
-					</plugin>   				
+					</plugin>
 				</plugins>
 			</build>
 
@@ -202,7 +221,7 @@
 		            <id>ossrh</id>
 		            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		        </snapshotRepository>
-		    </distributionManagement>		
+		    </distributionManagement>
 		</profile>
 	</profiles>
 

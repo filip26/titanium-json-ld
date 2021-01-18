@@ -19,8 +19,10 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.apicatalog.jdk8.Jdk8Compatibility.isBlank;
+
 /**
- * 
+ *
  * @see <a href="https://tools.ietf.org/html/rfc3986#section-5.2">Relative
  *      Resolution</a>
  *
@@ -31,25 +33,25 @@ public final class UriResolver {
     }
 
     public static final String resolve(final URI base, final String relative) {
-        
+
         if (base == null) {
             return relative;
         }
 
         URI components = UriUtils.create(relative);
 
-        String basePath = base.getPath();        
+        String basePath = base.getPath();
         String baseAuthority = base.getAuthority();
 
         String componentPath = components.getPath();
-        
+
         // hacks
         if (baseAuthority == null && base.getSchemeSpecificPart().startsWith("///")) {
             baseAuthority = "";
         }
         if (basePath == null && base.getSchemeSpecificPart() != null) {
             basePath = base.getSchemeSpecificPart();
-        } 
+        }
 
         if (componentPath == null && components.getSchemeSpecificPart() != null) {
             componentPath = components.getSchemeSpecificPart();
@@ -60,31 +62,31 @@ public final class UriResolver {
         String path = null;
         String query = null;
 
-        if (components.getScheme() != null && !components.getScheme().isBlank()) {
+        if (components.getScheme() != null && !isBlank(components.getScheme())) {
             scheme = components.getScheme();
             authority =  components.getAuthority();
             path = removeDotSegments(componentPath);
             query = components.getQuery();
 
         } else {
-            
-            if (components.getAuthority() != null && !components.getAuthority().isBlank()) {
+
+            if (components.getAuthority() != null && !isBlank(components.getAuthority())) {
                 authority = components.getAuthority();
                 path = removeDotSegments(componentPath);
                 query = components.getQuery();
 
             } else {
 
-                if (componentPath != null && !componentPath.isBlank()) {
+                if (componentPath != null && !isBlank(componentPath)) {
                     if (componentPath.startsWith("/")) {
                         path = removeDotSegments(componentPath);
 
-                    } else if (basePath != null && !basePath.isBlank()) {
-                        
+                    } else if (basePath != null && !isBlank(basePath)) {
+
                         path = removeDotSegments(merge(basePath, componentPath));
                     } else {
                         path = "/".concat(removeDotSegments(componentPath));
-                        
+
                     }
                     query = components.getQuery();
 
@@ -97,21 +99,21 @@ public final class UriResolver {
                     } else {
                         query = base.getQuery();
                     }
-                    
+
                 }
                 authority = baseAuthority;
             }
-            scheme = base.getScheme();            
+            scheme = base.getScheme();
         }
 
         return UriUtils.recompose(scheme, authority, path, query, components.getFragment());
     }
 
     /**
-     * 
+     *
      * @see <a href="https://tools.ietf.org/html/rfc3986#section-5.2.4">Remove Dot
      *      Segments</a>
-     * 
+     *
      * @param path
      * @return
      */
@@ -124,7 +126,7 @@ public final class UriResolver {
         String input = path;
         List<String> output = new ArrayList<>();
 
-        while (!input.isBlank()) {
+        while (!isBlank(input)) {
 
             // A.
             if (input.startsWith("../")) {
@@ -176,16 +178,16 @@ public final class UriResolver {
     }
 
     /**
-     * 
+     *
      * @see <a href="https://tools.ietf.org/html/rfc3986#section-5.2.3">Merge
      *      Paths</a>
-     * 
+     *
      * @param basePath
      * @param path
      * @return
      */
     private static final String merge(String basePath, String path) {
-        
+
         if (UriUtils.isNotDefined(basePath)) {
             return "/".concat(path);
         }

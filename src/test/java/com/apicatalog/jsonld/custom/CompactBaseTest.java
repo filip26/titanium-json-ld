@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.custom;
 
+import static com.apicatalog.jdk8.Jdk8Compatibility.noSuchElementException;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -35,8 +36,8 @@ class CompactBaseTest {
                 .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld", new ZipResourceLoader())
                 .stream()
                 .filter(o -> "#t0047".equals(o.id))
-                .findFirst().orElseThrow();
-                
+                .findFirst().orElseThrow(noSuchElementException);
+
         assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options ->
                         JsonDocument.of(
                                 JsonLd.compact(testCase.input, testCase.context).options(options).base("http://fake.com").get()

@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.loader;
 
+import static com.apicatalog.jdk8.Jdk8Compatibility.noSuchElementException;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.net.URISyntaxException;
@@ -40,40 +41,40 @@ class HttpLoaderTest {
 
     WireMockServer wireMockServer;
 
-    @BeforeEach 
+    @BeforeEach
     void proxyToWireMock() {
         wireMockServer = new WireMockServer(WireMockConfiguration.options());
         wireMockServer.start();
     }
 
-    @AfterEach 
+    @AfterEach
     void noMoreWireMock() {
         wireMockServer.stop();
         wireMockServer = null;
     }
-    
+
     @Test
     void testMissingContentType() throws URISyntaxException, JsonLdError {
-     
+
         final JsonLdTestCase testCase = JsonLdManifestLoader
                 .load("/com/apicatalog/jsonld/test/", "manifest.json", new ClasspathLoader())
                 .stream()
                 .filter(o -> "#t0002".equals(o.id))
-                .findFirst().orElseThrow();
+                .findFirst().orElseThrow(noSuchElementException);
 
         testCase.contentType = null;
-        
+
         execute(testCase);
     }
 
     @Test
     void testPlainTextContentType() throws URISyntaxException, JsonLdError {
-     
+
         final JsonLdTestCase testCase = JsonLdManifestLoader
                 .load("/com/apicatalog/jsonld/test/", "manifest.json", new ClasspathLoader())
                 .stream()
                 .filter(o -> "#t0008".equals(o.id))
-                .findFirst().orElseThrow();
+                .findFirst().orElseThrow(noSuchElementException);
 
         execute(testCase);
     }
@@ -82,27 +83,27 @@ class HttpLoaderTest {
         JsonLdMockServer server = new JsonLdMockServer(testCase, testCase.baseUri.substring(0, testCase.baseUri.length() - 1), "/com/apicatalog/jsonld/test/", new ClasspathLoader());
 
         try {
-            
+
             server.start();
-            
+
             (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
-                
+
                 JsonLdOptions expandOptions = new JsonLdOptions(options);
 
                 expandOptions.setDocumentLoader(
                                     new UriBaseRewriter(
-                                                testCase.baseUri, 
+                                                testCase.baseUri,
                                                 wireMockServer.baseUrl() + "/",
                                                 SchemeRouter.defaultInstance()));
-                
+
                 return JsonDocument.of(JsonLd.expand(testCase.input).options(expandOptions).get());
             });
 
             server.stop();
-            
+
         } catch (Exception e) {
             fail(e.getMessage());
         }
     }
-    
+
 }

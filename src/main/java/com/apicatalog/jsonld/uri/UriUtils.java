@@ -19,6 +19,9 @@ import java.net.URI;
 
 import com.apicatalog.jsonld.lang.Keywords;
 
+import static com.apicatalog.jdk8.Jdk8Compatibility.isBlank;
+import static com.apicatalog.jdk8.Jdk8Compatibility.strip;
+
 public final class UriUtils {
 
     private UriUtils() {
@@ -26,24 +29,24 @@ public final class UriUtils {
 
     public static final boolean isURI(final String value) {
 
-        return value != null 
-                    && !value.isBlank() 
-                    && !Keywords.matchForm(value.strip())
-                    && create(value.strip()) != null;
+        return value != null
+                    && !isBlank(value)
+                    && !Keywords.matchForm(strip(value))
+                    && create(strip(value)) != null;
     }
 
-    
+
     public static final URI create(final String uri) {
 
         if (uri == null) {
             throw new IllegalArgumentException("The uri cannot be null.");
         }
 
-        String uriValue = uri.strip();
-        
+        String uriValue = strip(uri);
+
         if (uri.endsWith(":")) {
             uriValue = uri + ".";
-            
+
         } else if (uri.endsWith("[") || uri.endsWith("]")) {
             uriValue = uri.substring(0, uri.length() - 1);
         }
@@ -51,18 +54,18 @@ public final class UriUtils {
         try {
 
             return URI.create(uriValue);
-            
+
         } catch (IllegalArgumentException e) {
             return null;
         }
     }
-    
+
     /**
      * Check if the provided URI ends with generic delimiter.
-     * 
+     *
      * @see <a href="https://tools.ietf.org/html/rfc3986#section-2.2">URI - Reserved
      *      Characters </a>
-     *      
+     *
      * @param uri to check
      * @return <code>true</code> if the provided URI ends with delimiter
      */
@@ -72,10 +75,10 @@ public final class UriUtils {
     }
 
     public static final boolean isNotURI(final String uri) {
-        return uri == null 
-                || (!uri.isBlank() 
-                        && (Keywords.matchForm(uri.strip())
-                        || create(uri.strip()) == null));
+        return uri == null
+                || (!isBlank(uri)
+                        && (Keywords.matchForm(strip(uri))
+                        || create(strip(uri)) == null));
     }
 
     public static final boolean isNotAbsoluteUri(final String uri) {
@@ -88,14 +91,14 @@ public final class UriUtils {
     }
 
     public static final boolean isAbsoluteUri(final String uri) {
-        
+
         try {
             return URI.create(uri).isAbsolute();
         } catch (IllegalArgumentException e) {
             return false;
         }
     }
-    
+
     protected static final String recompose(final String scheme, final String authority, final String path, final String query, final String fragment) {
 
         final StringBuilder builder = new StringBuilder();
@@ -121,13 +124,13 @@ public final class UriUtils {
         }
         return builder.toString();
     }
-    
+
     protected static final boolean isDefined(final String value) {
-        return value != null && !value.isBlank();
+        return value != null && !isBlank(value);
     }
 
     protected static final boolean isNotDefined(final String value) {
-        return value == null || value.isBlank();
+        return value == null || isBlank(value);
     }
 
 }

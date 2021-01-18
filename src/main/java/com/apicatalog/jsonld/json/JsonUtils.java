@@ -29,6 +29,9 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
+import static com.apicatalog.jdk8.Jdk8Compatibility.isBlank;
+import static java.util.Collections.singletonList;
+
 public final class JsonUtils {
 
     JsonUtils() {
@@ -39,7 +42,7 @@ public final class JsonUtils {
         if (text == null) {
             return value == null;
         }
-        
+
         if (value == null) {
             return false;
         }
@@ -54,12 +57,12 @@ public final class JsonUtils {
         if (JsonUtils.isObject(value)) {
             return value.asJsonObject().containsKey(text);
         }
-        
+
         return false;
     }
 
     public static final boolean isScalar(final JsonValue value) {
-        return value != null 
+        return value != null
                     && !ValueType.ARRAY.equals(value.getValueType())
                     && !ValueType.OBJECT.equals(value.getValueType())
                     ;
@@ -107,14 +110,14 @@ public final class JsonUtils {
 
     public static boolean isNotBoolean(JsonValue value) {
         return value == null
-                || (!ValueType.TRUE.equals(value.getValueType()) 
+                || (!ValueType.TRUE.equals(value.getValueType())
                         && !ValueType.FALSE.equals(value.getValueType()));
     }
-    
+
     public static boolean isNotNumber(JsonValue value) {
         return value == null || !ValueType.NUMBER.equals(value.getValueType());
     }
-    
+
     public static boolean isTrue(JsonValue value) {
         return value != null && ValueType.TRUE.equals(value.getValueType());
     }
@@ -148,7 +151,7 @@ public final class JsonUtils {
     }
 
     public static Collection<JsonValue> toCollection(JsonValue value) {
-        
+
         if (value == null) {
             return Collections.emptyList();
         }
@@ -157,31 +160,31 @@ public final class JsonUtils {
             return value.asJsonArray();
         }
 
-        return List.of(value); 
+        return singletonList(value);
     }
-    
+
     public static JsonArray toJsonArray(JsonValue value) {
-       return JsonUtils.isArray(value) 
-                    ? value.asJsonArray() 
+       return JsonUtils.isArray(value)
+                    ? value.asJsonArray()
                     : Json.createArrayBuilder().add(value).build()
                     ;
     }
 
     public static boolean isBlankString(JsonValue value) {
-        return isString(value) && ((JsonString) value).getString().isBlank();
+        return isString(value) && isBlank(((JsonString) value).getString());
     }
 
     public static JsonValue toJsonValue(String value) {
-        return value != null && !value.isBlank() 
+        return value != null && !isBlank(value)
                     ? Json.createValue(value)
                     : JsonValue.NULL
                     ;
-    }    
- 
+    }
+
     public static boolean isNotEmptyArray(JsonValue value) {
         return isNotArray(value) || !value.asJsonArray().isEmpty();
     }
-    
+
     public static boolean isNotEmptyObject(JsonValue value) {
         return isNotObject(value) || !value.asJsonObject().isEmpty();
     }
