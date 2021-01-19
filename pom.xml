@@ -70,12 +70,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>4.8.0</version>
-        </dependency>
-
-        <dependency>
 			<groupId>jakarta.json</groupId>
     		<artifactId>jakarta.json-api</artifactId>
             <version>${jakarta.json.version}</version>
