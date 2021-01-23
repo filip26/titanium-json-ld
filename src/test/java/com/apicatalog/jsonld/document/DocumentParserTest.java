@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.document;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -40,7 +41,7 @@ class DocumentParserTest {
         
         assertNotNull(document);
         assertTrue(MediaType.N_QUADS.match(document.getContentType()));
-        assertTrue(document.getJsonContent().isEmpty());
+        assertFalse(document.getJsonContent().isPresent());
         assertTrue(document.getRdfContent().isPresent());
     }
 
@@ -52,7 +53,7 @@ class DocumentParserTest {
         assertNotNull(document);
         assertTrue(MediaType.JSON_LD.match(document.getContentType()));
         assertTrue(document.getJsonContent().isPresent());
-        assertTrue(document.getRdfContent().isEmpty());
+        assertFalse(document.getRdfContent().isPresent());
     }
     
     @Test
@@ -62,7 +63,7 @@ class DocumentParserTest {
         
         assertNotNull(document);
         assertTrue(MediaType.N_QUADS.match(document.getContentType()));
-        assertTrue(document.getJsonContent().isEmpty());
+        assertFalse(document.getJsonContent().isPresent());
         assertTrue(document.getRdfContent().isPresent());
     }
 
@@ -74,7 +75,7 @@ class DocumentParserTest {
         assertNotNull(document);
         assertTrue(MediaType.JSON_LD.match(document.getContentType()));
         assertTrue(document.getJsonContent().isPresent());
-        assertTrue(document.getRdfContent().isEmpty());
+        assertFalse(document.getRdfContent().isPresent());
     }
 
     @Test

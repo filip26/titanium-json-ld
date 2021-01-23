@@ -331,11 +331,11 @@ public final class JsonLd {
         
         assertNotNull(location, param);
 
-        if (location.isBlank()) {
+        if (StringUtils.isBlank(location)) {
             throw new IllegalArgumentException("'" + param + "' is blank string.");
         }
         
-        if (UriUtils.isNotAbsoluteUri(location.strip())) {
+        if (UriUtils.isNotAbsoluteUri(StringUtils.strip(location))) {
             throw new IllegalArgumentException("'" + param + "' is not an absolute URI [" + location + "].");
         }
     }
@@ -353,7 +353,7 @@ public final class JsonLd {
         
         assertNotNull(document, param);
 
-        if (document.getJsonContent().isEmpty()) {
+        if (!document.getJsonContent().isPresent()) {
             throw new IllegalArgumentException("'" + param + "' is not not JSON document but [" + document.getContentType() + "].");
         }
     }
@@ -362,7 +362,7 @@ public final class JsonLd {
         
         assertNotNull(document, param);
         
-        if (document.getRdfContent().isEmpty()) {
+        if (!document.getRdfContent().isPresent()) {
             throw new IllegalArgumentException("'" + param + "' is not not RDF document but [" + document.getContentType() + "].");
         }
     }

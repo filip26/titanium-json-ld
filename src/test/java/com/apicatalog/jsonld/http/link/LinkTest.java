@@ -62,8 +62,8 @@ class LinkTest {
         
         assertEquals(new HashSet<>(Arrays.asList("previous")), l1.relations());
         
-        assertTrue(l1.type().isEmpty());        
-        assertTrue(l1.context().isEmpty());
+        assertFalse(l1.type().isPresent());        
+        assertFalse(l1.context().isPresent());
     }
 
     @Test
@@ -79,8 +79,8 @@ class LinkTest {
         
         assertEquals(new HashSet<>(Arrays.asList("http://example.net/foo")), l1.relations());
         
-        assertTrue(l1.type().isEmpty());        
-        assertTrue(l1.context().isEmpty());
+        assertFalse(l1.type().isPresent());        
+        assertFalse(l1.context().isPresent());
     }
     
     @Test
@@ -98,7 +98,7 @@ class LinkTest {
    
         assertEquals(new HashSet<>(Arrays.asList("copyright")), l1.relations());
         
-        assertTrue(l1.type().isEmpty());
+        assertFalse(l1.type().isPresent());        
     }
     
     @Test
@@ -115,8 +115,8 @@ class LinkTest {
         
         assertEquals(new HashSet<>(Arrays.asList("start", "http://example.net/relation/other")), l1.relations());
         
-        assertTrue(l1.type().isEmpty());        
-        assertTrue(l1.context().isEmpty());
+        assertFalse(l1.type().isPresent());        
+        assertFalse(l1.context().isPresent());
     }
 
     @Test
@@ -135,8 +135,8 @@ class LinkTest {
         
         assertEquals(new HashSet<>(Arrays.asList("st\\art")), l1.relations());
         
-        assertTrue(l1.type().isEmpty());        
-        assertTrue(l1.context().isEmpty());
+        assertFalse(l1.type().isPresent());        
+        assertFalse(l1.context().isPresent());
         
         Link l2 = it.next();
         
@@ -146,8 +146,8 @@ class LinkTest {
         
         assertEquals(new HashSet<>(Arrays.asList("iαn", "dex")), l2.relations());
         
-        assertTrue(l2.type().isEmpty());        
-        assertTrue(l2.context().isEmpty());
+        assertFalse(l2.type().isPresent());        
+        assertFalse(l2.context().isPresent());
     }
 
     @Test
@@ -163,8 +163,8 @@ class LinkTest {
         
         assertEquals(new HashSet<>(Arrays.asList("123")), l1.relations());
         
-        assertTrue(l1.type().isEmpty());        
-        assertTrue(l1.context().isEmpty());
+        assertFalse(l1.type().isPresent());        
+        assertFalse(l1.context().isPresent());
     }
 
     @Test
@@ -182,8 +182,8 @@ class LinkTest {
         
         assertEquals("x=1x10", l1.attributes().firstValue("x").map(Object::toString).orElse(null));
         
-        assertTrue(l1.type().isEmpty());        
-        assertTrue(l1.context().isEmpty());
+        assertFalse(l1.type().isPresent());        
+        assertFalse(l1.context().isPresent());
         
         Link l2 = it.next();
         
@@ -193,8 +193,8 @@ class LinkTest {
         
         assertEquals(Collections.emptySet(), l2.relations());
         
-        assertTrue(l2.type().isEmpty());        
-        assertTrue(l2.context().isEmpty());
+        assertFalse(l2.type().isPresent());        
+        assertFalse(l2.context().isPresent());
     }
 
     @Test
@@ -216,10 +216,10 @@ class LinkTest {
         assertEquals("x=ab", value.get().toString());
         assertEquals("x", value.get().name());
         assertEquals("ab", value.get().value());
-        assertTrue(value.get().languageTag().isEmpty());
+        assertFalse(value.get().languageTag().isPresent());
         
-        assertTrue(l1.type().isEmpty());
-        assertTrue(l1.context().isEmpty());
+        assertFalse(l1.type().isPresent());        
+        assertFalse(l1.context().isPresent());
     }
 
     @Test
@@ -237,7 +237,7 @@ class LinkTest {
         assertEquals(Collections.emptySet(), l1.relations());
         assertTrue(l1.type().isPresent());
         assertTrue(MediaType.HTML.match(l1.type().get()));
-        assertTrue(l1.context().isEmpty());
+        assertFalse(l1.context().isPresent());
     }
     
     @Test
@@ -253,8 +253,8 @@ class LinkTest {
         assertEquals(URI.create("https://a/x"), l1.target());
         assertEquals(Collections.emptySet(), l1.attributes().names());
         assertEquals(Collections.emptySet(), l1.relations());
-        assertTrue(l1.type().isEmpty());
-        assertTrue(l1.context().isEmpty());
+        assertFalse(l1.type().isPresent());        
+        assertFalse(l1.context().isPresent());
     }
 
     @Test
@@ -270,8 +270,8 @@ class LinkTest {
         assertEquals(URI.create("https://a/b/x"), l1.target());
         assertEquals(new HashSet<>(Arrays.asList("abc")), l1.attributes().names());
         assertEquals(Collections.emptySet(), l1.relations());
-        assertTrue(l1.type().isEmpty());
-        assertTrue(l1.context().isEmpty());
+        assertFalse(l1.type().isPresent());        
+        assertFalse(l1.context().isPresent());
     }
 
     @Test
@@ -287,7 +287,7 @@ class LinkTest {
         assertEquals(URI.create("//a/b/x"), l1.target());
         assertEquals(Collections.emptySet(), l1.attributes().names());
         assertEquals(Collections.emptySet(), l1.relations());
-        assertTrue(l1.type().isEmpty());
+        assertFalse(l1.type().isPresent());        
         assertTrue(l1.context().isPresent());
         assertEquals(URI.create("//a/anchor"), l1.context().get());
     }
@@ -310,8 +310,8 @@ class LinkTest {
         assertEquals(Arrays.asList(new LinkAttribute("y", "y")), l1.attributes().values("y"));
         
         assertEquals(Collections.emptySet(), l1.relations());
-        assertTrue(l1.type().isEmpty());        
-        assertTrue(l1.context().isEmpty());
+        assertFalse(l1.type().isPresent());        
+        assertFalse(l1.context().isPresent());
     }
 
     @Test
@@ -327,8 +327,8 @@ class LinkTest {
         assertEquals(Arrays.asList(new LinkAttribute("1", "2")), l1.attributes().values());
 
         assertEquals(Collections.emptySet(), l1.relations());
-        assertTrue(l1.type().isEmpty());        
-        assertTrue(l1.context().isEmpty());
+        assertFalse(l1.type().isPresent());        
+        assertFalse(l1.context().isPresent());
     }
 
     @Test
@@ -344,8 +344,8 @@ class LinkTest {
         assertEquals(Arrays.asList(new LinkAttribute("1", "23")), l1.attributes().values());
 
         assertEquals(Collections.emptySet(), l1.relations());
-        assertTrue(l1.type().isEmpty());        
-        assertTrue(l1.context().isEmpty());
+        assertFalse(l1.type().isPresent());        
+        assertFalse(l1.context().isPresent());
     }
 
     @Test
@@ -375,8 +375,8 @@ class LinkTest {
         assertEquals(URI.create("https://example.org/"), l1.target());
         
         assertTrue(l1.attributes().isEmpty());
-        assertTrue(l1.type().isEmpty());        
-        assertTrue(l1.context().isEmpty());
+        assertFalse(l1.type().isPresent());        
+        assertFalse(l1.context().isPresent());
     }
     
     @Test
@@ -407,8 +407,8 @@ class LinkTest {
         
         assertEquals(Collections.emptySet(), l1.relations());
         
-        assertTrue(l1.type().isEmpty());        
-        assertTrue(l1.context().isEmpty());
+        assertFalse(l1.type().isPresent());        
+        assertFalse(l1.context().isPresent());
     }
     
     @Test
@@ -427,7 +427,7 @@ class LinkTest {
         assertEquals("text", l1.attributes().firstValue("type").get().value());
         
         assertEquals(Collections.emptySet(), l1.relations());
-        assertTrue(l1.type().isEmpty());
-        assertTrue(l1.context().isEmpty());
+        assertFalse(l1.type().isPresent());        
+        assertFalse(l1.context().isPresent());
     }
 }

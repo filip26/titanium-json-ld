@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -185,7 +186,7 @@ public final class JsonLdTestCase {
     
     public static final JsonLdErrorCode errorCode(String errorCode) {
         
-        if (errorCode == null || errorCode.isBlank()) {
+        if (errorCode == null ||  StringUtils.isBlank(errorCode)) {
             return null;
         }
         
@@ -205,7 +206,7 @@ public final class JsonLdTestCase {
             return JsonLdErrorCode.UNSPECIFIED;
         }
 
-        return JsonLdErrorCode.valueOf(errorCode.strip().toUpperCase().replace(" ", "_").replace("-", "_").replaceAll("\\_\\@", "_KEYWORD_" )); 
+        return JsonLdErrorCode.valueOf(StringUtils.strip(errorCode).toUpperCase().replace(" ", "_").replace("-", "_").replaceAll("\\_\\@", "_KEYWORD_" )); 
     }
     
     public enum Type {

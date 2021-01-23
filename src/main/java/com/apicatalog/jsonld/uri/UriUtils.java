@@ -17,6 +17,7 @@ package com.apicatalog.jsonld.uri;
 
 import java.net.URI;
 
+import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 
 public final class UriUtils {
@@ -27,9 +28,9 @@ public final class UriUtils {
     public static final boolean isURI(final String value) {
 
         return value != null 
-                    && !value.isBlank() 
-                    && !Keywords.matchForm(value.strip())
-                    && create(value.strip()) != null;
+                    && StringUtils.isNotBlank(value) 
+                    && !Keywords.matchForm(StringUtils.strip(value))
+                    && create(StringUtils.strip(value)) != null;
     }
 
     
@@ -39,7 +40,7 @@ public final class UriUtils {
             throw new IllegalArgumentException("The uri cannot be null.");
         }
 
-        String uriValue = uri.strip();
+        String uriValue = StringUtils.strip(uri);
         
         if (uri.endsWith(":")) {
             uriValue = uri + ".";
@@ -73,9 +74,9 @@ public final class UriUtils {
 
     public static final boolean isNotURI(final String uri) {
         return uri == null 
-                || (!uri.isBlank() 
-                        && (Keywords.matchForm(uri.strip())
-                        || create(uri.strip()) == null));
+                || (StringUtils.isNotBlank(uri) 
+                        && (Keywords.matchForm(StringUtils.strip(uri))
+                        || create(StringUtils.strip(uri)) == null));
     }
 
     public static final boolean isNotAbsoluteUri(final String uri) {
@@ -123,11 +124,11 @@ public final class UriUtils {
     }
     
     protected static final boolean isDefined(final String value) {
-        return value != null && !value.isBlank();
+        return value != null && StringUtils.isNotBlank(value);
     }
 
     protected static final boolean isNotDefined(final String value) {
-        return value == null || value.isBlank();
+        return value == null || StringUtils.isBlank(value);
     }
 
 }
