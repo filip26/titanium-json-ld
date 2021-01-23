@@ -18,6 +18,7 @@ package com.apicatalog.jsonld.loader;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.net.URISyntaxException;
+import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,7 +60,7 @@ class HttpLoaderTest {
                 .load("/com/apicatalog/jsonld/test/", "manifest.json", new ClasspathLoader())
                 .stream()
                 .filter(o -> "#t0002".equals(o.id))
-                .findFirst().orElseThrow();
+                .findFirst().orElseThrow(() -> new NoSuchElementException());
 
         testCase.contentType = null;
         
@@ -73,7 +74,7 @@ class HttpLoaderTest {
                 .load("/com/apicatalog/jsonld/test/", "manifest.json", new ClasspathLoader())
                 .stream()
                 .filter(o -> "#t0008".equals(o.id))
-                .findFirst().orElseThrow();
+                .findFirst().orElseThrow(() -> new NoSuchElementException());
 
         execute(testCase);
     }
