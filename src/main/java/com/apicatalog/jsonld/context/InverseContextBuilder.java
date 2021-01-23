@@ -59,14 +59,14 @@ public final class InverseContextBuilder {
         for (final String termName : activeContext.getTerms().stream().sorted().collect(Collectors.toList())) {
         
             // 3.1.
-            if (activeContext.getTerm(termName).isEmpty()) {
+            if (!activeContext.getTerm(termName).isPresent()) {
                 continue;
             }
 
             // 3.3.
             final Optional<String> variable = activeContext.getTerm(termName).map(TermDefinition::getUriMapping);
             
-            if (variable.isEmpty()) {
+            if (!variable.isPresent()) {
                 continue;
             }
             

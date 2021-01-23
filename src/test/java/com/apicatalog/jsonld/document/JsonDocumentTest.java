@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.document;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -42,9 +43,9 @@ class JsonDocumentTest {
         Document document = JsonDocument.of(JsonValue.EMPTY_JSON_ARRAY);
         assertNotNull(document);
         assertTrue(MediaType.JSON.match(document.getContentType()));
-        assertTrue(document.getRdfContent().isEmpty());
+        assertFalse(document.getRdfContent().isPresent());
         assertTrue(document.getJsonContent().isPresent());
-        assertTrue(document.getProfile().isEmpty());
+        assertFalse(document.getProfile().isPresent());
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, document.getJsonContent().get());
     }
 
@@ -53,9 +54,9 @@ class JsonDocumentTest {
         Document document = JsonDocument.of(MediaType.JSON_LD, JsonValue.EMPTY_JSON_OBJECT);
         assertNotNull(document);
         assertTrue(MediaType.JSON_LD.match(document.getContentType()));
-        assertTrue(document.getRdfContent().isEmpty());
+        assertFalse(document.getRdfContent().isPresent());
         assertTrue(document.getJsonContent().isPresent());
-        assertTrue(document.getProfile().isEmpty());
+        assertFalse(document.getProfile().isPresent());
         assertEquals(JsonValue.EMPTY_JSON_OBJECT, document.getJsonContent().get());
     }
 
@@ -64,9 +65,9 @@ class JsonDocumentTest {
         Document document = JsonDocument.of(new ByteArrayInputStream(JsonValue.EMPTY_JSON_ARRAY.toString().getBytes()));
         assertNotNull(document);
         assertTrue(MediaType.JSON.match(document.getContentType()));
-        assertTrue(document.getRdfContent().isEmpty());
+        assertFalse(document.getRdfContent().isPresent());
         assertTrue(document.getJsonContent().isPresent());
-        assertTrue(document.getProfile().isEmpty());
+        assertFalse(document.getProfile().isPresent());
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, document.getJsonContent().get());
     }
 
@@ -75,9 +76,9 @@ class JsonDocumentTest {
         Document document = JsonDocument.of(new InputStreamReader(new ByteArrayInputStream(JsonValue.EMPTY_JSON_ARRAY.toString().getBytes())));
         assertNotNull(document);
         assertTrue(MediaType.JSON.match(document.getContentType()));
-        assertTrue(document.getRdfContent().isEmpty());
+        assertFalse(document.getRdfContent().isPresent());
         assertTrue(document.getJsonContent().isPresent());
-        assertTrue(document.getProfile().isEmpty());
+        assertFalse(document.getProfile().isPresent());
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, document.getJsonContent().get());
     }
 
@@ -86,7 +87,7 @@ class JsonDocumentTest {
         Document document = JsonDocument.of(MediaType.of("application/custom+json;profile=https://example.org/profile"), JsonValue.EMPTY_JSON_OBJECT);
         assertNotNull(document);
         assertTrue(MediaType.of("application", "custom+json").match(document.getContentType()));
-        assertTrue(document.getRdfContent().isEmpty());
+        assertFalse(document.getRdfContent().isPresent());
         assertTrue(document.getJsonContent().isPresent());
         assertTrue(document.getProfile().isPresent());
         assertEquals("https://example.org/profile", document.getProfile().get());

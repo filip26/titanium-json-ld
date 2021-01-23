@@ -319,12 +319,12 @@ public final class ObjectExpansion {
         // 15.2.
         final Optional<JsonValue> type = result.get(Keywords.TYPE);
 
-        if (type.isEmpty() || !JsonUtils.contains(Keywords.JSON, type.get())) {
+        if (!type.isPresent() || !JsonUtils.contains(Keywords.JSON, type.get())) {
 
             final Optional<JsonValue> value = result.get(Keywords.VALUE);
 
             // 15.3.
-            if (value.isEmpty() || JsonUtils.isNull(value.get()) || (JsonUtils.isArray(value.get()) && value.get().asJsonArray().isEmpty())) {
+            if (!value.isPresent() || JsonUtils.isNull(value.get()) || (JsonUtils.isArray(value.get()) && value.get().asJsonArray().isEmpty())) {
                 return JsonValue.NULL;
 
             // 15.4

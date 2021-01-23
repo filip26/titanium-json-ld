@@ -119,7 +119,7 @@ public final class ValueCompaction {
         } else if (activePropertyDefinition.isPresent() 
                         && Keywords.NONE.equals(activePropertyDefinition.get().getTypeMapping())
                         || (value.containsKey(Keywords.TYPE)
-                                && (activePropertyDefinition.isEmpty()
+                                && (!activePropertyDefinition.isPresent()
                                         || !JsonUtils.contains(
                                                 activePropertyDefinition.get().getTypeMapping(),
                                                 value.get(Keywords.TYPE)

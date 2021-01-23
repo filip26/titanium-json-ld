@@ -142,7 +142,7 @@ public final class RdfToJsonld {
                     
                     graphMap.remove(graphName, cl);
                     
-                    if (clNodeValue.isEmpty()) {
+                    if (!clNodeValue.isPresent()) {
                         continue;
                     }
                     
@@ -274,7 +274,7 @@ public final class RdfToJsonld {
                     // 6.4.3.4.
                     final Optional<Map<String, JsonValue>> nextNode = graphMap.get(usage.graphName, usage.subject);
 
-                    if (nextNode.isEmpty()) {
+                    if (!nextNode.isPresent()) {
                         break;
                     }
                     
