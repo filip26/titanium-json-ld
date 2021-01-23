@@ -17,6 +17,7 @@ package com.apicatalog.jsonld.lang;
 
 import java.util.Arrays;
 
+import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.rdf.lang.RdfAlphabet;
 
 public final class LanguageTag {
@@ -39,7 +40,7 @@ public final class LanguageTag {
             throw new IllegalArgumentException();
         }
 
-        if (languageTag.isBlank()) {
+        if (StringUtils.isBlank(languageTag)) {
             return false;
         }
 

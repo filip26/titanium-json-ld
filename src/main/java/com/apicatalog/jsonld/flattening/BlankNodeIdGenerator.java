@@ -18,6 +18,8 @@ package com.apicatalog.jsonld.flattening;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.apicatalog.jsonld.StringUtils;
+
 /**
  * 
  * @see <a href="https://w3c.github.io/json-ld-api/#generate-blank-node-identifier">Generate Blank Node Identifier</a>
@@ -39,7 +41,7 @@ public final class BlankNodeIdGenerator {
 
     public String createIdentifier(String identifier) {
         
-        if (identifier == null || identifier.isBlank()) {
+        if (identifier == null || StringUtils.isBlank(identifier)) {
             return createIdentifier();            
         }
         

@@ -21,6 +21,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.apicatalog.jsonld.StringUtils;
+
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
@@ -168,11 +170,11 @@ public final class JsonUtils {
     }
 
     public static boolean isBlankString(JsonValue value) {
-        return isString(value) && ((JsonString) value).getString().isBlank();
+        return isString(value) && StringUtils.isBlank(((JsonString) value).getString());
     }
 
     public static JsonValue toJsonValue(String value) {
-        return value != null && !value.isBlank() 
+        return value != null && StringUtils.isNotBlank(value) 
                     ? Json.createValue(value)
                     : JsonValue.NULL
                     ;

@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import com.apicatalog.jsonld.StringUtils;
+
 public final class Path {
 
     public static final Path EMPTY = new Path(new ArrayList<>(), null, true);
@@ -51,7 +53,7 @@ public final class Path {
                                 ?  null
                                 : segments.remove(segments.size() - 1);
     
-        return new Path(segments, (last == null || last.isBlank()) ? null : last, relative);
+        return new Path(segments, (last == null || StringUtils.isBlank(last)) ? null : last, relative);
     }
     
     public Path relativize(final String base) {

@@ -19,6 +19,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.apicatalog.jsonld.StringUtils;
+
 /**
  * 
  * @see <a href="https://tools.ietf.org/html/rfc3986#section-5.2">Relative
@@ -60,7 +62,7 @@ public final class UriResolver {
         String path = null;
         String query = null;
 
-        if (components.getScheme() != null && !components.getScheme().isBlank()) {
+        if (components.getScheme() != null && StringUtils.isNotBlank(components.getScheme())) {
             scheme = components.getScheme();
             authority =  components.getAuthority();
             path = removeDotSegments(componentPath);
@@ -68,18 +70,18 @@ public final class UriResolver {
 
         } else {
             
-            if (components.getAuthority() != null && !components.getAuthority().isBlank()) {
+            if (components.getAuthority() != null && StringUtils.isNotBlank(components.getAuthority())) {
                 authority = components.getAuthority();
                 path = removeDotSegments(componentPath);
                 query = components.getQuery();
 
             } else {
 
-                if (componentPath != null && !componentPath.isBlank()) {
+                if (componentPath != null && StringUtils.isNotBlank(componentPath)) {
                     if (componentPath.startsWith("/")) {
                         path = removeDotSegments(componentPath);
 
-                    } else if (basePath != null && !basePath.isBlank()) {
+                    } else if (basePath != null && StringUtils.isNotBlank(basePath)) {
                         
                         path = removeDotSegments(merge(basePath, componentPath));
                     } else {
@@ -124,7 +126,7 @@ public final class UriResolver {
         String input = path;
         List<String> output = new ArrayList<>();
 
-        while (!input.isBlank()) {
+        while (StringUtils.isNotBlank(input)) {
 
             // A.
             if (input.startsWith("../")) {

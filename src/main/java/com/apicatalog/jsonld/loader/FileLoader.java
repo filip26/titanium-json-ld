@@ -25,6 +25,7 @@ import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.DocumentParser;
 import com.apicatalog.jsonld.http.media.MediaType;
@@ -65,7 +66,7 @@ public final class FileLoader implements DocumentLoader {
 
     private static final Optional<MediaType> detectedContentType(String name) {
         
-        if (name == null || name.isBlank()) {
+        if (name == null || StringUtils.isBlank(name)) {
             return Optional.empty();
         }
         

@@ -20,6 +20,7 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.Collection;
 
+import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
@@ -150,6 +151,6 @@ public final class DefaultRdfProvider extends RdfProvider {
     
     private static final boolean isBlank(String value) {
         return value.isEmpty() 
-                || value.isBlank() && value.chars().noneMatch(ch -> ch == '\n' || ch == '\r' || ch == '\t' || ch == '\f');
+                || StringUtils.isBlank(value) && value.chars().noneMatch(ch -> ch == '\n' || ch == '\r' || ch == '\t' || ch == '\f');
     }
 }

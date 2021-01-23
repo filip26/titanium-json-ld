@@ -23,6 +23,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Collection;
 
+import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.uri.UriUtils;
@@ -192,7 +193,7 @@ public final class Rdf {
     
     public static RdfResource createBlankNode(final String value) {
         
-        if (value == null || value.isBlank()) {
+        if (value == null || StringUtils.isBlank(value)) {
             throw new IllegalArgumentException();
         }
 
@@ -201,7 +202,7 @@ public final class Rdf {
     
     public static RdfResource createIRI(final String value) {
         
-        if (value == null || value.isBlank()) {
+        if (value == null || StringUtils.isBlank(value)) {
             throw new IllegalArgumentException();
         }
 
