@@ -18,7 +18,6 @@ package com.apicatalog.jsonld.json;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.apicatalog.jsonld.StringUtils;
@@ -159,7 +158,7 @@ public final class JsonUtils {
             return value.asJsonArray();
         }
 
-        return List.of(value); 
+        return Collections.singletonList(value); 
     }
     
     public static JsonArray toJsonArray(JsonValue value) {

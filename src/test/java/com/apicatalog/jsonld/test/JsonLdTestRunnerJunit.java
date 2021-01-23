@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Map;
+import java.util.Collections;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdError;
@@ -162,7 +162,7 @@ public class JsonLdTestRunnerJunit {
             writer.println("Test " + testName);
             writer.println("Expected:");
             
-            final JsonWriterFactory writerFactory = Json.createWriterFactory(Map.of(JsonGenerator.PRETTY_PRINTING, true));
+            final JsonWriterFactory writerFactory = Json.createWriterFactory(Collections.singletonMap(JsonGenerator.PRETTY_PRINTING, true));
             
             final StringWriter out1 = new StringWriter();
             

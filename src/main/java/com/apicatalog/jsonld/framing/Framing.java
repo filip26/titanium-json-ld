@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.framing;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -178,7 +179,7 @@ public final class Framing {
                     
                     Framing.with(
                                 graphState, 
-                                List.copyOf(state.getGraphMap().get(id).map(Map::keySet).orElse(Collections.emptySet())), 
+                                new ArrayList<>(state.getGraphMap().get(id).map(Map::keySet).orElse(Collections.emptySet())), 
                                 subframe, 
                                 output, 
                                 Keywords.GRAPH
