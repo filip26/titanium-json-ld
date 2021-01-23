@@ -18,4 +18,8 @@ public final class StringUtils {
         return string.strip();
     }
 
+    public static final String stripTrailing(final String string) {
+        return string.stripTrailing();
+    }
+
 }

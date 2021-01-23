@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -83,12 +84,12 @@ class NQuadsWriterTest {
             
             Rdf.createWriter(MediaType.N_QUADS, os).write(dataset);
             
-            result = os.toString().stripTrailing();
+            result = StringUtils.stripTrailing(os.toString());
         }
         
         try (final BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(testCase.getExpected())))) {
             
-            String expected = reader.lines().collect(Collectors.joining("\n")).stripTrailing();
+            String expected = StringUtils.stripTrailing(reader.lines().collect(Collectors.joining("\n")));
             
             if (!Objects.equal(expected, result)) {
                 System.out.println("Expected: ");

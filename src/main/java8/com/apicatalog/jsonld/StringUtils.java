@@ -20,4 +20,9 @@ public final class StringUtils {
         //TODO
         throw new UnsupportedOperationException();        
     }
+    
+    public static final String stripTrailing(final String string) {
+        //TODO
+        throw new UnsupportedOperationException();        
+    }
 }

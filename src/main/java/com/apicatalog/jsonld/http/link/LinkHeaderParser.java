@@ -126,13 +126,13 @@ final class LinkHeaderParser {
         case PARAM_NAME:
         case PARAM_NAME_END:
             if (valueBuilder.length() > 0) {
-                attributeName = valueBuilder.toString().stripTrailing();
+                attributeName = StringUtils.stripTrailing(valueBuilder.toString());
             }
             break;
                         
         case LITERAL_VALUE:
             if (valueBuilder.length() > 0) {
-                attributeValue = valueBuilder.toString().stripTrailing();
+                attributeValue = StringUtils.stripTrailing(valueBuilder.toString());
             }
             break;
             
@@ -230,7 +230,7 @@ final class LinkHeaderParser {
             }
             return;
         }        
-        targetUri = URI.create(UriResolver.resolve(baseUri, valueBuilder.toString().stripTrailing()));
+        targetUri = URI.create(UriResolver.resolve(baseUri, StringUtils.stripTrailing(valueBuilder.toString())));
         state = State.PARAMS;
     }
     
