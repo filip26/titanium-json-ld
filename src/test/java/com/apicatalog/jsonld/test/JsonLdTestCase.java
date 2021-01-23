@@ -39,7 +39,7 @@ public final class JsonLdTestCase {
     
     public static final String TESTS_BASE = "https://w3c.github.io";
     
-    public static final Predicate<JsonLdTestCase> IS_NOT_V1_0 = Predicate.not(test -> JsonLdVersion.V1_0.equals(test.options.specVersion));
+    public static final Predicate<JsonLdTestCase> IS_NOT_V1_0 = test -> !JsonLdVersion.V1_0.equals(test.options.specVersion);
     
     public String id;
     

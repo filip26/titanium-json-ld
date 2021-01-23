@@ -18,7 +18,6 @@ package com.apicatalog.jsonld.context;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -79,7 +78,7 @@ public final class InverseContextBuilder {
 
             // 3.2.
             final String container = containerMapping
-                                            .filter(Predicate.not(Collection::isEmpty))
+                                            .filter(collection -> !collection.isEmpty())
                                             .orElse(Arrays.asList(Keywords.NONE))
                                             .stream()
                                             .sorted()
