@@ -34,7 +34,7 @@
     <scm>
         <connection>scm:git:git://github.com/filip26/titanium-json-ld.git</connection>
         <developerConnection>scm:git:git://github.com/filip26/titanium-json-ld.git</developerConnection>
-        <url>https://github.com/filip26/titanium-json-ld/tree/master</url>
+        <url>https://github.com/filip26/titanium-json-ld/tree/main</url>
     </scm>
 
     <developers>
