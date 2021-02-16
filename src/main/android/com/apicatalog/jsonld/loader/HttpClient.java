@@ -8,10 +8,20 @@ import java.net.URL;
 
 public class HttpClient {
 
-    private OkHttpClient client = new OkHttpClient.Builder()
+    private static final OkHttpClient DEFAULT_CLIENT = new OkHttpClient.Builder()
             .followRedirects(false)
             .followSslRedirects(false)
             .build();
+
+    private OkHttpClient okHttpClient;
+
+    public HttpClient() {
+        this(DEFAULT_CLIENT);
+    }
+
+    public HttpClient(OkHttpClient okayHttpClient) {
+        this.okHttpClient = okayHttpClient;
+    }
 
     public HttpResponse get(URL url, String accept) throws IOException {
         Request request = new Request.Builder()
@@ -19,6 +29,6 @@ public class HttpClient {
                 .url(url)
                 .build();
 
-        return new HttpResponse(client.newCall(request).execute());
+        return new HttpResponse(okHttpClient.newCall(request).execute());
     }
 }
