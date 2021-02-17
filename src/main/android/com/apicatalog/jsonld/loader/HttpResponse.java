@@ -1,37 +1,33 @@
 package com.apicatalog.jsonld.loader;
 
+import okhttp3.Response;
+
 import java.io.Closeable;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.util.Collections;
 import java.util.List;
 
 public class HttpResponse implements Closeable {
 
-    private int statusCode;
-    private HttpURLConnection conn;
+    private Response response;
 
-    public HttpResponse(int statusCode, HttpURLConnection conn) {
-        this.statusCode = statusCode;
-        this.conn = conn;
+    public HttpResponse(Response response) {
+        this.response = response;
     }
 
     public int statusCode() {
-        return statusCode;
+        return response.code();
     }
 
     public List<String> headers(String h) {
-        List<String> headerValues = conn.getHeaderFields().get(h);
-        return headerValues == null ? Collections.emptyList() : headerValues;
+        return response.headers(h);
     }
 
-    public InputStream body() throws IOException {
-        return conn.getInputStream();
+    public InputStream body() {
+        return response.body().byteStream();
     }
 
     @Override
     public void close() {
-        conn.disconnect();
+        response.close();
     }
 }
