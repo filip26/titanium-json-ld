@@ -71,6 +71,10 @@ Gradle
 ```gradle
 compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '1.0.0'
 ```
+add the 'android' classifier when building on android:
+```gradle
+compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '1.0.0', classifier: 'android'
+```
 
 #### JSON-P Provider
 
