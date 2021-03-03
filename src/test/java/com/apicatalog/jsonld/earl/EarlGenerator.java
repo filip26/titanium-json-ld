@@ -252,7 +252,7 @@ public class EarlGenerator {
         writer.println("  doap:description \"A JSON-LD 1.1 Processor & API for Java\";");
         writer.println("  doap:developer <https://github.com/filip26>;");
         writer.println("  doap:homepage <https://github.com/filip26/titanium-json-ld>;");
-        writer.println("  doap:license <https://github.com/filip26/titanium-json-ld/blob/master/LICENSE>;");
+        writer.println("  doap:license <https://github.com/filip26/titanium-json-ld/blob/main/LICENSE>;");
         writer.println("  doap:release [");
         writer.println("    doap:name \"Titanium v" + VERSION + "\";");
         writer.println("    doap:revision \"" + VERSION + "\";");

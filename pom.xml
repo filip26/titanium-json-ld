@@ -34,7 +34,7 @@
     <scm>
         <connection>scm:git:git://github.com/filip26/titanium-json-ld.git</connection>
         <developerConnection>scm:git:git://github.com/filip26/titanium-json-ld.git</developerConnection>
-        <url>https://github.com/filip26/titanium-json-ld/tree/master</url>
+        <url>https://github.com/filip26/titanium-json-ld/tree/main</url>
     </scm>
 
     <developers>
@@ -62,7 +62,7 @@
         <argLine>-Dfile.encoding=UTF-8</argLine>
 
         <!--  test resources -->
-        <junit.version>5.7.0</junit.version>
+        <junit.version>5.7.1</junit.version>
         <wiremock.version>2.27.2</wiremock.version>
 
         <sonar.projectKey>filip26_titanium-json-ld</sonar.projectKey>
