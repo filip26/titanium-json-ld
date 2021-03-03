@@ -32,8 +32,8 @@ class UriResolverTest {
     void testResolve(final String base, String relative, String expected) {
         assertEquals(expected, UriResolver.resolve(URI.create(base), relative));
     }
-    
-    static final Stream<Arguments> data() {        
+
+    static final Stream<Arguments> data() {
         return Stream.of(
             arguments("file:///a/bb/ccc/d;p?q,", "g", "file:///a/bb/ccc/g"),
             arguments("file:///a/bb/ccc/d;p?q,", "/g", "file:///g"),

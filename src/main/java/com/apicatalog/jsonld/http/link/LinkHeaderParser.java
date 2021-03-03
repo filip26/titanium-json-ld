@@ -31,7 +31,7 @@ import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.uri.UriResolver;
 
 /**
- * 
+ *
  * @see <a href="https://tools.ietf.org/html/rfc8288#appendix-B">Appendix B.  Algorithms for Parsing Link Header Fields</a>
  *
  */
@@ -40,14 +40,14 @@ final class LinkHeaderParser {
     private static final String REL = "rel";
     private static final String ANCHOR = "anchor";
     private static final String TYPE = "type";
-    
-    private enum State { INIT, URI_REF, PARAMS, PARAM_NAME_BEGIN, PARAM_NAME, PARAM_NAME_END, PARAM_VALUE, 
+
+    private enum State { INIT, URI_REF, PARAMS, PARAM_NAME_BEGIN, PARAM_NAME, PARAM_NAME_END, PARAM_VALUE,
             STRING_VALUE, LITERAL_VALUE, ESCAPE, UNEXPECTED }
-    
+
     private URI baseUri;
 
     private final StringBuilder valueBuilder;
-    
+
     private List<Link> links;
     private State state;
 
@@ -55,16 +55,16 @@ final class LinkHeaderParser {
     private String attributeName;
     private String attributeValue;
     private Map<String, List<LinkAttribute>> attributes;
-    
+
     public LinkHeaderParser(final URI baseUri) {
         this.baseUri = baseUri;
         this.valueBuilder = new StringBuilder();
     }
 
     public List<Link> parse(String httpLink) {
-        
+
         resetState(baseUri);
-    
+
         final char[] linkHeader = httpLink.toCharArray();
 
         for (final char ch : linkHeader) {
@@ -129,33 +129,33 @@ final class LinkHeaderParser {
                 attributeName = StringUtils.stripTrailing(valueBuilder.toString());
             }
             break;
-                        
+
         case LITERAL_VALUE:
             if (valueBuilder.length() > 0) {
                 attributeValue = StringUtils.stripTrailing(valueBuilder.toString());
             }
             break;
-            
+
         case UNEXPECTED:
             return links;
-            
+
         default:
             break;
         }
-        
+
         addParameter();
         addLink();
-        
+
         return links;
     }
-    
+
     private final void addLink() {
         if (targetUri != null) {
-            
+
             Set<String> rel = Collections.emptySet();
             URI context = null;
             MediaType type = null;
-            
+
             if (attributes.containsKey(REL) && attributes.get(REL) != null) {
                 rel = new HashSet<>(Arrays.asList(StringUtils.strip(attributes.get(REL).get(0).value()).split("[\\s\\t]+")));
                 attributes.remove(REL);
@@ -170,30 +170,30 @@ final class LinkHeaderParser {
                     attributes.remove(TYPE);
                 }
             }
-            
+
             links.add(new Link(context, targetUri, rel, type, new LinkAttributes(attributes)));
 
             targetUri = null;
             attributes = new LinkedHashMap<>();
         }
     }
-    
+
     private final void addParameter() {
         if (attributeName != null) {
             if (attributeValue != null) {
                 attributes
                         .computeIfAbsent(attributeName, l -> new ArrayList<>())
                         .add(new LinkAttribute(attributeName, attributeValue));
-                
+
                 attributeValue = null;
-                
+
             } else {
 
                 attributes
                         .computeIfAbsent(attributeName, l -> new ArrayList<>())
                         .add(new LinkAttribute(attributeName));
             }
-            
+
             attributeName = null;
         }
     }
@@ -203,7 +203,7 @@ final class LinkHeaderParser {
         this.links = new ArrayList<>();
         this.attributes = new LinkedHashMap<>();
         this.state = State.INIT;
-        
+
         this.targetUri = null;
         this.attributeName = null;
         this.attributeValue = null;
@@ -221,7 +221,7 @@ final class LinkHeaderParser {
         }
         state = State.UNEXPECTED;
     }
-    
+
     private final void parseTargetUri(final char ch) {
         if (ch != '>') {
             // skip leading white-spaces
@@ -229,11 +229,11 @@ final class LinkHeaderParser {
                 valueBuilder.append(ch);
             }
             return;
-        }        
+        }
         targetUri = URI.create(UriResolver.resolve(baseUri, StringUtils.stripTrailing(valueBuilder.toString())));
         state = State.PARAMS;
     }
-    
+
     private final void parseParameters(final char ch) {
         // skip leading white-spaces
         if (HttpAlphabet.WHITESPACE.test(ch)) {
@@ -266,9 +266,9 @@ final class LinkHeaderParser {
             return;
         }
         addLink();
-        state = State.UNEXPECTED;        
+        state = State.UNEXPECTED;
     }
-    
+
     private final void parseParamName(final char ch) {
         if (ch == '=') {
             attributeName = valueBuilder.toString();
@@ -285,7 +285,7 @@ final class LinkHeaderParser {
         if (ch == ',') {
             attributeName = valueBuilder.toString();
             addParameter();
-            addLink();            
+            addLink();
             state = State.INIT;
             return;
         }
@@ -302,7 +302,7 @@ final class LinkHeaderParser {
         addLink();
         state = State.UNEXPECTED;
     }
-    
+
     private final void parseParamNameEnd(final char ch) {
         if (HttpAlphabet.WHITESPACE.test(ch)) {
             return;
@@ -318,7 +318,7 @@ final class LinkHeaderParser {
         }
         if (ch == ',') {
             addParameter();
-            addLink();            
+            addLink();
             state = State.INIT;
             return;
         }
@@ -342,7 +342,7 @@ final class LinkHeaderParser {
         addLink();
         state = State.UNEXPECTED;
     }
-    
+
 
     private final void parseString(final char ch) {
         if (ch == '"') {
@@ -362,7 +362,7 @@ final class LinkHeaderParser {
         addLink();
         state = State.UNEXPECTED;
     }
-    
+
     private final void parseLiteral(final char ch) {
 
         if (ch == ';') {
@@ -371,7 +371,7 @@ final class LinkHeaderParser {
             addParameter();
             state = State.PARAM_NAME;
             return;
-            
+
         } else if (ch == ',') {
             attributeValue = valueBuilder.toString();
             addParameter();
@@ -385,22 +385,22 @@ final class LinkHeaderParser {
         }
         if (HttpAlphabet.WHITESPACE.test(ch)) {
             attributeValue = valueBuilder.toString();
-            addParameter();            
+            addParameter();
             state = State.PARAMS;
             return;
         }
         addLink();
         state = State.UNEXPECTED;
     }
-        
+
     private final void escape(final char ch) {
         if (ch == 't') {
             valueBuilder.append('\t');
-            
+
         } else {
             valueBuilder.append(ch);
         }
-        
+
         state = State.STRING_VALUE;
     }
 }

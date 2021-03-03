@@ -37,10 +37,10 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
     private final URI documentUri;
     private final Document frame;
     private final URI frameUri;
-    
+
     // optional
     private JsonLdOptions options;
-    
+
     public FramingApi(URI documentUri, URI frameUri) {
         this.document = null;
         this.documentUri = documentUri;
@@ -59,7 +59,7 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
 
     @Override
     public FramingApi options(JsonLdOptions options) {
-        
+
         if (options == null) {
             throw new IllegalArgumentException("Parameter 'options' is null.");
         }
@@ -67,7 +67,7 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
         this.options = options;
         return this;
     }
-    
+
     @Override
     public FramingApi context(URI contextUri) {
         options.setExpandContext(contextUri);
@@ -78,14 +78,14 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
     public FramingApi context(String contextLocation) {
 
         if (contextLocation != null) {
-            
+
             if (UriUtils.isNotURI(contextLocation)) {
                 throw new IllegalArgumentException("Context location must be valid URI or null but is [" + contextLocation + ".");
             }
-            
-            return context(UriUtils.create(contextLocation));            
+
+            return context(UriUtils.create(contextLocation));
         }
-        
+
         return context((URI) null);
     }
 
@@ -129,7 +129,7 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
         options.setOrdered(enable);
         return this;
     }
-    
+
     public FramingApi embed(JsonLdEmbed value) {
         options.setEmbed(value);
         return this;
@@ -170,10 +170,10 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
     public FramingApi requiredAll() {
         return requiredAll(true);
     }
-    
+
     /**
      * Get the result of framing.
-     * 
+     *
      * @return {@link JsonObject} representing framed document
      * @throws JsonLdError
      */

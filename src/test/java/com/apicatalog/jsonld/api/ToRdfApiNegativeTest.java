@@ -35,12 +35,12 @@ class ToRdfApiNegativeTest {
     void test2() {
         assertThrows(IllegalArgumentException.class, () -> JsonLd.toRdf((String)null));
     }
-    
+
     @Test
     void test3() {
         assertThrows(IllegalArgumentException.class, () -> JsonLd.toRdf((URI)null));
     }
-    
+
     @Test
     void test4() {
         final URI uri = URI.create("/relative");
@@ -51,12 +51,12 @@ class ToRdfApiNegativeTest {
     void test5() {
         assertThrows(IllegalArgumentException.class, () -> JsonLd.toRdf(""));
     }
-    
+
     @Test
     void test6() {
         assertThrows(IllegalArgumentException.class, () -> JsonLd.toRdf("   "));
     }
-    
+
     @Test
     void test7() {
         assertThrows(IllegalArgumentException.class, () -> JsonLd.toRdf("relative"));

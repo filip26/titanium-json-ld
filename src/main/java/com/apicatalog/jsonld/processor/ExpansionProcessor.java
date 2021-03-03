@@ -35,7 +35,7 @@ import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 
 /**
- * 
+ *
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#dom-jsonldprocessor-expand">JsonLdProcessor.expand()</a>
  *
  */
@@ -52,13 +52,13 @@ public final class ExpansionProcessor {
 
         final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
         loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
-        
+
         final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
 
         if (remoteDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
-        
+
         return expand(remoteDocument, options, false);
     }
 
@@ -67,11 +67,11 @@ public final class ExpansionProcessor {
         if (input == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "RemoteDocument is null.");
         }
-        
+
         final JsonStructure jsonStructure = input
                                                 .getJsonContent()
                                                 .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document is not pased JSON."));
-        
+
         // 5. Initialize a new empty active context. The base IRI and
         // original base URL of the active context is set to the documentUrl
         // from remote document, if available; otherwise to the base option from
@@ -83,7 +83,7 @@ public final class ExpansionProcessor {
 
         if (input.getDocumentUrl() != null) {
             baseUrl = input.getDocumentUrl();
-            baseUri = baseUrl;                
+            baseUri = baseUrl;
         }
 
         if (baseUrl == null) {
@@ -92,7 +92,7 @@ public final class ExpansionProcessor {
         if (options.getBase() != null) {
             baseUri = options.getBase();
         }
-    
+
         ActiveContext activeContext = new ActiveContext(baseUri, baseUrl, options);
 
         // 6. If the expandContext option in options is set, update the active context
@@ -101,7 +101,7 @@ public final class ExpansionProcessor {
         // If expandContext is a map having an @context entry, pass that entry's value
         // instead for local context.
         if (options.getExpandContext() != null) {
-            
+
             final Optional<JsonStructure> contextValue = options.getExpandContext().getJsonContent();
 
             if (contextValue.isPresent()) {
@@ -141,13 +141,13 @@ public final class ExpansionProcessor {
         // 8.3
         return JsonUtils.toJsonArray(expanded);
     }
-    
+
     private static final ActiveContext updateContext(final ActiveContext activeContext, final JsonValue expandedContext, final URI baseUrl) throws JsonLdError {
-                
+
       if (JsonUtils.isArray(expandedContext)) {
-          
+
           if (expandedContext.asJsonArray().size() == 1) {
-              
+
               JsonValue value = expandedContext.asJsonArray().iterator().next();
 
               if (JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.CONTEXT)) {
@@ -155,23 +155,23 @@ public final class ExpansionProcessor {
                   return activeContext
                           .newContext()
                               .create(
-                                  value.asJsonObject().get(Keywords.CONTEXT), 
+                                  value.asJsonObject().get(Keywords.CONTEXT),
                                   baseUrl);
               }
           }
-          
+
           return activeContext.newContext().create(expandedContext, baseUrl);
-          
+
       } else if (JsonUtils.isObject(expandedContext) && expandedContext.asJsonObject().containsKey(Keywords.CONTEXT)) {
 
           return activeContext
                   .newContext()
                       .create(
-                          expandedContext.asJsonObject().get(Keywords.CONTEXT), 
+                          expandedContext.asJsonObject().get(Keywords.CONTEXT),
                           baseUrl);
 
       }
       return activeContext.newContext().create(Json.createArrayBuilder().add(expandedContext).build(), baseUrl);
     }
-    
+
 }

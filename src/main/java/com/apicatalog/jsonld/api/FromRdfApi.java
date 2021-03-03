@@ -32,10 +32,10 @@ public final class FromRdfApi implements CommonApi<FromRdfApi>, LoaderApi<FromRd
     // required
     private final Document document;
     private final URI documentUri;
-    
+
     // optional
     private JsonLdOptions options;
-    
+
     public FromRdfApi(Document document) {
         this.document = document;
         this.documentUri = null;
@@ -47,10 +47,10 @@ public final class FromRdfApi implements CommonApi<FromRdfApi>, LoaderApi<FromRd
         this.documentUri = documentUri;
         this.options = new JsonLdOptions();
     }
-    
+
     @Override
     public FromRdfApi options(JsonLdOptions options) {
-        
+
         if (options == null) {
             throw new IllegalArgumentException("Parameter 'options' is null.");
         }
@@ -58,7 +58,7 @@ public final class FromRdfApi implements CommonApi<FromRdfApi>, LoaderApi<FromRd
         this.options = options;
         return this;
     }
-    
+
     @Override
     public FromRdfApi mode(JsonLdVersion processingMode) {
         options.setProcessingMode(processingMode);
@@ -81,13 +81,13 @@ public final class FromRdfApi implements CommonApi<FromRdfApi>, LoaderApi<FromRd
         options.setOrdered(enable);
         return this;
     }
-    
+
     @Override
     public FromRdfApi loader(DocumentLoader loader) {
         options.setDocumentLoader(loader);
         return this;
     }
-    
+
     public FromRdfApi nativeTypes() {
         return nativeTypes(true);
     }
@@ -96,23 +96,23 @@ public final class FromRdfApi implements CommonApi<FromRdfApi>, LoaderApi<FromRd
         options.setUseNativeTypes(useNativeTypes);
         return this;
     }
-    
+
     /**
      * Get <code>JSON-LD</code> representation of the provided {@link RdfDataset}.
-     * 
+     *
      * @return {@link JsonArray} representing <code>JSON-LD</code> document
      * @throws JsonLdError
      */
     public JsonArray get() throws JsonLdError {
-        
+
         if (document != null) {
             return FromRdfProcessor.fromRdf(document, options);
         }
-        
+
         if (documentUri != null) {
             return FromRdfProcessor.fromRdf(documentUri, options);
         }
-        
+
         throw new IllegalStateException();
     }
 }

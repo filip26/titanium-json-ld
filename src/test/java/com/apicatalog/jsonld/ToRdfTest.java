@@ -31,11 +31,11 @@ import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 import com.apicatalog.jsonld.test.loader.ZipResourceLoader;
 
 class ToRdfTest {
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")
     void testToRdf(final JsonLdTestCase testCase) throws IOException {
-        
+
         // Force a locale to something different than US to be aware of DecimalFormat errors
         Locale.setDefault(Locale.GERMAN);
 

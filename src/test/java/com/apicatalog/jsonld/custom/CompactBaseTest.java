@@ -38,7 +38,7 @@ class CompactBaseTest {
                 .stream()
                 .filter(o -> "#t0047".equals(o.id))
                 .findFirst().orElseThrow(() -> new NoSuchElementException());
-                
+
         assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options ->
                         JsonDocument.of(
                                 JsonLd.compact(testCase.input, testCase.context).options(options).base("http://fake.com").get()

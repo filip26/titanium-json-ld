@@ -31,7 +31,7 @@ public final class ValueObject {
     public static JsonValue getValue(JsonValue value) {
         return isValueObject(value)
                     ? value.asJsonObject().get(Keywords.VALUE)
-                    : null; 
+                    : null;
     }
 
 }

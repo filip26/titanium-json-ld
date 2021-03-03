@@ -1,12 +1,12 @@
 /**
  * Provides APIs to process JSON-LD. Use only {@link com.apicatalog.jsonld.JsonLd} static methods to interact with
- * the processor.  
- * 
+ * the processor.
+ *
  * <pre>
  * e.g.
- * {@code 
+ * {@code
  *  JsonLd.expand("https://....").get()
  *  }</pre>
- *  
+ *
  */
 package com.apicatalog.jsonld;

@@ -25,21 +25,21 @@ import com.apicatalog.jsonld.StringUtils;
 public final class Path {
 
     public static final Path EMPTY = new Path(new ArrayList<>(), null, true);
-    
+
     private final List<String> segments;
     private final String last;
     private final boolean relative;
-    
+
     private Path(final List<String> segments, String last, final boolean relative) {
         this.segments = segments;
         this.last = last;
         this.relative = relative;
     }
-    
+
     public static final Path of(final String path) {
 
         final boolean relative = !path.startsWith("/");
-        
+
         final List<String> segments = new ArrayList<>(
                                         Arrays.asList(
                                                 (relative
@@ -52,20 +52,20 @@ public final class Path {
         final String last = (path.length() > 1 && path.endsWith("/"))
                                 ?  null
                                 : segments.remove(segments.size() - 1);
-    
+
         return new Path(segments, (last == null || StringUtils.isBlank(last)) ? null : last, relative);
     }
-    
+
     public Path relativize(final String base) {
         return relativize(Path.of(base));
     }
-    
+
     public Path relativize(final Path base) {
 
         if (segments.isEmpty() && base.segments.isEmpty()) {
             if (Objects.equals(last, base.last)) {
                 return new Path(EMPTY.segments, null, !base.relative);
-            } 
+            }
             return new Path(EMPTY.segments, last, !relative && !base.relative);
         }
 
@@ -74,13 +74,13 @@ public final class Path {
         }
 
         int leftIndex = 0;
-        
-        for (; leftIndex < Math.min(segments.size(), base.segments.size()); leftIndex++) {            
+
+        for (; leftIndex < Math.min(segments.size(), base.segments.size()); leftIndex++) {
             if (!segments.get(leftIndex).equals(base.segments.get(leftIndex))) {
                 break;
             }
         }
-        
+
         if (leftIndex == segments.size() && leftIndex == base.segments.size()) {
             if (Objects.equals(last, base.last)) {
                 return EMPTY;
@@ -89,18 +89,18 @@ public final class Path {
         }
 
         if (leftIndex >= base.segments.size()) {
-            
+
             if ((segments.size() - leftIndex == 1) && segments.get(leftIndex).equals(base.last)) {
                 return new Path(Arrays.asList("."), last, true);
             }
-            
+
             return new Path(segments.subList(leftIndex, segments.size()), last, true);
         }
-        
+
         int rightIndex = 0;
-        
+
         List<String> diff = new ArrayList<>();
-        
+
         for (; rightIndex < Math.min(segments.size(), base.segments.size()) - leftIndex; rightIndex++) {
             if (!segments.get(segments.size() - rightIndex - 1).equals(base.segments.get(base.segments.size() - rightIndex - 1))) {
                 break;
@@ -117,22 +117,22 @@ public final class Path {
 
         return new Path(diff, Objects.equals(last, base.last) ? null : last, true);
     }
-    
+
     public boolean isEmpty() {
         return segments.isEmpty() && last == null && !relative;
     }
-    
+
     public boolean isNotEmpty() {
         return !segments.isEmpty() || last != null || !relative;
     }
-    
+
     public boolean isRelative() {
         return relative;
     }
-    
+
     @Override
     public String toString() {
-        return (relative 
+        return (relative
                     ? ""
                     : "/")
                     .concat(String.join("/", segments))
@@ -143,5 +143,5 @@ public final class Path {
 
     public String getLeaf() {
         return last;
-    }    
+    }
 }

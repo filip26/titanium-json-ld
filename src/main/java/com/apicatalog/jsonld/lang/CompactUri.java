@@ -18,7 +18,7 @@ package com.apicatalog.jsonld.lang;
 import java.util.Objects;
 
 /**
- * 
+ *
  * @see <a href="https://www.w3.org/TR/curie/">A syntax for expressing Compact
  *      URIs</a>
  *

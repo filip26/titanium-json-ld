@@ -35,12 +35,12 @@ class FlatteningApiNegativeTest {
     void test2() {
         assertThrows(IllegalArgumentException.class, () -> JsonLd.flatten((String)null));
     }
-    
+
     @Test
     void test3() {
         assertThrows(IllegalArgumentException.class, () -> JsonLd.flatten((URI)null));
     }
-    
+
     @Test
     void test4() {
         assertThrows(IllegalArgumentException.class, () -> JsonLd.flatten(""));
@@ -50,13 +50,13 @@ class FlatteningApiNegativeTest {
     void test5() {
         assertThrows(IllegalArgumentException.class, () -> JsonLd.flatten("   "));
     }
-    
+
     @Test
     void test6() {
         assertThrows(IllegalArgumentException.class, () -> JsonLd.flatten("/relative"));
     }
-    
-    @Test    
+
+    @Test
     void test7() {
         final URI uri = URI.create("relative");
         assertThrows(IllegalArgumentException.class, () -> JsonLd.flatten(uri));
@@ -66,5 +66,5 @@ class FlatteningApiNegativeTest {
     void test10() {
         final FlatteningApi api = JsonLd.flatten("https://example.com");
         assertThrows(IllegalArgumentException.class, () -> api.options(null));
-    }    
+    }
 }

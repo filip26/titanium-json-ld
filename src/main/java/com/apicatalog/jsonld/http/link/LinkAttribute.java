@@ -24,12 +24,12 @@ import java.util.Optional;
  *
  */
 public final class LinkAttribute {
-        
+
     private final String name;
     private final String value;
-    
+
     private final String languageTag;
-        
+
     protected LinkAttribute(final String name) {
         this(name, name, null);
     }
@@ -37,36 +37,36 @@ public final class LinkAttribute {
     protected LinkAttribute(final String name, final String value) {
         this(name, value, null);
     }
-    
+
     protected LinkAttribute(final String name, final String value, final String languageTag) {
         this.name = name;
         this.value = value;
         this.languageTag = languageTag;
-    }   
-    
+    }
+
     public Optional<String> languageTag() {
         return Optional.ofNullable(languageTag);
     }
-    
+
     public String name() {
         return name;
     }
-    
+
     public String value() {
         return value;
     }
-    
+
     @Override
     public String toString() {
         if (value == null) {
             return name;
         }
-        
+
         final StringBuilder builder = new StringBuilder();
-        
+
         builder.append(name);
         builder.append('=');
-            
+
         if (languageTag != null) {
             builder.append(Charset.defaultCharset().name());
             builder.append('\'');
@@ -74,7 +74,7 @@ public final class LinkAttribute {
             builder.append('\'');
         }
         builder.append(value);
-            
+
         return builder.toString();
     }
 
@@ -97,5 +97,5 @@ public final class LinkAttribute {
         LinkAttribute other = (LinkAttribute) obj;
         return Objects.equals(languageTag, other.languageTag) && Objects.equals(name, other.name)
                 && Objects.equals(value, other.value);
-    }  
+    }
 }

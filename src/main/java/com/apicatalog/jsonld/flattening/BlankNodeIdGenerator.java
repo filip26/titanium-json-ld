@@ -21,15 +21,15 @@ import java.util.Map;
 import com.apicatalog.jsonld.StringUtils;
 
 /**
- * 
+ *
  * @see <a href="https://w3c.github.io/json-ld-api/#generate-blank-node-identifier">Generate Blank Node Identifier</a>
  */
 public final class BlankNodeIdGenerator {
 
     private final Map<String, String> map;
-    
+
     private Integer counter;
-    
+
     public BlankNodeIdGenerator() {
         this.map = new HashMap<>();
         this.counter = 0;
@@ -40,19 +40,19 @@ public final class BlankNodeIdGenerator {
     }
 
     public String createIdentifier(String identifier) {
-        
+
         if (identifier == null || StringUtils.isBlank(identifier)) {
-            return createIdentifier();            
+            return createIdentifier();
         }
-        
+
         if (map.containsKey(identifier)) {
             return map.get(identifier);
         }
-        
+
         final String blankId = createIdentifier();
-        
+
         map.put(identifier, blankId);
-        
+
         return blankId;
     }
 

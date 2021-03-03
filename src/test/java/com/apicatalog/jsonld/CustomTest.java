@@ -28,11 +28,11 @@ import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 import com.apicatalog.jsonld.test.loader.ClasspathLoader;
 
 class CustomTest {
-        
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")
-    void testCustom(JsonLdTestCase testCase) {        
-        assertTrue(new JsonLdTestRunnerJunit(testCase).execute());            
+    void testCustom(JsonLdTestCase testCase) {
+        assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
     }
 
     static final Stream<JsonLdTestCase> data() throws JsonLdError {

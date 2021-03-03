@@ -37,14 +37,14 @@ public final class NQuadsReaderTestSuite {
 
     private final String filePath;
     private final String manifestName;
-    
+
     public NQuadsReaderTestSuite(final String filePath, final String manifestName) {
         this.filePath = filePath;
         this.manifestName = manifestName;
     }
-    
+
     public final Stream<NQuadsReaderTestCase> load() throws ZipException, IOException, URISyntaxException {
-        
+
         final URL zipFileUrl =  NQuadsReaderTestSuite.class.getResource(filePath);
 
         assertNotNull(zipFileUrl);
@@ -52,20 +52,20 @@ public final class NQuadsReaderTestSuite {
         try (final ZipFile zip = new ZipFile(new File(zipFileUrl.toURI()))) {
 
             final ZipEntry manifestEntry = zip.getEntry(manifestName);
-            
+
             try (final InputStream is = zip.getInputStream(manifestEntry)) {
-             
+
                 final JsonParser parser = Json.createParser(is);
-                
+
                 parser.next();
-                
+
                 return parser
                             .getArray()
                             .stream()
                             .filter(JsonUtils::isObject)
                             .map(JsonObject.class::cast)
-                            .map(NQuadsReaderTestCase::of);                
+                            .map(NQuadsReaderTestCase::of);
             }
         }
-    }    
+    }
 }

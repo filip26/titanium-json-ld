@@ -37,53 +37,53 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 
 class RemoteTest {
-    
+
     WireMockServer wireMockServer;
 
-    @BeforeEach 
+    @BeforeEach
     public void proxyToWireMock() {
         wireMockServer = new WireMockServer(WireMockConfiguration.options());
         wireMockServer.start();
     }
 
-    @AfterEach 
+    @AfterEach
     public void noMoreWireMock() {
         wireMockServer.stop();
         wireMockServer = null;
     }
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")
     void testRemote(final JsonLdTestCase testCase) {
 
         // skip, HTML extraction is not supported yet
         assumeFalse("#t0013".equals(testCase.id));
-        
+
         try {
 
             JsonLdMockServer server = new JsonLdMockServer(testCase, JsonLdTestCase.TESTS_BASE, JsonLdManifestLoader.JSON_LD_API_BASE, new ZipResourceLoader());
-            
+
             server.start();
-            
+
             (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
-                
+
                 JsonLdOptions expandOptions = new JsonLdOptions(options);
-                
+
                 expandOptions.setDocumentLoader(
                                     new UriBaseRewriter(
-                                                JsonLdTestCase.TESTS_BASE, 
+                                                JsonLdTestCase.TESTS_BASE,
                                                 wireMockServer.baseUrl(),
                                                 SchemeRouter.defaultInstance()));
-                
+
                 return JsonDocument.of(JsonLd.expand(testCase.input).options(expandOptions).get());
             });
 
             server.stop();
-            
+
         } catch (JsonLdError e) {
             fail(e.getMessage());
-            
-        }        
+
+        }
     }
 
     static final Stream<JsonLdTestCase> data() throws JsonLdError {

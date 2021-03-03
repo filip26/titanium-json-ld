@@ -36,9 +36,9 @@ public class ClasspathLoader implements DocumentLoader, TestLoader {
 
             final Document document = toDocument(url, is);
             document.setDocumentUrl(url);
-            
+
             return document;
-            
+
         } catch (IOException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
@@ -46,22 +46,22 @@ public class ClasspathLoader implements DocumentLoader, TestLoader {
 
     @Override
     public byte[] fetchBytes(URI url) throws JsonLdError {
-        
+
         try (final InputStream is = getClass().getResourceAsStream(url.getPath())) {
-            
+
             return ZipResourceLoader.readAsByteArray(is);
-            
+
         } catch (IOException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
     }
-    
+
     private static final Document toDocument(URI url, InputStream is) throws JsonLdError {
-        
+
         if (url.toString().endsWith(".nq")) {
             return RdfDocument.of(is);
         }
-        
+
         return JsonDocument.of(is);
     }
 

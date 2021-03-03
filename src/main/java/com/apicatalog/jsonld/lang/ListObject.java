@@ -30,18 +30,18 @@ public final class ListObject {
      * A list object is a map that has a @list key. It may also have
      * an @index key, but no other entries. See the Lists and Sets section of
      * JSON-LD 1.1 for a normative description.
-     * 
+     *
      * @see <a href="https://www.w3.org/TR/json-ld11/#dfn-list-object">List
      *      Object</a>
-     * 
+     *
      * @param value to check
      * @return <code>true</code> if the provided value is valid list object
      */
     public static final boolean isListObject(JsonValue value) {
-        return JsonUtils.isObject(value) 
+        return JsonUtils.isObject(value)
                     && value.asJsonObject().containsKey(Keywords.LIST)
                     && (value.asJsonObject().size() == 1
-                            || (value.asJsonObject().size() == 2 
+                            || (value.asJsonObject().size() == 2
                                     && value.asJsonObject().containsKey(Keywords.INDEX)
                                     )
                             );
@@ -51,7 +51,7 @@ public final class ListObject {
      * Convert expanded value to a list object by first setting it to an array
      * containing only expanded value if it is not already an array, and then by
      * setting it to a map containing the key-value pair @list-expanded value.
-     *  
+     *
      * @param value to convert
      * @return list object containing the provided value
      */

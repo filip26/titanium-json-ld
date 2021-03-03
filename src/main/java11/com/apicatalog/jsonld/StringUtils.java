@@ -5,7 +5,7 @@ public final class StringUtils {
     private StringUtils() {
         // protected
     }
-    
+
     public static final boolean isBlank(final String string) {
         return string == null || string.isBlank();
     }

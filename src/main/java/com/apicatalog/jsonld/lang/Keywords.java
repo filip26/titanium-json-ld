@@ -22,7 +22,7 @@ import java.util.stream.IntStream;
 public final class Keywords {
 
     public static final String ANY = "@any";
-    
+
     public static final String BASE = "@base";
 
     public static final String CONTAINER = "@container";
@@ -50,11 +50,11 @@ public final class Keywords {
     public static final String NEST = "@nest";
 
     public static final String NONE = "@none";
-    
+
     public static final String PREFIX = "@prefix";
 
     public static final String PRESERVE = "@preserve";
-    
+
     public static final String PROPAGATE = "@propagate";
 
     public static final String PROTECTED = "@protected";
@@ -75,23 +75,23 @@ public final class Keywords {
     public static final String DEFAULT = "@default";
 
     public static final String EMBED = "@embed";
-    
+
     public static final String ALWAYS = "@always";
-    
+
     public static final String ONCE = "@once";
-    
+
     public static final String NEVER = "@never";
-    
+
     public static final String EXPLICIT = "@explicit";
-    
+
     public static final String NULL = "@null";
-    
+
     public static final String OMIT_DEFAULT = "@omitDefault";
-    
+
     public static final String REQUIRE_ALL = "@requireAll";
-    
+
     public static final String MERGED = "@merged";
-    
+
     private static final Collection<String> ALL_KEYWORDS = Arrays.asList(ANY, BASE, CONTAINER, CONTEXT, DIRECTION, GRAPH,
             ID, IMPORT, INCLUDED, INDEX, JSON, LANGUAGE, LIST, NEST, NONE, PREFIX, PRESERVE, PROPAGATE, PROTECTED, REVERSE, SET,
             TYPE, VALUE, VERSION, VOCAB,
@@ -110,7 +110,7 @@ public final class Keywords {
     /**
      * If value has the form of a keyword (i.e., it matches the ABNF rule "@"1*ALPHA
      * from [RFC5234])
-     * 
+     *
      * @param value to check
      * @return <code>true</code> if the provided value has keyword form
      */

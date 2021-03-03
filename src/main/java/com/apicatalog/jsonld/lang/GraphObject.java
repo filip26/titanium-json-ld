@@ -26,7 +26,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
 /**
- * 
+ *
  * @see <a href="https://www.w3.org/TR/json-ld11/#graph-objects">Graph Objects</a>
  *
  */
@@ -43,12 +43,12 @@ public final class GraphObject {
 
         return allowed.containsAll(value.asJsonObject().keySet());
     }
-    
+
     public static final boolean isSimpleGraphObject(JsonValue value) {
 
-        return isGraphObject(value) && !value.asJsonObject().containsKey(Keywords.ID);        
+        return isGraphObject(value) && !value.asJsonObject().containsKey(Keywords.ID);
     }
-    
+
     public static final JsonObject toGraphObject(JsonValue value) {
         return Json.createObjectBuilder().add(Keywords.GRAPH, JsonUtils.toJsonArray(value)).build();
     }

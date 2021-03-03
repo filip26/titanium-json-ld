@@ -27,7 +27,7 @@ final class NodeMapper {
     private final List<NodeCluster> clusters;
 
     private final int permutations;
-    
+
     private int iterator;
 
     private NodeMapper() {
@@ -40,25 +40,25 @@ final class NodeMapper {
         this.permutations = permutations;
         this.iterator = 0;
     }
-    
+
     public static final NodeMapper create(List<RdfNQuad> from, List<RdfNQuad> to) {
-        
+
         NodeClassifier sourceClassifier = new NodeClassifier();
         to.stream().forEach(sourceClassifier::add);
-        
+
         NodeClassifier targetClassifier = new NodeClassifier();
         from.stream().forEach(targetClassifier::add);
-        
+
         // cannot create mapping, blank nodes count do not match
         if (sourceClassifier.size() != targetClassifier.size()) {
             return new NodeMapper();
         }
-        
+
         Map<NodeCategory, List<String>> reducedSource = sourceClassifier.reduce();
         if (reducedSource == null) {
             return new NodeMapper();
         }
-        
+
         Map<NodeCategory, List<String>> reducedTarget = targetClassifier.reduce();
         if (reducedTarget == null) {
             return new NodeMapper();
@@ -67,7 +67,7 @@ final class NodeMapper {
         List<NodeCluster> clusters = new ArrayList<>();
 
         Map<String, NodeCluster> mapping = merge(reducedSource, reducedTarget, clusters);
-           
+
         if (mapping == null) {
             return new NodeMapper();
         }
@@ -78,19 +78,19 @@ final class NodeMapper {
                         clusters
                         );
     }
-    
+
     private final static Map<String, NodeCluster> merge(Map<NodeCategory, List<String>> reducedSource, Map<NodeCategory, List<String>> reducedTarget, List<NodeCluster> clusters) {
-        
+
         if (reducedSource.size() != reducedTarget.size()) {
             return null;
         }
-        
+
         Map<String, NodeCluster> mapping = new HashMap<>();
-        
+
         for (Entry<NodeCategory, List<String>> source : reducedSource.entrySet()) {
 
             List<String> target = reducedTarget.get(source.getKey());
-            
+
             if (target == null || target.size() != source.getValue().size()) {
                 return null;
             }
@@ -102,7 +102,7 @@ final class NodeMapper {
             clusters.add(cluster);
             source.getValue().forEach(l -> mapping.put(l, cluster));
         }
-        
+
         return mapping;
     }
 
@@ -111,7 +111,7 @@ final class NodeMapper {
     }
 
     public Map<String, String> next() {
-        
+
         if (!hasNext() || clusters == null) {
             throw new IllegalArgumentException();
         }
@@ -119,30 +119,30 @@ final class NodeMapper {
 
         if (iterator > 0) {
             boolean overflow = true;
-            
+
             for (NodeCluster cluster : clusters) {
                 if (overflow) {
-                    overflow = cluster.next(); 
+                    overflow = cluster.next();
                 }
                 if (!overflow) {
                     break;
                 }
             }
         }
-        
+
         Map<String, String> result = new HashMap<>(mapping.size());
-        
+
         for (Map.Entry<String, NodeCluster> entry : mapping.entrySet()) {
             result.put(entry.getKey(), entry.getValue().mapping(entry.getKey()));
         }
-        
+
         iterator++;
 
         return result;
-    }  
-    
+    }
+
     public int permutations() {
         return permutations;
     }
-    
+
 }

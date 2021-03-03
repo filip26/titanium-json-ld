@@ -27,13 +27,13 @@ public final class UriUtils {
 
     public static final boolean isURI(final String value) {
 
-        return value != null 
-                    && StringUtils.isNotBlank(value) 
+        return value != null
+                    && StringUtils.isNotBlank(value)
                     && !Keywords.matchForm(StringUtils.strip(value))
                     && create(StringUtils.strip(value)) != null;
     }
 
-    
+
     public static final URI create(final String uri) {
 
         if (uri == null) {
@@ -41,10 +41,10 @@ public final class UriUtils {
         }
 
         String uriValue = StringUtils.strip(uri);
-        
+
         if (uri.endsWith(":")) {
             uriValue = uri + ".";
-            
+
         } else if (uri.endsWith("[") || uri.endsWith("]")) {
             uriValue = uri.substring(0, uri.length() - 1);
         }
@@ -52,18 +52,18 @@ public final class UriUtils {
         try {
 
             return URI.create(uriValue);
-            
+
         } catch (IllegalArgumentException e) {
             return null;
         }
     }
-    
+
     /**
      * Check if the provided URI ends with generic delimiter.
-     * 
+     *
      * @see <a href="https://tools.ietf.org/html/rfc3986#section-2.2">URI - Reserved
      *      Characters </a>
-     *      
+     *
      * @param uri to check
      * @return <code>true</code> if the provided URI ends with delimiter
      */
@@ -73,8 +73,8 @@ public final class UriUtils {
     }
 
     public static final boolean isNotURI(final String uri) {
-        return uri == null 
-                || (StringUtils.isNotBlank(uri) 
+        return uri == null
+                || (StringUtils.isNotBlank(uri)
                         && (Keywords.matchForm(StringUtils.strip(uri))
                         || create(StringUtils.strip(uri)) == null));
     }
@@ -89,14 +89,14 @@ public final class UriUtils {
     }
 
     public static final boolean isAbsoluteUri(final String uri) {
-        
+
         try {
             return URI.create(uri).isAbsolute();
         } catch (IllegalArgumentException e) {
             return false;
         }
     }
-    
+
     protected static final String recompose(final String scheme, final String authority, final String path, final String query, final String fragment) {
 
         final StringBuilder builder = new StringBuilder();
@@ -122,7 +122,7 @@ public final class UriUtils {
         }
         return builder.toString();
     }
-    
+
     protected static final boolean isDefined(final String value) {
         return value != null && StringUtils.isNotBlank(value);
     }

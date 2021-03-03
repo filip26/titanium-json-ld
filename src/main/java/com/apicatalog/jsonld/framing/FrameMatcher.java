@@ -37,64 +37,64 @@ public final class FrameMatcher {
     private FramingState state;
     private Frame frame;
     private boolean requireAll;
-    
+
     private FrameMatcher(FramingState state, Frame frame, boolean requireAll) {
         this.state = state;
         this.frame = frame;
-        this.requireAll = requireAll; 
+        this.requireAll = requireAll;
     }
-    
+
     public static final FrameMatcher with(FramingState state, Frame frame, boolean requireAll) {
         return new FrameMatcher(state, frame, requireAll);
     }
-    
+
     public List<String> match(final Collection<String> subjects) throws JsonLdError {
-   
+
         // 1. if frame is empty then all subject match
         if (frame.isWildCard()) {
             return new ArrayList<>(subjects);
         }
-        
+
         final List<String> result = new ArrayList<>();
-        
+
         for (final String subject : subjects) {
 
             if (match(state.getGraphMap().get(state.getGraphName(), subject))) {
                 result.add(subject);
             }
         }
-        
+
         return result;
     }
-    
+
     public boolean match(final Map<String, JsonValue> node) throws JsonLdError {
-  
+
         int count = 0;
-        
+
         boolean nonKeywordProperty = false;
-        
+
         for (final String property : frame.keys()) {
 
             JsonValue nodeValue = node.get(property);
-            
+
             // 2.1.
             if (Keywords.ID.equals(property)) {
 
                 nodeValue = JsonUtils.toJsonArray(nodeValue);
-                
+
                 if (JsonUtils.toCollection(frame.get(property)).stream().anyMatch(nodeValue.asJsonArray()::contains)
-                        || frame.isWildCard(Keywords.ID) 
+                        || frame.isWildCard(Keywords.ID)
                         || frame.isNone(Keywords.ID)
                         ) {
-              
+
                     if (requireAll) {
                         count++;
                         continue;
                     }
-                    return true;                    
+                    return true;
                 }
                 return false;
-                
+
             // 2.2.
             } else if (Keywords.TYPE.equals(property)) {
 
@@ -117,88 +117,88 @@ public final class FrameMatcher {
             } else if (Keywords.matchForm(property)) {
                 continue;
             }
-         
+
             nonKeywordProperty = true;
-            
+
             JsonValue propertyValue = frame.get(property);
             final Frame propertyFrame;
 
-            if (JsonUtils.isNotNull(propertyValue) 
+            if (JsonUtils.isNotNull(propertyValue)
                     && JsonUtils.isArray(propertyValue) && JsonUtils.isNotEmptyArray(propertyValue)) {
-                
+
                 propertyFrame = Frame.of((JsonStructure)propertyValue);
-                
+
             } else {
                 propertyFrame = null;
             }
 
-            final JsonArray nodeValues = nodeValue != null 
+            final JsonArray nodeValues = nodeValue != null
                                             ? JsonUtils.toJsonArray(nodeValue)
                                             : JsonValue.EMPTY_JSON_ARRAY;
 
             // 2.5.
-            if (nodeValues.isEmpty() 
-                    && propertyFrame != null 
+            if (nodeValues.isEmpty()
+                    && propertyFrame != null
                     && propertyFrame.containsOnly(Keywords.DEFAULT)
                     ) {
                 continue;
             }
-            
+
             // 2.6.
             if (nodeValues.isEmpty() && frame.isNone(property)) {
-                
+
                 if (requireAll) {
                     count++;
                     continue;
                 }
                 return true;
-                
+
             } else if (!nodeValues.isEmpty() && frame.isNone(property)) {
                 return false;
             }
 
             // 2.7.
             if (!nodeValues.isEmpty() && propertyFrame != null && propertyFrame.isWildCard()) {
-                
+
                 if (requireAll) {
                     count++;
                     continue;
                 }
-                return true;                
+                return true;
             }
-            
+
             if (propertyFrame == null) {
-                
+
                 if (nodeValues.isEmpty()) {
                     if (requireAll) {
                         count++;
                         continue;
                     }
-                    return true;                    
+                    return true;
                 }
-                
+
             } else  {
 
                 if (propertyFrame.isListObject()) {
 
                     JsonValue listValue = propertyFrame.get(Keywords.LIST);
-                    
+
                     if (!nodeValues.isEmpty() && ListObject.isListObject(nodeValues.get(0))) {
-    
+
                         JsonValue nodeListValue = nodeValues.get(0).asJsonObject().get(Keywords.LIST);
-                                            
+
                         if (ValueObject.isValueObject(listValue.asJsonArray().get(0))) {
-    
+
                             boolean match = false;
-                            
+
                             for (final JsonValue value : JsonUtils.toCollection(nodeListValue)) {
-            
+
                                 match = Frame.of((JsonStructure)listValue).matchValue(value);
                                 if (match) {
                                     break;
                                 }
                             }
-                                
+
                             if (match) {
                                 if (requireAll) {
                                     count++;
@@ -206,19 +206,19 @@ public final class FrameMatcher {
                                 }
                                 return true;
                             }
-                            
+
                         } else if (NodeObject.isNodeObject(listValue.asJsonArray().get(0)) || NodeObject.isNodeReference(listValue.asJsonArray().get(0))) {
 
                             boolean match = false;
                             for (final JsonValue value : JsonUtils.toCollection(nodeListValue)) {
-            
+
                                 match = Frame.of((JsonStructure)listValue).matchNode(state, value, requireAll);
-    
+
                                 if (match) {
                                     break;
                                 }
                             }
-                                
+
                             if (match) {
                                 if (requireAll) {
                                     count++;
@@ -228,10 +228,10 @@ public final class FrameMatcher {
                             }
                         }
                     }
-                    
+
                 } else if (propertyFrame.isValuePattern()) {
 
-                    if (nodeValues.stream().anyMatch(propertyFrame::matchValue)) { 
+                    if (nodeValues.stream().anyMatch(propertyFrame::matchValue)) {
                         if (requireAll) {
                             count++;
                             continue;
@@ -242,18 +242,18 @@ public final class FrameMatcher {
                 } else if (propertyFrame.isNodeReference()) {
 
                         boolean match = false;
-                        
+
                         if (!nodeValues.isEmpty()) {
-                            
+
                             for (JsonValue values : nodeValues) {
-                                
+
                                 match = propertyFrame.matchNode(state, values, requireAll);
                                 if (match) {
                                     break;
                                 }
                             }
                         }
-                                                
+
                         if (match) {
                             if (requireAll) {
                                 count++;
@@ -261,17 +261,17 @@ public final class FrameMatcher {
                             }
                             return true;
                         }
-                        
+
                 } else  {
-                                        
+
                     if (!nodeValues.isEmpty()) {
                         if (requireAll) {
                             count++;
                             continue;
                         }
                         return true;
-                    }  
-                }    
+                    }
+                }
             }
 
             if (requireAll) {
@@ -281,5 +281,5 @@ public final class FrameMatcher {
 
         return !nonKeywordProperty || count > 0;
     }
-    
+
 }

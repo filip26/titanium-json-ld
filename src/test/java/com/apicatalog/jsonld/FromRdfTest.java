@@ -29,11 +29,11 @@ import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 import com.apicatalog.jsonld.test.loader.ZipResourceLoader;
 
 class FromRdfTest {
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")
     void testFromRdf(final JsonLdTestCase testCase) {
-        assertTrue(new JsonLdTestRunnerJunit(testCase).execute());            
+        assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
     }
 
     static final Stream<JsonLdTestCase> data() throws JsonLdError {

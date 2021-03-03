@@ -27,15 +27,15 @@ public final class LanguageTag {
 
     /**
      * LANGTAG  ::= [a-zA-Z]+ ('-' [a-zA-Z0-9]+)*
-     * 
+     *
      * @see <a href="https://www.w3.org/TR/n-quads/#sec-grammar">N-Quads Grammar</a>
-     * 
+     *
      * @param languageTag to check
      * @return <code>true</code> if the provided value is well-formed language tag
-     * 
+     *
      */
     public static boolean isWellFormed(final String languageTag) {
-        
+
         if (languageTag == null) {
             throw new IllegalArgumentException();
         }
@@ -49,7 +49,7 @@ public final class LanguageTag {
         if (RdfAlphabet.ASCII_ALPHA.negate().test(chars[0])) {
             return false;
         }
-        
+
         if (chars.length == 1) {
             return true;
         }

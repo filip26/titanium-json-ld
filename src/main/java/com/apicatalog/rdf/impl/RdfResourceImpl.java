@@ -23,7 +23,7 @@ final class RdfResourceImpl implements RdfResource {
 
     private final String value;
     private final boolean blankNode;
-    
+
     protected RdfResourceImpl(final String value, boolean isBlankNode) {
         this.value = value;
         this.blankNode = isBlankNode;
@@ -33,12 +33,12 @@ final class RdfResourceImpl implements RdfResource {
     public boolean isBlankNode() {
         return blankNode;
     }
-    
+
     @Override
     public boolean isIRI() {
         return !blankNode;
     }
-    
+
     @Override
     public String getValue() {
         return value;
@@ -63,7 +63,7 @@ final class RdfResourceImpl implements RdfResource {
         RdfResourceImpl other = (RdfResourceImpl) obj;
         return Objects.equals(value, other.value);
     }
-    
+
     @Override
     public String toString() {
         return Objects.toString(value);

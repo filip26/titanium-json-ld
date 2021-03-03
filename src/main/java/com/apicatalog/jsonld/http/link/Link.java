@@ -24,7 +24,7 @@ import java.util.Set;
 import com.apicatalog.jsonld.http.media.MediaType;
 
 /**
- * 
+ *
  * @see <a href="https://tools.ietf.org/html/rfc8288">Web Linking</a>
  *
  */
@@ -35,11 +35,11 @@ public final class Link {
     private final URI targetUri;
 
     private final Set<String> relations;
-    
+
     private final MediaType type;
-        
+
     private final LinkAttributes attributes;
-    
+
     protected Link(URI contextUri, URI targetUri, Set<String> relations, final MediaType type, final LinkAttributes attributes) {
         this.contextUri = contextUri;
         this.targetUri = targetUri;
@@ -51,15 +51,15 @@ public final class Link {
     public static final Collection<Link> of(final String linkHeader) {
         return of(linkHeader, null);
     }
-    
+
     public static final Collection<Link> of(final String linkHeader, final URI baseUri) {
         if (linkHeader == null) {
             throw new IllegalArgumentException("Link header value cannot be null.");
         }
-        
+
         return new LinkHeaderParser(baseUri).parse(linkHeader);
     }
-    
+
     public URI target() {
         return targetUri;
     }
@@ -75,7 +75,7 @@ public final class Link {
     public Optional<MediaType> type() {
         return Optional.ofNullable(type);
     }
-    
+
     public LinkAttributes attributes() {
         return attributes;
     }

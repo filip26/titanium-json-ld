@@ -31,7 +31,7 @@ public class MockLoader implements DocumentLoader {
 
     private final JsonStructure structure;
     private final RdfDataset dataset;
-    
+
     public MockLoader(final JsonStructure response) {
         this.structure = response;
         this.dataset = null;
@@ -41,27 +41,27 @@ public class MockLoader implements DocumentLoader {
         this.structure = null;
         this.dataset = dataset;
     }
-    
+
     @Override
     public Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
 
         if (structure != null) {
             final Document remoteDocument = JsonDocument.of(structure);
             remoteDocument.setDocumentUrl(url);
-            
+
             return remoteDocument;
         }
 
         if (dataset != null) {
             final Document remoteDocument = RdfDocument.of(dataset);
             remoteDocument.setDocumentUrl(url);
-            
-            return remoteDocument;            
+
+            return remoteDocument;
         }
-        
+
         throw new IllegalStateException();
     }
-    
-    
-    
+
+
+
 }

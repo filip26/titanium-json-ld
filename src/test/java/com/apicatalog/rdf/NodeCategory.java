@@ -24,10 +24,10 @@ final class NodeCategory {
     private int objectOccurence;
     private int subjectOccurence;
     private int graphOccurence;
-    
+
     private final Set<String> objects;
     private final Set<String> subjects;
-    
+
     public NodeCategory() {
         this.objectOccurence = 0;
         this.subjectOccurence = 0;
@@ -35,23 +35,23 @@ final class NodeCategory {
         this.objects = new HashSet<>();
         this.subjects = new HashSet<>();
     }
-        
+
     public void addObject(String subject) {
         this.objectOccurence++;
-        
+
         if (subject != null) {
             this.subjects.add(subject);
         }
     }
-    
+
     public void addSubject(String object) {
         this.subjectOccurence++;
-        
+
         if (object != null) {
             this.objects.add(object);
         }
     }
-    
+
     public void addGraph() {
         this.graphOccurence++;
     }
@@ -73,12 +73,12 @@ final class NodeCategory {
             return false;
         }
         NodeCategory other = (NodeCategory) obj;
-        return objectOccurence == other.objectOccurence 
+        return objectOccurence == other.objectOccurence
                 && subjectOccurence == other.subjectOccurence
                 && graphOccurence == other.graphOccurence
                 && subjects.equals(other.subjects)
                 && objects.equals(other.objects)
                 ;
-    }      
+    }
 }
 

@@ -40,19 +40,19 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import jakarta.json.JsonArray;
 
 public class EarlGenerator {
-    
+
     public static final String FILE_NAME = "java-jsonp-ld-earl.ttl";
     public static final String VERSION = "0.7";
     public static final String RELEASE_DATE = "2020-06-17";
-    
+
     public static void main(String[] args) throws JsonLdError, IOException {
         (new EarlGenerator()).generate(Paths.get(FILE_NAME));
     }
 
     public void generate(final Path path) throws JsonLdError, IOException {
-        
+
         try (PrintWriter writer = new PrintWriter(path.toFile())) {
-            
+
             printHeader(writer);
             testCompact(writer);
             testExpand(writer);
@@ -63,16 +63,16 @@ public class EarlGenerator {
             testFrame(writer);
         }
     }
-    
+
     public void testExpand(PrintWriter writer) throws JsonLdError {
 
         JsonLdManifestLoader
             .load(JsonLdManifestLoader.JSON_LD_API_BASE, "expand-manifest.jsonld", new ZipResourceLoader())
             .stream()
-            .forEach(testCase ->                
-                        printResult(writer, testCase.uri,           
+            .forEach(testCase ->
+                        printResult(writer, testCase.uri,
                                 (new JsonLdTestRunnerEarl(testCase)).execute(options ->
-                                
+
                                     JsonDocument.of(JsonLd.expand(testCase.input).options(options).get())
                                 )
                          )
@@ -84,12 +84,12 @@ public class EarlGenerator {
         JsonLdManifestLoader
             .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld", new ZipResourceLoader())
             .stream()
-            .forEach(testCase ->                
-                        printResult(writer, testCase.uri,           
+            .forEach(testCase ->
+                        printResult(writer, testCase.uri,
                              new JsonLdTestRunnerEarl(testCase).execute(options ->
-                            
+
                                     JsonDocument.of(JsonLd.compact(
-                                                        testCase.input, 
+                                                        testCase.input,
                                                         testCase.context
                                                         )
                                                     .options(options)
@@ -104,12 +104,12 @@ public class EarlGenerator {
         JsonLdManifestLoader
             .load(JsonLdManifestLoader.JSON_LD_API_BASE, "flatten-manifest.jsonld", new ZipResourceLoader())
             .stream()
-            .forEach(testCase ->                
-                        printResult(writer, testCase.uri,           
-                             new JsonLdTestRunnerEarl(testCase).execute(options -> 
-                                                 
+            .forEach(testCase ->
+                        printResult(writer, testCase.uri,
+                             new JsonLdTestRunnerEarl(testCase).execute(options ->
+
                                  JsonDocument.of(JsonLd
-                                             .flatten(testCase.input) 
+                                             .flatten(testCase.input)
                                              .context(testCase.context)
                                              .options(options)
                                              .get())
@@ -119,12 +119,12 @@ public class EarlGenerator {
     }
 
     public void testToRdf(final PrintWriter writer) throws JsonLdError {
-        
+
         JsonLdManifestLoader
         .load(JsonLdManifestLoader.JSON_LD_API_BASE, "toRdf-manifest.jsonld", new ZipResourceLoader())
         .stream()
-        .forEach(testCase ->                
-                printResult(writer, testCase.uri,           
+        .forEach(testCase ->
+                printResult(writer, testCase.uri,
                         (new JsonLdTestRunnerEarl(testCase)).execute(options ->
 
                             RdfDocument.of(JsonLd.toRdf(testCase.input).options(options).get())
@@ -139,8 +139,8 @@ public class EarlGenerator {
         JsonLdManifestLoader
             .load(JsonLdManifestLoader.JSON_LD_API_BASE, "fromRdf-manifest.jsonld", new ZipResourceLoader())
             .stream()
-            .forEach(testCase ->                
-                    printResult(writer, testCase.uri,           
+            .forEach(testCase ->
+                    printResult(writer, testCase.uri,
                             (new JsonLdTestRunnerEarl(testCase)).execute(options ->
 
                                 JsonDocument.of(JsonLd.fromRdf(testCase.input).options(options).get())
@@ -155,67 +155,67 @@ public class EarlGenerator {
         JsonLdManifestLoader
             .load(JsonLdManifestLoader.JSON_LD_FRAMING_BASE, "frame-manifest.jsonld", new ZipResourceLoader())
             .stream()
-            .forEach(testCase ->                
-                        printResult(writer, testCase.uri,           
+            .forEach(testCase ->
+                        printResult(writer, testCase.uri,
                                 (new JsonLdTestRunnerEarl(testCase)).execute(options ->
-                                
+
                                     JsonDocument.of(JsonLd.frame(testCase.input, testCase.frame).options(options).get())
                                 )
                          )
                     );
     }
 
-    
+
     public void testRemote(PrintWriter writer) throws JsonLdError {
 
         JsonLdManifestLoader
             .load(JsonLdManifestLoader.JSON_LD_API_BASE, "remote-doc-manifest.jsonld", new ZipResourceLoader())
             .stream()
             .forEach(testCase -> {
-                
+
                 boolean result = false;
-                
+
                 try {
                     WireMockServer wireMockServer = new WireMockServer();
                     wireMockServer.start();
 
                     JsonLdMockServer server = new JsonLdMockServer(testCase, JsonLdTestCase.TESTS_BASE, JsonLdManifestLoader.JSON_LD_API_BASE, new ZipResourceLoader());
                     server.start();
-                    
-                    
+
+
                     result = (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
-    
-                            
+
+
                             JsonLdOptions expandOptions = new JsonLdOptions(options);
-                            
+
                             expandOptions.setDocumentLoader(
                                                 new UriBaseRewriter(
-                                                            JsonLdTestCase.TESTS_BASE, 
-                                                            wireMockServer.baseUrl(), 
+                                                            JsonLdTestCase.TESTS_BASE,
+                                                            wireMockServer.baseUrl(),
                                                             SchemeRouter.defaultInstance()));
-                            
+
                             JsonArray r = JsonLd.expand(testCase.input).options(expandOptions).get();
-                            
+
                             return JsonDocument.of(r);
                     });
-                    
+
                     server.stop();
                     wireMockServer.stop();
-                    
+
                 } catch (JsonLdError e) {
                     result = false;
                 }
-                
+
                 printResult(writer, testCase.uri, result);
             });
     }
 
     void printResult(PrintWriter writer, String testUri, boolean passed) {
-        
+
         if (!passed) {
             System.out.println("Failed: " + testUri);
         }
-        
+
         writer.println();
         writer.println("[ a earl:Assertion;");
         writer.println("  earl:assertedBy <https://github.com/filip26>;");
@@ -229,9 +229,9 @@ public class EarlGenerator {
         writer.println("  earl:mode earl:automatic;");
         writer.println("] .");
     }
-    
+
     void printHeader(PrintWriter writer) {
-        
+
         writer.println("@prefix dc: <http://purl.org/dc/terms/> .");
         writer.println("@prefix doap: <http://usefulinc.com/ns/doap#> .");
         writer.println("@prefix foaf: <http://xmlns.com/foaf/0.1/> .");
@@ -263,5 +263,5 @@ public class EarlGenerator {
         writer.println("<https://github.com/filip26> a earl:Assertor, foaf:Person;");
         writer.println("  foaf:name \"Filip Kolarik\";");
         writer.println("  foaf:homepage <https://github.com/filip26>.");
-    }    
+    }
 }

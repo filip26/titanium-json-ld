@@ -30,7 +30,7 @@ public final class FromRdfProcessor {
 
     private FromRdfProcessor() {
     }
-    
+
     public static final JsonArray fromRdf(final Document document, final JsonLdOptions options) throws JsonLdError {
 
         return RdfToJsonld
@@ -49,7 +49,7 @@ public final class FromRdfProcessor {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + documentUri + "].");
         }
 
-        final Document remoteDocument = 
+        final Document remoteDocument =
                                 options
                                     .getDocumentLoader()
                                     .loadDocument(documentUri,
@@ -59,7 +59,7 @@ public final class FromRdfProcessor {
         if (remoteDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
-        
+
         return fromRdf(remoteDocument, options);
     }
 }

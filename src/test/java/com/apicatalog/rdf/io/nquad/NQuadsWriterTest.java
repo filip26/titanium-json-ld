@@ -61,36 +61,36 @@ class NQuadsWriterTest {
         assertNotNull(testCase);
         assertNotNull(testCase.getInput());
         assertNotNull(testCase.getExpected());
-        
+
         String result = null;
-        
+
         try (final InputStream is = getClass().getResourceAsStream(testCase.getInput())) {
 
             assertNotNull(is);
 
             JsonParser parser = Json.createParser(is);
             parser.next();
-            
+
             JsonArray input = parser.getArray();
             assertNotNull(input);
-            
+
             final RdfDataset dataset = Rdf.createDataset();
-            
+
             for (final JsonValue statement : input) {
-                dataset.add(createStatement(statement.asJsonObject()));    
+                dataset.add(createStatement(statement.asJsonObject()));
             }
-            
+
             final ByteArrayOutputStream os = new ByteArrayOutputStream();
-            
+
             Rdf.createWriter(MediaType.N_QUADS, os).write(dataset);
-            
+
             result = StringUtils.stripTrailing(os.toString());
         }
-        
+
         try (final BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(testCase.getExpected())))) {
-            
+
             String expected = StringUtils.stripTrailing(reader.lines().collect(Collectors.joining("\n")));
-            
+
             if (!Objects.equal(expected, result)) {
                 System.out.println("Expected: ");
                 System.out.println(expected);
@@ -98,7 +98,7 @@ class NQuadsWriterTest {
                 System.out.println("Result: ");
                 System.out.println(result);
             }
-            
+
             assertEquals(expected, result);
         }
     }
@@ -106,35 +106,35 @@ class NQuadsWriterTest {
     static final Stream<NQuadsWriterTestCase> data() throws IOException, URISyntaxException {
         return NQuadsWriterTestSuite.load();
     }
-    
+
     private static final RdfNQuad createStatement(final JsonObject value) {
-        
+
         RdfResource subject = Rdf.createResource(value.getString("subject"));
 
         RdfResource predicate = Rdf.createResource(value.getString("predicate"));
 
         RdfValue object = createObject(value.get("object"));
-            
+
         RdfResource graph = null;
-        
+
         if (value.containsKey("graph")) {
             graph = Rdf.createResource(value.getString("graph"));
         }
-        
+
         return Rdf.createNQuad(subject, predicate, object, graph);
-    }   
-    
+    }
+
     private static final RdfValue createObject(final JsonValue value) {
-        
+
         if (JsonUtils.isString(value)) {
 
             final String stringValue = ((JsonString)value).getString();
-            
+
             return Rdf.createValue(stringValue);
         }
-        
+
         JsonObject object = value.asJsonObject();
-        
+
         if (object.containsKey(Keywords.TYPE)) {
             return Rdf.createTypedString(object.getString(Keywords.VALUE), object.getString(Keywords.TYPE));
         }

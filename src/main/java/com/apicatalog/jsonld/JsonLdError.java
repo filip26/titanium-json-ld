@@ -17,10 +17,10 @@ package com.apicatalog.jsonld;
 
 /**
  * The {@link JsonLdError} type is used to report processing errors.
- * 
+ *
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#jsonlderror">JsonLdError
  *      Specification</a>
- * 
+ *
  */
 public final class JsonLdError extends Exception {
 

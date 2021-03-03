@@ -40,7 +40,7 @@ class FromRdfApiNegativeTest {
         final Document document = JsonDocument.of(JsonValue.EMPTY_JSON_ARRAY);
         assertThrows(IllegalArgumentException.class, () -> JsonLd.fromRdf(document));
     }
-    
+
     @Test
     void test3() {
         assertThrows(IllegalArgumentException.class, () -> JsonLd.fromRdf((RdfDocument)null));

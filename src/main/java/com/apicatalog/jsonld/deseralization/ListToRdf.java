@@ -32,7 +32,7 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonValue;
 
 /**
- * 
+ *
  * @see <a href="https://w3c.github.io/json-ld-api/#list-to-rdf-conversion">List to RDF Conversion</a>
  *
  */
@@ -42,27 +42,27 @@ final class ListToRdf {
     private JsonArray list;
     private List<RdfTriple> triples;
     private NodeMap nodeMap;
-    
+
     // optional
     private RdfDirection rdfDirection;
-    
+
     private ListToRdf(final JsonArray list, final List<RdfTriple> triples, NodeMap nodeMap) {
         this.list = list;
         this.triples = triples;
         this.nodeMap = nodeMap;
     }
-    
+
     public static final ListToRdf with(final JsonArray list, final List<RdfTriple> triples, NodeMap nodeMap) {
         return new ListToRdf(list, triples, nodeMap);
     }
-    
+
     public ListToRdf rdfDirection(RdfDirection rdfDirection) {
         this.rdfDirection = rdfDirection;
         return this;
     }
-    
+
     public RdfValue build() throws JsonLdError {
-        
+
         // 1.
         if (JsonUtils.isEmptyArray(list)) {
             return Rdf.createIRI(RdfConstants.NIL);
@@ -76,39 +76,39 @@ final class ListToRdf {
         // 3.
         int index = 0;
         for (final JsonValue item : list) {
-            
+
             final String subject = bnodes[index];
             index++;
-            
+
             // 3.1.
             final List<RdfTriple> embeddedTriples = new ArrayList<>();
-            
+
             // 3.2.
             ObjectToRdf
                 .with(item.asJsonObject(), embeddedTriples, nodeMap)
                 .rdfDirection(rdfDirection)
                 .build()
-                .ifPresent(object -> 
+                .ifPresent(object ->
                                 triples.add(Rdf.createTriple(
-                                                Rdf.createBlankNode(subject), 
-                                                Rdf.createIRI(RdfConstants.FIRST), 
+                                                Rdf.createBlankNode(subject),
+                                                Rdf.createIRI(RdfConstants.FIRST),
                                                 object)));
 
             // 3.4.
-            final RdfValue rest = (index < bnodes.length) ? Rdf.createBlankNode(bnodes[index]) 
+            final RdfValue rest = (index < bnodes.length) ? Rdf.createBlankNode(bnodes[index])
                                         : Rdf.createIRI(RdfConstants.NIL)
                                         ;
-            
+
             triples.add(Rdf.createTriple(
-                                    Rdf.createBlankNode(subject), 
-                                    Rdf.createIRI(RdfConstants.REST), 
+                                    Rdf.createBlankNode(subject),
+                                    Rdf.createIRI(RdfConstants.REST),
                                     rest
                                     ));
-            
+
             // 3.5.
             triples.addAll(embeddedTriples);
         }
-        
+
         // 4.
         return Rdf.createBlankNode(bnodes[0]);
     }

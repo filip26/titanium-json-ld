@@ -22,11 +22,11 @@ import java.util.Map;
 /**
  * The {@link JsonLdErrorCode} represents the collection of valid JSON-LD error
  * codes.
- * 
+ *
  * @see <a href=
  *      "https://www.w3.org/TR/json-ld11-api/#jsonlderrorcode">JsonLdErrorCode
  *      Specification</a>
- * 
+ *
  */
 public enum JsonLdErrorCode {
 
@@ -253,34 +253,34 @@ public enum JsonLdErrorCode {
     /**
      * An attempt was made to redefine a protected term.
      */
-    PROTECTED_TERM_REDEFINITION, 
+    PROTECTED_TERM_REDEFINITION,
 
-    
+
     // Framing Error Codes https://www.w3.org/TR/json-ld11-framing/#error-handling
-    
+
     /**
      * The frame is invalid.
-     * 
+     *
      * @see <a href="https://www.w3.org/TR/json-ld11-framing/#dom-jsonldframingerrorcode-invalid-frame">invalid frame</a>
      */
     INVALID_FRAME,
-    
+
     /**
      * The value for <code>@embed</code> is not one recognized for the object embed flag.
-     * 
+     *
      * @see <a href="https://www.w3.org/TR/json-ld11-framing/#dom-jsonldframingerrorcode-invalid-@embed-value">invalid @embed value</a>
      */
     INVALID_KEYWORD_EMBED_VALUE,
 
     // Custom
     UNSPECIFIED;
-    
+
     private static final Map<JsonLdErrorCode, String> CODE_TO_MESSAGE;
-    
+
     static {
-        
+
         final Map<JsonLdErrorCode, String> messages = new EnumMap<>(JsonLdErrorCode.class);
-    
+
         messages.put(COLLIDING_KEYWORDS, "Two properties which expand to the same keyword have been detected");
         messages.put(CONFLICTING_INDEXES, "Multiple conflicting indexes have been found for the same node");
         messages.put(CONTEXT_OVERFLOW, "Maximum number of @context URLs exceeded");
@@ -335,7 +335,7 @@ public enum JsonLdErrorCode {
 
         CODE_TO_MESSAGE = Collections.unmodifiableMap(messages);
     }
-    
+
     public String toMessage() {
         return CODE_TO_MESSAGE.getOrDefault(this, "Processing error") + " [code=" + this + "].";
     }

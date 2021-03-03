@@ -36,9 +36,9 @@ class DocumentParserTest {
 
     @Test
     void test1() throws JsonLdError {
-        
+
         Document document = DocumentParser.parse(MediaType.N_QUADS, new ByteArrayInputStream("_:b0 <https://example.org> _:b2 . ".getBytes()));
-        
+
         assertNotNull(document);
         assertTrue(MediaType.N_QUADS.match(document.getContentType()));
         assertFalse(document.getJsonContent().isPresent());
@@ -47,20 +47,20 @@ class DocumentParserTest {
 
     @Test
     void test2() throws JsonLdError {
-        
+
         Document document = DocumentParser.parse(MediaType.JSON_LD, new ByteArrayInputStream(Json.createObjectBuilder().add("x", 10).build().toString().getBytes()));
-        
+
         assertNotNull(document);
         assertTrue(MediaType.JSON_LD.match(document.getContentType()));
         assertTrue(document.getJsonContent().isPresent());
         assertFalse(document.getRdfContent().isPresent());
     }
-    
+
     @Test
     void test3() throws JsonLdError {
-        
+
         Document document = DocumentParser.parse(MediaType.N_QUADS, new InputStreamReader(new ByteArrayInputStream("_:b0 <https://example.org> _:b2 . ".getBytes())));
-        
+
         assertNotNull(document);
         assertTrue(MediaType.N_QUADS.match(document.getContentType()));
         assertFalse(document.getJsonContent().isPresent());
@@ -69,9 +69,9 @@ class DocumentParserTest {
 
     @Test
     void test4() throws JsonLdError {
-        
+
         Document document = DocumentParser.parse(MediaType.JSON_LD, new InputStreamReader(new ByteArrayInputStream(Json.createObjectBuilder().add("x", 10).build().toString().getBytes())));
-        
+
         assertNotNull(document);
         assertTrue(MediaType.JSON_LD.match(document.getContentType()));
         assertTrue(document.getJsonContent().isPresent());
@@ -87,7 +87,7 @@ class DocumentParserTest {
     void testI2() throws JsonLdError {
         assertThrows(IllegalArgumentException.class, () -> DocumentParser.parse(null, (Reader)null));
     }
-    
+
     @Test
     void testI3() throws JsonLdError {
         assertThrows(IllegalArgumentException.class, () -> DocumentParser.parse(MediaType.JSON, (InputStream)null));
@@ -97,7 +97,7 @@ class DocumentParserTest {
     void testI4() throws JsonLdError {
         assertThrows(IllegalArgumentException.class, () -> DocumentParser.parse(MediaType.N_QUADS, (Reader)null));
     }
-    
+
     @Test
     void testI5() throws JsonLdError {
         final InputStream inputStream = new ByteArrayInputStream("{}".getBytes());

@@ -52,18 +52,18 @@ class RemoteContextTest {
 
         final Document document = readDocument("/com/apicatalog/jsonld/test/issue61-in.json");
         final Document context = readDocument("/com/apicatalog/jsonld/test/issue61-context.json");
-        
+
         final RdfDataset result = JsonLd.toRdf(document).context(context).get();
-        
+
         assertNotNull(result);
 
         try (final InputStream is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue61-out.nq")) {
-            
+
             assertNotNull(is);
 
             boolean match = RdfComparison.equals(result, RdfDocument.of(is).getRdfContent().orElse(null));
-            
-            assertTrue(match);            
+
+            assertTrue(match);
         }
     }
 
@@ -77,21 +77,21 @@ class RemoteContextTest {
 
         final Document document = readDocument("/com/apicatalog/jsonld/test/issue61-in.json");
         final Document context = readDocument("/com/apicatalog/jsonld/test/issue61-context.json");
-        
+
         final JsonLdOptions options = new JsonLdOptions();
         options.setExpandContext(context);
-        
+
         final RdfDataset result = JsonLd.toRdf(document).options(options).get();
-        
+
         assertNotNull(result);
 
         try (final InputStream is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue61-out.nq")) {
-            
+
             assertNotNull(is);
 
             boolean match = RdfComparison.equals(result, RdfDocument.of(is).getRdfContent().orElse(null));
-                        
-            assertTrue(match);            
+
+            assertTrue(match);
         }
     }
 
@@ -104,21 +104,21 @@ class RemoteContextTest {
     void testRemoteContext() throws JsonLdError, IOException {
 
         final Document document = readDocument("/com/apicatalog/jsonld/test/issue63-in.json");
-        
+
         final RdfDataset result = JsonLd.toRdf(document).loader(new ClasspathLoader()).get();
-        
+
         assertNotNull(result);
 
         try (final InputStream is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue63-out.nq")) {
-            
+
             assertNotNull(is);
 
             boolean match = RdfComparison.equals(result, RdfDocument.of(is).getRdfContent().orElse(null));
-                        
-            assertTrue(match);            
+
+            assertTrue(match);
         }
     }
-    
+
     /**
      * @see <a href="https://github.com/filip26/titanium-json-ld/issues/62">Issue #62</a>
      *
@@ -128,33 +128,33 @@ class RemoteContextTest {
     @Test
     @Disabled("Run manually")
     void testPerformance() throws JsonLdError, IOException {
-        
+
         final Document document = readDocument("/com/apicatalog/jsonld/test/issue62-in.json");
         assertNotNull(document);
-        
+
         final Document expected = readDocument("/com/apicatalog/jsonld/test/issue62-out.json");
         assertNotNull(expected);
-        
+
         assertTimeout(ofMinutes(1), () -> {
-        
+
             long start = System.nanoTime();
-            
+
             final JsonArray result = JsonLd.expand(document).get();
-            
+
             System.out.println("Time elapsed: " + Duration.ofNanos(System.nanoTime() - start));
-            
+
             assertNotNull(result);
-           
+
             boolean match = JsonLdComparison.equals(result, expected.getJsonContent().orElse(null));
-                            
-            assertTrue(match);            
+
+            assertTrue(match);
         });
-            
+
     }
-    
+
     private final Document readDocument(final String name) throws JsonLdError, IOException {
         try (final InputStream is = getClass().getResourceAsStream(name)) {
             return JsonDocument.of(is);
         }
-    }    
+    }
 }

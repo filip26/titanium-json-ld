@@ -23,5 +23,5 @@ import com.apicatalog.jsonld.document.Document;
 public interface JsonLdTestCaseMethod {
 
     Document invoke(JsonLdOptions options) throws JsonLdError;
-    
+
 }

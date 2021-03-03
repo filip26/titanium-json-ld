@@ -33,34 +33,34 @@ public final class Flattening {
 
     // required
     private JsonStructure element;
-    
+
     // optional
     private boolean ordered;
-    
+
     private Flattening(final JsonStructure element) {
         this.element = element;
-        
+
         // default values
         this.ordered = false;
     }
-    
+
     public static final Flattening with(final JsonStructure element) {
         return new Flattening(element);
     }
-    
+
     public Flattening ordered(boolean ordered) {
         this.ordered = ordered;
         return this;
     }
-    
+
     public JsonArray flatten() throws JsonLdError {
-        
+
         // 1.
         NodeMap nodeMap = new NodeMap();
-        
+
         // 2.
         NodeMapBuilder.with(element, nodeMap).build();
-        
+
         // 3.
         final Map<String, Map<String, JsonValue>> defaultGraph = nodeMap.get(Keywords.DEFAULT).orElseThrow(IllegalStateException::new);
 
@@ -70,23 +70,23 @@ public final class Flattening {
             if (Keywords.DEFAULT.equals(graphName)) {
                 continue;
             }
-            
+
             final Map<String, Map<String, JsonValue>> graph = nodeMap.get(graphName).orElseThrow(IllegalStateException::new);
-            
+
             // 4.1.
             if (!defaultGraph.containsKey(graphName)) {
                 defaultGraph.put(graphName, Json.createObjectBuilder().add(Keywords.ID, graphName).build());
             }
-            
+
             // 4.2.
             final Map<String, JsonValue> entry = new LinkedHashMap<>(defaultGraph.get(graphName));
-            
+
             // 4.3.
             final JsonArrayBuilder graphArray =  Json.createArrayBuilder();
-            
+
             // 4.4.
             for (final String id : Utils.index(graph.keySet(), ordered)) {
-                
+
                 final Map<String, JsonValue> node = graph.get(id);
 
                 if (node == null || node.size() == 1 && node.containsKey(Keywords.ID)) {
@@ -97,27 +97,27 @@ public final class Flattening {
             }
 
             entry.put(Keywords.GRAPH, graphArray.build());
- 
+
             defaultGraph.put(graphName, entry);
         }
-        
+
         // 5.
         final JsonArrayBuilder flattened = Json.createArrayBuilder();
-        
+
         // 6.
         for (String id : Utils.index(defaultGraph.keySet(), ordered)) {
-            
+
             final Map<String, JsonValue> node = defaultGraph.get(id);
-  
+
             if (node == null || node.size() == 1 && node.containsKey(Keywords.ID)) {
                 continue;
             }
-            
+
             flattened.add(JsonUtils.toJsonObject(node));
         }
-        
+
         // 7.
         return flattened.build();
     }
-    
+
 }

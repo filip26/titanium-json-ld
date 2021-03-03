@@ -38,13 +38,13 @@ class ExpansionApiNegativeTest {
     void test2() {
         assertThrows(IllegalArgumentException.class, () -> JsonLd.expand((String)null));
     }
-    
+
     @Test
     void test3() {
         assertThrows(IllegalArgumentException.class, () -> JsonLd.expand((URI)null));
     }
-    
-    @Test    
+
+    @Test
     void test4() {
         assertThrows(IllegalArgumentException.class, () -> JsonLd.expand(""));
     }
@@ -53,12 +53,12 @@ class ExpansionApiNegativeTest {
     void test5() {
         assertThrows(IllegalArgumentException.class, () -> JsonLd.expand("   "));
     }
-    
+
     @Test
     void test6() {
         assertThrows(IllegalArgumentException.class, () -> JsonLd.expand("/relative"));
     }
-    
+
     @Test
     void test7() {
         final URI uri = URI.create("relative");

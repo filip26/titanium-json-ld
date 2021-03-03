@@ -34,7 +34,7 @@ import jakarta.json.JsonObject;
 /**
  * A context that is used to resolve terms while the processing algorithm is
  * running.
- * 
+ *
  */
 public final class ActiveContext {
 
@@ -63,7 +63,7 @@ public final class ActiveContext {
     private DirectionType defaultBaseDirection;
 
     private final JsonLdOptions options;
-    
+
     public ActiveContext(final JsonLdOptions options) {
         this(null, null, null, options);
     }
@@ -96,7 +96,7 @@ public final class ActiveContext {
     public void createInverseContext() {
         this.inverseContext = InverseContextBuilder.with(this).build();
    }
-   
+
     public boolean containsTerm(final String term) {
         return terms.containsKey(term);
     }
@@ -139,11 +139,11 @@ public final class ActiveContext {
     public ActiveContext getPreviousContext() {
         return previousContext;
     }
-    
+
     public URI getBaseUrl() {
         return baseUrl;
     }
-    
+
     public void setBaseUri(final URI baseUri) {
         this.baseUri = baseUri;
     }
@@ -151,15 +151,15 @@ public final class ActiveContext {
     public InverseContext getInverseContext() {
         return inverseContext;
     }
-        
+
     public Map<String, TermDefinition> getTermsMapping() {
         return terms;
     }
-    
+
     public Collection<String> getTerms() {
         return terms.keySet();
     }
-    
+
     public ActiveContextBuilder newContext() {
         return ActiveContextBuilder.with(this);
     }
@@ -191,31 +191,31 @@ public final class ActiveContext {
     public JsonLdOptions getOptions() {
         return options;
     }
-    
+
     protected void setDefaultBaseDirection(final DirectionType defaultBaseDirection) {
         this.defaultBaseDirection = defaultBaseDirection;
     }
-    
+
     protected void setDefaultLanguage(final String defaultLanguage) {
         this.defaultLanguage = defaultLanguage;
     }
-    
+
     protected void setVocabularyMapping(final String vocabularyMapping) {
         this.vocabularyMapping = vocabularyMapping;
     }
-    
+
     protected void setBaseUrl(final URI baseUrl) {
         this.baseUrl = baseUrl;
     }
-    
+
     protected void setPreviousContext(final ActiveContext previousContext) {
         this.previousContext = previousContext;
     }
-    
+
     protected void setInverseContext(final InverseContext inverseContext) {
         this.inverseContext = inverseContext;
     }
-    
+
     protected void setTerm(final String term, final TermDefinition definition) {
         terms.put(term, definition);
     }
