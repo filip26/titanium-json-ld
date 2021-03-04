@@ -21,7 +21,7 @@ public class DefaultHttpClient implements HttpClient {
             .followSslRedirects(false)
             .build();
 
-    static final DefaultHttpClient INSTANCE = new DefaultHttpClient(CLIENT);
+    private static final DefaultHttpClient INSTANCE = new DefaultHttpClient(CLIENT);
 
     private OkHttpClient okHttpClient;
 

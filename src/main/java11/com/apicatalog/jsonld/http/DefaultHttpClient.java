@@ -31,7 +31,7 @@ public final class DefaultHttpClient implements HttpClient {
 
     private static final java.net.http.HttpClient CLIENT = java.net.http.HttpClient.newBuilder().followRedirects(Redirect.NEVER).build();
 
-    static final DefaultHttpClient INSTANCE = new DefaultHttpClient(CLIENT);
+    private static final DefaultHttpClient INSTANCE = new DefaultHttpClient(CLIENT);
 
     private final java.net.http.HttpClient httpClient;
 
@@ -39,7 +39,7 @@ public final class DefaultHttpClient implements HttpClient {
         this.httpClient = httpClient;
     }
 
-    public com.apicatalog.jsonld.http.HttpResponse send(URI targetUri, String requestProfile) throws JsonLdError {
+    public HttpResponse send(URI targetUri, String requestProfile) throws JsonLdError {
 
         HttpRequest request =
                 HttpRequest.newBuilder()
@@ -62,11 +62,11 @@ public final class DefaultHttpClient implements HttpClient {
         }
     }
 
-    public static final com.apicatalog.jsonld.http.HttpClient defaultInstance() {
+    public static final HttpClient defaultInstance() {
         return INSTANCE;
     }
 
-    public static class HttpResponseImpl implements com.apicatalog.jsonld.http.HttpResponse {
+    public static class HttpResponseImpl implements HttpResponse {
 
         private final java.net.http.HttpResponse<InputStream> response;
 
