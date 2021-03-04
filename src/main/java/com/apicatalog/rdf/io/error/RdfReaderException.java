@@ -22,7 +22,7 @@ public class RdfReaderException extends Exception {
     public RdfReaderException(String message) {
         super(message);
     }
-    
+
     public RdfReaderException(Throwable cause) {
         super(cause);
     }

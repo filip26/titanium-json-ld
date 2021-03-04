@@ -21,7 +21,7 @@ import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.io.error.RdfReaderException;
 
 public interface RdfReader {
-    
+
     RdfDataset readDataset() throws IOException, RdfReaderException;
-    
+
 }

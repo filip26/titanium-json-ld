@@ -26,7 +26,7 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
 final class RefJsonObject extends AbstractMap<String, JsonValue> implements JsonObject {
-    
+
     private JsonObject jsonObject;
 
     RefJsonObject(JsonObject jsonObject) {
@@ -72,7 +72,7 @@ final class RefJsonObject extends AbstractMap<String, JsonValue> implements Json
     public int getInt(String name, int defaultValue) {
         return jsonObject.getInt(name, defaultValue);
     }
-    
+
     @Override
     public boolean getBoolean(String name) {
         return jsonObject.getBoolean(name);
@@ -127,7 +127,7 @@ final class RefJsonObject extends AbstractMap<String, JsonValue> implements Json
     public int hashCode() {
         return jsonObject.hashCode();
     }
-    
+
     @Override
     public boolean equals(Object o) {
         return jsonObject.equals(o);
@@ -136,19 +136,19 @@ final class RefJsonObject extends AbstractMap<String, JsonValue> implements Json
     @Override
     public JsonValue put(String key, JsonValue value) {
         JsonValue previous = jsonObject.get(key);
-        
+
         jsonObject = Json.createObjectBuilder(jsonObject).add(key, value).build();
-                
+
         return previous;
     }
-    
+
     @Override
     public JsonValue remove(Object key) {
 
         JsonValue previous = jsonObject.get(key);
-        
+
         jsonObject = Json.createObjectBuilder(jsonObject).remove(key.toString()).build();
-                
+
         return previous;
     }
 }

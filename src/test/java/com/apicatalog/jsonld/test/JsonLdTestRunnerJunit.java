@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Map;
+import java.util.Collections;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdError;
@@ -51,7 +51,7 @@ import jakarta.json.stream.JsonGenerator;
 public class JsonLdTestRunnerJunit {
 
     private final JsonLdTestCase testCase;
-    
+
     public JsonLdTestRunnerJunit(JsonLdTestCase testCase) {
         this.testCase = testCase;
     }
@@ -61,11 +61,11 @@ public class JsonLdTestRunnerJunit {
         if (testCase.type.contains(Type.COMPACT_TEST)) {
             return execute(options -> JsonDocument.of(JsonLd.compact(testCase.input, testCase.context).options(options).get()));
         }
-        
+
         if (testCase.type.contains(Type.EXPAND_TEST)) {
             return execute(options -> JsonDocument.of(JsonLd.expand(testCase.input).options(options).get()));
         }
-        
+
         if (testCase.type.contains(Type.FLATTEN_TEST)) {
             return execute(options -> JsonDocument.of(JsonLd.flatten(testCase.input).context(testCase.context).options(options).get()));
         }
@@ -73,18 +73,18 @@ public class JsonLdTestRunnerJunit {
         if (testCase.type.contains(Type.TO_RDF_TEST)) {
             return execute(options -> RdfDocument.of(JsonLd.toRdf(testCase.input).options(options).get()));
         }
-        
+
         if (testCase.type.contains(Type.FROM_RDF_TEST)) {
             return execute(options -> JsonDocument.of(JsonLd.fromRdf(testCase.input).options(options).get()));
         }
-        
+
         if (testCase.type.contains(Type.FRAME_TEST)) {
             return execute(options -> JsonDocument.of(JsonLd.frame(testCase.input, testCase.frame).options(options).get()));
         }
-        
+
         throw new IllegalStateException();
     }
-    
+
     public boolean execute(final JsonLdTestCaseMethod method) {
 
         assertNotNull(testCase.baseUri);
@@ -94,15 +94,15 @@ public class JsonLdTestRunnerJunit {
 
         assertNotNull(options);
         assertNotNull(options.getDocumentLoader());
-        
+
         Document result = null;
-        
+
         try {
-  
+
             result = method.invoke(options);
-            
+
             assertNotNull(result, "A result is expected but got null");
-        
+
         } catch (JsonLdError e) {
             assertEquals(testCase.expectErrorCode, e.getCode(), e.getMessage());
             return true;
@@ -110,7 +110,7 @@ public class JsonLdTestRunnerJunit {
 
         return validate(testCase, options, result);
     }
-    
+
     private boolean validate(final JsonLdTestCase testCase, final JsonLdOptions options, final Document result) {
 
         assertNull(testCase.expectErrorCode);
@@ -119,31 +119,31 @@ public class JsonLdTestRunnerJunit {
         if (result.getRdfContent().isPresent() && testCase.expect == null && testCase.type.contains(Type.POSITIVE_SYNTAX_TEST)) {
             return true;
         }
-        
+
         assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
-        
+
         try {
             Document expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new DocumentLoaderOptions());
-                        
+
             assertNotNull(expectedDocument);
-    
+
             // compare expected with the result
-            
+
             if (expectedDocument.getJsonContent().isPresent()) {
 
-                assertTrue(result.getJsonContent().isPresent(), "Expected JSON document but was " + result.getContentType());        
+                assertTrue(result.getJsonContent().isPresent(), "Expected JSON document but was " + result.getContentType());
 
                 return compareJson(testCase.id + ": " + testCase.name, result.getJsonContent().get(), expectedDocument.getJsonContent().get());
-                
+
             } else if (expectedDocument.getRdfContent().isPresent()) {
 
-                assertTrue(result.getRdfContent().isPresent(), "Expected RDF document but was " + result.getContentType());        
+                assertTrue(result.getRdfContent().isPresent(), "Expected RDF document but was " + result.getContentType());
 
                 return compareRdf(testCase.id + ": " + testCase.name, result.getRdfContent().get(), expectedDocument.getRdfContent().get());
             }
-            
+
             assertTrue(result.getRdfContent().isPresent(), "Expected " + expectedDocument.getContentType() + " document but was " + result.getContentType());
-            
+
         } catch (JsonLdError e) {
             fail(e.getMessage());
         }
@@ -155,17 +155,17 @@ public class JsonLdTestRunnerJunit {
         if (JsonLdComparison.equals(expected, result)) {
             return true;
         }
-        
+
         final StringWriter stringWriter = new StringWriter();
-        
+
         try (final PrintWriter writer = new PrintWriter(stringWriter)) {
             writer.println("Test " + testName);
             writer.println("Expected:");
-            
-            final JsonWriterFactory writerFactory = Json.createWriterFactory(Map.of(JsonGenerator.PRETTY_PRINTING, true));
-            
+
+            final JsonWriterFactory writerFactory = Json.createWriterFactory(Collections.singletonMap(JsonGenerator.PRETTY_PRINTING, true));
+
             final StringWriter out1 = new StringWriter();
-            
+
             try (final JsonWriter jsonWriter = writerFactory.createWriter(out1)) {
                 jsonWriter.write(expected);
             }
@@ -174,24 +174,24 @@ public class JsonLdTestRunnerJunit {
             writer.println();
             writer.println();
             writer.println("Actual:");
-            
+
             final StringWriter out2 = new StringWriter();
 
             try (final JsonWriter jsonWriter = writerFactory.createWriter(out2)) {
-                jsonWriter.write(result);                
+                jsonWriter.write(result);
             }
 
             writer.write(out2.toString());
             writer.println();
             writer.println();
         }
-        
+
         System.out.println(stringWriter.toString());
 
-        fail("Expected " + expected + ", but was" + result);        
+        fail("Expected " + expected + ", but was" + result);
         return false;
-    }  
-    
+    }
+
     public static final boolean compareRdf(final String testName, final RdfDataset result, final RdfDataset expected) {
 
         try {
@@ -199,35 +199,35 @@ public class JsonLdTestRunnerJunit {
             boolean match = RdfComparison.equals(expected, result);
 
             if (!match) {
-                
+
                 final StringWriter stringWriter = new StringWriter();
-                
+
                 try (final PrintWriter writer = new PrintWriter(stringWriter)) {
                     writer.println("Test " + testName);
                     writer.println("Expected:");
-                    
+
                     Rdf.createWriter(MediaType.N_QUADS, writer).write(expected);
-        
+
                     writer.println();
                     writer.println("Actual:");
-                
+
                     Rdf.createWriter(MediaType.N_QUADS, writer).write(result);
-                    
+
                     writer.println();
-                    
+
                 }
-                
+
                 System.out.print(stringWriter.toString());
             }
 
             assertTrue(match, "The result does not match expected output.");
-            
+
             return match;
-            
+
         } catch (RdfWriterException | UnsupportedContentException | IOException e ) {
             fail(e.getMessage());
         }
         return false;
     }
-    
+
 }

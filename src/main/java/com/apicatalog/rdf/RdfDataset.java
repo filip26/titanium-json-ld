@@ -25,30 +25,30 @@ public interface RdfDataset {
 
     /**
      * Add <code>N-Quad</code> to the dataset.
-     * 
+     *
      * @param nquad to add
      * @return the same {@link RdfDataset} instance
      */
     RdfDataset add(RdfNQuad nquad);
-    
+
     /**
      * Add a triple to default graph.
-     * 
+     *
      * @param triple to add
      * @return the same {@link RdfDataset} instance
      */
     RdfDataset add(RdfTriple triple);
-        
+
     List<RdfNQuad> toList();
-    
+
     Set<RdfResource> getGraphNames();
-    
+
     Optional<RdfGraph> getGraph(RdfResource graphName);
 
     /**
      * Get the size of the dataset.
-     * 
-     * @return total number of <code>N-Quads</code> in the dataset 
-     */    
+     *
+     * @return total number of <code>N-Quads</code> in the dataset
+     */
     int size();
 }

@@ -35,10 +35,10 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
     // required
     private final Document document;
     private final URI documentUri;
-    
+
     // optional
     private JsonLdOptions options;
-    
+
     public ToRdfApi(URI documentUri) {
         this.document = null;
         this.documentUri = documentUri;
@@ -53,7 +53,7 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
 
     @Override
     public ToRdfApi options(JsonLdOptions options) {
-        
+
         if (options == null) {
             throw new IllegalArgumentException("Parameter 'options' is null.");
         }
@@ -70,19 +70,19 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
 
     @Override
     public ToRdfApi context(String contextLocation) {
-        
+
         if (contextLocation != null) {
-            
+
             if (UriUtils.isNotURI(contextLocation)) {
                 throw new IllegalArgumentException("Context location must be valid URI or null but is [" + contextLocation + ".");
             }
-            
-            return context(UriUtils.create(contextLocation));            
+
+            return context(UriUtils.create(contextLocation));
         }
-        
+
         return context((URI) null);
     }
-    
+
     @Override
     public ToRdfApi context(JsonStructure context) {
         options.setExpandContext(context != null ? JsonDocument.of(context) : null);
@@ -107,16 +107,16 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
 
     /**
      * The JSON-LD processor may emit blank nodes for triple predicates.
-     * 
+     *
      * @return builder instance
-     */    
+     */
     public ToRdfApi produceGeneralizedRdf() {
         return produceGeneralizedRdf(true);
     }
 
     /**
      * Determines how value objects containing a base direction are transformed to and from RDF.
-     * 
+     *
      * @param direction
      * @return builder instance
      */
@@ -132,23 +132,23 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
     }
 
     @Override
-    public ToRdfApi base(URI baseUri) {        
+    public ToRdfApi base(URI baseUri) {
         options.setBase(baseUri);
         return this;
     }
 
     @Override
     public ToRdfApi base(String baseLocation) {
-        
+
         if (baseLocation != null) {
-            
+
             if (UriUtils.isNotURI(baseLocation)) {
                 throw new IllegalArgumentException("Base location must be valid URI or null but is [" + baseLocation + ".");
             }
-            
+
             return base(UriUtils.create(baseLocation));
         }
-        
+
         return base((URI) null);
     }
 
@@ -163,10 +163,10 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
         options.setOrdered(enable);
         return this;
     }
-        
+
     /**
      * Transform provided <code>JSON-LD</code> document into {@link RdfDataset}.
-     * 
+     *
      * @return {@link RdfDataset} representing provided <code>JSON-LD</code> document
      * @throws JsonLdError
      */
@@ -174,17 +174,17 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
         if (documentUri != null) {
             return ToRdfProcessor.toRdf(documentUri, options);
         }
-        
+
         if (document != null) {
             return ToRdfProcessor.toRdf(document, options);
         }
-        
+
         throw new IllegalArgumentException();
     }
 
     /**
-     * Experimental: Accept numeric @id. Disabled by default. 
-     * 
+     * Experimental: Accept numeric @id. Disabled by default.
+     *
      * @return builder instance
      */
     public ToRdfApi numericId() {

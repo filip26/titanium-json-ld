@@ -24,7 +24,7 @@ import jakarta.json.JsonValue;
 
 /**
  * Steps 4.1 - 4.3
- * 
+ *
  * @see <a href=
  *      "https://www.w3.org/TR/json-ld11-api/#expansion-algorithm">Expansion
  *      Algorithm</a>
@@ -72,7 +72,7 @@ public final class ScalarExpansion {
                                 .newContext()
                                 .create(
                                     propertyContext,
-                                    activeContext.getTerm(activeProperty).map(TermDefinition::getBaseUrl).orElse(null)                                    
+                                    activeContext.getTerm(activeProperty).map(TermDefinition::getBaseUrl).orElse(null)
                                 );
         }
 

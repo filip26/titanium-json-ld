@@ -34,8 +34,8 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
 /**
- * 
- * 
+ *
+ *
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#algorithm-4">IRI
  *      Expansion</a>
  *
@@ -43,7 +43,7 @@ import jakarta.json.JsonValue;
 public final class UriExpansion {
 
     private static final Logger LOGGER = Logger.getLogger(UriExpansion.class.getName());
-    
+
     // mandatory
     private final ActiveContext activeContext;
 
@@ -53,7 +53,7 @@ public final class UriExpansion {
 
     private JsonObject localContext;
     private Map<String, Boolean> defined;
-    
+
     private UriExpansion(final ActiveContext activeContext) {
         this.activeContext = activeContext;
 
@@ -87,7 +87,7 @@ public final class UriExpansion {
         this.defined = value;
         return this;
     }
-    
+
     public String expand(final String value) throws JsonLdError {
 
         // 1. If value is a keyword or null, return value as is.
@@ -104,9 +104,9 @@ public final class UriExpansion {
         }
 
         initLocalContext(value);
-        
-        Optional<TermDefinition> definition = activeContext.getTerm(value); 
-        
+
+        Optional<TermDefinition> definition = activeContext.getTerm(value);
+
         // 4. if active context has a term definition for value,
         // and the associated IRI mapping is a keyword, return that keyword.
         // 5. If vocab is true and the active context has a term definition for value,
@@ -114,7 +114,7 @@ public final class UriExpansion {
         if (definition.isPresent() && (Keywords.contains(definition.get().getUriMapping()) || vocab)) {
             return definition.get().getUriMapping();
         }
-        
+
         String result = value;
 
         // 6. If value contains a colon (:) anywhere after the first character, it is
@@ -143,7 +143,7 @@ public final class UriExpansion {
 
         return expandResult(result);
     }
-    
+
     private void initLocalContext(final String value) throws JsonLdError {
         /*
          * 3. If local context is not null, it contains an entry with a key that equals
@@ -166,9 +166,9 @@ public final class UriExpansion {
             }
         }
     }
-    
+
     private String initPropertyContext(final String prefix, final String suffix, final String result) throws JsonLdError {
-        
+
         // 6.3.
         if (localContext != null && localContext.containsKey(prefix)
                 && (!defined.containsKey(prefix) || !Boolean.TRUE.equals(defined.get(prefix)))) {
@@ -183,19 +183,19 @@ public final class UriExpansion {
 
             if (prefixDefinition.map(TermDefinition::getUriMapping).isPresent()
                     && prefixDefinition.map(TermDefinition::isPrefix).orElse(false)) {
-                
+
                 return prefixDefinition.map(TermDefinition::getUriMapping).map(m -> m.concat(suffix)).orElse(null);
             }
 
         }
         return result;
     }
-    
+
     private String expandResult(final String result) {
         // 7. If vocab is true, and active context has a vocabulary mapping,
         // return the result of concatenating the vocabulary mapping with value.
         if (vocab && activeContext.getVocabularyMapping() != null) {
-            
+
             return activeContext.getVocabularyMapping().concat(result);
 
         // 8.

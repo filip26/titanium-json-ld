@@ -6,9 +6,9 @@ import java.util.Map;
 public final class LruCache<K, V> implements Cache<K, V> {
 
     private final Map<K, V> cache;
-    
+
     public LruCache(final int maxCapacity) {
-        this.cache = new LinkedHashMap<>((int)(maxCapacity / 0.75 + 1), 0.75f, true) {
+        this.cache = new LinkedHashMap<K, V>((int)(maxCapacity / 0.75 + 1), 0.75f, true) {
 
             private static final long serialVersionUID = 4822962879473741809L;
 
@@ -18,17 +18,17 @@ public final class LruCache<K, V> implements Cache<K, V> {
             }
         };
     }
-    
+
     @Override
     public boolean containsKey(final K key) {
         return cache.containsKey(key);
     }
-    
+
     @Override
     public V get(final K key) {
         return cache.get(key);
     }
-    
+
     @Override
     public void put(final K key, V value) {
         cache.put(key, value);

@@ -22,11 +22,11 @@ public class RdfWriterException extends Exception {
     public RdfWriterException(String message) {
         super(message);
     }
-    
+
     public RdfWriterException(Throwable cause) {
         super(cause);
     }
-    
+
     public RdfWriterException(String message, Throwable cause) {
         super(message, cause);
     }

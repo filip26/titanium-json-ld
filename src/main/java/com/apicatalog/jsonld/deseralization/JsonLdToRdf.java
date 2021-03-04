@@ -41,23 +41,23 @@ public final class JsonLdToRdf {
     // required
     private final NodeMap nodeMap;
     private final RdfDataset dataset;
-    
+
     // optional
     private boolean produceGeneralizedRdf;
     private RdfDirection rdfDirection;
-    
+
     private JsonLdToRdf(NodeMap nodeMap, RdfDataset dataset) {
         this.nodeMap = nodeMap;
         this.dataset = dataset;
-        
+
         this.produceGeneralizedRdf = false;
         this.rdfDirection = null;
     }
-    
+
     public static final JsonLdToRdf with(NodeMap nodeMap, RdfDataset dataset) {
         return new JsonLdToRdf(nodeMap, dataset);
     }
-    
+
     public JsonLdToRdf produceGeneralizedRdf(boolean enable) {
         this.produceGeneralizedRdf = enable;
         return this;
@@ -69,70 +69,70 @@ public final class JsonLdToRdf {
     }
 
     public RdfDataset build() throws JsonLdError {
-        
+
         // 1.
         for (final String graphName : Utils.index(nodeMap.graphs(), true)) {
 
             // 1.2.
             final RdfResource rdfGraphName;
-            
+
             if (Keywords.DEFAULT.equals(graphName)) {
                 rdfGraphName = null;
-                
+
             } else {
 
                 // 1.1.
                 if (BlankNode.isWellFormed(graphName)) {
-                    
+
                     rdfGraphName = Rdf.createBlankNode(graphName);
-                    
+
                 } else if (UriUtils.isAbsoluteUri(graphName)) {
-                 
+
                     rdfGraphName = Rdf.createIRI(graphName);
-                    
+
                 } else {
                     continue;
                 }
             }
-            
+
             // 1.3.
             for (final String subject : Utils.index(nodeMap.subjects(graphName), true)) {
-                
+
                 final RdfResource rdfSubject;
 
                 // 1.3.1.
                 if (BlankNode.isWellFormed(subject)) {
                     rdfSubject = Rdf.createBlankNode(subject);
-                    
+
                 } else if (UriUtils.isAbsoluteUri(subject)) {
                     rdfSubject = Rdf.createIRI(subject);
-                    
+
                 } else {
-                    continue;                    
+                    continue;
                 }
-                
+
                 // 1.3.2.
                 for (final String property : Utils.index(nodeMap.properties(graphName, subject), true)) {
 
                     // 1.3.2.1.
                     if (Keywords.TYPE.equals(property)) {
-                        
-                        for (JsonValue type : nodeMap.get(graphName, subject, property).asJsonArray()) { 
-                        
+
+                        for (JsonValue type : nodeMap.get(graphName, subject, property).asJsonArray()) {
+
                             if (JsonUtils.isNotString(type)) {
                                 continue;
                             }
-                            
+
                             final String typeString = ((JsonString)type).getString();
 
                             final RdfValue rdfObject;
-                            
+
                             if (BlankNode.isWellFormed(typeString)) {
                                 rdfObject = Rdf.createBlankNode(typeString);
-                                
+
                             } else if (UriUtils.isAbsoluteUri(typeString)) {
                                 rdfObject = Rdf.createIRI(typeString);
-                                
+
                             } else {
                                 continue;
                             }
@@ -146,17 +146,17 @@ public final class JsonLdToRdf {
                         }
 
                     // 1.3.2.2.
-                    } else if (!Keywords.contains(property) 
-                                    && ((BlankNode.isWellFormed(property) && !produceGeneralizedRdf) 
+                    } else if (!Keywords.contains(property)
+                                    && ((BlankNode.isWellFormed(property) && !produceGeneralizedRdf)
                                      || UriUtils.isAbsoluteUri(property))) {
-                        
+
                         // 1.3.2.5.
                         for (JsonValue item : nodeMap.get(graphName, subject, property).asJsonArray()) {
-                        
+
                             // 1.3.2.5.1.
                             final List<RdfTriple> listTriples = new ArrayList<>();
 
-                            // 1.3.2.5.2.                            
+                            // 1.3.2.5.2.
                             ObjectToRdf
                                     .with(item.asJsonObject(), listTriples, nodeMap)
                                     .rdfDirection(rdfDirection)
@@ -173,8 +173,8 @@ public final class JsonLdToRdf {
                                         .map(triple -> Rdf.createNQuad(triple, rdfGraphName))
                                         .forEach(dataset::add);
                         }
-                    }   
-                }   
+                    }
+                }
             }
         }
         return dataset;

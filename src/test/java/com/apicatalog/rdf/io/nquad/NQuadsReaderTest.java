@@ -41,7 +41,7 @@ class NQuadsReaderTest {
 
     private final static String TEST_SUITE_NAME = "/n-quads-test-suite-20200629.zip";
     private final static String TEST_CASE_BASE_PATH = "nquads-test-suite/";
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")
     void testRead(NQuadsReaderTestCase testCase) throws IOException, URISyntaxException {
@@ -49,23 +49,23 @@ class NQuadsReaderTest {
         assertNotNull(testCase);
         assertNotNull(testCase.getName());
         assertNotNull(testCase.getType());
-        
+
         final URL zipFileUrl =  (new NQuadsReaderTest()).getClass().getResource(TEST_SUITE_NAME);
 
         assertNotNull(zipFileUrl);
 
         try (final ZipFile zip = new ZipFile(new File(zipFileUrl.toURI()))) {
-            
+
             assertNotNull(zip);
-            
+
             try (final Reader reader = new InputStreamReader(zip.getInputStream(zip.getEntry(TEST_CASE_BASE_PATH + testCase.getName() + ".nq")))) {
 
                 RdfDataset dataset = (new NQuadsReader(reader)).readDataset();
-                
+
                 assertNotNull(dataset);
-                
+
                 assertEquals(Type.POSITIVE, testCase.getType());
-                
+
             } catch (RdfReaderException | IllegalArgumentException e) {
                 assertEquals(Type.NEGATIVE, testCase.getType());
             }

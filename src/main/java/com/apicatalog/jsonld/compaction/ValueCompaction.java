@@ -33,7 +33,7 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
 /**
- * 
+ *
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#value-compaction">Value Compaction</a>
  *
  */
@@ -41,33 +41,33 @@ public final class ValueCompaction {
 
     // mandatory
     private final ActiveContext activeContext;
-    
+
     private ValueCompaction(final ActiveContext activeContext) {
         this.activeContext = activeContext;
     }
-    
+
     public static ValueCompaction with(ActiveContext activeContext) {
         return new ValueCompaction(activeContext);
     }
-    
+
     public JsonValue compact(final JsonObject value, final String activeProperty) throws JsonLdError {
 
         // 1.
         JsonValue result = value;
-        
+
         // 2.
         if (activeContext.getInverseContext() == null) {
             activeContext.createInverseContext();
         }
-        
+
         final Optional<TermDefinition> activePropertyDefinition = activeContext.getTerm(activeProperty);
-        
+
         // 4. - 5.
-        JsonValue language = null; 
+        JsonValue language = null;
         DirectionType direction = null;
 
         if (activePropertyDefinition.isPresent()) {
-            language = activePropertyDefinition.get().getLanguageMapping(); 
+            language = activePropertyDefinition.get().getLanguageMapping();
             direction = activePropertyDefinition.get().getDirectionMapping();
         }
 
@@ -80,17 +80,17 @@ public final class ValueCompaction {
         if (direction == null) {
             direction = activeContext.getDefaultBaseDirection();
         }
-        
+
         // 6.
-        if (value.containsKey(Keywords.ID) && 
+        if (value.containsKey(Keywords.ID) &&
                 ((value.size() == 1)
-                        || (value.size() == 2 && value.containsKey(Keywords.INDEX))) 
+                        || (value.size() == 2 && value.containsKey(Keywords.INDEX)))
                 ) {
-            
+
             // 6.1.
-            if (activePropertyDefinition.isPresent() 
+            if (activePropertyDefinition.isPresent()
                             && Keywords.ID.equals(activePropertyDefinition.get().getTypeMapping())) {
-                
+
                 result = JsonUtils.toJsonValue(activeContext
                                                 .uriCompaction()
                                                 .compact(value.getString(Keywords.ID)));
@@ -98,7 +98,7 @@ public final class ValueCompaction {
             // 6.2.
             } else if (activePropertyDefinition.isPresent()
                             && Keywords.VOCAB.equals(activePropertyDefinition.get().getTypeMapping())) {
-                
+
                 result = JsonUtils.toJsonValue(activeContext
                                                 .uriCompaction()
                                                 .vocab(true)
@@ -116,10 +116,10 @@ public final class ValueCompaction {
             result = value.get(Keywords.VALUE);
 
         // 8.
-        } else if (activePropertyDefinition.isPresent() 
+        } else if (activePropertyDefinition.isPresent()
                         && Keywords.NONE.equals(activePropertyDefinition.get().getTypeMapping())
                         || (value.containsKey(Keywords.TYPE)
-                                && (activePropertyDefinition.isEmpty()
+                                && (!activePropertyDefinition.isPresent()
                                         || !JsonUtils.contains(
                                                 activePropertyDefinition.get().getTypeMapping(),
                                                 value.get(Keywords.TYPE)
@@ -129,22 +129,22 @@ public final class ValueCompaction {
 
             // 8.1.
             final JsonArrayBuilder types = Json.createArrayBuilder();
-            
+
             final JsonValue resultTypes = result.asJsonObject().get(Keywords.TYPE);
-            
+
             if (JsonUtils.isNotNull(resultTypes)) {
                 for (final JsonValue type : JsonUtils.toCollection(resultTypes)) {
-    
-                    types.add(activeContext.uriCompaction().vocab(true).compact(((JsonString)type).getString()));                    
+
+                    types.add(activeContext.uriCompaction().vocab(true).compact(((JsonString)type).getString()));
                 }
-                
+
                 result = Json.createObjectBuilder(result.asJsonObject()).add(Keywords.TYPE, types.build()).build();
             }
-            
+
         // 9.
         } else if (JsonUtils.isNotString(value.get(Keywords.VALUE))) {
-            
-            if (!value.containsKey(Keywords.INDEX) 
+
+            if (!value.containsKey(Keywords.INDEX)
                     || activePropertyDefinition.map(td -> td.hasContainerMapping(Keywords.INDEX)).orElse(false)
                     ) {
                 result = value.get(Keywords.VALUE);
@@ -182,22 +182,22 @@ public final class ValueCompaction {
         if (JsonUtils.isObject(result)) {
 
             final JsonObjectBuilder resultBuilder = Json.createObjectBuilder();
-            
+
             for (Entry<String, JsonValue> entry : result.asJsonObject().entrySet()) {
                 resultBuilder.add(
                                 activeContext
                                         .uriCompaction()
                                         .vocab(true)
-                                        .compact(entry.getKey()), 
+                                        .compact(entry.getKey()),
                                 entry.getValue()
                                 );
             }
-            
+
             result = resultBuilder.build();
         }
 
         // 12.
         return result;
     }
-    
+
 }

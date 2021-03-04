@@ -38,7 +38,7 @@ class MediaTypeTest {
     void testNull() {
         assertThrows(IllegalArgumentException.class, () -> MediaType.of(null));
     }
-    
+
     @Test
     void test1() {
         MediaType type = MediaType.of("text/plain");
@@ -55,7 +55,7 @@ class MediaTypeTest {
         MediaType type = MediaType.of(mediaType);
         assertNull(type);
     }
-    
+
     @Test
     void test4() {
         MediaType type = MediaType.of("  x/y+a  ");
@@ -126,7 +126,7 @@ class MediaTypeTest {
         assertEquals("2", type.parameters().firstValue("1").get());
         assertEquals(Arrays.asList("2", "3"), type.parameters().values("1"));
     }
-    
+
     @Test
     void test12() {
         MediaType type= MediaType.of("a/b;1=\"a\\\tb\"");
@@ -148,7 +148,7 @@ class MediaTypeTest {
     void test15() {
         assertThrows(IllegalArgumentException.class, () -> MediaType.of("b", null));
     }
-    
+
     @Test
     void testM01() {
         assertTrue(MediaType.ANY.match(MediaType.HTML));

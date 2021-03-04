@@ -26,7 +26,7 @@ import com.apicatalog.jsonld.lang.Keywords;
 import jakarta.json.JsonValue;
 
 /**
- * 
+ *
  * @see <a href=
  *      "https://www.w3.org/TR/json-ld11-api/#expansion-algorithm">Expansion
  *      Algorithm</a>

@@ -30,113 +30,113 @@ import jakarta.json.JsonValue;
 class CompactionApiNegativeTest {
 
     public static final Document EMPTY_ARRAY_JSON_DOCUMENT = JsonDocument.of(JsonValue.EMPTY_JSON_ARRAY);
-    
+
     @Test
     void test2() {
         assertThrows(
-                    IllegalArgumentException.class, 
+                    IllegalArgumentException.class,
                     () -> JsonLd.compact(EMPTY_ARRAY_JSON_DOCUMENT, (JsonDocument)null));
     }
-    
+
     @Test
     void test3() {
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact((JsonDocument)null, EMPTY_ARRAY_JSON_DOCUMENT));
     }
-    
+
     @Test
     void test4() {
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact((JsonDocument)null, (JsonDocument)null));
     }
-    
+
     @Test
     void test7() {
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact((String)null, (String)null));
     }
 
     @Test
     void test8() {
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact("http://example.org/", (String)null));
     }
-    
+
     @Test
     void test9() {
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact((String)null, "http://example.org"));
     }
-    
+
     @Test
     void test10() {
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact("http://example.org", "relative"));
     }
-    
+
     @Test
     void test11() {
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact("relative", "http://example.org"));
     }
-    
+
     @Test
     void test12() {
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact((String)null, EMPTY_ARRAY_JSON_DOCUMENT));
     }
-    
+
     @Test
     void test13() {
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact("http://example.org", (JsonDocument)null));
     }
-    
+
     @Test
     void test14() {
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact((String)null, (JsonDocument)null));
     }
-    
+
     @Test
     void test15() {
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact("/relative", EMPTY_ARRAY_JSON_DOCUMENT));
     }
-    
+
     @Test
     void test20() {
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact((URI)null, (URI)null));
     }
 
     @Test
     void test21() {
         final URI uri = URI.create("http://example.com");
-        
+
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact(uri, (URI)null));
     }
 
     @Test
     void test22() {
         final URI uri = URI.create("http://example.com");
-        
+
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact((URI)null, uri));
     }
 
@@ -146,7 +146,7 @@ class CompactionApiNegativeTest {
         final URI uri2 = URI.create("/relative");
 
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact(uri1, uri2));
     }
 
@@ -154,16 +154,16 @@ class CompactionApiNegativeTest {
     void test24() {
         final URI uri1 = URI.create("/relative");
         final URI uri2 = URI.create("http://example.com");
-                
+
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact(uri1, uri2));
     }
 
     @Test
     void test25() {
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact((URI)null, (JsonDocument)null));
     }
 
@@ -171,14 +171,14 @@ class CompactionApiNegativeTest {
     void test26() {
         final URI uri = URI.create("http://example.com");
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact(uri, (JsonDocument)null));
     }
 
     @Test
     void test27() {
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact((URI)null, EMPTY_ARRAY_JSON_DOCUMENT));
     }
 
@@ -186,28 +186,28 @@ class CompactionApiNegativeTest {
     void test28() {
         final URI uri = URI.create("relative");
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact(uri, EMPTY_ARRAY_JSON_DOCUMENT));
     }
 
     @Test
     void test29() {
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact("   ", EMPTY_ARRAY_JSON_DOCUMENT));
     }
 
     @Test
     void test30() {
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact("http://example.com", ""));
     }
 
     @Test
     void test31() {
         assertThrows(
-                IllegalArgumentException.class, 
+                IllegalArgumentException.class,
                 () -> JsonLd.compact("http://example.com", "\t"));
     }
 }

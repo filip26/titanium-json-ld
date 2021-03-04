@@ -31,7 +31,7 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonValue;
 
 /**
- * 
+ *
  * @see <a href=
  *      "https://www.w3.org/TR/json-ld11-api/#expansion-algorithm">Expansion
  *      Algorithm</a>
@@ -92,7 +92,7 @@ public final class ArrayExpansion {
         for (final JsonValue item : element) {
 
             // 5.2.1
-            JsonValue expanded = 
+            JsonValue expanded =
                             Expansion
                                 .with(activeContext, item, activeProperty, baseUrl)
                                 .frameExpansion(frameExpansion)

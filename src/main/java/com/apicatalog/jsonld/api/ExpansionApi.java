@@ -34,10 +34,10 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
     // required
     private final URI documentUri;
     private final Document document;
-    
+
     // optional
     private JsonLdOptions options;
-    
+
     public ExpansionApi(URI documentUri) {
         this.document = null;
         this.documentUri = documentUri;
@@ -51,8 +51,8 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
     }
 
     @Override
-    public ExpansionApi options(JsonLdOptions options) {    
-        
+    public ExpansionApi options(JsonLdOptions options) {
+
         if (options == null) {
             throw new IllegalArgumentException("Parameter 'options' is null.");
         }
@@ -60,7 +60,7 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
         this.options = options;
         return this;
     }
-    
+
     @Override
     public ExpansionApi context(URI contextUri) {
         options.setExpandContext(contextUri);
@@ -69,15 +69,15 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
 
     @Override
     public ExpansionApi context(String contextLocation) {
-        
+
         if (contextLocation != null) {
-            
+
             if (UriUtils.isNotURI(contextLocation)) {
                 throw new IllegalArgumentException("Context location must be valid URI or null but is [" + contextLocation + ".");
             }
-            return context(UriUtils.create(contextLocation));    
+            return context(UriUtils.create(contextLocation));
         }
-        
+
         return context((Document) null);
     }
 
@@ -107,16 +107,16 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
 
     @Override
     public ExpansionApi base(String baseLocation) {
-        
+
         if (baseLocation != null) {
-            
+
             if (UriUtils.isNotURI(baseLocation)) {
                 throw new IllegalArgumentException("Base location must be valid URI or null but is [" + baseLocation + ".");
             }
             return base(UriUtils.create(baseLocation));
-        }        
-        
-        return base((URI) null);        
+        }
+
+        return base((URI) null);
     }
 
     @Override
@@ -133,14 +133,14 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
 
     /**
      * Get the result of the document expansion.
-     * 
+     *
      * @return {@link JsonArray} representing expanded document
      * @throws JsonLdError
      */
     public JsonArray get() throws JsonLdError {
         if (document != null) {
             return ExpansionProcessor.expand(document, options, false);
-            
+
         } else if (documentUri != null) {
             return ExpansionProcessor.expand(documentUri, options);
         }
@@ -148,12 +148,12 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
     }
 
     /**
-     * Experimental: Accept numeric @id. Disabled by default. 
-     * 
+     * Experimental: Accept numeric @id. Disabled by default.
+     *
      * @return builder instance
      */
     public ExpansionApi numericId() {
         options.setNumericId(true);
         return this;
-    }    
+    }
 }

@@ -35,78 +35,78 @@ import jakarta.json.JsonValue;
 class ToRdfApiTest {
 
     public static final MockLoader MOCK_LOADER = new MockLoader(JsonValue.EMPTY_JSON_ARRAY);
-    
-    @Test    
+
+    @Test
     void test1() throws JsonLdError {
         RdfDataset result = JsonLd.toRdf(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).get();
         assertNotNull(result);
         assertEquals(0, result.size());
     }
-    
-    @Test    
+
+    @Test
     void test2() throws JsonLdError {
         RdfDataset result = JsonLd.toRdf(JsonDocument.of(MediaType.JSON, new ByteArrayInputStream(JsonValue.EMPTY_JSON_OBJECT.toString().getBytes()))).get();
         assertNotNull(result);
         assertEquals(0, result.size());
     }
-    
-    @Test    
+
+    @Test
     void test3() throws JsonLdError {
         RdfDataset result = JsonLd.toRdf("https://example.com").loader(MOCK_LOADER).get();
         assertNotNull(result);
         assertEquals(0, result.size());
     }
 
-    @Test    
+    @Test
     void test4() throws JsonLdError {
         RdfDataset result = JsonLd.toRdf(URI.create("https://example.com")).loader(MOCK_LOADER).get();
         assertNotNull(result);
         assertEquals(0, result.size());
     }
 
-    @Test    
+    @Test
     void test5() throws JsonLdError {
         RdfDataset result = JsonLd.toRdf("\thttps://example.com  ").loader(MOCK_LOADER).get();
         assertNotNull(result);
         assertEquals(0, result.size());
     }
-    
-    @Test    
+
+    @Test
     void test6() throws JsonLdError {
         RdfDataset result = JsonLd.toRdf("\thttps://example.com  ").context(JsonValue.EMPTY_JSON_OBJECT).loader(MOCK_LOADER).get();
         assertNotNull(result);
         assertEquals(0, result.size());
     }
-        
-    @Test    
+
+    @Test
     void test7() throws JsonLdError {
         RdfDataset result = JsonLd.toRdf("\thttps://example.com").context(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).loader(MOCK_LOADER).ordered().get();
         assertNotNull(result);
         assertEquals(0, result.size());
-    }    
+    }
 
-    @Test    
+    @Test
     void test8() throws JsonLdError {
         RdfDataset result = JsonLd.toRdf("\thttps://example.com").context(JsonDocument.of(MediaType.JSON, new InputStreamReader(new ByteArrayInputStream(JsonValue.EMPTY_JSON_OBJECT.toString().getBytes())))).loader(MOCK_LOADER).ordered().get();
         assertNotNull(result);
         assertEquals(0, result.size());
     }
-    
-    @Test    
+
+    @Test
     void test9() throws JsonLdError {
         RdfDataset result = JsonLd.toRdf(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).context(JsonValue.EMPTY_JSON_OBJECT).loader(MOCK_LOADER).get();
         assertNotNull(result);
         assertEquals(0, result.size());
     }
-        
-    @Test    
+
+    @Test
     void test10() throws JsonLdError {
         RdfDataset result = JsonLd.toRdf(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).context(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).loader(MOCK_LOADER).ordered().get();
         assertNotNull(result);
         assertEquals(0, result.size());
-    }    
+    }
 
-    @Test    
+    @Test
     void test11() throws JsonLdError {
         RdfDataset result = JsonLd.toRdf(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).context(JsonDocument.of(MediaType.JSON, new ByteArrayInputStream(JsonValue.EMPTY_JSON_OBJECT.toString().getBytes()))).loader(MOCK_LOADER).ordered().get();
         assertNotNull(result);

@@ -24,7 +24,7 @@ public interface RdfResource extends RdfValue {
     default boolean isLiteral() {
         return false;
     }
- 
+
     @Override
     default RdfLiteral asLiteral() {
         throw new ClassCastException();

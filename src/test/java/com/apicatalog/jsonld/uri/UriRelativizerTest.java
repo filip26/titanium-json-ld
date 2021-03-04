@@ -34,7 +34,7 @@ class UriRelativizerTest {
     }
 
     static final Stream<Arguments> data() {
-        return Stream.of(    
+        return Stream.of(
             arguments("http://example.com/", "person/1", "http://example.com/person/1"),
             arguments("http://example.com", "/person/1", "http://example.com/person/1"),
             arguments("https://example.com/", "relative-url", "https://example.com/relative-url"),
@@ -50,7 +50,7 @@ class UriRelativizerTest {
             arguments("https://w3c.github.io/json-ld-api/tests/compact/0066-in.jsonld", "../../../too-many-dots", "https://w3c.github.io/too-many-dots"),
             arguments("https://w3c.github.io/json-ld-api/tests/compact/0066-in.jsonld", "../../../absolute", "https://w3c.github.io/absolute"),
             arguments("https://w3c.github.io/json-ld-api/tests/compact/0066-in.jsonld", "http://example.org/scheme-relative", "http://example.org/scheme-relative"),
-            
+
             arguments("http://a", "/b", "http://a/b"),
             arguments("http://a/", "./", "http://a/"),
             arguments("http://a/1/2", "2", "http://a/1/2"),

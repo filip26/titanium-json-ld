@@ -33,12 +33,12 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
     // required
     private final URI documentUri;
     private final Document document;
-    
+
     // optional
     private Document context;
     private URI contextUri;
     private JsonLdOptions options;
-    
+
     public FlatteningApi(URI documentUri) {
         this.document = null;
         this.documentUri = documentUri;
@@ -57,7 +57,7 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
 
     @Override
     public FlatteningApi options(JsonLdOptions options) {
-        
+
         if (options == null) {
             throw new IllegalArgumentException("Parameter 'options' is null.");
         }
@@ -80,15 +80,15 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
 
     @Override
     public FlatteningApi base(String baseLocation) {
-        
+
         if (baseLocation != null) {
-            
+
             if (UriUtils.isNotURI(baseLocation)) {
                 throw new IllegalArgumentException("Base location must be valid URI or null but is [" + baseLocation + ".");
             }
             return base(UriUtils.create(baseLocation));
         }
-        
+
         return base((URI) null);
     }
 
@@ -118,19 +118,19 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
         this.contextUri = contextUri;
         return this;
     }
-    
+
     @Override
     public FlatteningApi context(final String contextLocation) {
-        
+
         if (contextLocation != null) {
-            
+
             if (UriUtils.isNotURI(contextLocation)) {
                 throw new IllegalArgumentException("Context location must be valid URI or null but is [" + contextLocation + ".");
             }
-            
+
             return context(UriUtils.create(contextLocation));
         }
-        
+
         return context((URI) null);
     }
 
@@ -148,7 +148,7 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
 
     /**
      * Get the result of flattening.
-     * 
+     *
      * @return {@link JsonStructure} representing flattened document
      * @throws JsonLdError
      */

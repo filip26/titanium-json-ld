@@ -32,29 +32,29 @@ import jakarta.json.JsonArray;
 class FromRdfApiTest {
 
     public static final MockLoader MOCK_LOADER = new MockLoader(Rdf.createDataset());
-    
-    @Test    
+
+    @Test
     void test1() throws JsonLdError {
         JsonArray result = JsonLd.fromRdf(RdfDocument.of(Rdf.createDataset())).get();
         assertNotNull(result);
         assertEquals(0, result.size());
     }
-        
-    @Test    
+
+    @Test
     void test3() throws JsonLdError {
         JsonArray result = JsonLd.fromRdf("https://example.com").loader(MOCK_LOADER).get();
         assertNotNull(result);
         assertEquals(0, result.size());
     }
 
-    @Test    
+    @Test
     void test4() throws JsonLdError {
         JsonArray result = JsonLd.fromRdf(URI.create("https://example.com")).loader(MOCK_LOADER).get();
         assertNotNull(result);
         assertEquals(0, result.size());
     }
 
-    @Test    
+    @Test
     void test5() throws JsonLdError {
         JsonArray result = JsonLd.fromRdf("\thttps://example.com  ").loader(MOCK_LOADER).get();
         assertNotNull(result);

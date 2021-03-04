@@ -24,12 +24,12 @@ import com.apicatalog.rdf.RdfValue;
 final class RdfNQuadImpl extends RdfTripleImpl implements RdfNQuad {
 
     private final RdfResource graphName;
-    
+
     protected RdfNQuadImpl(RdfResource subject, RdfResource predicate, RdfValue object, RdfResource graphName) {
         super(subject, predicate, object);
         this.graphName = graphName;
     }
-    
+
     @Override
     public Optional<RdfResource> getGraphName() {
         return Optional.ofNullable(graphName);
@@ -37,10 +37,10 @@ final class RdfNQuadImpl extends RdfTripleImpl implements RdfNQuad {
 
     @Override
     public String toString() {
-        return  "RdfNQuadImpl[subject=" + getSubject() 
-                    + ", predicate=" + getPredicate() 
+        return  "RdfNQuadImpl[subject=" + getSubject()
+                    + ", predicate=" + getPredicate()
                     + ", object=" + getObject()
-                    + ", graph=" + graphName 
+                    + ", graph=" + graphName
                     + "]";
     }
 }

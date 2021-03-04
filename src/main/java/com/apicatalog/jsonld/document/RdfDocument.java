@@ -40,7 +40,7 @@ public final class RdfDocument implements Document {
 
     private URI documentUrl;
     private URI contentUrl;
-    
+
     private RdfDocument(final MediaType type, final String profile, final RdfDataset dataset) {
         this.contentType = type;
         this.profile = profile;
@@ -65,13 +65,13 @@ public final class RdfDocument implements Document {
      * @return {@link Document} representing RDF document
      */
     public static final Document of(final MediaType contentType, final RdfDataset dataset) {
-        
+
         assertContentType(contentType);
-        
+
         if (dataset == null) {
             throw new IllegalArgumentException("RDF dataset cannot be a null.");
         }
-        
+
         return new RdfDocument(contentType, null, dataset);
     }
 
@@ -84,17 +84,17 @@ public final class RdfDocument implements Document {
     public static final RdfDocument of(final InputStream is)  throws JsonLdError {
         return of(MediaType.N_QUADS, is);
     }
-    
+
     public static final RdfDocument of(final MediaType type, final InputStream is)  throws JsonLdError {
-        
+
         assertContentType(type);
-        
+
         try {
 
             RdfDataset dataset  = Rdf.createReader(type, is).readDataset();
 
             return new RdfDocument(type, null, dataset);
-            
+
         } catch (JsonException | IOException | RdfReaderException | UnsupportedContentException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
@@ -109,36 +109,36 @@ public final class RdfDocument implements Document {
     public static final Document of(final Reader reader)  throws JsonLdError {
         return of(MediaType.N_QUADS, reader);
     }
-    
+
     public static final Document of(final MediaType type, final Reader reader)  throws JsonLdError {
-        
+
         assertContentType(type);
-        
+
         try {
 
             RdfDataset dataset  = Rdf.createReader(type, reader).readDataset();
 
             return new RdfDocument(type, null, dataset);
-            
+
         } catch (JsonException | IOException | RdfReaderException | UnsupportedContentException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
-    
+
     public static final boolean accepts(final MediaType contentType) {
         return Rdf.canRead().contains(contentType);
     }
-    
+
     private static final void assertContentType(final MediaType contentType) {
         if (!accepts(contentType)) {
             throw new IllegalArgumentException(
-                    "Unsupported media type '" + contentType 
-                    + "'. Supported content types are [" 
+                    "Unsupported media type '" + contentType
+                    + "'. Supported content types are ["
                     + (Rdf.canRead().stream().map(MediaType::toString).collect(Collectors.joining(", ")))
                     + "]");
         }
     }
-    
+
     @Override
     public MediaType getContentType() {
         return contentType;

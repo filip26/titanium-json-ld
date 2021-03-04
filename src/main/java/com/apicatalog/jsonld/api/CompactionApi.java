@@ -34,10 +34,10 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
     private final URI documentUri;
     private final Document context;
     private final URI contextUri;
-    
+
     // optional
     private JsonLdOptions options;
-    
+
     public CompactionApi(URI documentUri, Document context) {
         this.document = null;
         this.documentUri = documentUri;
@@ -64,11 +64,11 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
 
     @Override
     public CompactionApi options(JsonLdOptions options) {
-        
+
         if (options == null) {
             throw new IllegalArgumentException("Parameter 'options' is null.");
         }
-        
+
         this.options = options;
         return this;
     }
@@ -80,7 +80,7 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
     }
 
     @Override
-    public CompactionApi base(URI baseUri) {        
+    public CompactionApi base(URI baseUri) {
         options.setBase(baseUri);
         return this;
     }
@@ -90,13 +90,13 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
         return base(baseUri != null ? UriUtils.create(baseUri) : null);
     }
 
-    
+
     /**
      * If set to <code>true</code>, the processor replaces arrays with just one
      * element  If set to false, all arrays will remain arrays even if they have just one
      * element. <code>true</code> by default.
      *
-     * @param enable 
+     * @param enable
      * @return builder instance
      */
     public CompactionApi compactArrays(boolean enable) {
@@ -105,18 +105,18 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
     }
 
     /**
-     * The processor replaces arrays with just one element. 
-     * 
+     * The processor replaces arrays with just one element.
+     *
      * @return {@link CompactionApi} instance
      */
     public CompactionApi compactArrays() {
         return compactArrays(true);
     }
-    
+
     /**
-     * Determines if IRIs are compacted relative to the {@link #base(URI)} or document location . 
+     * Determines if IRIs are compacted relative to the {@link #base(URI)} or document location .
      * <code>true</code> by default.
-     * 
+     *
      * @param enable
      * @return builder instance
      */
@@ -126,20 +126,20 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
     }
 
     /**
-     * IRIs are compacted relative to the {@link #base(URI)} or document location. 
-     * 
+     * IRIs are compacted relative to the {@link #base(URI)} or document location.
+     *
      * @return builder instance
      */
     public CompactionApi compactToRelative() {
         return compactToRelative(true);
     }
-    
+
     @Override
-    public CompactionApi loader(DocumentLoader loader) {        
+    public CompactionApi loader(DocumentLoader loader) {
         options.setDocumentLoader(loader);
         return this;
     }
-    
+
     @Override
     public CompactionApi ordered(boolean enable) {
         options.setOrdered(enable);
@@ -148,14 +148,14 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
 
     /**
      * Get the result of compaction.
-     * 
+     *
      * @return {@link JsonObject} representing compacted document
      * @throws JsonLdError
      */
     public JsonObject get() throws JsonLdError {
         if (documentUri != null && contextUri != null)  {
             return CompactionProcessor.compact(documentUri, contextUri, options);
-        }        
+        }
         if (documentUri != null && context != null)  {
             return CompactionProcessor.compact(documentUri, context, options);
         }

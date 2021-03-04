@@ -33,55 +33,55 @@ class FileLoaderTest {
 
     @Test
     void testLoadNQuads() throws URISyntaxException, JsonLdError {
-        
+
         URL fileUrl = getClass().getResource("document.nq");
-        
+
         assertNotNull(fileUrl);
-        
+
         Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions());
-        
+
         assertNotNull(document);
         assertTrue(MediaType.N_QUADS.match(document.getContentType()));
     }
 
     @Test
     void testLoadJson() throws URISyntaxException, JsonLdError {
-        
+
         URL fileUrl = getClass().getResource("document.json");
-        
+
         assertNotNull(fileUrl);
-        
+
         Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions());
-        
+
         assertNotNull(document);
         assertTrue(MediaType.JSON.match(document.getContentType()));
     }
 
     @Test
     void testLoadJsonLd() throws URISyntaxException, JsonLdError {
-        
+
         URL fileUrl = getClass().getResource("document.jsonld");
-        
+
         assertNotNull(fileUrl);
-        
+
         Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions());
-        
+
         assertNotNull(document);
         assertTrue(MediaType.JSON_LD.match(document.getContentType()));
     }
 
     @Test
     void testLoadHtml() throws URISyntaxException {
-        
+
         URL fileUrl = getClass().getResource("document.html");
-        
+
         assertNotNull(fileUrl);
-        
+
         assertThrows(JsonLdError.class, () -> new FileLoader().loadDocument(fileUrl.toURI(), new DocumentLoaderOptions()));
     }
 
     @Test
-    void testUnsupportedScheme() throws URISyntaxException {        
+    void testUnsupportedScheme() throws URISyntaxException {
         assertThrows(JsonLdError.class, () -> new FileLoader().loadDocument(URI.create("https://github.com/"), new DocumentLoaderOptions()));
     }
 

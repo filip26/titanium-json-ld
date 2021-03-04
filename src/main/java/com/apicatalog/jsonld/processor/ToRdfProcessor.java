@@ -31,7 +31,7 @@ import com.apicatalog.rdf.RdfDataset;
 import jakarta.json.JsonArray;
 
 /**
- * 
+ *
  * @see <a href="https://w3c.github.io/json-ld-api/#dom-jsonldprocessor-tordf">JsonLdProcessor.toRdf()</a>
  *
  */
@@ -45,7 +45,7 @@ public final class ToRdfProcessor {
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
-        
+
         final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
         loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
 
@@ -54,18 +54,18 @@ public final class ToRdfProcessor {
         if (remoteDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
-        
+
         return toRdf(remoteDocument, options);
     }
 
     public static final RdfDataset toRdf(Document input, final JsonLdOptions options) throws JsonLdError {
 
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
-        
+
         expansionOptions.setProcessingMode(options.getProcessingMode());
         expansionOptions.setBase(options.getBase());
         expansionOptions.setExpandContext(options.getExpandContext());
-        
+
         final JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
 
         return JsonLdToRdf
@@ -75,6 +75,6 @@ public final class ToRdfProcessor {
                             )
                         .produceGeneralizedRdf(options.isProduceGeneralizedRdf())
                         .rdfDirection(options.getRdfDirection())
-                        .build();     
+                        .build();
     }
 }

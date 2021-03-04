@@ -25,9 +25,9 @@ import com.apicatalog.rdf.lang.XsdConstants;
 final class RdfLiteralImpl implements RdfLiteral {
 
     private final String value;
-    
+
     private final String langTag;
-    
+
     private final String dataType;
 
     protected RdfLiteralImpl(String value) {
@@ -54,7 +54,7 @@ final class RdfLiteralImpl implements RdfLiteral {
     public boolean isLiteral() {
         return true;
     }
-    
+
     @Override
     public Optional<String> getLanguage() {
         return Optional.ofNullable(langTag);
@@ -80,25 +80,25 @@ final class RdfLiteralImpl implements RdfLiteral {
         return Objects.equals(dataType, other.dataType) && Objects.equals(langTag, other.langTag)
                 && Objects.equals(value, other.value);
     }
-    
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        
+
         builder.append(value);
-        
+
         if (langTag != null) {
             builder.append('@');
             builder.append(langTag);
-            
+
         } else if (dataType != null) {
             builder.append("^^");
             builder.append(dataType);
         }
-        
+
         return builder.toString();
     }
-    
+
     private static final String datatype(String langTag, String datatype) {
         if (datatype != null) {
             return datatype;

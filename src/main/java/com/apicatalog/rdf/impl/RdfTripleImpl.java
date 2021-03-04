@@ -22,14 +22,14 @@ import com.apicatalog.rdf.RdfValue;
 class RdfTripleImpl implements RdfTriple {
 
     private final RdfResource subject;
-    
+
     private final RdfResource predicate;
-    
+
     private final RdfValue object;
-    
+
     protected RdfTripleImpl(final RdfResource subject, final RdfResource predicate, final RdfValue object) {
         this.subject = subject;
-        this.predicate = predicate; 
+        this.predicate = predicate;
         this.object = object;
     }
 
@@ -50,9 +50,9 @@ class RdfTripleImpl implements RdfTriple {
 
     @Override
     public String toString() {
-        return  "RdfTripleImpl[subject=" + subject 
-                    + ", predicate=" + predicate 
-                    + ", object=" + object 
+        return  "RdfTripleImpl[subject=" + subject
+                    + ", predicate=" + predicate
+                    + ", object=" + object
                     + "]";
     }
 }

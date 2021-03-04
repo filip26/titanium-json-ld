@@ -32,13 +32,13 @@ final class GraphMap {
 
     //                 graph,     subject,  predicate,  object
     private final Map<String, Map<String, Map<String, JsonValue>>> index;
-    
+
     private final Map<String, Map<String, List<Reference>>> usages;
-    
+
     public GraphMap() {
         this.index = new LinkedHashMap<>();
         this.index.put(Keywords.DEFAULT, new LinkedHashMap<>());
-        
+
         this.usages = new LinkedHashMap<>();
     }
 
@@ -50,13 +50,13 @@ final class GraphMap {
         index
             .computeIfAbsent(graphName, e -> new LinkedHashMap<>())
             .computeIfAbsent(subject, e -> new LinkedHashMap<>())
-            .put(property, value);        
+            .put(property, value);
     }
 
     public Optional<Map<String, JsonValue>> get(final String graphName, final String subject) {
-        
+
         final Map<String, Map<String, JsonValue>> graphMap = index.get(graphName);
-        
+
         if (graphMap == null) {
             return Optional.empty();
         }
@@ -65,19 +65,19 @@ final class GraphMap {
     }
 
     public Optional<JsonValue> get(final String graphName, final String subject, final String property) {
-        
+
         final Map<String, Map<String, JsonValue>> graphMap = index.get(graphName);
-        
+
         if (graphMap == null) {
             return Optional.empty();
         }
-        
+
         final Map<String, JsonValue> subjectMap = graphMap.get(subject);
-        
+
         if (subjectMap == null) {
             return Optional.empty();
         }
-        
+
         return Optional.ofNullable(subjectMap.get(property));
     }
 
@@ -95,7 +95,7 @@ final class GraphMap {
 
     public List<Reference> getUsages(String graphName, String subject) {
         return usages.containsKey(graphName) && usages.get(graphName).containsKey(subject)
-                    ? usages.get(graphName).get(subject) 
+                    ? usages.get(graphName).get(subject)
                     : Collections.emptyList();
     }
 
@@ -108,5 +108,5 @@ final class GraphMap {
 
     public void remove(String graphName, String subject) {
         index.get(graphName).remove(subject);
-    }    
+    }
 }

@@ -34,26 +34,26 @@ public final class NQuadsWriterTestCase {
         testCase.name = json.getString("name");
         testCase.input = json.getString("input");
         testCase.expected = json.getString("expected");
-        
+
         return testCase;
     }
-    
+
     public String getId() {
         return id;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public String getInput() {
         return input;
     }
-    
+
     public String getExpected() {
         return expected;
     }
-    
+
     @Override
     public String toString() {
         return id + ": " + name;

@@ -29,11 +29,11 @@ import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 import com.apicatalog.jsonld.test.loader.ZipResourceLoader;
 
 class FrameTest {
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")
     void testFrame(JsonLdTestCase testCase) {
-        
+
         // @embed: @last - won't fix
         assumeFalse("#t0059".equals(testCase.id));
 

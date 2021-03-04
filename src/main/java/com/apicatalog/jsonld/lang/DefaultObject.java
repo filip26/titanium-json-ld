@@ -26,10 +26,10 @@ public final class DefaultObject {
 
     /**
      * A default object is a map that has a @default key.
-     * 
+     *
      * @see <a href="https://www.w3.org/TR/json-ld11/#dfn-default-object">Default
      *      Object</a>
-     * 
+     *
      * @param value to check
      * @return <code>true</code> if the provided value is valid default object
      */

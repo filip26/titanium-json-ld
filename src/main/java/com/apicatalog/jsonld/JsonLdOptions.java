@@ -30,94 +30,94 @@ import jakarta.json.JsonObject;
 
 /**
  * The {@link JsonLdOptions} type is used to pass various options to the processor.
- * 
+ *
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#the-jsonldoptions-type">The
  *      JsonLdOptions Specification.</a>
- * 
+ *
  */
 public final class JsonLdOptions {
 
-    public enum RdfDirection {        
+    public enum RdfDirection {
         I18N_DATATYPE,
-        COMPOUND_LITERAL 
+        COMPOUND_LITERAL
     }
-    
+
     /**
-     * The base IRI to use when expanding or compacting the document. 
+     * The base IRI to use when expanding or compacting the document.
      * If set, this overrides the input document's IRI.
      */
     private URI base;
-    
+
     /**
-     * If set to true, the JSON-LD processor replaces arrays with 
-     * just one element with that element during compaction. 
-     * If set to false, all arrays will remain arrays 
+     * If set to true, the JSON-LD processor replaces arrays with
+     * just one element with that element during compaction.
+     * If set to false, all arrays will remain arrays
      * even if they have just one element.
      */
     private boolean compactArrays;
-    
+
     /**
-     * Determines if IRIs are compacted relative to the base option 
+     * Determines if IRIs are compacted relative to the base option
      * or document location when compacting.
      */
     private boolean compactToRelative;
 
     /**
      * The callback of the loader to be used to retrieve remote documents and contexts,
-     *  implementing the LoadDocumentCallback. If specified, it is used to retrieve 
-     *  remote documents and contexts; otherwise, if not specified, 
+     *  implementing the LoadDocumentCallback. If specified, it is used to retrieve
+     *  remote documents and contexts; otherwise, if not specified,
      *  the processor's built-in loader is used.
      */
     private DocumentLoader documentLoader;
-    
+
     /**
      * A context that is used to initialize the active context when expanding a document.
      */
     private Document expandContext;
-    
+
     private boolean extractAllScripts;
-    
+
     private boolean ordered;
-    
+
     private JsonLdVersion processingMode;
-    
+
     private boolean produceGeneralizedRdf;
-    
+
     private RdfDirection rdfDirection;
-    
+
     private boolean useNativeTypes;
-    
+
     private boolean useRdfType;
-    
+
     // Framing https://www.w3.org/TR/json-ld11-framing/#jsonldoptions
-    
+
     private JsonLdEmbed embed;
-    
+
     private boolean explicit;
-    
+
     private boolean omitDefault;
-    
+
     private Boolean omitGraph;
-    
+
     private boolean requiredAll;
-    
-    // custom 
-    
+
+    // custom
+
     // allow numeric @id
     private boolean numericId;
-    
+
     // context cache
     private Cache<String, ActiveContext> contextCache;
-    
+
     // document cache
     private Cache<String, Document> documentCache;
 
     public JsonLdOptions() {
         this(SchemeRouter.defaultInstance());
     }
-    
+
     public JsonLdOptions(DocumentLoader loader) {
-        
+
         // default values
         this.base = null;
         this.compactArrays = true;
@@ -131,18 +131,18 @@ public final class JsonLdOptions {
         this.rdfDirection = null;
         this.useNativeTypes = false;
         this.useRdfType = false;
-        
+
         // framing defaults
         this.embed = JsonLdEmbed.ONCE;
         this.explicit = false;
         this.omitDefault = false;
         this.omitGraph = null;
         this.requiredAll = false;
-        
+
         // custom
         this.numericId = false;
         this.contextCache = new LruCache<>(256);
-        this.documentCache = null; 
+        this.documentCache = null;
     }
 
     public JsonLdOptions(JsonLdOptions options) {
@@ -158,14 +158,14 @@ public final class JsonLdOptions {
         this.rdfDirection = options.rdfDirection;
         this.useNativeTypes = options.useNativeTypes;
         this.useRdfType = options.useRdfType;
-        
+
         // framing
         this.embed = options.embed;
         this.explicit = options.explicit;
         this.omitDefault = options.omitDefault;
         this.omitGraph = options.omitGraph;
         this.requiredAll = options.requiredAll;
-        
+
         // custom
         this.numericId = options.numericId;
         this.contextCache = options.contextCache;
@@ -176,7 +176,7 @@ public final class JsonLdOptions {
      * The base IRI to use when expanding or
      * <a href="https://www.w3.org/TR/json-ld11-api/#dfn-compact">compacting</a> the
      * document. If set, this overrides the input document's IRI.
-     * 
+     *
      * @return the base URI or <code>null</code>
      */
     public URI getBase() {
@@ -189,7 +189,7 @@ public final class JsonLdOptions {
      * <a href="https://www.w3.org/TR/json-ld11-api/#dfn-compact">compaction</a>. If
      * set to false, all arrays will remain arrays even if they have just one
      * element.
-     * 
+     *
      * @return <code>true</code> if array compaction is enabled
      */
     public boolean isCompactArrays() {
@@ -200,7 +200,7 @@ public final class JsonLdOptions {
      * Determines if IRIs are compacted relative to the {@link #getBase()} option
      * or document location when
      * <a href="https://www.w3.org/TR/json-ld11-api/#dfn-compact">compacting</a>.
-     * 
+     *
      * @return <code>true</code> if IRI relativization is enabled
      */
     public boolean isCompactToRelative() {
@@ -212,7 +212,7 @@ public final class JsonLdOptions {
      * contexts, implementing the {@link DocumentLoader}. If specified, it is
      * used to retrieve remote documents and contexts; otherwise, if not specified,
      * the processor's built-in loader is used.
-     * 
+     *
      * @return the loader or <code>null</code> is is not set
      */
     public DocumentLoader getDocumentLoader() {
@@ -227,7 +227,7 @@ public final class JsonLdOptions {
      * identifier</a> is targeted, extracts all encountered <a href=
      * "https://www.w3.org/TR/json-ld11-api/#dfn-json-ld-script-element">JSON-LD
      * script elements</a> using an array form, if necessary.
-     * 
+     *
      * @return <code>true</code> if script extraction is enabled
      */
     public boolean isExtractAllScripts() {
@@ -238,7 +238,7 @@ public final class JsonLdOptions {
      * If set to <code>true</code>, certain algorithm processing steps where
      * indicated are ordered lexicographically. If <code>false</code>, order is not
      * considered in processing.
-     * 
+     *
      * @return <code>true</code> if array sorting is enabled
      */
     public boolean isOrdered() {
@@ -264,7 +264,7 @@ public final class JsonLdOptions {
     public boolean isUseRdfType() {
         return useRdfType;
     }
-    
+
     public Document getExpandContext() {
         return expandContext;
     }
@@ -314,7 +314,7 @@ public final class JsonLdOptions {
     }
 
     public void setExpandContext(final String contextLocation) {
-        
+
         if (contextLocation == null) {
             this.expandContext = null;
             return;
@@ -322,85 +322,85 @@ public final class JsonLdOptions {
 
         this.expandContext = JsonDocument.of(Json.createArrayBuilder().add(contextLocation).build());
     }
-    
+
     public void setExpandContext(URI contextUri) {
-        
+
         if (contextUri == null) {
             this.expandContext = null;
             return;
         }
-        
+
         setExpandContext(contextUri.toString());
     }
 
     public void setExpandContext(JsonObject context) {
-        
+
         if (context == null) {
             this.expandContext = null;
             return;
         }
-        
+
         this.expandContext = JsonDocument.of(context);
     }
-    
+
     public void setExpandContext(Document context) {
         this.expandContext = context;
     }
-    
+
     // Framing
-    
+
     public JsonLdEmbed getEmbed() {
         return embed;
     }
-    
+
     public void setEmbed(JsonLdEmbed embed) {
         this.embed = embed;
     }
-    
+
     public boolean isExplicit() {
         return explicit;
     }
-    
+
     public void setExplicit(boolean explicit) {
         this.explicit = explicit;
     }
-    
+
     public boolean isOmitDefault() {
         return omitDefault;
     }
-    
+
     public void setOmitDefault(boolean omitDefault) {
         this.omitDefault = omitDefault;
     }
-    
+
     public Boolean isOmitGraph() {
         return omitGraph;
     }
-    
+
     public void setOmitGraph(Boolean omitGraph) {
         this.omitGraph = omitGraph;
     }
-    
+
     public boolean isRequiredAll() {
         return requiredAll;
     }
-    
+
     public void setRequiredAll(boolean requiredAll) {
         this.requiredAll = requiredAll;
     }
 
     /**
      * Experimental: Enables/Disables numeric @id support.
-     *  
+     *
      * @param enable numeric @id support
      */
     public void setNumericId(boolean enable) {
         this.numericId = enable;
     }
-    
+
     /**
      * Experimental: Numeric @id support state. Disabled by default.
-     * 
+     *
      * @return <code>true</code> if numeric @id support is enabled
      */
     public boolean isNumericId() {
@@ -410,15 +410,15 @@ public final class JsonLdOptions {
     public Cache<String, ActiveContext> getContextCache() {
         return contextCache;
     }
-    
+
     public void setContextCache(Cache<String, ActiveContext> contextCache) {
         this.contextCache = contextCache;
     }
-    
+
     public Cache<String, Document> getDocumentCache() {
         return documentCache;
     }
-    
+
     public void setDocumentCache(Cache<String, Document> documentCache) {
         this.documentCache = documentCache;
     }

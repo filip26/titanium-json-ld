@@ -52,7 +52,7 @@ public final class TermDefinition {
     private DirectionType directionMapping;
 
     private JsonValue languageMapping;
-    
+
     public TermDefinition(boolean prefixFlag, boolean protectedFlag, boolean reversePropertyFlag) {
         this.prefixFlag = prefixFlag;
         this.protectedFlag = protectedFlag;
@@ -127,7 +127,7 @@ public final class TermDefinition {
     public String getIndexMapping() {
         return indexMapping;
     }
-    
+
     public String getNestValue() {
         return nestValue;
     }
@@ -139,31 +139,31 @@ public final class TermDefinition {
     protected void setIndexMapping(String indexMapping) {
         this.indexMapping = indexMapping;
     }
-    
+
     protected void setContainerMapping(Set<String> containerMapping) {
         this.containerMapping = containerMapping;
     }
-    
+
     protected void setPrefix(boolean prefixFlag) {
         this.prefixFlag = prefixFlag;
     }
-    
+
     protected void setProtected(boolean protectedFlag) {
         this.protectedFlag = protectedFlag;
     }
-    
+
     protected void setReverseProperty(boolean reversePropertyFlag) {
         this.reversePropertyFlag = reversePropertyFlag;
     }
-    
+
     protected void setTypeMapping(String typeMapping) {
         this.typeMapping = typeMapping;
     }
-    
+
     protected void setDirectionMapping(DirectionType directionMapping) {
         this.directionMapping = directionMapping;
     }
-    
+
     protected void setNestValue(String nestValue) {
         this.nestValue = nestValue;
     }
@@ -179,10 +179,10 @@ public final class TermDefinition {
                 || !Objects.equals(localContext, ref.localContext)
                 ;
     }
-    
+
     public boolean hasContainerMapping(String value) {
         return containerMapping != null && containerMapping.contains(value);
-    }  
+    }
 
     @Override
     public String toString() {

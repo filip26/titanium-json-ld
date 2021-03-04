@@ -20,7 +20,7 @@ import java.util.Arrays;
 import com.apicatalog.rdf.lang.RdfAlphabet;
 
 /**
- * 
+ *
  * @see <a href="https://www.w3.org/TR/curie/">A syntax for expressing Compact
  *      URIs</a>
  *
@@ -28,18 +28,18 @@ import com.apicatalog.rdf.lang.RdfAlphabet;
 public final class BlankNode {
 
     private BlankNode() {
-        
+
     }
-    
+
     public static boolean hasPrefix(final String value) {
         return value.startsWith("_:");
     }
 
     /**
      * BLANK_NODE_LABEL ::= '_:' (PN_CHARS_U | [0-9]) ((PN_CHARS | '.')* PN_CHARS)?
-     * 
+     *
      * @see <a href="https://www.w3.org/TR/n-quads/#sec-grammar">N-Quads Grammar</a>
-     * 
+     *
      * @param blankNodeId to check
      * @return <code>true</code> if the provided string is well formed blank node identifier
      */
@@ -48,26 +48,26 @@ public final class BlankNode {
         if (blankNodeId == null) {
             throw new IllegalArgumentException();
         }
-        
+
         if (blankNodeId.length() < 3) {
             return false;
         }
 
         int[] chars = blankNodeId.codePoints().toArray();
 
-        if (chars[0] != '_' 
-                || chars[1] != ':' 
+        if (chars[0] != '_'
+                || chars[1] != ':'
                 || (RdfAlphabet.PN_CHARS_U.negate().test(chars[2])
                         && RdfAlphabet.ASCII_DIGIT.negate().test(chars[2]))
                 || chars[chars.length - 1] == '.'
                         )  {
             return false;
         }
-        
+
         if (chars.length == 3) {
             return true;
         }
-        
+
         return Arrays.stream(chars, 3, chars.length - 1).allMatch(RdfAlphabet.PN_CHARS.or(ch -> ch == '.'));
     }
 }

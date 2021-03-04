@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.document;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -36,15 +37,15 @@ import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 
 class JsonDocumentTest {
-    
+
     @Test
     void test1() {
         Document document = JsonDocument.of(JsonValue.EMPTY_JSON_ARRAY);
         assertNotNull(document);
         assertTrue(MediaType.JSON.match(document.getContentType()));
-        assertTrue(document.getRdfContent().isEmpty());
+        assertFalse(document.getRdfContent().isPresent());
         assertTrue(document.getJsonContent().isPresent());
-        assertTrue(document.getProfile().isEmpty());
+        assertFalse(document.getProfile().isPresent());
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, document.getJsonContent().get());
     }
 
@@ -53,9 +54,9 @@ class JsonDocumentTest {
         Document document = JsonDocument.of(MediaType.JSON_LD, JsonValue.EMPTY_JSON_OBJECT);
         assertNotNull(document);
         assertTrue(MediaType.JSON_LD.match(document.getContentType()));
-        assertTrue(document.getRdfContent().isEmpty());
+        assertFalse(document.getRdfContent().isPresent());
         assertTrue(document.getJsonContent().isPresent());
-        assertTrue(document.getProfile().isEmpty());
+        assertFalse(document.getProfile().isPresent());
         assertEquals(JsonValue.EMPTY_JSON_OBJECT, document.getJsonContent().get());
     }
 
@@ -64,9 +65,9 @@ class JsonDocumentTest {
         Document document = JsonDocument.of(new ByteArrayInputStream(JsonValue.EMPTY_JSON_ARRAY.toString().getBytes()));
         assertNotNull(document);
         assertTrue(MediaType.JSON.match(document.getContentType()));
-        assertTrue(document.getRdfContent().isEmpty());
+        assertFalse(document.getRdfContent().isPresent());
         assertTrue(document.getJsonContent().isPresent());
-        assertTrue(document.getProfile().isEmpty());
+        assertFalse(document.getProfile().isPresent());
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, document.getJsonContent().get());
     }
 
@@ -75,9 +76,9 @@ class JsonDocumentTest {
         Document document = JsonDocument.of(new InputStreamReader(new ByteArrayInputStream(JsonValue.EMPTY_JSON_ARRAY.toString().getBytes())));
         assertNotNull(document);
         assertTrue(MediaType.JSON.match(document.getContentType()));
-        assertTrue(document.getRdfContent().isEmpty());
+        assertFalse(document.getRdfContent().isPresent());
         assertTrue(document.getJsonContent().isPresent());
-        assertTrue(document.getProfile().isEmpty());
+        assertFalse(document.getProfile().isPresent());
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, document.getJsonContent().get());
     }
 
@@ -86,13 +87,13 @@ class JsonDocumentTest {
         Document document = JsonDocument.of(MediaType.of("application/custom+json;profile=https://example.org/profile"), JsonValue.EMPTY_JSON_OBJECT);
         assertNotNull(document);
         assertTrue(MediaType.of("application", "custom+json").match(document.getContentType()));
-        assertTrue(document.getRdfContent().isEmpty());
+        assertFalse(document.getRdfContent().isPresent());
         assertTrue(document.getJsonContent().isPresent());
         assertTrue(document.getProfile().isPresent());
         assertEquals("https://example.org/profile", document.getProfile().get());
         assertEquals(JsonValue.EMPTY_JSON_OBJECT, document.getJsonContent().get());
     }
-    
+
     @Test
     void testi1() throws JsonLdError {
         assertThrows(IllegalArgumentException.class, () -> JsonDocument.of((InputStream)null));
@@ -107,7 +108,7 @@ class JsonDocumentTest {
     void testi3() throws JsonLdError {
         assertThrows(IllegalArgumentException.class, () -> JsonDocument.of((Reader)null));
     }
-    
+
     @Test
     void testi4() throws JsonLdError {
         final InputStream is = new ByteArrayInputStream(JsonValue.EMPTY_JSON_ARRAY.toString().getBytes());
@@ -124,7 +125,7 @@ class JsonDocumentTest {
         final Reader reader = new InputStreamReader(new ByteArrayInputStream(JsonValue.EMPTY_JSON_ARRAY.toString().getBytes()));
         assertThrows(IllegalArgumentException.class, () -> JsonDocument.of(null, reader));
     }
-    
+
     @ParameterizedTest
     @ValueSource(strings = {"{ bad json", "   ", "true"})
     void testi7(String content) throws JsonLdError {
@@ -136,5 +137,5 @@ class JsonDocumentTest {
     void testi8() throws JsonLdError {
         final Reader reader = new InputStreamReader(new ByteArrayInputStream("n".getBytes()));
         assertThrows(JsonLdError.class, () -> JsonDocument.of(reader));
-    }    
+    }
 }

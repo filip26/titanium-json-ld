@@ -32,15 +32,15 @@ import jakarta.json.stream.JsonParser;
 public final class NQuadsWriterTestSuite {
 
     public static final Stream<NQuadsWriterTestCase> load() throws ZipException, IOException, URISyntaxException {
-        
+
         try (final InputStream is = NQuadsWriterTestSuite.class.getResourceAsStream("/com/apicatalog/rdf/io/nquad/manifest.json")) {
 
             assertNotNull(is);
 
             final JsonParser parser = Json.createParser(is);
-            
+
             parser.next();
-            
+
             return parser
                         .getArray()
                         .stream()

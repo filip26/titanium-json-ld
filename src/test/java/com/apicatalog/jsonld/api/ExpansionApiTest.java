@@ -36,43 +36,43 @@ import jakarta.json.JsonValue;
 class ExpansionApiTest {
 
     public static final MockLoader MOCK_LOADER = new MockLoader(JsonValue.EMPTY_JSON_ARRAY);
-    
-    @Test    
+
+    @Test
     void test1() throws JsonLdError {
         JsonArray expanded = JsonLd.expand(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).get();
         assertNotNull(expanded);
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, expanded);
     }
-    
-    @Test    
+
+    @Test
     void test2() throws JsonLdError {
         JsonArray expanded = JsonLd.expand(JsonDocument.of(MediaType.JSON, new ByteArrayInputStream(JsonValue.EMPTY_JSON_OBJECT.toString().getBytes()))).get();
         assertNotNull(expanded);
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, expanded);
     }
-    
-    @Test    
+
+    @Test
     void test3() throws JsonLdError {
         JsonArray expanded = JsonLd.expand("https://example.com").loader(MOCK_LOADER).base("").get();
         assertNotNull(expanded);
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, expanded);
     }
 
-    @Test    
+    @Test
     void test4() throws JsonLdError {
         JsonArray expanded = JsonLd.expand(URI.create("https://example.com")).loader(MOCK_LOADER).mode(JsonLdVersion.V1_0).get();
         assertNotNull(expanded);
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, expanded);
     }
 
-    @Test    
+    @Test
     void test5() throws JsonLdError {
         JsonArray expanded = JsonLd.expand("\thttps://example.com  ").loader(MOCK_LOADER).ordered().get();
         assertNotNull(expanded);
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, expanded);
     }
-    
-    @Test    
+
+    @Test
     void test6() throws JsonLdError {
         JsonArray expanded = JsonLd.expand("\thttps://example.com").context(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).loader(MOCK_LOADER).ordered().get();
         assertNotNull(expanded);
@@ -84,15 +84,15 @@ class ExpansionApiTest {
         JsonArray expanded = JsonLd.expand("\thttps://example.com").context(JsonDocument.of(MediaType.JSON, new InputStreamReader(new ByteArrayInputStream(JsonValue.EMPTY_JSON_OBJECT.toString().getBytes())))).loader(MOCK_LOADER).ordered().get();
         assertNotNull(expanded);
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, expanded);
-    }    
+    }
 
-    @Test    
+    @Test
     void test8() throws JsonLdError {
         JsonArray expanded = JsonLd.expand("\thttps://example.com").context(JsonValue.EMPTY_JSON_OBJECT).loader(MOCK_LOADER).ordered().get();
         assertNotNull(expanded);
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, expanded);
     }
-    
+
     @Test
     void test9() throws JsonLdError {
         ExpansionApi api = JsonLd.expand("file:/example.org").context("file:/example.org");

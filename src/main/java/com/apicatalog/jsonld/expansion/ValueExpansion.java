@@ -31,7 +31,7 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
 /**
- * 
+ *
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#value-expansion">Value
  *      Expansion Algorithm</a>
  *
@@ -40,7 +40,7 @@ public final class ValueExpansion {
 
     // required
     private final ActiveContext activeContext;
-    
+
     // runtime
     private JsonObject result;
     private Optional<TermDefinition> definition;
@@ -63,9 +63,9 @@ public final class ValueExpansion {
 
             // 1.
             if (Keywords.ID.equals(typeMapping.get())) {
-                
+
                 String idValue = null;
-                
+
                 if (JsonUtils.isString(value)) {
                     idValue = ((JsonString) value).getString();
 
@@ -73,14 +73,14 @@ public final class ValueExpansion {
                 } else if (activeContext.getOptions().isNumericId() && JsonUtils.isNumber(value)) {
                     idValue = ((JsonNumber) value).toString();
                 }
-                
+
                 if (idValue != null) {
                     final String expandedValue = activeContext.uriExpansion().documentRelative(true)
                             .vocab(false).expand(idValue);
-                    
+
                     return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();
                 }
-                
+
             // 2.
             } else if (Keywords.VOCAB.equals(typeMapping.get()) && JsonUtils.isString(value)) {
 
@@ -108,7 +108,7 @@ public final class ValueExpansion {
         // 6.
         return result;
     }
-    
+
     private void buildStringValue() {
 
         // 5.1.
@@ -125,7 +125,7 @@ public final class ValueExpansion {
         final DirectionType direction = definition
                                             .map(TermDefinition::getDirectionMapping)
                                             .orElse(activeContext.getDefaultBaseDirection());
-        
+
         // 5.3.
         if (JsonUtils.isNotNull(language)) {
             result = Json.createObjectBuilder(result).add(Keywords.LANGUAGE, language).build();

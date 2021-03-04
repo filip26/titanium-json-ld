@@ -25,7 +25,7 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
 /**
- * 
+ *
  * @see <a href="https://w3c.github.io/json-ld-framing/#value-matching">Value Pattern Matching Algorithm</a>
  *
  */
@@ -34,28 +34,28 @@ public final class ValuePatternMatcher {
     // required
     private JsonObject pattern;
     private JsonObject value;
-    
+
     private ValuePatternMatcher(final JsonObject pattern, final JsonObject value) {
         this.pattern = pattern;
         this.value = value;
     }
-    
+
     public static final  ValuePatternMatcher with(final JsonObject pattern, final JsonObject value) {
         return new ValuePatternMatcher(pattern, value);
     }
-    
+
     public boolean match() {
-        
+
         final JsonValue value2 = pattern.getOrDefault(Keywords.VALUE, null);
-        
+
         final JsonValue type2 = pattern.getOrDefault(Keywords.TYPE, null);
 
         final JsonValue lang2 = pattern.getOrDefault(Keywords.LANGUAGE, null);
 
-        return (value2 == null && type2 == null && lang2 == null) 
+        return (value2 == null && type2 == null && lang2 == null)
                 || (matchValue(value2) && matchType(type2) && matchLanguage(lang2));
     }
-    
+
     private boolean matchValue(final JsonValue value2) {
 
         final JsonValue value1 = value.getOrDefault(Keywords.VALUE, null);
@@ -64,9 +64,9 @@ public final class ValuePatternMatcher {
                     || (JsonUtils.isNotNull(value2) && JsonUtils.toJsonArray(value2).contains(value1))
                     ;
     }
-    
+
     private boolean matchType(final JsonValue type2) {
-        
+
         final JsonValue type1 = value.getOrDefault(Keywords.TYPE, null);
 
         return (JsonUtils.isNotNull(type1) && isWildcard(type2))
@@ -74,39 +74,39 @@ public final class ValuePatternMatcher {
                     || (JsonUtils.isNotNull(type2) && JsonUtils.toJsonArray(type2).contains(type1))
                 ;
     }
-    
+
     private boolean matchLanguage(final JsonValue lang2) {
 
-        final String lang1 = value.containsKey(Keywords.LANGUAGE) 
+        final String lang1 = value.containsKey(Keywords.LANGUAGE)
                                     ? value.getString(Keywords.LANGUAGE).toLowerCase()
                                     : null;
 
         return ((lang1 != null && isWildcard(lang2)) || (lang1 == null && isNone(lang2)))
                 || (lang1 != null && lang2 != null
-                        && JsonUtils.isNotNull(lang2) 
+                        && JsonUtils.isNotNull(lang2)
                         && JsonUtils.toCollection(lang2)
                                 .stream()
                                 .map(JsonString.class::cast)
                                 .map(JsonString::getString)
                                 .anyMatch(x -> x.equalsIgnoreCase(lang1)));
     }
-    
+
     protected static final boolean isWildcard(final JsonValue value, final String...except) {
-        
+
         if (JsonUtils.isEmptyObject(value)) {
             return true;
         }
-        
+
         JsonObject frame = null;
-        
+
         if (JsonUtils.isObject(value)) {
-            
+
             frame = (JsonObject)value;
-            
-        } else if (JsonUtils.isArray(value) 
+
+        } else if (JsonUtils.isArray(value)
                     && value.asJsonArray().size() == 1
                     && JsonUtils.isObject(value.asJsonArray().get(0))) {
-            
+
             frame = value.asJsonArray().getJsonObject(0);
         }
 
@@ -119,7 +119,7 @@ public final class ValuePatternMatcher {
                 except
         ).containsAll(frame.keySet()));
     }
-    
+
     protected static final boolean isNone(JsonValue value) {
         return JsonUtils.isNull(value) || JsonUtils.isEmptyArray(value);
     }
