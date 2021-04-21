@@ -27,6 +27,7 @@ import com.apicatalog.jsonld.loader.SchemeRouter;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 
 /**
  * The {@link JsonLdOptions} type is used to pass various options to the processor.
@@ -107,7 +108,7 @@ public final class JsonLdOptions {
     private boolean numericId;
 
     // context cache
-    private Cache<String, ActiveContext> contextCache;
+    private Cache<String, JsonValue> contextCache;
 
     // document cache
     private Cache<String, Document> documentCache;
@@ -407,11 +408,11 @@ public final class JsonLdOptions {
         return numericId;
     }
 
-    public Cache<String, ActiveContext> getContextCache() {
+    public Cache<String, JsonValue> getContextCache() {
         return contextCache;
     }
 
-    public void setContextCache(Cache<String, ActiveContext> contextCache) {
+    public void setContextCache(Cache<String, JsonValue> contextCache) {
         this.contextCache = contextCache;
     }
 

@@ -464,7 +464,6 @@ public final class ActiveContextBuilder {
     }
 
     private void fetch(final String context, final URI baseUrl) throws JsonLdError {
-
         String contextUri = context;
 
         // 5.2.1
@@ -491,13 +490,17 @@ public final class ActiveContextBuilder {
 
         remoteContexts.add(contextUri);
 
-        // if the context has been processed already
+        // 5.2.4
         if (activeContext.getOptions() != null
                 && activeContext.getOptions().getContextCache() != null
                 && activeContext.getOptions().getContextCache().containsKey(contextUri) && !validateScopedContext) {
 
-            // then return the context from a cache
-            result = activeContext.getOptions().getContextCache().get(contextUri);
+            JsonValue cachedContext = activeContext.getOptions().getContextCache().get(contextUri);
+            result = result
+                    .newContext()
+                    .remoteContexts(new ArrayList<>(remoteContexts))
+                    .validateScopedContext(validateScopedContext)
+                    .create(cachedContext, URI.create(contextUri));
             return;
         }
 
@@ -572,7 +575,7 @@ public final class ActiveContextBuilder {
                         .create(importedContext, remoteImport.getDocumentUrl());
 
             if (result.getOptions() != null && result.getOptions().getContextCache() != null && !validateScopedContext) {
-                result.getOptions().getContextCache().put(contextUri, result);
+                result.getOptions().getContextCache().put(contextUri, importedContext);
             }
 
         } catch (JsonLdError e) {
