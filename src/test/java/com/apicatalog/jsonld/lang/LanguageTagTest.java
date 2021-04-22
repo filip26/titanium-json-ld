@@ -16,20 +16,15 @@
 package com.apicatalog.jsonld.lang;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-import java.net.URI;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import com.apicatalog.jsonld.uri.UriResolver;
 
 class LanguageTagTest {
 
@@ -40,7 +35,7 @@ class LanguageTagTest {
 
     @ParameterizedTest(name = "isWellFormed({0}): {1}")
     @MethodSource("data")
-    void test(final String tag, final boolean expected) {
+    void testWellFormed(final String tag, final boolean expected) {
         assertEquals(expected, LanguageTag.isWellFormed(tag));
     }
 
@@ -52,11 +47,20 @@ class LanguageTagTest {
             arguments("cs-a-CZ", false),
             arguments("cs-", false),
             arguments("-cs", false),
+            arguments("c#-CZ", false),
+            arguments("A1B2", false),
+            arguments("1", false),
+            arguments("abcd1234-abcd1234", false),
+            arguments("a-b-", false),
             
             arguments("cs", true),
             arguments("cs-CZ", true),
-            arguments("en-US", true)
+            arguments("en-US", true),
+            arguments("en-US", true),
+            
+            arguments("A", true),
+            arguments("A-0", true),
+            arguments("abcd-1234", true)
         );
     }
-
 }
