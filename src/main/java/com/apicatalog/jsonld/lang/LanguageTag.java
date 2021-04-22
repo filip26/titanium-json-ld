@@ -15,9 +15,6 @@
  */
 package com.apicatalog.jsonld.lang;
 
-import java.util.Arrays;
-
-import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.rdf.lang.RdfAlphabet;
 
 public final class LanguageTag {
@@ -40,13 +37,9 @@ public final class LanguageTag {
             throw new IllegalArgumentException();
         }
 
-        if (StringUtils.isBlank(languageTag)) {
-            return false;
-        }
-
-        int[] chars = languageTag.trim().codePoints().toArray();
-
-        if (RdfAlphabet.ASCII_ALPHA.negate().test(chars[0])) {
+        final int[] chars = languageTag.trim().codePoints().toArray();
+        
+        if (chars.length == 0 || RdfAlphabet.ASCII_ALPHA.negate().test(chars[0])) {
             return false;
         }
 
@@ -54,9 +47,42 @@ public final class LanguageTag {
             return true;
         }
 
-        if (RdfAlphabet.ASCII_ALPHA_NUM.negate().test(chars[chars.length - 1])) {
+
+        int index = 1;
+        
+        // [a-zA-Z]+
+        for (; index < chars.length; index++) {
+            
+            // ('-' [a-zA-Z0-9]+)*
+            if (chars[index] == '-') {
+                break;
+            }
+
+            // [a-zA-Z]+
+            if (RdfAlphabet.ASCII_ALPHA.test(chars[index])) {
+                continue;
+            }
+            
             return false;
         }
-        return Arrays.stream(chars, 1, chars.length - 1).allMatch(RdfAlphabet.ASCII_ALPHA_NUM.or(ch -> ch == '-'));
+
+        if (index == chars.length - 1) {
+            return chars[index] != '-';
+        }
+        
+        index++;
+
+        // ('-' [a-zA-Z0-9]+)*
+        for (; index < chars.length; index++) {
+            
+            // [a-zA-Z0-9]+
+            if (RdfAlphabet.ASCII_ALPHA_NUM.test(chars[index])) {
+                continue;
+            }
+            
+            return false;            
+        }
+        
+        return true;
     }
 }
