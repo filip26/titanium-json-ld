@@ -271,8 +271,12 @@ final class ObjectExpansion1314 {
                                             || !value.asJsonArray().stream().allMatch(JsonUtils::isString)
                                         )
                                     && !DefaultObject.isDefaultObject(value)
-                                        && (JsonUtils.isNotString(DefaultObject.getValue(value))
-                                                || !UriUtils.isURI(((JsonString)DefaultObject.getValue(value)).getString())
+                                    && (DefaultObject.getValue(value).map(JsonUtils::isNotString).orElse(true)
+                                            || DefaultObject.getValue(value)
+                                                            .map(JsonString.class::cast)
+                                                            .map(JsonString::getString)
+                                                            .map(UriUtils::isNotURI)
+                                                            .orElse(true)
                                             )
                             ) {
 
@@ -283,20 +287,24 @@ final class ObjectExpansion1314 {
                     if (JsonUtils.isEmptyObject(value)) {
                         expandedValue = value;
 
-                        // 13.4.4.3
+                    // 13.4.4.3
                     } else if (DefaultObject.isDefaultObject(value)) {
 
-                        value = DefaultObject.getValue(value);
+                        final Optional<JsonValue> defaultValue = DefaultObject.getValue(value);
 
-                        expandedValue = Json.createObjectBuilder()
-                                .add(Keywords.DEFAULT,
-                                        typeContext
-                                                .uriExpansion()
-                                                .vocab(true)
-                                                .documentRelative(true)
-                                                .expand(((JsonString) value).getString()))
-                                .build();
-
+                        if (defaultValue.map(JsonUtils::isString).orElse(false)) {
+                            
+                            expandedValue = Json.createObjectBuilder()
+                                    .add(Keywords.DEFAULT,
+                                            typeContext
+                                                    .uriExpansion()
+                                                    .vocab(true)
+                                                    .documentRelative(true)
+                                                    //  deepcode ignore checkIsPresent~Optional: false positive
+                                                    .expand(defaultValue.map(JsonString.class::cast).map(JsonString::getString).get()))
+                                    .build();
+                        }
+                    
                     // 13.4.4.4
                     } else {
 

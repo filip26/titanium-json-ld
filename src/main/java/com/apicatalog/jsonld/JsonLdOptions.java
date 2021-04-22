@@ -17,7 +17,6 @@ package com.apicatalog.jsonld;
 
 import java.net.URI;
 
-import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.cache.Cache;
 import com.apicatalog.jsonld.context.cache.LruCache;
 import com.apicatalog.jsonld.document.Document;
