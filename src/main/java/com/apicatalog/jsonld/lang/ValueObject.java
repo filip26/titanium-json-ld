@@ -15,6 +15,8 @@
  */
 package com.apicatalog.jsonld.lang;
 
+import java.util.Optional;
+
 import com.apicatalog.jsonld.json.JsonUtils;
 
 import jakarta.json.JsonValue;
@@ -28,10 +30,10 @@ public final class ValueObject {
         return JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.VALUE);
     }
 
-    public static JsonValue getValue(JsonValue value) {
+    public static Optional<JsonValue> getValue(JsonValue value) {
         return isValueObject(value)
-                    ? value.asJsonObject().get(Keywords.VALUE)
-                    : null;
+                    ? Optional.ofNullable(value.asJsonObject().get(Keywords.VALUE))
+                    : Optional.empty();
     }
 
 }

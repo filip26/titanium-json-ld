@@ -91,7 +91,7 @@ public final class Frame {
             }
 
             if (ValueObject.isValueObject(embed)) {
-                embed = ValueObject.getValue(embed);
+                embed = ValueObject.getValue(embed).orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE));
             }
 
             if (JsonUtils.isString(embed)) {
@@ -136,7 +136,7 @@ public final class Frame {
             }
 
             if (ValueObject.isValueObject(value)) {
-                value = ValueObject.getValue(value);
+                value = ValueObject.getValue(value).orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_FRAME));
             }
 
             if (JsonUtils.isString(value)) {
