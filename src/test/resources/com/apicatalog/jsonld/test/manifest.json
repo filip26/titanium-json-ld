@@ -83,13 +83,21 @@
       "input": "relative-base-in.json",
       "expect": "relative-base-out.json"
     },
-	{
+	  {
       "@id": "#t0010",
       "@type": ["jld:PositiveEvaluationTest", "jld:ToRDFTest"],
       "name": "ToRDF: relative base in local context",
       "input": "relative-base-in.json",
       "expect": "relative-base-out.nq"
+    },
+    {
+      "@id": "#t0010",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ToRDFTest"],
+      "name": "ToRDF: document relative subject",
+      "input": "issue145-in.json",
+      "expect": "issue145-out.nq"
     }    
+        
         
   ]
 }

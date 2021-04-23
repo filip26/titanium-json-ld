@@ -1,0 +1,1 @@
+<https://raw.githubusercontent.com/filip26/titanium-json-ld/master/src/test/resources/com/apicatalog/jsonld/test/x.y.z> <x:item> "A_Token"^^<http://www.w3.org/2001/XMLSchema#token> .

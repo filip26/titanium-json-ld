@@ -42,5 +42,5 @@ class CustomTest {
                     .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                     .filter(test -> !"#t0008".equals(test.id))  // requires mock server
                     ;
-    }
+    }    
 }

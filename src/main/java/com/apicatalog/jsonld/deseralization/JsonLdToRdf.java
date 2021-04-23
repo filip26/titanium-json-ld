@@ -17,6 +17,8 @@ package com.apicatalog.jsonld.deseralization;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
@@ -38,6 +40,8 @@ import jakarta.json.JsonValue;
 
 public final class JsonLdToRdf {
 
+    private static final Logger LOGGER = Logger.getLogger(JsonLdToRdf.class.getName());
+    
     // required
     private final NodeMap nodeMap;
     private final RdfDataset dataset;
@@ -108,6 +112,7 @@ public final class JsonLdToRdf {
                     rdfSubject = Rdf.createIRI(subject);
 
                 } else {
+                    LOGGER.log(Level.WARNING, "Non well-formed subject [{0}] has been skipped.", subject);
                     continue;
                 }
 
