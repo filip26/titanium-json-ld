@@ -319,11 +319,13 @@ public final class ActiveContextBuilder {
                         }
 
                     } else if (StringUtils.isNotBlank(valueString)) {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);
+                        throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI,
+                                "An invalid base IRI has been detected [@base = " + valueString + "].");
                     }
 
                 } else {
-                    throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI);
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI,
+                            "An invalid base IRI has been detected [@base = " + value + "].");
                 }
             }
 

@@ -99,7 +99,7 @@ public final class Frame {
                 String stringValue = ((JsonString)embed).getString();
 
                 if (Keywords.noneMatch(stringValue, Keywords.ALWAYS, Keywords.ONCE, Keywords.NEVER)) {
-                    throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE);
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag [@embed = " + stringValue + "].");
                 }
 
                 return JsonLdEmbed.valueOf(stringValue.substring(1).toUpperCase());
@@ -111,7 +111,7 @@ public final class Frame {
                 return JsonLdEmbed.ONCE;
             }
 
-            throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE);
+            throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag [@embed = " + embed + "].");
          }
 
         return defaultValue;
