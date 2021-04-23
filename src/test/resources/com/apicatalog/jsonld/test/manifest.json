@@ -91,7 +91,7 @@
       "expect": "relative-base-out.nq"
     },
     {
-      "@id": "#t0010",
+      "@id": "#t0011",
       "@type": ["jld:PositiveEvaluationTest", "jld:ToRDFTest"],
       "name": "ToRDF: document relative subject",
       "input": "issue145-in.json",
