@@ -690,9 +690,10 @@ final class ObjectExpansion1314 {
                 expandedValue = JsonValue.EMPTY_JSON_ARRAY;
 
                 // 13.7.2.
-                final DirectionType direction = keyTermDefinition.map(TermDefinition::getDirectionMapping).isPresent()
-                                                    ? keyTermDefinition.get().getDirectionMapping()
-                                                    : activeContext.getDefaultBaseDirection();
+                final DirectionType direction = keyTermDefinition
+                                                    .map(TermDefinition::getDirectionMapping)
+                                                    .orElse(activeContext.getDefaultBaseDirection())
+                                                    ;
 
                 final JsonObject valueObject = value.asJsonObject();
 
