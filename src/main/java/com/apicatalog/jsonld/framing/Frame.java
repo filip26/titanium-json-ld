@@ -31,6 +31,7 @@ import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.jsonld.uri.UriUtils;
 
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonStructure;
@@ -70,12 +71,12 @@ public final class Frame {
 
         // 1.2.
         if (frameObject.containsKey(Keywords.ID) && !validateFrameId(frameObject)) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @id value is not valid [" + frameObject.get(Keywords.ID) + "].");
+            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @id value is not valid [@id = " + frameObject.get(Keywords.ID) + "].");
         }
 
         // 1.3.
         if (frameObject.containsKey(Keywords.TYPE) && !validateFrameType(frameObject)) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @type value i not valid [" + frameObject.get(Keywords.TYPE) + "].");
+            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @type value i not valid [@type = " + frameObject.get(Keywords.TYPE) + "].");
         }
         return new Frame(frameObject);
     }
@@ -86,7 +87,7 @@ public final class Frame {
 
             JsonValue embed = frameObject.get(Keywords.EMBED);
 
-            if (embed == null || JsonUtils.isNull(embed)) {
+            if (JsonUtils.isNull(embed)) {
                 return defaultValue;
             }
 
@@ -99,7 +100,7 @@ public final class Frame {
                 String stringValue = ((JsonString)embed).getString();
 
                 if (Keywords.noneMatch(stringValue, Keywords.ALWAYS, Keywords.ONCE, Keywords.NEVER)) {
-                    throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE);
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag [@embed = " + stringValue + "].");
                 }
 
                 return JsonLdEmbed.valueOf(stringValue.substring(1).toUpperCase());
@@ -111,7 +112,7 @@ public final class Frame {
                 return JsonLdEmbed.ONCE;
             }
 
-            throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE);
+            throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag [@embed = " + embed + "].");
          }
 
         return defaultValue;
@@ -159,54 +160,45 @@ public final class Frame {
 
     private static final boolean validateFrameId(JsonObject frame) {
 
-        final JsonValue idValue = frame.get(Keywords.ID);
+        final JsonValue id = frame.get(Keywords.ID);
 
-        if (JsonUtils.isArray(idValue) && JsonUtils.isNotEmptyArray(idValue)) {
+        if (JsonUtils.isArray(id) && JsonUtils.isNotEmptyArray(id)) {
 
-            if (idValue.asJsonArray().size() == 1
-                   && JsonUtils.isEmptyObject(idValue.asJsonArray().get(0))) {
-                return true;
-            }
-
-            for (final JsonValue item : idValue.asJsonArray()) {
-                if (JsonUtils.isNotString(item) || UriUtils.isNotAbsoluteUri(((JsonString)item).getString())) {
-                    return false;
-                }
-            }
-            return true;
-
+            final JsonArray idArray = id.asJsonArray();
+            
+            return ((idArray.size() == 1 && JsonUtils.isEmptyObject(idArray.get(0)))
+                    || idArray
+                        .stream()
+                        .noneMatch(item -> JsonUtils.isNotString(item) 
+                                            || UriUtils.isNotAbsoluteUri(((JsonString)item).getString())));
         }
-        return JsonUtils.isString(idValue) && UriUtils.isAbsoluteUri(((JsonString)idValue).getString());
+        return JsonUtils.isString(id) && UriUtils.isAbsoluteUri(((JsonString)id).getString());
     }
 
     private static final boolean validateFrameType(JsonObject frame) {
 
-        final JsonValue typeValue = frame.get(Keywords.TYPE);
+        final JsonValue type = frame.get(Keywords.TYPE);
 
-        if (JsonUtils.isArray(typeValue) && JsonUtils.isNotEmptyArray(typeValue)) {
+        if (JsonUtils.isArray(type) && JsonUtils.isNotEmptyArray(type)) {
 
-            if (typeValue.asJsonArray().size() == 1
-                   && (JsonUtils.isEmptyObject(typeValue.asJsonArray().get(0))
-                           || (JsonUtils.isObject(typeValue.asJsonArray().get(0))
-                                   && typeValue.asJsonArray().get(0).asJsonObject().containsKey(Keywords.DEFAULT)
-                                   )
-                    )) {
-
-                return true;
-            }
-
-            for (final JsonValue item : typeValue.asJsonArray()) {
-                if (JsonUtils.isNotString(item) || UriUtils.isNotAbsoluteUri(((JsonString)item).getString())) {
-                    return false;
-                }
-            }
-            return true;
-
+            final JsonArray typeArray = type.asJsonArray();
+            
+            return ((typeArray.size() == 1
+                        && (JsonUtils.isEmptyObject(typeArray.get(0))
+                            || (JsonUtils.isObject(typeArray.get(0))
+                                    && typeArray.get(0).asJsonObject().containsKey(Keywords.DEFAULT)
+                                    )
+                            )
+                    )
+                    || typeArray
+                        .stream()
+                        .noneMatch(item -> JsonUtils.isNotString(item) 
+                                            || UriUtils.isNotAbsoluteUri(((JsonString)item).getString())));
         }
-        return
-                JsonUtils.isEmptyArray(typeValue)
-                || JsonUtils.isEmptyObject(typeValue)
-                || JsonUtils.isString(typeValue) && UriUtils.isAbsoluteUri(((JsonString)typeValue).getString());
+
+        return JsonUtils.isEmptyArray(type)
+                || JsonUtils.isEmptyObject(type)
+                || JsonUtils.isString(type) && UriUtils.isAbsoluteUri(((JsonString)type).getString());
     }
 
     public Set<String> keys() {

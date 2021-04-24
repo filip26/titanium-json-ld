@@ -644,7 +644,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 27.
-        if (!overrideProtectedFlag && previousDefinition.isPresent() && previousDefinition.get().isProtected()) {
+        if (!overrideProtectedFlag && previousDefinition.filter(TermDefinition::isProtected).isPresent()) {
 
             // 27.1.
             if (definition.isNotSameExcept(previousDefinition.get())) {

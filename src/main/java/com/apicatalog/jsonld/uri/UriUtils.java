@@ -80,12 +80,7 @@ public final class UriUtils {
     }
 
     public static final boolean isNotAbsoluteUri(final String uri) {
-
-        try {
-            return !URI.create(uri).isAbsolute();
-        } catch (IllegalArgumentException e) {
-            return true;
-        }
+        return !isAbsoluteUri(uri);
     }
 
     public static final boolean isAbsoluteUri(final String uri) {

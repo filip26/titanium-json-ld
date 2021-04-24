@@ -88,16 +88,22 @@ public final class ValueCompaction {
                 ) {
 
             // 6.1.
-            if (activePropertyDefinition.isPresent()
-                            && Keywords.ID.equals(activePropertyDefinition.get().getTypeMapping())) {
+            if (activePropertyDefinition
+                    .map(TermDefinition::getTypeMapping)
+                    .filter(Keywords.ID::equals)
+                    .isPresent()
+                    ) {
 
                 result = JsonUtils.toJsonValue(activeContext
                                                 .uriCompaction()
                                                 .compact(value.getString(Keywords.ID)));
 
             // 6.2.
-            } else if (activePropertyDefinition.isPresent()
-                            && Keywords.VOCAB.equals(activePropertyDefinition.get().getTypeMapping())) {
+            } else if (activePropertyDefinition
+                            .map(TermDefinition::getTypeMapping)
+                            .filter(Keywords.VOCAB::equals)
+                            .isPresent()
+                            ) {
 
                 result = JsonUtils.toJsonValue(activeContext
                                                 .uriCompaction()
@@ -106,26 +112,30 @@ public final class ValueCompaction {
             }
         // 7.
         } else if (value.containsKey(Keywords.TYPE)
-                    && activePropertyDefinition.isPresent()
-                    && JsonUtils.contains(
-                                    activePropertyDefinition.get().getTypeMapping(),
-                                    value.get(Keywords.TYPE)
+                    && activePropertyDefinition
+                            .map(TermDefinition::getTypeMapping)
+                            .filter(d -> JsonUtils.contains(
+                                        d,
+                                        value.get(Keywords.TYPE))
                                         )
+                            .isPresent()
                     ) {
 
             result = value.get(Keywords.VALUE);
 
         // 8.
-        } else if (activePropertyDefinition.isPresent()
-                        && Keywords.NONE.equals(activePropertyDefinition.get().getTypeMapping())
+        } else if (activePropertyDefinition
+                        .map(TermDefinition::getTypeMapping)
+                        .filter(Keywords.NONE::equals)
+                        .isPresent()
                         || (value.containsKey(Keywords.TYPE)
-                                && (!activePropertyDefinition.isPresent()
-                                        || !JsonUtils.contains(
-                                                activePropertyDefinition.get().getTypeMapping(),
-                                                value.get(Keywords.TYPE)
-                                                )
-                                        ))
-                ) {
+                                && (activePropertyDefinition
+                                        .map(TermDefinition::getTypeMapping)
+                                        .map(d -> !JsonUtils.contains(d, value.get(Keywords.TYPE)))
+                                        .orElse(true)
+                                        )
+                                )
+                    ) {
 
             // 8.1.
             final JsonArrayBuilder types = Json.createArrayBuilder();
@@ -145,7 +155,7 @@ public final class ValueCompaction {
         } else if (JsonUtils.isNotString(value.get(Keywords.VALUE))) {
 
             if (!value.containsKey(Keywords.INDEX)
-                    || activePropertyDefinition.map(td -> td.hasContainerMapping(Keywords.INDEX)).orElse(false)
+                    || activePropertyDefinition.filter(td -> td.hasContainerMapping(Keywords.INDEX)).isPresent()
                     ) {
                 result = value.get(Keywords.VALUE);
             }
@@ -170,9 +180,7 @@ public final class ValueCompaction {
                                 ))
                                 )
                         )
-                    && (!value.containsKey(Keywords.INDEX) || (activePropertyDefinition.isPresent()
-                && activePropertyDefinition.get().hasContainerMapping(Keywords.INDEX))
-                            )
+                    && (!value.containsKey(Keywords.INDEX) || activePropertyDefinition.filter(d -> d.hasContainerMapping(Keywords.INDEX)).isPresent())
                 ){
 
                 result = value.get(Keywords.VALUE);

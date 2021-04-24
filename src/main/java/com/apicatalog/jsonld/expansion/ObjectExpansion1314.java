@@ -292,7 +292,7 @@ final class ObjectExpansion1314 {
 
                         final Optional<JsonValue> defaultValue = DefaultObject.getValue(value);
 
-                        if (defaultValue.map(JsonUtils::isString).orElse(false)) {
+                        if (defaultValue.filter(JsonUtils::isString).isPresent()) {
                             
                             expandedValue = Json.createObjectBuilder()
                                     .add(Keywords.DEFAULT,
@@ -678,8 +678,7 @@ final class ObjectExpansion1314 {
             JsonValue expandedValue = null;
 
             // 13.6.
-            if (keyTermDefinition.isPresent()
-                    && Keywords.JSON.equals(keyTermDefinition.get().getTypeMapping())) {
+            if (keyTermDefinition.map(TermDefinition::getTypeMapping).filter(Keywords.JSON::equals).isPresent()) {
 
                 expandedValue = Json.createObjectBuilder().add(Keywords.VALUE, value)
                         .add(Keywords.TYPE, Keywords.JSON).build();
@@ -691,9 +690,10 @@ final class ObjectExpansion1314 {
                 expandedValue = JsonValue.EMPTY_JSON_ARRAY;
 
                 // 13.7.2.
-                final DirectionType direction = (keyTermDefinition.isPresent() && keyTermDefinition.map(TermDefinition::getDirectionMapping).isPresent())
-                                                    ? keyTermDefinition.get().getDirectionMapping()
-                                                    : activeContext.getDefaultBaseDirection();
+                final DirectionType direction = keyTermDefinition
+                                                    .map(TermDefinition::getDirectionMapping)
+                                                    .orElse(activeContext.getDefaultBaseDirection())
+                                                    ;
 
                 final JsonObject valueObject = value.asJsonObject();
 
@@ -944,7 +944,7 @@ final class ObjectExpansion1314 {
             }
 
             // 13.13.
-            if (keyTermDefinition.isPresent() && keyTermDefinition.get().isReverseProperty()) {
+            if (keyTermDefinition.filter(TermDefinition::isReverseProperty).isPresent()) {
 
                 // 13.13.3.
                 expandedValue = JsonUtils.toJsonArray(expandedValue);

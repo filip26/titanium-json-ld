@@ -95,7 +95,7 @@ public final class InverseContextBuilder {
                                                                 .map(TermDefinition::getDirectionMapping);
 
             // 3.10.
-            if (activeContext.getTerm(termName).map(TermDefinition::isReverseProperty).orElse(false)) {
+            if (activeContext.getTerm(termName).filter(TermDefinition::isReverseProperty).isPresent()) {
 
                 // 3.10.1
                 result.setIfAbsent(variableValue, container, Keywords.TYPE, Keywords.REVERSE, termName);

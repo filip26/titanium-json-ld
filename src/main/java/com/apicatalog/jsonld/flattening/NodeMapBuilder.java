@@ -16,14 +16,15 @@
 package com.apicatalog.jsonld.flattening;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.json.JsonSetBuilder;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -293,7 +294,7 @@ public final class NodeMapBuilder {
             // 6.7.
             if (elementObject.containsKey(Keywords.TYPE)) {
 
-                final JsonSetBuilder nodeType = JsonSetBuilder.create();
+                final Set<JsonValue> nodeType = new LinkedHashSet<>();
 
                 final JsonValue nodeTypeValue = nodeMap.get(activeGraph, id, Keywords.TYPE);
 
@@ -313,7 +314,10 @@ public final class NodeMapBuilder {
                     nodeType.add(typeValue);
                 }
 
-                nodeMap.set(activeGraph, id, Keywords.TYPE, nodeType.build());
+                final JsonArrayBuilder nodeTypeBuilder = Json.createArrayBuilder();
+                nodeType.forEach(nodeTypeBuilder::add);
+                
+                nodeMap.set(activeGraph, id, Keywords.TYPE, nodeTypeBuilder.build());
 
                 elementObject.remove(Keywords.TYPE);
             }
