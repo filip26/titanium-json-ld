@@ -417,8 +417,10 @@ public final class UriCompaction {
 
                 final Optional<TermDefinition> compactedIdValueTermDefinition = activeContext.getTerm(compactedIdValue);
 
-                if (compactedIdValueTermDefinition.isPresent()
-                        && idValue.equals(compactedIdValueTermDefinition.get().getUriMapping())
+                if (compactedIdValueTermDefinition
+                        .map(TermDefinition::getUriMapping)
+                        .map(idValue::equals)
+                        .orElse(false)
                         ) {
                     preferredValues.add(Keywords.VOCAB);
                     preferredValues.add(Keywords.ID);

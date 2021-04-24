@@ -124,10 +124,9 @@ public final class Compaction {
                     || !compactArrays
                     || Keywords.GRAPH.equals(activeProperty)
                     || Keywords.SET.equals(activeProperty)
-                    || (activePropertyDefinition.isPresent()
-                            && (activePropertyDefinition.get().hasContainerMapping(Keywords.LIST)
-                                || activePropertyDefinition.get().hasContainerMapping(Keywords.SET))
-                            )
+                    || activePropertyDefinition
+                            .map(d -> d.hasContainerMapping(Keywords.LIST) || d.hasContainerMapping(Keywords.SET))
+                            .orElse(false)
                     ) {
 
                 return result;
