@@ -2,6 +2,8 @@ package com.apicatalog.jsonld.document;
 
 import java.io.InputStream;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -10,6 +12,8 @@ import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.Rdf;
 
 public class DocumentResolver {
+
+    private static final Logger LOGGER = Logger.getLogger(DocumentResolver.class.getName());
 
     private MediaType fallbackContentType;
     
@@ -26,7 +30,15 @@ public class DocumentResolver {
      */
     public DocumentReader<InputStream> getReader(MediaType contentType) throws JsonLdError {
         return findReader(contentType)
-                .or(() -> findReader(fallbackContentType))
+                .or(() -> {
+                    
+                    if (fallbackContentType != null) {
+                        LOGGER.log(Level.WARNING, "Content type [{0}] is not supported, trying again with [{1}].", new Object[] { contentType, fallbackContentType});
+                        return findReader(fallbackContentType);
+                    }
+                    
+                    return Optional.empty();
+                })
                 .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED,
                     "Unsupported media type '" + contentType
                     + "'. Supported content types are ["

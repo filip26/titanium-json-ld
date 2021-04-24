@@ -36,9 +36,10 @@ import com.apicatalog.jsonld.http.media.MediaType;
 public final class FileLoader implements DocumentLoader {
 
     private final DocumentResolver resolver;
-    
+
     public FileLoader() {
         this.resolver = new DocumentResolver();
+        this.resolver.setFallbackContentType(MediaType.JSON);
     }
     
     private static final Logger LOGGER = Logger.getLogger(FileLoader.class.getName());    
@@ -99,5 +100,5 @@ public final class FileLoader implements DocumentLoader {
         }
 
         return Optional.empty();
-    }
+    }    
 }
