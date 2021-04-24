@@ -319,12 +319,12 @@ public final class ObjectExpansion {
         // 15.2.
         final Optional<JsonValue> type = result.get(Keywords.TYPE);
 
-        if (!type.isPresent() || !JsonUtils.contains(Keywords.JSON, type.get())) {
+        if (type.map(t -> !JsonUtils.contains(Keywords.JSON, t)).orElse(true)) {
 
             final Optional<JsonValue> value = result.get(Keywords.VALUE);
 
             // 15.3.
-            if (!value.isPresent() || JsonUtils.isNull(value.get()) || (JsonUtils.isArray(value.get()) && value.get().asJsonArray().isEmpty())) {
+            if (value.map(v -> JsonUtils.isNull(v) || (JsonUtils.isArray(v) && v.asJsonArray().isEmpty())).orElse(true)) {
                 return JsonValue.NULL;
 
             // 15.4
@@ -332,8 +332,11 @@ public final class ObjectExpansion {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
 
             // 15.5
-            } else if (type.isPresent()
-                    && (JsonUtils.isNotString(type.get()) || UriUtils.isNotURI(((JsonString) type.get()).getString())) && !frameExpansion) {
+            } else if (!frameExpansion
+                            && type.map(t -> JsonUtils.isNotString(t) 
+                                                || UriUtils.isNotURI(((JsonString) t).getString()))
+                                    .orElse(false)
+                         ) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE);
             }
         }

@@ -103,8 +103,10 @@ public final class ArrayExpansion {
             final Optional<TermDefinition> definition = activeContext.getTerm(activeProperty);
 
             // 5.2.2
-            if (definition.isPresent() && definition.get().getContainerMapping() != null
-                    && definition.get().getContainerMapping().contains(Keywords.LIST) && JsonUtils.isArray(expanded)) {
+            if (definition
+                        .map(TermDefinition::getContainerMapping)
+                        .map(c -> c.contains(Keywords.LIST)).orElse(false) 
+                    && JsonUtils.isArray(expanded)) {
 
                 expanded = ListObject.toListObject(expanded);
             }

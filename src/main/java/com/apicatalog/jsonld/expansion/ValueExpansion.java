@@ -95,8 +95,9 @@ public final class ValueExpansion {
         result = Json.createObjectBuilder().add(Keywords.VALUE, value).build();
 
         // 4.
-        if (typeMapping.isPresent() && !Keywords.ID.equals(typeMapping.get()) && !Keywords.VOCAB.equals(typeMapping.get())
-                && !Keywords.NONE.equals(typeMapping.get())) {
+        if (typeMapping
+                    .map(t -> !Keywords.ID.equals(t) && !Keywords.VOCAB.equals(t) && !Keywords.NONE.equals(t))
+                    .orElse(false)) {
 
             result = Json.createObjectBuilder(result).add(Keywords.TYPE, typeMapping.get()).build();
 
@@ -114,7 +115,7 @@ public final class ValueExpansion {
         // 5.1.
         JsonValue language = null;
 
-        if (definition.isPresent() && definition.map(TermDefinition::getLanguageMapping).isPresent()) {
+        if (definition.map(TermDefinition::getLanguageMapping).isPresent()) {
             language = definition.get().getLanguageMapping();
 
         } else if (activeContext.getDefaultLanguage() != null) {
