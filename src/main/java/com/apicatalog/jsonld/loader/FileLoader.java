@@ -29,11 +29,18 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.DocumentParser;
+import com.apicatalog.jsonld.document.DocumentReader;
+import com.apicatalog.jsonld.document.DocumentResolver;
 import com.apicatalog.jsonld.http.media.MediaType;
 
 public final class FileLoader implements DocumentLoader {
 
+    private final DocumentResolver resolver;
+    
+    public FileLoader() {
+        this.resolver = new DocumentResolver();
+    }
+    
     private static final Logger LOGGER = Logger.getLogger(FileLoader.class.getName());    
     
     @Override
@@ -56,9 +63,10 @@ public final class FileLoader implements DocumentLoader {
                                     return MediaType.JSON;  
                                 });
 
+        final DocumentReader<InputStream> reader = resolver.getReader(contentType);
+                
         try (final InputStream is = new FileInputStream(file)) {
-
-            final Document document = DocumentParser.parse(contentType, is);
+            final Document document = reader.read(is);
             document.setDocumentUrl(url);
             return document;
 

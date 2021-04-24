@@ -41,5 +41,4 @@ public interface DocumentLoader {
      * @throws JsonLdError
      */
     Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError;
-
 }

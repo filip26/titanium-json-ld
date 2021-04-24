@@ -28,13 +28,20 @@ import java.util.zip.ZipFile;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.DocumentParser;
+import com.apicatalog.jsonld.document.DocumentReader;
+import com.apicatalog.jsonld.document.DocumentResolver;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
 public class ZipResourceLoader implements DocumentLoader, TestLoader {
 
+    private final DocumentResolver resolver;
+    
+    public ZipResourceLoader() {
+        this.resolver = new DocumentResolver();
+    }
+    
     @Override
     public Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
 
@@ -65,25 +72,24 @@ public class ZipResourceLoader implements DocumentLoader, TestLoader {
                 return null;
             }
 
-            MediaType type = null;
+            final DocumentReader<InputStream> reader;
 
             if (zipEntry.getName().endsWith(".nq")) {
-                type = MediaType.N_QUADS;
+                reader = resolver.getReader(MediaType.N_QUADS);
 
             } else if (zipEntry.getName().endsWith(".json")) {
-                type = MediaType.JSON;
+                reader = resolver.getReader(MediaType.JSON);
 
             } else if (zipEntry.getName().endsWith(".jsonld")) {
-                type = MediaType.JSON_LD;
+                reader = resolver.getReader(MediaType.JSON_LD);
+                
+            } else {
+                return null;                
             }
 
-            if (type == null) {
-                return null;
-            }
+            try (final InputStream is = zip.getInputStream(zipEntry)) {
 
-            try (InputStream is = zip.getInputStream(zipEntry)) {
-
-                final Document document = DocumentParser.parse(type, is);
+                final Document document = reader.read(is);
                 document.setDocumentUrl(url);
 
                 return document;
