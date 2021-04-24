@@ -83,7 +83,7 @@ class DocumentResolverTest {
     void test9() throws JsonLdError {
         DocumentResolver resolver = new DocumentResolver();
         resolver.setFallbackContentType(MediaType.XHTML);
-        DocumentReader<InputStream> reader = resolver.getReader(MediaType.of("text/plain+json"));
+        DocumentReader<InputStream> reader = resolver.getReader(MediaType.of("text/plain+json; charset=utf-8"));
         assertNotNull(reader);
     }
 
