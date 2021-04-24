@@ -168,31 +168,12 @@ public final class RdfToJsonld {
                         // 6.1.6.1.
                         clObject.remove(Keywords.ID);
 
-                        JsonValue value = clNode.get(RdfConstants.VALUE);
-
-                        // 6.1.6.2.
-                        if (JsonUtils.isArray(value) && value.asJsonArray().size() == 1) {
-                            value = value.asJsonArray().get(0);
-                        }
-
-                        if (JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.VALUE)) {
-                            value = value.asJsonObject().get(Keywords.VALUE);
-                        }
-
-                        clObject.add(Keywords.VALUE, value);
+                        clObject.add(Keywords.VALUE, JsonUtils.flatten(clNode.get(RdfConstants.VALUE), Keywords.VALUE));
 
                         // 6.1.6.3.
                         if (clNode.containsKey(RdfConstants.LANGUAGE)) {
 
-                            JsonValue lang = clNode.get(RdfConstants.LANGUAGE);
-
-                            if (JsonUtils.isArray(lang)) {
-                                lang = lang.asJsonArray().get(0);
-                            }
-
-                            if (JsonUtils.isObject(lang) && lang.asJsonObject().containsKey(Keywords.VALUE)) {
-                                lang = lang.asJsonObject().get(Keywords.VALUE);
-                            }
+                            final JsonValue lang = JsonUtils.flatten(clNode.get(RdfConstants.LANGUAGE), Keywords.VALUE);
 
                             if (JsonUtils.isNotString(lang) || !LanguageTag.isWellFormed(((JsonString)lang).getString())) {
                                 throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
@@ -204,15 +185,7 @@ public final class RdfToJsonld {
                         // 6.1.6.4.
                         if (clNode.containsKey(RdfConstants.DIRECTION)) {
 
-                            JsonValue direction = clNode.get(RdfConstants.DIRECTION);
-
-                            if (JsonUtils.isArray(direction)) {
-                                direction = direction.asJsonArray().get(0);
-                            }
-
-                            if (JsonUtils.isObject(direction) && direction.asJsonObject().containsKey(Keywords.VALUE)) {
-                                direction = direction.asJsonObject().get(Keywords.VALUE);
-                            }
+                            final JsonValue direction = JsonUtils.flatten(clNode.get(RdfConstants.DIRECTION), Keywords.VALUE);
 
                             if (JsonUtils.isNotString(direction)
                                     || (!"ltr".equalsIgnoreCase(((JsonString)direction).getString())

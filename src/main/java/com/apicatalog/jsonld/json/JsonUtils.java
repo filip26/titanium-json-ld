@@ -186,4 +186,17 @@ public final class JsonUtils {
     public static boolean isNotEmptyObject(JsonValue value) {
         return isNotObject(value) || !value.asJsonObject().isEmpty();
     }
+    
+    public static JsonValue flatten(JsonValue value, String key) {
+        
+        if (JsonUtils.isArray(value) && value.asJsonArray().size() == 1) {
+            value = value.asJsonArray().get(0);
+        }
+
+        if (JsonUtils.isObject(value) && value.asJsonObject().containsKey(key)) {
+            value = value.asJsonObject().get(key);
+        }
+        
+        return value;
+    }
 }
