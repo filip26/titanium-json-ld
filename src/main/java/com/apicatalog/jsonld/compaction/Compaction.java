@@ -150,8 +150,7 @@ public final class Compaction {
         }
 
         // 6.
-        if (activePropertyDefinition.isPresent()
-                && activePropertyDefinition.map(TermDefinition::getLocalContext).isPresent()) {
+        if (activePropertyDefinition.map(TermDefinition::getLocalContext).isPresent()) {
 
             activeContext =
                     activeContext
@@ -169,9 +168,12 @@ public final class Compaction {
             final JsonValue result = activeContext.valueCompaction().compact(elementObject, activeProperty);
 
             if (JsonUtils.isScalar(result)
-                    || (activePropertyDefinition.isPresent()
-                            && Keywords.JSON.equals(activePropertyDefinition.get().getTypeMapping()))) {
-
+                    || activePropertyDefinition
+                            .map(TermDefinition::getTypeMapping)
+                            .map(Keywords.JSON::equals)
+                            .orElse(false)
+                    ) {
+                
                 return result;
             }
 
@@ -179,8 +181,7 @@ public final class Compaction {
 
         // 8.
         if (ListObject.isListObject(element)
-                && activePropertyDefinition.isPresent()
-                && activePropertyDefinition.get().hasContainerMapping(Keywords.LIST)
+                && activePropertyDefinition.map(d -> d.hasContainerMapping(Keywords.LIST)).orElse(false)
                 ) {
 
             return Compaction
@@ -214,7 +215,7 @@ public final class Compaction {
                 final Optional<TermDefinition> termDefinition = typeContext.getTerm(term);
 
                 // 11.1.
-                if (termDefinition.isPresent() && termDefinition.get().hasLocalContext()) {
+                if (termDefinition.map(TermDefinition::hasLocalContext).orElse(false)) {
 
                     activeContext =
                             activeContext
@@ -267,11 +268,12 @@ public final class Compaction {
                     // 12.2.2.2.
                     for (final JsonValue expandedType : expandedValue.asJsonArray()) {
 
-                        // 12.2.2.2.1.
-                        String term = typeContext.uriCompaction().vocab(true).compact(((JsonString)expandedType).getString());
-
-                        // 12.2.2.2.2.
-                        compactedArray.add(term);
+                        compactedArray.add(
+                                        typeContext
+                                            .uriCompaction()
+                                            .vocab(true)
+                                            .compact(((JsonString)expandedType).getString())
+                                        );
                     }
 
                     compactedValue = compactedArray.build();
@@ -317,10 +319,10 @@ public final class Compaction {
 
                         // 12.3.2.1.1
                         final boolean asArray = !compactArrays
-                                            || activeContext
-                                                        .getTerm(entry.getKey())
-                                                        .map(td -> td.hasContainerMapping(Keywords.SET))
-                                                        .orElse(false);
+                                                    || activeContext
+                                                                .getTerm(entry.getKey())
+                                                                .map(td -> td.hasContainerMapping(Keywords.SET))
+                                                                .orElse(false);
 
                         // 12.3.2.1.2.
                         result.add(entry.getKey(), entry.getValue(), asArray);
@@ -369,8 +371,7 @@ public final class Compaction {
 
             // 12.5.
             if (Keywords.INDEX.equals(expandedProperty)
-                    && activePropertyDefinition.isPresent()
-                    && activePropertyDefinition.get().hasContainerMapping(Keywords.INDEX)
+                    && activePropertyDefinition.map(d -> d.hasContainerMapping(Keywords.INDEX)).orElse(false)
                     ) {
                 continue;
 
@@ -401,12 +402,13 @@ public final class Compaction {
                                                     .reverse(insideReverse)
                                                     .compact(expandedProperty);
                 // 12.7.2.
-                if (activeContext.getTerm(itemActiveProperty).map(TermDefinition::getNestValue).isPresent()) {
+                final Optional<String> nestProperty = activeContext
+                                                        .getTerm(itemActiveProperty)
+                                                        .map(TermDefinition::getNestValue);
+                
+                if (nestProperty.isPresent()) {
 
-                    final String nestTerm = activeContext
-                                                    .getTerm(itemActiveProperty)
-                                                    .map(TermDefinition::getNestValue)
-                                                    .orElse(null);
+                    final String nestTerm = nestProperty.get();
 
                     // 12.7.2.1.
                     if (!Keywords.NEST.equals(nestTerm) && !Keywords.NEST.equals(activeContext.uriExpansion().vocab(true).expand(nestTerm))) {
@@ -439,12 +441,13 @@ public final class Compaction {
                 String nestResultKey = null;
 
                 // 12.8.2.
-                if (activeContext.getTerm(itemActiveProperty).map(TermDefinition::getNestValue).isPresent()) {
+                final Optional<String> nestProperty = activeContext
+                                                        .getTerm(itemActiveProperty)
+                                                        .map(TermDefinition::getNestValue);
 
-                    final String nestTerm = activeContext
-                                            .getTerm(itemActiveProperty)
-                                            .map(TermDefinition::getNestValue)
-                                            .orElse(null);
+                if (nestProperty.isPresent()) {
+
+                    final String nestTerm = nestProperty.get();
 
                     // 12.8.2.1.
                     if (!Keywords.NEST.equals(nestTerm) && !Keywords.NEST.equals(activeContext.uriExpansion().vocab(true).expand(nestTerm))) {
@@ -483,10 +486,10 @@ public final class Compaction {
                 }
 
                 JsonValue compactedItem = Compaction
-                                                    .with(activeContext)
-                                                    .compactArrays(compactArrays)
-                                                    .ordered(ordered)
-                                                    .compact(itemActiveProperty, expandedItemValue);
+                                                .with(activeContext)
+                                                .compactArrays(compactArrays)
+                                                .ordered(ordered)
+                                                .compact(itemActiveProperty, expandedItemValue);
 
                 // 12.8.7.
                 if (ListObject.isListObject(expandedItem)) {

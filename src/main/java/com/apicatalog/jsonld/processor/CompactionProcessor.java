@@ -92,20 +92,12 @@ public final class CompactionProcessor {
         }
 
         // 6.
-        JsonValue contextValue = context.getJsonContent().orElse(JsonValue.EMPTY_JSON_OBJECT);
-
-        if (JsonUtils.isArray(contextValue) && contextValue.asJsonArray().size() == 1) {
-            contextValue = contextValue.asJsonArray().get(0);
-        }
-
-        if (JsonUtils.isObject(contextValue) && contextValue.asJsonObject().containsKey(Keywords.CONTEXT)) {
-            contextValue = contextValue.asJsonObject().get(Keywords.CONTEXT);
-        }
+        final JsonValue contextValue = context.getJsonContent()
+                                        .map(ctx -> JsonUtils.flatten(ctx, Keywords.CONTEXT))
+                                        .orElse(JsonValue.EMPTY_JSON_OBJECT);
 
         // 7.
-        ActiveContext activeContext = new ActiveContext(options);
-
-        activeContext = activeContext.newContext().create(contextValue, contextBase);
+        final ActiveContext activeContext = new ActiveContext(options).newContext().create(contextValue, contextBase);
 
         // 8.
         if (activeContext.getBaseUri() == null) {
@@ -116,7 +108,6 @@ public final class CompactionProcessor {
             } else if (options.isCompactToRelative()) {
                 activeContext.setBaseUri(input.getDocumentUrl());
             }
-
         }
 
         // 9.
