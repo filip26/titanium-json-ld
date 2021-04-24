@@ -35,15 +35,15 @@ import com.apicatalog.jsonld.http.media.MediaType;
 
 public final class FileLoader implements DocumentLoader {
 
+    private static final Logger LOGGER = Logger.getLogger(FileLoader.class.getName());    
+
     private final DocumentResolver resolver;
 
     public FileLoader() {
         this.resolver = new DocumentResolver();
         this.resolver.setFallbackContentType(MediaType.JSON);
     }
-    
-    private static final Logger LOGGER = Logger.getLogger(FileLoader.class.getName());    
-    
+        
     @Override
     public Document loadDocument(final URI url, final DocumentLoaderOptions options) throws JsonLdError {
 
