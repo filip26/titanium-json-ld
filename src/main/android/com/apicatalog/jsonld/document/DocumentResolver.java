@@ -1,7 +1,6 @@
 package com.apicatalog.jsonld.document;
 
 import java.io.InputStream;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -51,7 +50,7 @@ public class DocumentResolver {
                     + MediaType.JSON  + ", +json, "
                     + (Rdf.canRead().stream().map(MediaType::toString).collect(Collectors.joining(", ")))
                     + "]"
-                    ));
+                    );
     }
 
     public void setFallbackContentType(MediaType fallbackContentType) {

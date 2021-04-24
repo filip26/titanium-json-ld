@@ -194,25 +194,6 @@ class DefaultHttpLoader implements DocumentLoader {
         return builder.toString();
     }
 
-    @Deprecated(since = "1.0.4")
-    public static final Document createDocument(
-                                        final MediaType type,
-                                        final URI targetUri,
-                                        final URI contextUrl,
-                                        final HttpResponse response) throws JsonLdError, IOException {
-
-        try (final InputStream is = response.body()) {
-            
-            final Document remoteDocument = new DocumentResolver().getReader(type).read(is);
-
-            remoteDocument.setDocumentUrl(targetUri);
-
-            remoteDocument.setContextUrl(contextUrl);
-
-            return remoteDocument;
-        }
-    }
-
     private final Document resolve(
             final MediaType type,
             final URI targetUri,
