@@ -27,12 +27,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.SchemeRouter;
+import com.apicatalog.jsonld.loader.UriBaseRewriter;
+import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.jsonld.test.JsonLdManifestLoader;
 import com.apicatalog.jsonld.test.JsonLdMockServer;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
-import com.apicatalog.jsonld.test.loader.UriBaseRewriter;
-import com.apicatalog.jsonld.test.loader.ZipResourceLoader;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 

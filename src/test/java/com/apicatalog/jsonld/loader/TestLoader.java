@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.test.loader;
+package com.apicatalog.jsonld.loader;
 
 import java.net.URI;
 

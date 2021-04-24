@@ -29,12 +29,12 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.loader.SchemeRouter;
+import com.apicatalog.jsonld.loader.UriBaseRewriter;
+import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.jsonld.test.JsonLdManifestLoader;
 import com.apicatalog.jsonld.test.JsonLdMockServer;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerEarl;
-import com.apicatalog.jsonld.test.loader.UriBaseRewriter;
-import com.apicatalog.jsonld.test.loader.ZipResourceLoader;
 import com.github.tomakehurst.wiremock.WireMockServer;
 
 import jakarta.json.JsonArray;

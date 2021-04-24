@@ -29,8 +29,6 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.DocumentReader;
-import com.apicatalog.jsonld.document.DocumentResolver;
 import com.apicatalog.jsonld.http.media.MediaType;
 
 public final class FileLoader implements DocumentLoader {

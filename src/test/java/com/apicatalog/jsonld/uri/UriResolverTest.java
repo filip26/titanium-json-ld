@@ -15,8 +15,8 @@
  */
 package com.apicatalog.jsonld.uri;
 
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.net.URI;
 import java.util.stream.Stream;

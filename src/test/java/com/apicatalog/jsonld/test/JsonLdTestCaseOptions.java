@@ -18,8 +18,8 @@ package com.apicatalog.jsonld.test;
 import java.net.URI;
 
 import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
+import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.uri.UriResolver;
 
 import jakarta.json.JsonObject;

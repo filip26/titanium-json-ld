@@ -28,8 +28,6 @@ import java.util.stream.Collectors;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.DocumentReader;
-import com.apicatalog.jsonld.document.DocumentResolver;
 import com.apicatalog.jsonld.http.HttpClient;
 import com.apicatalog.jsonld.http.HttpResponse;
 import com.apicatalog.jsonld.http.ProfileConstants;

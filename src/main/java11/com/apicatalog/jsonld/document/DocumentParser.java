@@ -25,7 +25,7 @@ import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.Rdf;
 
 /**
- * @deprecated use {@link DocumentResolver} or use <{@link JsonDocument#of} or {@link RdfDocument#of} directly 
+ * @deprecated use <{@link JsonDocument#of} or {@link RdfDocument#of} directly 
  */
 @Deprecated(since = "1.0.4")
 public final class DocumentParser {

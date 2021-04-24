@@ -31,7 +31,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.http.link.Link;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.HttpLoader;
-import com.apicatalog.jsonld.test.loader.TestLoader;
+import com.apicatalog.jsonld.loader.TestLoader;
 import com.apicatalog.jsonld.uri.UriResolver;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 
