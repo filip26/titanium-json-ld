@@ -182,9 +182,9 @@ public final class UriExpansion {
             final Optional<TermDefinition> prefixDefinition = activeContext.getTerm(prefix);
 
             if (prefixDefinition.map(TermDefinition::getUriMapping).isPresent()
-                    && prefixDefinition.map(TermDefinition::isPrefix).orElse(false)) {
+                    && prefixDefinition.filter(TermDefinition::isPrefix).isPresent()) {
 
-                return prefixDefinition.map(TermDefinition::getUriMapping).map(m -> m.concat(suffix)).orElse(null);
+                return prefixDefinition.map(TermDefinition::getUriMapping).map(m -> m.concat(suffix)).get();
             }
 
         }

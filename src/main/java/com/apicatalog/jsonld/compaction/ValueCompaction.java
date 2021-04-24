@@ -90,8 +90,8 @@ public final class ValueCompaction {
             // 6.1.
             if (activePropertyDefinition
                     .map(TermDefinition::getTypeMapping)
-                    .map(Keywords.ID::equals)
-                    .orElse(false)
+                    .filter(Keywords.ID::equals)
+                    .isPresent()
                     ) {
 
                 result = JsonUtils.toJsonValue(activeContext
@@ -101,8 +101,8 @@ public final class ValueCompaction {
             // 6.2.
             } else if (activePropertyDefinition
                             .map(TermDefinition::getTypeMapping)
-                            .map(Keywords.VOCAB::equals)
-                            .orElse(false)
+                            .filter(Keywords.VOCAB::equals)
+                            .isPresent()
                             ) {
 
                 result = JsonUtils.toJsonValue(activeContext
@@ -114,11 +114,11 @@ public final class ValueCompaction {
         } else if (value.containsKey(Keywords.TYPE)
                     && activePropertyDefinition
                             .map(TermDefinition::getTypeMapping)
-                            .map(d -> JsonUtils.contains(
+                            .filter(d -> JsonUtils.contains(
                                         d,
                                         value.get(Keywords.TYPE))
                                         )
-                            .orElse(false)
+                            .isPresent()
                     ) {
 
             result = value.get(Keywords.VALUE);
@@ -126,8 +126,8 @@ public final class ValueCompaction {
         // 8.
         } else if (activePropertyDefinition
                         .map(TermDefinition::getTypeMapping)
-                        .map(Keywords.NONE::equals)
-                        .orElse(false)
+                        .filter(Keywords.NONE::equals)
+                        .isPresent()
                         || (value.containsKey(Keywords.TYPE)
                                 && (activePropertyDefinition
                                         .map(TermDefinition::getTypeMapping)
@@ -155,7 +155,7 @@ public final class ValueCompaction {
         } else if (JsonUtils.isNotString(value.get(Keywords.VALUE))) {
 
             if (!value.containsKey(Keywords.INDEX)
-                    || activePropertyDefinition.map(td -> td.hasContainerMapping(Keywords.INDEX)).orElse(false)
+                    || activePropertyDefinition.filter(td -> td.hasContainerMapping(Keywords.INDEX)).isPresent()
                     ) {
                 result = value.get(Keywords.VALUE);
             }
@@ -180,7 +180,7 @@ public final class ValueCompaction {
                                 ))
                                 )
                         )
-                    && (!value.containsKey(Keywords.INDEX) || activePropertyDefinition.map(d -> d.hasContainerMapping(Keywords.INDEX)).orElse(false))
+                    && (!value.containsKey(Keywords.INDEX) || activePropertyDefinition.filter(d -> d.hasContainerMapping(Keywords.INDEX)).isPresent())
                 ){
 
                 result = value.get(Keywords.VALUE);

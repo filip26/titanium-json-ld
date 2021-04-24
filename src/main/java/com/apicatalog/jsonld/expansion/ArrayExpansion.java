@@ -105,7 +105,7 @@ public final class ArrayExpansion {
             // 5.2.2
             if (definition
                         .map(TermDefinition::getContainerMapping)
-                        .map(c -> c.contains(Keywords.LIST)).orElse(false) 
+                        .filter(c -> c.contains(Keywords.LIST)).isPresent() 
                     && JsonUtils.isArray(expanded)) {
 
                 expanded = ListObject.toListObject(expanded);

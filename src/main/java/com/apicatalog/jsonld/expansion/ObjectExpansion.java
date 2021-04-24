@@ -333,9 +333,9 @@ public final class ObjectExpansion {
 
             // 15.5
             } else if (!frameExpansion
-                            && type.map(t -> JsonUtils.isNotString(t) 
+                            && type.filter(t -> JsonUtils.isNotString(t) 
                                                 || UriUtils.isNotURI(((JsonString) t).getString()))
-                                    .orElse(false)
+                                    .isPresent()
                          ) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE);
             }

@@ -125,8 +125,8 @@ public final class Compaction {
                     || Keywords.GRAPH.equals(activeProperty)
                     || Keywords.SET.equals(activeProperty)
                     || activePropertyDefinition
-                            .map(d -> d.hasContainerMapping(Keywords.LIST) || d.hasContainerMapping(Keywords.SET))
-                            .orElse(false)
+                            .filter(d -> d.hasContainerMapping(Keywords.LIST) || d.hasContainerMapping(Keywords.SET))
+                            .isPresent()
                     ) {
 
                 return result;
@@ -169,8 +169,8 @@ public final class Compaction {
             if (JsonUtils.isScalar(result)
                     || activePropertyDefinition
                             .map(TermDefinition::getTypeMapping)
-                            .map(Keywords.JSON::equals)
-                            .orElse(false)
+                            .filter(Keywords.JSON::equals)
+                            .isPresent()
                     ) {
                 
                 return result;
@@ -180,7 +180,7 @@ public final class Compaction {
 
         // 8.
         if (ListObject.isListObject(element)
-                && activePropertyDefinition.map(d -> d.hasContainerMapping(Keywords.LIST)).orElse(false)
+                && activePropertyDefinition.filter(d -> d.hasContainerMapping(Keywords.LIST)).isPresent()
                 ) {
 
             return Compaction
@@ -214,7 +214,7 @@ public final class Compaction {
                 final Optional<TermDefinition> termDefinition = typeContext.getTerm(term);
 
                 // 11.1.
-                if (termDefinition.map(TermDefinition::hasLocalContext).orElse(false)) {
+                if (termDefinition.filter(TermDefinition::hasLocalContext).isPresent()) {
 
                     activeContext =
                             activeContext
@@ -287,7 +287,7 @@ public final class Compaction {
                 // 12.2.4.
                 final boolean asArray = !compactArrays
                                         || (activeContext.inMode(JsonLdVersion.V1_1)
-                                            && activeContext.getTerm(alias).map(t -> t.hasContainerMapping(Keywords.SET)).orElse(false)
+                                            && activeContext.getTerm(alias).filter(t -> t.hasContainerMapping(Keywords.SET)).isPresent()
                                            );
 
                 // 12.2.5.
@@ -314,14 +314,14 @@ public final class Compaction {
                 for (final Entry<String, JsonValue> entry : compactedMap.entrySet()) {
 
                     // 12.3.2.1.
-                    if (activeContext.getTerm(entry.getKey()).map(TermDefinition::isReverseProperty).orElse(false)) {
+                    if (activeContext.getTerm(entry.getKey()).filter(TermDefinition::isReverseProperty).isPresent()) {
 
                         // 12.3.2.1.1
                         final boolean asArray = !compactArrays
                                                     || activeContext
                                                                 .getTerm(entry.getKey())
-                                                                .map(td -> td.hasContainerMapping(Keywords.SET))
-                                                                .orElse(false);
+                                                                .filter(td -> td.hasContainerMapping(Keywords.SET))
+                                                                .isPresent();
 
                         // 12.3.2.1.2.
                         result.add(entry.getKey(), entry.getValue(), asArray);
@@ -370,7 +370,7 @@ public final class Compaction {
 
             // 12.5.
             if (Keywords.INDEX.equals(expandedProperty)
-                    && activePropertyDefinition.map(d -> d.hasContainerMapping(Keywords.INDEX)).orElse(false)
+                    && activePropertyDefinition.filter(d -> d.hasContainerMapping(Keywords.INDEX)).isPresent()
                     ) {
                 continue;
 

@@ -292,7 +292,7 @@ final class ObjectExpansion1314 {
 
                         final Optional<JsonValue> defaultValue = DefaultObject.getValue(value);
 
-                        if (defaultValue.map(JsonUtils::isString).orElse(false)) {
+                        if (defaultValue.filter(JsonUtils::isString).isPresent()) {
                             
                             expandedValue = Json.createObjectBuilder()
                                     .add(Keywords.DEFAULT,
@@ -678,7 +678,7 @@ final class ObjectExpansion1314 {
             JsonValue expandedValue = null;
 
             // 13.6.
-            if (keyTermDefinition.map(TermDefinition::getTypeMapping).map(Keywords.JSON::equals).orElse(false)) {
+            if (keyTermDefinition.map(TermDefinition::getTypeMapping).filter(Keywords.JSON::equals).isPresent()) {
 
                 expandedValue = Json.createObjectBuilder().add(Keywords.VALUE, value)
                         .add(Keywords.TYPE, Keywords.JSON).build();
@@ -943,7 +943,7 @@ final class ObjectExpansion1314 {
             }
 
             // 13.13.
-            if (keyTermDefinition.map(TermDefinition::isReverseProperty).orElse(false)) {
+            if (keyTermDefinition.filter(TermDefinition::isReverseProperty).isPresent()) {
 
                 // 13.13.3.
                 expandedValue = JsonUtils.toJsonArray(expandedValue);

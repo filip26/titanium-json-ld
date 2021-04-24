@@ -96,8 +96,8 @@ public final class ValueExpansion {
 
         // 4.
         if (typeMapping
-                    .map(t -> !Keywords.ID.equals(t) && !Keywords.VOCAB.equals(t) && !Keywords.NONE.equals(t))
-                    .orElse(false)) {
+                    .filter(t -> !Keywords.ID.equals(t) && !Keywords.VOCAB.equals(t) && !Keywords.NONE.equals(t))
+                    .isPresent()) {
 
             result = Json.createObjectBuilder(result).add(Keywords.TYPE, typeMapping.get()).build();
 
