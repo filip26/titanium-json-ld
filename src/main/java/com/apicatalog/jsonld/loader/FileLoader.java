@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -32,6 +34,8 @@ import com.apicatalog.jsonld.http.media.MediaType;
 
 public final class FileLoader implements DocumentLoader {
 
+    private static final Logger LOGGER = Logger.getLogger(FileLoader.class.getName());    
+    
     @Override
     public Document loadDocument(final URI url, final DocumentLoaderOptions options) throws JsonLdError {
 
@@ -47,7 +51,10 @@ public final class FileLoader implements DocumentLoader {
 
         final MediaType contentType =
                                 detectedContentType(url.getPath().toLowerCase())
-                                .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unknown media type of the file [" + url + "]."));
+                                .orElseGet(() -> { 
+                                    LOGGER.log(Level.WARNING, "Cannot detect file [{0}] content type. Trying application/json.", url);
+                                    return MediaType.JSON;  
+                                });
 
         try (final InputStream is = new FileInputStream(file)) {
 
