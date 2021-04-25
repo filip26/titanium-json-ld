@@ -39,7 +39,7 @@ class DocumentResolver {
         }
         
         if (fallbackContentType != null) {
-            LOGGER.log(Level.INFO, "Content type [{0}] is not acceptable, trying again with [{1}].", new Object[] { contentType, fallbackContentType});
+            LOGGER.log(Level.WARNING, "Content type [{0}] is not acceptable, trying again with [{1}].", new Object[] { contentType, fallbackContentType});
             reader = findReader(fallbackContentType);
             
             if (reader != null) {
