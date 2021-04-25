@@ -179,7 +179,7 @@ public final class Framing {
 
                     Framing.with(
                                 graphState,
-                                new ArrayList<>(state.getGraphMap().get(id).map(Map::keySet).orElse(Collections.emptySet())),
+                                new ArrayList<>(state.getGraphMap().get(id).map(Map::keySet).orElseGet(() -> Collections.emptySet())),
                                 subframe,
                                 output,
                                 Keywords.GRAPH
@@ -362,13 +362,12 @@ public final class Framing {
 
                         final JsonValue subframe = reverseObject.asJsonObject().get(reverseProperty);
 
-                        for (final String subjectProperty : state.getGraphMap().get(state.getGraphName()).map(Map::keySet).orElse(Collections.emptySet())) {
+                        for (final String subjectProperty : state.getGraphMap().get(state.getGraphName()).map(Map::keySet).orElseGet(() -> Collections.emptySet())) {
 
                             final JsonValue nodeValues = state.getGraphMap().get(state.getGraphName(), subjectProperty, reverseProperty);
 
                             if (nodeValues != null
-                                    && JsonUtils.toCollection(nodeValues)
-                                                .stream()
+                                    && JsonUtils.toStream(nodeValues)
                                                 .filter(JsonUtils::isObject)
                                                 .map(JsonObject.class::cast)
                                                 .filter(v -> v.containsKey(Keywords.ID))

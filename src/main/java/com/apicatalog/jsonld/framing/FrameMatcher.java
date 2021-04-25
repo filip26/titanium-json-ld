@@ -82,7 +82,7 @@ public final class FrameMatcher {
 
                 nodeValue = JsonUtils.toJsonArray(nodeValue);
 
-                if (JsonUtils.toCollection(frame.get(property)).stream().anyMatch(nodeValue.asJsonArray()::contains)
+                if (JsonUtils.toStream(frame.get(property)).anyMatch(nodeValue.asJsonArray()::contains)
                         || frame.isWildCard(Keywords.ID)
                         || frame.isNone(Keywords.ID)
                         ) {

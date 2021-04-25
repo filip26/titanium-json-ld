@@ -125,7 +125,7 @@ public final class ValueExpansion {
         // 5.2.
         final DirectionType direction = definition
                                             .map(TermDefinition::getDirectionMapping)
-                                            .orElse(activeContext.getDefaultBaseDirection());
+                                            .orElseGet(() -> activeContext.getDefaultBaseDirection());
 
         // 5.3.
         if (JsonUtils.isNotNull(language)) {

@@ -225,8 +225,7 @@ public final class ObjectExpansion {
 
             // 11.2
             final List<String> terms = JsonUtils
-                                            .toCollection(element.get(key))
-                                            .stream()
+                                            .toStream(element.get(key))
                                             .filter(JsonUtils::isString)
                                             .map(JsonString.class::cast)
                                             .map(JsonString::getString)

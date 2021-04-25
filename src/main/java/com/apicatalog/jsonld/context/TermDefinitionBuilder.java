@@ -172,8 +172,6 @@ public final class TermDefinitionBuilder {
         // 6.
         final TermDefinition previousDefinition = activeContext.removeTerm(term).orElse(null);
 
-        final TermDefinition definition = new TermDefinition(false, protectedFlag, false);
-
         final Map<String, JsonValue> valueObject;
 
         final boolean simpleTerm;
@@ -203,6 +201,9 @@ public final class TermDefinitionBuilder {
         } else {
             throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
         }
+        
+        // 10.
+        final TermDefinition definition = new TermDefinition(false, protectedFlag, false);
         
         // 11.
         if (valueObject.containsKey(Keywords.PROTECTED)) {
@@ -461,9 +462,11 @@ public final class TermDefinitionBuilder {
             }
 
             // 19.3.
-            for (final JsonValue item : JsonUtils.toCollection(containerValue)) {
-                definition.addContainerMapping(((JsonString)item).getString());
-            }
+            JsonUtils.toStream(containerValue)
+                        .filter(JsonUtils::isString)
+                        .map(JsonString.class::cast)
+                        .map(JsonString::getString)
+                        .forEach(definition::addContainerMapping);
 
             // 19.4.
             if (definition.getContainerMapping().contains(Keywords.TYPE)) {
@@ -480,6 +483,7 @@ public final class TermDefinitionBuilder {
                 }
             }
         }
+        
         // 20.
         if (valueObject.containsKey(Keywords.INDEX)) {
 

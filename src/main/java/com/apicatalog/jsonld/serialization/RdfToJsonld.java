@@ -212,7 +212,7 @@ public final class RdfToJsonld {
             for (Reference usage : graphMap.getUsages(graphName, RdfConstants.NIL)) {
 
                 // 6.4.1.
-                Map<String, JsonValue> node = graphMap.get(usage.graphName, usage.subject).orElse(Collections.emptyMap());
+                Map<String, JsonValue> node = graphMap.get(usage.graphName, usage.subject).orElseGet(() -> Collections.emptyMap());
 
                 // 6.4.2.
                 final JsonArrayBuilder list = Json.createArrayBuilder();
@@ -284,7 +284,7 @@ public final class RdfToJsonld {
         // 8.
         for (final String subject : Utils.index(graphMap.keys(Keywords.DEFAULT), ordered)) {
 
-            final Map<String, JsonValue> node = graphMap.get(Keywords.DEFAULT, subject).orElse(new LinkedHashMap<>());
+            final Map<String, JsonValue> node = graphMap.get(Keywords.DEFAULT, subject).orElseGet(() -> new LinkedHashMap<>());
 
             // 8.1.
             if (graphMap.contains(subject)) {
@@ -293,7 +293,7 @@ public final class RdfToJsonld {
 
                 for (final String key : Utils.index(graphMap.keys(subject), ordered)) {
 
-                    final Map<String, JsonValue> entry = graphMap.get(subject, key).orElse(Collections.emptyMap());
+                    final Map<String, JsonValue> entry = graphMap.get(subject, key).orElseGet(() -> Collections.emptyMap());
 
                     if (entry.size() > 1 || !entry.containsKey(Keywords.ID)) {
                         array.add(JsonUtils.toJsonObject(entry));
