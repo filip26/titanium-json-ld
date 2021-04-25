@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.DocumentParser;
 import com.apicatalog.jsonld.http.HttpClient;
 import com.apicatalog.jsonld.http.HttpResponse;
 import com.apicatalog.jsonld.http.ProfileConstants;
@@ -47,6 +46,8 @@ class DefaultHttpLoader implements DocumentLoader {
     private final int maxRedirections;
 
     private final HttpClient httpClient;
+    
+    private final DocumentResolver resolver;
 
     public DefaultHttpLoader(HttpClient httpClient) {
         this(httpClient, MAX_REDIRECTIONS);
@@ -55,6 +56,7 @@ class DefaultHttpLoader implements DocumentLoader {
     public DefaultHttpLoader(HttpClient httpClient, int maxRedirections) {
         this.httpClient = httpClient;
         this.maxRedirections = maxRedirections;
+        this.resolver = new DocumentResolver();
     }
 
     @Override
@@ -158,7 +160,7 @@ class DefaultHttpLoader implements DocumentLoader {
                         contentType = MediaType.JSON;
                     }
 
-                    return createDocument(contentType, targetUri, contextUri, response);
+                    return resolve(contentType, targetUri, contextUri, response);
                 }
             }
 
@@ -190,20 +192,33 @@ class DefaultHttpLoader implements DocumentLoader {
         return builder.toString();
     }
 
-    public static final Document createDocument(
-                                        final MediaType type,
-                                        final URI targetUri,
-                                        final URI contextUrl,
-                                        final HttpResponse response) throws JsonLdError, IOException {
+    private final Document resolve(
+            final MediaType type,
+            final URI targetUri,
+            final URI contextUrl,
+            final HttpResponse response) throws JsonLdError, IOException {
+
+        final DocumentReader<InputStream> reader = resolver.getReader(type);
+        
         try (final InputStream is = response.body()) {
-
-            final Document remoteDocument = DocumentParser.parse(type, is);
-
+        
+            final Document remoteDocument = reader.read(is);
+            
             remoteDocument.setDocumentUrl(targetUri);
-
+            
             remoteDocument.setContextUrl(contextUrl);
-
+            
             return remoteDocument;
         }
+    }
+    
+    /**
+     * Set fallback content-type used when received content-type is not supported. 
+     * e.g. <code>setFallbackContentType(MediaType.JSON_LD)</code>
+     * 
+     * @param fallbackContentType a content type that overrides unsupported received content-type
+     */
+    public void setFallbackContentType(MediaType fallbackContentType) {
+        this.resolver.setFallbackContentType(fallbackContentType);
     }
 }

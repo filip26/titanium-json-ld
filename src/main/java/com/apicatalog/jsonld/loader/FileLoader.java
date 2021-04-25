@@ -22,16 +22,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.DocumentParser;
 import com.apicatalog.jsonld.http.media.MediaType;
 
 public final class FileLoader implements DocumentLoader {
 
+    private static final Logger LOGGER = Logger.getLogger(FileLoader.class.getName());    
+
+    private final DocumentResolver resolver;
+
+    public FileLoader() {
+        this.resolver = new DocumentResolver();
+        this.resolver.setFallbackContentType(MediaType.JSON);
+    }
+        
     @Override
     public Document loadDocument(final URI url, final DocumentLoaderOptions options) throws JsonLdError {
 
@@ -47,11 +57,15 @@ public final class FileLoader implements DocumentLoader {
 
         final MediaType contentType =
                                 detectedContentType(url.getPath().toLowerCase())
-                                .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unknown media type of the file [" + url + "]."));
+                                .orElseGet(() -> { 
+                                    LOGGER.log(Level.WARNING, "Cannot detect file [{0}] content type. Trying application/json.", url);
+                                    return MediaType.JSON;  
+                                });
 
+        final DocumentReader<InputStream> reader = resolver.getReader(contentType);
+                
         try (final InputStream is = new FileInputStream(file)) {
-
-            final Document document = DocumentParser.parse(contentType, is);
+            final Document document = reader.read(is);
             document.setDocumentUrl(url);
             return document;
 
@@ -84,5 +98,5 @@ public final class FileLoader implements DocumentLoader {
         }
 
         return Optional.empty();
-    }
+    }    
 }

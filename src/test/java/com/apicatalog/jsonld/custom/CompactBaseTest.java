@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.jsonld.test.JsonLdManifestLoader;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
-import com.apicatalog.jsonld.test.loader.ZipResourceLoader;
 
 class CompactBaseTest {
 

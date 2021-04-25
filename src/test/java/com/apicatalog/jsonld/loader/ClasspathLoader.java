@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.test.loader;
+package com.apicatalog.jsonld.loader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,8 +24,6 @@ import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
-import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
 public class ClasspathLoader implements DocumentLoader, TestLoader {
 

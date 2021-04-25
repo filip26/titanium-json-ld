@@ -85,5 +85,4 @@ public interface Document {
     public default Optional<RdfDataset> getRdfContent() {
         return Optional.empty();
     }
-
 }

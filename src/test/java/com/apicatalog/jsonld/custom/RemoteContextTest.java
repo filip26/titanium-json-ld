@@ -34,7 +34,7 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.json.JsonLdComparison;
-import com.apicatalog.jsonld.test.loader.ClasspathLoader;
+import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.RdfDataset;
 

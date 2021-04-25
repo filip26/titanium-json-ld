@@ -24,11 +24,14 @@ import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.Rdf;
 
+/**
+ * @deprecated use {@link JsonDocument#of} or {@link RdfDocument#of} directly 
+ */
+@Deprecated(since = "1.0.4")
 public final class DocumentParser {
 
     private DocumentParser() {
     }
-
 
     /**
      * Create a new document.
@@ -57,7 +60,7 @@ public final class DocumentParser {
             return RdfDocument.of(contentType, inputStream);
         }
 
-        return fireUnsupportedMediaType(contentType);
+        throw unsupportedMediaType(contentType);
     }
 
     /**
@@ -87,11 +90,11 @@ public final class DocumentParser {
             return RdfDocument.of(contentType, reader);
         }
 
-        return fireUnsupportedMediaType(contentType);
+        throw unsupportedMediaType(contentType);
     }
-
-    private static final Document fireUnsupportedMediaType(MediaType contentType) throws JsonLdError {
-        throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED,
+    
+    private static final JsonLdError unsupportedMediaType(MediaType contentType) throws JsonLdError {
+        return new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED,
                 "Unsupported media type '" + contentType
                 + "'. Supported content types are ["
                 + MediaType.JSON_LD + ", "
@@ -100,5 +103,4 @@ public final class DocumentParser {
                 + "]"
                 );
     }
-
 }

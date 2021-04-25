@@ -29,7 +29,7 @@ import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.test.loader.UriBaseRewriter;
+import com.apicatalog.jsonld.loader.UriBaseRewriter;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
