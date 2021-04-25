@@ -18,8 +18,8 @@ package com.apicatalog.jsonld.context;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,7 +35,6 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.uri.UriUtils;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
@@ -171,35 +170,40 @@ public final class TermDefinitionBuilder {
         }
 
         // 6.
-        final Optional<TermDefinition> previousDefinition = activeContext.removeTerm(term);
+        final TermDefinition previousDefinition = activeContext.removeTerm(term).orElse(null);
 
-        JsonObject valueObject = null;
-        boolean simpleTerm = false;
+        final TermDefinition definition = new TermDefinition(false, protectedFlag, false);
 
+        final Map<String, JsonValue> valueObject;
+
+        final boolean simpleTerm;
+        final JsonValue idValue; 
+        
         // 7.
         if (JsonUtils.isNull(value)) {
-
-            valueObject = Json.createObjectBuilder().add(Keywords.ID, JsonValue.NULL).build();
+            
+            valueObject = Collections.emptyMap();
+            idValue = JsonValue.NULL;
+            simpleTerm = false;            
 
         // 8.
         } else if (JsonUtils.isString(value)) {
 
-            valueObject = Json.createObjectBuilder().add(Keywords.ID, value).build();
+            valueObject = Collections.emptyMap();
+            idValue = value;
             simpleTerm = true;
 
         // 9.
         } else if (JsonUtils.isObject(value)) {
-
+            
             valueObject = value.asJsonObject();
+            idValue = valueObject.get(Keywords.ID);
+            simpleTerm = false;
 
         } else {
             throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
         }
-
-        // 10.
-        TermDefinition definition = new TermDefinition(false, protectedFlag, false);
-
-
+        
         // 11.
         if (valueObject.containsKey(Keywords.PROTECTED)) {
 
@@ -318,8 +322,6 @@ public final class TermDefinitionBuilder {
             defined.put(term, Boolean.TRUE);
             return;
         }
-
-        final JsonValue idValue = valueObject.get(Keywords.ID);
 
         // 14.
         if (idValue != null && (JsonUtils.isNotString(idValue) || !term.equals(((JsonString) idValue).getString()))) {
@@ -445,7 +447,6 @@ public final class TermDefinitionBuilder {
             throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
 
         } else {
-
             definition.setUriMapping(activeContext.getVocabularyMapping().concat(term));
         }
 
@@ -635,7 +636,7 @@ public final class TermDefinitionBuilder {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
         }
-
+        
         // 26.
         if (!Keywords.allMatch(valueObject.keySet(), Keywords.ID, Keywords.REVERSE, Keywords.CONTAINER,
                 Keywords.CONTEXT, Keywords.DIRECTION, Keywords.INDEX, Keywords.LANGUAGE, Keywords.NEST, Keywords.PREFIX,
@@ -644,22 +645,23 @@ public final class TermDefinitionBuilder {
         }
 
         // 27.
-        if (!overrideProtectedFlag && previousDefinition.filter(TermDefinition::isProtected).isPresent()) {
+        if (!overrideProtectedFlag && previousDefinition != null && previousDefinition.isProtected()) {
 
             // 27.1.
-            if (definition.isNotSameExcept(previousDefinition.get())) {
+            if (definition.isNotSameExcept(previousDefinition)) {
                 throw new JsonLdError(JsonLdErrorCode.PROTECTED_TERM_REDEFINITION);
             }
 
             // 27.2.
-            definition = previousDefinition.get();
+            activeContext.setTerm(term, previousDefinition);
+            
+        } else {
+            activeContext.setTerm(term, definition);
         }
 
-        // 28
-        activeContext.setTerm(term, definition);
         defined.put(term, Boolean.TRUE);
     }
-
+    
     private final boolean validateContainer(final JsonValue value) {
 
         JsonValue container = value;
