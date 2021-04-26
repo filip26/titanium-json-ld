@@ -84,11 +84,10 @@ public final class ValuePatternMatcher {
         return ((lang1 != null && isWildcard(lang2)) || (lang1 == null && isNone(lang2)))
                 || (lang1 != null && lang2 != null
                         && JsonUtils.isNotNull(lang2)
-                        && JsonUtils.toCollection(lang2)
-                                .stream()
-                                .map(JsonString.class::cast)
-                                .map(JsonString::getString)
-                                .anyMatch(x -> x.equalsIgnoreCase(lang1)));
+                        && JsonUtils.toStream(lang2)
+                                        .map(JsonString.class::cast)
+                                        .map(JsonString::getString)
+                                        .anyMatch(x -> x.equalsIgnoreCase(lang1)));
     }
 
     protected static final boolean isWildcard(final JsonValue value, final String...except) {

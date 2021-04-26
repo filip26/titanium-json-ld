@@ -452,12 +452,10 @@ public final class ActiveContextBuilder {
                 if (Keywords.noneMatch(key, Keywords.BASE, Keywords.DIRECTION, Keywords.IMPORT, Keywords.LANGUAGE,
                         Keywords.PROPAGATE, Keywords.PROTECTED, Keywords.VERSION, Keywords.VOCAB)) {
 
-                    termBuilder.protectedFlag(
-                                    contextDefinition.containsKey(Keywords.PROTECTED)
-                                        && JsonUtils.isTrue(contextDefinition.get(Keywords.PROTECTED))
-                                        )
-                                .remoteContexts(new ArrayList<>(remoteContexts))
-                                .create(key);
+                    termBuilder
+                        .protectedFlag(JsonUtils.isTrue(contextDefinition.get(Keywords.PROTECTED)))
+                        .remoteContexts(new ArrayList<>(remoteContexts))
+                        .create(key);
                 }
             }
         }

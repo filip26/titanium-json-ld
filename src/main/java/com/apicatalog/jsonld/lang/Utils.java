@@ -18,7 +18,6 @@ package com.apicatalog.jsonld.lang;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 public final class Utils {
 
@@ -31,10 +30,8 @@ public final class Utils {
         }
 
         if (ordered) {
-            final List<String> sorted = new ArrayList<>(keys);
-
+            final ArrayList<String> sorted = new ArrayList<>(keys);
             Collections.sort(sorted);
-
             return sorted;
         }
 

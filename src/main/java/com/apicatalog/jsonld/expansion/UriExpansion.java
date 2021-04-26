@@ -170,25 +170,20 @@ public final class UriExpansion {
     private String initPropertyContext(final String prefix, final String suffix, final String result) throws JsonLdError {
 
         // 6.3.
-        if (localContext != null && localContext.containsKey(prefix)
-                && (!defined.containsKey(prefix) || !Boolean.TRUE.equals(defined.get(prefix)))) {
-
+        if (localContext != null && localContext.containsKey(prefix) && !Boolean.TRUE.equals(defined.get(prefix))) {
             activeContext.newTerm(localContext, defined).create(prefix);
         }
 
         // 6.4.
-        if (activeContext.containsTerm(prefix)) {
-
-            final Optional<TermDefinition> prefixDefinition = activeContext.getTerm(prefix);
-
-            if (prefixDefinition.map(TermDefinition::getUriMapping).isPresent()
-                    && prefixDefinition.filter(TermDefinition::isPrefix).isPresent()) {
-                
-                // deepcode ignore checkIsPresent~Optional: false positive
-                return prefixDefinition.map(TermDefinition::getUriMapping).map(m -> m.concat(suffix)).get();
-            }
-
+        final Optional<TermDefinition> prefixDefinition = activeContext.getTerm(prefix);
+        
+        if (prefixDefinition.map(TermDefinition::getUriMapping).isPresent()
+                && prefixDefinition.filter(TermDefinition::isPrefix).isPresent()) {
+            
+            // deepcode ignore checkIsPresent~Optional: false positive
+            return prefixDefinition.map(TermDefinition::getUriMapping).map(m -> m.concat(suffix)).get();
         }
+
         return result;
     }
 

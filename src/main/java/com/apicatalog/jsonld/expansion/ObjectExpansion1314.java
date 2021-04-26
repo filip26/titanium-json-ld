@@ -237,7 +237,7 @@ final class ObjectExpansion1314 {
 
                         final JsonArrayBuilder array = Json.createArrayBuilder();
 
-                        for (final JsonValue item : JsonUtils.toCollection((value))) {
+                        for (final JsonValue item : JsonUtils.toCollection(value)) {
 
                             String expandedStringValue =
                                     activeContext
@@ -300,7 +300,7 @@ final class ObjectExpansion1314 {
                                                     .uriExpansion()
                                                     .vocab(true)
                                                     .documentRelative(true)
-                                                    //  deepcode ignore checkIsPresent~Optional: false positive
+                                                    // deepcode ignore checkIsPresent~Optional: false positive
                                                     .expand(defaultValue.map(JsonString.class::cast).map(JsonString::getString).get()))
                                     .build();
                         }
@@ -673,7 +673,7 @@ final class ObjectExpansion1314 {
 
             final Collection<String> containerMapping = keyTermDefinition
                                                         .map(TermDefinition::getContainerMapping)
-                                                        .orElse(Collections.emptyList());
+                                                        .orElseGet(() -> Collections.emptyList());
 
             JsonValue expandedValue = null;
 
@@ -692,7 +692,7 @@ final class ObjectExpansion1314 {
                 // 13.7.2.
                 final DirectionType direction = keyTermDefinition
                                                     .map(TermDefinition::getDirectionMapping)
-                                                    .orElse(activeContext.getDefaultBaseDirection())
+                                                    .orElseGet(() -> activeContext.getDefaultBaseDirection())
                                                     ;
 
                 final JsonObject valueObject = value.asJsonObject();
@@ -935,8 +935,7 @@ final class ObjectExpansion1314 {
                 final JsonArrayBuilder array = Json.createArrayBuilder();
 
                 JsonUtils
-                    .toCollection(expandedValue)
-                    .stream()
+                    .toStream(expandedValue)
                     .map(GraphObject::toGraphObject)
                     .forEach(array::add);
 

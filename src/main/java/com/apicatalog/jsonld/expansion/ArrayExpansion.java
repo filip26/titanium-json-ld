@@ -83,7 +83,7 @@ public final class ArrayExpansion {
         return this;
     }
 
-    public JsonValue expand() throws JsonLdError {
+    public JsonArray expand() throws JsonLdError {
 
         // 5.1
         final JsonArrayBuilder result = Json.createArrayBuilder();
@@ -115,14 +115,11 @@ public final class ArrayExpansion {
             if (JsonUtils.isArray(expanded)) {
 
                 // append array
-                for (JsonValue expandedItem : expanded.asJsonArray()) {
-
-                    if (JsonUtils.isNull(expandedItem)) {
-                        continue;
-                    }
-
-                    result.add(expandedItem);
-                }
+                expanded
+                    .asJsonArray()
+                    .stream()
+                    .filter(JsonUtils::isNotNull)
+                    .forEach(result::add);
 
             // append non-null element
             } else if (JsonUtils.isNotNull(expanded)) {

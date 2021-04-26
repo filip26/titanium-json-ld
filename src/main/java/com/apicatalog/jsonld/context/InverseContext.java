@@ -34,19 +34,21 @@ public final class InverseContext {
                 .put(key, value);
     }
 
-    public boolean doesNotContain(final String variable, final String container, final String type) {
+    private boolean doesNotContain(final String variable, final String container, final String type, final String key) {
         return !context.containsKey(variable)
                 || !context.get(variable).containsKey(container)
-                || !context.get(variable).get(container).containsKey(type);
-    }
-
-    public boolean doesNotContain(final String variable, final String container, final String type, final String key) {
-        return doesNotContain(variable, container, type)
+                || !context.get(variable).get(container).containsKey(type)
                 || !context.get(variable).get(container).get(type).containsKey(key);
     }
 
     public boolean contains(final String variable) {
         return context.containsKey(variable);
+    }
+
+    public boolean contains(final String variable, final String container, final String type) {
+        return context.containsKey(variable) 
+                && context.get(variable).containsKey(container)
+                && context.get(variable).get(container).containsKey(type);
     }
 
     public boolean contains(final String variable, final String container, final String type, final String key) {
@@ -56,10 +58,11 @@ public final class InverseContext {
                     && context.get(variable).get(container).get(type).containsKey(key);
     }
 
-    public void setIfAbsent(final String variable, final String container, final String type, final String key, final String value) {
+    public InverseContext setIfAbsent(final String variable, final String container, final String type, final String key, final String value) {
         if (doesNotContain(variable, container, type, key)) {
             set(variable, container, type, key, value);
         }
+        return this;
     }
 
     public Optional<String> get(final String variable, final String container, final String type, final String key) {

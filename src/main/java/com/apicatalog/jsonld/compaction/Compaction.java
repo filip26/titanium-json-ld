@@ -202,9 +202,7 @@ public final class Compaction {
             final List<String> compactedTypes = new ArrayList<>();
 
             for (final JsonValue type : JsonUtils.toCollection(elementObject.get(Keywords.TYPE))) {
-
                 compactedTypes.add(activeContext.uriCompaction().vocab(true).compact(((JsonString)type).getString()));
-
             }
 
             Collections.sort(compactedTypes);
@@ -466,7 +464,7 @@ public final class Compaction {
                 final Collection<String> container = activeContext
                                                         .getTerm(itemActiveProperty)
                                                         .map(TermDefinition::getContainerMapping)
-                                                        .orElse(Collections.emptyList());
+                                                        .orElseGet(() -> Collections.emptyList());
 
                 // 12.8.5.
                 final boolean asArray = container.contains(Keywords.SET)

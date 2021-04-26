@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import com.apicatalog.jsonld.StringUtils;
 
@@ -159,6 +160,19 @@ public final class JsonUtils {
         }
 
         return Collections.singletonList(value);
+    }
+
+    public static Stream<JsonValue> toStream(JsonValue value) {
+
+        if (value == null) {
+            return Stream.empty();
+        }
+
+        if (JsonValue.ValueType.ARRAY.equals(value.getValueType())) {
+            return value.asJsonArray().stream();
+        }
+
+        return Stream.of(value);
     }
 
     public static JsonArray toJsonArray(JsonValue value) {

@@ -27,6 +27,7 @@ import com.apicatalog.jsonld.lang.Keywords;
 import jakarta.json.Json;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
@@ -42,7 +43,6 @@ public final class ValueExpansion {
     private final ActiveContext activeContext;
 
     // runtime
-    private JsonObject result;
     private Optional<TermDefinition> definition;
 
     private ValueExpansion(final ActiveContext activeContext) {
@@ -92,50 +92,45 @@ public final class ValueExpansion {
         }
 
         // 3.
-        result = Json.createObjectBuilder().add(Keywords.VALUE, value).build();
+        final JsonObjectBuilder result = Json.createObjectBuilder().add(Keywords.VALUE, value);
 
         // 4.
         if (typeMapping
                     .filter(t -> !Keywords.ID.equals(t) && !Keywords.VOCAB.equals(t) && !Keywords.NONE.equals(t))
                     .isPresent()) {
 
-            result = Json.createObjectBuilder(result).add(Keywords.TYPE, typeMapping.get()).build();
+            result.add(Keywords.TYPE, typeMapping.get());
 
             // 5.
         } else if (JsonUtils.isString(value)) {
-            buildStringValue();
+            buildStringValue(result);
         }
 
         // 6.
-        return result;
+        return result.build();
     }
 
-    private void buildStringValue() {
+    private void buildStringValue(final JsonObjectBuilder result) {
 
         // 5.1.
-        JsonValue language = null;
-
-        if (definition.map(TermDefinition::getLanguageMapping).isPresent()) {
-            language = definition.get().getLanguageMapping();
-
-        } else if (activeContext.getDefaultLanguage() != null) {
-            language = Json.createValue(activeContext.getDefaultLanguage());
-        }
-
+        final JsonValue language = definition
+                                            .map(TermDefinition::getLanguageMapping)
+                                            .orElseGet(() -> activeContext.getDefaultLanguage() != null
+                                                                ? Json.createValue(activeContext.getDefaultLanguage())
+                                                                : null);
         // 5.2.
         final DirectionType direction = definition
                                             .map(TermDefinition::getDirectionMapping)
-                                            .orElse(activeContext.getDefaultBaseDirection());
+                                            .orElseGet(() -> activeContext.getDefaultBaseDirection());
 
         // 5.3.
         if (JsonUtils.isNotNull(language)) {
-            result = Json.createObjectBuilder(result).add(Keywords.LANGUAGE, language).build();
+            result.add(Keywords.LANGUAGE, language);
         }
 
         // 5.4.
         if (direction != null && !DirectionType.NULL.equals(direction)) {
-            result = Json.createObjectBuilder(result)
-                    .add(Keywords.DIRECTION, Json.createValue(direction.name().toLowerCase())).build();
+            result.add(Keywords.DIRECTION, Json.createValue(direction.name().toLowerCase()));
         }
     }
 }

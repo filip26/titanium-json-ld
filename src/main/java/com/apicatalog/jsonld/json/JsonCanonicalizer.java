@@ -22,8 +22,8 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
+import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.rdf.io.nquad.NQuadsWriter;
 
 import jakarta.json.JsonArray;
@@ -138,7 +138,7 @@ public final class JsonCanonicalizer {
 
         writer.write("{");
 
-        for (String propertyName : value.keySet().stream().sorted().collect(Collectors.toList())) {
+        for (String propertyName : Utils.index(value.keySet(), true)) {
 
             if (next) {
                 writer.write(",");
