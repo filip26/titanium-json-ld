@@ -300,7 +300,7 @@ final class ObjectExpansion1314 {
                                                     .uriExpansion()
                                                     .vocab(true)
                                                     .documentRelative(true)
-                                                    //  deepcode ignore checkIsPresent~Optional: false positive
+                                                    // deepcode ignore checkIsPresent~Optional: false positive
                                                     .expand(defaultValue.map(JsonString.class::cast).map(JsonString::getString).get()))
                                     .build();
                         }

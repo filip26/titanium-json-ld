@@ -28,6 +28,7 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.uri.UriUtils;
 
 import jakarta.json.Json;
@@ -168,7 +169,7 @@ public final class ObjectExpansion {
 
             boolean revert = true;
 
-            for (final String key : element.keySet().stream().sorted().collect(Collectors.toList())) {
+            for (final String key : Utils.index(element.keySet(), true)) {
 
                 final String expandedKey =
                             activeContext
@@ -203,7 +204,7 @@ public final class ObjectExpansion {
         String typeKey = null;
 
         // 11.
-        for (final String key : element.keySet().stream().sorted().collect(Collectors.toSet())) {
+        for (final String key : Utils.index(element.keySet(), true)) {
 
             final String expandedKey =
                         activeContext

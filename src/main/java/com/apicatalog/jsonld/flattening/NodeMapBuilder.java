@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -29,6 +28,7 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.NodeObject;
+import com.apicatalog.jsonld.lang.Utils;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -386,7 +386,7 @@ public final class NodeMapBuilder {
             }
 
             // 6.12.
-            for (String property : elementObject.keySet().stream().sorted().collect(Collectors.toList())) {
+            for (String property : Utils.index(elementObject.keySet(), true)) {
 
                 final JsonValue value = elementObject.get(property);
 
