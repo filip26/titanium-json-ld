@@ -16,8 +16,6 @@
 package com.apicatalog.jsonld.expansion;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
@@ -168,14 +166,11 @@ public final class ObjectExpansion {
         // objects.
         if (activeContext.getPreviousContext() != null && !fromMap) {
 
-            List<String> keys = new ArrayList<>(element.keySet());
-            Collections.sort(keys);
-
             boolean revert = true;
 
-            for (final String key : keys) {
+            for (final String key : element.keySet().stream().sorted().collect(Collectors.toList())) {
 
-                String expandedKey =
+                final String expandedKey =
                             activeContext
                                 .uriExpansion()
                                 .vocab(true)
@@ -258,8 +253,6 @@ public final class ObjectExpansion {
 
     private String findInputType(final String typeKey) throws JsonLdError {
 
-        String inputType = null;
-
         // Initialize input type to expansion of the last value of the first entry in
         // element
         // expanding to @type (if any), ordering entries lexicographically by key. Both
@@ -267,39 +260,29 @@ public final class ObjectExpansion {
         // value of the matched entry are IRI expanded.
         if (typeKey != null) {
 
-            JsonValue t = element.get(typeKey);
+            final JsonValue type = element.get(typeKey);
 
-            String lastValue = null;
+            if (JsonUtils.isArray(type)) {
+                
+                final String lastValue = type.asJsonArray()                        
+                                .stream()
+                                .filter(JsonUtils::isString)
+                                .map(JsonString.class::cast)
+                                .map(JsonString::getString)
+                                .sorted()
+                                .reduce((first, second) -> second)
+                                .orElse(null);
 
-            if (JsonUtils.isArray(t)) {
-
-                List<String> sortedValues = t.asJsonArray()
-                        .stream()
-                        .filter(JsonUtils::isString)
-                        .map(JsonString.class::cast)
-                        .map(JsonString::getString)
-                        .sorted()
-                        .collect(Collectors.toList());
-
-                if (!sortedValues.isEmpty()) {
-                    lastValue = sortedValues.get(sortedValues.size() - 1);
+                if (lastValue != null) {
+                    return activeContext.uriExpansion().vocab(true).expand(lastValue);
                 }
-            }
 
-            if (JsonUtils.isString(t)) {
-                lastValue = ((JsonString) t).getString();
-            }
-
-            if (lastValue != null) {
-
-                inputType = activeContext
-                                .uriExpansion()
-                                .vocab(true)
-                                .expand(lastValue);
+            } else if (JsonUtils.isString(type)) {
+                return activeContext.uriExpansion().vocab(true).expand(((JsonString) type).getString());
             }
         }
 
-        return inputType;
+        return null;
     }
 
     private JsonValue normalizeValue(final JsonMapBuilder result) throws JsonLdError {
@@ -327,7 +310,7 @@ public final class ObjectExpansion {
                 return JsonValue.NULL;
 
             // 15.4
-            } else if (JsonUtils.isNotString(value.get()) && result.containsKey(Keywords.LANGUAGE) && !frameExpansion) {
+            } else if (!frameExpansion && JsonUtils.isNotString(value.get()) && result.containsKey(Keywords.LANGUAGE)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
 
             // 15.5
@@ -362,21 +345,12 @@ public final class ObjectExpansion {
         }
 
         // 17.2.
-        if (result.containsKey(Keywords.SET)) {
-
-            final Optional<JsonValue> set = result.get(Keywords.SET);
-
-            if (set.isPresent()) {
-
-                if (JsonUtils.isNotObject(set.get())) {
-                    return set.get();
-                }
-
-                return normalize(JsonMapBuilder.create(set.get().asJsonObject()));
-            }
-        }
-
-        return normalize(result);
+        return result
+                    .get(Keywords.SET)
+                    .map(set -> JsonUtils.isNotObject(set)
+                                    ? set
+                                    : normalize(JsonMapBuilder.create(set.asJsonObject())))
+                    .orElseGet(() -> normalize(result));
     }
 
     private JsonValue normalize(final JsonMapBuilder result) {
@@ -391,7 +365,7 @@ public final class ObjectExpansion {
 
             // 19.1. If result is a map which is empty, or contains only the entries @value
             // or @list, set result to null
-            if (result.isEmpty() && !frameExpansion
+            if (!frameExpansion && result.isEmpty()
                     || result.containsKey(Keywords.VALUE)
                     || result.containsKey(Keywords.LIST)) {
                 return JsonValue.NULL;
@@ -400,7 +374,7 @@ public final class ObjectExpansion {
             // 19.2. if result is a map whose only entry is @id, set result to null. When
             // the frameExpansion flag is set, a map containing only the @id entry is
             // retained.
-            if (result.size() == 1 && result.containsKey(Keywords.ID) && !frameExpansion) {
+            if (!frameExpansion && result.size() == 1 && result.containsKey(Keywords.ID)) {
                 return JsonValue.NULL;
             }
 

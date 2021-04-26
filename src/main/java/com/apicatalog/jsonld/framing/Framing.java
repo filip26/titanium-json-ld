@@ -93,11 +93,7 @@ public final class Framing {
                                     .match(subjects);
 
         // 4.
-        if (ordered) {
-            Collections.sort(matchedSubjects);
-        }
-
-        for (final String id : matchedSubjects) {
+        for (final String id : Utils.index(matchedSubjects, ordered)) {
 
             final Map<String, JsonValue> node = state.getGraphMap().get(state.getGraphName(), id);
 

@@ -170,7 +170,6 @@ public final class ValueCompaction {
                                 && (!value.containsKey(Keywords.LANGUAGE) || JsonUtils.isNull(value.get(Keywords.LANGUAGE))))
                         )
                         && ((direction != null && direction != DirectionType.NULL
-                                && value.containsKey(Keywords.DIRECTION)
                                 && JsonUtils.isString(value.get(Keywords.DIRECTION))
                                 && direction == DirectionType.valueOf(value.getString(Keywords.DIRECTION).toUpperCase())
                                 )
