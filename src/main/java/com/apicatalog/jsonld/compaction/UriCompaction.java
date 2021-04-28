@@ -540,7 +540,9 @@ public final class UriCompaction {
 
         // 10.
         if (!vocab && activeContext.getBaseUri() != null && !BlankNode.hasPrefix(variable)) {
-            return UriRelativizer.relativize(activeContext.getBaseUri(), variable);
+             final String relativeUri = UriRelativizer.relativize(activeContext.getBaseUri(), variable);
+             
+             return Keywords.matchForm(relativeUri) ? "./".concat(relativeUri) : relativeUri;
         }
 
         // 11.
