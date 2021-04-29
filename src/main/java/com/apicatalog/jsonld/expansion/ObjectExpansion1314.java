@@ -174,12 +174,12 @@ final class ObjectExpansion1314 {
                 if (Keywords.ID.equals(expandedProperty)) {
 
                     // 13.4.3.1
-                    if (JsonUtils.isNotString(value) && !frameExpansion && (!activeContext.getOptions().isNumericId() || JsonUtils.isNotNumber(value))
+                    if (!frameExpansion && JsonUtils.isNotString(value) && (!activeContext.getOptions().isNumericId() || JsonUtils.isNotNumber(value))
                             || frameExpansion
                                     && JsonUtils.isNotString(value)
                                     && JsonUtils.isNotEmptyObject(value)
                                     && (JsonUtils.isNotArray(value)
-                                            || !value.asJsonArray().stream().allMatch(JsonUtils::isString)
+                                            || value.asJsonArray().stream().anyMatch(JsonUtils::isNotString)
                                     )
                             ) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE);
@@ -262,13 +262,13 @@ final class ObjectExpansion1314 {
                     if ((!frameExpansion
                             && JsonUtils.isNotString(value)
                             && (JsonUtils.isNotArray(value)
-                                    || !value.asJsonArray().stream().allMatch(JsonUtils::isString)
+                                    || value.asJsonArray().stream().anyMatch(JsonUtils::isNotString)
                                 ))
                             || frameExpansion
                                     && JsonUtils.isNotString(value)
                                     && JsonUtils.isNotEmptyObject(value)
                                     && (JsonUtils.isNotArray(value)
-                                            || !value.asJsonArray().stream().allMatch(JsonUtils::isString)
+                                            || value.asJsonArray().stream().anyMatch(JsonUtils::isNotString)
                                         )
                                     && !DefaultObject.isDefaultObject(value)
                                     && (DefaultObject.getValue(value).map(JsonUtils::isNotString).orElse(true)
@@ -392,7 +392,7 @@ final class ObjectExpansion1314 {
                         }
 
                         // 13.4.6.3
-                        if (!expandedValue.asJsonArray().stream().allMatch(NodeObject::isNodeObject)) {
+                        if (expandedValue.asJsonArray().stream().anyMatch(NodeObject::isNotNodeObject)) {
                             throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_INCLUDED_VALUE);
                         }
 

@@ -17,12 +17,12 @@ package com.apicatalog.jsonld.processor;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -147,17 +147,22 @@ public final class FramingProcessor {
                 .ordered(options.isOrdered())
                 .frame();
 
-        Collection<JsonValue> result = resultMap.valuesToArray();
+        Stream<JsonValue> result = resultMap.valuesToArray().stream();
 
         // 17. - remove blank @id
         if (!activeContext.inMode(JsonLdVersion.V1_0)) {
-            result = removeBlankId(result);
+            
+            final List<String> remove = findBlankNodes(resultMap.valuesToArray());
+            
+            if (!remove.isEmpty()) {
+                result = result.map(v -> FramingProcessor.removeBlankIdKey(v, remove));
+            }
         }
 
         // 18. - remove preserve
         final JsonArrayBuilder filtered = Json.createArrayBuilder();
 
-        result.stream().map(FramingProcessor::removePreserve).forEach(filtered::add);
+        result.map(FramingProcessor::removePreserve).forEach(filtered::add);
 
         // 19.
         JsonValue compactedResults = Compaction
@@ -250,9 +255,7 @@ public final class FramingProcessor {
 
             final JsonArrayBuilder array = Json.createArrayBuilder();
 
-            for (final JsonValue item : value.asJsonArray()) {
-                array.add(removePreserve(item));
-            }
+            value.asJsonArray().forEach(item -> array.add(removePreserve(item)));
 
             return array.build();
         }
@@ -283,7 +286,7 @@ public final class FramingProcessor {
 
             final JsonArrayBuilder array = Json.createArrayBuilder();
 
-            value.asJsonArray().stream().map(FramingProcessor::replaceNull).forEach(array::add);
+            value.asJsonArray().forEach(item -> array.add(replaceNull(item)));
 
             final JsonArray result = array.build();
 
@@ -292,29 +295,11 @@ public final class FramingProcessor {
 
         final JsonObjectBuilder object = Json.createObjectBuilder();
 
-        for (Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
-
-            object.add(entry.getKey(), replaceNull(entry.getValue()));
-
-        }
+        value.asJsonObject().entrySet().forEach(entry -> object.add(entry.getKey(), replaceNull(entry.getValue())));
+        
         return object.build();
     }
-
-    private static final Collection<JsonValue> removeBlankId(Collection<JsonValue> array) {
-
-        Map<String, Integer> candidates = new HashMap<>();
-
-        array.forEach(v -> findBlankNodes(v, candidates));
-
-        List<String> remove = candidates.entrySet().stream().filter(e -> e.getValue() == 1).map(Entry::getKey).collect(Collectors.toList());
-
-        if (remove.isEmpty()) {
-            return array;
-        }
-
-        return array.stream().map(v -> removeBlankIdKey(v, remove)).collect(Collectors.toList());
-    }
-
+    
     private static final JsonValue removeBlankIdKey(JsonValue value, List<String> blankNodes) {
 
         if (JsonUtils.isScalar(value)) {
@@ -325,7 +310,7 @@ public final class FramingProcessor {
 
             final JsonArrayBuilder array = Json.createArrayBuilder();
 
-            value.asJsonArray().stream().map(item -> removeBlankIdKey(item, blankNodes)).forEach(array::add);
+            value.asJsonArray().forEach(item -> array.add(removeBlankIdKey(item, blankNodes)));
 
             return array.build();
         }
@@ -345,6 +330,15 @@ public final class FramingProcessor {
         }
 
         return object.build();
+    }
+
+    private static final List<String> findBlankNodes(final JsonArray array) {
+
+        Map<String, Integer> candidates = new HashMap<>();
+
+        array.forEach(v -> findBlankNodes(v, candidates));
+
+        return candidates.entrySet().stream().filter(e -> e.getValue() == 1).map(Entry::getKey).collect(Collectors.toList());
     }
 
     private static final void findBlankNodes(JsonValue value, final Map<String, Integer> blankNodes) {
@@ -371,7 +365,6 @@ public final class FramingProcessor {
         }
 
         for (Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
-
             findBlankNodes(entry.getValue(), blankNodes);
         }
     }

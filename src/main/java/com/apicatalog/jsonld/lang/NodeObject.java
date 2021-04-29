@@ -44,6 +44,11 @@ public final class NodeObject {
                         );
     }
 
+    public static final boolean isNotNodeObject(JsonValue value) {
+        return !isNodeObject(value);
+    }
+
+    
     public static final boolean isNodeReference(JsonValue value) {
         return JsonUtils.isObject(value)
                     && value.asJsonObject().size() == 1
