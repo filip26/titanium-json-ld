@@ -128,8 +128,14 @@ public final class Keywords {
         return true;
     }
 
-    public static boolean noneMatch(final String key, final String... keywords) {
-        return Arrays.stream(keywords).noneMatch(key::equals);
+    public static boolean noneMatch(final String key, final String... keywords) {        
+        // vanilla approach is 3 times faster than stream.noneMatch
+        for (String k : keywords) {
+            if (k.equals(key)) {
+                return false;
+            }
+        }
+        return true;        
     }
 
     public static boolean anyMatch(final String key, final String... keywords) {
