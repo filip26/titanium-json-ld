@@ -17,7 +17,6 @@ package com.apicatalog.jsonld.lang;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.IntStream;
 
 public final class Keywords {
 
@@ -115,12 +114,28 @@ public final class Keywords {
      * @return <code>true</code> if the provided value has keyword form
      */
     public static boolean matchForm(final String value) {
-        return value.startsWith("@") && value.length() > 1
-                && IntStream.range(1, value.length()).map(value::charAt).allMatch(Character::isAlphabetic);
+ 
+        if (value.length() < 2 || value.charAt(0) != '@') {
+            return false;
+        }
+
+        // vanilla approach is 3 times faster than stream.allMatch        
+        for (int i=1; i < value.length(); i++) {
+            if (!Character.isAlphabetic(value.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
-    public static boolean noneMatch(final String key, final String... keywords) {
-        return Arrays.stream(keywords).noneMatch(key::equals);
+    public static boolean noneMatch(final String key, final String... keywords) {        
+        // vanilla approach is 3 times faster than stream.noneMatch
+        for (String k : keywords) {
+            if (k.equals(key)) {
+                return false;
+            }
+        }
+        return true;        
     }
 
     public static boolean anyMatch(final String key, final String... keywords) {
