@@ -63,7 +63,7 @@
 
         <!--  test resources -->
         <junit.version>5.7.1</junit.version>
-        <wiremock.version>2.27.2</wiremock.version>
+        <wiremock.version>2.28.0</wiremock.version>
 
         <sonar.projectKey>filip26_titanium-json-ld</sonar.projectKey>
         <sonar.organization>apicatalog</sonar.organization>
