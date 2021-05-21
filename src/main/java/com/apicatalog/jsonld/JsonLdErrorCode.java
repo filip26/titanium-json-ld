@@ -272,6 +272,20 @@ public enum JsonLdErrorCode {
      */
     INVALID_KEYWORD_EMBED_VALUE,
 
+    /**
+     * JSON-LD* 
+     * 
+     * @see <a href="https://json-ld.github.io/json-ld-star">JSON-LD*</a>
+     */
+    INVALID_EMBEDDED_NODE,
+    
+    /**
+     * JSON-LD* 
+     * 
+     * @see <a href="https://json-ld.github.io/json-ld-star">JSON-LD*</a>
+     */    
+    INVALID_ANNOTATION, 
+    
     // Custom
     UNSPECIFIED;
 
@@ -332,6 +346,8 @@ public enum JsonLdErrorCode {
         messages.put(PROTECTED_TERM_REDEFINITION, "An attempt was made to redefine a protected term");
         messages.put(INVALID_FRAME, "The frame is invalid");
         messages.put(INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag");
+        messages.put(INVALID_EMBEDDED_NODE, "An invalid embedded node has been detected.");
+        messages.put(INVALID_ANNOTATION, "An invalid annotation has been detected");
 
         CODE_TO_MESSAGE = Collections.unmodifiableMap(messages);
     }
