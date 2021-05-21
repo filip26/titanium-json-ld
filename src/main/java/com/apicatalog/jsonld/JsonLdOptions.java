@@ -101,6 +101,9 @@ public final class JsonLdOptions {
 
     private boolean requiredAll;
 
+    // JSON-LD* https://json-ld.github.io/json-ld-star
+    private boolean rdfStar;
+    
     // custom
 
     // allow numeric @id
@@ -139,6 +142,9 @@ public final class JsonLdOptions {
         this.omitGraph = null;
         this.requiredAll = false;
 
+        // json-ld-star defaults
+        this.rdfStar = false;
+        
         // custom
         this.numericId = false;
         this.contextCache = new LruCache<>(256);
@@ -166,6 +172,9 @@ public final class JsonLdOptions {
         this.omitGraph = options.omitGraph;
         this.requiredAll = options.requiredAll;
 
+        // json-ld-star
+        this.rdfStar = options.rdfStar;
+        
         // custom
         this.numericId = options.numericId;
         this.contextCache = options.contextCache;
@@ -421,5 +430,13 @@ public final class JsonLdOptions {
 
     public void setDocumentCache(Cache<String, Document> documentCache) {
         this.documentCache = documentCache;
+    }
+    
+    public boolean isRdfStar() {
+        return rdfStar;
+    }
+    
+    public void setRdfStar(boolean rdfStar) {
+        this.rdfStar = rdfStar;
     }
 }

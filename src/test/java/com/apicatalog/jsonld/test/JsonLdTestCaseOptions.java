@@ -39,6 +39,7 @@ public class JsonLdTestCaseOptions {
     public Boolean useRdfType;
     public Boolean omitGraph;
     public Boolean numericId;
+    public Boolean rdfStar;
 
     public static final JsonLdTestCaseOptions of(JsonObject o, String baseUri) {
 
@@ -89,6 +90,10 @@ public class JsonLdTestCaseOptions {
             options.numericId = o.getBoolean("useNumericId");
         }
 
+        if (o.containsKey("rdfStar")) {
+            options.rdfStar = o.getBoolean("rdfStar");
+        }
+
         return options;
     }
 
@@ -137,6 +142,9 @@ public class JsonLdTestCaseOptions {
         if (numericId != null) {
             options.setNumericId(numericId);
         }
-
+        
+        if (rdfStar != null) {
+            options.setRdfStar(rdfStar);
+        }
     }
 }

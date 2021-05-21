@@ -31,16 +31,24 @@ import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 class ExpandTest {
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource("data")
+    @MethodSource({"jsonLdApi", "jsonLdStar"})
     void testExpand(final JsonLdTestCase testCase) {
         assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
     }
 
-    static final Stream<JsonLdTestCase> data() throws JsonLdError {
+    static final Stream<JsonLdTestCase> jsonLdApi() throws JsonLdError {
         return JsonLdManifestLoader
                     .load(JsonLdManifestLoader.JSON_LD_API_BASE, "expand-manifest.jsonld", new ZipResourceLoader())
                     .stream()
                     .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                     ;
     }
+
+    static final Stream<JsonLdTestCase> jsonLdStar() throws JsonLdError {
+        return JsonLdManifestLoader
+                    .load(JsonLdManifestLoader.JSON_LD_STAR_BASE, "expand-manifest.jsonld", new ZipResourceLoader())
+                    .stream()
+                    ;
+    }
+
 }

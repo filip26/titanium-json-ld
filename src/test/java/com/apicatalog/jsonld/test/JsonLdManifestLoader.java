@@ -36,6 +36,7 @@ public final class JsonLdManifestLoader {
 
     public static final String JSON_LD_API_BASE = "zip://json-ld-test-suite-20210520.zip/com/github/w3c/json-ld-api/tests/";
     public static final String JSON_LD_FRAMING_BASE = "zip://json-ld-framing-test-suite-20200609.zip/com/github/w3c/json-ld-framing/tests/";
+    public static final String JSON_LD_STAR_BASE = "zip://json-ld-star-test-suite-20210521.zip/com/github/json-ld/json-ld-star/tests/";
 
     private final String manifestName;
     private final String manifestBase;
