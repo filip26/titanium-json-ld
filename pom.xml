@@ -62,8 +62,8 @@
         <argLine>-Dfile.encoding=UTF-8</argLine>
 
         <!--  test resources -->
-        <junit.version>5.7.1</junit.version>
-        <wiremock.version>2.27.2</wiremock.version>
+        <junit.version>5.7.2</junit.version>
+        <wiremock.version>2.28.0</wiremock.version>
 
         <sonar.projectKey>filip26_titanium-json-ld</sonar.projectKey>
         <sonar.organization>apicatalog</sonar.organization>
@@ -158,7 +158,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.6</version>
+                <version>0.8.7</version>
                 <executions>
                     <execution>
                         <id>default-prepare-agent</id>
@@ -199,7 +199,7 @@
 		            <plugin>
 		                <groupId>org.apache.maven.plugins</groupId>
 		                <artifactId>maven-gpg-plugin</artifactId>
-		                <version>1.6</version>
+		                <version>3.0.1</version>
 		                <executions>
 		                    <execution>
 		                        <id>sign-artifacts</id>
