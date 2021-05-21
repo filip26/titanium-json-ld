@@ -36,7 +36,7 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
  | Feature | Tests | Pass | Status | Notes |
  | --- | ---: | ---: | ---: | --- |
 | [Expansion](https://www.w3.org/TR/json-ld/#expanded-document-form) | 371 |  371 | 100% | |
-| [Compaction](https://www.w3.org/TR/json-ld/#compacted-document-form) | 240 | 240 | 100% | |
+| [Compaction](https://www.w3.org/TR/json-ld/#compacted-document-form) | 242 | 242 | 100% | |
 | [Flattening](https://www.w3.org/TR/json-ld/#flattened-document-form) | 55 | 55 | 100% | |
 | [JSON-LD to RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 451 | 449 | 99.5% | <ul><li>[te075 - @vocab as blank node identifier](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#te075)</li><li>[tli12 - List with bad @base](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#tli12)</li></ul> |
 | [RDF to JSON-LD](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 51 | 51  | 100% | |
