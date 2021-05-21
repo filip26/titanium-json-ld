@@ -683,12 +683,12 @@ public final class Compaction {
                     // 12.8.9.6.
                     } else if (container.contains(Keywords.INDEX)
                                 && !Keywords.INDEX.equals(indexKey)) {
-
+                                                
                         // 12.8.9.6.1.
                         containerKey = activeContext
                                                 .uriCompaction()
                                                 .vocab(true)
-                                                .compact(indexKey);
+                                                .compact(activeContext.uriExpansion().expand(indexKey));
 
                         // 12.8.9.6.2.
                         if (JsonUtils.isObject(compactedItem) && compactedItem.asJsonObject().containsKey(containerKey)) {
