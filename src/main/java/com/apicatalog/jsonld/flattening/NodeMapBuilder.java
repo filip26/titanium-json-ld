@@ -313,7 +313,7 @@ public final class NodeMapBuilder {
 
                 final JsonArrayBuilder nodeTypeBuilder = Json.createArrayBuilder();
                 nodeType.forEach(nodeTypeBuilder::add);
-                
+
                 nodeMap.set(activeGraph, id, Keywords.TYPE, nodeTypeBuilder.build());
 
                 elementObject.remove(Keywords.TYPE);

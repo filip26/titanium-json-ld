@@ -90,8 +90,8 @@ public class JsonLdTestCaseOptions {
             options.numericId = o.getBoolean("useNumericId");
         }
 
-        if (o.containsKey("rdfStar")) {
-            options.rdfStar = o.getBoolean("rdfStar");
+        if (o.containsKey("rdfstar")) {
+            options.rdfStar = o.getBoolean("rdfstar");
         }
 
         return options;
@@ -142,7 +142,7 @@ public class JsonLdTestCaseOptions {
         if (numericId != null) {
             options.setNumericId(numericId);
         }
-        
+
         if (rdfStar != null) {
             options.setRdfStar(rdfStar);
         }

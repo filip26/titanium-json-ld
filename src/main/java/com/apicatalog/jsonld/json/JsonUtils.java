@@ -193,16 +193,16 @@ public final class JsonUtils {
                     ;
     }
 
-    public static boolean isNotEmptyArray(JsonValue value) {
-        return isNotArray(value) || !value.asJsonArray().isEmpty();
+    public static boolean isNonEmptyArray(JsonValue value) {
+        return isArray(value) && !value.asJsonArray().isEmpty();
     }
 
-    public static boolean isNotEmptyObject(JsonValue value) {
-        return isNotObject(value) || !value.asJsonObject().isEmpty();
+    public static boolean isNonEmptyObject(JsonValue value) {
+        return isObject(value) && !value.asJsonObject().isEmpty();
     }
-    
+
     public static JsonValue flatten(JsonValue value, String key) {
-        
+
         if (JsonUtils.isArray(value) && value.asJsonArray().size() == 1) {
             value = value.asJsonArray().get(0);
         }
@@ -210,7 +210,7 @@ public final class JsonUtils {
         if (JsonUtils.isObject(value) && value.asJsonObject().containsKey(key)) {
             value = value.asJsonObject().get(key);
         }
-        
+
         return value;
     }
 }

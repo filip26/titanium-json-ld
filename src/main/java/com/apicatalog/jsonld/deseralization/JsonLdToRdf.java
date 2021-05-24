@@ -41,7 +41,7 @@ import jakarta.json.JsonValue;
 public final class JsonLdToRdf {
 
     private static final Logger LOGGER = Logger.getLogger(JsonLdToRdf.class.getName());
-    
+
     // required
     private final NodeMap nodeMap;
     private final RdfDataset dataset;

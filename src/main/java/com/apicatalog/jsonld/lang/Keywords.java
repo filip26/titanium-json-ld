@@ -91,11 +91,16 @@ public final class Keywords {
 
     public static final String MERGED = "@merged";
 
+    // Extension: JSON-LD-STAR (Experimental)
+    public static final String ANNOTATION = "@annotation";
+
     private static final Collection<String> ALL_KEYWORDS = Arrays.asList(ANY, BASE, CONTAINER, CONTEXT, DIRECTION, GRAPH,
             ID, IMPORT, INCLUDED, INDEX, JSON, LANGUAGE, LIST, NEST, NONE, PREFIX, PRESERVE, PROPAGATE, PROTECTED, REVERSE, SET,
             TYPE, VALUE, VERSION, VOCAB,
             // framing
-            DEFAULT, EMBED, ALWAYS, ONCE, NEVER, EXPLICIT, NULL, OMIT_DEFAULT, REQUIRE_ALL, MERGED
+            DEFAULT, EMBED, ALWAYS, ONCE, NEVER, EXPLICIT, NULL, OMIT_DEFAULT, REQUIRE_ALL, MERGED,
+            // star
+            ANNOTATION
             );
 
 
@@ -114,12 +119,12 @@ public final class Keywords {
      * @return <code>true</code> if the provided value has keyword form
      */
     public static boolean matchForm(final String value) {
- 
+
         if (value.length() < 2 || value.charAt(0) != '@') {
             return false;
         }
 
-        // vanilla approach is 3 times faster than stream.allMatch        
+        // vanilla approach is 3 times faster than stream.allMatch
         for (int i=1; i < value.length(); i++) {
             if (!Character.isAlphabetic(value.charAt(i))) {
                 return false;
@@ -128,14 +133,14 @@ public final class Keywords {
         return true;
     }
 
-    public static boolean noneMatch(final String key, final String... keywords) {        
+    public static boolean noneMatch(final String key, final String... keywords) {
         // vanilla approach is 3 times faster than stream.noneMatch
         for (String k : keywords) {
             if (k.equals(key)) {
                 return false;
             }
         }
-        return true;        
+        return true;
     }
 
     public static boolean anyMatch(final String key, final String... keywords) {

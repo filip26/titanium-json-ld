@@ -273,19 +273,19 @@ public enum JsonLdErrorCode {
     INVALID_KEYWORD_EMBED_VALUE,
 
     /**
-     * JSON-LD* 
-     * 
+     * JSON-LD*
+     *
      * @see <a href="https://json-ld.github.io/json-ld-star">JSON-LD*</a>
      */
     INVALID_EMBEDDED_NODE,
-    
+
     /**
-     * JSON-LD* 
-     * 
+     * JSON-LD*
+     *
      * @see <a href="https://json-ld.github.io/json-ld-star">JSON-LD*</a>
-     */    
-    INVALID_ANNOTATION, 
-    
+     */
+    INVALID_ANNOTATION,
+
     // Custom
     UNSPECIFIED;
 

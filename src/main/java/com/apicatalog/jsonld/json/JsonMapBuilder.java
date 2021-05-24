@@ -34,7 +34,6 @@ public final class JsonMapBuilder {
 
     private JsonMapBuilder(Map<String, Object> map) {
         this.map = map;
-
     }
 
     public JsonObject build() {
@@ -109,7 +108,7 @@ public final class JsonMapBuilder {
     }
 
     public boolean isNotValueObject() {
-        return !Keywords.allMatch(map.keySet(), Keywords.TYPE, Keywords.VALUE, Keywords.DIRECTION, Keywords.LANGUAGE, Keywords.INDEX);
+        return !Keywords.allMatch(map.keySet(), Keywords.TYPE, Keywords.VALUE, Keywords.DIRECTION, Keywords.LANGUAGE, Keywords.INDEX, Keywords.ANNOTATION);
     }
 
     public JsonArray valuesToArray() {

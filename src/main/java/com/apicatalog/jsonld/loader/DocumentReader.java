@@ -6,5 +6,5 @@ import com.apicatalog.jsonld.document.Document;
 interface DocumentReader<S> {
 
     Document read(S input) throws JsonLdError;
-    
+
 }

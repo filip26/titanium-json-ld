@@ -33,7 +33,7 @@ import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 class ToRdfTest {
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource({"jsonLdApi", "jsonLdStar"})
+    @MethodSource({"jsonLdApi"})
     void testToRdf(final JsonLdTestCase testCase) throws IOException {
 
         // Force a locale to something different than US to be aware of DecimalFormat errors
@@ -54,11 +54,4 @@ class ToRdfTest {
                     .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                     ;
     }
-    
-    static final Stream<JsonLdTestCase> jsonLdStar() throws JsonLdError {
-        return JsonLdManifestLoader
-                .load(JsonLdManifestLoader.JSON_LD_STAR_BASE, "toRdf-manifest.jsonld", new ZipResourceLoader())
-                .stream()
-                ;
-    }    
 }

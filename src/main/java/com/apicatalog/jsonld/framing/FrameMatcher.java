@@ -121,16 +121,11 @@ public final class FrameMatcher {
             nonKeywordProperty = true;
 
             JsonValue propertyValue = frame.get(property);
-            final Frame propertyFrame;
 
-            if (JsonUtils.isNotNull(propertyValue)
-                    && JsonUtils.isArray(propertyValue) && JsonUtils.isNotEmptyArray(propertyValue)) {
-
-                propertyFrame = Frame.of((JsonStructure)propertyValue);
-
-            } else {
-                propertyFrame = null;
-            }
+            final Frame propertyFrame =
+                            (JsonUtils.isNotNull(propertyValue) && JsonUtils.isNonEmptyArray(propertyValue))
+                                ? Frame.of((JsonStructure)propertyValue)
+                                : null;
 
             final JsonArray nodeValues = nodeValue != null
                                             ? JsonUtils.toJsonArray(nodeValue)

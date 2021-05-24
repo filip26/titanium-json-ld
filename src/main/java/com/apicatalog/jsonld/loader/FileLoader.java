@@ -33,7 +33,7 @@ import com.apicatalog.jsonld.http.media.MediaType;
 
 public final class FileLoader implements DocumentLoader {
 
-    private static final Logger LOGGER = Logger.getLogger(FileLoader.class.getName());    
+    private static final Logger LOGGER = Logger.getLogger(FileLoader.class.getName());
 
     private final DocumentResolver resolver;
 
@@ -41,7 +41,7 @@ public final class FileLoader implements DocumentLoader {
         this.resolver = new DocumentResolver();
         this.resolver.setFallbackContentType(MediaType.JSON);
     }
-        
+
     @Override
     public Document loadDocument(final URI url, final DocumentLoaderOptions options) throws JsonLdError {
 
@@ -57,13 +57,13 @@ public final class FileLoader implements DocumentLoader {
 
         final MediaType contentType =
                                 detectedContentType(url.getPath().toLowerCase())
-                                .orElseGet(() -> { 
+                                .orElseGet(() -> {
                                     LOGGER.log(Level.WARNING, "Cannot detect file [{0}] content type. Trying application/json.", url);
-                                    return MediaType.JSON;  
+                                    return MediaType.JSON;
                                 });
 
         final DocumentReader<InputStream> reader = resolver.getReader(contentType);
-                
+
         try (final InputStream is = new FileInputStream(file)) {
             final Document document = reader.read(is);
             document.setDocumentUrl(url);
@@ -98,5 +98,5 @@ public final class FileLoader implements DocumentLoader {
         }
 
         return Optional.empty();
-    }    
+    }
 }

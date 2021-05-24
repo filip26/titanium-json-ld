@@ -151,9 +151,9 @@ public final class FramingProcessor {
 
         // 17. - remove blank @id
         if (!activeContext.inMode(JsonLdVersion.V1_0)) {
-            
+
             final List<String> remove = findBlankNodes(resultMap.valuesToArray());
-            
+
             if (!remove.isEmpty()) {
                 result = result.map(v -> FramingProcessor.removeBlankIdKey(v, remove));
             }
@@ -216,7 +216,7 @@ public final class FramingProcessor {
         }
 
         // 19.3.
-        if (JsonUtils.isNotEmptyArray(context) && JsonUtils.isNotEmptyObject(context)) {
+        if (!JsonUtils.isEmptyArray(context) && !JsonUtils.isEmptyObject(context)) {
             compactedResults = Json.createObjectBuilder(compactedResults.asJsonObject()).add(Keywords.CONTEXT, context).build();
         }
 
@@ -296,10 +296,10 @@ public final class FramingProcessor {
         final JsonObjectBuilder object = Json.createObjectBuilder();
 
         value.asJsonObject().entrySet().forEach(entry -> object.add(entry.getKey(), replaceNull(entry.getValue())));
-        
+
         return object.build();
     }
-    
+
     private static final JsonValue removeBlankIdKey(JsonValue value, List<String> blankNodes) {
 
         if (JsonUtils.isScalar(value)) {

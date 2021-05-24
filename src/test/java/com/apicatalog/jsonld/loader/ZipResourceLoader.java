@@ -33,11 +33,11 @@ import com.apicatalog.jsonld.http.media.MediaType;
 public class ZipResourceLoader implements DocumentLoader, TestLoader {
 
     private final DocumentResolver resolver;
-    
+
     public ZipResourceLoader() {
         this.resolver = new DocumentResolver();
     }
-    
+
     @Override
     public Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
 
@@ -78,9 +78,9 @@ public class ZipResourceLoader implements DocumentLoader, TestLoader {
 
             } else if (zipEntry.getName().endsWith(".jsonld")) {
                 reader = resolver.getReader(MediaType.JSON_LD);
-                
+
             } else {
-                return null;                
+                return null;
             }
 
             try (final InputStream is = zip.getInputStream(zipEntry)) {

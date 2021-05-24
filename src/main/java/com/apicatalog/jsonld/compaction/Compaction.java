@@ -172,7 +172,7 @@ public final class Compaction {
                             .filter(Keywords.JSON::equals)
                             .isPresent()
                     ) {
-                
+
                 return result;
             }
 
@@ -402,7 +402,7 @@ public final class Compaction {
                 final Optional<String> nestProperty = activeContext
                                                         .getTerm(itemActiveProperty)
                                                         .map(TermDefinition::getNestValue);
-                
+
                 if (nestProperty.isPresent()) {
 
                     final String nestTerm = nestProperty.get();
@@ -683,7 +683,7 @@ public final class Compaction {
                     // 12.8.9.6.
                     } else if (container.contains(Keywords.INDEX)
                                 && !Keywords.INDEX.equals(indexKey)) {
-                                                
+
                         // 12.8.9.6.1.
                         containerKey = activeContext
                                                 .uriCompaction()

@@ -30,7 +30,7 @@ import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 class FlattenTest {
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource({"jsonLdApi", "jsonLdStar"})
+    @MethodSource({"jsonLdApi"})
     void testFlatten(JsonLdTestCase testCase) {
         assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
     }
@@ -40,13 +40,6 @@ class FlattenTest {
                 .load(JsonLdManifestLoader.JSON_LD_API_BASE, "flatten-manifest.jsonld", new ZipResourceLoader())
                 .stream()
                 .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
-                ;
-    }
-    
-    static final Stream<JsonLdTestCase> jsonLdStar() throws JsonLdError {
-        return JsonLdManifestLoader
-                .load(JsonLdManifestLoader.JSON_LD_STAR_BASE, "flatten-manifest.jsonld", new ZipResourceLoader())
-                .stream()
                 ;
     }
 }
