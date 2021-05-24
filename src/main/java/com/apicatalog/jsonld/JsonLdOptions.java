@@ -436,6 +436,12 @@ public final class JsonLdOptions {
         return rdfStar;
     }
 
+    /**
+     * Experimental: Enables JSON-LD-STAR extension. Only expansion is supported. Disabled by default.
+     *
+     * @see <a href="https://json-ld.github.io/json-ld-star">JSON-LD-STAR Draft</a>
+     *
+     */
     public void setRdfStar(boolean rdfStar) {
         this.rdfStar = rdfStar;
     }

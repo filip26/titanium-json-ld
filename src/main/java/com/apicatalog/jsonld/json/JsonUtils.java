@@ -201,6 +201,16 @@ public final class JsonUtils {
         return isObject(value) && !value.asJsonObject().isEmpty();
     }
 
+    @Deprecated
+    public static boolean isNotEmptyArray(JsonValue value) {
+        return isNotArray(value) || !value.asJsonArray().isEmpty();
+    }
+
+    @Deprecated
+    public static boolean isNotEmptyObject(JsonValue value) {
+        return isNotObject(value) || !value.asJsonObject().isEmpty();
+    }
+
     public static JsonValue flatten(JsonValue value, String key) {
 
         if (JsonUtils.isArray(value) && value.asJsonArray().size() == 1) {
