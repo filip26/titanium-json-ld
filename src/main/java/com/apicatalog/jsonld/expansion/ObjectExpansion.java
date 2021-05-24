@@ -351,6 +351,7 @@ public final class ObjectExpansion {
         final Optional<JsonValue> set = result.get(Keywords.SET);
 
         if (set.filter(JsonUtils::isObject).isPresent()) {
+            // deepcode ignore checkIsPresent~Optional: false positive
             return normalize(JsonMapBuilder.create(set.map(JsonValue::asJsonObject).get()));
 
         } else if (set.isPresent()) {
