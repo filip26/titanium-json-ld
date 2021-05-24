@@ -46,7 +46,7 @@ public final class InverseContext {
     }
 
     public boolean contains(final String variable, final String container, final String type) {
-        return context.containsKey(variable) 
+        return context.containsKey(variable)
                 && context.get(variable).containsKey(container)
                 && context.get(variable).get(container).containsKey(type);
     }

@@ -23,11 +23,13 @@ import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.uri.UriUtils;
 
@@ -264,8 +266,8 @@ public final class ObjectExpansion {
             final JsonValue type = element.get(typeKey);
 
             if (JsonUtils.isArray(type)) {
-                
-                final String lastValue = type.asJsonArray()                        
+
+                final String lastValue = type.asJsonArray()
                                 .stream()
                                 .filter(JsonUtils::isString)
                                 .map(JsonString.class::cast)
@@ -316,7 +318,7 @@ public final class ObjectExpansion {
 
             // 15.5
             } else if (!frameExpansion
-                            && type.filter(t -> JsonUtils.isNotString(t) 
+                            && type.filter(t -> JsonUtils.isNotString(t)
                                                 || UriUtils.isNotURI(((JsonString) t).getString()))
                                     .isPresent()
                          ) {
@@ -327,7 +329,7 @@ public final class ObjectExpansion {
         return normalize(result);
     }
 
-    private JsonValue normalizeType(final JsonMapBuilder result) {
+    private JsonValue normalizeType(final JsonMapBuilder result) throws JsonLdError {
 
         result
             .get(Keywords.TYPE)
@@ -346,15 +348,30 @@ public final class ObjectExpansion {
         }
 
         // 17.2.
-        return result
-                    .get(Keywords.SET)
-                    .map(set -> JsonUtils.isNotObject(set)
-                                    ? set
-                                    : normalize(JsonMapBuilder.create(set.asJsonObject())))
-                    .orElseGet(() -> normalize(result));
+        final Optional<JsonValue> set = result.get(Keywords.SET);
+
+        if (set.filter(JsonUtils::isObject).isPresent()) {
+            // deepcode ignore checkIsPresent~Optional: false positive
+            return normalize(JsonMapBuilder.create(set.map(JsonValue::asJsonObject).get()));
+
+        } else if (set.isPresent()) {
+            return  set.get();
+        }
+
+        return normalize(result);
     }
 
-    private JsonValue normalize(final JsonMapBuilder result) {
+    private JsonValue normalize(final JsonMapBuilder result) throws JsonLdError {
+
+        // Extension: JSON-LD-STAR (Experimental)
+        if (result.containsKey(Keywords.ANNOTATION)
+                && (StringUtils.isBlank(activeProperty)
+                    || Keywords.GRAPH.equals(activeProperty)
+                    || Keywords.INCLUDED.equals(activeProperty)
+                    || result.get(Keywords.ANNOTATION).filter(NodeObject::isNotAnnotationObject).isPresent())
+                ) {
+            throw new JsonLdError(JsonLdErrorCode.INVALID_ANNOTATION);
+        }
 
         // 18.
         if (result.size() == 1 && result.containsKey(Keywords.LANGUAGE)) {

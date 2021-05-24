@@ -162,14 +162,14 @@ public final class Frame {
 
         final JsonValue id = frame.get(Keywords.ID);
 
-        if (JsonUtils.isArray(id) && JsonUtils.isNotEmptyArray(id)) {
+        if (JsonUtils.isNonEmptyArray(id)) {
 
             final JsonArray idArray = id.asJsonArray();
-            
+
             return ((idArray.size() == 1 && JsonUtils.isEmptyObject(idArray.get(0)))
                     || idArray
                         .stream()
-                        .noneMatch(item -> JsonUtils.isNotString(item) 
+                        .noneMatch(item -> JsonUtils.isNotString(item)
                                             || UriUtils.isNotAbsoluteUri(((JsonString)item).getString())));
         }
         return JsonUtils.isString(id) && UriUtils.isAbsoluteUri(((JsonString)id).getString());
@@ -179,10 +179,10 @@ public final class Frame {
 
         final JsonValue type = frame.get(Keywords.TYPE);
 
-        if (JsonUtils.isArray(type) && JsonUtils.isNotEmptyArray(type)) {
+        if (JsonUtils.isNonEmptyArray(type)) {
 
             final JsonArray typeArray = type.asJsonArray();
-            
+
             return ((typeArray.size() == 1
                         && (JsonUtils.isEmptyObject(typeArray.get(0))
                             || (JsonUtils.isObject(typeArray.get(0))
@@ -192,7 +192,7 @@ public final class Frame {
                     )
                     || typeArray
                         .stream()
-                        .noneMatch(item -> JsonUtils.isNotString(item) 
+                        .noneMatch(item -> JsonUtils.isNotString(item)
                                             || UriUtils.isNotAbsoluteUri(((JsonString)item).getString())));
         }
 

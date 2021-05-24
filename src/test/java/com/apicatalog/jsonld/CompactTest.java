@@ -30,17 +30,16 @@ import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 class CompactTest {
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource("data")
+    @MethodSource({"jsonLdApi"})
     void testCompact(JsonLdTestCase testCase) {
         assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
     }
 
-    static final Stream<JsonLdTestCase> data() throws JsonLdError {
+    static final Stream<JsonLdTestCase> jsonLdApi() throws JsonLdError {
         return JsonLdManifestLoader
                 .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld", new ZipResourceLoader())
                 .stream()
                 .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 ;
-
     }
 }

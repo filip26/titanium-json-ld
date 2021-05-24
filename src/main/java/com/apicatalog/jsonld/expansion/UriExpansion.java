@@ -176,10 +176,10 @@ public final class UriExpansion {
 
         // 6.4.
         final Optional<TermDefinition> prefixDefinition = activeContext.getTerm(prefix);
-        
+
         if (prefixDefinition.map(TermDefinition::getUriMapping).isPresent()
                 && prefixDefinition.filter(TermDefinition::isPrefix).isPresent()) {
-            
+
             // deepcode ignore checkIsPresent~Optional: false positive
             return prefixDefinition.map(TermDefinition::getUriMapping).map(m -> m.concat(suffix)).get();
         }

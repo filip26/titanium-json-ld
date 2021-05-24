@@ -38,7 +38,7 @@ public final class LanguageTag {
         }
 
         final int[] chars = languageTag.trim().codePoints().toArray();
-        
+
         if (chars.length == 0 || RdfAlphabet.ASCII_ALPHA.negate().test(chars[0])) {
             return false;
         }
@@ -49,10 +49,10 @@ public final class LanguageTag {
 
 
         int index = 1;
-        
+
         // [a-zA-Z]+
         for (; index < chars.length; index++) {
-            
+
             // ('-' [a-zA-Z0-9]+)*
             if (chars[index] == '-') {
                 break;
@@ -62,27 +62,27 @@ public final class LanguageTag {
             if (RdfAlphabet.ASCII_ALPHA.test(chars[index])) {
                 continue;
             }
-            
+
             return false;
         }
 
         if (index == chars.length - 1) {
             return chars[index] != '-';
         }
-        
+
         index++;
 
         // ('-' [a-zA-Z0-9]+)*
         for (; index < chars.length; index++) {
-            
+
             // [a-zA-Z0-9]+
             if (RdfAlphabet.ASCII_ALPHA_NUM.test(chars[index])) {
                 continue;
             }
-            
-            return false;            
+
+            return false;
         }
-        
+
         return true;
     }
 }

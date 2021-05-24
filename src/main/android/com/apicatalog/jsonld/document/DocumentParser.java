@@ -25,7 +25,7 @@ import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.Rdf;
 
 /**
- * @deprecated use {@link JsonDocument#of} or {@link RdfDocument#of} directly 
+ * @deprecated use {@link JsonDocument#of} or {@link RdfDocument#of} directly
  */
 @Deprecated
 public final class DocumentParser {
@@ -92,7 +92,7 @@ public final class DocumentParser {
 
         throw unsupportedMediaType(contentType);
     }
-    
+
     private static final JsonLdError unsupportedMediaType(MediaType contentType) throws JsonLdError {
         return new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED,
                 "Unsupported media type '" + contentType

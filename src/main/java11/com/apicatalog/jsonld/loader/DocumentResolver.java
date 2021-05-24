@@ -19,14 +19,14 @@ class DocumentResolver {
     private static final Logger LOGGER = Logger.getLogger(DocumentResolver.class.getName());
 
     private MediaType fallbackContentType;
-    
+
     public DocumentResolver() {
         this.fallbackContentType = null;
     }
-    
+
     /**
      * Return a reader or throw {@link JsonLdError} if there is no reader nor fallbackContentType.
-     * 
+     *
      * @param contentType content type of the requested reader
      * @return a reader allowing to transform an input into {@link Document}
      * @throws JsonLdError
@@ -34,12 +34,12 @@ class DocumentResolver {
     public DocumentReader<InputStream> getReader(MediaType contentType) throws JsonLdError {
         return findReader(contentType)
                 .or(() -> {
-                    
+
                     if (fallbackContentType != null) {
                         LOGGER.log(Level.WARNING, "Content type [{0}] is not acceptable, trying again with [{1}].", new Object[] { contentType, fallbackContentType});
                         return findReader(fallbackContentType);
                     }
-                    
+
                     return Optional.empty();
                 })
                 .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED,
@@ -55,21 +55,21 @@ class DocumentResolver {
     public void setFallbackContentType(MediaType fallbackContentType) {
         this.fallbackContentType = fallbackContentType;
     }
-    
+
     private static final Optional<DocumentReader<InputStream>> findReader(final MediaType type) {
-        
+
         if (type == null) {
             return Optional.empty();
         }
-        
+
         if (JsonDocument.accepts(type)) {
             return Optional.of(is ->  JsonDocument.of(type, is));
         }
 
         if (RdfDocument.accepts(type)) {
             return Optional.of(is -> RdfDocument.of(type, is));
-        }        
-        
+        }
+
         return Optional.empty();
     }
 }

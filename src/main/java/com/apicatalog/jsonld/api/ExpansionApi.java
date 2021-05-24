@@ -156,4 +156,16 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
         options.setNumericId(true);
         return this;
     }
+
+    /**
+     * Experimental: Enables JSON-LD-STAR extension. Disabled by default.
+     *
+     * @see <a href="https://json-ld.github.io/json-ld-star">JSON-LD-STAR Draft</a>
+     *
+     * @return builder instance
+     */
+    public ExpansionApi rdfStar() {
+        options.setRdfStar(true);
+        return this;
+    }
 }

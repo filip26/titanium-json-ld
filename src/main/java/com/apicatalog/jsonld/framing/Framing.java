@@ -236,7 +236,7 @@ public final class Framing {
                             JsonValue listFrame = null;
 
                             if (frame.contains(property)
-                                    && JsonUtils.isNotEmptyArray(frame.get(property))
+                                    && !JsonUtils.isEmptyArray(frame.get(property))
                                     && JsonUtils.isObject(frame.get(property).asJsonArray().get(0))
                                 ) {
                                 listFrame = frame.get(property).asJsonArray().get(0).asJsonObject().get(Keywords.LIST);
@@ -321,7 +321,7 @@ public final class Framing {
                 // 4.7.4.2.
                 final JsonObject propertyFrame;
 
-                if (JsonUtils.isArray(frame.get(property)) && JsonUtils.isNotEmptyArray(frame.get(property))) {
+                if (JsonUtils.isNonEmptyArray(frame.get(property))) {
                     propertyFrame = frame.get(property).asJsonArray().getJsonObject(0);
 
                 } else {

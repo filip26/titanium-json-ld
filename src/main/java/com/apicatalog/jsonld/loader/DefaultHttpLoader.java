@@ -46,7 +46,7 @@ class DefaultHttpLoader implements DocumentLoader {
     private final int maxRedirections;
 
     private final HttpClient httpClient;
-    
+
     private final DocumentResolver resolver;
 
     public DefaultHttpLoader(HttpClient httpClient) {
@@ -199,23 +199,23 @@ class DefaultHttpLoader implements DocumentLoader {
             final HttpResponse response) throws JsonLdError, IOException {
 
         final DocumentReader<InputStream> reader = resolver.getReader(type);
-        
+
         try (final InputStream is = response.body()) {
-        
+
             final Document remoteDocument = reader.read(is);
-            
+
             remoteDocument.setDocumentUrl(targetUri);
-            
+
             remoteDocument.setContextUrl(contextUrl);
-            
+
             return remoteDocument;
         }
     }
-    
+
     /**
-     * Set fallback content-type used when received content-type is not supported. 
+     * Set fallback content-type used when received content-type is not supported.
      * e.g. <code>setFallbackContentType(MediaType.JSON_LD)</code>
-     * 
+     *
      * @param fallbackContentType a content type that overrides unsupported received content-type
      */
     public void setFallbackContentType(MediaType fallbackContentType) {

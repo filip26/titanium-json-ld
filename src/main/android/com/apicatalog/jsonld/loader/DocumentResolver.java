@@ -18,34 +18,34 @@ class DocumentResolver {
     private static final Logger LOGGER = Logger.getLogger(DocumentResolver.class.getName());
 
     private MediaType fallbackContentType;
-    
+
     public DocumentResolver() {
         this.fallbackContentType = null;
     }
-    
+
     /**
      * Return a reader or throw {@link JsonLdError} if there is no reader nor fallbackContentType.
-     * 
+     *
      * @param contentType content type of the requested reader
      * @return a reader allowing to transform an input into {@link Document}
      * @throws JsonLdError
      */
     public DocumentReader<InputStream> getReader(MediaType contentType) throws JsonLdError {
-        
+
         DocumentReader<InputStream> reader = findReader(contentType);
-        
+
         if (reader != null) {
             return reader;
         }
-        
+
         if (fallbackContentType != null) {
             LOGGER.log(Level.WARNING, "Content type [{0}] is not acceptable, trying again with [{1}].", new Object[] { contentType, fallbackContentType});
             reader = findReader(fallbackContentType);
-            
+
             if (reader != null) {
                 return reader;
             }
-        }      
+        }
         throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED,
                     "Unsupported media type '" + contentType
                     + "'. Supported content types are ["
@@ -59,17 +59,17 @@ class DocumentResolver {
     public void setFallbackContentType(MediaType fallbackContentType) {
         this.fallbackContentType = fallbackContentType;
     }
-    
+
     private static final DocumentReader<InputStream> findReader(final MediaType type) {
-        
+
         if (JsonDocument.accepts(type)) {
             return is ->  JsonDocument.of(type, is);
         }
 
         if (RdfDocument.accepts(type)) {
             return is -> RdfDocument.of(type, is);
-        }        
-        
+        }
+
         return null;
     }
 }

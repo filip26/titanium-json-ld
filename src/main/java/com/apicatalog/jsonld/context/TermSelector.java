@@ -62,7 +62,7 @@ public final class TermSelector {
         return containers
                     .stream()
                     .filter(container -> inverseContext.contains(variable, container, typeLanguage))
-                    
+
                     .flatMap(container -> preferredValues
                                             .stream()
                                             .map(item -> inverseContext.get(variable, container, typeLanguage, item)))

@@ -31,12 +31,12 @@ import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 class FromRdfTest {
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource("data")
+    @MethodSource({"jsonLdApi"})
     void testFromRdf(final JsonLdTestCase testCase) {
         assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
     }
 
-    static final Stream<JsonLdTestCase> data() throws JsonLdError {
+    static final Stream<JsonLdTestCase> jsonLdApi() throws JsonLdError {
         return JsonLdManifestLoader
                     .load(JsonLdManifestLoader.JSON_LD_API_BASE, "fromRdf-manifest.jsonld", new ZipResourceLoader())
                     .stream()

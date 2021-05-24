@@ -15,9 +15,7 @@
  */
 package com.apicatalog.jsonld.test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -41,9 +39,11 @@ import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.io.error.RdfWriterException;
 import com.apicatalog.rdf.io.error.UnsupportedContentException;
+import com.google.common.base.Objects;
 
 import jakarta.json.Json;
 import jakarta.json.JsonStructure;
+import jakarta.json.JsonValue;
 import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
@@ -104,16 +104,26 @@ public class JsonLdTestRunnerJunit {
             assertNotNull(result, "A result is expected but got null");
 
         } catch (JsonLdError e) {
-            assertEquals(testCase.expectErrorCode, e.getCode(), e.getMessage());
-            return true;
+
+            if (Objects.equal(e.getCode(), testCase.expectErrorCode)) {
+                return true;
+            }
+
+            write(testCase, null, null, e);
+            fail("Unexpected error [" + e.getCode() + "]: " + e.getMessage() + ".");
+            return false;
+        }
+
+        if (testCase.expectErrorCode != null) {
+            write(testCase, result.getJsonContent().get(), null, null);
+            fail("Expected error [" + testCase.expectErrorCode + "] but got " + result.getContentType() + "].");
+            return false;
         }
 
         return validate(testCase, options, result);
     }
 
     private boolean validate(final JsonLdTestCase testCase, final JsonLdOptions options, final Document result) {
-
-        assertNull(testCase.expectErrorCode);
 
         // A PositiveSyntaxTest succeeds when no error is found when processing.
         if (result.getRdfContent().isPresent() && testCase.expect == null && testCase.type.contains(Type.POSITIVE_SYNTAX_TEST)) {
@@ -133,13 +143,13 @@ public class JsonLdTestRunnerJunit {
 
                 assertTrue(result.getJsonContent().isPresent(), "Expected JSON document but was " + result.getContentType());
 
-                return compareJson(testCase.id + ": " + testCase.name, result.getJsonContent().get(), expectedDocument.getJsonContent().get());
+                return compareJson(testCase, result.getJsonContent().get(), expectedDocument.getJsonContent().get());
 
             } else if (expectedDocument.getRdfContent().isPresent()) {
 
                 assertTrue(result.getRdfContent().isPresent(), "Expected RDF document but was " + result.getContentType());
 
-                return compareRdf(testCase.id + ": " + testCase.name, result.getRdfContent().get(), expectedDocument.getRdfContent().get());
+                return compareRdf(testCase, result.getRdfContent().get(), expectedDocument.getRdfContent().get());
             }
 
             assertTrue(result.getRdfContent().isPresent(), "Expected " + expectedDocument.getContentType() + " document but was " + result.getContentType());
@@ -150,49 +160,62 @@ public class JsonLdTestRunnerJunit {
         return false;
     }
 
-    public static final boolean compareJson(final String testName, final JsonStructure result, final JsonStructure expected) {
+    public static final boolean compareJson(final JsonLdTestCase testCase, final JsonStructure result, final JsonStructure expected) {
 
         if (JsonLdComparison.equals(expected, result)) {
             return true;
         }
 
-        final StringWriter stringWriter = new StringWriter();
-
-        try (final PrintWriter writer = new PrintWriter(stringWriter)) {
-            writer.println("Test " + testName);
-            writer.println("Expected:");
-
-            final JsonWriterFactory writerFactory = Json.createWriterFactory(Collections.singletonMap(JsonGenerator.PRETTY_PRINTING, true));
-
-            final StringWriter out1 = new StringWriter();
-
-            try (final JsonWriter jsonWriter = writerFactory.createWriter(out1)) {
-                jsonWriter.write(expected);
-            }
-
-            writer.write(out1.toString());
-            writer.println();
-            writer.println();
-            writer.println("Actual:");
-
-            final StringWriter out2 = new StringWriter();
-
-            try (final JsonWriter jsonWriter = writerFactory.createWriter(out2)) {
-                jsonWriter.write(result);
-            }
-
-            writer.write(out2.toString());
-            writer.println();
-            writer.println();
-        }
-
-        System.out.println(stringWriter.toString());
+        write(testCase, result, expected, null);
 
         fail("Expected " + expected + ", but was" + result);
         return false;
     }
 
-    public static final boolean compareRdf(final String testName, final RdfDataset result, final RdfDataset expected) {
+    public static void write(final JsonLdTestCase testCase, final JsonStructure result, final JsonStructure expected, JsonLdError error) {
+        final StringWriter stringWriter = new StringWriter();
+
+        try (final PrintWriter writer = new PrintWriter(stringWriter)) {
+            writer.println("Test " + testCase.id + ": " + testCase.name);
+
+            final JsonWriterFactory writerFactory = Json.createWriterFactory(Collections.singletonMap(JsonGenerator.PRETTY_PRINTING, true));
+
+            if (expected != null) {
+                write(writer, writerFactory, "Expected", expected);
+                writer.println();
+
+            } else if (testCase.expectErrorCode != null) {
+                writer.println("Expected: " + testCase.expectErrorCode);
+            }
+
+            if (result != null) {
+                write(writer, writerFactory, "Actual", result);
+                writer.println();
+            }
+            if (error != null) {
+                writer.println("Actual: ");
+                error.printStackTrace(writer);
+            }
+        }
+
+        System.out.println(stringWriter.toString());
+    }
+
+    public static final void write(final PrintWriter writer, final JsonWriterFactory writerFactory, final String name, final JsonValue result) {
+
+        writer.println(name + ":");
+
+        final StringWriter out = new StringWriter();
+
+        try (final JsonWriter jsonWriter = writerFactory.createWriter(out)) {
+            jsonWriter.write(result);
+        }
+
+        writer.write(out.toString());
+        writer.println();
+    }
+
+    public static final boolean compareRdf(final JsonLdTestCase testCase, final RdfDataset result, final RdfDataset expected) {
 
         try {
 
@@ -203,7 +226,7 @@ public class JsonLdTestRunnerJunit {
                 final StringWriter stringWriter = new StringWriter();
 
                 try (final PrintWriter writer = new PrintWriter(stringWriter)) {
-                    writer.println("Test " + testName);
+                    writer.println("Test " + testCase.id + ": " + testCase.name);
                     writer.println("Expected:");
 
                     Rdf.createWriter(MediaType.N_QUADS, writer).write(expected);

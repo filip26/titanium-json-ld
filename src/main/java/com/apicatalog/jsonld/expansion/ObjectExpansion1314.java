@@ -173,11 +173,27 @@ final class ObjectExpansion1314 {
                 // 13.4.3
                 if (Keywords.ID.equals(expandedProperty)) {
 
+                    // Extension: JSON-LD-STAR (Experimental)
+                    if (!activeContext.getOptions().isRdfStar() && Keywords.ANNOTATION.equals(activeProperty)) {
+                        throw new JsonLdError(JsonLdErrorCode.INVALID_ANNOTATION);
+
+                    } else if (activeContext.getOptions().isRdfStar() && JsonUtils.isNonEmptyObject(value)) {
+
+                        expandedValue = Expansion
+                                            .with(activeContext, value, null, baseUrl)
+                                            .frameExpansion(frameExpansion)
+                                            .ordered(ordered)
+                                            .compute();
+
+                        if (!NodeObject.isEmbeddedNode(expandedValue)) {
+                            throw new JsonLdError(JsonLdErrorCode.INVALID_EMBEDDED_NODE);
+                        }
+
                     // 13.4.3.1
-                    if (!frameExpansion && JsonUtils.isNotString(value) && (!activeContext.getOptions().isNumericId() || JsonUtils.isNotNumber(value))
+                    } else if (!frameExpansion && JsonUtils.isNotString(value) && (!activeContext.getOptions().isNumericId() || JsonUtils.isNotNumber(value))
                             || frameExpansion
                                     && JsonUtils.isNotString(value)
-                                    && JsonUtils.isNotEmptyObject(value)
+                                    && JsonUtils.isNonEmptyObject(value)
                                     && (JsonUtils.isNotArray(value)
                                             || value.asJsonArray().stream().anyMatch(JsonUtils::isNotString)
                                     )
@@ -266,7 +282,7 @@ final class ObjectExpansion1314 {
                                 ))
                             || frameExpansion
                                     && JsonUtils.isNotString(value)
-                                    && JsonUtils.isNotEmptyObject(value)
+                                    && JsonUtils.isNonEmptyObject(value)
                                     && (JsonUtils.isNotArray(value)
                                             || value.asJsonArray().stream().anyMatch(JsonUtils::isNotString)
                                         )
@@ -293,7 +309,7 @@ final class ObjectExpansion1314 {
                         final Optional<JsonValue> defaultValue = DefaultObject.getValue(value);
 
                         if (defaultValue.filter(JsonUtils::isString).isPresent()) {
-                            
+
                             expandedValue = Json.createObjectBuilder()
                                     .add(Keywords.DEFAULT,
                                             typeContext
@@ -304,7 +320,7 @@ final class ObjectExpansion1314 {
                                                     .expand(defaultValue.map(JsonString.class::cast).map(JsonString::getString).get()))
                                     .build();
                         }
-                    
+
                     // 13.4.4.4
                     } else {
 
@@ -640,6 +656,20 @@ final class ObjectExpansion1314 {
                     }
 
                     continue;
+                }
+
+                // Extension: JSON-LD-STAR (Experimental)
+                if (Keywords.ANNOTATION.equals(expandedProperty)) {
+
+                    if (!activeContext.getOptions().isRdfStar()) {
+                        continue;
+                    }
+
+                    expandedValue = JsonUtils.toJsonArray(Expansion
+                            .with(activeContext, value, Keywords.ANNOTATION, baseUrl)
+                            .frameExpansion(frameExpansion)
+                            .ordered(ordered)
+                            .compute());
                 }
 
                 // 13.4.15

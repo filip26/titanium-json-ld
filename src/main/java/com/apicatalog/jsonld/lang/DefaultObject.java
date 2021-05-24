@@ -40,8 +40,8 @@ public final class DefaultObject {
     }
 
     public static Optional<JsonValue> getValue(JsonValue value) {
-        return JsonUtils.isObject(value) 
-                            ? Optional.ofNullable(value.asJsonObject().get(Keywords.DEFAULT)) 
+        return JsonUtils.isObject(value)
+                            ? Optional.ofNullable(value.asJsonObject().get(Keywords.DEFAULT))
                             : Optional.empty();
     }
 

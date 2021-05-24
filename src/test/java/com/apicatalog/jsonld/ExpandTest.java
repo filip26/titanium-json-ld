@@ -17,6 +17,7 @@ package com.apicatalog.jsonld;
 
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.util.stream.Stream;
 
@@ -31,16 +32,28 @@ import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 class ExpandTest {
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource("data")
+    @MethodSource({"jsonLdApi", "jsonLdStar"})
     void testExpand(final JsonLdTestCase testCase) {
+
+        // Skip JSON-LD-STAR (Experimental) negative test (an invalid annotation inside @list)
+        assumeFalse("#tst26".equals(testCase.id));
+
         assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
     }
 
-    static final Stream<JsonLdTestCase> data() throws JsonLdError {
+    static final Stream<JsonLdTestCase> jsonLdApi() throws JsonLdError {
         return JsonLdManifestLoader
                     .load(JsonLdManifestLoader.JSON_LD_API_BASE, "expand-manifest.jsonld", new ZipResourceLoader())
                     .stream()
                     .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                     ;
     }
+
+    static final Stream<JsonLdTestCase> jsonLdStar() throws JsonLdError {
+        return JsonLdManifestLoader
+                    .load(JsonLdManifestLoader.JSON_LD_STAR_BASE, "expand-manifest.jsonld", new ZipResourceLoader())
+                    .stream()
+                    ;
+    }
+
 }

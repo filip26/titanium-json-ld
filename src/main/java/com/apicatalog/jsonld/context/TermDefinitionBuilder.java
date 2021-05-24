@@ -175,14 +175,14 @@ public final class TermDefinitionBuilder {
         final Map<String, JsonValue> valueObject;
 
         final boolean simpleTerm;
-        final JsonValue idValue; 
-        
+        final JsonValue idValue;
+
         // 7.
         if (JsonUtils.isNull(value)) {
-            
+
             valueObject = Collections.emptyMap();
             idValue = JsonValue.NULL;
-            simpleTerm = false;            
+            simpleTerm = false;
 
         // 8.
         } else if (JsonUtils.isString(value)) {
@@ -193,7 +193,7 @@ public final class TermDefinitionBuilder {
 
         // 9.
         } else if (JsonUtils.isObject(value)) {
-            
+
             valueObject = value.asJsonObject();
             idValue = valueObject.get(Keywords.ID);
             simpleTerm = false;
@@ -201,10 +201,10 @@ public final class TermDefinitionBuilder {
         } else {
             throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
         }
-        
+
         // 10.
         final TermDefinition definition = new TermDefinition(false, protectedFlag, false);
-        
+
         // 11.
         if (valueObject.containsKey(Keywords.PROTECTED)) {
 
@@ -483,7 +483,7 @@ public final class TermDefinitionBuilder {
                 }
             }
         }
-        
+
         // 20.
         if (valueObject.containsKey(Keywords.INDEX)) {
 
@@ -640,7 +640,7 @@ public final class TermDefinitionBuilder {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
         }
-        
+
         // 26.
         if (!Keywords.allMatch(valueObject.keySet(), Keywords.ID, Keywords.REVERSE, Keywords.CONTAINER,
                 Keywords.CONTEXT, Keywords.DIRECTION, Keywords.INDEX, Keywords.LANGUAGE, Keywords.NEST, Keywords.PREFIX,
@@ -658,14 +658,14 @@ public final class TermDefinitionBuilder {
 
             // 27.2.
             activeContext.setTerm(term, previousDefinition);
-            
+
         } else {
             activeContext.setTerm(term, definition);
         }
 
         defined.put(term, Boolean.TRUE);
     }
-    
+
     private final boolean validateContainer(final JsonValue value) {
 
         JsonValue container = value;

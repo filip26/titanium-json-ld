@@ -16,9 +16,12 @@
 package com.apicatalog.jsonld.lang;
 
 import java.util.Arrays;
+import java.util.Map.Entry;
 
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.uri.UriUtils;
 
+import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
 public final class NodeObject {
@@ -48,11 +51,97 @@ public final class NodeObject {
         return !isNodeObject(value);
     }
 
-    
     public static final boolean isNodeReference(JsonValue value) {
         return JsonUtils.isObject(value)
                     && value.asJsonObject().size() == 1
                     && value.asJsonObject().containsKey(Keywords.ID);
     }
 
+    // Extension: JSON-LD-STAR (Experimental)
+    public static final boolean isEmbeddedNode(JsonValue value) {
+
+        if (JsonUtils.isNotObject(value)) {
+            return false;
+        }
+
+        final JsonObject node = value.asJsonObject();
+
+        boolean found = false;
+
+        for (Entry<String, JsonValue> property : node.entrySet()) {
+
+            if (property.getKey().equals(Keywords.INDEX)
+                || property.getKey().equals(Keywords.CONTEXT)
+                || property.getKey().equals(Keywords.REVERSE)
+                ) {
+                return false;
+            }
+
+            if (!Keywords.TYPE.equals(property.getKey()) && Keywords.matchForm(property.getKey())) {
+                continue;
+            }
+
+            // validate property name
+            if (!found && (Keywords.TYPE.equals(property.getKey()) || UriUtils.isURI(property.getKey()))) {
+
+                // validate property value
+                JsonValue propertyValue = property.getValue();
+
+                if (JsonUtils.isArray(propertyValue)) {
+
+                    if (propertyValue.asJsonArray().size() != 1) {
+                        return false;
+                    }
+
+                    propertyValue = propertyValue.asJsonArray().get(0);
+                }
+
+                if (ValueObject.isValueObject(propertyValue)) {
+                    propertyValue = ValueObject.getValue(propertyValue).orElse(null);
+                }
+
+                if (JsonUtils.isString(propertyValue)
+                        || (JsonUtils.isObject(propertyValue) && isEmbeddedNode(propertyValue.asJsonObject()))
+                        ) {
+                    found = true;
+                    continue;
+                }
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    // Extension: JSON-LD-STAR (Experimental)
+    public static final boolean  isNotAnnotationObject(final JsonValue annotation) {
+        return !isAnnotationObject(annotation);
+    }
+
+    public static final boolean  isAnnotationObject(final JsonValue annotation) {
+
+        JsonValue value = annotation;
+
+        if (JsonUtils.isArray(value)) {
+            return value.asJsonArray().stream().allMatch(NodeObject::isAnnotationObject);
+        }
+
+        if (JsonUtils.isNotObject(value)) {
+            return false;
+        }
+
+        for (Entry<String, JsonValue> property : value.asJsonObject().entrySet()) {
+
+            if (Keywords.ANNOTATION.equals(property.getKey()) && !isAnnotationObject(property.getValue())) {
+                return false;
+            }
+
+            if (Keywords.matchForm(property.getKey()) && !Keywords.TYPE.equals(property.getKey()) && !Keywords.REVERSE.equals(property.getKey())) {
+                return false;
+            }
+
+        }
+
+        return true;
+    }
 }

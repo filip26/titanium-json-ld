@@ -60,11 +60,11 @@ public final class InverseContextBuilder {
                                                 .map(TermDefinition::getUriMapping)
                                                 .isPresent())
                         .sorted()
-                        
-                        .forEach(termName ->  
+
+                        .forEach(termName ->
                                             processTerm(
-                                                termName, 
-                                                result, 
+                                                termName,
+                                                result,
                                                 activeContext
                                                     .getTerm(termName)
                                                     .map(TermDefinition::getUriMapping)
@@ -74,8 +74,8 @@ public final class InverseContextBuilder {
 
         // 4.
         return result;
-    }                        
- 
+    }
+
     private void processTerm(final String termName, InverseContext result, final String variableValue, final String defaultLanguage) {
 
         // 3.2.
@@ -118,13 +118,13 @@ public final class InverseContextBuilder {
             result.setIfAbsent(variableValue, container, Keywords.TYPE, typeMapping.get(), termName);
             return;
         }
-        
-        final Optional<JsonValue> languageMapping = 
+
+        final Optional<JsonValue> languageMapping =
                                             activeContext
                                                 .getTerm(termName)
                                                 .map(TermDefinition::getLanguageMapping);
 
-        final Optional<DirectionType> directionMapping = 
+        final Optional<DirectionType> directionMapping =
                                             activeContext
                                                 .getTerm(termName)
                                                 .map(TermDefinition::getDirectionMapping);
@@ -134,43 +134,43 @@ public final class InverseContextBuilder {
 
             // 3.13.1.
             final String langDir;
-            
+
             final JsonValue language = languageMapping.get();
 
             // 3.13.
             if (directionMapping.isPresent()) {
-                
+
                 final DirectionType direction = directionMapping.get();
-    
+
                 // 3.13.2.
                 if (JsonUtils.isString(language)) {
-                    
+
                     if (direction != DirectionType.NULL) {
-    
+
                         langDir = ((JsonString)language).getString()
                                         .concat("_")
                                         .concat(direction.name())
                                         .toLowerCase();
-                    // 3.13.3.                    
+                    // 3.13.3.
                     } else {
-                        langDir = ((JsonString)language).getString().toLowerCase();                    
+                        langDir = ((JsonString)language).getString().toLowerCase();
                     }
-    
+
                 // 3.13.4.
                 } else if (direction != DirectionType.NULL) {
 
                     langDir = "_".concat(direction.name().toLowerCase());
-    
+
                 } else {
                     langDir = Keywords.NULL;
                 }
-    
+
             } else {
                 langDir = JsonUtils.isString(language)
                                 ? ((JsonString)language).getString().toLowerCase()
                                 : Keywords.NULL;
             }
-            
+
             // 3.13.5.
             result.setIfAbsent(variableValue, container, Keywords.LANGUAGE, langDir, termName);
 
@@ -182,14 +182,14 @@ public final class InverseContextBuilder {
                                         .filter(d -> d != DirectionType.NULL)
                                         .map(d -> "_".concat(d.name().toLowerCase()))
                                         .orElse(Keywords.NONE);
-            
+
             // 3.15.2.
             result.setIfAbsent(variableValue, container, Keywords.LANGUAGE, direction, termName);
 
         // 3.16.
         } else {
-            final String langDir = activeContext.getDefaultBaseDirection() != null 
-    
+            final String langDir = activeContext.getDefaultBaseDirection() != null
+
                                         ? (activeContext.getDefaultLanguage() != null
                                                 ? activeContext.getDefaultLanguage()
                                                 : ""
@@ -197,9 +197,9 @@ public final class InverseContextBuilder {
                                             .concat("_")
                                             .concat(activeContext.getDefaultBaseDirection().name())
                                             .toLowerCase()
-                                            
+
                                         : defaultLanguage;
-    
+
             result
                 .setIfAbsent(variableValue, container, Keywords.LANGUAGE, langDir, termName)
                 .setIfAbsent(variableValue, container, Keywords.LANGUAGE, Keywords.NONE, termName)

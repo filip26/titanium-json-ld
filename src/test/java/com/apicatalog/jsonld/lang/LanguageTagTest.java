@@ -52,12 +52,12 @@ class LanguageTagTest {
             arguments("1", false),
             arguments("abcd1234-abcd1234", false),
             arguments("a-b-", false),
-            
+
             arguments("cs", true),
             arguments("cs-CZ", true),
             arguments("en-US", true),
             arguments("en-US", true),
-            
+
             arguments("A", true),
             arguments("A-0", true),
             arguments("abcd-1234", true)
