@@ -47,6 +47,7 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 
 ## Extensions
 
+- Experimental: [JSON-LD-star](https://json-ld.github.io/json-ld-star) expansion built-in support
 - [Universal RDF Dataset Normalization Algorithm - URDNA2015](https://github.com/simon-greatrix/rdf-urdna)
 
 ## Usage
