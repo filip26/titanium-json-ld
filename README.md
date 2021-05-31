@@ -25,6 +25,7 @@ The goals of Titanium are:
   * [Documentation](#documentation)
   * [Examples](#examples)
 - [Contributing](#contributing)
+- [Resources](#resources)
 - [Commercial Support](#commercial-support)
 
 ## Conformance
@@ -180,5 +181,14 @@ Fork and clone the project repository.
 > ./mvnw clean package
 ```
 
+## Resources
+- [JSON-LD 1.1](https://www.w3.org/TR/json-ld/)
+- [JSON-LD 1.1 Processing Algorithms and API](https://www.w3.org/TR/json-ld-api/)
+- [JSON-LD 1.1 Framing](https://www.w3.org/TR/json-ld-framing/)
+- [JSON-LD Best Practices](https://w3c.github.io/json-ld-bp/)
+- [JSON-LD-star](https://json-ld.github.io/json-ld-star/)
+- [JSON-LD Playground](https://json-ld.org/playground/)
+
 ## Commercial Support
 Commercial support is available at filip26@gmail.com
+
