@@ -198,7 +198,7 @@ final class ObjectExpansion1314 {
                                             || value.asJsonArray().stream().anyMatch(JsonUtils::isNotString)
                                     )
                             ) {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE);
+                        throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE, "An @id entry was encountered whose value [" + value + "] was not a string.");
 
                     // 13.4.3.2
                     } else if (JsonUtils.isString(value)) {
