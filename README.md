@@ -153,7 +153,6 @@ JsonLd.compact(document, contextDocument).get();
 
 All PR's welcome!
 
-There are many ways to motivate developers or speed up development:
 - develop
   - implement a new feature 
   - fix an existing issue
