@@ -1,0 +1,47 @@
+{
+  "@graph": [
+    {
+      "@id": "http://n2t.net/ark:/39333/ncg/dataset",
+      "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag",
+      "member": [
+        "http://n2t.net/ark:/39333/ncg/place/NCG11248",
+        "http://n2t.net/ark:/39333/ncg/place/NCG07554",
+        "http://n2t.net/ark:/39333/ncg/place/NCG03755"
+      ]
+    },
+    {
+      "@id": "http://n2t.net/ark:/39333/ncg/place/NCG03755",
+      "@type": "http://n2t.net/ark:/39333/ncg/type#Mountain",
+      "county": "http://n2t.net/ark:/39333/ncg/place/NCG11248",
+      "label": "Crawford Mountain"
+    },
+    {
+      "@id": "http://n2t.net/ark:/39333/ncg/place/NCG07554",
+      "@type": "http://n2t.net/ark:/39333/ncg/type#Community",
+      "county": "http://n2t.net/ark:/39333/ncg/place/NCG11248",
+      "label": "Ichley"
+    },
+    {
+      "@id": "http://n2t.net/ark:/39333/ncg/place/NCG11248",
+      "@type": "http://n2t.net/ark:/39333/ncg/type#County",
+      "label": "Orange County",
+      "description": "Not to be confused with Orange County, CA"
+    }
+  ],
+  "@context": {
+    "label": {
+      "@id": "http://www.w3.org/2004/02/skos/core#label"
+    },
+    "description": {
+      "@id": "http://www.w3.org/2004/02/skos/core#note"
+    },
+    "county": {
+      "@id": "http://n2t.net/ark:/39333/ncg/vocab#county",
+      "@type": "@id"
+    },
+    "member": {
+      "@id": "http://www.w3.org/2000/01/rdf-schema#member",
+      "@type": "@id"
+    }
+  }
+}

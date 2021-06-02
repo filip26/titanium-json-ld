@@ -89,6 +89,7 @@ public final class Expansion {
 
             return ArrayExpansion
                         .with(activeContext, element.asJsonArray(), activeProperty, baseUrl)
+                        .frameExpansion(frameExpansion)
                         .expand();
         }
 
