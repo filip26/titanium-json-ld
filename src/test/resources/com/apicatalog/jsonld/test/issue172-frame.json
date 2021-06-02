@@ -1,0 +1,31 @@
+{
+  "@context": {
+    "@base": "http://n2t.net/ark:/39333/ncg/place/",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "ncv": "http://n2t.net/ark:/39333/ncg/vocab#",
+    "nct": "http://n2t.net/ark:/39333/ncg/type#",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
+    "records": {
+      "@container": "@id",
+      "@type": "@id",
+      "@id": "rdfs:member"
+    },
+    "county": {
+      "@container": "@set",
+      "@type": "@id",
+      "@id": "ncv:county"
+    }
+  },
+  "@type": "rdf:Bag",
+  "records": [
+    {
+      "@id": {},
+      "county": {
+        "@embed": "@always",
+        "@explicit": true,
+        "skos:label": {}
+      }
+    }
+  ]
+}
