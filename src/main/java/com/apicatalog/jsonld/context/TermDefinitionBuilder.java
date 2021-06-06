@@ -162,7 +162,7 @@ public final class TermDefinitionBuilder {
 
         // 5.
         } else if (Keywords.contains(term)) {
-            throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
+            throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION, "A keyword [" + term + "] redefinition has been detected.");
 
         } else if (Keywords.matchForm(term)) {
             LOGGER.log(Level.WARNING, "Term [{0}] has form of a keyword. Keywords cannot be overridden.", term);

@@ -33,6 +33,7 @@ import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.GraphObject;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
+import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.jsonld.uri.UriRelativizer;
 import com.apicatalog.jsonld.uri.UriUtils;
@@ -410,28 +411,39 @@ public final class UriCompaction {
                    && value.asJsonObject().containsKey(Keywords.ID)
                    ) {
 
-                // 4.16.1.
-                final String idValue = value.asJsonObject().getString(Keywords.ID);
+                final JsonValue idValue = value.asJsonObject().get(Keywords.ID);
 
-                final String compactedIdValue = activeContext.uriCompaction().vocab(true).compact(idValue);
-
-                final Optional<TermDefinition> compactedIdValueTermDefinition = activeContext.getTerm(compactedIdValue);
-
-                if (compactedIdValueTermDefinition
-                        .map(TermDefinition::getUriMapping)
-                        .filter(idValue::equals)
-                        .isPresent()
-                        ) {
-                    preferredValues.add(Keywords.VOCAB);
+                // json-ld-star
+                if (activeContext.getOptions().isRdfStar() && NodeObject.isEmbeddedNode(idValue)) {
                     preferredValues.add(Keywords.ID);
+                    preferredValues.add(Keywords.VOCAB);
 
-                // 4.16.2.
+                } else if (JsonUtils.isString(idValue)) {
+                    // 4.16.1.
+                    final String idString = ((JsonString)idValue).getString();
+
+                    final String compactedIdValue = activeContext.uriCompaction().vocab(true).compact(idString);
+
+                    final Optional<TermDefinition> compactedIdValueTermDefinition = activeContext.getTerm(compactedIdValue);
+
+                    if (compactedIdValueTermDefinition
+                            .map(TermDefinition::getUriMapping)
+                            .filter(idString::equals)
+                            .isPresent()
+                            ) {
+                        preferredValues.add(Keywords.VOCAB);
+                        preferredValues.add(Keywords.ID);
+
+                    // 4.16.2.
+                    } else {
+                        preferredValues.add(Keywords.ID);
+                        preferredValues.add(Keywords.VOCAB);
+                    }
+
                 } else {
-
-                    preferredValues.add(Keywords.ID);
-                    preferredValues.add(Keywords.VOCAB);
-
+                  throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE, "An @id entry was encountered whose value was not a string but [" + idValue + "].");
                 }
+
                 preferredValues.add(Keywords.NONE);
 
             // 4.17.

@@ -147,6 +147,18 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
     }
 
     /**
+     * Experimental: Enables JSON-LD-STAR extension. Disabled by default.
+     *
+     * @see <a href="https://json-ld.github.io/json-ld-star">JSON-LD-STAR Draft</a>
+     *
+     * @return builder instance
+     */
+    public CompactionApi rdfStar() {
+        options.setRdfStar(true);
+        return this;
+    }
+
+    /**
      * Get the result of compaction.
      *
      * @return {@link JsonObject} representing compacted document
