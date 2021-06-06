@@ -87,11 +87,11 @@ Add JSON-P provider, if it is not on the classpath already.
 Maven
 
 ```xml
-    <dependency>
-        <groupId>org.glassfish</groupId>
-        <artifactId>jakarta.json</artifactId>
-        <version>2.0.0</version>
-    </dependency>
+<dependency>
+    <groupId>org.glassfish</groupId>
+    <artifactId>jakarta.json</artifactId>
+    <version>2.0.0</version>
+</dependency>
 ```
 
 Gradle
