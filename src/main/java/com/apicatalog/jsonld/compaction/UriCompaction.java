@@ -410,16 +410,22 @@ public final class UriCompaction {
                    && value.asJsonObject().containsKey(Keywords.ID)
                    ) {
 
+                final JsonValue idValue = value.asJsonObject().get(Keywords.ID);
+                
+                if (JsonUtils.isNotString(idValue)) {
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE);
+                }
+                
                 // 4.16.1.
-                final String idValue = value.asJsonObject().getString(Keywords.ID);
+                final String idString = ((JsonString)idValue).getString();
 
-                final String compactedIdValue = activeContext.uriCompaction().vocab(true).compact(idValue);
+                final String compactedIdValue = activeContext.uriCompaction().vocab(true).compact(idString);
 
                 final Optional<TermDefinition> compactedIdValueTermDefinition = activeContext.getTerm(compactedIdValue);
 
                 if (compactedIdValueTermDefinition
                         .map(TermDefinition::getUriMapping)
-                        .filter(idValue::equals)
+                        .filter(idString::equals)
                         .isPresent()
                         ) {
                     preferredValues.add(Keywords.VOCAB);
