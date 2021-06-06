@@ -417,7 +417,7 @@ public final class UriCompaction {
                 if (activeContext.getOptions().isRdfStar() && NodeObject.isEmbeddedNode(idValue)) {
                     preferredValues.add(Keywords.ID);
                     preferredValues.add(Keywords.VOCAB);
-                    
+
                 } else if (JsonUtils.isString(idValue)) {
                     // 4.16.1.
                     final String idString = ((JsonString)idValue).getString();
@@ -439,13 +439,13 @@ public final class UriCompaction {
                         preferredValues.add(Keywords.ID);
                         preferredValues.add(Keywords.VOCAB);
                     }
-                    
-                } else {                      
+
+                } else {
                   throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE, "An @id entry was encountered whose value was not a string but [" + idValue + "].");
                 }
-                
+
                 preferredValues.add(Keywords.NONE);
-                  
+
             // 4.17.
             } else {
 

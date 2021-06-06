@@ -238,7 +238,7 @@ public final class Compaction {
                 // 12.1.1.
                 if (JsonUtils.isString(expandedValue)) {
                     compactedValue = JsonUtils.toJsonValue(activeContext.uriCompaction().compact(((JsonString)expandedValue).getString()));
-                    
+
                 // json-ld-star
                 } else if (activeContext.getOptions().isRdfStar() && NodeObject.isEmbeddedNode(expandedValue)) {
                     compactedValue = Compaction.with(activeContext)

@@ -145,7 +145,7 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
         options.setOrdered(enable);
         return this;
     }
-    
+
     /**
      * Experimental: Enables JSON-LD-STAR extension. Disabled by default.
      *

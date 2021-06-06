@@ -34,24 +34,24 @@ class CompactTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource({"jsonLdApi", "jsonLdStar"})
     void testCompact(JsonLdTestCase testCase) {
- 
+
         // Skip JSON-LD-STAR (Experimental) embedded node tests - unsupported now
         assumeFalse(Arrays.stream(new String[]{
                 "#tst04", "#tst05", "#tst06", "#tst07", "#tst08", "#tst09", "#tst10",
                 "#tst15", "#tst16", "#tst17"
                 }).anyMatch(testCase.id::equals));
-        
+
         assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
     }
 
-    static final Stream<JsonLdTestCase> jsonLdApi() throws JsonLdError {        
+    static final Stream<JsonLdTestCase> jsonLdApi() throws JsonLdError {
         return JsonLdManifestLoader
                 .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld", new ZipResourceLoader())
                 .stream()
                 .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 ;
     }
-    
+
     static final Stream<JsonLdTestCase> jsonLdStar() throws JsonLdError {
         return JsonLdManifestLoader
                     .load(JsonLdManifestLoader.JSON_LD_STAR_BASE, "compact-manifest.jsonld", new ZipResourceLoader())
