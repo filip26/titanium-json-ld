@@ -32,6 +32,7 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.GraphObject;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
+import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.Utils;
 
 import jakarta.json.Json;
@@ -160,8 +161,9 @@ public final class Compaction {
         }
 
         // 7.
-        if (elementObject.containsKey(Keywords.VALUE)
-                || elementObject.containsKey(Keywords.ID)
+        if ((elementObject.containsKey(Keywords.VALUE)
+                || elementObject.containsKey(Keywords.ID))
+                && (!activeContext.getOptions().isRdfStar() || !elementObject.containsKey(Keywords.ANNOTATION))
                 ) {
 
             final JsonValue result = activeContext.valueCompaction().compact(elementObject, activeProperty);
@@ -236,6 +238,13 @@ public final class Compaction {
                 // 12.1.1.
                 if (JsonUtils.isString(expandedValue)) {
                     compactedValue = JsonUtils.toJsonValue(activeContext.uriCompaction().compact(((JsonString)expandedValue).getString()));
+                    
+                // json-ld-star
+                } else if (activeContext.getOptions().isRdfStar() && NodeObject.isEmbeddedNode(expandedValue)) {
+                    compactedValue = Compaction.with(activeContext)
+                                        .compactArrays(compactArrays)
+                                        .ordered(ordered)
+                                        .compact(expandedValue);
                 }
 
                 // 12.1.2.
