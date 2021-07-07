@@ -1,0 +1,3 @@
+_:b0 <http://www.w3.org/2003/12/exif/ns#width> "1701"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:b0 <http://www.w3.org/2003/12/exif/ns#height> "430000"^^<http://www.w3.org/2001/XMLSchema#long> .
+

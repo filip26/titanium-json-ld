@@ -104,6 +104,14 @@
       "input": "issue172-in.json",
       "expect": "issue172-out.json",
       "frame": "issue172-frame.json"
+    },
+    {
+      "@id": "#t0013",
+      "@type": ["jld:PositiveEvaluationTest", "jld:FromRDFTest"],
+      "name": "Issue #179: int support",
+      "purpose": "int support",
+      "input": "issue179-in.nq",
+      "expect": "issue179-out.json"
     }
   ]
 }

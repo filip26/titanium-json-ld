@@ -105,10 +105,10 @@ final class RdfToObject {
                     }
 
                 // 2.4.3.
-                } else if (XsdConstants.INTEGER.equals(literal.getDatatype())) {
+                } else if (XsdConstants.INTEGER.equals(literal.getDatatype()) || XsdConstants.INT.equals(literal.getDatatype()) || XsdConstants.LONG.equals(literal.getDatatype())) {
 
                     convertedValue = Json.createValue(Long.parseLong(literal.getValue()));
-
+                    
                 } else if (XsdConstants.DOUBLE.equals(literal.getDatatype())) {
 
                     convertedValue = Json.createValue(Double.parseDouble(literal.getValue()));
