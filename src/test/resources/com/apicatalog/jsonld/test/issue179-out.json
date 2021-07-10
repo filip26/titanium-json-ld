@@ -3,14 +3,12 @@
         "@id": "_:b0",
         "http://www.w3.org/2003/12/exif/ns#width": [
             {
-                "@value": "1701",
-                "@type": "http://www.w3.org/2001/XMLSchema#int"
+                "@value": 1701
             }
         ],
         "http://www.w3.org/2003/12/exif/ns#height": [
             {
-                "@value": "430000",
-                "@type": "http://www.w3.org/2001/XMLSchema#long"
+                "@value": 430000
             }
         ]
     }
