@@ -108,10 +108,11 @@
     {
       "@id": "#t0013",
       "@type": ["jld:PositiveEvaluationTest", "jld:FromRDFTest"],
-      "name": "Issue #179: int support",
-      "purpose": "int support",
+      "name": "Issue #179: xsd:int, xsd:long",
+      "purpose": "FromRDF: xsd:int, xsd:long support",
       "input": "issue179-in.nq",
-      "expect": "issue179-out.json"
+      "expect": "issue179-out.json",
+      "option": { "useNativeTypes": true }
     }
   ]
 }
