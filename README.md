@@ -97,7 +97,7 @@ Maven
 Gradle
 
 ```gradle
-compile group: 'org.glassfish', name: 'jakarta.json', version: '2.0.0'
+compile group: 'org.glassfish', name: 'jakarta.json', version: '2.0.1'
 
 ```
 
