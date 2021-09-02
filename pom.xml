@@ -69,39 +69,33 @@
         <sonar.organization>apicatalog</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
-
     <dependencies>
         <dependency>
-			<groupId>jakarta.json</groupId>
-    		<artifactId>jakarta.json-api</artifactId>
+            <groupId>jakarta.json</groupId>
+            <artifactId>jakarta.json-api</artifactId>
             <version>${jakarta.json.version}</version>
             <scope>provided</scope>
         </dependency>
-        
         <!--  Tests -->
-		<dependency>
+	<dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>jakarta.json</artifactId>
             <version>${jakarta.json.version}</version>
             <scope>test</scope>
-		</dependency>
-
-		<dependency>
-		    <groupId>org.junit.jupiter</groupId>
-		    <artifactId>junit-jupiter</artifactId>
+	</dependency>
+	<dependency>
+	    <groupId>org.junit.jupiter</groupId>
+	    <artifactId>junit-jupiter</artifactId>
             <version>${junit.version}</version>
-		    <scope>test</scope>
-		</dependency>
-		        
+	    <scope>test</scope>
+	</dependency>   
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock-jre8</artifactId>
             <version>${wiremock.version}</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
-
     <build>        
         <plugins>
             <plugin>
@@ -185,69 +179,62 @@
         	</plugin>            
         </plugins>
     </build>
-
-	<profiles>
-		<profile>
-			<id>maven-central</id>
-
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-
-			<build>
-				<plugins>				
-		            <plugin>
-		                <groupId>org.apache.maven.plugins</groupId>
-		                <artifactId>maven-gpg-plugin</artifactId>
-		                <version>3.0.1</version>
-		                <executions>
-		                    <execution>
-		                        <id>sign-artifacts</id>
-		                        <phase>verify</phase>
-		                        <goals>
-		                            <goal>sign</goal>
-		                        </goals>
-		                    </execution>
-		                </executions>
-		            </plugin> 
-					<plugin>
-						<groupId>org.sonatype.plugins</groupId>
-						<artifactId>nexus-staging-maven-plugin</artifactId>
-						<version>1.6.8</version>
-						<extensions>true</extensions>
-						<configuration>
-							<serverId>ossrh</serverId>
-							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-							<autoReleaseAfterClose>true</autoReleaseAfterClose>
-						</configuration>
-					</plugin>   				
-				</plugins>
-			</build>
-
-		    <distributionManagement>
-		        <snapshotRepository>
-		            <id>ossrh</id>
-		            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		        </snapshotRepository>
-		    </distributionManagement>		
-		</profile>
+    <profiles>
+        <profile>
+            <id>maven-central</id>
+                <activation>
+                    <activeByDefault>false</activeByDefault>
+		</activation>
+                <build>
+                    <plugins>				
+                        <plugin>
+		            <groupId>org.apache.maven.plugins</groupId>
+		            <artifactId>maven-gpg-plugin</artifactId>
+		            <version>3.0.1</version>
+		            <executions>
+                                <execution>
+		                    <id>sign-artifacts</id>
+		                    <phase>verify</phase>
+		                    <goals>
+                                        <goal>sign</goal>
+		                    </goals>
+		                </execution>
+		            </executions>
+		        </plugin> 
+			<plugin>
+                            <groupId>org.sonatype.plugins</groupId>
+                            <artifactId>nexus-staging-maven-plugin</artifactId>
+                            <version>1.6.8</version>
+                            <extensions>true</extensions>
+                            <configuration>
+                                <serverId>ossrh</serverId>
+				<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+				<autoReleaseAfterClose>true</autoReleaseAfterClose>
+                            </configuration>
+			</plugin>   				
+                    </plugins>
+		</build>
+		<distributionManagement>
+                    <snapshotRepository>
+		    <id>ossrh</id>
+		    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                    </snapshotRepository>
+		</distributionManagement>		
+        </profile>
 
         <!--  Android (Java 8) Build -->
         <profile>
             <id>android</id>
-
             <activation>
                 <activeByDefault>false</activeByDefault>            
                 <jdk>1.8</jdk>
             </activation>
-
             <properties>
                 <maven.compiler.target>1.8</maven.compiler.target>
                 <maven.compiler.source>1.8</maven.compiler.source>
                 <envClassifier>android</envClassifier>
                 <envSources>src/main/android</envSources>
-            </properties>
-            
+            </properties>         
             <dependencies>
                 <dependency>
                     <groupId>com.squareup.okhttp3</groupId>
@@ -257,5 +244,4 @@
             </dependencies>
         </profile>        
     </profiles>
-
 </project>

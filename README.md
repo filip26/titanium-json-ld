@@ -90,14 +90,14 @@ Maven
 <dependency>
     <groupId>org.glassfish</groupId>
     <artifactId>jakarta.json</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
 </dependency>
 ```
 
 Gradle
 
 ```gradle
-compile group: 'org.glassfish', name: 'jakarta.json', version: '2.0.0'
+compile group: 'org.glassfish', name: 'jakarta.json', version: '2.0.1'
 
 ```
 
