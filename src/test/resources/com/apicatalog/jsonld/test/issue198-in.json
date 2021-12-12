@@ -1,5 +1,4 @@
 {
-  "@context" : "issue198-context.json",
   "data": {
     "allFactSheets": {
       "edges": [
