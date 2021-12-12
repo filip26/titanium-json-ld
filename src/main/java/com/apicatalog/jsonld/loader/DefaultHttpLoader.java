@@ -188,7 +188,7 @@ class DefaultHttpLoader implements DocumentLoader {
 
         builder.append(',');
         builder.append(MediaType.JSON.toString());
-        builder.append(";q=0.9,*/*;q=0.8");
+        builder.append(";q=0.9,*/*;q=0.1");
         return builder.toString();
     }
 
