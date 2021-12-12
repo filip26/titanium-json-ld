@@ -113,6 +113,14 @@
       "input": "issue179-in.nq",
       "expect": "issue179-out.json",
       "option": { "useNativeTypes": true }
+    },
+    {
+      "@id": "#t0014",
+      "@type": ["jld:PositiveEvaluationTest", "jld:FlattenTest"],
+      "name": "Issue #198: @reverse in @context",
+      "input": "issue198-in.json",
+      "expect": "issue198-out.json",
+      "option": { "expandContext" : "issue198-context.json", "base": "http://leanix.net/" }
     }
   ]
 }

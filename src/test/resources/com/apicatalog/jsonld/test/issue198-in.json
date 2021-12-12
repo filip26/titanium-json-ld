@@ -1,0 +1,32 @@
+{
+  "data": {
+    "allFactSheets": {
+      "edges": [
+        {
+          "node": {
+            "id": "ec254751-86be-4b7d-82b8-b716bedb87ce",
+            "displayName": "#MYBEST",
+            "type": "Application",
+            "qualitySeal": "APPROVED",
+            "relApplicationToDataObject": {
+              "edges": [
+                {
+                  "node": {
+                    "type": "RelApplicationToDataObject",
+                    "id": "9a8fb137-0a53-4c95-adbb-d9f8bd27b2bc",
+                    "factSheet": {
+                      "id": "338b1d1d-617d-4ee4-b79f-dee72e265831",
+                      "displayName": "IT Landscape Meta Data",
+                      "type": "DataObject"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "errors": null
+}

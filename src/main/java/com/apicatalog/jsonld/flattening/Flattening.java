@@ -56,7 +56,7 @@ public final class Flattening {
     public JsonArray flatten() throws JsonLdError {
 
         // 1.
-        NodeMap nodeMap = new NodeMap();
+        final NodeMap nodeMap = new NodeMap();
 
         // 2.
         NodeMapBuilder.with(element, nodeMap).build();

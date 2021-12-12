@@ -355,7 +355,6 @@ public final class NodeMapBuilder {
                             .referencedNode(referenced)
                             .activeProperty(entry.getKey())
                             .build();
-
                     }
                 }
 
@@ -411,7 +410,6 @@ public final class NodeMapBuilder {
                         .activeGraph(activeGraph)
                         .activeSubject(id)
                         .activeProperty(property)
-                        .referencedNode(referencedNode)
                         .build();
             }
         }

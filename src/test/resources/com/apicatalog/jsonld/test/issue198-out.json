@@ -1,0 +1,57 @@
+[
+  {
+    "@id": "_:b0",
+    "https://adidas-dev.collibra.com/ignore": [
+      {
+        "@id": "_:b1"
+      }
+    ]
+  },
+  {
+    "@id": "http://leanix.net/338b1d1d-617d-4ee4-b79f-dee72e265831",
+    "@type": [
+      "https://adidas-dev.collibra.com/00000000-0000-0000-0000-000000031026"
+    ],
+    "https://adidas-dev.collibra.com/displayname": [
+      {
+        "@type": "xsd:string",
+        "@value": "IT Landscape Meta Data"
+      }
+    ]
+  },
+  {
+    "@id": "http://leanix.net/9a8fb137-0a53-4c95-adbb-d9f8bd27b2bc",
+    "@index": "edges",
+    "@type": [
+      "https://adidas-dev.collibra.com/1099a85a-48c4-4d34-996e-07f63bc0034e"
+    ],
+    "https://adidas-dev.collibra.com/to": [
+      {
+        "@id": "http://leanix.net/338b1d1d-617d-4ee4-b79f-dee72e265831"
+      }
+    ]
+  },
+  {
+    "@id": "http://leanix.net/ec254751-86be-4b7d-82b8-b716bedb87ce",
+    "@index": "edges",
+    "@type": [
+      "http://leanix.net/Application"
+    ],
+    "https://adidas-dev.collibra.com/displayname": [
+      {
+        "@type": "xsd:string",
+        "@value": "#MYBEST"
+      }
+    ],
+    "https://adidas-dev.collibra.com/relates": [
+      {
+        "@id": "http://leanix.net/9a8fb137-0a53-4c95-adbb-d9f8bd27b2bc"
+      }
+    ],
+    "https://adidas-dev.collibra.com/assets_in_domain_relation": [
+      {
+        "@id": "_:b1"
+      }
+    ]
+  }
+]

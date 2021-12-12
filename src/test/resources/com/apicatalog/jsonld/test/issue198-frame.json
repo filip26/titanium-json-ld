@@ -1,0 +1,26 @@
+{
+  "@context":{
+    "@base":"http://leanix.net/",
+    "col":"https://adidas-dev.collibra.com/",
+    "type":"@type",
+    "id":"@id",
+    "data":"col:ignore",
+    "allFactSheets":{
+      "@reverse":"col:assets_in_domain_relation"
+    },
+    "displayName":{
+      "@id":"col:displayname",
+      "@type":"xsd:string"
+    },
+    
+    "DataObject":"col:00000000-0000-0000-0000-000000031026",
+    
+    "relation" : "col:relates",
+    "from" : "col:from",
+    "to" : "col:to"
+  },
+  "data":{
+    "type" : {"@default" : "col:2cc7d681-42bd-4a1d-ab85-7b5386f0c71a"},
+    "allFactSheets":{}
+  }
+}
