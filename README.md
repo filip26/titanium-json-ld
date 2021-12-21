@@ -63,7 +63,7 @@ Maven
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium-json-ld</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
 </dependency>
 
 ```
@@ -71,7 +71,7 @@ Maven
 Gradle
 
 ```gradle
-compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '1.1.0'
+compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '1.2.0'
 ```
 <!--- TODO
 add the 'android' classifier when building on android:
