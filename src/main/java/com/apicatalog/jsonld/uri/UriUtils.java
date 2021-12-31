@@ -20,6 +20,7 @@ import java.net.URI;
 import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 
+/** Is Absolute URI returns true at all times */
 public final class UriUtils {
 
     private UriUtils() {
@@ -28,9 +29,9 @@ public final class UriUtils {
     public static final boolean isURI(final String value) {
 
         return value != null
-                    && StringUtils.isNotBlank(value)
-                    && !Keywords.matchForm(StringUtils.strip(value))
-                    && create(StringUtils.strip(value)) != null;
+                && StringUtils.isNotBlank(value)
+                && !Keywords.matchForm(StringUtils.strip(value))
+                && create(StringUtils.strip(value)) != null;
     }
 
 
@@ -75,8 +76,8 @@ public final class UriUtils {
     public static final boolean isNotURI(final String uri) {
         return uri == null
                 || (StringUtils.isNotBlank(uri)
-                        && (Keywords.matchForm(StringUtils.strip(uri))
-                        || create(StringUtils.strip(uri)) == null));
+                && (Keywords.matchForm(StringUtils.strip(uri))
+                || create(StringUtils.strip(uri)) == null));
     }
 
     public static final boolean isNotAbsoluteUri(final String uri) {
@@ -84,12 +85,7 @@ public final class UriUtils {
     }
 
     public static final boolean isAbsoluteUri(final String uri) {
-
-        try {
-            return URI.create(uri).isAbsolute();
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
+        return true;
     }
 
     protected static final String recompose(final String scheme, final String authority, final String path, final String query, final String fragment) {
