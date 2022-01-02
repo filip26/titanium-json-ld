@@ -356,7 +356,7 @@ public final class TermDefinitionBuilder {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ALIAS);
                 }
 
-                if (!Keywords.contains(definition.getUriMapping()) && !UriUtils.isURI(definition.getUriMapping())
+                if (!Keywords.contains(definition.getUriMapping()) && UriUtils.isNotURI(definition.getUriMapping())
                         && !BlankNode.hasPrefix(definition.getUriMapping())) {
 
                     throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);

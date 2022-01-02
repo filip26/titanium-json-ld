@@ -287,13 +287,12 @@ final class ObjectExpansion1314 {
                                             || value.asJsonArray().stream().anyMatch(JsonUtils::isNotString)
                                         )
                                     && !DefaultObject.isDefaultObject(value)
-                                    && (DefaultObject.getValue(value).map(JsonUtils::isNotString).orElse(true)
-                                            || DefaultObject.getValue(value)
-                                                            .map(JsonString.class::cast)
-                                                            .map(JsonString::getString)
-                                                            .map(UriUtils::isNotURI)
-                                                            .orElse(true)
-                                            )
+                                    && DefaultObject.getValue(value)
+                                                    .filter(JsonUtils::isString)
+                                                    .map(JsonString.class::cast)
+                                                    .map(JsonString::getString)
+                                                    .map(UriUtils::isNotURI)
+                                                    .orElse(true)
                             ) {
 
                         throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_VALUE, "@type value is not valid [" + value + "].");

@@ -42,11 +42,15 @@ public final class UriUtils {
 
         String uriValue = StringUtils.strip(uri);
 
-        if (uri.endsWith(":")) {
-            uriValue = uri + ".";
+        if (uriValue.isEmpty()) {
+            return null;
+        }
 
-        } else if (uri.endsWith("[") || uri.endsWith("]")) {
-            uriValue = uri.substring(0, uri.length() - 1);
+        if (uriValue.endsWith(":")) {
+            uriValue += ".";
+
+        } else if (uriValue.endsWith("[") || uriValue.endsWith("]")) {
+            uriValue = uriValue.substring(0, uriValue.length() - 1);
         }
 
         try {

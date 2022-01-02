@@ -24,9 +24,9 @@ public final class XsdConstants {
     public static final String DOUBLE = "http://www.w3.org/2001/XMLSchema#double";
 
     public static final String INTEGER = "http://www.w3.org/2001/XMLSchema#integer";
-    
+
     public static final String INT = "http://www.w3.org/2001/XMLSchema#int";
-    
+
     public static final String LONG = "http://www.w3.org/2001/XMLSchema#long";
 
     private XsdConstants() {

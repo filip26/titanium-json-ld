@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.uri;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,12 +39,64 @@ public final class UriResolver {
             return relative;
         }
 
-        URI components = UriUtils.create(relative);
+        return resolve(base, UriUtils.create(relative));
+    }
+
+    public static final String resolve(final URI base, final URI relative) {
+
+        if (relative == null) {
+            return base != null ? base.toString() : null;
+        }
+
+        if (base == null) {
+            return relative != null ? relative.toString() : null;
+        }
+
+        final String[] components = resolveAsComponents(base, relative);
+
+        return UriUtils.recompose(components[0], components[1], components[2], components[3], components[4]);
+    }
+
+    public static final URI resolveAsUri(final URI base, final String relative) throws URISyntaxException {
+
+        if (relative == null || relative.trim().isBlank()) {
+            return base;
+        }
+
+        if (base == null) {
+            return relative != null ? UriUtils.create(relative) : null;
+        }
+
+        return resolveAsUri(base, UriUtils.create(relative));
+    }
+
+    public static final  URI resolveAsUri(final URI base, final URI relative) throws URISyntaxException {
+
+        if (relative == null) {
+            return base;
+        }
+
+        if (base == null) {
+            return relative;
+        }
+
+        final String[] components = resolveAsComponents(base, relative);
+
+        if (components[0] != null
+                && components[1] == null
+                ) {
+            return new URI(components[0], components[2].trim().isEmpty() ? "." : components[2], components[4]);
+        }
+
+        return new URI(components[0], components[1], components[2], components[3], components[4]);
+    }
+
+    private static final String[] resolveAsComponents(final URI base, final URI relative) {
 
         String basePath = base.getPath();
         String baseAuthority = base.getAuthority();
 
-        String componentPath = components.getPath();
+        String componentPath = relative.getPath();
 
         // hacks
         if (baseAuthority == null && base.getSchemeSpecificPart().startsWith("///")) {
@@ -53,60 +106,58 @@ public final class UriResolver {
             basePath = base.getSchemeSpecificPart();
         }
 
-        if (componentPath == null && components.getSchemeSpecificPart() != null) {
-            componentPath = components.getSchemeSpecificPart();
+        if (componentPath == null && relative.getSchemeSpecificPart() != null) {
+            componentPath = relative.getSchemeSpecificPart();
         }
 
-        String scheme = null;
-        String authority = null;
-        String path = null;
-        String query = null;
+        final String[] target = new String[5];
+        target[4] = relative.getFragment();
 
-        if (components.getScheme() != null && StringUtils.isNotBlank(components.getScheme())) {
-            scheme = components.getScheme();
-            authority =  components.getAuthority();
-            path = removeDotSegments(componentPath);
-            query = components.getQuery();
+        if (relative.getScheme() != null && StringUtils.isNotBlank(relative.getScheme())) {
+            target[0] = relative.getScheme();
+            target[1] = relative.getAuthority();
+            target[2] = removeDotSegments(componentPath);
+            target[3] = relative.getQuery();
 
         } else {
 
-            if (components.getAuthority() != null && StringUtils.isNotBlank(components.getAuthority())) {
-                authority = components.getAuthority();
-                path = removeDotSegments(componentPath);
-                query = components.getQuery();
+            if (relative.getAuthority() != null && StringUtils.isNotBlank(relative.getAuthority())) {
+                target[1] = relative.getAuthority();
+                target[2] = removeDotSegments(componentPath);
+                target[3] = relative.getQuery();
 
             } else {
 
                 if (componentPath != null && StringUtils.isNotBlank(componentPath)) {
                     if (componentPath.startsWith("/")) {
-                        path = removeDotSegments(componentPath);
+                        target[2] = removeDotSegments(componentPath);
 
                     } else if (basePath != null && StringUtils.isNotBlank(basePath)) {
+                        target[2] = removeDotSegments(merge(basePath, componentPath));
 
-                        path = removeDotSegments(merge(basePath, componentPath));
                     } else {
-                        path = "/".concat(removeDotSegments(componentPath));
+                        target[2] = "/".concat(removeDotSegments(componentPath));
 
                     }
-                    query = components.getQuery();
+                    target[3] = relative.getQuery();
 
                 } else {
-                    path = basePath;
+                    target[2] = basePath;
 
-                    if (UriUtils.isDefined(components.getQuery())) {
-                        query = components.getQuery();
+                    if (UriUtils.isDefined(relative.getQuery())) {
+                        target[3] = relative.getQuery();
 
                     } else {
-                        query = base.getQuery();
+                        target[3] = base.getQuery();
                     }
 
                 }
-                authority = baseAuthority;
+                target[1] = baseAuthority;
             }
-            scheme = base.getScheme();
+            target[0] = base.getScheme();
         }
 
-        return UriUtils.recompose(scheme, authority, path, query, components.getFragment());
+        return target;
     }
 
     /**

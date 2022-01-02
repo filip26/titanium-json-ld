@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.http.link;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -161,8 +162,14 @@ final class LinkHeaderParser {
                 attributes.remove(REL);
             }
             if (attributes.containsKey(ANCHOR) && attributes.get(ANCHOR) != null) {
-                context = URI.create(UriResolver.resolve(baseUri, StringUtils.strip(attributes.get(ANCHOR).get(0).value())));
-                attributes.remove(ANCHOR);
+                try {
+                    context = UriResolver.resolveAsUri(baseUri, StringUtils.strip(attributes.get(ANCHOR).get(0).value()));
+                    attributes.remove(ANCHOR);
+
+                } catch (URISyntaxException e) {
+                    state = State.UNEXPECTED;
+                    return;
+                }
             }
             if (attributes.containsKey(TYPE) && attributes.get(TYPE) != null) {
                 type = MediaType.of(attributes.get(TYPE).get(0).value());
@@ -230,8 +237,12 @@ final class LinkHeaderParser {
             }
             return;
         }
-        targetUri = URI.create(UriResolver.resolve(baseUri, StringUtils.stripTrailing(valueBuilder.toString())));
-        state = State.PARAMS;
+        try {
+            targetUri = UriResolver.resolveAsUri(baseUri, StringUtils.stripTrailing(valueBuilder.toString()));
+            state = State.PARAMS;
+        } catch (URISyntaxException e) {
+            state = State.UNEXPECTED;
+        }
     }
 
     private final void parseParameters(final char ch) {

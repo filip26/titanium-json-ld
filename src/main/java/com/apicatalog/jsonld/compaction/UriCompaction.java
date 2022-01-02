@@ -539,15 +539,15 @@ public final class UriCompaction {
         }
 
         // 9.
-        if (UriUtils.isAbsoluteUri(variable)) {
+        final URI uri = UriUtils.create(variable);
 
-            final URI uri = URI.create(variable);
-
-            if (uri.getScheme() != null
-                    && activeContext.getTerm(uri.getScheme()).filter(TermDefinition::isPrefix).isPresent()
-                    && uri.getAuthority() == null) {
+        if (uri != null
+                && uri.isAbsolute()
+                && uri.getScheme() != null
+                && uri.getAuthority() == null
+                && activeContext.getTerm(uri.getScheme()).filter(TermDefinition::isPrefix).isPresent()
+            ) {
                 throw new JsonLdError(JsonLdErrorCode.IRI_CONFUSED_WITH_PREFIX);
-            }
         }
 
         // 10.

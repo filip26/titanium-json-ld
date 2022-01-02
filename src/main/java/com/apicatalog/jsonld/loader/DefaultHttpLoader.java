@@ -18,6 +18,7 @@ package com.apicatalog.jsonld.loader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -84,7 +85,11 @@ class DefaultHttpLoader implements DocumentLoader {
                         final Optional<String> location = response.location();
 
                         if (location.isPresent()) {
-                            targetUri = URI.create(UriResolver.resolve(targetUri, location.get()));
+                            try {
+                                targetUri = UriResolver.resolveAsUri(targetUri, location.get());
+                            } catch (URISyntaxException e) {
+                                throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Header location value is invalid [" + location.get() + "].");
+                            }
 
                         } else {
                             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Header location is required for code [" + response.statusCode() + "].");
