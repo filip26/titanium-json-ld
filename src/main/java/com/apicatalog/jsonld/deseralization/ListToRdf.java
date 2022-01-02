@@ -45,11 +45,16 @@ final class ListToRdf {
 
     // optional
     private RdfDirection rdfDirection;
+    private boolean uriValidation;
 
     private ListToRdf(final JsonArray list, final List<RdfTriple> triples, NodeMap nodeMap) {
         this.list = list;
         this.triples = triples;
         this.nodeMap = nodeMap;
+        
+        // default values
+        this.rdfDirection = null;
+        this.uriValidation = true;
     }
 
     public static final ListToRdf with(final JsonArray list, final List<RdfTriple> triples, NodeMap nodeMap) {
@@ -87,6 +92,7 @@ final class ListToRdf {
             ObjectToRdf
                 .with(item.asJsonObject(), embeddedTriples, nodeMap)
                 .rdfDirection(rdfDirection)
+                .uriValidation(uriValidation)
                 .build()
                 .ifPresent(object ->
                                 triples.add(Rdf.createTriple(
@@ -111,5 +117,10 @@ final class ListToRdf {
 
         // 4.
         return Rdf.createBlankNode(bnodes[0]);
+    }
+
+    public ListToRdf uriValidation(boolean uriValidation) {
+        this.uriValidation = uriValidation;
+        return this;
     }
 }

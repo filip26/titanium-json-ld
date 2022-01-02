@@ -242,7 +242,7 @@ public final class NQuadsReader implements RdfReader {
     }
 
     private static final void assertAbsoluteIri(final String iri, final String what) throws RdfReaderException {
-        if (UriUtils.isNotAbsoluteUri(iri)) {
+        if (UriUtils.isNotAbsoluteUri(iri, true)) {
             throw new RdfReaderException(what + " must be an absolute IRI [" + iri  +  "]. ");
         }
     }
