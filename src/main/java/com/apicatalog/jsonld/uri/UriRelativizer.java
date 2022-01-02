@@ -29,7 +29,7 @@ public final class UriRelativizer {
             return uri;
         }
 
-        return relativize(base, URI.create(uri));
+        return relativize(base, UriUtils.create(uri));
     }
 
     public static final String relativize(final URI base, final URI uri) {

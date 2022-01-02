@@ -115,6 +115,8 @@ public final class JsonLdOptions {
     // document cache
     private Cache<String, Document> documentCache;
 
+    private boolean uriValidation;
+    
     public JsonLdOptions() {
         this(SchemeRouter.defaultInstance());
     }
@@ -149,6 +151,7 @@ public final class JsonLdOptions {
         this.numericId = false;
         this.contextCache = new LruCache<>(256);
         this.documentCache = null;
+        this.uriValidation = true;
     }
 
     public JsonLdOptions(JsonLdOptions options) {
@@ -179,6 +182,7 @@ public final class JsonLdOptions {
         this.numericId = options.numericId;
         this.contextCache = options.contextCache;
         this.documentCache = options.documentCache;
+        this.uriValidation = options.uriValidation;
     }
 
     /**
@@ -444,5 +448,28 @@ public final class JsonLdOptions {
      */
     public void setRdfStar(boolean rdfStar) {
         this.rdfStar = rdfStar;
+    }
+
+    /**
+     * if disabled only URIs required for processing are parsed and validated. 
+     * An invalid URI may cause skipped records or an exception. 
+     * Enabled by default. 
+     *  
+     * @return true if validation is enabled
+     *
+     */
+    public boolean isUriValidation() {
+        return uriValidation;
+    }
+
+    /**
+     * if disabled only URIs required for processing are parsed and validated. 
+     * An invalid URI may cause skipped records or an exception. 
+     *  
+     * @param enabled set <code>true</code> to enable validation
+     *
+     */
+    public void setUriValidation(boolean enabled) {
+        this.uriValidation = enabled;
     }
 }

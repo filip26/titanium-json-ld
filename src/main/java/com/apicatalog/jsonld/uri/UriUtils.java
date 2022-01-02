@@ -83,11 +83,36 @@ public final class UriUtils {
                         || create(StringUtils.strip(uri)) == null));
     }
 
+    /**
+     * Deprecated in favor of {@link UriUtils#isNotAbsoluteUri(String, boolean)}
+     * @param uri
+     * @return
+     */
+    @Deprecated(since = "1.3.0")
     public static final boolean isNotAbsoluteUri(final String uri) {
         return !isAbsoluteUri(uri);
     }
 
+    public static final boolean isNotAbsoluteUri(final String uri, final boolean validate) {
+        return !isAbsoluteUri(uri);
+    }
+
+    /**
+     * Deprecated in favor of {@link UriUtils#isAbsoluteUri(String, boolean)}
+     * @param uri
+     * @return
+     */
+    @Deprecated(since = "1.3.0")
     public static final boolean isAbsoluteUri(final String uri) {
+
+        try {
+            return URI.create(uri).isAbsolute();
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    public static final boolean isAbsoluteUri(final String uri, final boolean validate) {
 
         try {
             return URI.create(uri).isAbsolute();

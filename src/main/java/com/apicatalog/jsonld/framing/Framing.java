@@ -56,6 +56,7 @@ public final class Framing {
 
     // optional
     private boolean ordered;
+    private boolean validateUris;
 
     private Framing(FramingState state, List<String> subjects, Frame frame, JsonMapBuilder parent, String activeProperty) {
         this.state = state;
@@ -66,6 +67,7 @@ public final class Framing {
 
         // default values
         this.ordered = false;
+        this.validateUris = true;
     }
 
     public static final Framing with(FramingState state, List<String> subjects, Frame frame, JsonMapBuilder parent, String activeProperty) {
@@ -76,6 +78,11 @@ public final class Framing {
         this.ordered = ordered;
         return this;
     }
+    
+    public Framing validateUris(boolean validate) {
+        this.validateUris = validate;
+        return this;
+    }    
 
     public void frame() throws JsonLdError {
 
@@ -90,6 +97,7 @@ public final class Framing {
         final List<String> matchedSubjects =
                                 FrameMatcher
                                     .with(state, frame, requireAll)
+                                    .validateUris(validateUris)
                                     .match(subjects);
 
         // 4.
@@ -148,7 +156,7 @@ public final class Framing {
 
                 if (!frame.contains(Keywords.GRAPH)) {
                     recurse = !Keywords.MERGED.equals(state.getGraphName());
-                    subframe = Frame.of(JsonValue.EMPTY_JSON_OBJECT);
+                    subframe = Frame.of(JsonValue.EMPTY_JSON_OBJECT, false);
 
                 // 4.5.2.
                 } else {
@@ -158,10 +166,10 @@ public final class Framing {
                             || JsonUtils.isArray(frame.get(Keywords.GRAPH))
                             ) {
 
-                        subframe = Frame.of((JsonStructure)frame.get(Keywords.GRAPH));
+                        subframe = Frame.of((JsonStructure)frame.get(Keywords.GRAPH), validateUris);
 
                     } else {
-                        subframe = Frame.of(JsonValue.EMPTY_JSON_OBJECT);
+                        subframe = Frame.of(JsonValue.EMPTY_JSON_OBJECT, false);
                     }
                 }
 
@@ -181,6 +189,7 @@ public final class Framing {
                                 Keywords.GRAPH
                                 )
                             .ordered(ordered)
+                            .validateUris(validateUris)
                             .frame();
                 }
             }
@@ -194,11 +203,12 @@ public final class Framing {
                 Framing.with(
                             includedState,
                             subjects,
-                            Frame.of((JsonStructure)frame.get(Keywords.INCLUDED)),
+                            Frame.of((JsonStructure)frame.get(Keywords.INCLUDED), validateUris),
                             output,
                             Keywords.INCLUDED
                             )
                         .ordered(ordered)
+                        .validateUris(validateUris)
                         .frame();
             }
 
@@ -266,10 +276,11 @@ public final class Framing {
                                     Framing.with(
                                                 listState,
                                                 Arrays.asList(listItem.asJsonObject().getString(Keywords.ID)),
-                                                Frame.of((JsonStructure)listFrame),
+                                                Frame.of((JsonStructure)listFrame, validateUris),
                                                 listResult,
                                                 Keywords.LIST)
                                             .ordered(ordered)
+                                            .validateUris(validateUris)
                                             .frame();
 
                                     if (listResult.containsKey(Keywords.LIST)) {
@@ -292,14 +303,15 @@ public final class Framing {
                         Framing.with(
                                     clonedState,
                                     Arrays.asList(item.asJsonObject().getString(Keywords.ID)),
-                                    Frame.of((JsonStructure)subframe),
+                                    Frame.of((JsonStructure)subframe, validateUris),
                                     output,
                                     property)
                                 .ordered(ordered)
+                                .validateUris(validateUris)
                                 .frame();
 
                     } else if (ValueObject.isValueObject(item)) {
-                        if ((Frame.of((JsonStructure)subframe)).matchValue(item)) {
+                        if (Frame.of((JsonStructure)subframe, validateUris).matchValue(item)) {
                             output.add(property, item);
                         }
 
@@ -379,10 +391,11 @@ public final class Framing {
                                 Framing.with(
                                             reverseState,
                                             Arrays.asList(subjectProperty),
-                                            Frame.of((JsonStructure)subframe),
+                                            Frame.of((JsonStructure)subframe, validateUris),
                                             reverseResult,
                                             null)
                                         .ordered(ordered)
+                                        .validateUris(validateUris)
                                         .frame();
 
                                 output

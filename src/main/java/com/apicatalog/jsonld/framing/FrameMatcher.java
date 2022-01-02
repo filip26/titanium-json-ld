@@ -38,14 +38,25 @@ public final class FrameMatcher {
     private Frame frame;
     private boolean requireAll;
 
+    // optional
+    private boolean validateUris;
+    
     private FrameMatcher(FramingState state, Frame frame, boolean requireAll) {
         this.state = state;
         this.frame = frame;
         this.requireAll = requireAll;
+        
+        // optional
+        this.validateUris = true;
     }
 
     public static final FrameMatcher with(FramingState state, Frame frame, boolean requireAll) {
         return new FrameMatcher(state, frame, requireAll);
+    }
+    
+    public FrameMatcher validateUris(boolean enable) {
+        this.validateUris = enable;
+        return this;
     }
 
     public List<String> match(final Collection<String> subjects) throws JsonLdError {
@@ -124,7 +135,7 @@ public final class FrameMatcher {
 
             final Frame propertyFrame =
                             (JsonUtils.isNotNull(propertyValue) && JsonUtils.isNonEmptyArray(propertyValue))
-                                ? Frame.of((JsonStructure)propertyValue)
+                                ? Frame.of((JsonStructure)propertyValue, validateUris)
                                 : null;
 
             final JsonArray nodeValues = nodeValue != null
@@ -188,7 +199,7 @@ public final class FrameMatcher {
 
                             for (final JsonValue value : JsonUtils.toCollection(nodeListValue)) {
 
-                                match = Frame.of((JsonStructure)listValue).matchValue(value);
+                                match = Frame.of((JsonStructure)listValue, validateUris).matchValue(value);
                                 if (match) {
                                     break;
                                 }
@@ -207,7 +218,7 @@ public final class FrameMatcher {
                             boolean match = false;
                             for (final JsonValue value : JsonUtils.toCollection(nodeListValue)) {
 
-                                match = Frame.of((JsonStructure)listValue).matchNode(state, value, requireAll);
+                                match = Frame.of((JsonStructure)listValue, validateUris).matchNode(state, value, requireAll);
 
                                 if (match) {
                                     break;
