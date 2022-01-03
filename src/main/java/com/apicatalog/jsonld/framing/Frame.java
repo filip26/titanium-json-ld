@@ -170,9 +170,9 @@ public final class Frame {
                     || idArray
                         .stream()
                         .noneMatch(item -> JsonUtils.isNotString(item)
-                                            || UriUtils.isNotAbsoluteUri(((JsonString)item).getString())));
+                                            || UriUtils.isNotAbsoluteUri(((JsonString)item).getString(), true)));
         }
-        return JsonUtils.isString(id) && UriUtils.isAbsoluteUri(((JsonString)id).getString());
+        return JsonUtils.isString(id) && UriUtils.isAbsoluteUri(((JsonString)id).getString(), true);
     }
 
     private static final boolean validateFrameType(JsonObject frame) {
@@ -193,12 +193,12 @@ public final class Frame {
                     || typeArray
                         .stream()
                         .noneMatch(item -> JsonUtils.isNotString(item)
-                                            || UriUtils.isNotAbsoluteUri(((JsonString)item).getString())));
+                                            || UriUtils.isNotAbsoluteUri(((JsonString)item).getString(), true)));
         }
 
         return JsonUtils.isEmptyArray(type)
                 || JsonUtils.isEmptyObject(type)
-                || JsonUtils.isString(type) && UriUtils.isAbsoluteUri(((JsonString)type).getString());
+                || JsonUtils.isString(type) && UriUtils.isAbsoluteUri(((JsonString)type).getString(), true);
     }
 
     public Set<String> keys() {

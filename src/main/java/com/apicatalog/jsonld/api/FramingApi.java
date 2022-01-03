@@ -77,16 +77,18 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
     @Override
     public FramingApi context(String contextLocation) {
 
+        URI contextUri = null;
+
         if (contextLocation != null) {
 
-            if (UriUtils.isNotURI(contextLocation)) {
+            contextUri = UriUtils.create(contextLocation);
+
+            if (contextUri == null) {
                 throw new IllegalArgumentException("Context location must be valid URI or null but is [" + contextLocation + ".");
             }
-
-            return context(UriUtils.create(contextLocation));
         }
 
-        return context((URI) null);
+        return context(contextUri);
     }
 
     @Override
@@ -115,7 +117,7 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
 
     @Override
     public FramingApi base(String baseUri) {
-        return base(URI.create(baseUri));
+        return base(UriUtils.create(baseUri));
     }
 
     @Override

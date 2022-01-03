@@ -23,6 +23,7 @@ import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.FromRdfProcessor;
+import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.RdfDataset;
 
 import jakarta.json.JsonArray;
@@ -73,7 +74,7 @@ public final class FromRdfApi implements CommonApi<FromRdfApi>, LoaderApi<FromRd
 
     @Override
     public FromRdfApi base(String baseUri) {
-        return base(URI.create(baseUri));
+        return base(UriUtils.create(baseUri));
     }
 
     @Override

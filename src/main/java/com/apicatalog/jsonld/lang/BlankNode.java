@@ -31,6 +31,12 @@ public final class BlankNode {
 
     }
 
+    /**
+     * Returns <code>true</code> if the given value starts with a blank node prefix '<code>_:</code>'.
+     *
+     * @param value to check
+     * @return <code>true</code> if the give value has blank node prefix
+     */
     public static boolean hasPrefix(final String value) {
         return value.startsWith("_:");
     }

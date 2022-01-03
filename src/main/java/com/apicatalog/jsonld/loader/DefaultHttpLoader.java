@@ -84,13 +84,11 @@ class DefaultHttpLoader implements DocumentLoader {
                         final Optional<String> location = response.location();
 
                         if (location.isPresent()) {
-                            targetUri = URI.create(UriResolver.resolve(targetUri, location.get()));
-
-                        } else {
-                            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Header location is required for code [" + response.statusCode() + "].");
+                            targetUri = UriResolver.resolveAsUri(targetUri, location.get());
+                            continue;
                         }
 
-                        continue;
+                        throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Header location is required for code [" + response.statusCode() + "].");
                     }
 
                     if (response.statusCode() != 200) {

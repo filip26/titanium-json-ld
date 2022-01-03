@@ -40,6 +40,7 @@ public final class FromRdfProcessor {
                     .useNativeTypes(options.isUseNativeTypes())
                     .useRdfType(options.isUseRdfType())
                     .processingMode(options.getProcessingMode())
+                    .uriValidation(options.isUriValidation())
                     .build();
     }
 

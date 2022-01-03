@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -50,6 +51,7 @@ public final class UriExpansion {
     // optional
     private boolean documentRelative;
     private boolean vocab;
+    private boolean uriValidation;
 
     private JsonObject localContext;
     private Map<String, Boolean> defined;
@@ -62,6 +64,7 @@ public final class UriExpansion {
         this.vocab = false;
         this.localContext = null;
         this.defined = null;
+        this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
     public static final UriExpansion with(final ActiveContext activeContext) {
@@ -136,7 +139,7 @@ public final class UriExpansion {
             result = initPropertyContext(split[0], split[1], result);
 
             // 6.5
-            if (UriUtils.isAbsoluteUri(result) || BlankNode.hasPrefix(result)) {
+            if (BlankNode.hasPrefix(result) || UriUtils.isAbsoluteUri(result, uriValidation)) {
                 return result;
             }
         }
@@ -202,5 +205,10 @@ public final class UriExpansion {
 
         // 9.
         return result;
+    }
+
+    public UriExpansion uriValidation(boolean uriValidation) {
+        this.uriValidation = uriValidation;
+        return this;
     }
 }

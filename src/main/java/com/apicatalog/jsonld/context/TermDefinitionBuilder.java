@@ -249,7 +249,7 @@ public final class TermDefinitionBuilder {
                     && activeContext.inMode(JsonLdVersion.V1_0))
                     // 12.4.
                     || (Keywords.noneMatch(expandedTypeString, Keywords.ID, Keywords.JSON, Keywords.NONE, Keywords.VOCAB)
-                            && UriUtils.isNotAbsoluteUri(expandedTypeString))) {
+                            && UriUtils.isNotAbsoluteUri(expandedTypeString, true))) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING);
             }
 
@@ -356,7 +356,7 @@ public final class TermDefinitionBuilder {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ALIAS);
                 }
 
-                if (!Keywords.contains(definition.getUriMapping()) && !UriUtils.isURI(definition.getUriMapping())
+                if (!Keywords.contains(definition.getUriMapping()) && UriUtils.isNotURI(definition.getUriMapping())
                         && !BlankNode.hasPrefix(definition.getUriMapping())) {
 
                     throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);

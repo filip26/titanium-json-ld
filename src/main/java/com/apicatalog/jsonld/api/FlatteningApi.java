@@ -20,6 +20,7 @@ import java.net.URI;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.DocumentLoader;
@@ -81,15 +82,18 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
     @Override
     public FlatteningApi base(String baseLocation) {
 
-        if (baseLocation != null) {
+        URI baseUri = null;
 
-            if (UriUtils.isNotURI(baseLocation)) {
+        if (StringUtils.isNotBlank(baseLocation)) {
+
+            baseUri = UriUtils.create(baseLocation);
+
+            if (baseUri == null) {
                 throw new IllegalArgumentException("Base location must be valid URI or null but is [" + baseLocation + ".");
             }
-            return base(UriUtils.create(baseLocation));
         }
 
-        return base((URI) null);
+        return base(baseUri);
     }
 
     public FlatteningApi compactArrays(boolean enable) {
@@ -122,16 +126,18 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
     @Override
     public FlatteningApi context(final String contextLocation) {
 
+        URI contextUri = null;
+
         if (contextLocation != null) {
 
-            if (UriUtils.isNotURI(contextLocation)) {
+            contextUri = UriUtils.create(contextLocation);
+
+            if (contextUri == null) {
                 throw new IllegalArgumentException("Context location must be valid URI or null but is [" + contextLocation + ".");
             }
-
-            return context(UriUtils.create(contextLocation));
         }
 
-        return context((URI) null);
+        return context(contextUri);
     }
 
     @Override

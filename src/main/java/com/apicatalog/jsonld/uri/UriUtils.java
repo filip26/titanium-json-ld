@@ -42,11 +42,15 @@ public final class UriUtils {
 
         String uriValue = StringUtils.strip(uri);
 
-        if (uri.endsWith(":")) {
-            uriValue = uri + ".";
+        if (uriValue.isEmpty()) {
+            return null;
+        }
 
-        } else if (uri.endsWith("[") || uri.endsWith("]")) {
-            uriValue = uri.substring(0, uri.length() - 1);
+        if (uriValue.endsWith(":")) {
+            uriValue += ".";
+
+        } else if (uriValue.endsWith("[") || uriValue.endsWith("]")) {
+            uriValue = uriValue.substring(0, uriValue.length() - 1);
         }
 
         try {
@@ -79,17 +83,77 @@ public final class UriUtils {
                         || create(StringUtils.strip(uri)) == null));
     }
 
+    /**
+     * Deprecated in favor of {@link UriUtils#isNotAbsoluteUri(String, boolean)}
+     * 
+     * @deprecated since 1.3.0
+     * 
+     * @param uri to check
+     * @return <code>true</code> if the given URI is not absolute
+     */
+    @Deprecated
     public static final boolean isNotAbsoluteUri(final String uri) {
-        return !isAbsoluteUri(uri);
+        return isNotAbsoluteUri(uri, true);
     }
 
+    public static final boolean isNotAbsoluteUri(final String uri, final boolean validate) {
+        return !isAbsoluteUri(uri, validate);
+    }
+
+    /**
+     * Deprecated in favor of {@link UriUtils#isAbsoluteUri(String, boolean)}
+     * 
+     * @deprecated since 1.3.0
+     *
+     * @param uri to check
+     * @return <code>true</code> if the given URI is absolute
+     */
+    @Deprecated
     public static final boolean isAbsoluteUri(final String uri) {
+        return isAbsoluteUri(uri, true);
+    }
+
+    public static final boolean isAbsoluteUri(final String uri, final boolean validate) {
+//        System.out.println("............................ A");
+//        System.out.println("base: " + uri + ", " + validate);
+
+
+        // if URI validation is disabled
+        if (!validate) {
+            // then validate just a scheme
+            return startsWithScheme(uri);
+        }
 
         try {
             return URI.create(uri).isAbsolute();
         } catch (IllegalArgumentException e) {
             return false;
         }
+    }
+
+    private static final boolean startsWithScheme(final String uri) {
+
+        if (uri == null
+                || uri.length() < 2 // a scheme must have at least one letter followed by ':'
+                || !Character.isLetter(uri.codePointAt(0)) // a scheme name must start with a letter
+                ) {
+            return false;
+        }
+
+        for (int i = 1; i < uri.length(); i++) {
+
+            if (
+                //  a scheme name must start with a letter followed by a letter/digit/+/-/.
+                Character.isLetterOrDigit(uri.codePointAt(i))
+                        || uri.charAt(i) == '-' || uri.charAt(i) == '+' || uri.charAt(i) == '.'
+                ) {
+                continue;
+            }
+
+            // a scheme name must be terminated by ';'
+            return uri.charAt(i) == ':';
+        }
+        return false;
     }
 
     protected static final String recompose(final String scheme, final String authority, final String path, final String query, final String fragment) {

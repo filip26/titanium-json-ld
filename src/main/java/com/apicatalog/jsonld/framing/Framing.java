@@ -299,7 +299,7 @@ public final class Framing {
                                 .frame();
 
                     } else if (ValueObject.isValueObject(item)) {
-                        if ((Frame.of((JsonStructure)subframe)).matchValue(item)) {
+                        if (Frame.of((JsonStructure)subframe).matchValue(item)) {
                             output.add(property, item);
                         }
 

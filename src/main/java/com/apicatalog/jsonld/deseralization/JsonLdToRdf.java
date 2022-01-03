@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -49,6 +50,7 @@ public final class JsonLdToRdf {
     // optional
     private boolean produceGeneralizedRdf;
     private RdfDirection rdfDirection;
+    private boolean uriValidation;
 
     private JsonLdToRdf(NodeMap nodeMap, RdfDataset dataset) {
         this.nodeMap = nodeMap;
@@ -56,6 +58,7 @@ public final class JsonLdToRdf {
 
         this.produceGeneralizedRdf = false;
         this.rdfDirection = null;
+        this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
     public static final JsonLdToRdf with(NodeMap nodeMap, RdfDataset dataset) {
@@ -90,7 +93,7 @@ public final class JsonLdToRdf {
 
                     rdfGraphName = Rdf.createBlankNode(graphName);
 
-                } else if (UriUtils.isAbsoluteUri(graphName)) {
+                } else if (UriUtils.isAbsoluteUri(graphName, uriValidation)) {
 
                     rdfGraphName = Rdf.createIRI(graphName);
 
@@ -108,7 +111,7 @@ public final class JsonLdToRdf {
                 if (BlankNode.isWellFormed(subject)) {
                     rdfSubject = Rdf.createBlankNode(subject);
 
-                } else if (UriUtils.isAbsoluteUri(subject)) {
+                } else if (UriUtils.isAbsoluteUri(subject, uriValidation)) {
                     rdfSubject = Rdf.createIRI(subject);
 
                 } else {
@@ -135,7 +138,7 @@ public final class JsonLdToRdf {
                             if (BlankNode.isWellFormed(typeString)) {
                                 rdfObject = Rdf.createBlankNode(typeString);
 
-                            } else if (UriUtils.isAbsoluteUri(typeString)) {
+                            } else if (UriUtils.isAbsoluteUri(typeString, uriValidation)) {
                                 rdfObject = Rdf.createIRI(typeString);
 
                             } else {
@@ -151,37 +154,56 @@ public final class JsonLdToRdf {
                         }
 
                     // 1.3.2.2.
-                    } else if (!Keywords.contains(property)
-                                    && ((BlankNode.isWellFormed(property) && !produceGeneralizedRdf)
-                                     || UriUtils.isAbsoluteUri(property))) {
+                    } else if (!Keywords.contains(property)) {
 
-                        // 1.3.2.5.
-                        for (JsonValue item : nodeMap.get(graphName, subject, property).asJsonArray()) {
+                        final RdfResource rdfProperty;
 
-                            // 1.3.2.5.1.
-                            final List<RdfTriple> listTriples = new ArrayList<>();
+                        if (BlankNode.isWellFormed(property)) {
+                            rdfProperty = !produceGeneralizedRdf ? Rdf.createBlankNode(property) : null;
 
-                            // 1.3.2.5.2.
-                            ObjectToRdf
-                                    .with(item.asJsonObject(), listTriples, nodeMap)
-                                    .rdfDirection(rdfDirection)
-                                    .build()
-                                    .ifPresent(rdfObject ->
-                                                        dataset.add(Rdf.createNQuad(
-                                                                    rdfSubject,
-                                                                    Rdf.createResource(property),
-                                                                    rdfObject,
-                                                                    rdfGraphName
-                                                                    )));
-                            // 1.3.2.5.3.
-                            listTriples.stream()
-                                        .map(triple -> Rdf.createNQuad(triple, rdfGraphName))
-                                        .forEach(dataset::add);
+                        } else if (UriUtils.isAbsoluteUri(property, uriValidation)) {
+                            rdfProperty = Rdf.createIRI(property);
+
+                        } else {
+                            rdfProperty = null;
+                        }
+
+                        if (rdfProperty != null) {
+
+                            // 1.3.2.5.
+                            for (JsonValue item : nodeMap.get(graphName, subject, property).asJsonArray()) {
+
+                                // 1.3.2.5.1.
+                                final List<RdfTriple> listTriples = new ArrayList<>();
+
+                                // 1.3.2.5.2.
+                                ObjectToRdf
+                                        .with(item.asJsonObject(), listTriples, nodeMap)
+                                        .rdfDirection(rdfDirection)
+                                        .uriValidation(uriValidation)
+                                        .build()
+                                        .ifPresent(rdfObject ->
+                                                            dataset.add(Rdf.createNQuad(
+                                                                        rdfSubject,
+                                                                        rdfProperty,
+                                                                        rdfObject,
+                                                                        rdfGraphName
+                                                                        )));
+                                // 1.3.2.5.3.
+                                listTriples.stream()
+                                            .map(triple -> Rdf.createNQuad(triple, rdfGraphName))
+                                            .forEach(dataset::add);
+                            }
                         }
                     }
                 }
             }
         }
         return dataset;
+    }
+
+    public JsonLdToRdf uriValidation(boolean uriValidation) {
+        this.uriValidation = uriValidation;
+        return this;
     }
 }

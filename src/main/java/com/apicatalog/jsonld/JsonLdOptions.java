@@ -42,6 +42,11 @@ public final class JsonLdOptions {
         COMPOUND_LITERAL
     }
 
+    /* default values */
+    public static final boolean DEFAULT_RDF_STAR = false;
+    public static final boolean DEFAULT_NUMERIC_ID = false;
+    public static final boolean DEFAULT_URI_VALIDATION = true;
+
     /**
      * The base IRI to use when expanding or compacting the document.
      * If set, this overrides the input document's IRI.
@@ -115,6 +120,8 @@ public final class JsonLdOptions {
     // document cache
     private Cache<String, Document> documentCache;
 
+    private boolean uriValidation;
+
     public JsonLdOptions() {
         this(SchemeRouter.defaultInstance());
     }
@@ -143,12 +150,13 @@ public final class JsonLdOptions {
         this.requiredAll = false;
 
         // Extension: JSON-LD-STAR (Experimental)
-        this.rdfStar = false;
+        this.rdfStar = DEFAULT_RDF_STAR;
 
         // custom
-        this.numericId = false;
+        this.numericId = DEFAULT_NUMERIC_ID;
         this.contextCache = new LruCache<>(256);
         this.documentCache = null;
+        this.uriValidation = DEFAULT_URI_VALIDATION;
     }
 
     public JsonLdOptions(JsonLdOptions options) {
@@ -179,6 +187,7 @@ public final class JsonLdOptions {
         this.numericId = options.numericId;
         this.contextCache = options.contextCache;
         this.documentCache = options.documentCache;
+        this.uriValidation = options.uriValidation;
     }
 
     /**
@@ -444,5 +453,37 @@ public final class JsonLdOptions {
      */
     public void setRdfStar(boolean rdfStar) {
         this.rdfStar = rdfStar;
+    }
+
+    /**
+     * if disabled only URIs required for processing are parsed and validated.
+     * Disabling URI validation might improve performance depending on the number of processed URIs.
+     * <p>
+     * <b>Warning:</b> Disabled validation could cause an invalid output.
+     * </p>
+     * <p>
+     * Enabled by default.
+     * </p>
+     *
+     * @return true if validation is enabled
+     */
+    public boolean isUriValidation() {
+        return uriValidation;
+    }
+
+    /**
+     * if disabled only URIs required for processing are parsed and validated.
+     * Disabling URI validation might improve performance depending on the number of processed URIs.
+     * <p>
+     * <b>Warning:</b> Disabled validation could cause an invalid output.
+     * </p>
+     * <p>
+     * Enabled by default.
+     * </p>
+     *
+     * @param enabled set <code>true</code> to enable validation
+     */
+    public void setUriValidation(boolean enabled) {
+        this.uriValidation = enabled;
     }
 }

@@ -220,7 +220,7 @@ public final class NodeMapBuilder {
             if (elementObject.containsKey(Keywords.ID)) {
 
                 final JsonValue idValue = elementObject.get(Keywords.ID);
-                
+
                 if (JsonUtils.isNull(idValue) || JsonUtils.isNotString(idValue)) {
                     return nodeMap;
                 }

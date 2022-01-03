@@ -24,6 +24,7 @@ import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -56,6 +57,7 @@ public final class RdfToJsonld {
     private RdfDirection rdfDirection;
     private boolean useNativeTypes;
     private boolean useRdfType;
+    private boolean uriValidation;
 
     private JsonLdVersion processingMode;
 
@@ -74,6 +76,7 @@ public final class RdfToJsonld {
         this.rdfDirection = null;
         this.useNativeTypes = false;
         this.useRdfType = false;
+        this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
     public static final RdfToJsonld with(final RdfDataset dataset) {
@@ -260,7 +263,7 @@ public final class RdfToJsonld {
                     nodeId = ((JsonString)node.get(Keywords.ID)).getString();
 
                     // 6.4.3.5.
-                    if (UriUtils.isAbsoluteUri(nodeId)) {
+                    if (UriUtils.isAbsoluteUri(nodeId, uriValidation)) {
                         break;
                     }
                 }
@@ -429,5 +432,10 @@ public final class RdfToJsonld {
         private String subject;
         private String property;
         private JsonObject value;
+    }
+
+    public RdfToJsonld uriValidation(boolean uriValidation) {
+        this.uriValidation = uriValidation;
+        return this;
     }
 }

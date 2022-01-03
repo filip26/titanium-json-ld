@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.json.JsonCanonicalizer;
@@ -66,6 +67,7 @@ final class ObjectToRdf {
 
     // optional
     private RdfDirection rdfDirection;
+    private boolean uriValidation;
 
     private ObjectToRdf(JsonObject item, List<RdfTriple> triples, NodeMap nodeMap) {
         this.item = item;
@@ -74,6 +76,7 @@ final class ObjectToRdf {
 
         // default values
         this.rdfDirection = null;
+        this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
     public static final ObjectToRdf with(JsonObject item, List<RdfTriple> triples, NodeMap nodeMap) {
@@ -101,7 +104,7 @@ final class ObjectToRdf {
             if (BlankNode.isWellFormed(idString)) {
                 return Optional.of(Rdf.createBlankNode(idString));
 
-            } else if (UriUtils.isAbsoluteUri(idString)) {
+            } else if (UriUtils.isAbsoluteUri(idString, uriValidation)) {
                 return Optional.of(Rdf.createIRI(idString));
             }
 
@@ -113,6 +116,7 @@ final class ObjectToRdf {
             return Optional.of(ListToRdf
                         .with(item.get(Keywords.LIST).asJsonArray(), triples, nodeMap)
                         .rdfDirection(rdfDirection)
+                        .uriValidation(uriValidation)
                         .build());
         }
 
@@ -129,7 +133,7 @@ final class ObjectToRdf {
                             : null;
 
         // 6.
-        if (datatype != null && !Keywords.JSON.equals(datatype) && !UriUtils.isAbsoluteUri(datatype)) {
+        if (datatype != null && !Keywords.JSON.equals(datatype) && !UriUtils.isAbsoluteUri(datatype, uriValidation)) {
             return Optional.empty();
         }
 
@@ -282,5 +286,10 @@ final class ObjectToRdf {
 
     private static final String toXsdDouble(BigDecimal bigDecimal) {
         return xsdNumberFormat.format(bigDecimal);
+    }
+
+    public ObjectToRdf uriValidation(boolean uriValidation) {
+        this.uriValidation = uriValidation;
+        return this;
     }
 }

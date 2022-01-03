@@ -51,6 +51,7 @@ final class LinkHeaderParser {
     private List<Link> links;
     private State state;
 
+    private boolean foundLink;
     private URI targetUri;
     private String attributeName;
     private String attributeValue;
@@ -150,7 +151,7 @@ final class LinkHeaderParser {
     }
 
     private final void addLink() {
-        if (targetUri != null) {
+        if (foundLink) {
 
             Set<String> rel = Collections.emptySet();
             URI context = null;
@@ -161,7 +162,7 @@ final class LinkHeaderParser {
                 attributes.remove(REL);
             }
             if (attributes.containsKey(ANCHOR) && attributes.get(ANCHOR) != null) {
-                context = URI.create(UriResolver.resolve(baseUri, StringUtils.strip(attributes.get(ANCHOR).get(0).value())));
+                context = UriResolver.resolveAsUri(baseUri, StringUtils.strip(attributes.get(ANCHOR).get(0).value()));
                 attributes.remove(ANCHOR);
             }
             if (attributes.containsKey(TYPE) && attributes.get(TYPE) != null) {
@@ -172,9 +173,9 @@ final class LinkHeaderParser {
             }
 
             links.add(new Link(context, targetUri, rel, type, new LinkAttributes(attributes)));
-
             targetUri = null;
             attributes = new LinkedHashMap<>();
+            foundLink = false;
         }
     }
 
@@ -204,6 +205,7 @@ final class LinkHeaderParser {
         this.attributes = new LinkedHashMap<>();
         this.state = State.INIT;
 
+        this.foundLink = false;
         this.targetUri = null;
         this.attributeName = null;
         this.attributeValue = null;
@@ -230,7 +232,8 @@ final class LinkHeaderParser {
             }
             return;
         }
-        targetUri = URI.create(UriResolver.resolve(baseUri, StringUtils.stripTrailing(valueBuilder.toString())));
+        targetUri = UriResolver.resolveAsUri(baseUri, StringUtils.stripTrailing(valueBuilder.toString()));
+        foundLink = true;
         state = State.PARAMS;
     }
 

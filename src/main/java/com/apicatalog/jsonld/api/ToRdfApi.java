@@ -20,6 +20,7 @@ import java.net.URI;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
@@ -71,16 +72,18 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
     @Override
     public ToRdfApi context(String contextLocation) {
 
+        URI contextUri = null;
+
         if (contextLocation != null) {
 
-            if (UriUtils.isNotURI(contextLocation)) {
+            contextUri = UriUtils.create(contextLocation);
+
+            if (contextUri == null) {
                 throw new IllegalArgumentException("Context location must be valid URI or null but is [" + contextLocation + ".");
             }
-
-            return context(UriUtils.create(contextLocation));
         }
 
-        return context((URI) null);
+        return context(contextUri);
     }
 
     @Override
@@ -140,16 +143,18 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
     @Override
     public ToRdfApi base(String baseLocation) {
 
-        if (baseLocation != null) {
+        URI baseUri = null;
 
-            if (UriUtils.isNotURI(baseLocation)) {
+        if (StringUtils.isNotBlank(baseLocation)) {
+
+            baseUri = UriUtils.create(baseLocation);
+
+            if (baseUri == null) {
                 throw new IllegalArgumentException("Base location must be valid URI or null but is [" + baseLocation + ".");
             }
-
-            return base(UriUtils.create(baseLocation));
         }
 
-        return base((URI) null);
+        return base(baseUri);
     }
 
     @Override

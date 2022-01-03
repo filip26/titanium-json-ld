@@ -58,10 +58,7 @@ public final class JsonLd {
      * @return {@link ExpansionApi} allowing to set additional parameters
      */
     public static final ExpansionApi expand(final String documentLocation) {
-
-        assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME);
-
-        return new ExpansionApi(UriUtils.create(documentLocation));
+        return new ExpansionApi(assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME));
     }
 
     /**
@@ -98,11 +95,10 @@ public final class JsonLd {
      * @return {@link CompactionApi} allowing to set additional parameters
      */
     public static final CompactionApi compact(final String documentLocation, final String contextLocation) {
-
-        assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME);
-        assertLocation(contextLocation, "contextLocation");
-
-        return compact(UriUtils.create(documentLocation), UriUtils.create(contextLocation));
+        return compact(
+                assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME),
+                assertLocation(contextLocation, "contextLocation")
+                );
     }
 
     /**
@@ -129,10 +125,12 @@ public final class JsonLd {
      */
     public static final CompactionApi compact(final String documentLocation, final Document context) {
 
-        assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME);
         assertJsonDocument(context, CONTEXT_PARAM_NAME);
 
-        return new CompactionApi(UriUtils.create(documentLocation), context);
+        return new CompactionApi(
+                assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME),
+                context
+                );
     }
 
     /**
@@ -172,10 +170,7 @@ public final class JsonLd {
      * @return {@link FlatteningApi} allowing to set additional parameters
      */
     public static final FlatteningApi flatten(final String documentLocation) {
-
-        assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME);
-
-        return new FlatteningApi(UriUtils.create(documentLocation));
+        return new FlatteningApi(assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME));
     }
 
     /**
@@ -227,11 +222,10 @@ public final class JsonLd {
      * @return {@link FramingApi} allowing to set additional parameters
      */
     public static final FramingApi frame(final String documentLocation, final String frameLocation) {
-
-        assertLocation(documentLocation, DOCUMENT_URI_PARAM_NAME);
-        assertLocation(frameLocation, FRAME_LOCATION_PARAM_NAME);
-
-        return new FramingApi(UriUtils.create(documentLocation), UriUtils.create(frameLocation));
+        return new FramingApi(
+                assertLocation(documentLocation, DOCUMENT_URI_PARAM_NAME),
+                assertLocation(frameLocation, FRAME_LOCATION_PARAM_NAME)
+                );
     }
 
     /**
@@ -256,10 +250,7 @@ public final class JsonLd {
      * @return {@link ToRdfApi} allowing to set additional parameters
      */
     public static final ToRdfApi toRdf(final String documentLocation) {
-
-        assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME);
-
-        return new ToRdfApi(UriUtils.create(documentLocation));
+        return new ToRdfApi(assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME));
     }
 
     /**
@@ -295,10 +286,7 @@ public final class JsonLd {
      * @return {@link FromRdfApi} allowing to set additional parameters
      */
     public static final FromRdfApi fromRdf(final String documentLocation) {
-
-        assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME);
-
-        return new FromRdfApi(UriUtils.create(documentLocation));
+        return new FromRdfApi(assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME));
     }
 
     /**
@@ -327,7 +315,7 @@ public final class JsonLd {
         return new FromRdfApi(document);
     }
 
-    private static final void assertLocation(final String location, final String param) {
+    private static final URI assertLocation(final String location, final String param) {
 
         assertNotNull(location, param);
 
@@ -335,9 +323,13 @@ public final class JsonLd {
             throw new IllegalArgumentException("'" + param + "' is blank string.");
         }
 
-        if (UriUtils.isNotAbsoluteUri(StringUtils.strip(location))) {
+        final URI uri = UriUtils.create(StringUtils.strip(location));
+
+        if (uri == null || !uri.isAbsolute()) {
             throw new IllegalArgumentException("'" + param + "' is not an absolute URI [" + location + "].");
         }
+
+        return uri;
     }
 
     private static final void assertUri(final URI uri, final String param) {

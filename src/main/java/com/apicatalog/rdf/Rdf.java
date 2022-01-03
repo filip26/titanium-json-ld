@@ -129,12 +129,12 @@ public final class Rdf {
             throw new IllegalArgumentException();
         }
 
-        if (UriUtils.isAbsoluteUri(value)) {
-            return RdfProvider.provider().createIRI(value);
-        }
-
         if (BlankNode.isWellFormed(value)) {
             return RdfProvider.provider().createBlankNode(value);
+        }
+
+        if (UriUtils.isAbsoluteUri(value, true)) {
+            return RdfProvider.provider().createIRI(value);
         }
 
         return RdfProvider.provider().createTypedString(value, XsdConstants.STRING);
@@ -180,12 +180,12 @@ public final class Rdf {
             throw new IllegalArgumentException("The resource value cannot be null.");
         }
 
-        if (UriUtils.isAbsoluteUri(resource)) {
-            return RdfProvider.provider().createIRI(resource);
-        }
-
         if (BlankNode.isWellFormed(resource)) {
             return RdfProvider.provider().createBlankNode(resource);
+        }
+
+        if (UriUtils.isAbsoluteUri(resource, true)) {
+            return RdfProvider.provider().createIRI(resource);
         }
 
         throw new IllegalArgumentException("The resource must be an absolute IRI or blank node identifier, but was [" + resource + "].");
