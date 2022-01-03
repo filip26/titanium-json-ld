@@ -41,7 +41,7 @@ public final class JsonLdOptions {
         I18N_DATATYPE,
         COMPOUND_LITERAL
     }
-    
+
     /* default values */
     public static final boolean DEFAULT_RDF_STAR = false;
     public static final boolean DEFAULT_NUMERIC_ID = false;

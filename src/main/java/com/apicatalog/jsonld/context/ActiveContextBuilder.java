@@ -16,7 +16,6 @@
 package com.apicatalog.jsonld.context;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -229,14 +228,7 @@ public final class ActiveContextBuilder {
                 }
 
                 // 5.6.3.
-                final URI contextImportUri;
-
-                try {
-                    contextImportUri = UriResolver.resolveAsUri(baseUrl, ((JsonString) contextImport).getString());
-
-                } catch (URISyntaxException e) {
-                    throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE, "Invalid context @import value [" + contextImport + "].");
-                }
+                final URI contextImportUri = UriResolver.resolveAsUri(baseUrl, ((JsonString) contextImport).getString());
 
                 // 5.6.4.
                 if (activeContext.getOptions().getDocumentLoader() == null) {
@@ -313,14 +305,7 @@ public final class ActiveContextBuilder {
 
                         // 5.7.4
                         } else if (result.getBaseUri() != null) {
-
-                            try {
-                                result.setBaseUri(UriResolver.resolveAsUri(result.getBaseUri(), valueUri));
-
-                            } catch (URISyntaxException e) {
-                                throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI,
-                                        "An invalid base IRI has been detected [@base = " + valueUri + "].");
-                            }
+                            result.setBaseUri(UriResolver.resolveAsUri(result.getBaseUri(), valueUri));
 
                         } else {
                             LOGGER.log(Level.FINE,
@@ -493,7 +478,7 @@ public final class ActiveContextBuilder {
                 throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Context URI is not absolute [" + contextUri + "].");
             }
 
-        } catch (URISyntaxException | IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Context URI is not URI [" + context + "].");
         }
 

@@ -16,7 +16,6 @@
 package com.apicatalog.jsonld.http.link;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -52,6 +51,7 @@ final class LinkHeaderParser {
     private List<Link> links;
     private State state;
 
+    private boolean foundLink;
     private URI targetUri;
     private String attributeName;
     private String attributeValue;
@@ -151,7 +151,7 @@ final class LinkHeaderParser {
     }
 
     private final void addLink() {
-        if (targetUri != null) {
+        if (foundLink) {
 
             Set<String> rel = Collections.emptySet();
             URI context = null;
@@ -162,14 +162,8 @@ final class LinkHeaderParser {
                 attributes.remove(REL);
             }
             if (attributes.containsKey(ANCHOR) && attributes.get(ANCHOR) != null) {
-                try {
-                    context = UriResolver.resolveAsUri(baseUri, StringUtils.strip(attributes.get(ANCHOR).get(0).value()));
-                    attributes.remove(ANCHOR);
-
-                } catch (URISyntaxException e) {
-                    state = State.UNEXPECTED;
-                    return;
-                }
+                context = UriResolver.resolveAsUri(baseUri, StringUtils.strip(attributes.get(ANCHOR).get(0).value()));
+                attributes.remove(ANCHOR);
             }
             if (attributes.containsKey(TYPE) && attributes.get(TYPE) != null) {
                 type = MediaType.of(attributes.get(TYPE).get(0).value());
@@ -179,9 +173,9 @@ final class LinkHeaderParser {
             }
 
             links.add(new Link(context, targetUri, rel, type, new LinkAttributes(attributes)));
-
             targetUri = null;
             attributes = new LinkedHashMap<>();
+            foundLink = false;
         }
     }
 
@@ -211,6 +205,7 @@ final class LinkHeaderParser {
         this.attributes = new LinkedHashMap<>();
         this.state = State.INIT;
 
+        this.foundLink = false;
         this.targetUri = null;
         this.attributeName = null;
         this.attributeValue = null;
@@ -237,12 +232,9 @@ final class LinkHeaderParser {
             }
             return;
         }
-        try {
-            targetUri = UriResolver.resolveAsUri(baseUri, StringUtils.stripTrailing(valueBuilder.toString()));
-            state = State.PARAMS;
-        } catch (URISyntaxException e) {
-            state = State.UNEXPECTED;
-        }
+        targetUri = UriResolver.resolveAsUri(baseUri, StringUtils.stripTrailing(valueBuilder.toString()));
+        foundLink = true;
+        state = State.PARAMS;
     }
 
     private final void parseParameters(final char ch) {

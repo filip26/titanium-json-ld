@@ -57,7 +57,7 @@ public final class UriResolver {
         return UriUtils.recompose(components[0], components[1], components[2], components[3], components[4]);
     }
 
-    public static final URI resolveAsUri(final URI base, final String relative) throws URISyntaxException {
+    public static final URI resolveAsUri(final URI base, final String relative) {
 
         if (relative == null || relative.trim().isBlank()) {
             return base;
@@ -70,7 +70,7 @@ public final class UriResolver {
         return resolveAsUri(base, UriUtils.create(relative));
     }
 
-    public static final  URI resolveAsUri(final URI base, final URI relative) throws URISyntaxException {
+    public static final  URI resolveAsUri(final URI base, final URI relative) {
 
         if (relative == null) {
             return base;
@@ -82,13 +82,18 @@ public final class UriResolver {
 
         final String[] components = resolveAsComponents(base, relative);
 
-        if (components[0] != null
-                && components[1] == null
-                ) {
-            return new URI(components[0], components[2].trim().isEmpty() ? "." : components[2], components[4]);
-        }
+        try {
+            if (components[0] != null
+                    && components[1] == null
+                    ) {
+                return new URI(components[0], components[2].trim().isEmpty() ? "." : components[2], components[4]);
+            }
 
-        return new URI(components[0], components[1], components[2], components[3], components[4]);
+            return new URI(components[0], components[1], components[2], components[3], components[4]);
+
+        } catch (URISyntaxException e) {
+            throw new IllegalStateException(e); // should never happen
+        }
     }
 
     private static final String[] resolveAsComponents(final URI base, final URI relative) {

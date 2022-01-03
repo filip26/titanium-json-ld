@@ -18,6 +18,7 @@ package com.apicatalog.jsonld.http.link;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -158,7 +159,7 @@ class LinkTest {
 
         Link l1 = result.iterator().next();
 
-        assertEquals(URI.create(""), l1.target());
+        assertNull(l1.target());
         assertEquals(Collections.emptySet(), l1.attributes().names());
 
         assertEquals(new HashSet<>(Arrays.asList("123")), l1.relations());
@@ -177,7 +178,7 @@ class LinkTest {
 
         Link l1 = it.next();
 
-        assertEquals(URI.create(""), l1.target());
+        assertNull(l1.target());
         assertEquals(new HashSet<>(Arrays.asList("x")), l1.attributes().names());
 
         assertEquals("x=1x10", l1.attributes().firstValue("x").map(Object::toString).orElse(null));
@@ -322,7 +323,7 @@ class LinkTest {
 
         Link l1 = result.iterator().next();
 
-        assertEquals(URI.create(""), l1.target());
+        assertNull(l1.target());
 
         assertEquals(Arrays.asList(new LinkAttribute("1", "2")), l1.attributes().values());
 
@@ -339,7 +340,7 @@ class LinkTest {
 
         Link l1 = result.iterator().next();
 
-        assertEquals(URI.create(""), l1.target());
+        assertNull(l1.target());
 
         assertEquals(Arrays.asList(new LinkAttribute("1", "23")), l1.attributes().values());
 
@@ -421,7 +422,7 @@ class LinkTest {
 
         Link l1 = it.next();
 
-        assertEquals(URI.create(""), l1.target());
+        assertNull(l1.target());
         assertEquals(new HashSet<>(Arrays.asList("type")), l1.attributes().names());
         assertTrue(l1.attributes().firstValue("type").isPresent());
         assertEquals("text", l1.attributes().firstValue("type").get().value());
