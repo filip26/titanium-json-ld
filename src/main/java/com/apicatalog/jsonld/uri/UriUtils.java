@@ -85,12 +85,12 @@ public final class UriUtils {
 
     /**
      * Deprecated in favor of {@link UriUtils#isNotAbsoluteUri(String, boolean)}
-     * @param uri
-     * @return
+     * @param uri to check
+     * @return <code>true</code> if the given URI is not absolute
      */
     @Deprecated(since = "1.3.0")
     public static final boolean isNotAbsoluteUri(final String uri) {
-        return !isAbsoluteUri(uri);
+        return isNotAbsoluteUri(uri, true);
     }
 
     public static final boolean isNotAbsoluteUri(final String uri, final boolean validate) {
@@ -99,11 +99,21 @@ public final class UriUtils {
 
     /**
      * Deprecated in favor of {@link UriUtils#isAbsoluteUri(String, boolean)}
-     * @param uri
-     * @return
+     * @param uri to check
+     * @return <code>true</code> if the given URI is absolute
      */
     @Deprecated(since = "1.3.0")
     public static final boolean isAbsoluteUri(final String uri) {
+        return isAbsoluteUri(uri, true);
+    }
+
+    public static final boolean isAbsoluteUri(final String uri, final boolean validate) {
+
+        // if URI validation is disabled
+        if (!validate) {
+            // then validate just a scheme
+            return startsWithScheme(uri);
+        }
 
         try {
             return URI.create(uri).isAbsolute();
@@ -134,23 +144,7 @@ public final class UriUtils {
             // a scheme name must be terminated by ';'
             return uri.charAt(i) == ':';
         }
-
         return false;
-    }
-
-    public static final boolean isAbsoluteUri(final String uri, final boolean validate) {
-
-        // if URI validation is disabled
-        if (!validate) {
-            // then validate just a scheme
-            return startsWithScheme(uri);
-        }
-
-        try {
-            return URI.create(uri).isAbsolute();
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
     }
 
     protected static final String recompose(final String scheme, final String authority, final String path, final String query, final String fragment) {
