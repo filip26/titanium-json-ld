@@ -78,16 +78,17 @@ public final class UriUtils {
 
     public static final boolean isNotURI(final String uri) {
         return uri == null
-                || (StringUtils.isNotBlank(uri)
-                        && (Keywords.matchForm(StringUtils.strip(uri))
-                        || create(StringUtils.strip(uri)) == null));
+                || StringUtils.isBlank(uri)
+                || Keywords.matchForm(StringUtils.strip(uri))
+                || create(StringUtils.strip(uri)) == null
+                ;
     }
 
     /**
      * Deprecated in favor of {@link UriUtils#isNotAbsoluteUri(String, boolean)}
-     * 
+     *
      * @deprecated since 1.3.0
-     * 
+     *
      * @param uri to check
      * @return <code>true</code> if the given URI is not absolute
      */
@@ -102,7 +103,7 @@ public final class UriUtils {
 
     /**
      * Deprecated in favor of {@link UriUtils#isAbsoluteUri(String, boolean)}
-     * 
+     *
      * @deprecated since 1.3.0
      *
      * @param uri to check
@@ -114,10 +115,17 @@ public final class UriUtils {
     }
 
     public static final boolean isAbsoluteUri(final String uri, final boolean validate) {
+
         // if URI validation is disabled
         if (!validate) {
             // then validate just a scheme
             return startsWithScheme(uri);
+        }
+
+        if (uri == null
+                || uri.length() < 3 // minimal form s(1):ssp(1)
+                ) {
+            return false;
         }
 
         try {
