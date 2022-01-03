@@ -114,10 +114,30 @@ public final class UriUtils {
 
     public static final boolean isAbsoluteUri(final String uri, final boolean validate) {
 
+        // if URI validation is disabled
         if (!validate) {
-            return uri.indexOf(":") != -1;
+            
+            // then validate just a scheme
+            for (int i = 0; i < uri.length(); i++) {
+
+                // a scheme name must start with a letter
+                if (i == 0 && Character.isLetter(uri.codePointAt(i))
+                        
+                    // followed by a letter/digit/+/-/. 
+                    || (i > 0 && (
+                            Character.isLetterOrDigit(uri.codePointAt(i))
+                            || uri.charAt(i) == '-' || uri.charAt(i) == '+' || uri.charAt(i) == '.'
+                        ))
+                    ) {
+                    continue;
+                }
+
+                // a scheme name must be terminated by ';'
+                return (i > 0 && uri.charAt(i) == ':');
+            }
+            return false;
         }
-        
+
         try {
             return URI.create(uri).isAbsolute();
         } catch (IllegalArgumentException e) {
