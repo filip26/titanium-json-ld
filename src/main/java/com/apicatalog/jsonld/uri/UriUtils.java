@@ -85,10 +85,13 @@ public final class UriUtils {
 
     /**
      * Deprecated in favor of {@link UriUtils#isNotAbsoluteUri(String, boolean)}
+     * 
+     * @deprecated since 1.3.0
+     * 
      * @param uri to check
      * @return <code>true</code> if the given URI is not absolute
      */
-    @Deprecated(since = "1.3.0")
+    @Deprecated
     public static final boolean isNotAbsoluteUri(final String uri) {
         return isNotAbsoluteUri(uri, true);
     }
@@ -99,10 +102,13 @@ public final class UriUtils {
 
     /**
      * Deprecated in favor of {@link UriUtils#isAbsoluteUri(String, boolean)}
+     * 
+     * @deprecated since 1.3.0
+     *
      * @param uri to check
      * @return <code>true</code> if the given URI is absolute
      */
-    @Deprecated(since = "1.3.0")
+    @Deprecated
     public static final boolean isAbsoluteUri(final String uri) {
         return isAbsoluteUri(uri, true);
     }

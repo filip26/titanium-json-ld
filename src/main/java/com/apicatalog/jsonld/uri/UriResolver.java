@@ -59,7 +59,7 @@ public final class UriResolver {
 
     public static final URI resolveAsUri(final URI base, final String relative) {
 
-        if (relative == null || relative.trim().isBlank()) {
+        if (StringUtils.isBlank(relative)) {
             return base;
         }
 
