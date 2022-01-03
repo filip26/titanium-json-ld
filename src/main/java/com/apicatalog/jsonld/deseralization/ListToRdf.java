@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -54,7 +55,7 @@ final class ListToRdf {
 
         // default values
         this.rdfDirection = null;
-        this.uriValidation = true;
+        this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
     public static final ListToRdf with(final JsonArray list, final List<RdfTriple> triples, NodeMap nodeMap) {

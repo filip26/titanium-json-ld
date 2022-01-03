@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.json.JsonCanonicalizer;
@@ -75,7 +76,7 @@ final class ObjectToRdf {
 
         // default values
         this.rdfDirection = null;
-        this.uriValidation = true;
+        this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
     public static final ObjectToRdf with(JsonObject item, List<RdfTriple> triples, NodeMap nodeMap) {

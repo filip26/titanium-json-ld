@@ -41,6 +41,11 @@ public final class JsonLdOptions {
         I18N_DATATYPE,
         COMPOUND_LITERAL
     }
+    
+    /* default values */
+    public static final boolean DEFAULT_RDF_STAR = false;
+    public static final boolean DEFAULT_NUMERIC_ID = false;
+    public static final boolean DEFAULT_URI_VALIDATION = true;
 
     /**
      * The base IRI to use when expanding or compacting the document.
@@ -145,13 +150,13 @@ public final class JsonLdOptions {
         this.requiredAll = false;
 
         // Extension: JSON-LD-STAR (Experimental)
-        this.rdfStar = false;
+        this.rdfStar = DEFAULT_RDF_STAR;
 
         // custom
-        this.numericId = false;
+        this.numericId = DEFAULT_NUMERIC_ID;
         this.contextCache = new LruCache<>(256);
         this.documentCache = null;
-        this.uriValidation = false;
+        this.uriValidation = DEFAULT_URI_VALIDATION;
     }
 
     public JsonLdOptions(JsonLdOptions options) {

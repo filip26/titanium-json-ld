@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -57,7 +58,7 @@ public final class JsonLdToRdf {
 
         this.produceGeneralizedRdf = false;
         this.rdfDirection = null;
-        this.uriValidation = true;
+        this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
     public static final JsonLdToRdf with(NodeMap nodeMap, RdfDataset dataset) {

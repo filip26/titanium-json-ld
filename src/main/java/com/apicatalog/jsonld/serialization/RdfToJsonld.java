@@ -24,6 +24,7 @@ import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -75,7 +76,7 @@ public final class RdfToJsonld {
         this.rdfDirection = null;
         this.useNativeTypes = false;
         this.useRdfType = false;
-        this.uriValidation = true;
+        this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
     public static final RdfToJsonld with(final RdfDataset dataset) {
