@@ -45,18 +45,7 @@ public final class Frame {
         this.frameObject = frameObject;
     }
 
-    /**
-     * Deprecated in favor of {@link #of(JsonStructure, boolean)}.
-     * @param structure
-     * @return
-     * @throws JsonLdError
-     */
-    @Deprecated(since = "1.3.0")
-    public static final Frame of2(final JsonStructure structure) throws JsonLdError {
-        return of(structure, true);
-    }
-    
-    public static final Frame of(final JsonStructure structure, boolean validateUris) throws JsonLdError {
+    public static final Frame of(final JsonStructure structure) throws JsonLdError {
 
         final JsonObject frameObject;
 
@@ -81,12 +70,12 @@ public final class Frame {
         }
 
         // 1.2.
-        if (frameObject.containsKey(Keywords.ID) && !validateFrameId(frameObject, validateUris)) {
+        if (frameObject.containsKey(Keywords.ID) && !validateFrameId(frameObject)) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @id value is not valid [@id = " + frameObject.get(Keywords.ID) + "].");
         }
 
         // 1.3.
-        if (frameObject.containsKey(Keywords.TYPE) && !validateFrameType(frameObject, validateUris)) {
+        if (frameObject.containsKey(Keywords.TYPE) && !validateFrameType(frameObject)) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @type value i not valid [@type = " + frameObject.get(Keywords.TYPE) + "].");
         }
         return new Frame(frameObject);
@@ -169,7 +158,7 @@ public final class Frame {
         return defaultValue;
     }
 
-    private static final boolean validateFrameId(JsonObject frame, boolean validateUris) {
+    private static final boolean validateFrameId(JsonObject frame) {
 
         final JsonValue id = frame.get(Keywords.ID);
 
@@ -181,12 +170,12 @@ public final class Frame {
                     || idArray
                         .stream()
                         .noneMatch(item -> JsonUtils.isNotString(item)
-                                            || UriUtils.isNotAbsoluteUri(((JsonString)item).getString(), validateUris)));
+                                            || UriUtils.isNotAbsoluteUri(((JsonString)item).getString(), true)));
         }
-        return JsonUtils.isString(id) && UriUtils.isAbsoluteUri(((JsonString)id).getString(), validateUris);
+        return JsonUtils.isString(id) && UriUtils.isAbsoluteUri(((JsonString)id).getString(), true);
     }
 
-    private static final boolean validateFrameType(JsonObject frame, boolean validateUris) {
+    private static final boolean validateFrameType(JsonObject frame) {
 
         final JsonValue type = frame.get(Keywords.TYPE);
 
@@ -204,12 +193,12 @@ public final class Frame {
                     || typeArray
                         .stream()
                         .noneMatch(item -> JsonUtils.isNotString(item)
-                                            || UriUtils.isNotAbsoluteUri(((JsonString)item).getString(), validateUris)));
+                                            || UriUtils.isNotAbsoluteUri(((JsonString)item).getString(), true)));
         }
 
         return JsonUtils.isEmptyArray(type)
                 || JsonUtils.isEmptyObject(type)
-                || JsonUtils.isString(type) && UriUtils.isAbsoluteUri(((JsonString)type).getString(), validateUris);
+                || JsonUtils.isString(type) && UriUtils.isAbsoluteUri(((JsonString)type).getString(), true);
     }
 
     public Set<String> keys() {

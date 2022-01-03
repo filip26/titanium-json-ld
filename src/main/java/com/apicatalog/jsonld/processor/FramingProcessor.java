@@ -140,12 +140,11 @@ public final class FramingProcessor {
         // 16.
         Framing.with(state,
                     new ArrayList<>(state.getGraphMap().subjects(state.getGraphName())),
-                    Frame.of(expandedFrame, options.isUriValidation()),
+                    Frame.of(expandedFrame),
                     resultMap,
                     null
                     )
                 .ordered(options.isOrdered())
-                .validateUris(options.isUriValidation())
                 .frame();
 
         Stream<JsonValue> result = resultMap.valuesToArray().stream();

@@ -114,7 +114,7 @@ public final class UriUtils {
 
     public static final boolean isAbsoluteUri(final String uri, final boolean validate) {
 
-        if (validate) {
+        if (!validate) {
             return uri.indexOf(":") != -1;
         }
         

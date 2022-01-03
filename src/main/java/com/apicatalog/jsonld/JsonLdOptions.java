@@ -151,7 +151,7 @@ public final class JsonLdOptions {
         this.numericId = false;
         this.contextCache = new LruCache<>(256);
         this.documentCache = null;
-        this.uriValidation = true;
+        this.uriValidation = false;
     }
 
     public JsonLdOptions(JsonLdOptions options) {
