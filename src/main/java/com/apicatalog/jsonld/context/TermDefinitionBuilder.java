@@ -249,7 +249,7 @@ public final class TermDefinitionBuilder {
                     && activeContext.inMode(JsonLdVersion.V1_0))
                     // 12.4.
                     || (Keywords.noneMatch(expandedTypeString, Keywords.ID, Keywords.JSON, Keywords.NONE, Keywords.VOCAB)
-                            && UriUtils.isNotAbsoluteUri(expandedTypeString))) {
+                            && UriUtils.isNotAbsoluteUri(expandedTypeString, activeContext.getOptions().isUriValidation()))) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING);
             }
 

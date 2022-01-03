@@ -157,8 +157,8 @@ public final class JsonLdToRdf {
 
                         final RdfResource rdfProperty;
                         
-                        if ((BlankNode.isWellFormed(property) && !produceGeneralizedRdf)) {
-                            rdfProperty = Rdf.createBlankNode(property);
+                        if (BlankNode.isWellFormed(property)) {
+                            rdfProperty = !produceGeneralizedRdf ? Rdf.createBlankNode(property) : null;
                             
                         } else if (UriUtils.isAbsoluteUri(property, uriValidation)) {
                             rdfProperty = Rdf.createIRI(property);
@@ -166,8 +166,9 @@ public final class JsonLdToRdf {
                         } else {
                             rdfProperty = null;
                         }
-                        
-                        if (rdfProperty != null) {                        
+
+                        if (rdfProperty != null) {
+
                             // 1.3.2.5.
                             for (JsonValue item : nodeMap.get(graphName, subject, property).asJsonArray()) {
     

@@ -115,7 +115,7 @@ public class JsonLdTestRunnerJunit {
         }
 
         if (testCase.expectErrorCode != null) {
-            write(testCase, result.getJsonContent().get(), null, null);
+            write(testCase, result.getJsonContent().orElse(null), null, null);
             fail("Expected error [" + testCase.expectErrorCode + "] but got " + result.getContentType() + "].");
             return false;
         }

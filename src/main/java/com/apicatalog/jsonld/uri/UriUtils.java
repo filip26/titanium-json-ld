@@ -94,7 +94,7 @@ public final class UriUtils {
     }
 
     public static final boolean isNotAbsoluteUri(final String uri, final boolean validate) {
-        return !isAbsoluteUri(uri);
+        return !isAbsoluteUri(uri, validate);
     }
 
     /**
@@ -114,6 +114,10 @@ public final class UriUtils {
 
     public static final boolean isAbsoluteUri(final String uri, final boolean validate) {
 
+        if (validate) {
+            return uri.indexOf(":") != -1;
+        }
+        
         try {
             return URI.create(uri).isAbsolute();
         } catch (IllegalArgumentException e) {
