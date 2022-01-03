@@ -226,10 +226,7 @@ final class Tokenizer {
 
             while (ch != '"' && ch != -1) {
 
-                if (ch == 0x22
-                     || ch == 0xa
-                     || ch == 0xd
-                        ) {
+                if (ch == 0xa || ch == 0xd) {
                     unexpected(ch);
                 }
 
@@ -350,7 +347,7 @@ final class Tokenizer {
 
             int ch = reader.read();
 
-            if (ch != ':' || ch == -1) {
+            if (ch != ':') {
                 unexpected(ch);
             }
 
