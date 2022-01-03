@@ -114,10 +114,6 @@ public final class UriUtils {
     }
 
     public static final boolean isAbsoluteUri(final String uri, final boolean validate) {
-//        System.out.println("............................ A");
-//        System.out.println("base: " + uri + ", " + validate);
-
-
         // if URI validation is disabled
         if (!validate) {
             // then validate just a scheme
