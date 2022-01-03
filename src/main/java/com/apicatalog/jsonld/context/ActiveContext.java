@@ -165,7 +165,7 @@ public final class ActiveContext {
     }
 
     public UriExpansion uriExpansion() {
-        return UriExpansion.with(this);
+        return UriExpansion.with(this).uriValidation(options.isUriValidation());
     }
 
     public ValueExpansion valueExpansion() {

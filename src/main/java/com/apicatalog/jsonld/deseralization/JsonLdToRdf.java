@@ -156,13 +156,13 @@ public final class JsonLdToRdf {
                     } else if (!Keywords.contains(property)) {
 
                         final RdfResource rdfProperty;
-                        
+
                         if (BlankNode.isWellFormed(property)) {
                             rdfProperty = !produceGeneralizedRdf ? Rdf.createBlankNode(property) : null;
-                            
+
                         } else if (UriUtils.isAbsoluteUri(property, uriValidation)) {
                             rdfProperty = Rdf.createIRI(property);
-                            
+
                         } else {
                             rdfProperty = null;
                         }
@@ -171,10 +171,10 @@ public final class JsonLdToRdf {
 
                             // 1.3.2.5.
                             for (JsonValue item : nodeMap.get(graphName, subject, property).asJsonArray()) {
-    
+
                                 // 1.3.2.5.1.
                                 final List<RdfTriple> listTriples = new ArrayList<>();
-    
+
                                 // 1.3.2.5.2.
                                 ObjectToRdf
                                         .with(item.asJsonObject(), listTriples, nodeMap)

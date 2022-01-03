@@ -51,7 +51,7 @@ final class ListToRdf {
         this.list = list;
         this.triples = triples;
         this.nodeMap = nodeMap;
-        
+
         // default values
         this.rdfDirection = null;
         this.uriValidation = true;

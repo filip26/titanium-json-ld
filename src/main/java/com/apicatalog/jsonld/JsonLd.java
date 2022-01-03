@@ -128,7 +128,7 @@ public final class JsonLd {
         assertJsonDocument(context, CONTEXT_PARAM_NAME);
 
         return new CompactionApi(
-                assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME), 
+                assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME),
                 context
                 );
     }

@@ -112,30 +112,38 @@ public final class UriUtils {
         }
     }
 
+    private static final boolean startsWithScheme(final String uri) {
+
+        if (uri == null
+                || uri.length() < 2 // a scheme must have at least one letter followed by ':'
+                || !Character.isLetter(uri.codePointAt(0)) // a scheme name must start with a letter
+                ) {
+            return false;
+        }
+
+        for (int i = 1; i < uri.length(); i++) {
+
+            if (
+                //  a scheme name must start with a letter followed by a letter/digit/+/-/.
+                Character.isLetterOrDigit(uri.codePointAt(i))
+                        || uri.charAt(i) == '-' || uri.charAt(i) == '+' || uri.charAt(i) == '.'
+                ) {
+                continue;
+            }
+
+            // a scheme name must be terminated by ';'
+            return uri.charAt(i) == ':';
+        }
+
+        return false;
+    }
+
     public static final boolean isAbsoluteUri(final String uri, final boolean validate) {
 
         // if URI validation is disabled
         if (!validate) {
-            
             // then validate just a scheme
-            for (int i = 0; i < uri.length(); i++) {
-
-                // a scheme name must start with a letter
-                if (i == 0 && Character.isLetter(uri.codePointAt(i))
-                        
-                    // followed by a letter/digit/+/-/. 
-                    || (i > 0 && (
-                            Character.isLetterOrDigit(uri.codePointAt(i))
-                            || uri.charAt(i) == '-' || uri.charAt(i) == '+' || uri.charAt(i) == '.'
-                        ))
-                    ) {
-                    continue;
-                }
-
-                // a scheme name must be terminated by ';'
-                return (i > 0 && uri.charAt(i) == ':');
-            }
-            return false;
+            return startsWithScheme(uri);
         }
 
         try {

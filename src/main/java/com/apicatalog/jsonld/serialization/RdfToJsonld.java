@@ -56,6 +56,7 @@ public final class RdfToJsonld {
     private RdfDirection rdfDirection;
     private boolean useNativeTypes;
     private boolean useRdfType;
+    private boolean uriValidation;
 
     private JsonLdVersion processingMode;
 
@@ -74,6 +75,7 @@ public final class RdfToJsonld {
         this.rdfDirection = null;
         this.useNativeTypes = false;
         this.useRdfType = false;
+        this.uriValidation = true;
     }
 
     public static final RdfToJsonld with(final RdfDataset dataset) {
@@ -260,7 +262,7 @@ public final class RdfToJsonld {
                     nodeId = ((JsonString)node.get(Keywords.ID)).getString();
 
                     // 6.4.3.5.
-                    if (UriUtils.isAbsoluteUri(nodeId)) {
+                    if (UriUtils.isAbsoluteUri(nodeId, uriValidation)) {
                         break;
                     }
                 }
@@ -429,5 +431,10 @@ public final class RdfToJsonld {
         private String subject;
         private String property;
         private JsonObject value;
+    }
+
+    public RdfToJsonld uriValidation(boolean uriValidation) {
+        this.uriValidation = uriValidation;
+        return this;
     }
 }

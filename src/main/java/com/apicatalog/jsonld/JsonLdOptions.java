@@ -116,7 +116,7 @@ public final class JsonLdOptions {
     private Cache<String, Document> documentCache;
 
     private boolean uriValidation;
-    
+
     public JsonLdOptions() {
         this(SchemeRouter.defaultInstance());
     }
@@ -451,23 +451,32 @@ public final class JsonLdOptions {
     }
 
     /**
-     * if disabled only URIs required for processing are parsed and validated. 
-     * An invalid URI may cause skipped records or an exception. 
-     * Enabled by default. 
-     *  
-     * @return true if validation is enabled
+     * if disabled only URIs required for processing are parsed and validated.
+     * Disabling URI validation might improve performance depending on the number of processed URIs.
+     * <p>
+     * <b>Warning:</b> Disabled validation could cause an invalid output.
+     * </p>
+     * <p>
+     * Enabled by default.
+     * </p>
      *
+     * @return true if validation is enabled
      */
     public boolean isUriValidation() {
         return uriValidation;
     }
 
     /**
-     * if disabled only URIs required for processing are parsed and validated. 
-     * An invalid URI may cause skipped records or an exception. 
-     *  
-     * @param enabled set <code>true</code> to enable validation
+     * if disabled only URIs required for processing are parsed and validated.
+     * Disabling URI validation might improve performance depending on the number of processed URIs.
+     * <p>
+     * <b>Warning:</b> Disabled validation could cause an invalid output.
+     * </p>
+     * <p>
+     * Enabled by default.
+     * </p>
      *
+     * @param enabled set <code>true</code> to enable validation
      */
     public void setUriValidation(boolean enabled) {
         this.uriValidation = enabled;
