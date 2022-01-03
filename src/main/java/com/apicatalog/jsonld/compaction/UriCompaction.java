@@ -36,7 +36,6 @@ import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.jsonld.uri.UriRelativizer;
-import com.apicatalog.jsonld.uri.UriUtils;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonString;
@@ -539,16 +538,18 @@ public final class UriCompaction {
         }
 
         // 9.
-        final URI uri = UriUtils.create(variable);
-
-        if (uri != null
-                && uri.isAbsolute()
-                && uri.getScheme() != null
-                && uri.getAuthority() == null
-                && activeContext.getTerm(uri.getScheme()).filter(TermDefinition::isPrefix).isPresent()
-            ) {
-                throw new JsonLdError(JsonLdErrorCode.IRI_CONFUSED_WITH_PREFIX);
-        }
+        try {
+            final URI uri = URI.create(variable);
+    
+            if (uri != null
+                    && uri.isAbsolute()
+                    && uri.getScheme() != null
+                    && uri.getAuthority() == null
+                    && activeContext.getTerm(uri.getScheme()).filter(TermDefinition::isPrefix).isPresent()
+                ) {
+                    throw new JsonLdError(JsonLdErrorCode.IRI_CONFUSED_WITH_PREFIX);
+            }
+        } catch (IllegalArgumentException e) { /* variable is not URI */ }
 
         // 10.
         if (!vocab && activeContext.getBaseUri() != null && !BlankNode.hasPrefix(variable)) {
