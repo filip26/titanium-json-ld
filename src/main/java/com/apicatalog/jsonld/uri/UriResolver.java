@@ -49,7 +49,7 @@ public final class UriResolver {
         }
 
         if (base == null) {
-            return relative != null ? relative.toString() : null;
+            return relative.toString();
         }
 
         final String[] components = resolveAsComponents(base, relative);
@@ -64,7 +64,7 @@ public final class UriResolver {
         }
 
         if (base == null) {
-            return relative != null ? UriUtils.create(relative) : null;
+            return UriUtils.create(relative);
         }
 
         return resolveAsUri(base, UriUtils.create(relative));
