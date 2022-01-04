@@ -176,7 +176,7 @@ public final class UriResolver {
     private static final String removeDotSegments(final String path) {
 
         if (UriUtils.isNotDefined(path)) {
-            return "";
+            return null;
         }
 
         String input = path;

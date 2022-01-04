@@ -148,7 +148,7 @@ public final class Framing {
 
                 if (!frame.contains(Keywords.GRAPH)) {
                     recurse = !Keywords.MERGED.equals(state.getGraphName());
-                    subframe = Frame.of(JsonValue.EMPTY_JSON_OBJECT);
+                    subframe = Frame.EMPTY;
 
                 // 4.5.2.
                 } else {
@@ -157,11 +157,10 @@ public final class Framing {
                     if (JsonUtils.isObject(frame.get(Keywords.GRAPH))
                             || JsonUtils.isArray(frame.get(Keywords.GRAPH))
                             ) {
-
                         subframe = Frame.of((JsonStructure)frame.get(Keywords.GRAPH));
 
                     } else {
-                        subframe = Frame.of(JsonValue.EMPTY_JSON_OBJECT);
+                        subframe = Frame.EMPTY;
                     }
                 }
 
@@ -233,22 +232,24 @@ public final class Framing {
                     // 4.7.3.1.
                     if (ListObject.isListObject(item)) {
 
-                            JsonValue listFrame = null;
+                            JsonValue listFrameValue = null;
 
                             if (frame.contains(property)
                                     && !JsonUtils.isEmptyArray(frame.get(property))
                                     && JsonUtils.isObject(frame.get(property).asJsonArray().get(0))
                                 ) {
-                                listFrame = frame.get(property).asJsonArray().get(0).asJsonObject().get(Keywords.LIST);
+                                listFrameValue = frame.get(property).asJsonArray().get(0).asJsonObject().get(Keywords.LIST);
                             }
 
-                            if (listFrame == null) {
-                                listFrame = Json.createObjectBuilder()
+                            if (listFrameValue == null) {
+                                listFrameValue = Json.createObjectBuilder()
                                         .add(Keywords.EMBED, "@".concat(embed.name().toLowerCase()))
                                         .add(Keywords.EXPLICIT, explicit)
                                         .add(Keywords.REQUIRE_ALL, requireAll)
                                         .build();
                             }
+
+                            final Frame listFrame = Frame.of((JsonStructure)listFrameValue);
 
                             final JsonArrayBuilder list = Json.createArrayBuilder();
 
@@ -266,7 +267,7 @@ public final class Framing {
                                     Framing.with(
                                                 listState,
                                                 Arrays.asList(listItem.asJsonObject().getString(Keywords.ID)),
-                                                Frame.of((JsonStructure)listFrame),
+                                                listFrame,
                                                 listResult,
                                                 Keywords.LIST)
                                             .ordered(ordered)
@@ -356,7 +357,7 @@ public final class Framing {
 
                     for (final String reverseProperty :  reverseObject.asJsonObject().keySet()) {
 
-                        final JsonValue subframe = reverseObject.asJsonObject().get(reverseProperty);
+                        final Frame subframe = Frame.of((JsonStructure)reverseObject.asJsonObject().get(reverseProperty));
 
                         for (final String subjectProperty : state.getGraphMap().get(state.getGraphName()).map(Map::keySet).orElseGet(() -> Collections.emptySet())) {
 
@@ -379,7 +380,7 @@ public final class Framing {
                                 Framing.with(
                                             reverseState,
                                             Arrays.asList(subjectProperty),
-                                            Frame.of((JsonStructure)subframe),
+                                            subframe,
                                             reverseResult,
                                             null)
                                         .ordered(ordered)

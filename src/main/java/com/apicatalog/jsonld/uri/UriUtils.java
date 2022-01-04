@@ -154,7 +154,7 @@ public final class UriUtils {
                 continue;
             }
 
-            // a scheme name must be terminated by ';'
+            // a scheme name must be terminated by ':'
             return uri.charAt(i) == ':';
         }
         return false;
