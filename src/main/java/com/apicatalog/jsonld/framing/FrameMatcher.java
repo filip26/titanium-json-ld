@@ -184,11 +184,12 @@ public final class FrameMatcher {
 
                         if (ValueObject.isValueObject(listValue.asJsonArray().get(0))) {
 
+                            final Frame frame = Frame.of((JsonStructure)listValue);
                             boolean match = false;
 
                             for (final JsonValue value : JsonUtils.toCollection(nodeListValue)) {
 
-                                match = Frame.of((JsonStructure)listValue).matchValue(value);
+                                match = frame.matchValue(value);
                                 if (match) {
                                     break;
                                 }
@@ -204,10 +205,12 @@ public final class FrameMatcher {
 
                         } else if (NodeObject.isNodeObject(listValue.asJsonArray().get(0)) || NodeObject.isNodeReference(listValue.asJsonArray().get(0))) {
 
+                            final Frame frame = Frame.of((JsonStructure)listValue);
                             boolean match = false;
+
                             for (final JsonValue value : JsonUtils.toCollection(nodeListValue)) {
 
-                                match = Frame.of((JsonStructure)listValue).matchNode(state, value, requireAll);
+                                match = frame.matchNode(state, value, requireAll);
 
                                 if (match) {
                                     break;

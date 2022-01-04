@@ -39,6 +39,8 @@ import jakarta.json.JsonValue;
 
 public final class Frame {
 
+    public static final Frame EMPTY = new Frame(JsonValue.EMPTY_JSON_OBJECT);
+
     private final JsonObject frameObject;
 
     private Frame(final JsonObject frameObject) {

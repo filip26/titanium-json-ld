@@ -540,7 +540,7 @@ public final class UriCompaction {
         // 9.
         try {
             final URI uri = URI.create(variable);
-    
+
             if (uri != null
                     && uri.isAbsolute()
                     && uri.getScheme() != null
