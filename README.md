@@ -49,7 +49,7 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 
 ## CLI
 
-[JSON-LD-CLI](https://github.com/filip26/json-ld-cli) is a native command line utility for Linux, Mac, Windows - work in progress
+[JSON-LD-CLI](https://github.com/filip26/json-ld-cli) is a native command line utility for Ubuntu, Mac, Windows
 
 ## Extensions
 
