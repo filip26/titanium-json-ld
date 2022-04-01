@@ -19,6 +19,7 @@ The goals of Titanium are:
 
 ## Table of Contents  
 - [Conformance](#conformance)  
+- [CLI](#cli)
 - [Extensions](#extensions)  
 - [Usage](#usage)
   * [Installation](#installation)
@@ -45,6 +46,10 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 | [Remote Document and Context Retrieval](https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval) | 18 | 17 | 94.4% | <ul><li>[t0013 - HTML document](https://w3c.github.io/json-ld-api/tests/remote-doc-manifest#t0013)</li></ul> |
 
 See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld-api/reports/#subj_Titanium_JSON_LD_Java) for more details.
+
+## CLI
+
+[JSON-LD-CLI](https://github.com/filip26/json-ld-cli) is a native command line utility for Linux, Mac, Windows - work in progress
 
 ## Extensions
 
