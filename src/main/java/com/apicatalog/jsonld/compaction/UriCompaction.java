@@ -118,7 +118,7 @@ public final class UriCompaction {
             }
 
             // 4.2.
-            if (JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.PRESERVE)) {
+            if (JsonUtils.containsKey(value, Keywords.PRESERVE)) {
 
                 JsonValue preserve = value.asJsonObject().get(Keywords.PRESERVE);
 
@@ -135,10 +135,7 @@ public final class UriCompaction {
             String typeLanguageValue = Keywords.NULL;
 
             // 4.5.
-            if (JsonUtils.isObject(value)
-                    && value.asJsonObject().containsKey(Keywords.INDEX)
-                    && !GraphObject.isGraphObject(value)
-                    ) {
+            if (JsonUtils.containsKey(value, Keywords.INDEX) && !GraphObject.isGraphObject(value)) {
 
                 containers.add(Keywords.INDEX);
                 containers.add(Keywords.INDEX.concat(Keywords.SET));
@@ -176,8 +173,7 @@ public final class UriCompaction {
                     String itemType = Keywords.NONE;
 
                     // 4.7.4.2.
-                    if (JsonUtils.isObject(item)
-                            && item.asJsonObject().containsKey(Keywords.VALUE)) {
+                    if (JsonUtils.containsKey(item, Keywords.VALUE)) {
 
                         // 4.7.4.2.1.
                         if (item.asJsonObject().containsKey(Keywords.DIRECTION)) {
@@ -216,8 +212,7 @@ public final class UriCompaction {
 
                     // 4.7.4.5.
                     } else if (!Objects.equals(itemLanguage, commonLanguage)
-                            && JsonUtils.isObject(item)
-                            && item.asJsonObject().containsKey(Keywords.VALUE)
+                            && JsonUtils.containsKey(item, Keywords.VALUE)
                             ) {
                         commonLanguage = Keywords.NONE;
                     }
@@ -382,8 +377,7 @@ public final class UriCompaction {
 
             // 4.12.
             if (!activeContext.inMode(JsonLdVersion.V1_0)
-                    && JsonUtils.isObject(value)
-                    && value.asJsonObject().containsKey(Keywords.VALUE)
+                    && JsonUtils.containsKey(value, Keywords.VALUE)
                     && value.asJsonObject().size() == 1
                     ) {
 
@@ -406,8 +400,7 @@ public final class UriCompaction {
 
             // 4.16.
             if ((Keywords.REVERSE.equals(typeLanguageValue) || Keywords.ID.equals(typeLanguageValue))
-                   && JsonUtils.isObject(value)
-                   && value.asJsonObject().containsKey(Keywords.ID)
+                   && JsonUtils.containsKey(value, Keywords.ID)
                    ) {
 
                 final JsonValue idValue = value.asJsonObject().get(Keywords.ID);

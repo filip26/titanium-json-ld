@@ -59,6 +59,12 @@ public final class JsonUtils {
 
         return false;
     }
+    
+    public static final boolean containsKey(JsonValue object, String key) {
+        return object != null 
+                && ValueType.OBJECT.equals(object.getValueType())
+                && object.asJsonObject().containsKey(key);
+    }
 
     public static final boolean isScalar(final JsonValue value) {
         return value != null

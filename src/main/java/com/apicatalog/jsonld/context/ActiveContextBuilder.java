@@ -562,7 +562,7 @@ public final class ActiveContextBuilder {
         importedContext = importedContext.asJsonObject().get(Keywords.CONTEXT);
 
         // remote @base from a remote context
-        if (JsonUtils.isObject(importedContext) && importedContext.asJsonObject().containsKey(Keywords.BASE)) {
+        if (JsonUtils.containsKey(importedContext, Keywords.BASE)) {
             importedContext = Json.createObjectBuilder(importedContext.asJsonObject()).remove(Keywords.BASE).build();
         }
 

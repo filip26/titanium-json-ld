@@ -187,9 +187,7 @@ public final class Frame {
 
             return ((typeArray.size() == 1
                         && (JsonUtils.isEmptyObject(typeArray.get(0))
-                            || (JsonUtils.isObject(typeArray.get(0))
-                                    && typeArray.get(0).asJsonObject().containsKey(Keywords.DEFAULT)
-                                    )
+                            || (JsonUtils.containsKey(typeArray.get(0), Keywords.DEFAULT))
                             )
                     )
                     || typeArray

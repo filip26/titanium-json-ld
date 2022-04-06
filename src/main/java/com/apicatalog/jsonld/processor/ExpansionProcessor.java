@@ -148,9 +148,9 @@ public final class ExpansionProcessor {
 
           if (expandedContext.asJsonArray().size() == 1) {
 
-              JsonValue value = expandedContext.asJsonArray().iterator().next();
+              final JsonValue value = expandedContext.asJsonArray().iterator().next();
 
-              if (JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.CONTEXT)) {
+              if (JsonUtils.containsKey(value, Keywords.CONTEXT)) {
 
                   return activeContext
                           .newContext()
@@ -162,7 +162,7 @@ public final class ExpansionProcessor {
 
           return activeContext.newContext().create(expandedContext, baseUrl);
 
-      } else if (JsonUtils.isObject(expandedContext) && expandedContext.asJsonObject().containsKey(Keywords.CONTEXT)) {
+      } else if (JsonUtils.containsKey(expandedContext, Keywords.CONTEXT)) {
 
           return activeContext
                   .newContext()

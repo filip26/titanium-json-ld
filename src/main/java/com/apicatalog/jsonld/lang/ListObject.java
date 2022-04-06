@@ -38,8 +38,7 @@ public final class ListObject {
      * @return <code>true</code> if the provided value is valid list object
      */
     public static final boolean isListObject(JsonValue value) {
-        return JsonUtils.isObject(value)
-                    && value.asJsonObject().containsKey(Keywords.LIST)
+        return JsonUtils.containsKey(value, Keywords.LIST)
                     && (value.asJsonObject().size() == 1
                             || (value.asJsonObject().size() == 2
                                     && value.asJsonObject().containsKey(Keywords.INDEX)
