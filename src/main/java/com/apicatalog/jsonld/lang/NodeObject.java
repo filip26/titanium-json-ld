@@ -52,9 +52,7 @@ public final class NodeObject {
     }
 
     public static final boolean isNodeReference(JsonValue value) {
-        return JsonUtils.isObject(value)
-                    && value.asJsonObject().size() == 1
-                    && value.asJsonObject().containsKey(Keywords.ID);
+        return JsonUtils.containsKey(value, Keywords.ID) && value.asJsonObject().size() == 1;
     }
 
     // Extension: JSON-LD-STAR (Experimental)

@@ -512,8 +512,7 @@ public final class Compaction {
                         compactedItem = Json.createObjectBuilder().add(key, compactedItem).build();
 
                         // 12.8.7.2.2.
-                        if (JsonUtils.isObject(expandedItem)
-                                && expandedItem.asJsonObject().containsKey(Keywords.INDEX)) {
+                        if (JsonUtils.containsKey(expandedItem, Keywords.INDEX)) {
 
                             String indexKey = activeContext.uriCompaction().vocab(true).compact(Keywords.INDEX);
 
@@ -700,7 +699,7 @@ public final class Compaction {
                                                 .compact(activeContext.uriExpansion().expand(indexKey));
 
                         // 12.8.9.6.2.
-                        if (JsonUtils.isObject(compactedItem) && compactedItem.asJsonObject().containsKey(containerKey)) {
+                        if (JsonUtils.containsKey(compactedItem, containerKey)) {
 
                             final JsonValue containerValue = compactedItem.asJsonObject().get(containerKey);
 
@@ -740,8 +739,7 @@ public final class Compaction {
                     // 12.8.9.7.
                     } else if (container.contains(Keywords.ID)) {
 
-                        if (JsonUtils.isObject(compactedItem)
-                                && compactedItem.asJsonObject().containsKey(containerKey)) {
+                        if (JsonUtils.containsKey(compactedItem, containerKey)) {
 
                             mapKey = compactedItem.asJsonObject().getString(containerKey);
 
@@ -752,8 +750,7 @@ public final class Compaction {
                     } else if (container.contains(Keywords.TYPE)) {
 
                         // 12.8.9.8.1.
-                        if (JsonUtils.isObject(compactedItem)
-                                && compactedItem.asJsonObject().containsKey(containerKey)) {
+                        if (JsonUtils.containsKey(compactedItem, containerKey)) {
 
                             final JsonValue compactedKeyValue = compactedItem.asJsonObject().get(containerKey);
 
