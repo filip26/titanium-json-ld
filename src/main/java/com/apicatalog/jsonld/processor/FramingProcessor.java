@@ -61,6 +61,14 @@ public final class FramingProcessor {
     private FramingProcessor() {
     }
 
+    public static final JsonObject frame(final URI documentUri, final Document frame, final JsonLdOptions options) throws JsonLdError {
+        return null;
+    }
+    
+    public static final JsonObject frame(final Document input, final URI frameUri, final JsonLdOptions options) throws JsonLdError {
+        return null;
+    }
+    
     public static final JsonObject frame(final Document input, final Document frame, final JsonLdOptions options) throws JsonLdError {
 
         if (frame == null) {

@@ -272,6 +272,50 @@ public final class JsonLd {
         return new FramingApi(document, frame);
     }
 
+    public static final FramingApi frame(final Document document, final String frameLocation) {
+
+        assertJsonDocument(document, DOCUMENT_PARAM_NAME);
+
+        return new FramingApi(document, assertLocation(frameLocation, FRAME_LOCATION_PARAM_NAME));
+    }
+
+    public static final FramingApi frame(final Document document, final URI frameUri) {
+
+        assertJsonDocument(document, DOCUMENT_PARAM_NAME);
+        assertUri(frameUri, FRAME_URI_PARAM_NAME);
+
+        return new FramingApi(document, frameUri);
+    }
+    
+    public static final FramingApi frame(final String documentLocation, final Document frame) {
+
+        assertJsonDocument(frame, FRAME_PARAM_NAME);
+
+        return new FramingApi(assertLocation(documentLocation, DOCUMENT_URI_PARAM_NAME), frame);
+    }
+
+    public static final FramingApi frame(final String documentLocation, final URI frameUri) {
+
+        assertUri(frameUri, FRAME_URI_PARAM_NAME);
+
+        return new FramingApi(assertLocation(documentLocation, DOCUMENT_URI_PARAM_NAME), frameUri);
+    }
+
+    public static final FramingApi frame(final URI documentUri, final Document frame) {
+
+        assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
+        assertJsonDocument(frame, FRAME_PARAM_NAME);
+
+        return new FramingApi(documentUri, frame);
+    }
+
+    public static final FramingApi frame(final URI documentUri, final String frameLocation) {
+
+        assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
+
+        return new FramingApi(documentUri, assertLocation(frameLocation, FRAME_LOCATION_PARAM_NAME));
+    }
+
     /**
      * Transforms the given input into {@link RdfDataset}.
      *

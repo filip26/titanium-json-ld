@@ -53,12 +53,12 @@ class FramingApiNegativeTest {
 
     @Test
     void test5() {
-        assertThrows(IllegalArgumentException.class, () -> JsonLd.frame("https://example.org", null));
+        assertThrows(IllegalArgumentException.class, () -> JsonLd.frame("https://example.org", (String)null));
     }
 
     @Test
     void test6() {
-        assertThrows(IllegalArgumentException.class, () -> JsonLd.frame(null, "http://example.com"));
+        assertThrows(IllegalArgumentException.class, () -> JsonLd.frame((String)null, "http://example.com"));
     }
 
     @Test
@@ -94,13 +94,13 @@ class FramingApiNegativeTest {
     @Test
     void test13() {
         final URI uri = URI.create("http://example.org");
-        assertThrows(IllegalArgumentException.class, () -> JsonLd.frame(uri, null));
+        assertThrows(IllegalArgumentException.class, () -> JsonLd.frame(uri, (URI)null));
     }
 
     @Test
     void test14() {
         final URI uri = URI.create("http://example.org");
-        assertThrows(IllegalArgumentException.class, () -> JsonLd.frame(null, uri));
+        assertThrows(IllegalArgumentException.class, () -> JsonLd.frame((URI)null, uri));
     }
 
     @Test
