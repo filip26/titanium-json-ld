@@ -116,11 +116,6 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
     }
 
     @Override
-    public FramingApi base(String baseUri) {
-        return base(UriUtils.create(baseUri));
-    }
-
-    @Override
     public FramingApi loader(DocumentLoader loader) {
         options.setDocumentLoader(loader);
         return this;
