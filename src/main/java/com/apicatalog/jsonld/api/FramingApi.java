@@ -57,6 +57,22 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
         this.options = new JsonLdOptions();
     }
 
+    public FramingApi(Document document, URI frameUri) {
+        this.document = document;
+        this.documentUri = null;
+        this.frame = null;
+        this.frameUri = frameUri;
+        this.options = new JsonLdOptions();
+    }
+
+    public FramingApi(URI documentUri, Document frame) {
+        this.document = null;
+        this.documentUri = documentUri;
+        this.frame = frame;
+        this.frameUri = null;
+        this.options = new JsonLdOptions();
+    }
+
     @Override
     public FramingApi options(JsonLdOptions options) {
 
@@ -175,11 +191,22 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
      * @throws JsonLdError
      */
     public JsonObject get() throws JsonLdError {
-        if (documentUri != null && frameUri != null) {
-            return FramingProcessor.frame(documentUri, frameUri, options);
+        if (document != null) {
+            if (frame != null) {
+                return FramingProcessor.frame(document, frame, options);                
+            }
+            if (frameUri != null) {
+                return FramingProcessor.frame(document, frameUri, options);
+            }
         }
-        if (document != null && frame != null) {
-            return FramingProcessor.frame(document, frame, options);
+        
+        if (documentUri != null) {
+            if (frame != null) {
+                return FramingProcessor.frame(documentUri, frame, options);                
+            }
+            if (frameUri != null) {
+                return FramingProcessor.frame(documentUri, frameUri, options);
+            }
         }
 
         throw new IllegalStateException();

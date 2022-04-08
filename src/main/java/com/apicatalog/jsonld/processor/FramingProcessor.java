@@ -61,6 +61,37 @@ public final class FramingProcessor {
     private FramingProcessor() {
     }
 
+    public static final JsonObject frame(final URI input, final Document frame, final JsonLdOptions options) throws JsonLdError {
+        if (options.getDocumentLoader() == null) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
+        }
+
+        final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
+        loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
+
+        final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
+
+        if (remoteDocument == null) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Returned document is null [" + input + "].");
+        }
+
+        return frame(remoteDocument, frame, options);
+    }
+    
+    public static final JsonObject frame(final Document input, final URI frameUri, final JsonLdOptions options) throws JsonLdError {
+        if (options.getDocumentLoader() == null) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + frameUri + "].");
+        }
+
+        final Document frameDocument = options.getDocumentLoader().loadDocument(frameUri, new DocumentLoaderOptions());
+
+        if (frameDocument == null) {
+            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Returned frame is null [" + frameUri + "] is null.");
+        }
+
+        return frame(input, frameDocument, options);
+    }
+    
     public static final JsonObject frame(final Document input, final Document frame, final JsonLdOptions options) throws JsonLdError {
 
         if (frame == null) {

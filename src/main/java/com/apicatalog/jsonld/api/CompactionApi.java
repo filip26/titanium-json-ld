@@ -61,6 +61,14 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
         this.options = new JsonLdOptions();
     }
 
+    public CompactionApi(Document document, URI contextUri) {
+        this.document = document;
+        this.documentUri = null;
+        this.context = null;
+        this.contextUri = contextUri;
+        this.options = new JsonLdOptions();
+    }
+
     @Override
     public CompactionApi options(JsonLdOptions options) {
 
@@ -158,15 +166,25 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
      * @throws JsonLdError
      */
     public JsonObject get() throws JsonLdError {
-        if (documentUri != null && contextUri != null)  {
-            return CompactionProcessor.compact(documentUri, contextUri, options);
+
+        if (document != null) {
+            if (context != null)  {
+                return CompactionProcessor.compact(document, context, options);
+            }
+            if (contextUri != null) {
+                return CompactionProcessor.compact(document, contextUri, options);
+            }
         }
-        if (documentUri != null && context != null)  {
-            return CompactionProcessor.compact(documentUri, context, options);
+
+        if (documentUri != null) {
+            if (context != null)  {
+                return CompactionProcessor.compact(documentUri, context, options);
+            }
+            if (contextUri != null)  {
+                return CompactionProcessor.compact(documentUri, contextUri, options);
+            }
         }
-        if (document != null && context != null)  {
-            return CompactionProcessor.compact(document, context, options);
-        }
+
         throw new IllegalStateException();
     }
 }
