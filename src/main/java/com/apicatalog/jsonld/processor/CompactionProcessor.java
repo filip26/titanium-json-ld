@@ -84,7 +84,7 @@ public final class CompactionProcessor {
         final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions());
 
         if (contextDocument == null) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Context[" + context + "] is null.");
+            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Returned context is null [" + context + "] is null.");
         }
 
         return compact(input, contextDocument, options);
