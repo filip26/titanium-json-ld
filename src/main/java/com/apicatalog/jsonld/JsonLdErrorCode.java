@@ -341,7 +341,7 @@ public enum JsonLdErrorCode {
         messages.put(INVALID_VOCAB_MAPPING, "An invalid vocabulary mapping has been detected");
         messages.put(IRI_CONFUSED_WITH_PREFIX, "When compacting an IRI would result in an IRI which could be confused with a compact IRI");
         messages.put(KEYWORD_REDEFINITION, "A keyword redefinition has been detected");
-        messages.put(LOADING_DOCUMENT_FAILED, "The document could not be loaded or parsed as JSON");
+        messages.put(LOADING_DOCUMENT_FAILED, "The document could not be loaded or parsed");
         messages.put(LOADING_REMOTE_CONTEXT_FAILED, "There was a problem encountered loading a remote context");
         messages.put(MULTIPLE_CONTEXT_LINK_HEADERS, "Multiple HTTP Link Headers [RFC8288] using the http://www.w3.org/ns/json-ld#context link relation have been detected");
         messages.put(PROCESSING_MODE_CONFLICT, "An attempt was made to change the processing mode which is incompatible with the previous specified version");
