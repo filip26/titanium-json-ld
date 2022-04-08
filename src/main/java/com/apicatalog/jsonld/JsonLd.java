@@ -332,7 +332,7 @@ public final class JsonLd {
     /**
      *  Frames the remote input using given local frame.
      *
-     * @param frameLocation {@code IRI} referencing JSON-LD frame
+     * @param documentLocation {@code IRI} referencing JSON-LD document to frame
      * @param frame JSON-LD definition
      * @return {@link FramingApi} allowing to set additional parameters
      */
@@ -346,7 +346,7 @@ public final class JsonLd {
     /**
      *  Frames the remote input using given remote frame.
      *
-     * @param frameLocation {@code IRI} referencing JSON-LD frame
+     * @param documentLocation {@code IRI} referencing JSON-LD document to frame
      * @param frameUri {@code URI} referencing JSON-LD frame
      * @return {@link FramingApi} allowing to set additional parameters
      */
