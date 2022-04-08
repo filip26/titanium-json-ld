@@ -163,6 +163,13 @@ public final class JsonLd {
         return new CompactionApi(document, context);
     }
 
+    /**
+     * Compacts {@link Document} document using the context.
+     *
+     * @param document to compact
+     * @param contextLocation {@code IRI} referencing the context to use when compacting the document
+     * @return {@link CompactionApi} allowing to set additional parameters
+     */
     public static final CompactionApi compact(final Document document, final String contextLocation) {
 
         assertJsonDocument(document, DOCUMENT_PARAM_NAME);
@@ -170,6 +177,13 @@ public final class JsonLd {
         return compact(document, assertLocation(contextLocation, "contextLocation"));
     }
 
+    /**
+     * Compacts {@link Document} document using the context.
+     *
+     * @param document to compact
+     * @param contextUri {@link URI} referencing the context to use when compacting the document
+     * @return {@link CompactionApi} allowing to set additional parameters
+     */
     public static final CompactionApi compact(final Document document, final URI contextUri) {
 
         assertJsonDocument(document, DOCUMENT_PARAM_NAME);
@@ -178,6 +192,13 @@ public final class JsonLd {
         return new CompactionApi(document, contextUri);
     }
 
+    /**
+     * Compacts {@link Document} document using the context.
+     *
+     * @param documentLocation {@code IRI} referencing JSON-LD document to compact
+     * @param contextUri {@link URI} referencing the context to use when compacting the document
+     * @return {@link CompactionApi} allowing to set additional parameters
+     */
     public static final CompactionApi compact(final String documentLocation, final URI contextUri) {
 
         assertUri(contextUri, "contextUri");
@@ -185,6 +206,13 @@ public final class JsonLd {
         return new CompactionApi(assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME), contextUri);
     }
 
+    /**
+     * Compacts {@link Document} document using the context.
+     *
+     * @param documentUri {@code URI} referencing JSON-LD document to compact
+     * @param contextLocation {@code IRI} referencing the context to use when compacting the document
+     * @return {@link CompactionApi} allowing to set additional parameters
+     */
     public static final CompactionApi compact(final URI documentUri, final String contextLocation) {
 
         assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
@@ -229,7 +257,7 @@ public final class JsonLd {
     }
 
     /**
-     *  Frames the given input using frame.
+     *  Frames the given remote input using remote frame.
      *
      * @param documentUri {@code URI} referencing JSON-LD document to frame
      * @param frameUri {@code URI} referencing JSON-LD frame
@@ -244,7 +272,7 @@ public final class JsonLd {
     }
 
     /**
-     *  Frames the given input using frame.
+     *  Frames the given remote input using remote frame.
      *
      * @param documentLocation {@code IRI} referencing JSON-LD document to frame
      * @param frameLocation {@code IRI} referencing JSON-LD frame
@@ -258,7 +286,7 @@ public final class JsonLd {
     }
 
     /**
-     *  Frames the remote input using given remote frame.
+     *  Frames the local document using given local frame.
      *
      * @param document to frame
      * @param frame JSON-LD definition
@@ -272,6 +300,13 @@ public final class JsonLd {
         return new FramingApi(document, frame);
     }
 
+    /**
+     *  Frames the local document using given remote frame.
+     *
+     * @param document to frame
+     * @param frameLocation {@code IRI} referencing JSON-LD frame
+     * @return {@link FramingApi} allowing to set additional parameters
+     */
     public static final FramingApi frame(final Document document, final String frameLocation) {
 
         assertJsonDocument(document, DOCUMENT_PARAM_NAME);
@@ -279,6 +314,13 @@ public final class JsonLd {
         return new FramingApi(document, assertLocation(frameLocation, FRAME_LOCATION_PARAM_NAME));
     }
 
+    /**
+     *  Frames the local document using given remote frame.
+     *
+     * @param document to frame
+     * @param frameUri {@code URI} referencing JSON-LD frame
+     * @return {@link FramingApi} allowing to set additional parameters
+     */
     public static final FramingApi frame(final Document document, final URI frameUri) {
 
         assertJsonDocument(document, DOCUMENT_PARAM_NAME);
@@ -287,6 +329,13 @@ public final class JsonLd {
         return new FramingApi(document, frameUri);
     }
     
+    /**
+     *  Frames the remote input using given local frame.
+     *
+     * @param frameLocation {@code IRI} referencing JSON-LD frame
+     * @param frame JSON-LD definition
+     * @return {@link FramingApi} allowing to set additional parameters
+     */
     public static final FramingApi frame(final String documentLocation, final Document frame) {
 
         assertJsonDocument(frame, FRAME_PARAM_NAME);
@@ -294,6 +343,13 @@ public final class JsonLd {
         return new FramingApi(assertLocation(documentLocation, DOCUMENT_URI_PARAM_NAME), frame);
     }
 
+    /**
+     *  Frames the remote input using given remote frame.
+     *
+     * @param frameLocation {@code IRI} referencing JSON-LD frame
+     * @param frameUri {@code URI} referencing JSON-LD frame
+     * @return {@link FramingApi} allowing to set additional parameters
+     */
     public static final FramingApi frame(final String documentLocation, final URI frameUri) {
 
         assertUri(frameUri, FRAME_URI_PARAM_NAME);
@@ -301,6 +357,13 @@ public final class JsonLd {
         return new FramingApi(assertLocation(documentLocation, DOCUMENT_URI_PARAM_NAME), frameUri);
     }
 
+    /**
+     *  Frames the remote input using given local frame.
+     *
+     * @param documentUri {@code URI} referencing JSON-LD document to frame
+     * @param frame JSON-LD definition
+     * @return {@link FramingApi} allowing to set additional parameters
+     */
     public static final FramingApi frame(final URI documentUri, final Document frame) {
 
         assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
@@ -309,6 +372,13 @@ public final class JsonLd {
         return new FramingApi(documentUri, frame);
     }
 
+    /**
+     *  Frames the remote input using given remote frame.
+     *
+     * @param documentUri {@code URI} referencing JSON-LD document to frame
+     * @param frameLocation {@code IRI} referencing JSON-LD frame
+     * @return {@link FramingApi} allowing to set additional parameters
+     */
     public static final FramingApi frame(final URI documentUri, final String frameLocation) {
 
         assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
