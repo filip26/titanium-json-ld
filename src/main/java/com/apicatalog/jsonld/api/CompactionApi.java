@@ -23,7 +23,6 @@ import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.CompactionProcessor;
-import com.apicatalog.jsonld.uri.UriUtils;
 
 import jakarta.json.JsonObject;
 
@@ -84,12 +83,6 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
         options.setBase(baseUri);
         return this;
     }
-
-    @Override
-    public CompactionApi base(String baseUri) {
-        return base(baseUri != null ? UriUtils.create(baseUri) : null);
-    }
-
 
     /**
      * If set to <code>true</code>, the processor replaces arrays with just one

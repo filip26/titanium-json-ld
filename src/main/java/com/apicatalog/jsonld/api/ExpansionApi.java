@@ -20,7 +20,6 @@ import java.net.URI;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdVersion;
-import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.DocumentLoader;
@@ -107,23 +106,6 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
     public ExpansionApi base(URI baseUri) {
         options.setBase(baseUri);
         return this;
-    }
-
-    @Override
-    public ExpansionApi base(String baseLocation) {
-
-        URI baseUri = null;
-
-        if (StringUtils.isNotBlank(baseLocation)) {
-
-            baseUri = UriUtils.create(baseLocation);
-
-            if (baseUri == null) {
-                throw new IllegalArgumentException("Base location must be valid URI or null but is [" + baseLocation + "].");
-            }
-        }
-
-        return base(baseUri);
     }
 
     @Override
