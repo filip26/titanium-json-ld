@@ -45,7 +45,7 @@ public final class CompactionProcessor {
     public static final JsonObject compact(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError {
 
         if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + context + "].");
         }
 
         final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions());
@@ -78,7 +78,7 @@ public final class CompactionProcessor {
     public static final JsonObject compact(final Document input, final URI context, final JsonLdOptions options) throws JsonLdError {
 
         if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + context + "].");
         }
 
         final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions());
