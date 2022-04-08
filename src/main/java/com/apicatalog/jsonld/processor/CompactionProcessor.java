@@ -75,6 +75,21 @@ public final class CompactionProcessor {
         return compact(remoteDocument, context, options);
     }
 
+    public static final JsonObject compact(final Document input, final URI context, final JsonLdOptions options) throws JsonLdError {
+
+        if (options.getDocumentLoader() == null) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
+        }
+
+        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions());
+
+        if (contextDocument == null) {
+            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Context[" + context + "] is null.");
+        }
+
+        return compact(input, contextDocument, options);
+    }
+
     public static final JsonObject compact(final Document input, final Document context, final JsonLdOptions options) throws JsonLdError {
 
         // 4.
