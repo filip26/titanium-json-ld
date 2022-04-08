@@ -178,6 +178,20 @@ public final class JsonLd {
         return new CompactionApi(document, contextUri);
     }
 
+    public static final CompactionApi compact(final String documentLocation, final URI contextUri) {
+
+        assertUri(contextUri, "contextUri");
+
+        return new CompactionApi(assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME), contextUri);
+    }
+
+    public static final CompactionApi compact(final URI documentUri, final String contextLocation) {
+
+        assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
+
+        return new CompactionApi(documentUri, assertLocation(contextLocation, "contextLocation"));
+    }
+
     /**
      * Flattens the given input and optionally compacts it using context.
      *
