@@ -9,7 +9,7 @@ The goals of Titanium are:
   - only `jakarta.json-api` is required
 - simple to use
 
-![Java 11 CI with Maven](https://github.com/filip26/titanium-json-ld/workflows/Java%20CI%20with%20Maven/badge.svg)
+[![Java 11 CI with Maven](https://github.com/filip26/titanium-json-ld/actions/workflows/java11-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java11-build.yml)
 [![Android (JDK8) CI with Maven](https://github.com/filip26/titanium-json-ld/actions/workflows/android-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/android-build.yml)
 [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/filip26/titanium-json-ld.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/filip26/titanium-json-ld/context:java)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=filip26_titanium-json-ld&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=filip26_titanium-json-ld)
