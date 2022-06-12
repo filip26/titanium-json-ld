@@ -9,7 +9,8 @@ The goals of Titanium are:
   - only `jakarta.json-api` is required
 - simple to use
 
-![Build](https://github.com/filip26/titanium-json-ld/workflows/Java%20CI%20with%20Maven/badge.svg)
+![Java 11 CI with Maven](https://github.com/filip26/titanium-json-ld/workflows/Java%20CI%20with%20Maven/badge.svg)
+[![Android (JDK8) CI with Maven](https://github.com/filip26/titanium-json-ld/actions/workflows/android-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/android-build.yml)
 [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/filip26/titanium-json-ld.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/filip26/titanium-json-ld/context:java)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=filip26_titanium-json-ld&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=filip26_titanium-json-ld)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/c530c6b43b0243c08ce81521c5b4cf6a)](https://www.codacy.com/manual/filip26/titanium-json-ld?utm_source=github.com&utm_medium=referral&utm_content=filip26/titanium-json-ld&utm_campaign=Badge_Coverage)
