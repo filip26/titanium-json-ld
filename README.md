@@ -65,11 +65,23 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 
 Maven
 
+
 ```xml
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium-json-ld</artifactId>
-    <version>1.3.0</version>
+    <version>1.3.1</version>
+</dependency>
+
+```
+or
+
+```xml
+<!-- Android (JRE8) Compatible -->
+<dependency>
+    <groupId>com.apicatalog</groupId>
+    <artifactId>titanium-json-ld-jre8</artifactId>
+    <version>1.3.1</version>
 </dependency>
 
 ```
@@ -79,12 +91,6 @@ Gradle
 ```gradle
 compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '1.3.0'
 ```
-<!--- TODO
-add the 'android' classifier when building on android:
-```gradle
-compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '1.0.0', classifier: 'android'
-```
--->
 
 #### JSON-P Provider
 
