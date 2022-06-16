@@ -17,8 +17,6 @@
         A JSON-LD 1.1 Processor &amp; API
     </description>
     
-    <url>https://github.com/filip26/titanium-json-ld</url>
-    
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -31,12 +29,6 @@
         <url>https://github.com/filip26/titanium-json-ld/issues</url>
     </issueManagement>
     
-    <scm>
-        <connection>scm:git:git://github.com/filip26/titanium-json-ld.git</connection>
-        <developerConnection>scm:git:git://github.com/filip26/titanium-json-ld.git</developerConnection>
-        <url>https://github.com/filip26/titanium-json-ld/tree/main</url>
-    </scm>
-
     <developers>
         <developer>
           <id>filip26</id>
