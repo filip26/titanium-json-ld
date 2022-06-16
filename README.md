@@ -10,7 +10,7 @@ The goals of Titanium are:
 - simple to use
 
 [![Java 11 CI with Maven](https://github.com/filip26/titanium-json-ld/actions/workflows/java11-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java11-build.yml)
-[![Android (JDK8) CI with Maven](https://github.com/filip26/titanium-json-ld/actions/workflows/android-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/android-build.yml)
+[![Android (Java 8) CI with Maven](https://github.com/filip26/titanium-json-ld/actions/workflows/java8-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java8-build.yml)
 [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/filip26/titanium-json-ld.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/filip26/titanium-json-ld/context:java)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=filip26_titanium-json-ld&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=filip26_titanium-json-ld)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/c530c6b43b0243c08ce81521c5b4cf6a)](https://www.codacy.com/manual/filip26/titanium-json-ld?utm_source=github.com&utm_medium=referral&utm_content=filip26/titanium-json-ld&utm_campaign=Badge_Coverage)
@@ -78,7 +78,7 @@ Maven
 or
 
 ```xml
-<!-- Android (JRE8) Compatible -->
+<!-- Android (JRE8, OkHttp) -->
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium-json-ld-jre8</artifactId>
@@ -90,7 +90,7 @@ or
 Gradle
 
 ```gradle
-compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '1.3.0'
+compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '1.3.1'
 ```
 
 #### JSON-P Provider
