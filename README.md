@@ -67,6 +67,7 @@ Maven
 
 
 ```xml
+<!-- Java 11 -->
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium-json-ld</artifactId>
