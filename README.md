@@ -80,7 +80,6 @@ or
 
 ```xml
 <!-- Android (Java 8, OkHtttp) -->
-Android (Java 8, OkHttp)
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium-json-ld-jre8</artifactId>
