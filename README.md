@@ -9,8 +9,8 @@ The goals of Titanium are:
   - only `jakarta.json-api` is required
 - simple to use
 
-[![Java 11 CI with Maven](https://github.com/filip26/titanium-json-ld/actions/workflows/java11-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java11-build.yml)
-[![Android (JDK8) CI with Maven](https://github.com/filip26/titanium-json-ld/actions/workflows/android-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/android-build.yml)
+[![Java 11 CI](https://github.com/filip26/titanium-json-ld/actions/workflows/java11-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java11-build.yml)
+[![Android (Java 8) CI](https://github.com/filip26/titanium-json-ld/actions/workflows/java8-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java8-build.yml)
 [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/filip26/titanium-json-ld.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/filip26/titanium-json-ld/context:java)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=filip26_titanium-json-ld&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=filip26_titanium-json-ld)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/c530c6b43b0243c08ce81521c5b4cf6a)](https://www.codacy.com/manual/filip26/titanium-json-ld?utm_source=github.com&utm_medium=referral&utm_content=filip26/titanium-json-ld&utm_campaign=Badge_Coverage)
@@ -65,7 +65,9 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 
 Maven
 
+
 ```xml
+<!-- Java 11 -->
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium-json-ld</artifactId>
@@ -74,17 +76,21 @@ Maven
 
 ```
 
+<!--
+or
+Android (Java 8, OkHttp)
+<dependency>
+    <groupId>com.apicatalog</groupId>
+    <artifactId>titanium-json-ld-jre8</artifactId>
+    <version>1.3.1</version>
+</dependency>
+-->
+
 Gradle
 
 ```gradle
 compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '1.3.0'
 ```
-<!--- TODO
-add the 'android' classifier when building on android:
-```gradle
-compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '1.0.0', classifier: 'android'
-```
--->
 
 #### JSON-P Provider
 

@@ -57,3 +57,4 @@ local.properties
 **/logs/
 **/nbactions.xml
 META-INF
+.flattened-pom.xml
