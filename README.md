@@ -188,9 +188,18 @@ All PR's welcome!
 
 Fork and clone the project repository.
 
+#### Java 11
+
 ```bash
 > cd titanium-json-ld
 > ./mvnw clean package
+```
+
+#### Java 8
+
+```bash
+> cd titanium-json-ld
+> ./mvnw -f pom_jre8.xml clean package
 ```
 
 ## Resources
