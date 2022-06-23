@@ -231,7 +231,7 @@ public final class LanguageTag {
         return sb.toString();
     }
 
-    public static class Extension {
+    public class Extension {
 
         private char code;
         private Collection<String> tags;
