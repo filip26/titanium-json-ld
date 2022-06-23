@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+import java.util.Collection;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -78,11 +79,39 @@ class LanguageTagTest {
             arguments("en-Latn-GB-boont-r-extended-sequence-x-private-b-private2", true),
             arguments("en-Latn-GB-boont-r-extended-sequence-x-private-private2", true),
 
+            arguments("de-419-DE", false),
+            arguments("a-DE", false),
+            
             // private use
             arguments("x-private", true),
 
             // grandfathered regular
             arguments("zh-min-nan", true)
+        );
+    }
+    
+    @ParameterizedTest(name = "parse({0}): {1}")
+    @MethodSource("validTags")
+    void testParse(final String tag, 
+                    final String language, 
+                    final Collection<String> langExt,
+                    final String script,
+                    final String region
+                    ) {
+        
+        final LanguageTag languageTag = LanguageTag.create(tag);
+        
+        assertEquals(language, languageTag.getLanguage());
+        assertEquals(langExt, languageTag.getLanguageExtensions());
+        assertEquals(script, languageTag.getScript());
+        assertEquals(region, languageTag.getRegion());
+    }
+
+    static final Stream<Arguments> validTags() {
+        return Stream.of(
+            arguments("cs", "cs", null, null, null),
+            arguments("cs-CZ", "cs", null, null, "CZ"),
+            arguments("en-US", "en", null, null, "US")
         );
     }
 }
