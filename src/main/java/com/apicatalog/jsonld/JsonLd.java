@@ -328,7 +328,7 @@ public final class JsonLd {
 
         return new FramingApi(document, frameUri);
     }
-    
+
     /**
      *  Frames the remote input using given local frame.
      *

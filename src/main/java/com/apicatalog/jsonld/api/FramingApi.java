@@ -193,16 +193,16 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
     public JsonObject get() throws JsonLdError {
         if (document != null) {
             if (frame != null) {
-                return FramingProcessor.frame(document, frame, options);                
+                return FramingProcessor.frame(document, frame, options);
             }
             if (frameUri != null) {
                 return FramingProcessor.frame(document, frameUri, options);
             }
         }
-        
+
         if (documentUri != null) {
             if (frame != null) {
-                return FramingProcessor.frame(documentUri, frame, options);                
+                return FramingProcessor.frame(documentUri, frame, options);
             }
             if (frameUri != null) {
                 return FramingProcessor.frame(documentUri, frameUri, options);

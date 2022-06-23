@@ -77,7 +77,7 @@ public final class FramingProcessor {
 
         return frame(remoteDocument, frame, options);
     }
-    
+
     public static final JsonObject frame(final Document input, final URI frameUri, final JsonLdOptions options) throws JsonLdError {
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + frameUri + "].");
@@ -91,7 +91,7 @@ public final class FramingProcessor {
 
         return frame(input, frameDocument, options);
     }
-    
+
     public static final JsonObject frame(final Document input, final Document frame, final JsonLdOptions options) throws JsonLdError {
 
         if (frame == null) {
