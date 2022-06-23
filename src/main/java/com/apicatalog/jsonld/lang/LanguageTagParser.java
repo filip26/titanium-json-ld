@@ -63,7 +63,6 @@ final class LanguageTagParser {
      *
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc5646#section-2.1">RFC 5643 - 2.1 Syntax</a>
      *
-     * @param languageTag to check
      * @return <code>true</code> if the provided value is well-formed language tag
      *
      */
