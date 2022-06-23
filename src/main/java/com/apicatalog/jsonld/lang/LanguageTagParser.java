@@ -113,7 +113,7 @@ final class LanguageTagParser {
         // *("-" extension)
         // extension = singleton 1*("-" (2*8alphanum))
         // singleton = DIGIT | a-z !- x
-        while (acceptDigit(1) || alphaRange(0, 1) && !tags[tagIndex].equalsIgnoreCase("x") && accept(1)) {
+        while (acceptDigit(1) || (alphaRange(0, 1) && !tags[tagIndex].equalsIgnoreCase("x") && accept(1))) {
 
             // 1*("-" (2*8alphanum))
             if (!acceptAlphaNun(2, 8)) {
