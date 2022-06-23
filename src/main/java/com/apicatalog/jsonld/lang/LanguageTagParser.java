@@ -20,9 +20,9 @@ import java.util.function.IntPredicate;
 import com.apicatalog.rdf.lang.RdfAlphabet;
 
 /**
- * Language tags are used to help identify languages and are defined by <code>RFC 5646</code>
+ * Language tags are used to help identify languages and are defined by <code>RFC 5646</code>.
  *
- * @see <a href="https://datatracker.ietf.org/doc/html/rfc5646#section-2.1">RFC 5643 - 2.1 Syntax</a>
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc5646">RFC 5643</a>
  */
 final class LanguageTagParser {
 
@@ -31,7 +31,7 @@ final class LanguageTagParser {
 
     int tagIndex;
 
-    private LanguageTagParser(String languageTag, String[] tags) {
+    private LanguageTagParser(final String languageTag, final String[] tags) {
         this.languageTag = languageTag;
         this.tags = tags;
         this.tagIndex = 0;
@@ -174,14 +174,18 @@ final class LanguageTagParser {
     }
 
     boolean accept(int min, int max, IntPredicate predicate) {
-
-        if (tagIndex >= tags.length) {
-            return false;
-        }
-
-        if (tags[tagIndex].length() >= min
+        if (tagIndex < tags.length
+                && tags[tagIndex].length() >= min
                 && tags[tagIndex].length() <= max
                 && tags[tagIndex].chars().allMatch(predicate)) {
+            tagIndex++;
+            return true;
+        }
+        return false;
+    }
+
+    boolean accept(int length) {
+        if (tagIndex < tags.length && tags[tagIndex].length() == length) {
             tagIndex++;
             return true;
         }
@@ -201,22 +205,11 @@ final class LanguageTagParser {
     }
 
     boolean range(int index, int length, IntPredicate predicate) {
-        if (tagIndex >= tags.length) {
-            return false;
-        }
-
-        return (index < tags[tagIndex].length()
+        return
+            tagIndex < tags.length
+            && index < tags[tagIndex].length()
             && (index + length) <= tags[tagIndex].length()
             && tags[tagIndex].substring(index, index + length).chars().allMatch(predicate)
-            );
+            ;
     }
-
-    boolean accept(int length) {
-        if (tagIndex < tags.length && tags[tagIndex].length() == length) {
-            tagIndex++;
-            return true;
-        }
-        return false;
-    }
-
 }
