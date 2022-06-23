@@ -16,15 +16,20 @@
 package com.apicatalog.jsonld.lang;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import com.apicatalog.jsonld.lang.LanguageTag.Extension;
 
 class LanguageTagTest {
 
@@ -38,6 +43,35 @@ class LanguageTagTest {
     void testWellFormed(final String tag, final boolean expected) {
         assertEquals(expected, LanguageTag.isWellFormed(tag));
     }
+
+    @ParameterizedTest(name = "isWellFormed({0}): {1}")
+    @MethodSource("validTags")
+    void testToString(final String tag, final boolean expected) {
+
+        final LanguageTag languageTag = LanguageTag.create(tag);
+
+        assertNotNull(languageTag);
+        assertEquals(tag, languageTag.toString());
+    }
+
+    @ParameterizedTest(name = "parse({0}): {1}")
+    @MethodSource("validTags")
+    void testParse(final String tag,
+                    final String language,
+                    final Collection<String> langExt,
+                    final String script,
+                    final String region
+                    ) {
+
+        final LanguageTag languageTag = LanguageTag.create(tag);
+
+        assertNotNull(languageTag);
+        assertEquals(language, languageTag.getLanguage());
+        assertEquals(langExt, languageTag.getLanguageExtensions());
+        assertEquals(script, languageTag.getScript());
+        assertEquals(region, languageTag.getRegion());
+    }
+
 
     static final Stream<Arguments> data() {
         return Stream.of(
@@ -78,11 +112,28 @@ class LanguageTagTest {
             arguments("en-Latn-GB-boont-r-extended-sequence-x-private-b-private2", true),
             arguments("en-Latn-GB-boont-r-extended-sequence-x-private-private2", true),
 
+            arguments("de-419-DE", false),
+            arguments("a-DE", false),
+
             // private use
             arguments("x-private", true),
 
             // grandfathered regular
             arguments("zh-min-nan", true)
+        );
+    }
+
+    static final Stream<Arguments> validTags() {
+        return Stream.of(
+            arguments("cs", "cs", null, null, null),
+            arguments("cs-CZ", "cs", null, null, "CZ"),
+            arguments("en-US", "en", null, null, "US"),
+
+            arguments("en-Latn-GB-boont-r-extended-sequence-x-private-b-private2",
+                    "en", null, "Latn", "GB", Arrays.asList("boont"),
+                    Arrays.asList(new Extension('r', Arrays.asList("extended", "sequence"))),
+                    Arrays.asList("private", "b", "private2")
+                    )
         );
     }
 }
