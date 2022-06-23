@@ -19,6 +19,11 @@ import java.util.function.IntPredicate;
 
 import com.apicatalog.rdf.lang.RdfAlphabet;
 
+/**
+ * Language tags are used to help identify languages and are defined by <code>RFC 5646</code>
+ *
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc5646#section-2.1">RFC 5643 - 2.1 Syntax</a>
+ */
 final class LanguageTagParser {
 
     final String languageTag;
@@ -32,6 +37,11 @@ final class LanguageTagParser {
         this.tagIndex = 0;
     }
 
+    /**
+     * Creates a new {@link LanguageTagParser} instance.
+     * @param languageTag used to initialize the parser
+     * @return a new instance
+     */
     public static final LanguageTagParser create(final String languageTag) {
 
         if (languageTag == null) {
@@ -59,12 +69,9 @@ final class LanguageTagParser {
     }
 
     /**
-     * Language tags are used to help identify languages and are defined by <code>RFC 5646</code>
+     * Checks if the language tag is well-formed
      *
-     * @see <a href="https://datatracker.ietf.org/doc/html/rfc5646#section-2.1">RFC 5643 - 2.1 Syntax</a>
-     *
-     * @return <code>true</code> if the provided value is well-formed language tag
-     *
+     * @return <code>true</code> if the tag is well-formed language tag
      */
     public boolean isWellFormed() {
 
