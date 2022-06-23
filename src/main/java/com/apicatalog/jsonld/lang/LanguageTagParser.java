@@ -35,9 +35,10 @@ final class LanguageTagParser {
 
     boolean verififierMode;
 
-    private LanguageTagParser(final String languageTag, final String[] tags, final boolean verifierMode) {
+    LanguageTagParser(final String languageTag, final String[] tags, final boolean verifierMode) {
         this.languageTag = languageTag;
         this.tags = tags;
+        this.verififierMode = verifierMode;
         this.tagIndex = 0;
     }
 
