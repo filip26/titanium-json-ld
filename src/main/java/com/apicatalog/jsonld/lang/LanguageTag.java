@@ -29,7 +29,7 @@ public final class LanguageTag {
     private Collection<String> variants;
     private Collection<String> privateUse;
     
-    protected LanguageTag() {
+    LanguageTag() {
     }
 
     /**
