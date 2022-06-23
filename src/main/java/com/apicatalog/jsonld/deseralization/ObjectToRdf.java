@@ -21,6 +21,8 @@ import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
@@ -55,6 +57,8 @@ import jakarta.json.JsonValue;
  */
 final class ObjectToRdf {
 
+    private static final Logger LOGGER = Logger.getLogger(ObjectToRdf.class.getName());
+    
     private static final DecimalFormat xsdNumberFormat =
             new DecimalFormat("0.0##############E0", new DecimalFormatSymbols(Locale.ENGLISH));
 
@@ -141,6 +145,8 @@ final class ObjectToRdf {
         if (item.containsKey(Keywords.LANGUAGE) && (JsonUtils.isNotString(item.get(Keywords.LANGUAGE))
                 || !LanguageTag.isWellFormed(item.getString(Keywords.LANGUAGE)))
                 ) {
+            
+            LOGGER.log(Level.WARNING, "Language tag [{0}] is not string or well formed and is skipped.", item.get(Keywords.LANGUAGE));
 
             return Optional.empty();
         }
