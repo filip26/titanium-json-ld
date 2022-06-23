@@ -32,7 +32,7 @@ final class LanguageTagParser {
     final String[] tags;
 
     int tagIndex;
-    
+
     boolean verififierMode;
 
     private LanguageTagParser(final String languageTag, final String[] tags, final boolean verifierMode) {
@@ -43,7 +43,7 @@ final class LanguageTagParser {
 
     /**
      * Creates a new {@link LanguageTagParser} instance.
-     * 
+     *
      * @param languageTag used to initialize the parser
      * @return a new instance
      */
@@ -52,10 +52,10 @@ final class LanguageTagParser {
     }
 
     public static final boolean isWellFormed(final String languageTag) {
-        
+
         try {
             return create(languageTag, true).parse() != null;
-            
+
         } catch (IllegalArgumentException e) {
             return false;
         }
@@ -87,10 +87,10 @@ final class LanguageTagParser {
         return new LanguageTagParser(languageTag, tags, verifierMode);
     }
     /**
-     * Parses the language tag. 
+     * Parses the language tag.
      *
      * @throws IllegalArgumentException if the language tag is not well-formed
-     * 
+     *
      * @return the language tag
      */
     LanguageTag parse() throws IllegalArgumentException {
@@ -100,7 +100,7 @@ final class LanguageTagParser {
         }
 
         final LanguageTag tag = new LanguageTag();
-        
+
         tagIndex = 0;
 
         // language - 2*3ALPHA
@@ -140,7 +140,7 @@ final class LanguageTagParser {
 
         // *("-" variant)
         // variant = 5*8alphanum | (DIGIT 3alphanum)
-        while (acceptAlphaNun(5, 8, tag::addVariant) 
+        while (acceptAlphaNun(5, 8, tag::addVariant)
                 || (digitRange(0, 1) && alphaNumRange(1, 3) && accept(4, tag::addVariant)));
 
         // *("-" extension)
@@ -148,9 +148,7 @@ final class LanguageTagParser {
         // singleton = DIGIT | a-z !- x
         while (acceptDigit(1) || (alphaRange(0, 1) && !tags[tagIndex].equalsIgnoreCase("x") && accept(1))) {
 
-            final Extension extension = new Extension();
-            
-            extension.code = tags[tagIndex - 1].charAt(0);
+            final Extension extension = new Extension(tags[tagIndex - 1].charAt(0));
 
             // 1*("-" (2*8alphanum))
             if (!acceptAlphaNun(2, 8, extension::addTag)) {
@@ -159,7 +157,7 @@ final class LanguageTagParser {
             }
 
             while (acceptAlphaNun(2, 8, extension::addTag));
-            
+
             tag.addExtension(extension);
         }
 
@@ -181,7 +179,7 @@ final class LanguageTagParser {
             if (!acceptAlphaNun(1, 8, tag::addPrivateUse)) {
                 tagIndex--;
 
-            } else {                
+            } else {
                 while (acceptAlphaNun(1, 8, tag::addPrivateUse));
                 return true;
             }
@@ -218,24 +216,24 @@ final class LanguageTagParser {
                 && tags[tagIndex].length() >= min
                 && tags[tagIndex].length() <= max
                 && tags[tagIndex].chars().allMatch(predicate)) {
-            
+
             if (!verififierMode && consumer != null) {
                 consumer.accept(tags[tagIndex]);
             }
-            
+
             tagIndex++;
             return true;
         }
         return false;
     }
-    
+
     boolean accept(int length) {
         return accept(length, null);
     }
 
     boolean accept(int length, Consumer<String> consumer) {
         if (tagIndex < tags.length && tags[tagIndex].length() == length) {
-            
+
             if (!verififierMode && consumer != null) {
                 consumer.accept(tags[tagIndex]);
             }
