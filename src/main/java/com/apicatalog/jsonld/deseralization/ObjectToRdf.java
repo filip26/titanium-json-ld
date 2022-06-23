@@ -58,7 +58,7 @@ import jakarta.json.JsonValue;
 final class ObjectToRdf {
 
     private static final Logger LOGGER = Logger.getLogger(ObjectToRdf.class.getName());
-    
+
     private static final DecimalFormat xsdNumberFormat =
             new DecimalFormat("0.0##############E0", new DecimalFormatSymbols(Locale.ENGLISH));
 
@@ -138,15 +138,16 @@ final class ObjectToRdf {
 
         // 6.
         if (datatype != null && !Keywords.JSON.equals(datatype) && !UriUtils.isAbsoluteUri(datatype, uriValidation)) {
-            LOGGER.log(Level.WARNING, "Datatype [{0}] is not an absolute IRI nor @json and is skipped.", datatype);
+            LOGGER.log(Level.WARNING, "Datatype [{0}] is not an absolute IRI nor @json and value is skipped.", datatype);
             return Optional.empty();
         }
 
         // 7.
-        if (item.containsKey(Keywords.LANGUAGE) && (JsonUtils.isNotString(item.get(Keywords.LANGUAGE))
-                || !LanguageTag.isWellFormed(item.getString(Keywords.LANGUAGE)))
-                ) {            
-            LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed string and is skipped.", item.get(Keywords.LANGUAGE));
+        if (item.containsKey(Keywords.LANGUAGE)
+                && (JsonUtils.isNotString(item.get(Keywords.LANGUAGE))
+                        || !LanguageTag.isWellFormed(item.getString(Keywords.LANGUAGE)))
+                ) {
+            LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed string and value is skipped.", item.get(Keywords.LANGUAGE));
             return Optional.empty();
         }
 

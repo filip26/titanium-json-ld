@@ -44,7 +44,7 @@ class LanguageTagTest {
             arguments("", false),
             arguments("   ", false),
             arguments("cs--CZ", false),
-            arguments("cs-a-CZ", false),
+            arguments("cs-a-CZ", true),
             arguments("cs-", false),
             arguments("-cs", false),
             arguments("c#-CZ", false),
@@ -58,10 +58,11 @@ class LanguageTagTest {
             arguments("en-US", true),
             arguments("en-US", true),
 
-            arguments("A", true),
-            arguments("A-0", true),
+            arguments("A", false),
+            arguments("A-0", false),
             arguments("abcd-1234", true),
-            
+            arguments("abcd-1234567890", false),
+
             // extension subtags
             arguments("en-x-US", true),
             arguments("el-x-koine", true),
@@ -69,9 +70,19 @@ class LanguageTagTest {
             arguments("en-x-lgr", true),
             arguments("de-CH-x-phonebk", true),
             arguments("az-Arab-x-AZE-derbend", true),
+            arguments("zh-variant1-variant2", true),
+            arguments("zh-variant1-1abc", true),
+            arguments("zh-Latn-CN-variant1-a-extend1-b-extend2", true),
             arguments("zh-Latn-CN-variant1-a-extend1-x-wadegile", true),
-            arguments("en-Latn-GB-boont-r-extended-sequence-x-private", true)
-            
+            arguments("en-Latn-GB-boont-r-extended-sequence-x-private", true),
+            arguments("en-Latn-GB-boont-r-extended-sequence-x-private-b-private2", true),
+            arguments("en-Latn-GB-boont-r-extended-sequence-x-private-private2", true),
+
+            // private use
+            arguments("x-private", true),
+
+            // grandfathered regular
+            arguments("zh-min-nan", true)
         );
     }
 }

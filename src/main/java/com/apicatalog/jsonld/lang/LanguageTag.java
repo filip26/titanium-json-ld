@@ -15,17 +15,15 @@
  */
 package com.apicatalog.jsonld.lang;
 
-import com.apicatalog.rdf.lang.RdfAlphabet;
-
 public final class LanguageTag {
 
     private LanguageTag() {
     }
 
     /**
-     * LANGTAG  ::= [a-zA-Z]+ ('-' [a-zA-Z0-9]+)*
+     * Language tags are used to help identify languages and are defined by <code>RFC 5646</code>
      *
-     * @see <a href="https://www.w3.org/TR/n-quads/#sec-grammar">N-Quads Grammar</a>
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc5646#section-2.1">RFC 5643 - 2.1 Syntax</a>
      *
      * @param languageTag to check
      * @return <code>true</code> if the provided value is well-formed language tag
@@ -34,55 +32,9 @@ public final class LanguageTag {
     public static boolean isWellFormed(final String languageTag) {
 
         if (languageTag == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("The parameter 'laguageTag' must not be null");
         }
 
-        final int[] chars = languageTag.trim().codePoints().toArray();
-
-        if (chars.length == 0 || RdfAlphabet.ASCII_ALPHA.negate().test(chars[0])) {
-            return false;
-        }
-
-        if (chars.length == 1) {
-            return true;
-        }
-
-
-        int index = 1;
-
-        // [a-zA-Z]+
-        for (; index < chars.length; index++) {
-
-            // ('-' [a-zA-Z0-9]+)*
-            if (chars[index] == '-') {
-                break;
-            }
-
-            // [a-zA-Z]+
-            if (RdfAlphabet.ASCII_ALPHA.test(chars[index])) {
-                continue;
-            }
-
-            return false;
-        }
-
-        if (index == chars.length - 1) {
-            return chars[index] != '-';
-        }
-
-        index++;
-
-        // ('-' [a-zA-Z0-9]+)*
-        for (; index < chars.length; index++) {
-
-            // [a-zA-Z0-9]+
-            if (RdfAlphabet.ASCII_ALPHA_NUM.test(chars[index])) {
-                continue;
-            }
-
-            return false;
-        }
-
-        return true;
+        return LanguageTagParser.create(languageTag).isWellFormed();
     }
 }
