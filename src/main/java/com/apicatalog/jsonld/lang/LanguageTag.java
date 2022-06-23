@@ -47,12 +47,7 @@ public final class LanguageTag {
             throw new IllegalArgumentException("The parameter 'laguageTag' must not be null");
         }
 
-        try {
-            return LanguageTagParser.create(languageTag).parse() != null;
-        
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
+       return LanguageTagParser.isWellFormed(languageTag);        
     }
     
     /**

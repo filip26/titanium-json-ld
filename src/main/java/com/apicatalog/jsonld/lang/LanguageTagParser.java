@@ -32,8 +32,10 @@ final class LanguageTagParser {
     final String[] tags;
 
     int tagIndex;
+    
+    boolean verififierMode;
 
-    private LanguageTagParser(final String languageTag, final String[] tags) {
+    private LanguageTagParser(final String languageTag, final String[] tags, final boolean verifierMode) {
         this.languageTag = languageTag;
         this.tags = tags;
         this.tagIndex = 0;
@@ -41,10 +43,25 @@ final class LanguageTagParser {
 
     /**
      * Creates a new {@link LanguageTagParser} instance.
+     * 
      * @param languageTag used to initialize the parser
      * @return a new instance
      */
     public static final LanguageTagParser create(final String languageTag) {
+        return create(languageTag, false);
+    }
+
+    public static final boolean isWellFormed(final String languageTag) {
+        
+        try {
+            return create(languageTag, true).parse() != null;
+            
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    private static final LanguageTagParser create(final String languageTag, boolean verifierMode) {
 
         if (languageTag == null) {
             throw new IllegalArgumentException("The parameter 'laguageTag' must not be null");
@@ -57,19 +74,18 @@ final class LanguageTagParser {
                 || RdfAlphabet.ASCII_ALPHA.negate().test(stripped.codePointAt(0))
                 || RdfAlphabet.ASCII_ALPHA_NUM.negate().test(stripped.codePointAt(stripped.length() - 1))
                 ) {
-            return new LanguageTagParser(languageTag, null);
+            return new LanguageTagParser(languageTag, null, verifierMode);
         }
 
         final String[] tags = stripped.split("-");
 
 
         if (tags == null || tags.length == 0) {
-            return new LanguageTagParser(languageTag, null);
+            return new LanguageTagParser(languageTag, null, verifierMode);
         }
 
-        return new LanguageTagParser(languageTag, tags);
+        return new LanguageTagParser(languageTag, tags, verifierMode);
     }
-
     /**
      * Parses the language tag. 
      *
@@ -77,7 +93,7 @@ final class LanguageTagParser {
      * 
      * @return the language tag
      */
-    public LanguageTag parse() throws IllegalArgumentException {
+    LanguageTag parse() throws IllegalArgumentException {
 
         if (tags == null || tags.length == 0) {
             return null;
@@ -203,7 +219,7 @@ final class LanguageTagParser {
                 && tags[tagIndex].length() <= max
                 && tags[tagIndex].chars().allMatch(predicate)) {
             
-            if (consumer != null) {
+            if (!verififierMode && consumer != null) {
                 consumer.accept(tags[tagIndex]);
             }
             
@@ -220,7 +236,7 @@ final class LanguageTagParser {
     boolean accept(int length, Consumer<String> consumer) {
         if (tagIndex < tags.length && tags[tagIndex].length() == length) {
             
-            if (consumer != null) {
+            if (!verififierMode && consumer != null) {
                 consumer.accept(tags[tagIndex]);
             }
 
