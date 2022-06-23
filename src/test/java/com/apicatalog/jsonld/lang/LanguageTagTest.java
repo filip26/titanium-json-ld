@@ -60,7 +60,18 @@ class LanguageTagTest {
 
             arguments("A", true),
             arguments("A-0", true),
-            arguments("abcd-1234", true)
+            arguments("abcd-1234", true),
+            
+            // extension subtags
+            arguments("en-x-US", true),
+            arguments("el-x-koine", true),
+            arguments("el-x-attic", true),
+            arguments("en-x-lgr", true),
+            arguments("de-CH-x-phonebk", true),
+            arguments("az-Arab-x-AZE-derbend", true),
+            arguments("zh-Latn-CN-variant1-a-extend1-x-wadegile", true),
+            arguments("en-Latn-GB-boont-r-extended-sequence-x-private", true)
+            
         );
     }
 }
