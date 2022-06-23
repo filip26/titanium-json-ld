@@ -20,8 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -130,9 +130,9 @@ class LanguageTagTest {
             arguments("en-US", "en", null, null, "US"),
 
             arguments("en-Latn-GB-boont-r-extended-sequence-x-private-b-private2",
-                    "en", null, "Latn", "GB", List.of("boont"),
-                    List.of(new Extension('r', List.of("extended", "sequence"))),
-                    List.of("private", "b", "private2")
+                    "en", null, "Latn", "GB", Arrays.asList("boont"),
+                    Arrays.asList(new Extension('r', Arrays.asList("extended", "sequence"))),
+                    Arrays.asList("private", "b", "private2")
                     )
         );
     }

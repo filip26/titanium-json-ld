@@ -231,16 +231,12 @@ public final class LanguageTag {
         return sb.toString();
     }
 
-    public class Extension {
+    public static class Extension {
 
         private char code;
         private Collection<String> tags;
 
-        protected Extension(char code) {
-            this(code, new ArrayList<>());
-        }
-
-        protected Extension(char code, Collection<String> tags) {
+        public Extension(char code, Collection<String> tags) {
             this.code = code;
             this.tags = tags;
         }

@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.lang;
 
+import java.util.ArrayList;
 import java.util.function.Consumer;
 import java.util.function.IntPredicate;
 
@@ -149,7 +150,7 @@ final class LanguageTagParser {
         // singleton = DIGIT | a-z !- x
         while (acceptDigit(1) || (alphaRange(0, 1) && !tags[tagIndex].equalsIgnoreCase("x") && accept(1))) {
 
-            final Extension extension = new Extension(tags[tagIndex - 1].charAt(0));
+            final Extension extension = new Extension(tags[tagIndex - 1].charAt(0), new ArrayList<>());
 
             // 1*("-" (2*8alphanum))
             if (!acceptAlphaNun(2, 8, extension::addTag)) {
