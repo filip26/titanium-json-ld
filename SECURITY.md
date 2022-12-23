@@ -10,4 +10,4 @@
 
 ## Reporting a Vulnerability
 
-Please report security vulnerabilities to [Filip Kolarik](mailto:filip26@gmail.com). Thank you!
+Please report security vulnerabilities to [Filip Kolařík](mailto:filip26@gmail.com). Thank you!
