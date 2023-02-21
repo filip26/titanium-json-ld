@@ -19,7 +19,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.JsonProvider;
 import com.apicatalog.jsonld.lang.Keywords;
 
 import jakarta.json.JsonArray;

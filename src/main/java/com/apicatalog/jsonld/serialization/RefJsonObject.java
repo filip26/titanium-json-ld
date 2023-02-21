@@ -18,7 +18,7 @@ package com.apicatalog.jsonld.serialization;
 import java.util.AbstractMap;
 import java.util.Set;
 
-import com.apicatalog.jsonld.JsonProvider;
+import com.apicatalog.jsonld.json.JsonProvider;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonNumber;

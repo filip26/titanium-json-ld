@@ -15,7 +15,7 @@
  */
 package com.apicatalog.jsonld.lang;
 
-import com.apicatalog.jsonld.JsonProvider;
+import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 
 import jakarta.json.JsonObject;

@@ -21,7 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import com.apicatalog.jsonld.JsonProvider;
 import com.apicatalog.jsonld.StringUtils;
 
 import jakarta.json.JsonArray;
