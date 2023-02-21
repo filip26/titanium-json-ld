@@ -15,9 +15,9 @@
  */
 package com.apicatalog.jsonld.lang;
 
+import com.apicatalog.jsonld.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 
-import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
@@ -56,10 +56,10 @@ public final class ListObject {
      */
     public static final JsonObject toListObject(JsonValue value) {
         if (JsonUtils.isArray(value)) {
-            return Json.createObjectBuilder().add(Keywords.LIST, value).build();
+            return JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, value).build();
         }
 
-        return Json.createObjectBuilder().add(Keywords.LIST, Json.createArrayBuilder().add(value)).build();
+        return JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, JsonProvider.instance().createArrayBuilder().add(value)).build();
 
     }
 }

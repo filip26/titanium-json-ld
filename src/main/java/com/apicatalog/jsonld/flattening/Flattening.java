@@ -19,11 +19,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Utils;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonStructure;
@@ -75,14 +75,14 @@ public final class Flattening {
 
             // 4.1.
             if (!defaultGraph.containsKey(graphName)) {
-                defaultGraph.put(graphName, Json.createObjectBuilder().add(Keywords.ID, graphName).build());
+                defaultGraph.put(graphName, JsonProvider.instance().createObjectBuilder().add(Keywords.ID, graphName).build());
             }
 
             // 4.2.
             final Map<String, JsonValue> entry = new LinkedHashMap<>(defaultGraph.get(graphName));
 
             // 4.3.
-            final JsonArrayBuilder graphArray =  Json.createArrayBuilder();
+            final JsonArrayBuilder graphArray =  JsonProvider.instance().createArrayBuilder();
 
             // 4.4.
             for (final String id : Utils.index(graph.keySet(), ordered)) {
@@ -102,7 +102,7 @@ public final class Flattening {
         }
 
         // 5.
-        final JsonArrayBuilder flattened = Json.createArrayBuilder();
+        final JsonArrayBuilder flattened = JsonProvider.instance().createArrayBuilder();
 
         // 6.
         for (String id : Utils.index(defaultGraph.keySet(), ordered)) {

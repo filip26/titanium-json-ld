@@ -22,10 +22,10 @@ import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonProvider;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
 
-import jakarta.json.Json;
 import jakarta.json.JsonException;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
@@ -107,7 +107,7 @@ public final class JsonDocument implements Document {
             throw new IllegalArgumentException("The input stream parameter cannot be null.");
         }
 
-        try (final JsonParser parser = Json.createParser(is)) {
+        try (final JsonParser parser = JsonProvider.instance().createParser(is)) {
 
             return doParse(contentType, parser);
 
@@ -143,7 +143,7 @@ public final class JsonDocument implements Document {
             throw new IllegalArgumentException("The reader parameter cannot be null.");
         }
 
-        try (final JsonParser parser = Json.createParser(reader)) {
+        try (final JsonParser parser = JsonProvider.instance().createParser(reader)) {
 
             return doParse(contentType, parser);
 

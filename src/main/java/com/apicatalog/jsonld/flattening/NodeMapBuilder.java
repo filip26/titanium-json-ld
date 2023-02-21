@@ -24,13 +24,13 @@ import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.Utils;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
@@ -133,12 +133,12 @@ public final class NodeMapBuilder {
         // 3.
         if (elementObject.containsKey(Keywords.TYPE)) {
 
-            final JsonArrayBuilder types = Json.createArrayBuilder();
+            final JsonArrayBuilder types = JsonProvider.instance().createArrayBuilder();
 
             // 3.1.
             JsonUtils.toStream(elementObject.get(Keywords.TYPE))
                     .map(item -> JsonUtils.isString(item) && BlankNode.hasPrefix(((JsonString)item).getString())
-                                    ? Json.createValue(nodeMap.createIdentifier(((JsonString)item).getString()))
+                                    ? JsonProvider.instance().createValue(nodeMap.createIdentifier(((JsonString)item).getString()))
                                     : item
                             )
                     .forEach(types::add);
@@ -158,17 +158,17 @@ public final class NodeMapBuilder {
                     final JsonArray activePropertyValue = nodeMap.get(activeGraph, activeSubject, activeProperty).asJsonArray();
 
                     if (activePropertyValue.stream().noneMatch(e -> Objects.equals(e, element))) {
-                        nodeMap.set(activeGraph, activeSubject, activeProperty, Json.createArrayBuilder(activePropertyValue).add(element).build());
+                        nodeMap.set(activeGraph, activeSubject, activeProperty, JsonProvider.instance().createArrayBuilder(activePropertyValue).add(element).build());
                     }
 
                 // 4.1.2.
                 } else {
-                    nodeMap.set(activeGraph, activeSubject, activeProperty, Json.createArrayBuilder().add(JsonUtils.toJsonObject(elementObject)).build());
+                    nodeMap.set(activeGraph, activeSubject, activeProperty, JsonProvider.instance().createArrayBuilder().add(JsonUtils.toJsonObject(elementObject)).build());
                 }
 
             // 4.2.
             } else {
-                list.put(Keywords.LIST, Json.createArrayBuilder(list.get(Keywords.LIST).asJsonArray()).add(element).build());
+                list.put(Keywords.LIST, JsonProvider.instance().createArrayBuilder(list.get(Keywords.LIST).asJsonArray()).add(element).build());
             }
 
         // 5.
@@ -195,7 +195,7 @@ public final class NodeMapBuilder {
                 if (nodeMap.contains(activeGraph, activeSubject, activeProperty)) {
 
                     nodeMap.set(activeGraph, activeSubject, activeProperty,
-                                Json.createArrayBuilder(
+                                JsonProvider.instance().createArrayBuilder(
                                         nodeMap.get(activeGraph, activeSubject, activeProperty)
                                             .asJsonArray())
                                             .add(JsonUtils.toJsonObject(result))
@@ -203,12 +203,12 @@ public final class NodeMapBuilder {
                                 );
 
                 } else {
-                    nodeMap.set(activeGraph, activeSubject, activeProperty, Json.createArrayBuilder().add(JsonUtils.toJsonObject(result)).build());
+                    nodeMap.set(activeGraph, activeSubject, activeProperty, JsonProvider.instance().createArrayBuilder().add(JsonUtils.toJsonObject(result)).build());
                 }
 
             // 5.4.
             } else {
-                list.put(Keywords.LIST, Json.createArrayBuilder(list.get(Keywords.LIST).asJsonArray()).add(JsonUtils.toJsonObject(result)).build());
+                list.put(Keywords.LIST, JsonProvider.instance().createArrayBuilder(list.get(Keywords.LIST).asJsonArray()).add(JsonUtils.toJsonObject(result)).build());
             }
 
         // 6.
@@ -239,7 +239,7 @@ public final class NodeMapBuilder {
 
             // 6.3.
             if (id != null && !nodeMap.contains(activeGraph, id)) {
-                nodeMap.set(activeGraph, id, Keywords.ID, Json.createValue(id));
+                nodeMap.set(activeGraph, id, Keywords.ID, JsonProvider.instance().createValue(id));
             }
 
             // 6.4.
@@ -253,19 +253,19 @@ public final class NodeMapBuilder {
                     final JsonArray activePropertyValue = nodeMap.get(activeGraph, id, activeProperty).asJsonArray();
 
                     if (activePropertyValue.stream().filter(JsonUtils::isObject).noneMatch(e -> Objects.equals(e.asJsonObject(), JsonUtils.toJsonObject(referencedNode)))) {
-                        nodeMap.set(activeGraph, id, activeProperty, Json.createArrayBuilder(activePropertyValue).add(JsonUtils.toJsonObject(referencedNode)).build());
+                        nodeMap.set(activeGraph, id, activeProperty, JsonProvider.instance().createArrayBuilder(activePropertyValue).add(JsonUtils.toJsonObject(referencedNode)).build());
                     }
 
                 // 6.5.2.
                 } else {
-                    nodeMap.set(activeGraph, id, activeProperty, Json.createArrayBuilder().add(JsonUtils.toJsonObject(referencedNode)).build());
+                    nodeMap.set(activeGraph, id, activeProperty, JsonProvider.instance().createArrayBuilder().add(JsonUtils.toJsonObject(referencedNode)).build());
                 }
 
             // 6.6.
             } else if (activeProperty != null) {
 
                 // 6.6.1.
-                final JsonObject reference = Json.createObjectBuilder().add(Keywords.ID, id).build();
+                final JsonObject reference = JsonProvider.instance().createObjectBuilder().add(Keywords.ID, id).build();
 
                 // 6.6.2.
                 if (list == null) {
@@ -276,17 +276,17 @@ public final class NodeMapBuilder {
                         final JsonArray activePropertyValue = nodeMap.get(activeGraph, activeSubject, activeProperty).asJsonArray();
 
                         if (activePropertyValue.stream().noneMatch(e -> Objects.equals(e, reference))) {
-                            nodeMap.set(activeGraph, activeSubject, activeProperty, Json.createArrayBuilder(activePropertyValue).add(reference).build());
+                            nodeMap.set(activeGraph, activeSubject, activeProperty, JsonProvider.instance().createArrayBuilder(activePropertyValue).add(reference).build());
                         }
 
                     // 6.6.2.1.
                     } else {
-                        nodeMap.set(activeGraph, activeSubject, activeProperty, Json.createArrayBuilder().add(reference).build());
+                        nodeMap.set(activeGraph, activeSubject, activeProperty, JsonProvider.instance().createArrayBuilder().add(reference).build());
                     }
 
                 // 6.6.3.
                 } else {
-                    list.put(Keywords.LIST, Json.createArrayBuilder(list.get(Keywords.LIST).asJsonArray()).add(reference).build());
+                    list.put(Keywords.LIST, JsonProvider.instance().createArrayBuilder(list.get(Keywords.LIST).asJsonArray()).add(reference).build());
                 }
             }
 
@@ -313,7 +313,7 @@ public final class NodeMapBuilder {
                     nodeType.add(typeValue);
                 }
 
-                final JsonArrayBuilder nodeTypeBuilder = Json.createArrayBuilder();
+                final JsonArrayBuilder nodeTypeBuilder = JsonProvider.instance().createArrayBuilder();
                 nodeType.forEach(nodeTypeBuilder::add);
 
                 nodeMap.set(activeGraph, id, Keywords.TYPE, nodeTypeBuilder.build());
@@ -337,7 +337,7 @@ public final class NodeMapBuilder {
 
                 // 6.9.1.
                 Map<String, JsonValue> referenced = new LinkedHashMap<>();
-                referenced.put(Keywords.ID, Json.createValue(id));
+                referenced.put(Keywords.ID, JsonProvider.instance().createValue(id));
 
                 // 6.9.2.
                 JsonValue reverseMap = elementObject.get(Keywords.REVERSE);

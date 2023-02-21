@@ -19,13 +19,13 @@ import java.net.URI;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonProvider;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonValue;
@@ -86,7 +86,7 @@ public final class ArrayExpansion {
     public JsonArray expand() throws JsonLdError {
 
         // 5.1
-        final JsonArrayBuilder result = Json.createArrayBuilder();
+        final JsonArrayBuilder result = JsonProvider.instance().createArrayBuilder();
 
         // 5.2.
         for (final JsonValue item : element) {

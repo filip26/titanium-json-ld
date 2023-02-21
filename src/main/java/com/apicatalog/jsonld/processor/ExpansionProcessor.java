@@ -21,6 +21,7 @@ import java.util.Optional;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.JsonProvider;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.expansion.Expansion;
@@ -28,7 +29,6 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonStructure;
@@ -113,7 +113,7 @@ public final class ExpansionProcessor {
         if (input.getContextUrl() != null) {
             activeContext = activeContext
                                 .newContext()
-                                .create(Json.createValue(input.getContextUrl().toString()), input.getContextUrl());
+                                .create(JsonProvider.instance().createValue(input.getContextUrl().toString()), input.getContextUrl());
         }
 
         // 8.
@@ -171,7 +171,7 @@ public final class ExpansionProcessor {
                           baseUrl);
 
       }
-      return activeContext.newContext().create(Json.createArrayBuilder().add(expandedContext).build(), baseUrl);
+      return activeContext.newContext().create(JsonProvider.instance().createArrayBuilder().add(expandedContext).build(), baseUrl);
     }
 
 }

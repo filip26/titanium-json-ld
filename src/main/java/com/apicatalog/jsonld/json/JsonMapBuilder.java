@@ -19,9 +19,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import com.apicatalog.jsonld.JsonProvider;
 import com.apicatalog.jsonld.lang.Keywords;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
@@ -38,7 +38,7 @@ public final class JsonMapBuilder {
 
     public JsonObject build() {
 
-        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonObjectBuilder builder = JsonProvider.instance().createObjectBuilder();
 
         for (final Map.Entry<String, Object> entry : map.entrySet()) {
 
@@ -112,7 +112,7 @@ public final class JsonMapBuilder {
     }
 
     public JsonArray valuesToArray() {
-        final JsonArrayBuilder array = Json.createArrayBuilder();
+        final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
 
         for (final Object item : map.values()) {
 
@@ -162,17 +162,17 @@ public final class JsonMapBuilder {
                 if (original instanceof JsonValue) {
 
                     if (JsonUtils.isArray((JsonValue)original)) {
-                        map.put(key, Json.createArrayBuilder(((JsonValue)original).asJsonArray()).add(value));
+                        map.put(key, JsonProvider.instance().createArrayBuilder(((JsonValue)original).asJsonArray()).add(value));
 
                     } else {
-                        map.put(key, Json.createArrayBuilder().add((JsonValue)original).add(value));
+                        map.put(key, JsonProvider.instance().createArrayBuilder().add((JsonValue)original).add(value));
                     }
 
                 } else if (original instanceof JsonArrayBuilder) {
                     ((JsonArrayBuilder)original).add(value);
 
                 } else if (original instanceof JsonMapBuilder) {
-                    map.put(key, Json.createArrayBuilder().add(((JsonMapBuilder)original).build()));
+                    map.put(key, JsonProvider.instance().createArrayBuilder().add(((JsonMapBuilder)original).build()));
 
                 } else {
                     throw new IllegalStateException();
@@ -198,10 +198,10 @@ public final class JsonMapBuilder {
             if (original instanceof JsonValue) {
 
                 if (JsonUtils.isArray((JsonValue)original)) {
-                    map.put(key, Json.createArrayBuilder(((JsonValue)original).asJsonArray()));
+                    map.put(key, JsonProvider.instance().createArrayBuilder(((JsonValue)original).asJsonArray()));
 
                 } else {
-                    map.put(key, Json.createArrayBuilder().add((JsonValue)original));
+                    map.put(key, JsonProvider.instance().createArrayBuilder().add((JsonValue)original));
                 }
                 return;
 
@@ -209,14 +209,14 @@ public final class JsonMapBuilder {
                 return;
 
             } else if (original instanceof JsonMapBuilder) {
-                map.put(key, Json.createArrayBuilder().add(((JsonMapBuilder)original).build()));
+                map.put(key, JsonProvider.instance().createArrayBuilder().add(((JsonMapBuilder)original).build()));
                 return;
 
             }
             throw new IllegalStateException();
         }
 
-        map.put(key, Json.createArrayBuilder());
+        map.put(key, JsonProvider.instance().createArrayBuilder());
     }
 
     public void put(String key, JsonMapBuilder value) {

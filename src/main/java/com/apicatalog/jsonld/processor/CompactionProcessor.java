@@ -20,6 +20,7 @@ import java.net.URI;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.JsonProvider;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.Document;
@@ -27,7 +28,6 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
@@ -138,7 +138,7 @@ public final class CompactionProcessor {
 
         // 9.2.
         } else if (JsonUtils.isArray(compactedOutput)) {
-            compactedOutput = Json.createObjectBuilder()
+            compactedOutput = JsonProvider.instance().createObjectBuilder()
                                     .add(
                                         activeContext.uriCompaction().vocab(true).compact(Keywords.GRAPH),
                                         compactedOutput
@@ -155,7 +155,7 @@ public final class CompactionProcessor {
                 && !JsonUtils.isEmptyArray(contextValue)
                 && !JsonUtils.isEmptyObject(contextValue)
                 ) {
-            compactedOutput = Json.createObjectBuilder(compactedOutput.asJsonObject())
+            compactedOutput = JsonProvider.instance().createObjectBuilder(compactedOutput.asJsonObject())
                                     .add(Keywords.CONTEXT, contextValue)
                                     .build();
         }

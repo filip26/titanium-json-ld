@@ -25,6 +25,7 @@ import java.util.Optional;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.JsonProvider;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonMapBuilder;
@@ -35,7 +36,6 @@ import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.Utils;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
@@ -100,7 +100,7 @@ public final class Compaction {
         if (JsonUtils.isArray(element)) {
 
             // 3.1.
-            final JsonArrayBuilder resultBuilder = Json.createArrayBuilder();
+            final JsonArrayBuilder resultBuilder = JsonProvider.instance().createArrayBuilder();
 
             // 3.2.
             for (final JsonValue item : element.asJsonArray()) {
@@ -269,7 +269,7 @@ public final class Compaction {
                 } else if (JsonUtils.isArray(expandedValue)) {
 
                     // 12.2.2.1.
-                    final JsonArrayBuilder compactedArray = Json.createArrayBuilder();
+                    final JsonArrayBuilder compactedArray = JsonProvider.instance().createArrayBuilder();
 
                     // 12.2.2.2.
                     for (final JsonValue expandedType : expandedValue.asJsonArray()) {
@@ -336,7 +336,7 @@ public final class Compaction {
                     } else {
 
                         if (remaining == null) {
-                            remaining = Json.createObjectBuilder();
+                            remaining = JsonProvider.instance().createObjectBuilder();
                         }
 
                         remaining.add(entry.getKey(), entry.getValue());
@@ -509,14 +509,14 @@ public final class Compaction {
                         // 12.8.7.2.1.
                         String key = activeContext.uriCompaction().vocab(true).compact(Keywords.LIST);
 
-                        compactedItem = Json.createObjectBuilder().add(key, compactedItem).build();
+                        compactedItem = JsonProvider.instance().createObjectBuilder().add(key, compactedItem).build();
 
                         // 12.8.7.2.2.
                         if (JsonUtils.containsKey(expandedItem, Keywords.INDEX)) {
 
                             String indexKey = activeContext.uriCompaction().vocab(true).compact(Keywords.INDEX);
 
-                            compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject())
+                            compactedItem = JsonProvider.instance().createObjectBuilder(compactedItem.asJsonObject())
                                                 .add(indexKey, expandedItem.asJsonObject().get(Keywords.INDEX))
                                                 .build();
                         }
@@ -572,7 +572,7 @@ public final class Compaction {
 
                         // 12.8.8.3.1.
                         if (JsonUtils.isArray(compactedItem) && compactedItem.asJsonArray().size() > 1) {
-                            compactedItem = Json.createObjectBuilder().add(
+                            compactedItem = JsonProvider.instance().createObjectBuilder().add(
                                                         activeContext
                                                             .uriCompaction()
                                                             .vocab(true)
@@ -591,7 +591,7 @@ public final class Compaction {
                     // 12.8.8.4.
                     if (!container.contains(Keywords.GRAPH) || followup) {
                         // 12.8.8.4.1.
-                        compactedItem = Json.createObjectBuilder().add(
+                        compactedItem = JsonProvider.instance().createObjectBuilder().add(
                                 activeContext
                                     .uriCompaction()
                                     .vocab(true)
@@ -602,7 +602,7 @@ public final class Compaction {
                         // 12.8.8.4.2.
                         if (expandedItem.asJsonObject().containsKey(Keywords.ID)) {
 
-                            compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).add(
+                            compactedItem = JsonProvider.instance().createObjectBuilder(compactedItem.asJsonObject()).add(
                                     activeContext
                                         .uriCompaction()
                                         .vocab(true)
@@ -618,7 +618,7 @@ public final class Compaction {
                         // 12.8.8.4.3.
                         if (expandedItem.asJsonObject().containsKey(Keywords.INDEX)) {
 
-                            compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).add(
+                            compactedItem = JsonProvider.instance().createObjectBuilder(compactedItem.asJsonObject()).add(
                                     activeContext
                                         .uriCompaction()
                                         .vocab(true)
@@ -707,7 +707,7 @@ public final class Compaction {
                                 mapKey = ((JsonString)containerValue).getString();
 
                                 // 12.8.9.6.3.
-                                compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();
+                                compactedItem = JsonProvider.instance().createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();
 
                             } else if (JsonUtils.isArray(containerValue) && !JsonUtils.isEmptyArray(containerValue)) {
 
@@ -722,16 +722,16 @@ public final class Compaction {
                                         containerKeyValue = containerValue.asJsonArray().get(1);
 
                                     } else {
-                                        containerKeyValue = Json.createArrayBuilder(containerValue.asJsonArray()).remove(0).build();
+                                        containerKeyValue = JsonProvider.instance().createArrayBuilder(containerValue.asJsonArray()).remove(0).build();
                                     }
 
-                                    compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject())
+                                    compactedItem = JsonProvider.instance().createObjectBuilder(compactedItem.asJsonObject())
                                                         .remove(containerKey)
                                                         .add(containerKey, containerKeyValue)
                                                         .build();
 
                                 } else {
-                                    compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();
+                                    compactedItem = JsonProvider.instance().createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();
                                 }
                             }
                         }
@@ -743,7 +743,7 @@ public final class Compaction {
 
                             mapKey = compactedItem.asJsonObject().getString(containerKey);
 
-                            compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();
+                            compactedItem = JsonProvider.instance().createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();
                         }
 
                     // 12.8.9.8.
@@ -768,21 +768,21 @@ public final class Compaction {
                                         compactedKeyArrayValue = compactedKeyArray.get(1);
 
                                     } else {
-                                        compactedKeyArrayValue = Json.createArrayBuilder(compactedKeyArray).remove(0).build();
+                                        compactedKeyArrayValue = JsonProvider.instance().createArrayBuilder(compactedKeyArray).remove(0).build();
                                     }
 
-                                    compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject())
+                                    compactedItem = JsonProvider.instance().createObjectBuilder(compactedItem.asJsonObject())
                                                         .remove(containerKey)
                                                         .add(containerKey, compactedKeyArrayValue)
                                                         .build();
 
                                 } else {
-                                    compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();
+                                    compactedItem = JsonProvider.instance().createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();
                                 }
 
 
                             } else {
-                                compactedItem = Json.createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();
+                                compactedItem = JsonProvider.instance().createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();
                             }
                         }
 
@@ -793,7 +793,7 @@ public final class Compaction {
 
                             if (Keywords.ID.equals(expandedKey)) {
 
-                                JsonObject map = Json.createObjectBuilder().add(Keywords.ID, expandedItem.asJsonObject().get(Keywords.ID)).build();
+                                JsonObject map = JsonProvider.instance().createObjectBuilder().add(Keywords.ID, expandedItem.asJsonObject().get(Keywords.ID)).build();
 
                                 compactedItem = Compaction
                                                         .with(activeContext)

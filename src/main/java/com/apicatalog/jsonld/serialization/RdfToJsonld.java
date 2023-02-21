@@ -25,8 +25,9 @@ import java.util.Optional;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
+import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -39,7 +40,6 @@ import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.lang.RdfConstants;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
@@ -151,7 +151,7 @@ public final class RdfToJsonld {
 
                     final Map<String, JsonValue> clNode = clNodeValue.get();
 
-                    final JsonArrayBuilder clArray = Json.createArrayBuilder();
+                    final JsonArrayBuilder clArray = JsonProvider.instance().createArrayBuilder();
 
                     // 6.1.6.
                     for (final JsonValue clReference : graphMap.get(clEntry.graphName, clEntry.subject, clEntry.property).map(JsonValue::asJsonArray).orElse(JsonValue.EMPTY_JSON_ARRAY)) {
@@ -166,7 +166,7 @@ public final class RdfToJsonld {
                             continue;
                         }
 
-                        final JsonObjectBuilder clObject = Json.createObjectBuilder(clReferenceObject);
+                        final JsonObjectBuilder clObject = JsonProvider.instance().createObjectBuilder(clReferenceObject);
 
                         // 6.1.6.1.
                         clObject.remove(Keywords.ID);
@@ -218,7 +218,7 @@ public final class RdfToJsonld {
                 Map<String, JsonValue> node = graphMap.get(usage.graphName, usage.subject).orElseGet(() -> Collections.emptyMap());
 
                 // 6.4.2.
-                final JsonArrayBuilder list = Json.createArrayBuilder();
+                final JsonArrayBuilder list = JsonProvider.instance().createArrayBuilder();
                 final List<String> listNodes = new ArrayList<>();
 
                 String nodeId = ((JsonString)node.get(Keywords.ID)).getString();
@@ -234,7 +234,7 @@ public final class RdfToJsonld {
                         && (node.size() == 3    /* keywords: @id, @first, @last */
                                 || (node.size() == 4 && node.containsKey(Keywords.TYPE)
                                     && node.get(Keywords.TYPE).asJsonArray().size() == 1
-                                    && node.get(Keywords.TYPE).asJsonArray().contains(Json.createValue(RdfConstants.LIST))
+                                    && node.get(Keywords.TYPE).asJsonArray().contains(JsonProvider.instance().createValue(RdfConstants.LIST))
                                     ))
                         ) {
 
@@ -282,7 +282,7 @@ public final class RdfToJsonld {
         }
 
         // 7.
-        final JsonArrayBuilder result = Json.createArrayBuilder();
+        final JsonArrayBuilder result = JsonProvider.instance().createArrayBuilder();
 
         // 8.
         for (final String subject : Utils.index(graphMap.keys(Keywords.DEFAULT), ordered)) {
@@ -292,7 +292,7 @@ public final class RdfToJsonld {
             // 8.1.
             if (graphMap.contains(subject)) {
 
-                final JsonArrayBuilder array = Json.createArrayBuilder();
+                final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
 
                 for (final String key : Utils.index(graphMap.keys(subject), ordered)) {
 
@@ -324,7 +324,7 @@ public final class RdfToJsonld {
 
         // 5.4.
         if (!Keywords.DEFAULT.equals(graphName) && !graphMap.contains(Keywords.DEFAULT, graphName)) {
-            graphMap.set(Keywords.DEFAULT, graphName, Keywords.ID, Json.createValue(graphName));
+            graphMap.set(Keywords.DEFAULT, graphName, Keywords.ID, JsonProvider.instance().createValue(graphName));
         }
 
         // 5.6.
@@ -338,7 +338,7 @@ public final class RdfToJsonld {
 
             // 5.7.1.
             if (!graphMap.contains(graphName, subject)) {
-                graphMap.set(graphName, subject, Keywords.ID, Json.createValue(subject));
+                graphMap.set(graphName, subject, Keywords.ID, JsonProvider.instance().createValue(subject));
             }
 
             // 5.7.3.
@@ -352,7 +352,7 @@ public final class RdfToJsonld {
             if ((triple.getObject().isBlankNode() || triple.getObject().isIRI())
                     && !graphMap.contains(graphName, triple.getObject().toString())) {
 
-                graphMap.set(graphName, triple.getObject().toString(), Keywords.ID, Json.createValue(triple.getObject().toString()));
+                graphMap.set(graphName, triple.getObject().toString(), Keywords.ID, JsonProvider.instance().createValue(triple.getObject().toString()));
             }
 
             // 5.7.5.
@@ -364,11 +364,11 @@ public final class RdfToJsonld {
 
                     JsonArray types = type.get().asJsonArray();
 
-                    graphMap.set(graphName, subject, Keywords.TYPE, Json.createArrayBuilder(types).add(triple.getObject().toString()).build());
+                    graphMap.set(graphName, subject, Keywords.TYPE, JsonProvider.instance().createArrayBuilder(types).add(triple.getObject().toString()).build());
 
                 } else {
 
-                    graphMap.set(graphName, subject, Keywords.TYPE, Json.createArrayBuilder().add(triple.getObject().toString()).build());
+                    graphMap.set(graphName, subject, Keywords.TYPE, JsonProvider.instance().createArrayBuilder().add(triple.getObject().toString()).build());
                 }
 
                 continue;
@@ -389,12 +389,12 @@ public final class RdfToJsonld {
                 JsonArray array = predicateValue.get().asJsonArray();
 
                 if (!array.contains(value)) {
-                    graphMap.set(graphName, subject, predicate, Json.createArrayBuilder(array).add(value).build());
+                    graphMap.set(graphName, subject, predicate, JsonProvider.instance().createArrayBuilder(array).add(value).build());
                 }
 
             // 5.7.8.
             } else {
-                graphMap.set(graphName, subject, predicate, Json.createArrayBuilder().add(value).build());
+                graphMap.set(graphName, subject, predicate, JsonProvider.instance().createArrayBuilder().add(value).build());
             }
 
             // 5.7.9.

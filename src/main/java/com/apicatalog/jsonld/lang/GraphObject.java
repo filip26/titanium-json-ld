@@ -19,9 +19,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.apicatalog.jsonld.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 
-import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
@@ -50,7 +50,7 @@ public final class GraphObject {
     }
 
     public static final JsonObject toGraphObject(JsonValue value) {
-        return Json.createObjectBuilder().add(Keywords.GRAPH, JsonUtils.toJsonArray(value)).build();
+        return JsonProvider.instance().createObjectBuilder().add(Keywords.GRAPH, JsonUtils.toJsonArray(value)).build();
     }
 
 }
