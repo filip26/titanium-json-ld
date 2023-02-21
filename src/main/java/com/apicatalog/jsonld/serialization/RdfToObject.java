@@ -19,8 +19,9 @@ import java.io.StringReader;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
+import com.apicatalog.jsonld.json.JsonProvider;
+import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfValue;
@@ -65,10 +66,10 @@ final class RdfToObject {
 
         // 1.
         if (value.isIRI() || value.isBlankNode()) {
-            return new RefJsonObject(Json.createObjectBuilder().add(Keywords.ID, value.getValue()).build());
+            return new RefJsonObject(JsonProvider.instance().createObjectBuilder().add(Keywords.ID, value.getValue()).build());
         }
 
-        final JsonObjectBuilder result = Json.createObjectBuilder();
+        final JsonObjectBuilder result = JsonProvider.instance().createObjectBuilder();
 
         // 2.
         final RdfLiteral literal = value.asLiteral();
@@ -86,7 +87,7 @@ final class RdfToObject {
 
                 // 2.4.1.
                 if (XsdConstants.STRING.equals(literal.getDatatype())) {
-                    convertedValue = Json.createValue(literal.getValue());
+                    convertedValue = JsonProvider.instance().createValue(literal.getValue());
 
                 // 2.4.2.
                 } else if (XsdConstants.BOOLEAN.equals(literal.getDatatype())) {
@@ -107,11 +108,11 @@ final class RdfToObject {
                 // 2.4.3.
                 } else if (XsdConstants.INTEGER.equals(literal.getDatatype()) || XsdConstants.INT.equals(literal.getDatatype()) || XsdConstants.LONG.equals(literal.getDatatype())) {
 
-                    convertedValue = Json.createValue(Long.parseLong(literal.getValue()));
+                    convertedValue = JsonProvider.instance().createValue(Long.parseLong(literal.getValue()));
 
                 } else if (XsdConstants.DOUBLE.equals(literal.getDatatype())) {
 
-                    convertedValue = Json.createValue(Double.parseDouble(literal.getValue()));
+                    convertedValue = JsonProvider.instance().createValue(Double.parseDouble(literal.getValue()));
 
                 } else if (literal.getDatatype() != null) {
 
@@ -124,7 +125,7 @@ final class RdfToObject {
                         && literal.getDatatype() != null
                         && RdfConstants.JSON.equals(literal.getDatatype())) {
 
-            try (JsonParser parser = Json.createParser(new StringReader(literal.getValue()))) {
+            try (JsonParser parser = JsonProvider.instance().createParser(new StringReader(literal.getValue()))) {
 
                 parser.next();
 
@@ -141,7 +142,7 @@ final class RdfToObject {
                     && literal.getDatatype().startsWith(RdfConstants.I18N_BASE)
                 ) {
 
-            convertedValue = Json.createValue(literal.getValue());
+            convertedValue = JsonProvider.instance().createValue(literal.getValue());
 
             String langId = literal.getDatatype().substring(RdfConstants.I18N_BASE.length());
 
@@ -149,16 +150,16 @@ final class RdfToObject {
 
             if (directionIndex > 1) {
 
-                result.add(Keywords.LANGUAGE, Json.createValue(langId.substring(0, directionIndex)));
-                result.add(Keywords.DIRECTION, Json.createValue(langId.substring(directionIndex + 1)));
+                result.add(Keywords.LANGUAGE, JsonProvider.instance().createValue(langId.substring(0, directionIndex)));
+                result.add(Keywords.DIRECTION, JsonProvider.instance().createValue(langId.substring(directionIndex + 1)));
 
             } else if (directionIndex == 0) {
 
-                result.add(Keywords.DIRECTION, Json.createValue(langId.substring(1)));
+                result.add(Keywords.DIRECTION, JsonProvider.instance().createValue(langId.substring(1)));
 
             } else  if (directionIndex == -1) {
 
-                result.add(Keywords.LANGUAGE, Json.createValue(langId));
+                result.add(Keywords.LANGUAGE, JsonProvider.instance().createValue(langId));
             }
 
         // 2.7.
@@ -179,11 +180,11 @@ final class RdfToObject {
         // 2.9.
         result.add(Keywords.VALUE, (convertedValue != null)
                                         ? convertedValue
-                                        : Json.createValue(literal.getValue()));
+                                        : JsonProvider.instance().createValue(literal.getValue()));
 
         // 2.10.
         if (type != null) {
-            result.add(Keywords.TYPE, Json.createValue(type));
+            result.add(Keywords.TYPE, JsonProvider.instance().createValue(type));
         }
 
         // 2.11.

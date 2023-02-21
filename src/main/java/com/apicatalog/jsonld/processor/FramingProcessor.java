@@ -37,12 +37,12 @@ import com.apicatalog.jsonld.framing.Frame;
 import com.apicatalog.jsonld.framing.Framing;
 import com.apicatalog.jsonld.framing.FramingState;
 import com.apicatalog.jsonld.json.JsonMapBuilder;
+import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
@@ -191,7 +191,7 @@ public final class FramingProcessor {
         }
 
         // 18. - remove preserve
-        final JsonArrayBuilder filtered = Json.createArrayBuilder();
+        final JsonArrayBuilder filtered = JsonProvider.instance().createArrayBuilder();
 
         result.map(FramingProcessor::removePreserve).forEach(filtered::add);
 
@@ -211,7 +211,7 @@ public final class FramingProcessor {
 
             final String key = activeContext.uriCompaction().vocab(true).compact(Keywords.GRAPH);
 
-            compactedResults = Json.createObjectBuilder()
+            compactedResults = JsonProvider.instance().createObjectBuilder()
                                     .add(key, compactedResults).build();
 
         }
@@ -234,21 +234,21 @@ public final class FramingProcessor {
 
             if (compactedResults.asJsonObject().isEmpty()) {
 
-                compactedResults = Json.createObjectBuilder().add(Keywords.GRAPH,
+                compactedResults = JsonProvider.instance().createObjectBuilder().add(Keywords.GRAPH,
                         JsonValue.EMPTY_JSON_ARRAY
                         ).build();
 
             } else {
 
-                compactedResults = Json.createObjectBuilder().add(Keywords.GRAPH,
-                                        Json.createArrayBuilder().add(compactedResults)
+                compactedResults = JsonProvider.instance().createObjectBuilder().add(Keywords.GRAPH,
+                                        JsonProvider.instance().createArrayBuilder().add(compactedResults)
                                         ).build();
             }
         }
 
         // 19.3.
         if (!JsonUtils.isEmptyArray(context) && !JsonUtils.isEmptyObject(context)) {
-            compactedResults = Json.createObjectBuilder(compactedResults.asJsonObject()).add(Keywords.CONTEXT, context).build();
+            compactedResults = JsonProvider.instance().createObjectBuilder(compactedResults.asJsonObject()).add(Keywords.CONTEXT, context).build();
         }
 
         return compactedResults.asJsonObject();
@@ -284,14 +284,14 @@ public final class FramingProcessor {
 
         if (JsonUtils.isArray(value)) {
 
-            final JsonArrayBuilder array = Json.createArrayBuilder();
+            final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
 
             value.asJsonArray().forEach(item -> array.add(removePreserve(item)));
 
             return array.build();
         }
 
-        final JsonObjectBuilder object = Json.createObjectBuilder();
+        final JsonObjectBuilder object = JsonProvider.instance().createObjectBuilder();
 
         for (final Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
 
@@ -315,7 +315,7 @@ public final class FramingProcessor {
 
         } else if (JsonUtils.isArray(value)) {
 
-            final JsonArrayBuilder array = Json.createArrayBuilder();
+            final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
 
             value.asJsonArray().forEach(item -> array.add(replaceNull(item)));
 
@@ -324,7 +324,7 @@ public final class FramingProcessor {
             return result.size() != 1 || JsonUtils.isNotNull(result.get(0)) ? result : JsonValue.EMPTY_JSON_ARRAY;
         }
 
-        final JsonObjectBuilder object = Json.createObjectBuilder();
+        final JsonObjectBuilder object = JsonProvider.instance().createObjectBuilder();
 
         value.asJsonObject().entrySet().forEach(entry -> object.add(entry.getKey(), replaceNull(entry.getValue())));
 
@@ -339,14 +339,14 @@ public final class FramingProcessor {
 
         if (JsonUtils.isArray(value)) {
 
-            final JsonArrayBuilder array = Json.createArrayBuilder();
+            final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
 
             value.asJsonArray().forEach(item -> array.add(removeBlankIdKey(item, blankNodes)));
 
             return array.build();
         }
 
-        final JsonObjectBuilder object = Json.createObjectBuilder();
+        final JsonObjectBuilder object = JsonProvider.instance().createObjectBuilder();
 
         for (final Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
 

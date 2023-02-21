@@ -21,11 +21,11 @@ import java.util.Optional;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
@@ -73,7 +73,7 @@ public final class ValueCompaction {
 
         if (language == null) {
             language = activeContext.getDefaultLanguage() != null
-                            ? Json.createValue(activeContext.getDefaultLanguage())
+                            ? JsonProvider.instance().createValue(activeContext.getDefaultLanguage())
                             : null;
         }
 
@@ -138,7 +138,7 @@ public final class ValueCompaction {
                     ) {
 
             // 8.1.
-            final JsonArrayBuilder types = Json.createArrayBuilder();
+            final JsonArrayBuilder types = JsonProvider.instance().createArrayBuilder();
 
             final JsonValue resultTypes = result.asJsonObject().get(Keywords.TYPE);
 
@@ -148,7 +148,7 @@ public final class ValueCompaction {
                     types.add(activeContext.uriCompaction().vocab(true).compact(((JsonString)type).getString()));
                 }
 
-                result = Json.createObjectBuilder(result.asJsonObject()).add(Keywords.TYPE, types.build()).build();
+                result = JsonProvider.instance().createObjectBuilder(result.asJsonObject()).add(Keywords.TYPE, types.build()).build();
             }
 
         // 9.
@@ -188,7 +188,7 @@ public final class ValueCompaction {
         // 11.
         if (JsonUtils.isObject(result)) {
 
-            final JsonObjectBuilder resultBuilder = Json.createObjectBuilder();
+            final JsonObjectBuilder resultBuilder = JsonProvider.instance().createObjectBuilder();
 
             for (Entry<String, JsonValue> entry : result.asJsonObject().entrySet()) {
                 resultBuilder.add(

@@ -20,11 +20,11 @@ import java.util.Optional;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
 
-import jakarta.json.Json;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
@@ -78,7 +78,7 @@ public final class ValueExpansion {
                     final String expandedValue = activeContext.uriExpansion().documentRelative(true)
                             .vocab(false).expand(idValue);
 
-                    return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();
+                    return JsonProvider.instance().createObjectBuilder().add(Keywords.ID, expandedValue).build();
                 }
 
             // 2.
@@ -87,12 +87,12 @@ public final class ValueExpansion {
                 String expandedValue = activeContext.uriExpansion().documentRelative(true)
                         .vocab(true).expand(((JsonString) value).getString());
 
-                return Json.createObjectBuilder().add(Keywords.ID, expandedValue).build();
+                return JsonProvider.instance().createObjectBuilder().add(Keywords.ID, expandedValue).build();
             }
         }
 
         // 3.
-        final JsonObjectBuilder result = Json.createObjectBuilder().add(Keywords.VALUE, value);
+        final JsonObjectBuilder result = JsonProvider.instance().createObjectBuilder().add(Keywords.VALUE, value);
 
         // 4.
         if (typeMapping
@@ -116,7 +116,7 @@ public final class ValueExpansion {
         final JsonValue language = definition
                                             .map(TermDefinition::getLanguageMapping)
                                             .orElseGet(() -> activeContext.getDefaultLanguage() != null
-                                                                ? Json.createValue(activeContext.getDefaultLanguage())
+                                                                ? JsonProvider.instance().createValue(activeContext.getDefaultLanguage())
                                                                 : null);
         // 5.2.
         final DirectionType direction = definition
@@ -130,7 +130,7 @@ public final class ValueExpansion {
 
         // 5.4.
         if (direction != null && !DirectionType.NULL.equals(direction)) {
-            result.add(Keywords.DIRECTION, Json.createValue(direction.name().toLowerCase()));
+            result.add(Keywords.DIRECTION, JsonProvider.instance().createValue(direction.name().toLowerCase()));
         }
     }
 }

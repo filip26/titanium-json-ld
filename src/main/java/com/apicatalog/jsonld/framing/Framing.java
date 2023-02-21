@@ -25,6 +25,7 @@ import java.util.Objects;
 import com.apicatalog.jsonld.JsonLdEmbed;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.json.JsonMapBuilder;
+import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
@@ -32,7 +33,6 @@ import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.lang.ValueObject;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
@@ -103,7 +103,7 @@ public final class Framing {
 
             // 4.1.
             final JsonMapBuilder output = JsonMapBuilder.create();
-            output.put(Keywords.ID, Json.createValue(id));
+            output.put(Keywords.ID, JsonProvider.instance().createValue(id));
 
 
             if (activeProperty == null) {
@@ -222,7 +222,7 @@ public final class Framing {
                     JsonValue subframe = frame.get(property);
 
                     if (subframe == null) {
-                        subframe = Json.createObjectBuilder()
+                        subframe = JsonProvider.instance().createObjectBuilder()
                                         .add(Keywords.EMBED, "@".concat(embed.name().toLowerCase()))
                                         .add(Keywords.EXPLICIT, explicit)
                                         .add(Keywords.REQUIRE_ALL, requireAll)
@@ -242,7 +242,7 @@ public final class Framing {
                             }
 
                             if (listFrameValue == null) {
-                                listFrameValue = Json.createObjectBuilder()
+                                listFrameValue = JsonProvider.instance().createObjectBuilder()
                                         .add(Keywords.EMBED, "@".concat(embed.name().toLowerCase()))
                                         .add(Keywords.EXPLICIT, explicit)
                                         .add(Keywords.REQUIRE_ALL, requireAll)
@@ -251,7 +251,7 @@ public final class Framing {
 
                             final Frame listFrame = Frame.of((JsonStructure)listFrameValue);
 
-                            final JsonArrayBuilder list = Json.createArrayBuilder();
+                            final JsonArrayBuilder list = JsonProvider.instance().createArrayBuilder();
 
                             for (final JsonValue listItem : JsonUtils.toCollection(item.asJsonObject().get(Keywords.LIST))) {
 
@@ -283,7 +283,7 @@ public final class Framing {
                                 }
                             }
 
-                            output.add(property, Json.createObjectBuilder().add(Keywords.LIST, list));
+                            output.add(property, JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, list));
 
                     } else if (NodeObject.isNodeReference(item)) {
 
@@ -339,12 +339,12 @@ public final class Framing {
                 JsonValue defaultValue = propertyFrame.get(Keywords.DEFAULT);
 
                 if (JsonUtils.isNull(defaultValue)) {
-                    defaultValue = Json.createValue(Keywords.NULL);
+                    defaultValue = JsonProvider.instance().createValue(Keywords.NULL);
                 }
 
-                output.add(property, Json.createObjectBuilder()
+                output.add(property, JsonProvider.instance().createObjectBuilder()
                                                     .add(Keywords.PRESERVE,
-                                                            Json.createArrayBuilder().add(
+                                                            JsonProvider.instance().createArrayBuilder().add(
                                                             defaultValue)));
             }
 

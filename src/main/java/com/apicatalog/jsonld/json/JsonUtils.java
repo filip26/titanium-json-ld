@@ -23,7 +23,6 @@ import java.util.stream.Stream;
 
 import com.apicatalog.jsonld.StringUtils;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
@@ -51,7 +50,7 @@ public final class JsonUtils {
         }
 
         if (JsonUtils.isArray(value)) {
-            return value.asJsonArray().contains(Json.createValue(text));
+            return value.asJsonArray().contains(JsonProvider.instance().createValue(text));
         }
         if (JsonUtils.isObject(value)) {
             return value.asJsonObject().containsKey(text);
@@ -140,7 +139,7 @@ public final class JsonUtils {
     }
 
     public static JsonObject toJsonObject(Map<String, JsonValue> map) {
-        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonObjectBuilder builder = JsonProvider.instance().createObjectBuilder();
 
         map.entrySet().forEach(e -> builder.add(e.getKey(), e.getValue()));
 
@@ -184,7 +183,7 @@ public final class JsonUtils {
     public static JsonArray toJsonArray(JsonValue value) {
        return JsonUtils.isArray(value)
                     ? value.asJsonArray()
-                    : Json.createArrayBuilder().add(value).build()
+                    : JsonProvider.instance().createArrayBuilder().add(value).build()
                     ;
     }
 
@@ -194,7 +193,7 @@ public final class JsonUtils {
 
     public static JsonValue toJsonValue(String value) {
         return value != null && StringUtils.isNotBlank(value)
-                    ? Json.createValue(value)
+                    ? JsonProvider.instance().createValue(value)
                     : JsonValue.NULL
                     ;
     }

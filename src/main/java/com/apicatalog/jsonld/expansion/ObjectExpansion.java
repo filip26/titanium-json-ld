@@ -27,13 +27,13 @@ import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonMapBuilder;
+import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.uri.UriUtils;
 
-import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
@@ -335,7 +335,7 @@ public final class ObjectExpansion {
             .get(Keywords.TYPE)
             .filter(JsonUtils::isNotArray)
             .filter(JsonUtils::isNotNull)
-            .ifPresent(value -> result.put(Keywords.TYPE, Json.createArrayBuilder().add(value).build()));
+            .ifPresent(value -> result.put(Keywords.TYPE, JsonProvider.instance().createArrayBuilder().add(value).build()));
 
         return normalize(result);
     }

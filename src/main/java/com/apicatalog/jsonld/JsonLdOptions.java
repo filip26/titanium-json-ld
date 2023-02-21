@@ -21,10 +21,10 @@ import com.apicatalog.jsonld.context.cache.Cache;
 import com.apicatalog.jsonld.context.cache.LruCache;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.SchemeRouter;
 
-import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
@@ -338,7 +338,7 @@ public final class JsonLdOptions {
             return;
         }
 
-        this.expandContext = JsonDocument.of(Json.createArrayBuilder().add(contextLocation).build());
+        this.expandContext = JsonDocument.of(JsonProvider.instance().createArrayBuilder().add(contextLocation).build());
     }
 
     public void setExpandContext(URI contextUri) {

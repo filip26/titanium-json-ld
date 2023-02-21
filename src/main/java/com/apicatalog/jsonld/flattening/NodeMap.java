@@ -22,10 +22,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonValue;
 
@@ -120,7 +120,7 @@ public final class NodeMap {
 
                 // 2.1.
                 if (!result.contains(Keywords.MERGED, subject.getKey())) {
-                    result.set(Keywords.MERGED, subject.getKey(), Keywords.ID, Json.createValue(subject.getKey()));
+                    result.set(Keywords.MERGED, subject.getKey(), Keywords.ID, JsonProvider.instance().createValue(subject.getKey()));
                 }
 
                 // 2.2.
@@ -138,10 +138,10 @@ public final class NodeMap {
                         final JsonArrayBuilder array;
 
                         if (result.contains(Keywords.MERGED, subject.getKey(), property.getKey())) {
-                            array = Json.createArrayBuilder(JsonUtils.toJsonArray(result.get(Keywords.MERGED, subject.getKey(), property.getKey())));
+                            array = JsonProvider.instance().createArrayBuilder(JsonUtils.toJsonArray(result.get(Keywords.MERGED, subject.getKey(), property.getKey())));
 
                         } else {
-                            array = Json.createArrayBuilder();
+                            array = JsonProvider.instance().createArrayBuilder();
                         }
 
                         JsonUtils.toJsonArray(property.getValue()).forEach(array::add);

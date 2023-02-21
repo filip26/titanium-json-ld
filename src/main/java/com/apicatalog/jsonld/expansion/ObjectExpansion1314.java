@@ -31,6 +31,7 @@ import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonMapBuilder;
+import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.DefaultObject;
 import com.apicatalog.jsonld.lang.DirectionType;
@@ -43,7 +44,6 @@ import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.jsonld.uri.UriUtils;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
@@ -212,10 +212,10 @@ final class ObjectExpansion1314 {
 
                         if (expandedStringValue != null) {
 
-                            expandedValue = Json.createValue(expandedStringValue);
+                            expandedValue = JsonProvider.instance().createValue(expandedStringValue);
 
                             if (frameExpansion) {
-                                expandedValue = Json.createArrayBuilder().add(expandedValue).build();
+                                expandedValue = JsonProvider.instance().createArrayBuilder().add(expandedValue).build();
                             }
                         } else {
                             expandedValue = JsonValue.NULL;
@@ -232,10 +232,10 @@ final class ObjectExpansion1314 {
 
                         if (expandedStringValue != null) {
 
-                            expandedValue = Json.createValue(expandedStringValue);
+                            expandedValue = JsonProvider.instance().createValue(expandedStringValue);
 
                             if (frameExpansion) {
-                                expandedValue = Json.createArrayBuilder().add(expandedValue).build();
+                                expandedValue = JsonProvider.instance().createArrayBuilder().add(expandedValue).build();
                             }
                         } else {
                             expandedValue = JsonValue.NULL;
@@ -243,7 +243,7 @@ final class ObjectExpansion1314 {
 
                     } else if (JsonUtils.isObject(value)) {
 
-                        expandedValue = Json.createArrayBuilder().add(JsonValue.EMPTY_JSON_OBJECT).build();
+                        expandedValue = JsonProvider.instance().createArrayBuilder().add(JsonValue.EMPTY_JSON_OBJECT).build();
 
                     } else if (JsonUtils.isEmptyArray(value)) {
 
@@ -251,7 +251,7 @@ final class ObjectExpansion1314 {
 
                     } else if (JsonUtils.isArray(value))  {
 
-                        final JsonArrayBuilder array = Json.createArrayBuilder();
+                        final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
 
                         for (final JsonValue item : JsonUtils.toCollection(value)) {
 
@@ -309,7 +309,7 @@ final class ObjectExpansion1314 {
 
                         if (defaultValue.filter(JsonUtils::isString).isPresent()) {
 
-                            expandedValue = Json.createObjectBuilder()
+                            expandedValue = JsonProvider.instance().createObjectBuilder()
                                     .add(Keywords.DEFAULT,
                                             typeContext
                                                     .uriExpansion()
@@ -333,12 +333,12 @@ final class ObjectExpansion1314 {
                                             .expand(((JsonString) value).getString());
 
                             if (expandedStringValue != null) {
-                                expandedValue = Json.createValue(expandedStringValue);
+                                expandedValue = JsonProvider.instance().createValue(expandedStringValue);
                             }
 
                         } else if (JsonUtils.isArray(value)) {
 
-                            final JsonArrayBuilder array = Json.createArrayBuilder();
+                            final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
 
                             for (final JsonValue item : value.asJsonArray()) {
 
@@ -352,7 +352,7 @@ final class ObjectExpansion1314 {
                                                 .expand(((JsonString) item).getString());
 
                                     if (expandedStringValue != null) {
-                                        array.add(Json.createValue(expandedStringValue));
+                                        array.add(JsonProvider.instance().createValue(expandedStringValue));
                                     }
                                 }
                             }
@@ -366,10 +366,10 @@ final class ObjectExpansion1314 {
                         final JsonValue typeValue = result.get(Keywords.TYPE).orElse(null);
 
                         if (JsonUtils.isArray(typeValue)) {
-                            expandedValue = Json.createArrayBuilder(typeValue.asJsonArray()).add(expandedValue).build();
+                            expandedValue = JsonProvider.instance().createArrayBuilder(typeValue.asJsonArray()).add(expandedValue).build();
 
                         } else {
-                            expandedValue = Json.createArrayBuilder().add(typeValue).add(expandedValue).build();
+                            expandedValue = JsonProvider.instance().createArrayBuilder().add(typeValue).add(expandedValue).build();
                         }
                     }
                 }
@@ -403,7 +403,7 @@ final class ObjectExpansion1314 {
                     if (JsonUtils.isNotNull(expandedValue)) {
 
                         if (JsonUtils.isNotArray(expandedValue)) {
-                            expandedValue = Json.createArrayBuilder().add(expandedValue).build();
+                            expandedValue = JsonProvider.instance().createArrayBuilder().add(expandedValue).build();
                         }
 
                         // 13.4.6.3
@@ -419,10 +419,10 @@ final class ObjectExpansion1314 {
                             final JsonArrayBuilder included;
 
                             if (JsonUtils.isArray(includedValue)) {
-                                included = Json.createArrayBuilder(includedValue.asJsonArray());
+                                included = JsonProvider.instance().createArrayBuilder(includedValue.asJsonArray());
 
                             } else {
-                                included = Json.createArrayBuilder().add(includedValue);
+                                included = JsonProvider.instance().createArrayBuilder().add(includedValue);
                             }
 
                             expandedValue.asJsonArray().forEach(included::add);
@@ -492,7 +492,7 @@ final class ObjectExpansion1314 {
                         }
 
                         // 13.4.8.2
-                        expandedValue = JsonUtils.isString(value) ? Json.createValue(((JsonString)value).getString().toLowerCase()) : value;
+                        expandedValue = JsonUtils.isString(value) ? JsonProvider.instance().createValue(((JsonString)value).getString().toLowerCase()) : value;
 
                         if (frameExpansion) {
                             expandedValue = JsonUtils.toJsonArray(expandedValue);
@@ -561,7 +561,7 @@ final class ObjectExpansion1314 {
                                         .compute();
 
                     if (JsonUtils.isNotArray(expandedValue)) {
-                        expandedValue = Json.createArrayBuilder().add(expandedValue).build();
+                        expandedValue = JsonProvider.instance().createArrayBuilder().add(expandedValue).build();
                     }
                 }
 
@@ -709,7 +709,7 @@ final class ObjectExpansion1314 {
             // 13.6.
             if (keyTermDefinition.map(TermDefinition::getTypeMapping).filter(Keywords.JSON::equals).isPresent()) {
 
-                expandedValue = Json.createObjectBuilder().add(Keywords.VALUE, value)
+                expandedValue = JsonProvider.instance().createObjectBuilder().add(Keywords.VALUE, value)
                         .add(Keywords.TYPE, Keywords.JSON).build();
 
             // 13.7.
@@ -733,7 +733,7 @@ final class ObjectExpansion1314 {
 
                     // 13.7.4.1.
                     if (JsonUtils.isNotArray(langValue)) {
-                        langValue = Json.createArrayBuilder().add(langValue).build();
+                        langValue = JsonProvider.instance().createArrayBuilder().add(langValue).build();
                     }
 
                     // 13.7.4.2.
@@ -750,7 +750,7 @@ final class ObjectExpansion1314 {
                         }
 
                         // 13.7.4.2.3.
-                        final JsonObjectBuilder langMap = Json.createObjectBuilder().add(Keywords.VALUE, item);
+                        final JsonObjectBuilder langMap = JsonProvider.instance().createObjectBuilder().add(Keywords.VALUE, item);
 
                         // 13.7.4.2.4.
                         if (!Keywords.NONE.equals(langCode)) {
@@ -767,17 +767,17 @@ final class ObjectExpansion1314 {
                                     LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", langCode);
                                 }
 
-                                langMap.add(Keywords.LANGUAGE, Json.createValue(langCode.toLowerCase()));
+                                langMap.add(Keywords.LANGUAGE, JsonProvider.instance().createValue(langCode.toLowerCase()));
                             }
                         }
 
                         // 13.7.4.2.5.
                         if (direction != null && !DirectionType.NULL.equals(direction)) {
-                            langMap.add(Keywords.DIRECTION, Json.createValue(direction.name().toLowerCase()));
+                            langMap.add(Keywords.DIRECTION, JsonProvider.instance().createValue(direction.name().toLowerCase()));
                         }
 
                         // 13.7.4.2.6.
-                        expandedValue = Json.createArrayBuilder(expandedValue.asJsonArray()).add(langMap).build();
+                        expandedValue = JsonProvider.instance().createArrayBuilder(expandedValue.asJsonArray()).add(langMap).build();
                     }
                 }
 
@@ -836,7 +836,7 @@ final class ObjectExpansion1314 {
 
                     // 13.8.3.5.
                     if (JsonUtils.isNotArray(indexValue)) {
-                        indexValue = Json.createArrayBuilder().add(indexValue).build();
+                        indexValue = JsonProvider.instance().createArrayBuilder().add(indexValue).build();
                     }
 
                     // 13.8.3.6.
@@ -857,7 +857,7 @@ final class ObjectExpansion1314 {
 
                             // 13.8.3.7.2.1.
                             JsonValue reExpandedIndex = activeContext.valueExpansion()
-                                    .expand(Json.createValue(index), indexKey);
+                                    .expand(JsonProvider.instance().createValue(index), indexKey);
 
                             // 13.8.3.7.2.2.
                             final String expandedIndexKey =
@@ -867,7 +867,7 @@ final class ObjectExpansion1314 {
                                             .expand(indexKey);
 
                             // 13.8.3.7.2.3.
-                            final JsonArrayBuilder indexPropertyValues = Json.createArrayBuilder().add(reExpandedIndex);
+                            final JsonArrayBuilder indexPropertyValues = JsonProvider.instance().createArrayBuilder().add(reExpandedIndex);
 
                             final JsonValue existingValues = item.asJsonObject().get(expandedIndexKey);
 
@@ -881,7 +881,7 @@ final class ObjectExpansion1314 {
                             }
 
                             // 13.8.3.7.2.4.
-                            item = Json.createObjectBuilder(item.asJsonObject())
+                            item = JsonProvider.instance().createObjectBuilder(item.asJsonObject())
                                     .add(expandedIndexKey, indexPropertyValues).build();
 
 
@@ -895,7 +895,7 @@ final class ObjectExpansion1314 {
                                 && !item.asJsonObject().containsKey(Keywords.INDEX)
                                 && !Keywords.NONE.equals(expandedIndex)) {
 
-                            item = Json.createObjectBuilder(item.asJsonObject()).add(Keywords.INDEX, index).build();
+                            item = JsonProvider.instance().createObjectBuilder(item.asJsonObject()).add(Keywords.INDEX, index).build();
 
                         // 13.8.3.7.4.
                         } else if (containerMapping.contains(Keywords.ID)
@@ -908,13 +908,13 @@ final class ObjectExpansion1314 {
                                                 .documentRelative(true)
                                                 .expand(index);
 
-                            item = Json.createObjectBuilder(item.asJsonObject()).add(Keywords.ID, expandedIndex)
+                            item = JsonProvider.instance().createObjectBuilder(item.asJsonObject()).add(Keywords.ID, expandedIndex)
                                     .build();
 
                         // 13.8.3.7.5.
                         } else if (containerMapping.contains(Keywords.TYPE) && !Keywords.NONE.equals(expandedIndex)) {
 
-                            final JsonArrayBuilder types = Json.createArrayBuilder().add(expandedIndex);
+                            final JsonArrayBuilder types = JsonProvider.instance().createArrayBuilder().add(expandedIndex);
 
                             final JsonValue existingType = item.asJsonObject().get(Keywords.TYPE);
 
@@ -928,11 +928,11 @@ final class ObjectExpansion1314 {
                                 }
                             }
 
-                            item = Json.createObjectBuilder(item.asJsonObject()).add(Keywords.TYPE, types).build();
+                            item = JsonProvider.instance().createObjectBuilder(item.asJsonObject()).add(Keywords.TYPE, types).build();
                         }
 
                         // 13.8.3.7.6.
-                        expandedValue = Json.createArrayBuilder(expandedValue.asJsonArray()).add(item).build();
+                        expandedValue = JsonProvider.instance().createArrayBuilder(expandedValue.asJsonArray()).add(item).build();
                     }
                 }
 
@@ -961,7 +961,7 @@ final class ObjectExpansion1314 {
                     && !containerMapping.contains(Keywords.ID)
                     && !containerMapping.contains(Keywords.INDEX)) {
 
-                final JsonArrayBuilder array = Json.createArrayBuilder();
+                final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
 
                 JsonUtils
                     .toStream(expandedValue)

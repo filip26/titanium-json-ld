@@ -18,7 +18,8 @@ package com.apicatalog.jsonld.serialization;
 import java.util.AbstractMap;
 import java.util.Set;
 
-import jakarta.json.Json;
+import com.apicatalog.jsonld.json.JsonProvider;
+
 import jakarta.json.JsonArray;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
@@ -137,7 +138,7 @@ final class RefJsonObject extends AbstractMap<String, JsonValue> implements Json
     public JsonValue put(String key, JsonValue value) {
         JsonValue previous = jsonObject.get(key);
 
-        jsonObject = Json.createObjectBuilder(jsonObject).add(key, value).build();
+        jsonObject = JsonProvider.instance().createObjectBuilder(jsonObject).add(key, value).build();
 
         return previous;
     }
@@ -147,7 +148,7 @@ final class RefJsonObject extends AbstractMap<String, JsonValue> implements Json
 
         JsonValue previous = jsonObject.get(key);
 
-        jsonObject = Json.createObjectBuilder(jsonObject).remove(key.toString()).build();
+        jsonObject = JsonProvider.instance().createObjectBuilder(jsonObject).remove(key.toString()).build();
 
         return previous;
     }
