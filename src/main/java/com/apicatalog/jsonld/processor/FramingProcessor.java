@@ -138,13 +138,13 @@ public final class FramingProcessor {
                                             .create(context, contextBase);
 
         // 13.
-        final List<String> frameKeysExpanded = new ArrayList<>();
-
+        boolean frameDefault = false;
         for (final String key : frameObject.keySet()) {
-            frameKeysExpanded.add(activeContext.uriExpansion().vocab(true).expand(key));
+            if(activeContext.uriExpansion().vocab(true).expand(key).equals(Keywords.GRAPH)) {
+                frameDefault = true;
+                break;
+            }
         }
-
-        boolean frameDefault = frameKeysExpanded.contains(Keywords.GRAPH);
 
         // 14.
         final FramingState state = new FramingState();
