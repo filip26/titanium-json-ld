@@ -46,7 +46,7 @@ class LanguageTagTest {
 
     @ParameterizedTest(name = "isWellFormed({0}): {1}")
     @MethodSource("validTags")
-    void testToString(final String tag, final boolean expected) {
+    void testToString(final String tag) {
 
         final LanguageTag languageTag = LanguageTag.create(tag);
 
@@ -57,11 +57,10 @@ class LanguageTagTest {
     @ParameterizedTest(name = "parse({0}): {1}")
     @MethodSource("validTags")
     void testParse(final String tag,
-                    final String language,
-                    final Collection<String> langExt,
-                    final String script,
-                    final String region
-                    ) {
+            final String language,
+            final Collection<String> langExt,
+            final String script,
+            final String region) {
 
         final LanguageTag languageTag = LanguageTag.create(tag);
 
@@ -72,68 +71,64 @@ class LanguageTagTest {
         assertEquals(region, languageTag.getRegion());
     }
 
-
     static final Stream<Arguments> data() {
         return Stream.of(
-            arguments("", false),
-            arguments("   ", false),
-            arguments("cs--CZ", false),
-            arguments("cs-a-CZ", true),
-            arguments("cs-", false),
-            arguments("-cs", false),
-            arguments("c#-CZ", false),
-            arguments("A1B2", false),
-            arguments("1", false),
-            arguments("abcd1234-abcd1234", false),
-            arguments("a-b-", false),
+                arguments("", false),
+                arguments("   ", false),
+                arguments("cs--CZ", false),
+                arguments("cs-a-CZ", true),
+                arguments("cs-", false),
+                arguments("-cs", false),
+                arguments("c#-CZ", false),
+                arguments("A1B2", false),
+                arguments("1", false),
+                arguments("abcd1234-abcd1234", false),
+                arguments("a-b-", false),
 
-            arguments("cs", true),
-            arguments("cs-CZ", true),
-            arguments("en-US", true),
-            arguments("en-US", true),
+                arguments("cs", true),
+                arguments("cs-CZ", true),
+                arguments("en-US", true),
+                arguments("en-US", true),
 
-            arguments("A", false),
-            arguments("A-0", false),
-            arguments("abcd-1234", true),
-            arguments("abcd-1234567890", false),
+                arguments("A", false),
+                arguments("A-0", false),
+                arguments("abcd-1234", true),
+                arguments("abcd-1234567890", false),
 
-            // extension subtags
-            arguments("en-x-US", true),
-            arguments("el-x-koine", true),
-            arguments("el-x-attic", true),
-            arguments("en-x-lgr", true),
-            arguments("de-CH-x-phonebk", true),
-            arguments("az-Arab-x-AZE-derbend", true),
-            arguments("zh-variant1-variant2", true),
-            arguments("zh-variant1-1abc", true),
-            arguments("zh-Latn-CN-variant1-a-extend1-b-extend2", true),
-            arguments("zh-Latn-CN-variant1-a-extend1-x-wadegile", true),
-            arguments("en-Latn-GB-boont-r-extended-sequence-x-private", true),
-            arguments("en-Latn-GB-boont-r-extended-sequence-x-private-b-private2", true),
-            arguments("en-Latn-GB-boont-r-extended-sequence-x-private-private2", true),
+                // extension subtags
+                arguments("en-x-US", true),
+                arguments("el-x-koine", true),
+                arguments("el-x-attic", true),
+                arguments("en-x-lgr", true),
+                arguments("de-CH-x-phonebk", true),
+                arguments("az-Arab-x-AZE-derbend", true),
+                arguments("zh-variant1-variant2", true),
+                arguments("zh-variant1-1abc", true),
+                arguments("zh-Latn-CN-variant1-a-extend1-b-extend2", true),
+                arguments("zh-Latn-CN-variant1-a-extend1-x-wadegile", true),
+                arguments("en-Latn-GB-boont-r-extended-sequence-x-private", true),
+                arguments("en-Latn-GB-boont-r-extended-sequence-x-private-b-private2", true),
+                arguments("en-Latn-GB-boont-r-extended-sequence-x-private-private2", true),
 
-            arguments("de-419-DE", false),
-            arguments("a-DE", false),
+                arguments("de-419-DE", false),
+                arguments("a-DE", false),
 
-            // private use
-            arguments("x-private", true),
+                // private use
+                arguments("x-private", true),
 
-            // grandfathered regular
-            arguments("zh-min-nan", true)
-        );
+                // grandfathered regular
+                arguments("zh-min-nan", true));
     }
 
     static final Stream<Arguments> validTags() {
         return Stream.of(
-            arguments("cs", "cs", null, null, null),
-            arguments("cs-CZ", "cs", null, null, "CZ"),
-            arguments("en-US", "en", null, null, "US"),
+                arguments("cs", "cs", null, null, null),
+                arguments("cs-CZ", "cs", null, null, "CZ"),
+                arguments("en-US", "en", null, null, "US"),
 
-            arguments("en-Latn-GB-boont-r-extended-sequence-x-private-b-private2",
-                    "en", null, "Latn", "GB", Arrays.asList("boont"),
-                    Arrays.asList(new Extension('r', Arrays.asList("extended", "sequence"))),
-                    Arrays.asList("private", "b", "private2")
-                    )
-        );
+                arguments("en-Latn-GB-boont-r-extended-sequence-x-private-b-private2",
+                        "en", null, "Latn", "GB", Arrays.asList("boont"),
+                        Arrays.asList(new Extension('r', Arrays.asList("extended", "sequence"))),
+                        Arrays.asList("private", "b", "private2")));
     }
 }
