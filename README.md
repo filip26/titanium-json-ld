@@ -74,24 +74,12 @@ Maven
     <artifactId>titanium-json-ld</artifactId>
     <version>1.3.2</version>
 </dependency>
-
 ```
 
-or
-
-```xml
-<!-- Android (Java 8, OkHtttp) -->
-<dependency>
-    <groupId>com.apicatalog</groupId>
-    <artifactId>titanium-json-ld-jre8</artifactId>
-    <version>1.3.2</version>
-</dependency>
-```
-
-Gradle
+Gradle (JRE8)
 
 ```gradle
-compile group: 'com.apicatalog', name: 'titanium-json-ld', version: '1.3.2'
+compile group: 'com.apicatalog', name: 'titanium-json-ld-jre8', version: '1.3.2'
 ```
 
 #### JSON-P Provider
