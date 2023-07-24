@@ -64,11 +64,10 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 
 #### Titanium
 
-Maven
-
+##### Maven
+Java 11 or higher
 
 ```xml
-<!-- Java 11 -->
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium-json-ld</artifactId>
@@ -76,7 +75,8 @@ Maven
 </dependency>
 ```
 
-Gradle (JRE8, supported Android API Level >=30)
+##### Gradle 
+Java 8+, Android API Level >=21
 
 ```gradle
 compile group: 'com.apicatalog', name: 'titanium-json-ld-jre8', version: '1.3.2'
