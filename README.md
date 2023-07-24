@@ -76,7 +76,7 @@ Maven
 </dependency>
 ```
 
-Gradle (JRE8)
+Gradle (JRE8, supported Android API Level >=30)
 
 ```gradle
 compile group: 'com.apicatalog', name: 'titanium-json-ld-jre8', version: '1.3.2'
