@@ -47,15 +47,20 @@ public final class NodeMap {
         }
 
         index
-            .computeIfAbsent(graphName, x -> new LinkedHashMap<>())
-            .computeIfAbsent(subject, x -> new LinkedHashMap<>())
-            .put(property, value);
+                .computeIfAbsent(graphName, x -> new LinkedHashMap<>())
+                .computeIfAbsent(subject, x -> new LinkedHashMap<>())
+                .put(property, value);
     }
 
     public JsonValue get(String graphName, String subject, String property) {
 
-        if (index.containsKey(graphName) && index.get(graphName).containsKey(subject)) {
-            return index.get(graphName).get(subject).get(property);
+        var indexGraphName = index.get(graphName);
+        if (indexGraphName != null) {
+
+            var indexSubject = indexGraphName.get(subject);
+            if (indexSubject != null) {
+                return indexSubject.get(property);
+            }
         }
 
         return null;
@@ -63,21 +68,37 @@ public final class NodeMap {
 
     public Map<String, JsonValue> get(String graphName, String subject) {
 
-        if (index.containsKey(graphName)) {
-            return index.get(graphName).get(subject);
+        var indexGraphName = index.get(graphName);
+
+        if (indexGraphName != null) {
+            return indexGraphName.get(subject);
         }
 
         return null;
     }
 
     public boolean contains(String graphName, String subject) {
-        return index.containsKey(graphName) && index.get(graphName).containsKey(subject);
+        var indexGraphName = index.get(graphName);
+
+        if (indexGraphName != null) {
+            return indexGraphName.containsKey(subject);
+        }
+
+        return false;
+
     }
 
     public boolean contains(String graphName, String subject, String property) {
-        return index.containsKey(graphName)
-                    && index.get(graphName).containsKey(subject)
-                    && index.get(graphName).get(subject).containsKey(property);
+       var indexGraphName = index.get(graphName);
+
+        if (indexGraphName != null) {
+            var indexSubject = indexGraphName.get(subject);
+            if (indexSubject != null) {
+                return indexSubject.containsKey(property);
+            }
+        }
+        return false;
+
     }
 
     public Optional<Map<String, Map<String, JsonValue>>> get(String graphName) {
@@ -105,7 +126,6 @@ public final class NodeMap {
     }
 
     /**
-     *
      * @see <a href="https://www.w3.org/TR/json-ld11-api/#merge-node-maps">Merge Node Maps</a>
      */
     public void merge() {
@@ -129,7 +149,7 @@ public final class NodeMap {
                     // 2.2.1.
                     if (!Keywords.TYPE.equals(property.getKey())
                             && Keywords.matchForm(property.getKey())
-                            ) {
+                    ) {
 
                         result.set(Keywords.MERGED, subject.getKey(), property.getKey(), property.getValue());
 

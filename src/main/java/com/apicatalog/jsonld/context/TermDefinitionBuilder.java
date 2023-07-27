@@ -462,11 +462,7 @@ public final class TermDefinitionBuilder {
             }
 
             // 19.3.
-            JsonUtils.toStream(containerValue)
-                        .filter(JsonUtils::isString)
-                        .map(JsonString.class::cast)
-                        .map(JsonString::getString)
-                        .forEach(definition::addContainerMapping);
+            JsonUtils.withStrings(containerValue, definition::addContainerMapping);
 
             // 19.4.
             if (definition.getContainerMapping().contains(Keywords.TYPE)) {

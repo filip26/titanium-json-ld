@@ -34,16 +34,15 @@ import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.uri.UriUtils;
 
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
 /**
- *
  * @see <a href=
- *      "https://www.w3.org/TR/json-ld11-api/#expansion-algorithm">Expansion
- *      Algorithm</a>
- *
+ * "https://www.w3.org/TR/json-ld11-api/#expansion-algorithm">Expansion
+ * Algorithm</a>
  */
 public final class ObjectExpansion {
 
@@ -60,7 +59,7 @@ public final class ObjectExpansion {
     private boolean fromMap;
 
     private ObjectExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final JsonObject element,
-            final String activeProperty, final URI baseUrl) {
+                            final String activeProperty, final URI baseUrl) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
         this.element = element;
@@ -74,7 +73,7 @@ public final class ObjectExpansion {
     }
 
     public static final ObjectExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
-            final JsonObject element, final String activeProperty, final URI baseUrl) {
+                                             final JsonObject element, final String activeProperty, final URI baseUrl) {
         return new ObjectExpansion(activeContext, propertyContext, element, activeProperty, baseUrl);
     }
 
@@ -111,26 +110,26 @@ public final class ObjectExpansion {
         final JsonMapBuilder result = JsonMapBuilder.create();
 
         ObjectExpansion1314
-                    .with(activeContext, element, activeProperty, baseUrl)
-                    .inputType(inputType)
-                    .result(result)
-                    .typeContext(typeContext)
-                    .nest(new LinkedHashMap<>())
-                    .frameExpansion(frameExpansion)
-                    .ordered(ordered)
-                    .expand();
+                .with(activeContext, element, activeProperty, baseUrl)
+                .inputType(inputType)
+                .result(result)
+                .typeContext(typeContext)
+                .nest(new LinkedHashMap<>())
+                .frameExpansion(frameExpansion)
+                .ordered(ordered)
+                .expand();
 
         // 15.
         if (result.containsKey(Keywords.VALUE)) {
 
             return normalizeValue(result);
 
-        // 16.
+            // 16.
         } else if (result.containsKey(Keywords.TYPE)) {
 
             return normalizeType(result);
 
-        // 17.
+            // 17.
         } else if (result.containsKey(Keywords.LIST) || result.containsKey(Keywords.SET)) {
 
             return normalizeContainer(result);
@@ -144,15 +143,15 @@ public final class ObjectExpansion {
         if (propertyContext != null) {
 
             activeContext = activeContext
-                                .newContext()
-                                .overrideProtected(true)
-                                .create(
-                                    propertyContext,
-                                    activeContext
-                                            .getTerm(activeProperty)
-                                            .map(TermDefinition::getBaseUrl)
-                                            .orElse(null)
-                                        );
+                    .newContext()
+                    .overrideProtected(true)
+                    .create(
+                            propertyContext,
+                            activeContext
+                                    .getTerm(activeProperty)
+                                    .map(TermDefinition::getBaseUrl)
+                                    .orElse(null)
+                    );
         }
     }
 
@@ -174,7 +173,7 @@ public final class ObjectExpansion {
             for (final String key : Utils.index(element.keySet(), true)) {
 
                 final String expandedKey =
-                            activeContext
+                        activeContext
                                 .uriExpansion()
                                 .vocab(true)
                                 .expand(key);
@@ -196,12 +195,18 @@ public final class ObjectExpansion {
         if (element.containsKey(Keywords.CONTEXT)) {
 
             activeContext = activeContext
-                                .newContext()
-                                .create(element.get(Keywords.CONTEXT), baseUrl);
+                    .newContext()
+                    .create(element.get(Keywords.CONTEXT), baseUrl);
         }
     }
 
     private String processTypeScoped(final ActiveContext typeContext) throws JsonLdError {
+
+        if (element.containsKey(Keywords.TYPE)) {
+            // TODO: This is safe only if an element can't have two different keys for TYPE.
+            handle11_2(typeContext, Keywords.TYPE);
+            return Keywords.TYPE;
+        }
 
         String typeKey = null;
 
@@ -209,7 +214,7 @@ public final class ObjectExpansion {
         for (final String key : Utils.index(element.keySet(), true)) {
 
             final String expandedKey =
-                        activeContext
+                    activeContext
                             .uriExpansion()
                             .vocab(true)
                             .expand(key);
@@ -221,38 +226,40 @@ public final class ObjectExpansion {
                 typeKey = key;
             }
 
-            // 11.2
-            final List<String> terms = JsonUtils
-                                            .toStream(element.get(key))
-                                            .filter(JsonUtils::isString)
-                                            .map(JsonString.class::cast)
-                                            .map(JsonString::getString)
-                                            .sorted()
-                                            .collect(Collectors.toList());
+            handle11_2(typeContext, key);
+        }
 
-            for (final String term : terms) {
+        return typeKey;
+    }
 
-                Optional<JsonValue> localContext = typeContext.getTerm(term).map(TermDefinition::getLocalContext);
+    private void handle11_2(ActiveContext typeContext, String key) throws JsonLdError {
+        // 11.2
 
-                if (localContext.isPresent()) {
+        JsonValue value = element.get(key);
+        List<String> terms = JsonUtils.optimizedGetStrings(value);
 
-                    Optional<TermDefinition> valueDefinition = activeContext.getTerm(term);
+        for (final String term : terms) {
 
-                    activeContext =
-                            activeContext
+            Optional<JsonValue> localContext = typeContext.getTerm(term).map(TermDefinition::getLocalContext);
+
+            if (localContext.isPresent()) {
+
+                Optional<TermDefinition> valueDefinition = activeContext.getTerm(term);
+
+                activeContext =
+                        activeContext
                                 .newContext()
                                 .propagate(false)
                                 .create(localContext.get(),
                                         valueDefinition
                                                 .map(TermDefinition::getBaseUrl)
                                                 .orElse(null)
-                                        );
-                }
+                                );
             }
         }
-
-        return typeKey;
     }
+
+
 
     private String findInputType(final String typeKey) throws JsonLdError {
 
@@ -268,13 +275,13 @@ public final class ObjectExpansion {
             if (JsonUtils.isArray(type)) {
 
                 final String lastValue = type.asJsonArray()
-                                .stream()
-                                .filter(JsonUtils::isString)
-                                .map(JsonString.class::cast)
-                                .map(JsonString::getString)
-                                .sorted()
-                                .reduce((first, second) -> second)
-                                .orElse(null);
+                        .stream()
+                        .filter(JsonUtils::isString)
+                        .map(JsonString.class::cast)
+                        .map(JsonString::getString)
+                        .sorted()
+                        .reduce((first, second) -> second)
+                        .orElse(null);
 
                 if (lastValue != null) {
                     return activeContext.uriExpansion().vocab(true).expand(lastValue);
@@ -312,16 +319,16 @@ public final class ObjectExpansion {
             if (value.map(v -> JsonUtils.isNull(v) || (JsonUtils.isArray(v) && v.asJsonArray().isEmpty())).orElse(true)) {
                 return JsonValue.NULL;
 
-            // 15.4
+                // 15.4
             } else if (!frameExpansion && JsonUtils.isNotString(value.get()) && result.containsKey(Keywords.LANGUAGE)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
 
-            // 15.5
+                // 15.5
             } else if (!frameExpansion
-                            && type.filter(t -> JsonUtils.isNotString(t)
-                                                || UriUtils.isNotURI(((JsonString) t).getString()))
-                                    .isPresent()
-                         ) {
+                    && type.filter(t -> JsonUtils.isNotString(t)
+                            || UriUtils.isNotURI(((JsonString) t).getString()))
+                    .isPresent()
+            ) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE);
             }
         }
@@ -332,10 +339,10 @@ public final class ObjectExpansion {
     private JsonValue normalizeType(final JsonMapBuilder result) throws JsonLdError {
 
         result
-            .get(Keywords.TYPE)
-            .filter(JsonUtils::isNotArray)
-            .filter(JsonUtils::isNotNull)
-            .ifPresent(value -> result.put(Keywords.TYPE, JsonProvider.instance().createArrayBuilder().add(value).build()));
+                .get(Keywords.TYPE)
+                .filter(JsonUtils::isNotArray)
+                .filter(JsonUtils::isNotNull)
+                .ifPresent(value -> result.put(Keywords.TYPE, JsonProvider.instance().createArrayBuilder().add(value).build()));
 
         return normalize(result);
     }
@@ -355,7 +362,7 @@ public final class ObjectExpansion {
             return normalize(JsonMapBuilder.create(set.map(JsonValue::asJsonObject).get()));
 
         } else if (set.isPresent()) {
-            return  set.get();
+            return set.get();
         }
 
         return normalize(result);
@@ -366,10 +373,10 @@ public final class ObjectExpansion {
         // Extension: JSON-LD-STAR (Experimental)
         if (result.containsKey(Keywords.ANNOTATION)
                 && (StringUtils.isBlank(activeProperty)
-                    || Keywords.GRAPH.equals(activeProperty)
-                    || Keywords.INCLUDED.equals(activeProperty)
-                    || result.get(Keywords.ANNOTATION).filter(NodeObject::isNotAnnotationObject).isPresent())
-                ) {
+                || Keywords.GRAPH.equals(activeProperty)
+                || Keywords.INCLUDED.equals(activeProperty)
+                || result.get(Keywords.ANNOTATION).filter(NodeObject::isNotAnnotationObject).isPresent())
+        ) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_ANNOTATION);
         }
 

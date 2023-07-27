@@ -17,6 +17,7 @@ package com.apicatalog.jsonld.deseralization;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -177,18 +178,21 @@ public final class JsonLdToRdf {
                                 final List<RdfTriple> listTriples = new ArrayList<>();
 
                                 // 1.3.2.5.2.
-                                ObjectToRdf
+                                RdfValue rdfValue = ObjectToRdf
                                         .with(item.asJsonObject(), listTriples, nodeMap)
                                         .rdfDirection(rdfDirection)
                                         .uriValidation(uriValidation)
-                                        .build()
-                                        .ifPresent(rdfObject ->
-                                                            dataset.add(Rdf.createNQuad(
-                                                                        rdfSubject,
-                                                                        rdfProperty,
-                                                                        rdfObject,
-                                                                        rdfGraphName
-                                                                        )));
+                                        .build();
+
+                                if(rdfValue != null){
+                                    dataset.add(Rdf.createNQuad(
+                                            rdfSubject,
+                                            rdfProperty,
+                                            rdfValue,
+                                            rdfGraphName
+                                    ));
+                                }
+
                                 // 1.3.2.5.3.
                                 listTriples.stream()
                                             .map(triple -> Rdf.createNQuad(triple, rdfGraphName))

@@ -318,24 +318,32 @@ public final class NodeMapBuilder {
     }
 
     private void handle6_7(Map<String, JsonValue> elementObject, String id) {
-        final Set<JsonValue> nodeType = new LinkedHashSet<>();
+        Set<JsonValue> nodeType = Set.of();
 
         final JsonValue nodeTypeValue = nodeMap.get(activeGraph, id, Keywords.TYPE);
 
         if (JsonUtils.isArray(nodeTypeValue)) {
-            nodeTypeValue.asJsonArray().stream().filter(JsonUtils::isNotNull).forEach(nodeType::add);
+            for (JsonValue jsonValue : nodeTypeValue.asJsonArray()) {
+                if (JsonUtils.isNotNull(jsonValue)) {
+                    nodeType = optimizedAddToSet(jsonValue, nodeType);
+                }
+            }
 
         } else if (JsonUtils.isNotNull(nodeTypeValue)) {
-            nodeType.add(nodeTypeValue);
+            nodeType = optimizedAddToSet(nodeTypeValue, nodeType);
         }
 
         final JsonValue typeValue = elementObject.get(Keywords.TYPE);
 
         if (JsonUtils.isArray(typeValue)) {
-            typeValue.asJsonArray().stream().filter(JsonUtils::isNotNull).forEach(nodeType::add);
+            for (JsonValue jsonValue : typeValue.asJsonArray()) {
+                if (JsonUtils.isNotNull(jsonValue)) {
+                    nodeType = optimizedAddToSet(jsonValue, nodeType);
+                }
+            }
 
         } else if (JsonUtils.isNotNull(typeValue)) {
-            nodeType.add(typeValue);
+            nodeType = optimizedAddToSet(typeValue, nodeType);
         }
 
         final JsonArrayBuilder nodeTypeBuilder = JsonProvider.instance().createArrayBuilder();
@@ -344,6 +352,20 @@ public final class NodeMapBuilder {
         nodeMap.set(activeGraph, id, Keywords.TYPE, nodeTypeBuilder.build());
 
         elementObject.remove(Keywords.TYPE);
+    }
+
+    private static Set<JsonValue> optimizedAddToSet(JsonValue jsonValue, Set<JsonValue> nodeType) {
+        if(nodeType.isEmpty()){
+            nodeType = Set.of(jsonValue);
+        }else if(nodeType.size() == 1 && !nodeType.contains(jsonValue)) {
+            nodeType = Set.of(((JsonValue) nodeType.toArray()[0]), jsonValue);
+        }else if(nodeType.size() == 2) {
+            nodeType = new LinkedHashSet<>(nodeType);
+            nodeType.add(jsonValue);
+        } else if (nodeType.size() > 2) {
+            nodeType.add(jsonValue);
+        }
+        return nodeType;
     }
 
     private void handle6_9(Map<String, JsonValue> elementObject, String id) throws JsonLdError {
@@ -469,9 +491,10 @@ public final class NodeMapBuilder {
         if (list == null) {
 
             // 4.1.1.
-            if (nodeMap.contains(activeGraph, activeSubject, activeProperty)) {
+            JsonValue jsonValue = nodeMap.get(activeGraph, activeSubject, activeProperty);
+            if (jsonValue != null) {
 
-                final JsonArray activePropertyValue = nodeMap.get(activeGraph, activeSubject, activeProperty).asJsonArray();
+                final JsonArray activePropertyValue = jsonValue.asJsonArray();
 
                 if (noneMatch(activePropertyValue, element)) {
                     nodeMap.set(activeGraph, activeSubject, activeProperty, JsonProvider.instance().createArrayBuilder(activePropertyValue).add(element).build());

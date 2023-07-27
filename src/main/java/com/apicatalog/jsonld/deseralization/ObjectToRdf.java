@@ -92,7 +92,7 @@ final class ObjectToRdf {
         return this;
     }
 
-    public Optional<RdfValue> build() throws JsonLdError {
+    public RdfValue build() throws JsonLdError {
 
         // 1. - 2.
         if (NodeObject.isNodeObject(item)) {
@@ -100,33 +100,33 @@ final class ObjectToRdf {
             JsonValue id = item.get(Keywords.ID);
 
             if (JsonUtils.isNotString(id) || JsonUtils.isNull(id)) {
-                return Optional.empty();
+                return  null;
             }
 
             String idString = ((JsonString)id).getString();
 
             if (BlankNode.isWellFormed(idString)) {
-                return Optional.of(Rdf.createBlankNode(idString));
+                return Rdf.createBlankNode(idString);
 
             } else if (UriUtils.isAbsoluteUri(idString, uriValidation)) {
-                return Optional.of(Rdf.createIRI(idString));
+                return Rdf.createIRI(idString);
             }
 
-            return Optional.empty();
+            return  null;
         }
 
         // 3.
         if (ListObject.isListObject(item)) {
-            return Optional.of(ListToRdf
+            return ListToRdf
                         .with(item.get(Keywords.LIST).asJsonArray(), triples, nodeMap)
                         .rdfDirection(rdfDirection)
                         .uriValidation(uriValidation)
-                        .build());
+                        .build();
         }
 
         // 4.
         if (!ValueObject.isValueObject(item)) {
-            return Optional.empty();
+            return  null;
         }
 
         final JsonValue value = item.get(Keywords.VALUE);
@@ -139,7 +139,7 @@ final class ObjectToRdf {
         // 6.
         if (datatype != null && !Keywords.JSON.equals(datatype) && !UriUtils.isAbsoluteUri(datatype, uriValidation)) {
             LOGGER.log(Level.WARNING, "Datatype [{0}] is not an absolute IRI nor @json and value is skipped.", datatype);
-            return Optional.empty();
+            return  null;
         }
 
         // 7.
@@ -148,7 +148,7 @@ final class ObjectToRdf {
                         || !LanguageTag.isWellFormed(item.getString(Keywords.LANGUAGE)))
                 ) {
             LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed string and value is skipped.", item.get(Keywords.LANGUAGE));
-            return Optional.empty();
+            return  null;
         }
 
         String valueString = null;
@@ -217,7 +217,7 @@ final class ObjectToRdf {
         if (valueString == null) {
 
             if (JsonUtils.isNotString(value)) {
-                return Optional.empty();
+                return  null;
             }
 
             valueString = ((JsonString)value).getString();
@@ -272,7 +272,7 @@ final class ObjectToRdf {
                                     Rdf.createString(item.getString(Keywords.DIRECTION)))
                                     );
 
-                return Optional.of(Rdf.createBlankNode(blankNodeId));
+                return Rdf.createBlankNode(blankNodeId);
             }
 
         // 14.
@@ -287,7 +287,7 @@ final class ObjectToRdf {
         }
 
         // 15.
-        return Optional.ofNullable(rdfLiteral);
+        return rdfLiteral;
     }
 
     private static final String toXsdDouble(BigDecimal bigDecimal) {

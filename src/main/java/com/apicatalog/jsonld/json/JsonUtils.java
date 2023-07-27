@@ -18,7 +18,10 @@ package com.apicatalog.jsonld.json;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.apicatalog.jsonld.StringUtils;
@@ -227,5 +230,55 @@ public final class JsonUtils {
         }
 
         return value;
+    }
+
+    public static void withStrings(JsonValue value, Consumer<String> addContainerMapping) {
+        if (JsonValue.ValueType.ARRAY.equals(value.getValueType())) {
+
+            JsonArray asJsonArray = value.asJsonArray();
+            for (int i = 0, asJsonArraySize = asJsonArray.size(); i < asJsonArraySize; i++) {
+                JsonValue v = asJsonArray.get(i);
+                if (JsonUtils.isString(v)) {
+                    addContainerMapping.accept(((JsonString) v).getString());
+                }
+            }
+
+        }else if (JsonUtils.isString(value)) {
+            addContainerMapping.accept(((JsonString) value).getString());
+        }
+    }
+
+    public static List<String> optimizedGetStrings(JsonValue value) {
+        if (JsonValue.ValueType.ARRAY.equals(value.getValueType())) {
+            JsonArray jsonArray = value.asJsonArray();
+            if (jsonArray.isEmpty()) {
+                return List.of();
+            } else if (jsonArray.size() == 1) {
+                if (JsonUtils.isString(jsonArray.get(0))) {
+                    return List.of(jsonArray.getString(0));
+                }else {
+                    return List.of();
+                }
+            } else if (jsonArray.size() == 2) {
+                if (JsonUtils.isString(jsonArray.get(0)) && JsonUtils.isString(jsonArray.get(1))) {
+                    String string0 = jsonArray.getString(0);
+                    String string1 = jsonArray.getString(1);
+                    if (string0.compareTo(string1) <= 0) {
+                        return List.of(string0, string1);
+                    } else {
+                        return List.of(string1, string0);
+                    }
+                }
+            }
+        } else if (JsonUtils.isString(value)) {
+            return List.of(((JsonString) value).getString());
+        }
+        return JsonUtils
+                .toStream(value)
+                .filter(JsonUtils::isString)
+                .map(JsonString.class::cast)
+                .map(JsonString::getString)
+                .sorted()
+                .collect(Collectors.toList());
     }
 }
