@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.lang;
 
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 import com.apicatalog.rdf.lang.RdfAlphabet;
 
@@ -59,21 +60,25 @@ public final class BlankNode {
             return false;
         }
 
-        int[] chars = blankNodeId.codePoints().toArray();
 
-        if (chars[0] != '_'
-                || chars[1] != ':'
-                || (RdfAlphabet.PN_CHARS_U.negate().test(chars[2])
-                        && RdfAlphabet.ASCII_DIGIT.negate().test(chars[2]))
-                || chars[chars.length - 1] == '.'
-                        )  {
+
+        if (blankNodeId.codePointAt(0) != '_'
+                || blankNodeId.codePointAt(1) != ':'
+                || (RdfAlphabet.PN_CHARS_U.negate().test(blankNodeId.codePointAt(2))
+                        && RdfAlphabet.ASCII_DIGIT.negate().test(blankNodeId.codePointAt(2)))
+                || blankNodeId.endsWith(".")){
             return false;
         }
 
-        if (chars.length == 3) {
+        int codePointCount = blankNodeId.codePointCount(0, blankNodeId.length());
+
+        if (codePointCount == 3) {
             return true;
         }
 
-        return Arrays.stream(chars, 3, chars.length - 1).allMatch(RdfAlphabet.PN_CHARS.or(ch -> ch == '.'));
+
+
+        return blankNodeId.codePoints().skip(3).limit(codePointCount-4).allMatch(RdfAlphabet.PN_CHARS.or(ch -> ch == '.'));
+//        return Arrays.stream(chars, 3, chars.length - 1).allMatch(RdfAlphabet.PN_CHARS.or(ch -> ch == '.'));
     }
 }

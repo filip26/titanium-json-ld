@@ -17,6 +17,7 @@ package com.apicatalog.jsonld.flattening;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -231,7 +232,13 @@ public final class NodeMapBuilder {
                     final JsonArray activePropertyValue = nodeMap.get(activeGraph, activeSubject, activeProperty).asJsonArray();
 
                     if (noneMatch(activePropertyValue, reference)) {
-                        nodeMap.set(activeGraph, activeSubject, activeProperty, JsonProvider.instance().createArrayBuilder(activePropertyValue).add(reference).build());
+                        JsonArray build;
+                        if (activePropertyValue.isEmpty()) {
+                            build = JsonProvider.instance().createArrayBuilder(List.of(reference)).build();
+                        } else {
+                            build = JsonProvider.instance().createArrayBuilder(activePropertyValue).add(reference).build();
+                        }
+                        nodeMap.set(activeGraph, activeSubject, activeProperty, build);
                     }
 
                     // 6.6.2.1.
@@ -370,14 +377,16 @@ public final class NodeMapBuilder {
         return;
     }
 
-    private static boolean noneMatch(JsonArray activePropertyValue, JsonObject reference) {
+    private static boolean noneMatch(JsonArray activePropertyValue, JsonStructure reference) {
 
         if (activePropertyValue.isEmpty()) {
             return true;
         }
 
+        int referenceHashCode = reference.hashCode();
+
         for (JsonValue e : activePropertyValue) {
-            if (reference.hashCode() == e.hashCode()) {
+            if (referenceHashCode == e.hashCode()) {
                 if (reference.equals(e)) {
                     return false;
                 }
@@ -435,7 +444,7 @@ public final class NodeMapBuilder {
 
                 final JsonArray activePropertyValue = nodeMap.get(activeGraph, activeSubject, activeProperty).asJsonArray();
 
-                if (activePropertyValue.stream().noneMatch(e -> Objects.equals(e, element))) {
+                if (noneMatch(activePropertyValue, element)) {
                     nodeMap.set(activeGraph, activeSubject, activeProperty, JsonProvider.instance().createArrayBuilder(activePropertyValue).add(element).build());
                 }
 

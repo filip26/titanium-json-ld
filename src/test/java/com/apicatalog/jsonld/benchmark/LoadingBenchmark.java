@@ -42,7 +42,7 @@ public class LoadingBenchmark {
         document = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions());
     }
 
-    public static void main(String[] args) throws IOException, URISyntaxException, JsonLdError {
+    public static void main(String[] args) throws URISyntaxException, JsonLdError {
         LoadingBenchmark loadingBenchmark = new LoadingBenchmark();
         for (int i = 0; i<20; i++){
             System.out.println("Iteration " + i);
@@ -52,7 +52,7 @@ public class LoadingBenchmark {
     }
 
     @Benchmark
-    public int toRdfApiGet() throws IOException, URISyntaxException, JsonLdError {
+    public int toRdfApiGet() throws JsonLdError {
         RdfDataset rdfDataset = new ToRdfApi(document).get();
 
         return rdfDataset.size();
