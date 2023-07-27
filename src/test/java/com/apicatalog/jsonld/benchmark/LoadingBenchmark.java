@@ -47,12 +47,12 @@ public class LoadingBenchmark {
         for (int i = 0; i<20; i++){
             System.out.println("Iteration " + i);
             loadingBenchmark.setUp();
-            loadingBenchmark.parseJsonLd();
+            loadingBenchmark.toRdfApiGet();
         }
     }
 
     @Benchmark
-    public int parseJsonLd() throws IOException, URISyntaxException, JsonLdError {
+    public int toRdfApiGet() throws IOException, URISyntaxException, JsonLdError {
         RdfDataset rdfDataset = new ToRdfApi(document).get();
 
         return rdfDataset.size();
