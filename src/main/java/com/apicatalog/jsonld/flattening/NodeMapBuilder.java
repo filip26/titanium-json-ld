@@ -99,7 +99,6 @@ public final class NodeMapBuilder {
 
         // 1.
         if (JsonUtils.isArray(element)) {
-
             return handle1();
         }
 
@@ -108,18 +107,7 @@ public final class NodeMapBuilder {
 
         // 3.
         if (elementObject.containsKey(Keywords.TYPE)) {
-
-            final JsonArrayBuilder types = JsonProvider.instance().createArrayBuilder();
-
-            // 3.1.
-            JsonUtils.toStream(elementObject.get(Keywords.TYPE))
-                    .map(item -> JsonUtils.isString(item) && BlankNode.hasPrefix(((JsonString) item).getString())
-                            ? JsonProvider.instance().createValue(nodeMap.createIdentifier(((JsonString) item).getString()))
-                            : item
-                    )
-                    .forEach(types::add);
-
-            elementObject.put(Keywords.TYPE, types.build());
+            handle3(elementObject);
         }
 
         // 4.
@@ -138,6 +126,20 @@ public final class NodeMapBuilder {
         }
 
         return nodeMap;
+    }
+
+    private void handle3(Map<String, JsonValue> elementObject) {
+        final JsonArrayBuilder types = JsonProvider.instance().createArrayBuilder();
+
+        // 3.1.
+        JsonUtils.toStream(elementObject.get(Keywords.TYPE))
+                .map(item -> JsonUtils.isString(item) && BlankNode.hasPrefix(((JsonString) item).getString())
+                        ? JsonProvider.instance().createValue(nodeMap.createIdentifier(((JsonString) item).getString()))
+                        : item
+                )
+                .forEach(types::add);
+
+        elementObject.put(Keywords.TYPE, types.build());
     }
 
     private NodeMap handle1() throws JsonLdError {
@@ -203,149 +205,176 @@ public final class NodeMapBuilder {
         // 6.5.
         if (referencedNode != null) {
 
-            // 6.5.1.
-            if (nodeMap.contains(activeGraph, id, activeProperty)) {
+            handle6_5(id);
 
-                final JsonArray activePropertyValue = nodeMap.get(activeGraph, id, activeProperty).asJsonArray();
 
-                if (activePropertyValue.stream().filter(JsonUtils::isObject).noneMatch(e -> Objects.equals(e.asJsonObject(), JsonUtils.toJsonObject(referencedNode)))) {
-                    nodeMap.set(activeGraph, id, activeProperty, JsonProvider.instance().createArrayBuilder(activePropertyValue).add(JsonUtils.toJsonObject(referencedNode)).build());
-                }
-
-                // 6.5.2.
-            } else {
-                nodeMap.set(activeGraph, id, activeProperty, JsonProvider.instance().createArrayBuilder().add(JsonUtils.toJsonObject(referencedNode)).build());
-            }
-
-            // 6.6.
         } else if (activeProperty != null) {
-
-            // 6.6.1.
-            final JsonObject reference = JsonProvider.instance().createObjectBuilder().add(Keywords.ID, id).build();
-
-            // 6.6.2.
-            if (list == null) {
-
-                // 6.6.2.2.
-                if (nodeMap.contains(activeGraph, activeSubject, activeProperty)) {
-
-                    final JsonArray activePropertyValue = nodeMap.get(activeGraph, activeSubject, activeProperty).asJsonArray();
-
-                    if (noneMatch(activePropertyValue, reference)) {
-                        JsonArray build;
-                        if (activePropertyValue.isEmpty()) {
-                            build = JsonProvider.instance().createArrayBuilder(List.of(reference)).build();
-                        } else {
-                            build = JsonProvider.instance().createArrayBuilder(activePropertyValue).add(reference).build();
-                        }
-                        nodeMap.set(activeGraph, activeSubject, activeProperty, build);
-                    }
-
-                    // 6.6.2.1.
-                } else {
-                    nodeMap.set(activeGraph, activeSubject, activeProperty, JsonProvider.instance().createArrayBuilder().add(reference).build());
-                }
-
-                // 6.6.3.
-            } else {
-                list.put(Keywords.LIST, JsonProvider.instance().createArrayBuilder(list.get(Keywords.LIST).asJsonArray()).add(reference).build());
-            }
+            // 6.6.
+            handle6_6(id);
         }
 
         // 6.7.
         if (elementObject.containsKey(Keywords.TYPE)) {
-
-            final Set<JsonValue> nodeType = new LinkedHashSet<>();
-
-            final JsonValue nodeTypeValue = nodeMap.get(activeGraph, id, Keywords.TYPE);
-
-            if (JsonUtils.isArray(nodeTypeValue)) {
-                nodeTypeValue.asJsonArray().stream().filter(JsonUtils::isNotNull).forEach(nodeType::add);
-
-            } else if (JsonUtils.isNotNull(nodeTypeValue)) {
-                nodeType.add(nodeTypeValue);
-            }
-
-            final JsonValue typeValue = elementObject.get(Keywords.TYPE);
-
-            if (JsonUtils.isArray(typeValue)) {
-                typeValue.asJsonArray().stream().filter(JsonUtils::isNotNull).forEach(nodeType::add);
-
-            } else if (JsonUtils.isNotNull(typeValue)) {
-                nodeType.add(typeValue);
-            }
-
-            final JsonArrayBuilder nodeTypeBuilder = JsonProvider.instance().createArrayBuilder();
-            nodeType.forEach(nodeTypeBuilder::add);
-
-            nodeMap.set(activeGraph, id, Keywords.TYPE, nodeTypeBuilder.build());
-
-            elementObject.remove(Keywords.TYPE);
+            handle6_7(elementObject, id);
         }
 
         // 6.8.
         if (elementObject.containsKey(Keywords.INDEX)) {
-
-            if (nodeMap.contains(activeGraph, id, Keywords.INDEX)) {
-                throw new JsonLdError(JsonLdErrorCode.CONFLICTING_INDEXES);
-            }
-
-            nodeMap.set(activeGraph, id, Keywords.INDEX, elementObject.get(Keywords.INDEX));
-            elementObject.remove(Keywords.INDEX);
+            handle6_8(elementObject, id);
         }
 
         // 6.9.
         if (elementObject.containsKey(Keywords.REVERSE)) {
-
-            // 6.9.1.
-            Map<String, JsonValue> referenced = new LinkedHashMap<>();
-            referenced.put(Keywords.ID, JsonProvider.instance().createValue(id));
-
-            // 6.9.2.
-            JsonValue reverseMap = elementObject.get(Keywords.REVERSE);
-
-            // 6.9.3.
-            for (Entry<String, JsonValue> entry : reverseMap.asJsonObject().entrySet()) {
-
-                // 6.9.3.1.
-                for (JsonValue value : entry.getValue().asJsonArray()) {
-
-                    // 6.9.3.1.1.
-                    NodeMapBuilder
-                            .with((JsonStructure) value, nodeMap)
-                            .activeGraph(activeGraph)
-                            .referencedNode(referenced)
-                            .activeProperty(entry.getKey())
-                            .build();
-                }
-            }
-
-            // 6.9.4.
-            elementObject.remove(Keywords.REVERSE);
+            handle6_9(elementObject, id);
         }
 
         // 6.10.
         if (elementObject.containsKey(Keywords.GRAPH)) {
-
-            NodeMapBuilder
-                    .with((JsonStructure) elementObject.get(Keywords.GRAPH), nodeMap)
-                    .activeGraph(id)
-                    .build();
-
-            elementObject.remove(Keywords.GRAPH);
+            handle6_10(elementObject, id);
         }
 
         // 6.11.
         if (elementObject.containsKey(Keywords.INCLUDED)) {
-
-            NodeMapBuilder
-                    .with((JsonStructure) elementObject.get(Keywords.INCLUDED), nodeMap)
-                    .activeGraph(activeGraph)
-                    .build();
-
-            elementObject.remove(Keywords.INCLUDED);
+            handle6_11(elementObject);
         }
 
+        handle6_12(elementObject, id);
+    }
+
+    private void handle6_11(Map<String, JsonValue> elementObject) throws JsonLdError {
+        NodeMapBuilder
+                .with((JsonStructure) elementObject.get(Keywords.INCLUDED), nodeMap)
+                .activeGraph(activeGraph)
+                .build();
+
+        elementObject.remove(Keywords.INCLUDED);
+    }
+
+    private void handle6_10(Map<String, JsonValue> elementObject, String id) throws JsonLdError {
+        NodeMapBuilder
+                .with((JsonStructure) elementObject.get(Keywords.GRAPH), nodeMap)
+                .activeGraph(id)
+                .build();
+
+        elementObject.remove(Keywords.GRAPH);
+    }
+
+    private void handle6_8(Map<String, JsonValue> elementObject, String id) throws JsonLdError {
+        if (nodeMap.contains(activeGraph, id, Keywords.INDEX)) {
+            throw new JsonLdError(JsonLdErrorCode.CONFLICTING_INDEXES);
+        }
+
+        nodeMap.set(activeGraph, id, Keywords.INDEX, elementObject.get(Keywords.INDEX));
+        elementObject.remove(Keywords.INDEX);
+    }
+
+    private void handle6_5(String id) {
+        // 6.5.1.
+        if (nodeMap.contains(activeGraph, id, activeProperty)) {
+
+            final JsonArray activePropertyValue = nodeMap.get(activeGraph, id, activeProperty).asJsonArray();
+
+            if (activePropertyValue.stream().filter(JsonUtils::isObject).noneMatch(e -> Objects.equals(e.asJsonObject(), JsonUtils.toJsonObject(referencedNode)))) {
+                nodeMap.set(activeGraph, id, activeProperty, JsonProvider.instance().createArrayBuilder(activePropertyValue).add(JsonUtils.toJsonObject(referencedNode)).build());
+            }
+
+            // 6.5.2.
+        } else {
+            nodeMap.set(activeGraph, id, activeProperty, JsonProvider.instance().createArrayBuilder().add(JsonUtils.toJsonObject(referencedNode)).build());
+        }
+    }
+
+    private void handle6_6(String id) {
+        // 6.6.1.
+        final JsonObject reference = JsonProvider.instance().createObjectBuilder().add(Keywords.ID, id).build();
+
+        // 6.6.2.
+        if (list == null) {
+
+            // 6.6.2.2.
+            if (nodeMap.contains(activeGraph, activeSubject, activeProperty)) {
+
+                final JsonArray activePropertyValue = nodeMap.get(activeGraph, activeSubject, activeProperty).asJsonArray();
+
+                if (noneMatch(activePropertyValue, reference)) {
+                    JsonArray build;
+                    if (activePropertyValue.isEmpty()) {
+                        build = JsonProvider.instance().createArrayBuilder(List.of(reference)).build();
+                    } else {
+                        build = JsonProvider.instance().createArrayBuilder(activePropertyValue).add(reference).build();
+                    }
+                    nodeMap.set(activeGraph, activeSubject, activeProperty, build);
+                }
+
+                // 6.6.2.1.
+            } else {
+                nodeMap.set(activeGraph, activeSubject, activeProperty, JsonProvider.instance().createArrayBuilder().add(reference).build());
+            }
+
+            // 6.6.3.
+        } else {
+            list.put(Keywords.LIST, JsonProvider.instance().createArrayBuilder(list.get(Keywords.LIST).asJsonArray()).add(reference).build());
+        }
+    }
+
+    private void handle6_7(Map<String, JsonValue> elementObject, String id) {
+        final Set<JsonValue> nodeType = new LinkedHashSet<>();
+
+        final JsonValue nodeTypeValue = nodeMap.get(activeGraph, id, Keywords.TYPE);
+
+        if (JsonUtils.isArray(nodeTypeValue)) {
+            nodeTypeValue.asJsonArray().stream().filter(JsonUtils::isNotNull).forEach(nodeType::add);
+
+        } else if (JsonUtils.isNotNull(nodeTypeValue)) {
+            nodeType.add(nodeTypeValue);
+        }
+
+        final JsonValue typeValue = elementObject.get(Keywords.TYPE);
+
+        if (JsonUtils.isArray(typeValue)) {
+            typeValue.asJsonArray().stream().filter(JsonUtils::isNotNull).forEach(nodeType::add);
+
+        } else if (JsonUtils.isNotNull(typeValue)) {
+            nodeType.add(typeValue);
+        }
+
+        final JsonArrayBuilder nodeTypeBuilder = JsonProvider.instance().createArrayBuilder();
+        nodeType.forEach(nodeTypeBuilder::add);
+
+        nodeMap.set(activeGraph, id, Keywords.TYPE, nodeTypeBuilder.build());
+
+        elementObject.remove(Keywords.TYPE);
+    }
+
+    private void handle6_9(Map<String, JsonValue> elementObject, String id) throws JsonLdError {
+        // 6.9.1.
+        Map<String, JsonValue> referenced = new LinkedHashMap<>();
+        referenced.put(Keywords.ID, JsonProvider.instance().createValue(id));
+
+        // 6.9.2.
+        JsonValue reverseMap = elementObject.get(Keywords.REVERSE);
+
+        // 6.9.3.
+        for (Entry<String, JsonValue> entry : reverseMap.asJsonObject().entrySet()) {
+
+            // 6.9.3.1.
+            for (JsonValue value : entry.getValue().asJsonArray()) {
+
+                // 6.9.3.1.1.
+                NodeMapBuilder
+                        .with((JsonStructure) value, nodeMap)
+                        .activeGraph(activeGraph)
+                        .referencedNode(referenced)
+                        .activeProperty(entry.getKey())
+                        .build();
+            }
+        }
+
+        // 6.9.4.
+        elementObject.remove(Keywords.REVERSE);
+    }
+
+    private void handle6_12(Map<String, JsonValue> elementObject, String id) throws JsonLdError {
         // 6.12.
         for (String property : Utils.index(elementObject.keySet(), true)) {
 
@@ -374,7 +403,6 @@ public final class NodeMapBuilder {
                     .activeProperty(property)
                     .build();
         }
-        return;
     }
 
     private static boolean noneMatch(JsonArray activePropertyValue, JsonStructure reference) {
@@ -385,7 +413,8 @@ public final class NodeMapBuilder {
 
         int referenceHashCode = reference.hashCode();
 
-        for (JsonValue e : activePropertyValue) {
+        for (int i = 0, activePropertyValueSize = activePropertyValue.size(); i < activePropertyValueSize; i++) {
+            JsonValue e = activePropertyValue.get(i);
             if (referenceHashCode == e.hashCode()) {
                 if (reference.equals(e)) {
                     return false;
