@@ -18,9 +18,11 @@ package com.apicatalog.jsonld.deseralization;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -73,6 +75,8 @@ final class ObjectToRdf {
     private RdfDirection rdfDirection;
     private boolean uriValidation;
 
+    private final Set<String> absoluteIris = new HashSet<>();
+
     private ObjectToRdf(JsonObject item, List<RdfTriple> triples, NodeMap nodeMap) {
         this.item = item;
         this.triples = triples;
@@ -108,7 +112,7 @@ final class ObjectToRdf {
             if (BlankNode.isWellFormed(idString)) {
                 return Rdf.createBlankNode(idString);
 
-            } else if (UriUtils.isAbsoluteUri(idString, uriValidation)) {
+            } else if (UriUtils.isAbsoluteUri(idString, false) && UriUtils.isAbsoluteUri(idString, uriValidation)) {
                 return Rdf.createIRI(idString);
             }
 
@@ -137,9 +141,18 @@ final class ObjectToRdf {
                             : null;
 
         // 6.
-        if (datatype != null && !Keywords.JSON.equals(datatype) && !UriUtils.isAbsoluteUri(datatype, uriValidation)) {
-            LOGGER.log(Level.WARNING, "Datatype [{0}] is not an absolute IRI nor @json and value is skipped.", datatype);
-            return  null;
+        if (datatype != null && !Keywords.JSON.equals(datatype)) {
+
+            if(!absoluteIris.contains(datatype)) {
+                boolean absoluteUri = UriUtils.isAbsoluteUri(datatype, uriValidation);
+                if(absoluteUri) {
+                    absoluteIris.add(datatype);
+                }else {
+                    LOGGER.log(Level.WARNING, "Datatype [{0}] is not an absolute IRI nor @json and value is skipped.", datatype);
+                    return null;
+                }
+            }
+
         }
 
         // 7.

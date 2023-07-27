@@ -25,7 +25,7 @@ public final class UriUtils {
     private UriUtils() {
     }
 
-    public static final boolean isURI(final String value) {
+    public static boolean isURI(final String value) {
 
         return value != null
                     && StringUtils.isNotBlank(value)
@@ -34,7 +34,7 @@ public final class UriUtils {
     }
 
 
-    public static final URI create(final String uri) {
+    public static URI create(final String uri) {
 
         if (uri == null) {
             throw new IllegalArgumentException("The uri cannot be null.");
@@ -71,12 +71,12 @@ public final class UriUtils {
      * @param uri to check
      * @return <code>true</code> if the provided URI ends with delimiter
      */
-    public static final boolean endsWithGenDelim(final String uri) {
+    public static boolean endsWithGenDelim(final String uri) {
         return uri.endsWith(":") || uri.endsWith("/") || uri.endsWith("?") || uri.endsWith("#") || uri.endsWith("[")
                 || uri.endsWith("]") || uri.endsWith("@");
     }
 
-    public static final boolean isNotURI(final String uri) {
+    public static boolean isNotURI(final String uri) {
         return uri == null
                 || StringUtils.isBlank(uri)
                 || Keywords.matchForm(StringUtils.strip(uri))
@@ -93,11 +93,11 @@ public final class UriUtils {
      * @return <code>true</code> if the given URI is not absolute
      */
     @Deprecated
-    public static final boolean isNotAbsoluteUri(final String uri) {
+    public static boolean isNotAbsoluteUri(final String uri) {
         return isNotAbsoluteUri(uri, true);
     }
 
-    public static final boolean isNotAbsoluteUri(final String uri, final boolean validate) {
+    public static boolean isNotAbsoluteUri(final String uri, final boolean validate) {
         return !isAbsoluteUri(uri, validate);
     }
 
@@ -110,11 +110,12 @@ public final class UriUtils {
      * @return <code>true</code> if the given URI is absolute
      */
     @Deprecated
-    public static final boolean isAbsoluteUri(final String uri) {
+    public static  boolean isAbsoluteUri(final String uri) {
         return isAbsoluteUri(uri, true);
     }
 
-    public static final boolean isAbsoluteUri(final String uri, final boolean validate) {
+
+    public static boolean isAbsoluteUri(final String uri, final boolean validate) {
 
         // if URI validation is disabled
         if (!validate) {
@@ -135,7 +136,7 @@ public final class UriUtils {
         }
     }
 
-    private static final boolean startsWithScheme(final String uri) {
+    private static boolean startsWithScheme(final String uri) {
 
         if (uri == null
                 || uri.length() < 2 // a scheme must have at least one letter followed by ':'
@@ -160,7 +161,7 @@ public final class UriUtils {
         return false;
     }
 
-    protected static final String recompose(final String scheme, final String authority, final String path, final String query, final String fragment) {
+    protected static String recompose(final String scheme, final String authority, final String path, final String query, final String fragment) {
 
         final StringBuilder builder = new StringBuilder();
 
@@ -186,11 +187,11 @@ public final class UriUtils {
         return builder.toString();
     }
 
-    protected static final boolean isDefined(final String value) {
+    protected static boolean isDefined(final String value) {
         return value != null && StringUtils.isNotBlank(value);
     }
 
-    protected static final boolean isNotDefined(final String value) {
+    protected static boolean isNotDefined(final String value) {
         return value == null || StringUtils.isBlank(value);
     }
 
