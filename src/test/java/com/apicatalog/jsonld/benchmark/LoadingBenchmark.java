@@ -44,7 +44,7 @@ public class LoadingBenchmark {
 
     public static void main(String[] args) throws URISyntaxException, JsonLdError {
         LoadingBenchmark loadingBenchmark = new LoadingBenchmark();
-        for (int i = 0; i<40; i++){
+        for (int i = 0; i<200; i++){
             System.out.println("Iteration " + i);
             loadingBenchmark.setUp();
             loadingBenchmark.toRdfApiGet();

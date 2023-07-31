@@ -28,9 +28,9 @@ public final class UriUtils {
     public static boolean isURI(final String value) {
 
         return value != null
-                    && StringUtils.isNotBlank(value)
-                    && !Keywords.matchForm(StringUtils.strip(value))
-                    && create(StringUtils.strip(value)) != null;
+                && StringUtils.isNotBlank(value)
+                && !Keywords.matchForm(StringUtils.strip(value))
+                && create(StringUtils.strip(value)) != null;
     }
 
 
@@ -65,11 +65,10 @@ public final class UriUtils {
     /**
      * Check if the provided URI ends with generic delimiter.
      *
-     * @see <a href="https://tools.ietf.org/html/rfc3986#section-2.2">URI - Reserved
-     *      Characters </a>
-     *
      * @param uri to check
      * @return <code>true</code> if the provided URI ends with delimiter
+     * @see <a href="https://tools.ietf.org/html/rfc3986#section-2.2">URI - Reserved
+     * Characters </a>
      */
     public static boolean endsWithGenDelim(final String uri) {
         return uri.endsWith(":") || uri.endsWith("/") || uri.endsWith("?") || uri.endsWith("#") || uri.endsWith("[")
@@ -87,10 +86,9 @@ public final class UriUtils {
     /**
      * Deprecated in favor of {@link UriUtils#isNotAbsoluteUri(String, boolean)}
      *
-     * @deprecated since 1.3.0
-     *
      * @param uri to check
      * @return <code>true</code> if the given URI is not absolute
+     * @deprecated since 1.3.0
      */
     @Deprecated
     public static boolean isNotAbsoluteUri(final String uri) {
@@ -104,13 +102,12 @@ public final class UriUtils {
     /**
      * Deprecated in favor of {@link UriUtils#isAbsoluteUri(String, boolean)}
      *
-     * @deprecated since 1.3.0
-     *
      * @param uri to check
      * @return <code>true</code> if the given URI is absolute
+     * @deprecated since 1.3.0
      */
     @Deprecated
-    public static  boolean isAbsoluteUri(final String uri) {
+    public static boolean isAbsoluteUri(final String uri) {
         return isAbsoluteUri(uri, true);
     }
 
@@ -123,9 +120,8 @@ public final class UriUtils {
             return startsWithScheme(uri);
         }
 
-        if (uri == null
-                || uri.length() < 3 // minimal form s(1):ssp(1)
-                ) {
+        // minimal form s(1):ssp(1)
+        if (uri == null || uri.length() < 3 ) {
             return false;
         }
 
@@ -141,7 +137,7 @@ public final class UriUtils {
         if (uri == null
                 || uri.length() < 2 // a scheme must have at least one letter followed by ':'
                 || !Character.isLetter(uri.codePointAt(0)) // a scheme name must start with a letter
-                ) {
+        ) {
             return false;
         }
 
@@ -149,9 +145,9 @@ public final class UriUtils {
 
             if (
                 //  a scheme name must start with a letter followed by a letter/digit/+/-/.
-                Character.isLetterOrDigit(uri.codePointAt(i))
-                        || uri.charAt(i) == '-' || uri.charAt(i) == '+' || uri.charAt(i) == '.'
-                ) {
+                    Character.isLetterOrDigit(uri.codePointAt(i))
+                            || uri.charAt(i) == '-' || uri.charAt(i) == '+' || uri.charAt(i) == '.'
+            ) {
                 continue;
             }
 

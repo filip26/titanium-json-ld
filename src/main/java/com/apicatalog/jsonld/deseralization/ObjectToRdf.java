@@ -112,7 +112,10 @@ final class ObjectToRdf {
             if (BlankNode.isWellFormed(idString)) {
                 return Rdf.createBlankNode(idString);
 
-            } else if (UriUtils.isAbsoluteUri(idString, false) && UriUtils.isAbsoluteUri(idString, uriValidation)) {
+            } else if (absoluteIris.contains(idString)) {
+                return Rdf.createIRI(idString);
+            }else if ( UriUtils.isAbsoluteUri(idString, uriValidation)) {
+                absoluteIris.add(idString);
                 return Rdf.createIRI(idString);
             }
 
