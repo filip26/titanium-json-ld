@@ -51,7 +51,7 @@ public class BasicProcessingAlgorithmsBenchmark {
         for (int i = 0; i < 20; i++) {
             System.out.println("Iteration " + i);
             loadingBenchmark.setUp();
-            loadingBenchmark.flatten();
+            loadingBenchmark.compact();
         }
     }
 

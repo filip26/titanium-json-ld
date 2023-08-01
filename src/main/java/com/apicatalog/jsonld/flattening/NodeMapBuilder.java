@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.flattening;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.ModifiableJsonArray;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
@@ -299,9 +301,14 @@ public final class NodeMapBuilder {
                 if (noneMatch(activePropertyValue, reference)) {
                     JsonArray build;
                     if (activePropertyValue.isEmpty()) {
-                        build = JsonProvider.instance().createArrayBuilder(List.of(reference)).build();
+                        build = new ModifiableJsonArray(new ArrayList<>(List.of(reference)));
                     } else {
-                        build = JsonProvider.instance().createArrayBuilder(activePropertyValue).add(reference).build();
+                        if(activePropertyValue instanceof ModifiableJsonArray) {
+                            build = activePropertyValue;
+                        } else {
+                            build = new ModifiableJsonArray(new ArrayList<>(activePropertyValue));
+                        }
+                        build.add(reference);
                     }
                     nodeMap.set(activeGraph, activeSubject, activeProperty, build);
                 }
@@ -428,6 +435,10 @@ public final class NodeMapBuilder {
     }
 
     private static boolean noneMatch(JsonArray activePropertyValue, JsonStructure reference) {
+
+        if(activePropertyValue instanceof ModifiableJsonArray) {
+            return !activePropertyValue.contains(reference);
+        }
 
         if (activePropertyValue.isEmpty()) {
             return true;

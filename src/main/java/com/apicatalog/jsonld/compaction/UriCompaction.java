@@ -18,6 +18,8 @@ package com.apicatalog.jsonld.compaction;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
@@ -55,6 +57,7 @@ public final class UriCompaction {
     private JsonValue value;
     private boolean vocab;
     private boolean reverse;
+    private Map<String, URI> uriCache = new HashMap<>();
 
     private UriCompaction(final ActiveContext activeContext) {
         this.activeContext = activeContext;
