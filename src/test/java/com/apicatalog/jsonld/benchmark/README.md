@@ -15,6 +15,22 @@ BasicProcessingAlgorithmsBenchmark.expand   avgt    5   673.813 ±   9.570  ms/o
 BasicProcessingAlgorithmsBenchmark.flatten  avgt    5  3586.524 ± 124.667  ms/op
 ```
 
+```
+Lower is better
+
+Benchmark                                          Mode  Cnt  Score   Error  Units
+LoadingSmallFilesBenchmark.csiro                   avgt    5  0.227 ± 0.021  ms/op
+LoadingSmallFilesBenchmark.difiDataset             avgt    5  3.080 ± 0.075  ms/op
+LoadingSmallFilesBenchmark.geonorge                avgt    5  0.034 ± 0.007  ms/op
+LoadingSmallFilesBenchmark.schemaExample1          avgt    5  2.646 ± 0.024  ms/op
+LoadingSmallFilesBenchmark.schemaExample2          avgt    5  2.902 ± 0.221  ms/op
+LoadingSmallFilesBenchmark.schemaExample3          avgt    5  2.650 ± 0.250  ms/op
+LoadingSmallFilesBenchmark.schemaExample4          avgt    5  2.596 ± 0.028  ms/op
+LoadingSmallFilesBenchmark.schemaExtBib            avgt    5  3.184 ± 0.124  ms/op
+LoadingSmallFilesBenchmark.schemaExtHealthLifeSci  avgt    5  7.511 ± 0.108  ms/op
+LoadingSmallFilesBenchmark.schemaExtMeta           avgt    5  2.787 ± 0.291  ms/op
+```
+
 #### OOMBenchmark.toRdfApiGet
 ```
 More iterations is better
@@ -63,6 +79,21 @@ BasicProcessingAlgorithmsBenchmark.compact  avgt    5  1582.788 ± 134.656  ms/o
 BasicProcessingAlgorithmsBenchmark.expand   avgt    5   364.495 ±  11.532  ms/op
 BasicProcessingAlgorithmsBenchmark.flatten  avgt    5   809.893 ±   6.818  ms/op
 ```
+
+```
+Lower is better
+
+Benchmark                                          Mode  Cnt  Score   Error  Units
+LoadingSmallFilesBenchmark.csiro                   avgt    5  0.150 ± 0.019  ms/op
+LoadingSmallFilesBenchmark.difiDataset             avgt    5  1.738 ± 0.119  ms/op
+LoadingSmallFilesBenchmark.geonorge                avgt    5  0.017 ± 0.001  ms/op
+LoadingSmallFilesBenchmark.schemaExample1          avgt    5  2.085 ± 0.010  ms/op
+LoadingSmallFilesBenchmark.schemaExample2          avgt    5  2.158 ± 0.006  ms/op
+LoadingSmallFilesBenchmark.schemaExample3          avgt    5  2.125 ± 0.008  ms/op
+LoadingSmallFilesBenchmark.schemaExample4          avgt    5  2.199 ± 0.118  ms/op
+LoadingSmallFilesBenchmark.schemaExtBib            avgt    5  2.517 ± 0.009  ms/op
+LoadingSmallFilesBenchmark.schemaExtHealthLifeSci  avgt    5  4.880 ± 0.031  ms/op
+LoadingSmallFilesBenchmark.schemaExtMeta           avgt    5  2.193 ± 0.010  ms/op```
 
 #### OOMBenchmark.toRdfApiGet
 ```
