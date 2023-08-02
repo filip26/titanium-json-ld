@@ -112,8 +112,12 @@ public final class ActiveContext {
         return Optional.empty();
     }
 
-    public Optional<TermDefinition> getTerm(final String value) {
+    public Optional<TermDefinition>  getTerm(final String value) {
         return Optional.ofNullable(terms.get(value));
+    }
+
+    public TermDefinition  getTermNullable(final String value) {
+        return terms.get(value);
     }
 
     public DirectionType getDefaultBaseDirection() {

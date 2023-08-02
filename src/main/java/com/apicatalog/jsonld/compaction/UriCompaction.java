@@ -419,13 +419,11 @@ public final class UriCompaction {
 
                     final String compactedIdValue = activeContext.uriCompaction().vocab(true).compact(idString);
 
-                    final Optional<TermDefinition> compactedIdValueTermDefinition = activeContext.getTerm(compactedIdValue);
+                    final TermDefinition compactedIdValueTermDefinition = activeContext.getTermNullable(compactedIdValue);
 
-                    if (compactedIdValueTermDefinition
-                            .map(TermDefinition::getUriMapping)
-                            .filter(idString::equals)
-                            .isPresent()
-                            ) {
+
+
+                    if (compactedIdValueTermDefinition != null && idString.equals(compactedIdValueTermDefinition.getUriMapping())) {
                         preferredValues.add(Keywords.VOCAB);
                         preferredValues.add(Keywords.ID);
 

@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.context;
 
+import java.awt.*;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -58,16 +59,18 @@ public final class TermSelector {
         // 2. Initialize inverse context to the value of inverse context in active context.
         final InverseContext inverseContext = activeContext.getInverseContext();
 
+
         // 4.
-        return containers
-                    .stream()
-                    .filter(container -> inverseContext.contains(variable, container, typeLanguage))
-
-                    .flatMap(container -> preferredValues
-                                            .stream()
-                                            .map(item -> inverseContext.get(variable, container, typeLanguage, item)))
-
-                    .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty))
-                    .findFirst();
+        for (String container : containers) {
+            if (inverseContext.contains(variable, container, typeLanguage)) {
+                for (String item : preferredValues) {
+                    Optional<String> optionalResult = inverseContext.get(variable, container, typeLanguage, item);
+                    if (optionalResult.isPresent()) {
+                        return optionalResult;
+                    }
+                }
+            }
+        }
+        return Optional.empty();
     }
 }

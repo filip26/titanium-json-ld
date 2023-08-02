@@ -15,7 +15,11 @@
  */
 package com.apicatalog.jsonld.context;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -53,24 +57,30 @@ public final class InverseContextBuilder {
                                             ? activeContext.getDefaultLanguage().toLowerCase()
                                             : Keywords.NONE;
         // 3
-        activeContext.getTerms()
-                        .stream()
-                        .filter(termName -> activeContext
-                                                .getTerm(termName)
-                                                .map(TermDefinition::getUriMapping)
-                                                .isPresent())
-                        .sorted()
 
-                        .forEach(termName ->
-                                            processTerm(
-                                                termName,
-                                                result,
-                                                activeContext
-                                                    .getTerm(termName)
-                                                    .map(TermDefinition::getUriMapping)
-                                                    .get(),
-                                                defaultLanguage)
-                        );
+        Collection<String> terms = activeContext.getTerms();
+
+
+        ArrayList<String> sortedFilteredTerms = new ArrayList<>(terms.size());
+        for (String termName : terms) {
+            TermDefinition term = activeContext.getTermNullable(termName);
+            if(term != null){
+                if(term.getUriMapping() != null){
+                    sortedFilteredTerms.add(termName);
+                }
+            }
+
+        }
+
+        sortedFilteredTerms.sort(String::compareTo);
+
+        for (String termName : sortedFilteredTerms) {
+            processTerm(
+                    termName,
+                    result,
+                    activeContext.getTerm(termName).map(TermDefinition::getUriMapping).get(),
+                    defaultLanguage);
+        }
 
         // 4.
         return result;
@@ -79,14 +89,22 @@ public final class InverseContextBuilder {
     private void processTerm(final String termName, InverseContext result, final String variableValue, final String defaultLanguage) {
 
         // 3.2.
-        final String container = activeContext
-                                        .getTerm(termName)
-                                        .map(TermDefinition::getContainerMapping)
-                                        .filter(collection -> !collection.isEmpty())
-                                        .orElseGet(() -> Arrays.asList(Keywords.NONE))
-                                        .stream()
-                                        .sorted()
-                                        .collect(Collectors.joining());
+
+
+        List<String> listToSort = new ArrayList<>();
+        for (String s : activeContext
+                .getTerm(termName)
+                .map(TermDefinition::getContainerMapping)
+                .filter(collection -> !collection.isEmpty())
+                .orElseGet(() -> Arrays.asList(Keywords.NONE))) {
+            listToSort.add(s);
+        }
+        listToSort.sort(null);
+        StringBuilder sb1 = new StringBuilder();
+        for (String s : listToSort) {
+            sb1.append(s);
+        }
+        final String container = sb1.toString();
 
         result.setIfAbsent(variableValue, container, Keywords.ANY, Keywords.NONE, termName);
 

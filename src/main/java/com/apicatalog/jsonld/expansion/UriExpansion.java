@@ -15,11 +15,6 @@
  */
 package com.apicatalog.jsonld.expansion;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.ActiveContext;
@@ -29,17 +24,17 @@ import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.uri.UriResolver;
 import com.apicatalog.jsonld.uri.UriUtils;
-
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- *
- *
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#algorithm-4">IRI
- *      Expansion</a>
- *
+ * Expansion</a>
  */
 public final class UriExpansion {
 
@@ -108,14 +103,14 @@ public final class UriExpansion {
 
         initLocalContext(value);
 
-        Optional<TermDefinition> definition = activeContext.getTerm(value);
+        TermDefinition definition = activeContext.getTermNullable(value);
 
         // 4. if active context has a term definition for value,
         // and the associated IRI mapping is a keyword, return that keyword.
         // 5. If vocab is true and the active context has a term definition for value,
         // return the associated IRI mapping
-        if (definition.isPresent() && (Keywords.contains(definition.get().getUriMapping()) || vocab)) {
-            return definition.get().getUriMapping();
+        if (definition != null && (Keywords.contains(definition.getUriMapping()) || vocab)) {
+            return definition.getUriMapping();
         }
 
         String result = value;
@@ -136,7 +131,7 @@ public final class UriExpansion {
             // 6.2. If suffix begins with double-forward-slash
             // (//),
             // return value as it is already an IRI or a blank node identifier.
-            if (result.length() > indexOfColon+2 && result.charAt(indexOfColon +1) == '/' && result.charAt(indexOfColon +2) == '/') {
+            if (result.length() > indexOfColon + 2 && result.charAt(indexOfColon + 1) == '/' && result.charAt(indexOfColon + 2) == '/') {
                 return result;
             }
 
@@ -186,13 +181,13 @@ public final class UriExpansion {
         }
 
         // 6.4.
-        final Optional<TermDefinition> prefixDefinition = activeContext.getTerm(prefix);
+        final TermDefinition prefixDefinition = activeContext.getTermNullable(prefix);
 
-        if (prefixDefinition.map(TermDefinition::getUriMapping).isPresent()
-                && prefixDefinition.filter(TermDefinition::isPrefix).isPresent()) {
-
-            // deepcode ignore checkIsPresent~Optional: false positive
-            return prefixDefinition.map(TermDefinition::getUriMapping).map(m -> m.concat(suffix)).get();
+        if (prefixDefinition != null && prefixDefinition.isPrefix()) {
+            String uriMapping = prefixDefinition.getUriMapping();
+            if (uriMapping != null) {
+                return uriMapping + suffix;
+            }
         }
 
         return result;
@@ -205,7 +200,7 @@ public final class UriExpansion {
 
             return activeContext.getVocabularyMapping().concat(result);
 
-        // 8.
+            // 8.
         } else if (documentRelative) {
 
             return UriResolver.resolve(activeContext.getBaseUri(), result);
