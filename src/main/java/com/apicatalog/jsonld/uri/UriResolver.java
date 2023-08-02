@@ -15,18 +15,18 @@
  */
 package com.apicatalog.jsonld.uri;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.apicatalog.jsonld.StringUtils;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
+
 /**
- *
  * @see <a href="https://tools.ietf.org/html/rfc3986#section-5.2">Relative
- *      Resolution</a>
- *
+ * Resolution</a>
  */
 public final class UriResolver {
 
@@ -70,7 +70,7 @@ public final class UriResolver {
         return resolveAsUri(base, UriUtils.create(relative));
     }
 
-    public static final  URI resolveAsUri(final URI base, final URI relative) {
+    public static final URI resolveAsUri(final URI base, final URI relative) {
 
         if (relative == null) {
             return base;
@@ -85,7 +85,7 @@ public final class UriResolver {
         try {
             if (components[0] != null
                     && components[1] == null
-                    ) {
+            ) {
                 return new URI(components[0], components[2].trim().isEmpty() ? "." : components[2], components[4]);
             }
 
@@ -166,12 +166,10 @@ public final class UriResolver {
     }
 
     /**
-     *
-     * @see <a href="https://tools.ietf.org/html/rfc3986#section-5.2.4">Remove Dot
-     *      Segments</a>
-     *
      * @param path
      * @return
+     * @see <a href="https://tools.ietf.org/html/rfc3986#section-5.2.4">Remove Dot
+     * Segments</a>
      */
     private static final String removeDotSegments(final String path) {
 
@@ -179,8 +177,14 @@ public final class UriResolver {
             return null;
         }
 
+        if (!path.contains(".")) {
+            return path;
+        }
+
+
         String input = path;
-        List<String> output = new ArrayList<>();
+
+        Deque<String> output = new ArrayDeque<>();
 
         while (StringUtils.isNotBlank(input)) {
 
@@ -193,22 +197,22 @@ public final class UriResolver {
 
             // B.
             } else if (input.startsWith("/./")) {
-                input = "/".concat(input.substring(3));
+                input = input.substring(2); // we need to leave the "/" at the end of "/./"
 
             } else if ("/.".equals(input)) {
                 input = "/";
 
             // C.
             } else if (input.startsWith("/../")) {
-                input = "/".concat(input.substring(4));
+                input = input.substring(3); // we need to leave the "/" at the end of "/../"
                 if (!output.isEmpty()) {
-                    output.remove(output.size() - 1);
+                    output.removeLast();
                 }
 
             } else if ("/..".equals(input)) {
                 input = "/";
                 if (!output.isEmpty()) {
-                    output.remove(output.size() - 1);
+                    output.removeLast();
                 }
 
             // D.
@@ -220,11 +224,11 @@ public final class UriResolver {
                 int nextSlashIndex = input.indexOf('/', 1);
 
                 if (nextSlashIndex != -1) {
-                    output.add(input.substring(0, nextSlashIndex));
+                    output.addLast(input.substring(0, nextSlashIndex));
                     input = input.substring(nextSlashIndex);
 
                 } else {
-                    output.add(input);
+                    output.addLast(input);
                     input = "";
                 }
             }
@@ -233,14 +237,13 @@ public final class UriResolver {
         return String.join("", output);
     }
 
+
     /**
-     *
-     * @see <a href="https://tools.ietf.org/html/rfc3986#section-5.2.3">Merge
-     *      Paths</a>
-     *
      * @param basePath
      * @param path
      * @return
+     * @see <a href="https://tools.ietf.org/html/rfc3986#section-5.2.3">Merge
+     * Paths</a>
      */
     private static final String merge(String basePath, String path) {
 

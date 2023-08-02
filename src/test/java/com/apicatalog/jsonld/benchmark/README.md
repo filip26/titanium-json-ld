@@ -58,10 +58,10 @@ LoadingBenchmark.toRdfApiGet  avgt    5  1998.111 ± 135.659  ms/op
 ```
 Lower is better
 
-Benchmark                                   Mode  Cnt     Score    Error  Units
-BasicProcessingAlgorithmsBenchmark.compact  avgt    5  1541.122 ± 33.854  ms/op
-BasicProcessingAlgorithmsBenchmark.expand   avgt    5   376.108 ± 17.546  ms/op
-BasicProcessingAlgorithmsBenchmark.flatten  avgt    5   816.228 ± 28.191  ms/op
+Benchmark                                   Mode  Cnt     Score     Error  Units
+BasicProcessingAlgorithmsBenchmark.compact  avgt    5  1582.788 ± 134.656  ms/op
+BasicProcessingAlgorithmsBenchmark.expand   avgt    5   364.495 ±  11.532  ms/op
+BasicProcessingAlgorithmsBenchmark.flatten  avgt    5   809.893 ±   6.818  ms/op
 ```
 
 #### OOMBenchmark.toRdfApiGet
@@ -87,12 +87,13 @@ JsonLdImplementationsBenchmark.expandJsonLdJava   thrpt   10  1158.664 ± 19.302
 JsonLdImplementationsBenchmark.flattenJsonLdJava  thrpt   10  1557.635 ± 32.629  ops/s
 JsonLdImplementationsBenchmark.frameJsonLdJava    thrpt   10   591.227 ±  7.902  ops/s
 JsonLdImplementationsBenchmark.fromRdfJsonLdJava  thrpt   10  1529.213 ± 17.981  ops/s
-JsonLdImplementationsBenchmark.toRdfJsonLdJava    thrpt   10   440.860 ±  6.484  ops/s
+JsonLdImplementationsBenchmark.toRdfJsonLdJava    thrpt   10   440.8a60 ±  6.484  ops/s
 
-JsonLdImplementationsBenchmark.compactTitanium    thrpt   10   679.638 ±  3.834  ops/s
-JsonLdImplementationsBenchmark.expandTitanium     thrpt   10  1220.514 ± 19.752  ops/s
-JsonLdImplementationsBenchmark.flattenTitanium    thrpt   10  1611.532 ± 51.089  ops/s
-JsonLdImplementationsBenchmark.frameTitanium      thrpt   10   458.292 ±  1.669  ops/s
-JsonLdImplementationsBenchmark.fromRdfTitanium    thrpt   10  2271.748 ± 48.102  ops/s
-JsonLdImplementationsBenchmark.toRdfTitanium      thrpt   10   430.359 ±  1.481  ops/s
+Benchmark                                        Mode  Cnt     Score    Error  Units
+JsonLdImplementationsBenchmark.compactTitanium  thrpt   10   683.737 ±  9.222  ops/s
+JsonLdImplementationsBenchmark.expandTitanium   thrpt   10  1243.785 ± 23.390  ops/s
+JsonLdImplementationsBenchmark.flattenTitanium  thrpt   10  1570.057 ± 50.235  ops/s
+JsonLdImplementationsBenchmark.frameTitanium    thrpt   10   436.802 ±  8.350  ops/s
+JsonLdImplementationsBenchmark.fromRdfTitanium  thrpt   10  2236.124 ± 89.612  ops/s
+JsonLdImplementationsBenchmark.toRdfTitanium    thrpt   10   431.800 ±  6.175  ops/s
 ```

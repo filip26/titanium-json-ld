@@ -52,15 +52,15 @@ public final class UriRelativizer {
         final Path path = uriPath.relativize(basePath);
 
         if (path.isNotEmpty()) {
-            return UriUtils.recompose(null, null, path.toString() , uri.getQuery(), uri.getFragment());
+            return UriUtils.recompose( path.toString() , uri.getQuery(), uri.getFragment());
         }
 
         if (!Objects.equals(base.getQuery(), uri.getQuery())) {
-            return UriUtils.recompose(null, null, null , uri.getQuery(), uri.getFragment());
+            return UriUtils.recompose( uri.getQuery(), uri.getFragment());
         }
 
         if (!Objects.equals(base.getFragment(), uri.getFragment())) {
-            return UriUtils.recompose(null, null, null , null, uri.getFragment());
+            return UriUtils.recompose( uri.getFragment());
         }
 
         return uriPath.getLeaf() != null

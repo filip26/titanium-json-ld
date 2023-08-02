@@ -159,16 +159,81 @@ public final class UriUtils {
 
     protected static String recompose(final String scheme, final String authority, final String path, final String query, final String fragment) {
 
+        boolean includeScheme = isDefined(scheme);
+        boolean includeAuthority =authority != null;
+        boolean includePath = isDefined(path);
+        boolean includeQuery = isDefined(query);
+        boolean includeFragment = isDefined(fragment);
+
+        String result = recomposeCommonCases(scheme, authority, path, query, fragment, includeScheme, includeAuthority, includePath, includeQuery, includeFragment);
+        if (result != null) {
+            return result;
+        }
+
+        return recomposeAllCases(scheme, authority, path, query, fragment, includeScheme, includeAuthority, includePath, includeQuery, includeFragment);
+    }
+
+    private static String recomposeAllCases(String scheme, String authority, String path, String query, String fragment, boolean includeScheme, boolean includeAuthority, boolean includePath, boolean includeQuery, boolean includeFragment) {
         final StringBuilder builder = new StringBuilder();
 
-        if (isDefined(scheme)) {
+        if (includeScheme) {
             builder.append(scheme);
             builder.append(":");
         }
-        if (authority != null) {
+
+        if (includeAuthority) {
             builder.append("//");
             builder.append(authority);
         }
+        if (includePath) {
+            builder.append(path);
+        }
+        if (includeQuery) {
+            builder.append('?');
+            builder.append(query);
+        }
+        if (includeFragment) {
+            builder.append('#');
+            builder.append(fragment);
+        }
+        return builder.toString();
+    }
+
+    private static String recomposeCommonCases(String scheme, String authority, String path, String query, String fragment, boolean includeScheme, boolean includeAuthority, boolean includePath, boolean includeQuery, boolean includeFragment) {
+        if(includeScheme && !includeAuthority && !includePath && !includeQuery && !includeFragment){
+            return scheme + ":";
+        }
+
+        if(includeScheme && includeAuthority && !includePath && !includeQuery && !includeFragment){
+            return scheme + ":" + "//" + authority;
+        }
+
+        if(includeScheme &&!includeAuthority && includePath && !includeQuery && !includeFragment){
+            return scheme + ":" + path;
+        }
+
+        if(includeScheme && includeAuthority && includePath && !includeQuery && !includeFragment){
+            return scheme + ":" + "//" + authority + path;
+       }
+
+        if(includeScheme && includeAuthority && includePath && !includeQuery && includeFragment){
+            return scheme + ":" + "//" + authority + path + "#" + fragment;
+       }
+
+        if(includeScheme && includeAuthority && includePath && includeQuery && !includeFragment){
+            return scheme + ":" + "//" + authority + path + "?" + query;
+        }
+
+        if(includeScheme && includeAuthority && includePath && includeQuery && includeFragment){
+            return scheme + ":" + "//" + authority + path + "?" + query + "#" + fragment;
+        }
+        return null;
+    }
+
+    protected static String recompose(final String path, final String query, final String fragment) {
+
+        final StringBuilder builder = new StringBuilder();
+
         if (isDefined(path)) {
             builder.append(path);
         }
@@ -182,6 +247,31 @@ public final class UriUtils {
         }
         return builder.toString();
     }
+
+    protected static String recompose(final String query, final String fragment) {
+
+        final StringBuilder builder = new StringBuilder();
+
+        if (isDefined(query)) {
+            builder.append('?');
+            builder.append(query);
+        }
+        if (isDefined(fragment)) {
+            builder.append('#');
+            builder.append(fragment);
+        }
+        return builder.toString();
+    }
+
+    protected static String recompose( final String fragment) {
+
+        if (isDefined(fragment)) {
+            return "#"+fragment;
+        }
+
+        return "";
+    }
+
 
     protected static boolean isDefined(final String value) {
         return value != null && StringUtils.isNotBlank(value);
