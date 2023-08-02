@@ -1,0 +1,3378 @@
+{
+	"@context": {
+		"adms": "http:\/\/www.w3.org\/ns\/adms#",
+		"dcat": "http:\/\/www.w3.org\/ns\/dcat#",
+		"dct": "http:\/\/purl.org\/dc\/terms\/",
+		"foaf": "http:\/\/xmlns.com\/foaf\/0.1\/",
+		"owl": "http:\/\/www.w3.org\/2002\/07\/owl#",
+		"rdfs": "http:\/\/www.w3.org\/2000\/01\/rdf-schema#",
+		"schema": "http:\/\/schema.org\/",
+		"skos": "http:\/\/www.w3.org\/2004\/02\/skos\/core#",
+		"spdx": "http:\/\/spdx.org\/rdf\/terms#",
+		"vcard": "http:\/\/www.w3.org\/2006\/vcard\/ns#",
+		"xsd": "http:\/\/www.w3.org\/2001\/XMLSchema#",
+		"dct:issued": {
+			"@type": "http:\/\/www.w3.org\/2001\/XMLSchema#date"
+		},
+		"dct:modified": {
+			"@type": "http:\/\/www.w3.org\/2001\/XMLSchema#date"
+		}
+	},
+	"@graph": [{
+			"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE",
+			"@type": "skos:Concept",
+			"skos:prefLabel": "Forvaltning og offentlig sektor",
+			"skos:inSchema": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/"
+			}
+		}, {
+			"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv",
+			"@type": "dct:MediaTypeOrExtent"
+		}, {
+			"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json",
+			"@type": "dct:MediaTypeOrExtent"
+		}, {
+			"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml",
+			"@type": "dct:MediaTypeOrExtent"
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/967",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/?dataset=difi\/oep\/innsynskrav-2010",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "REST-API i formatene XML, JSON(P), CSV og YAML, og komplett nedlasting i CSV."
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "http:\/\/hotell.difi.no\/download\/difi\/oep\/innsynskrav-2010?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827",
+			"@type": "foaf:Agent",
+			"foaf:name": {
+				"@language": "no",
+				"@value": "Direktoratet for forvaltning og IKT"
+			},
+			"dct:identifier": "991825827",
+			"dct:type": "Statsforvaltningen"
+		}, {
+			"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/rdf+xml",
+			"@type": "dct:MediaTypeOrExtent"
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1232",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/psi.norge.no\/los\/struktur.html",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/creativecommons.org\/publicdomain\/zero\/1.0\/deed.no"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/rdf+xml"
+				}
+			],
+			"dct:title": {
+				"@language": "no",
+				"@value": "SKOS RDF\/XML"
+			},
+			"dct:description": [{
+					"@language": "no",
+					"@value": "HTML-visning av begrepene i Los. Ta bort  \u0022.html\u0022 for RDF\/XML (SKOS). "
+				}
+			],
+			"dcat:downloadURL": {
+				"@id": "http:\/\/psi.norge.no\/los\/all.rdf",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/vnd.sealed-xls",
+			"@type": "dct:MediaTypeOrExtent"
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/814",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/www.difi.no\/filearchive\/frekvenser-alt-innbyggerundersokelsen_1.xls",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/vnd.sealed-xls"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Alle data fra Innbyggerunders\u00f8kelsen fordelt p\u00e5 frekvenser (XLS)"
+				}
+			],
+			"dcat:downloadURL": {
+				"@id": "http:\/\/www.difi.no\/filearchive\/frekvenser-alt-innbyggerundersokelsen_1.xls",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/TRAN",
+			"@type": "skos:Concept",
+			"skos:prefLabel": "Transport",
+			"skos:inSchema": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/"
+			}
+		}, {
+			"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			"@type": "dct:MediaTypeOrExtent"
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/786",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/data.norge.no\/sites\/datanorge\/files\/Flyreiese-samleark-2009-2013.xlsx",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Flyreiseaktivitet i staten 2009-2013"
+				}
+			],
+			"dcat:downloadURL": {
+				"@id": "http:\/\/data.norge.no\/sites\/datanorge\/files\/Flyreiese-samleark-2009-2013.xlsx",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/data\/direktoratet-forvaltning-og-ikt\/flyreiseaktivitet-i-staten-2009-2013\/temporal\/1",
+			"@type": "dct:PeriodOfTime",
+			"schema:startDate": {
+				"@type": "xsd:date",
+				"@value": "2009-01-01"
+			},
+			"schema:endDate": {
+				"@type": "xsd:date",
+				"@value": "2013-12-31"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/961",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/api\/json\/difi\/etatsbasen",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Offentlige virksomheter - kontaktinformasjon, kartkoordinater, kvalitetsvurderinger m.m. "
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "https:\/\/hotell.difi.no\/download\/difi\/etatsbasen?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/html",
+			"@type": "dct:MediaTypeOrExtent"
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/985",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/www.difi.no\/innbyggerundersokelsen\/r%C3%A5data",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/html"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Nettside med tilgang til r\u00e5data fra Innbyggerunders\u00f8kelsen 2012-13."
+				}
+			]
+		}, {
+			"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/REGI",
+			"@type": "skos:Concept",
+			"skos:prefLabel": "Regioner og byer",
+			"skos:inSchema": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/933",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/?dataset=difi\/etatsbasen\/phone",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "REST-API i formatene XML, JSON(P), CSV og YAML, og komplett nedlasting i CSV."
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "http:\/\/hotell.difi.no\/download\/difi\/etatsbasen\/phone?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/765",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/?dataset=difi\/etatsbasen\/organization",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Datasett over enhetene i offentlig forvaltning"
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "http:\/\/hotell.difi.no\/download\/difi\/etatsbasen\/organization?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/711",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/?dataset=difi\/etatsbasen\/visitaddress",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "REST-API i formatene XML, JSON(P), CSV og YAML, og komplett nedlasting i CSV."
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "http:\/\/hotell.difi.no\/download\/difi\/etatsbasen\/visitaddress?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/960",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/?dataset=difi\/etatsbasen\/postaddress",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "REST-API i formatene XML, JSON(P), CSV og YAML, og komplett nedlasting i CSV."
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "http:\/\/hotell.difi.no\/download\/difi\/etatsbasen\/postaddress?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/827",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/?dataset=difi\/etatsbasen\/position",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "REST-API i formatene XML, JSON(P), CSV og YAML, og komplett nedlasting i CSV."
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "http:\/\/hotell.difi.no\/download\/difi\/etatsbasen\/position?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/962",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/?dataset=difi\/etatsbasen\/url",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "REST-API i formatene XML, JSON(P), CSV og YAML, og komplett nedlasting i CSV."
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "http:\/\/hotell.difi.no\/download\/difi\/etatsbasen\/url?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/757",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/?dataset=difi\/etatsbasen\/covers",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Data over hvilke kommuner regionale statlige virksomheter dekker "
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "http:\/\/hotell.difi.no\/download\/difi\/etatsbasen\/covers?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/vnd.oasis.opendocument.spreadsheet",
+			"@type": "dct:MediaTypeOrExtent"
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/810",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/www.difi.no\/filearchive\/innbyggerundersokelsen-flatfil.ods",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/vnd.oasis.opendocument.spreadsheet"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Alle data fra Innbyggerunders\u00f8kelsen p\u00e5 individniv\u00e5 (ODF)"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/812",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/www.difi.no\/filearchive\/frekvenser-alt-innbyggerundersokelsen-odf-.ods",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/vnd.oasis.opendocument.spreadsheet"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Alle data fra Innbyggerunders\u00f8kelsen fordelt p\u00e5 frekvenser (ODF)"
+				}
+			],
+			"dcat:downloadURL": {
+				"@id": "http:\/\/www.difi.no\/filearchive\/frekvenser-alt-innbyggerundersokelsen-odf-.ods",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/965",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/?dataset=difi\/oep\/innsynskrav",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "REST-API i formatene XML, JSON(P), CSV og YAML, og komplett nedlasting i CSV."
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "https:\/\/hotell.difi.no\/download\/difi\/oep\/innsynskrav?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/ECON",
+			"@type": "skos:Concept",
+			"skos:prefLabel": "\u00d8konomi og finans",
+			"skos:inSchema": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1151",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "https:\/\/hotell.difi.no\/?dataset=difi\/elma\/participants",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Mottakere med tilh\u00f8rende profiler."
+				}
+			],
+			"dct:conformsTo": "https:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "https:\/\/hotell.difi.no\/download\/difi\/elma\/participants?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1355",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "https:\/\/hotell.difi.no\/?dataset=difi\/elma\/capabilities",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Mottakere med tilh\u00f8rende evner."
+				}
+			],
+			"dct:conformsTo": "https:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "https:\/\/hotell.difi.no\/download\/difi\/elma\/capabilities?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/2012",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "https:\/\/hotell.difi.no\/?dataset=difi\/elma\/documenttypes",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Oversikt over dokumenttyper som inng\u00e5r i profilene."
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "http:\/\/hotell.difi.no\/download\/difi\/elma\/documenttypes?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1174",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/?dataset=difi\/tidstyv\/2014",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "REST-API i formatene XML, JSON(P), CSV og YAML, og komplett nedlasting i CSV"
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "http:\/\/hotell.difi.no\/download\/difi\/tidstyv\/2014?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/tidstyv.difi.no\/",
+			"@type": "foaf:Document"
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1235",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/?dataset=difi\/norgeno\/tjeneste",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "REST-API i formatene XML, JSON(P), CSV og YAML, og komplett nedlasting i CSV"
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "http:\/\/hotell.difi.no\/download\/difi\/norgeno\/tjeneste?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/data\/direktoratet-forvaltning-og-ikt\/norgeno-digitale-tjenester-fra-det-offentlige\/temporal\/1",
+			"@type": "dct:PeriodOfTime",
+			"schema:startDate": {
+				"@type": "xsd:date",
+				"@value": "2015-01-15"
+			},
+			"schema:endDate": {
+				"@type": "xsd:date",
+				"@value": "2018-12-31"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1234",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/?dataset=difi\/norgeno\/tjenesteeier",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "REST-API i formatene XML, JSON(P), CSV og YAML, og komplett nedlasting i CSV"
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "https:\/\/hotell.difi.no\/download\/difi\/norgeno\/tjenesteeier?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/data\/direktoratet-forvaltning-og-ikt\/norgeno-tjenesteeiere-statlige-virksomheter-kommuner-og\/temporal\/1",
+			"@type": "dct:PeriodOfTime",
+			"schema:startDate": {
+				"@type": "xsd:date",
+				"@value": "2015-01-15"
+			},
+			"schema:endDate": {
+				"@type": "xsd:date",
+				"@value": "2018-12-31"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1236",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/data.norge.no\/api\/dcat\/data.json",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "JSON-API i tr\u00e5d med \u0022Data Catalog Interoperability Protocol\u0022"
+				}
+			]
+		}, {
+			"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/xml",
+			"@type": "dct:MediaTypeOrExtent"
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1238",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/data.norge.no\/data\/rss.xml",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "RSS med de siste ti publiserte datasettene"
+				}
+			]
+		}, {
+			"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/ld+json",
+			"@type": "dct:MediaTypeOrExtent"
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/2073",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "https:\/\/data.norge.no\/api\/dcat2\/data.jsonld",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/ld+json"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "DCAT-AP-NO i JSON-LD-format"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1263",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/?dataset=difi\/kvalitet\/oversikt2010",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Kvalitet p\u00e5 nett - Resultatliste 2010"
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "http:\/\/hotell.difi.no\/download\/difi\/kvalitet\/oversikt2010?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/data\/direktoratet-forvaltning-og-ikt\/kvalitet-p%C3%A5-nett-resultatliste-2010\/temporal\/1",
+			"@type": "dct:PeriodOfTime",
+			"schema:startDate": {
+				"@type": "xsd:date",
+				"@value": "2010-01-01"
+			},
+			"schema:endDate": {
+				"@type": "xsd:date",
+				"@value": "2010-12-31"
+			}
+		}, {
+			"@id": "https:\/\/kvalitet.difi.no",
+			"@type": "foaf:Document"
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1265",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/?dataset=difi\/kvalitet\/oversikt2011",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Kvalitet p\u00e5 nett - Resultatliste 2011"
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "http:\/\/hotell.difi.no\/download\/difi\/kvalitet\/oversikt2011?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/data\/direktoratet-forvaltning-og-ikt\/kvalitet-p%C3%A5-nett-resultatliste-2011\/temporal\/1",
+			"@type": "dct:PeriodOfTime",
+			"schema:startDate": {
+				"@type": "xsd:date",
+				"@value": "2011-01-01"
+			},
+			"schema:endDate": {
+				"@type": "xsd:date",
+				"@value": "2011-12-31"
+			}
+		}, {
+			"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/x-yaml",
+			"@type": "dct:MediaTypeOrExtent"
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1267",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/?dataset=difi\/kvalitet\/oversikt2013",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/x-yaml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Kvalitet p\u00e5 nett - Resultatliste 2013"
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "http:\/\/hotell.difi.no\/download\/difi\/kvalitet\/oversikt2013?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/data\/direktoratet-forvaltning-og-ikt\/kvalitet-p%C3%A5-nett-resultatliste-2013\/temporal\/1",
+			"@type": "dct:PeriodOfTime",
+			"schema:startDate": {
+				"@type": "xsd:date",
+				"@value": "2013-01-01"
+			},
+			"schema:endDate": {
+				"@type": "xsd:date",
+				"@value": "2013-12-31"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1269",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/?dataset=difi\/kvalitet\/oversikt2014",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Kvalitet p\u00e5 digitale tjenester - resultatliste 2014"
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "http:\/\/hotell.difi.no\/download\/difi\/kvalitet\/oversikt2014?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1271",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/?dataset=difi\/kvalitet\/resultat2010",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Kvalitet p\u00e5 nett - detaljresultat 2010"
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "http:\/\/hotell.difi.no\/download\/difi\/kvalitet\/resultat2010?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/data\/direktoratet-forvaltning-og-ikt\/kvalitet-p%C3%A5-nett-detaljresultat-2010\/temporal\/1",
+			"@type": "dct:PeriodOfTime",
+			"schema:startDate": {
+				"@type": "xsd:date",
+				"@value": "2010-01-01"
+			},
+			"schema:endDate": {
+				"@type": "xsd:date",
+				"@value": "2010-12-31"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1273",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/?dataset=difi\/kvalitet\/resultat2011",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Kvalitet p\u00e5 nett - detaljresultat 2011"
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "http:\/\/hotell.difi.no\/download\/difi\/kvalitet\/resultat2011?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/data\/direktoratet-forvaltning-og-ikt\/kvalitet-p%C3%A5-nett-detaljresultat-2011\/temporal\/1",
+			"@type": "dct:PeriodOfTime",
+			"schema:startDate": {
+				"@type": "xsd:date",
+				"@value": "2011-01-01"
+			},
+			"schema:endDate": {
+				"@type": "xsd:date",
+				"@value": "2011-12-31"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1275",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/?dataset=difi\/kvalitet\/resultat2013",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Kvalitet p\u00e5 nett - detaljresultat 2013"
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "http:\/\/hotell.difi.no\/download\/difi\/kvalitet\/resultat2013?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/data\/direktoratet-forvaltning-og-ikt\/kvalitet-p%C3%A5-nett-detaljresultat-2013\/temporal\/1",
+			"@type": "dct:PeriodOfTime",
+			"schema:startDate": {
+				"@type": "xsd:date",
+				"@value": "2013-01-01"
+			},
+			"schema:endDate": {
+				"@type": "xsd:date",
+				"@value": "2013-12-31"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1277",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/?dataset=difi\/kvalitet\/resultat2014",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Kvalitet p\u00e5 digitale tjenester - detaljresultat 2014"
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "http:\/\/hotell.difi.no\/download\/difi\/kvalitet\/resultat2014?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/data\/direktoratet-forvaltning-og-ikt\/kvalitet-p%C3%A5-digitale-tjenester-detaljresultat-2014\/temporal\/1",
+			"@type": "dct:PeriodOfTime",
+			"schema:startDate": {
+				"@type": "xsd:date",
+				"@value": "2014-01-01"
+			},
+			"schema:endDate": {
+				"@type": "xsd:date",
+				"@value": "2014-12-31"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1356",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/www.difi.no\/rapporter-og-undersokelser\/statistikk-og-undersokelser\/innbyggerundersokelsen-2015\/data",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Nettside som gir tilgang til r\u00e5data pakket i ZIP-filer i formatene csv, xlsx og sav"
+				}
+			]
+		}, {
+			"@id": "http:\/\/www.difi.no\/rapporter-og-undersokelser\/statistikk-og-undersokelser\/innbyggerundersokelsen-2015",
+			"@type": "foaf:Document"
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1632",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "https:\/\/www.difi.no\/artikkel\/2016\/05\/radata-medarbeiderundersokelsen-i-staten",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Nettside som gir tilgang til r\u00e5data pakket i ZIP-filer i formatene XLSX og sav"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1652",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/?dataset=difi\/kvalitet\/oversikt2016",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "REST-API i formatene XML, JSON(P), CSV og YAML, og komplett nedlasting i CSV"
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "http:\/\/hotell.difi.no\/download\/difi\/kvalitet\/oversikt2016?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1653",
+			"@type": "dcat:Distribution",
+			"dcat:accessURL": {
+				"@id": "http:\/\/hotell.difi.no\/?dataset=difi\/kvalitet\/resultat2016",
+				"@type": "rdfs:Resource"
+			},
+			"dct:license": {
+				"@id": "http:\/\/data.norge.no\/nlod\/"
+			},
+			"dct:format": [{
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/text\/csv"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/json"
+				}, {
+					"@id": "http:\/\/www.iana.org\/assignments\/media-types\/application\/xml"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "REST-API i formatene XML, JSON(P), CSV og YAML, og komplett nedlasting i CSV"
+				}
+			],
+			"dct:conformsTo": "http:\/\/hotell.difi.no\/application.wadl",
+			"dcat:downloadURL": {
+				"@id": "https:\/\/hotell.difi.no\/download\/difi\/kvalitet\/resultat2016?download",
+				"@type": "rdfs:Resource"
+			}
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/95",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Postjournalstatistikk (OEP) - Innsynskrav 2010"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EOffentlig elektronisk postjournal (OEP) ble lansert 18. mai 2010 og er en felles publiseringstjeneste for statlige virksomheters postjournaler. Virksomhetene bruker publiseringsl\u00f8sningen til \u00e5 gj\u00f8re sine egne postjournaler tilgjengelig p\u00e5 internett for alle brukere. De ulike postjournalene blir deretter samlet i en felles database som blir gjort s\u00f8kbar for brukerne. Brukerne kan s\u00f8ke etter informasjon gjennom OEP og bestille innsyn i den informasjonen de finner interessant. Denne bestillingen blir sendt til den virksomheten som er ansvarlig for journaloppf\u00f8ringen. Deretter blir bestillingen behandlet av virksomheten som et innsynskrav, og brukeren f\u00e5r svar direkte fra virksomheten.\u003C\/p\u003E\u003Cp\u003EBruksstatistikk for OEP fra og med lanseringsdato mai 2010 til medio september 2011 er publisert p\u00e5 datahotellet. Dataene viser antall innsynskrav fordelt p\u00e5 statlige virksomhetene hver m\u00e5ned.\u003C\/p\u003E\u003Cp\u003EDatasettet vil oppdateres hver m\u00e5ned framover.\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/95",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/kontakt@oep.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "OEP"
+					},
+					"vcard:hasEmail": {
+						"@value": "kontakt@oep.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/967"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:relation": [{
+					"@id": "http:\/\/www.oep.no\/"
+				}
+			],
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "statistikk"
+				}, {
+					"@language": "no",
+					"@value": "postjournal"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/126",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Los - felles terminologi for offentlige tjenester "
+				}, {
+					"@language": "no",
+					"@value": "Los - felles terminologi for offentlige tjenester "
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003ELos er en felles terminologi for offentlige tjenester med et brukerorientert vokabular. Los best\u00e5r i dag av rundt 400 emneord og har over 1500 hjelpeord (synonym, tidligere emner osv) som kan brukes for gjenkjennelig kategorisering av innhold og ressurser p\u00e5 tvers av portaler og til \u00e5 hjelpe brukere til \u00e5 finne frem\u003C\/p\u003E\u003Cp\u003EDet er flere m\u00e5ter \u00e5 bruke Los-vokabularet p\u00e5. Den mest n\u00e6rliggende er \u00e5 referere til URIer for begrepene n\u00e5r en skal klassifisere en ressurs i et lenkede data-milj\u00f8. Standard for beskrivelse av datasett og dataktaloger er et eksempel p\u00e5 bruksomr\u00e5der der Los skal brukes prim\u00e6rt som referanse til tema ved hjelp av URIer.\u003C\/p\u003E\u003Cp\u003ELos kan ogs\u00e5 lastes ned lokalt og brukes som struktur for for eksempel offentlige nettsider. Dersom informasjonen som ligger i RDF\/XML-filen blir tatt med i kildekoden for sidene, vil dette bidra til \u00f8kt s\u00f8kbarhet ettersom Los tilbyr beskrivelse p\u00e5 flere spr\u00e5k og m\u00e5lformer samt hjelpeord.\u0026nbsp;\u003C\/p\u003E\u003Cp\u003EMerk at oversettelser til andre m\u00e5lformer og spr\u00e5k ikke er komplett. Det vil bli mulig \u00e5 bidra til flere oversettelser direkte i vokabularets kildekode p\u00e5 Github.\u003C\/p\u003E\u003Cp\u003EHver term har en stabil og globalt unik http-URI. URIene er bygd opp med f\u00f8lgende struktur: http:\/\/psi.norge.no\/los\/tema\/{term}. URIen for termen \u0026ldquo;arbeid\u0026rdquo; blir dermed http:\/\/psi.norge.no\/los\/tema\/arbeid og denne gir da svar i rdf-format. En html-visning av termen oppn\u00e5s ved \u00e5 legge til .html som suffiks. Lenke til html-visning for samme term blir http:\/\/psi.norge.no\/los\/tema\/arbeid.html\u0026nbsp;\u003C\/p\u003E\u003Cp\u003EOmskrivningsreglene i selve URIene for s\u00e6rnorske tegn og mellomrom er:\u00e6 -\u0026gt; ae\u00f8 -\u0026gt; oe\u00e5 -\u0026gt; aa(mellomrom) -\u0026gt; -Eksempel: \u0026nbsp;http:\/\/psi.norge.no\/los\/tema\/natur-og-miljoe\u0026nbsp;\u003C\/p\u003E\u003Cp\u003EI Los er b\u00e5de hovedkategorier, underkategorier og emneord et \u0026quot;SKOS concept\u0026quot;. Disse st\u00e5r i relasjoner til hverandre enten i et hierarki eller en annen form for relasjon.\u003C\/p\u003E"
+				}, {
+					"@language": "no",
+					"@value": "\u003Cp\u003E\u0026quot;Los\u0026quot; er en felles terminologi for \u00e5 beskrive offentlige tjenester og ressurser. Vokabularet er brukerorientert, og kan brukes til \u00e5 kategorisere for eksempel tjenester, informasjon, datasett og andre ressurser som offentlige virksomheter forvalter. Form\u00e5let med Los er \u00e5 gj\u00f8re offentlige ressurser enklere \u00e5 finne.\u003C\/p\u003E\u003Cp\u003ELos\u0026nbsp;er publisert i RDF\/XML som et SKOS-vokabular. SKOS er en W3C-anbefaling utviklet for \u00e5 representere thesaurier, klassifikasjonssystemer, taksonomier og kontrollerte vokabular. SKOS er del av en rekke standarder for den semantiske webben som bygger p\u00e5 RDF og RDFS. Hovedform\u00e5let med SKOS er \u00e5 tilby en enkel publisering og bruk av vokabular som lenkede data.\u003C\/p\u003E\u003Cp\u003EDet er flere m\u00e5ter \u00e5 bruke vokabularet p\u00e5. Den mest n\u00e6rliggende er \u00e5 referere til URIer for begrepene n\u00e5r en skal klassifisere en ressurs i et lenkede data-milj\u00f8. \u0026quot;Standard for beskrivelse av datasett og dataktaloger\u0026quot; er et eksempel p\u00e5 bruksomr\u00e5der der Los skal brukes prim\u00e6rt som referanse til tema ved hjelp av URIer.\u003C\/p\u003E\u003Cp\u003EVokabularet kan ogs\u00e5 lastes ned lokalt og brukes som struktur for for eksempel offentlige nettsider. Dersom informasjonen som ligger i RDF\/XML-filen blir tatt med i kildekoden for sidene, vil dette bidra til \u00f8kt s\u00f8kbarhet ettersom Los tilbyr beskrivelse p\u00e5 flere spr\u00e5k og m\u00e5lformer samt hjelpeord.\u0026nbsp;\u003C\/p\u003E\u003Cp\u003EMerk at oversettelser til andre m\u00e5lformer og spr\u00e5k ikke er komplett. Det vil det etterhvert bli mulig \u00e5 bidra til flere oversettelser direkte i vokabularets kildekode p\u00e5 Github.\u003C\/p\u003E\u003Cp\u003ELos inneholder over 400 emneord som er knyttet til ett eller flere underkategorier. Alle emneord er definerte p\u00e5 minst ett spr\u00e5k. I tillegg til \u00e5 v\u00e6re knyttet til underkategorier (og implisitt ogs\u00e5 hovedkategorier), har emneordene anbefalte og alternative hjelpeord p\u00e5 minst ett spr\u00e5k.\u003C\/p\u003E\u003Cp\u003EHver term har en stabil og globalt unik http-URI. URIene er bygd opp med f\u00f8lgende struktur: http:\/\/psi.norge.no\/los\/tema\/{term}. URIen for termen \u0026ldquo;arbeid\u0026rdquo; blir dermed http:\/\/psi.norge.no\/los\/tema\/arbeid og denne gir da svar i rdf-format. En html-visning av termen oppn\u00e5s ved \u00e5 legge til .html som suffiks. Lenke til html-visning for samme term blir http:\/\/psi.norge.no\/los\/tema\/arbeid.html\u0026nbsp;\u003C\/p\u003E\u003Cp\u003EOmskrivningsreglene i selve URIene for s\u00e6rnorske tegn og mellomrom er:\u00e6 -\u0026gt; ae\u00f8 -\u0026gt; oe\u00e5 -\u0026gt; aa(mellomrom) -\u0026gt; -Eksempel: \u0026nbsp;http:\/\/psi.norge.no\/los\/tema\/natur-og-miljoe\u0026nbsp;\u003C\/p\u003E\u003Cp\u003EI Los er b\u00e5de hovedkategorier, underkategorier og emneord et \u0026quot;SKOS concept\u0026quot;. Disse st\u00e5r i relasjoner til hverandre enten i et hierarki eller en annen form for relasjon.\u003C\/p\u003E\u003Cp\u003E\u0026nbsp;\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/126",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/oystein.asnes@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "\u00d8ystein \u00c5snes"
+					},
+					"vcard:hasEmail": {
+						"@value": "oystein.asnes@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/1232"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dct:accrualPeriodicity": {
+				"@id": "irregular"
+			},
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "ontologiar"
+				}, {
+					"@language": "no",
+					"@value": "offentleg forvalting"
+				}, {
+					"@language": "no",
+					"@value": "emneord"
+				}, {
+					"@language": "no",
+					"@value": "temastruktur"
+				}, {
+					"@language": "no",
+					"@value": "vokabular"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/166",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Innbyggerunders\u00f8kelsen 2009 (del 1) - syn p\u00e5 de st\u00f8rste offentlige tjenestene, velferdsstaten, demokrati og \u00e5 bo i Norge"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Innbyggerunders\u00f8kelsen er en utvalgs- og brukerunders\u00f8kelse om norsk forvaltning.   Innbyggerunders\u00f8kelsen er gjennomf\u00f8rt av Direktoratet for forvaltning og IKT (DIFI) i to deler, del 1 i 2009 og del 2 i 2010. \r\n\r\nDel 1 (utf\u00f8rt i 2009) fokuserer p\u00e5 innbyggerne sitt generelle syn p\u00e5 de st\u00f8rste offentlige tjenestene, velferdsstaten, demokrati og \u00e5 bo i Norge. Unders\u00f8kelsen skal gi bedre innsikt i innbyggernes oppfatninger og erfaringer p\u00e5 tjenesteomr\u00e5der som oppvekst, utdanning, helse, trygghet, \u00f8konomi, samferdsel og kultur.\r\n\r\nInnbyggerunders\u00f8kelsen har 412 variabler. \r\n"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/166",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/kristian.kjollesdal@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Kristian Kj\u00f8llesdal"
+					},
+					"vcard:hasEmail": {
+						"@value": "kristian.kjollesdal@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/814"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:relation": [{
+					"@id": "http:\/\/www.difi.no"
+				}, {
+					"@id": "http:\/\/www.difi.no\/artikkel\/2010\/11\/alle-resultater"
+				}, {
+					"@id": "http:\/\/www.nsd.uib.no\/nsddata\/serier\/innbyggerundersokelsen.html"
+				}, {
+					"@id": "http:\/\/www.difi.no\/innbyggerundersokelsen\/r%C3%A5data"
+				}
+			],
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "offentlige tjenester"
+				}, {
+					"@language": "no",
+					"@value": "innbyggerunders\u00f8kelse"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/183",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Flyreiseaktivitet i staten 2009-2013"
+				}, {
+					"@language": "no",
+					"@value": "Flyreiseaktivitet i staten 2009-2013"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EStaten kj\u00f8per klimakvotar for internasjonale tenestereiser som statstilsette gjer med fly. Som grunnlag for dette, samlar Difi data over statstilsette sine flyreiser, medrekna politisk leiing i departementa. Tala blir rapporterte inn til Finansdepartementet som s\u00e5 kj\u00f8per klimakvotar for utslepp fr\u00e5 dei internasjonale reisene.\u003C\/p\u003E\u003Cp\u003EStatistikken er basert p\u00e5 reiserekningar, innsamla fr\u00e5 Direktoratet for \u00f8konomiforvaltning (DF\u00d8), Bluegarden og om lag 30 verksemder som rapporterer direkte.\u003C\/p\u003E"
+				}, {
+					"@language": "no",
+					"@value": "\u003Cp\u003EStoltenbergregjeringen besluttet i 2007 \u00e5 kj\u00f8pe klimakvoter for \u00e5 kompensere for statens tjenestereiser i utlandet. For \u00e5 beregne hvor mange klimakvoter som skulle kj\u00f8pes,\u0026nbsp;ble det etablert et system for innsamling av flyreisestatistikk fra innleverte reiseregninger. I 2014 merket man at flyreiseaktivitet var forholdsvis stabil, slik at man kunne forenkle opplegget ved \u00e5 bruke historiske tall som grunnlag for framtidig kj\u00f8p av klimakvoter. Regjeringen vedtok dermed \u00e5 slutte med innsamling av flyreisestatistikk i januar 2015.\u003C\/p\u003E\u003Cp\u003EDe tall som foreligger blir dermed ikke oppdatert videre.\u003C\/p\u003E\u003Cp\u003EEventuelle brukere av disse tall b\u00f8r ta hensyn til at hensikten med datainnhenting var som grunnlag for kvotekj\u00f8p og ikke sammenligning mellom virksomheter. Tallene er \u003Cstrong\u003Eikke \u003C\/strong\u003Ekvalitetssikret p\u00e5 virksomhetsniv\u00e5\u0026nbsp;og eventuell bruk p\u00e5 dette niv\u00e5et b\u00f8r kryssjekkes med den aktuelle virksomheten.\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/183",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/martin.standley@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Martin Standley"
+					},
+					"vcard:hasEmail": {
+						"@value": "martin.standley@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/786"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}, {
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/TRAN"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dct:temporal": {
+				"@id": "http:\/\/data.norge.no\/data\/direktoratet-forvaltning-og-ikt\/flyreiseaktivitet-i-staten-2009-2013\/temporal\/1"
+			},
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "Reiseinformasjon"
+				}, {
+					"@language": "no",
+					"@value": "fly"
+				}, {
+					"@language": "no",
+					"@value": "Co2"
+				}, {
+					"@language": "no",
+					"@value": "flyreiser"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/215",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Offentlige virksomheter - kontaktinformasjon, kartkoordinater, kvalitetsvurderinger m.m."
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EDette datasettet som tidligere l\u00e5 p\u00e5 Norge.no, inneholder en oversikt over offentlige virksomheter, det vil si statlige etater og virksomheters sentrale, regionale og lokale enheter, fylkeskommuner og kommuner. Datasettet blir ikke oppdatert.\u0026nbsp;\u003C\/p\u003E\u003Cp\u003ETil hver enkelt virksomhet er det knyttet informasjon om* navnet til virksomheten* bes\u00f8ksadresse* postadresse* telefonnummer* e-post* nettadresse (URL)* kartkoordinater (posisjon)* dekning (hvilke kommuner virksomheten dekker)* organisasjonsnummer* overordnet virksomhet* organisasjonstype* tilknytningsform (m\u00e5ten en virksomhet er knyttet til den ut\u00f8vende statsmakt p\u00e5)* kvalitetsvurderinger av nettsidene 2004\u0026ndash;2011* kvalitetsvurderinger \u0026ndash; indikatorer 2004\u0026ndash;2011\u003C\/p\u003E\u003Cp\u003E\u003Cstrong\u003EObs: Datasettet blir ikke lenger oppdatert av Difi\u003C\/strong\u003E\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/215",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/msc@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Marta Kari Schawlann"
+					},
+					"vcard:hasEmail": {
+						"@value": "msc@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/961"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "Offentlige virksomheter"
+				}, {
+					"@language": "no",
+					"@value": "kontaktinformasjon"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/430",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Innbyggerunders\u00f8kelsen 2013"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EInnbyggerunders\u00f8kelsen best\u00e5r av to unders\u00f8kelser rettet mot ett og samme \u0026nbsp;utvalg.\u0026nbsp;Innbyggerdelen g\u00e5r ut til et tilfeldig utvalg av innbyggerne og blir \u0026nbsp;besvart av b\u00e5de dem med og dem uten erfaring med offentlige tilbud og \u0026nbsp;virksomheter. Brukerdelen blir besvart av dem med erfaring med 23 ulike \u0026nbsp;statlige, kommunale og fylkeskommunale tjenester.\u0026nbsp;\u003C\/p\u003E\u003Cp\u003E30 000 innbyggere fikk tilsendt innbyggerdelen. 27 361 av dem mottok faktisk \u0026nbsp;unders\u00f8kelsen, og 11 141 besvarte skjemaene. Det gir en svarprosent p\u00e5 41.\u0026nbsp;Respondentene i unders\u00f8kelsens brukerdel ble rekruttert gjennom \u0026nbsp;innbyggerdelen. De ble der spurt om de hadde hatt erfaring\/kontakt med ulike \u0026nbsp;offentlige tjenester i l\u00f8pet av de siste tolv m\u00e5nedene. P\u00e5 bakgrunn av hvilken \u0026nbsp;rolle de hadde hatt i kontakten med tjenestene, ble respondentene invitert til \u00e5 \u0026nbsp;delta i en brukerunders\u00f8kelse for inntil fem offentlige tjenester. \u0026nbsp;10 782 brukere ble invitert til \u00e5 gj\u00f8re til sammen 47 858 vurderinger av de ulike\u0026nbsp;tjenestene. 6 411 brukere svarte p\u00e5 til sammen 26 669 skjemaer for de ulike \u0026nbsp;tjenestene. Det betyr at responsraten var p\u00e5 59 prosent, og at 56 prosent av\u0026nbsp;skjemaene som ble sendt ut, ble fullf\u00f8rt.\u003C\/p\u003EInnbyggerunders\u00f8kelsen ble f\u00f8rste gang gjennomf\u00f8rt i 2009\/2010 av Synovate \u0026nbsp;(n\u00e5 Ipsos MMI). Den foreliggende unders\u00f8kelsen ble gjennomf\u00f8rt v\u00e5ren 2013 \u0026nbsp;av TNS Gallup AS."
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/430",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/john.nonseid@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "John Nonseid"
+					},
+					"vcard:hasEmail": {
+						"@value": "john.nonseid@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/985"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "innbygger"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/579",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Telefonnummer til statlige virksomheter og kommuner"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EDatasett over telefonnummer til stalige virksomheter, kommuner og fylkeskommuner.\u0026nbsp;Det er tenkt brukt sammen med datasettet over enhetene i offentlig forvaltning.\u0026nbsp;\u003C\/p\u003E\u003Cp\u003E\u003Cstrong\u003EDatasettet ble sist oppdatert i januar 2012, og det blir ikke lenger vedlikeholdt av Difi. Ved bruk av dette datasettet ber vi om at kilden blir henvist til (jf\u0026nbsp;\u003Ca href=\u0022http:\/\/data.norge.no\/nlod\/\u0022\u003ENLOD-lisensen\u003C\/a\u003E)\u0026nbsp;p\u00e5 f\u00f8lgende m\u00e5te: \u0026nbsp;\u003C\/strong\u003E\u003C\/p\u003E\u003Cp\u003ETjenesten er basert p\u00e5\u0026nbsp;\u003Ca href=\u0022http:\/\/data.norge.no\/organization\/direktoratet-forvaltning-og-ikt\u0022\u003E\u00e5pne datasett fra Difi\u003C\/a\u003E\u0026nbsp;og er underlagt\u0026nbsp;\u003Ca href=\u0022http:\/\/data.norge.no\/nlod\/\u0022\u003ENorsk lisens for offentlige data (NLOD)\u003C\/a\u003E. Datagrunnlaget ble sist oppdatert i 2012, og blir ikke lenger vedlikeholdt av Difi\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/579",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/msc@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Marta Kari Schawlann"
+					},
+					"vcard:hasEmail": {
+						"@value": "msc@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/933"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}, {
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/REGI"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:relation": [{
+					"@id": "http:\/\/data.norge.no\/data\/enhetene-i-offentlig-forvaltning"
+				}, {
+					"@id": "http:\/\/hotell.difi.no\/api"
+				}
+			],
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "telefonnummer"
+				}, {
+					"@language": "no",
+					"@value": "kontaktinformasjon"
+				}, {
+					"@language": "no",
+					"@value": "Offentlige virksomheter"
+				}, {
+					"@language": "no",
+					"@value": "kommuner"
+				}, {
+					"@language": "no",
+					"@value": "offentlige kontor"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/580",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Enhetene i offentlig forvaltning"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EDatasettet inneholder navn p\u00e5 enhetene (p\u00e5 bokm\u00e5l, nynorsk og engelsk), organisasjonsnummer, kommunenummer til kommunene og type enhet. \u0026nbsp;For statlige virksomheter er er data om tilknytningsformen med, det vil si data om den formelle organisasjonsstrukturen i staten og m\u00e5ten virksomheten er knyttet til den ut\u00f8vende statsmakt p\u00e5.\u003C\/p\u003E\u003Cp\u003E\u003Cstrong\u003EDatasettet ble sist oppdatert i januar 2012, og det blir ikke lenger vedlikeholdt av Difi. Ved bruk av dette datasettet ber vi om at kilden blir henvist til (jf \u003Ca href=\u0022http:\/\/data.norge.no\/nlod\/\u0022\u003ENLOD-lisensen\u003C\/a\u003E)\u0026nbsp;p\u00e5 f\u00f8lgende m\u00e5te: \u0026nbsp;\u003C\/strong\u003E\u003C\/p\u003E\u003Cp\u003ETjenesten er basert p\u00e5 \u003Ca href=\u0022http:\/\/data.norge.no\/organization\/direktoratet-forvaltning-og-ikt\u0022\u003E\u00e5pne datasett fra Difi\u003C\/a\u003E og er underlagt \u003Ca href=\u0022http:\/\/data.norge.no\/nlod\/\u0022\u003ENorsk lisens for offentlige data (NLOD)\u003C\/a\u003E. Datagrunnlaget ble sist oppdatert i 2012, og blir ikke lenger vedlikeholdt av Difi\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/580",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/msc@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Marta Kari Schawlann"
+					},
+					"vcard:hasEmail": {
+						"@value": "msc@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/765"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}, {
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/REGI"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "organisasjonsnummer"
+				}, {
+					"@language": "no",
+					"@value": "kommunenummer"
+				}, {
+					"@language": "no",
+					"@value": "tilknytningsform"
+				}, {
+					"@language": "no",
+					"@value": "virksomhetsnavn"
+				}, {
+					"@language": "no",
+					"@value": "organisasjonstype"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/581",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Bes\u00f8ksadresse til statlige virksomheter og kommuner"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EDatasettet inneholder bes\u00f8ksadresser til kommuner og statlige kontor og virksomheter. Det er tenkt brukt sammen med datasettet over enhetene i offentlig forvaltning. Datasettet ble sist oppdatert januar 2012, og det blir ikke lenger vedlikeholdt av Difi.\u0026nbsp;\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/581",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/msc@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Marta Kari Schawlann"
+					},
+					"vcard:hasEmail": {
+						"@value": "msc@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/711"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}, {
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/REGI"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dct:relation": [{
+					"@id": "http:\/\/data.norge.no\/data\/enhetene-i-offentlig-forvaltning"
+				}
+			],
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "bes\u00f8ksadresse"
+				}, {
+					"@language": "no",
+					"@value": "kommuner"
+				}, {
+					"@language": "no",
+					"@value": "offentlige kontor"
+				}, {
+					"@language": "no",
+					"@value": "kontaktinformasjon"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/582",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Postadresser til statlige virksomheter og kommuner"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EDatasettet inneholder postadresse, postnummer og sted til kommuner og statlige virksomheter.\u0026nbsp;Datasettet er tenkt brukt sammen med datasettet over enhetene i offentlig forvaltning.\u0026nbsp;\u003C\/p\u003E\u003Cp\u003E\u003Cstrong\u003EDatasettet ble sist oppdatert i januar 2012, og det blir ikke lenger vedlikeholdt av Difi. Ved bruk av dette datasettet ber vi om at kilden blir henvist til (jf\u0026nbsp;\u003Ca href=\u0022http:\/\/data.norge.no\/nlod\/\u0022\u003ENLOD-lisensen\u003C\/a\u003E)\u0026nbsp;p\u00e5 f\u00f8lgende m\u00e5te: \u0026nbsp;\u003C\/strong\u003E\u003C\/p\u003E\u003Cp\u003ETjenesten er basert p\u00e5\u0026nbsp;\u003Ca href=\u0022http:\/\/data.norge.no\/organization\/direktoratet-forvaltning-og-ikt\u0022\u003E\u00e5pne datasett fra Difi\u003C\/a\u003E\u0026nbsp;og er underlagt\u0026nbsp;\u003Ca href=\u0022http:\/\/data.norge.no\/nlod\/\u0022\u003ENorsk lisens for offentlige data (NLOD)\u003C\/a\u003E. Datagrunnlaget ble sist oppdatert i 2012, og blir ikke lenger vedlikeholdt av Difi\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/582",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/msc@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Marta Kari Schawlann"
+					},
+					"vcard:hasEmail": {
+						"@value": "msc@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/960"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}, {
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/REGI"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dct:relation": [{
+					"@id": "http:\/\/data.norge.no\/data\/enhetene-i-offentlig-forvaltning"
+				}, {
+					"@id": "http:\/\/hotell.difi.no\/api"
+				}
+			],
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "postadresse"
+				}, {
+					"@language": "no",
+					"@value": "kommuner"
+				}, {
+					"@language": "no",
+					"@value": "Offentlige virksomheter"
+				}, {
+					"@language": "no",
+					"@value": "postnummer"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/583",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Kartkoordinater til statlige virksomheter og kommuner"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EDatasettet inneholder koordinater (posisjonen) til statlige virksomheter og kommune- og fylkesadministrasjoner. Det er tenkt brukt sammen med datasettet over enhetene i offentlig forvaltning.\u003C\/p\u003E\u003Cp\u003E\u003Cstrong\u003EDatasettet ble sist oppdatert i januar 2012, og det blir ikke lenger vedlikeholdt av Difi. Ved bruk av dette datasettet ber vi om at kilden blir henvist til (jf\u0026nbsp;\u003Ca href=\u0022http:\/\/data.norge.no\/nlod\/\u0022\u003ENLOD-lisensen\u003C\/a\u003E)\u0026nbsp;p\u00e5 f\u00f8lgende m\u00e5te: \u0026nbsp;\u003C\/strong\u003E\u003C\/p\u003E\u003Cp\u003ETjenesten er basert p\u00e5\u0026nbsp;\u003Ca href=\u0022http:\/\/data.norge.no\/organization\/direktoratet-forvaltning-og-ikt\u0022\u003E\u00e5pne datasett fra Difi\u003C\/a\u003E\u0026nbsp;og er underlagt\u0026nbsp;\u003Ca href=\u0022http:\/\/data.norge.no\/nlod\/\u0022\u003ENorsk lisens for offentlige data (NLOD)\u003C\/a\u003E. Datagrunnlaget ble sist oppdatert i 2012, og blir ikke lenger vedlikeholdt av Difi\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/583",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/msc@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Marta Kari Schawlann"
+					},
+					"vcard:hasEmail": {
+						"@value": "msc@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/827"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}, {
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/REGI"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dct:relation": [{
+					"@id": "http:\/\/data.norge.no\/data\/enhetene-i-offentlig-forvaltning"
+				}, {
+					"@id": "http:\/\/hotell.difi.no\/api"
+				}
+			],
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "Kartdata"
+				}, {
+					"@language": "no",
+					"@value": "posisjon"
+				}, {
+					"@language": "no",
+					"@value": "kartkoordinater"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/584",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Nettadresser (url) til statlige virksomheter og kommuner"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EDatasettet inneholder internettadresser til statlige virksomheter og kommuner. Det er tenkt brukt sammen med datasettet over enhetene i offentlig forvaltning.\u0026nbsp;\u003C\/p\u003E\u003Cp\u003E\u003Cstrong\u003EDatasettet ble sist oppdatert i januar 2012, og det blir ikke lenger vedlikeholdt av Difi. Ved bruk av dette datasettet ber vi om at kilden blir henvist til (jf\u0026nbsp;\u003Ca href=\u0022http:\/\/data.norge.no\/nlod\/\u0022\u003ENLOD-lisensen\u003C\/a\u003E)\u0026nbsp;p\u00e5 f\u00f8lgende m\u00e5te: \u0026nbsp;\u003C\/strong\u003E\u003C\/p\u003E\u003Cp\u003ETjenesten er basert p\u00e5\u0026nbsp;\u003Ca href=\u0022http:\/\/data.norge.no\/organization\/direktoratet-forvaltning-og-ikt\u0022\u003E\u00e5pne datasett fra Difi\u003C\/a\u003E\u0026nbsp;og er underlagt\u0026nbsp;\u003Ca href=\u0022http:\/\/data.norge.no\/nlod\/\u0022\u003ENorsk lisens for offentlige data (NLOD)\u003C\/a\u003E. Datagrunnlaget ble sist oppdatert i 2012, og blir ikke lenger vedlikeholdt av Difi\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/584",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/msc@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Marta Kari Schawlann"
+					},
+					"vcard:hasEmail": {
+						"@value": "msc@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/962"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}, {
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/REGI"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dct:relation": [{
+					"@id": "http:\/\/data.norge.no\/data\/enhetene-i-offentlig-forvaltning"
+				}, {
+					"@id": "http:\/\/hotell.difi.no\/api"
+				}
+			],
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "nettadresse"
+				}, {
+					"@language": "no",
+					"@value": "url"
+				}, {
+					"@language": "no",
+					"@value": "nettsted"
+				}, {
+					"@language": "no",
+					"@value": "hjemmeside"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/585",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Data over hvilke kommuner regionale statlige virksomheter dekker "
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EDatasett med den regionale inndelingen av statlige virksomheter og hvilke kommuner den regionale virksomheten dekker. Det er tenkt brukt sammen med datasettet over enhetene i offentlig forvaltning.\u003C\/p\u003E\u003Cp\u003E\u003Cstrong\u003EDatasettet ble sist oppdatert i januar 2012, og det blir ikke lenger vedlikeholdt av Difi.\u0026nbsp;Ved bruk av dette datasettet ber vi om at kilden blir henvist til (jf \u003Ca href=\u0022http:\/\/data.norge.no\/nlod\/\u0022\u003ENLOD-lisensen\u003C\/a\u003E)\u0026nbsp;p\u00e5 f\u00f8lgende m\u00e5te: \u003C\/strong\u003E\u0026nbsp;\u003C\/p\u003E\u003Cp\u003ETjenesten er basert p\u00e5 \u003Ca href=\u0022http:\/\/data.norge.no\/organization\/direktoratet-forvaltning-og-ikt\u0022\u003E\u00e5pne datasett fra Difi\u003C\/a\u003E og er underlagt \u003Ca href=\u0022http:\/\/data.norge.no\/nlod\/\u0022\u003ENorsk lisens for offentlige data (NLOD)\u003C\/a\u003E. Datagrunnlaget ble sist oppdatert i 2012, og blir ikke lenger vedlikeholdt av Difi\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/585",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/msc@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Marta Kari Schawlann"
+					},
+					"vcard:hasEmail": {
+						"@value": "msc@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/757"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}, {
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/REGI"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dct:relation": [{
+					"@id": "http:\/\/data.norge.no\/data\/enhetene-i-offentlig-forvaltning"
+				}, {
+					"@id": "http:\/\/hotell.difi.no\/api"
+				}
+			],
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "regionale enheter"
+				}, {
+					"@language": "no",
+					"@value": "regionale statlige virksomheter"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/811",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Innbyggerunders\u00f8kelsen 2009 (del 1) - syn p\u00e5 de st\u00f8rste offentlige tjenestene, velferdsstaten, demokrati og \u00e5 bo i Norge"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Innbyggerunders\u00f8kelsen er en utvalgs- og brukerunders\u00f8kelse om norsk forvaltning. \u0026nbsp; Innbyggerunders\u00f8kelsen er gjennomf\u00f8rt av Direktoratet for forvaltning og IKT (DIFI) i to deler, del 1 i 2009 og del 2 i 2010.\u0026nbsp;\u0026nbsp;Del 1 (utf\u00f8rt i 2009) fokuserer p\u00e5 innbyggerne sitt generelle syn p\u00e5 de st\u00f8rste offentlige tjenestene, velferdsstaten, demokrati og \u00e5 bo i Norge. Unders\u00f8kelsen skal gi bedre innsikt i innbyggernes oppfatninger og erfaringer p\u00e5 tjenesteomr\u00e5der som oppvekst, utdanning, helse, trygghet, \u00f8konomi, samferdsel og kultur.\u0026nbsp;Innbyggerunders\u00f8kelsen har 412 variabler.\u0026nbsp;\u0026nbsp;"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/811",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/kristian.kjollesdal@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Kristian Kj\u00f8llesdal"
+					},
+					"vcard:hasEmail": {
+						"@value": "kristian.kjollesdal@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/810"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:relation": [{
+					"@id": "http:\/\/www.difi.no\/innbyggerundersokelsen\/r%C3%A5data"
+				}, {
+					"@id": "http:\/\/www.difi.no\/artikkel\/2010\/11\/alle-resultater"
+				}, {
+					"@id": "http:\/\/www.nsd.uib.no\/nsddata\/serier\/innbyggerundersokelsen.html"
+				}
+			],
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "offentlige tjenester"
+				}, {
+					"@language": "no",
+					"@value": "innbyggerunders\u00f8kelse"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/813",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Innbyggerunders\u00f8kelsen 2009 (del 1) - syn p\u00e5 de st\u00f8rste offentlige tjenestene, velferdsstaten, demokrati og \u00e5 bo i Norge"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Innbyggerunders\u00f8kelsen er en utvalgs- og brukerunders\u00f8kelse om norsk forvaltning. \u0026nbsp; Innbyggerunders\u00f8kelsen er gjennomf\u00f8rt av Direktoratet for forvaltning og IKT (DIFI) i to deler, del 1 i 2009 og del 2 i 2010.\u0026nbsp;\u0026nbsp;Del 1 (utf\u00f8rt i 2009) fokuserer p\u00e5 innbyggerne sitt generelle syn p\u00e5 de st\u00f8rste offentlige tjenestene, velferdsstaten, demokrati og \u00e5 bo i Norge. Unders\u00f8kelsen skal gi bedre innsikt i innbyggernes oppfatninger og erfaringer p\u00e5 tjenesteomr\u00e5der som oppvekst, utdanning, helse, trygghet, \u00f8konomi, samferdsel og kultur.\u0026nbsp;Innbyggerunders\u00f8kelsen har 412 variabler.\u0026nbsp;\u0026nbsp;"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/813",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/kristian.kjollesdal@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Kristian Kj\u00f8llesdal"
+					},
+					"vcard:hasEmail": {
+						"@value": "kristian.kjollesdal@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/812"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dct:relation": [{
+					"@id": "http:\/\/www.difi.no\/artikkel\/2010\/11\/alle-resultater"
+				}, {
+					"@id": "http:\/\/www.nsd.uib.no\/nsddata\/serier\/innbyggerundersokelsen.html"
+				}
+			],
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "offentlige tjenester"
+				}, {
+					"@language": "no",
+					"@value": "innbyggerunders\u00f8kelse"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/966",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Postjournalstatistikk (OEP) - Innsynskrav 2011"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EOffentlig elektronisk postjournal (OEP) ble lansert 18. mai 2010 og er en felles publiseringstjeneste for statlige virksomheters postjournaler. Virksomhetene bruker publiseringsl\u00f8sningen til \u00e5 gj\u00f8re sine egne postjournaler tilgjengelig p\u00e5 internett for alle brukere. De ulike postjournalene blir deretter samlet i en felles database som blir gjort s\u00f8kbar for brukerne. Brukerne kan s\u00f8ke etter informasjon gjennom OEP og bestille innsyn i den informasjonen de finner interessant. Denne bestillingen blir sendt til den virksomheten som er ansvarlig for journaloppf\u00f8ringen. Deretter blir bestillingen behandlet av virksomheten som et innsynskrav, og brukeren f\u00e5r svar direkte fra virksomheten.\u003C\/p\u003E\u003Cp\u003EBruksstatistikk for OEP fra og med lanseringsdato mai 2010 til medio september 2011 er publisert p\u00e5 datahotellet. Dataene viser antall innsynskrav fordelt p\u00e5 statlige virksomhetene hver m\u00e5ned.\u003C\/p\u003E\u003Cp\u003EDatasettet vil oppdateres hver m\u00e5ned framover.\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/966",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/kontakt@oep.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Oep"
+					},
+					"vcard:hasEmail": {
+						"@value": "kontakt@oep.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/965"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "statistikk"
+				}, {
+					"@language": "no",
+					"@value": "postjournal"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1152",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Norske mottakere i OpenPEPPOL"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EDette datasettet er en oversikt over mottakere som er registrert i den norske SMP-en (ofte kalt ELMA eller SMP ELMA) som Difi forvalter.\u003C\/p\u003E\u003Cp\u003EDatasettet oppdateres normalt en gang i timen. Alle navn i datasettet vaskes mot Enhetsregisteret en gang i d\u00f8gnet.\u003C\/p\u003E\u003Cp\u003EFeltene vil endre seg n\u00e5r det er naturlig, fortrinnsvis n\u00e5r det legges til eller fjernes mottaksprofiler.\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/1152",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/elma@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Support for ELMA"
+					},
+					"vcard:hasEmail": {
+						"@value": "elma@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/1151"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/1355"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/2012"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}, {
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/TRAN"
+				}, {
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/ECON"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dct:accrualPeriodicity": {
+				"@id": "continuous"
+			},
+			"dct:relation": [{
+					"@id": "https:\/\/github.com\/difi\/vefa-validator-conf\/raw\/master\/STANDARD\/EHFProfileCust\/Version%201.1.pdf"
+				}, {
+					"@id": "https:\/\/vefa.difi.no\/peppol\/open-data\/participants-in-elma-with-capabilities\/"
+				}
+			],
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "elma"
+				}, {
+					"@language": "no",
+					"@value": "peppol"
+				}, {
+					"@language": "no",
+					"@value": "faktura"
+				}, {
+					"@language": "no",
+					"@value": "ordre"
+				}, {
+					"@language": "no",
+					"@value": "katalog"
+				}, {
+					"@language": "no",
+					"@value": "ehandel"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1175",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Tidstyver i forvaltningen"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EKommunal- og moderniseringsdepartementet (KMD) har ambisjoner om \u00e5 fornye, forenkle og forbedre offentlig sektor. Som ledd i dette forenklingsarbeidet arbeides det med identifisere, redusere og fjerne s\u00e5kalte tidstyver.\u0026nbsp;Statlige virksomheter har derfor kommet med forslag til forenkling og fjerning av regelverk, prosedyrer mv. som fastsettes av andre myndigheter.\u003C\/p\u003E\u003Cp\u003ETidstyver i forvaltningen er aktiviteter som man bruker for mye tid p\u00e5 i forhold til hva som er hensiktsmessig for \u00e5 n\u00e5 m\u00e5lene for virksomheten. Det kan v\u00e6re un\u00f8dig rapportering, dobbeltarbeid, uhensiktsmessige rutiner.\u003C\/p\u003E\u003Cp\u003EFor brukere og n\u00e6ringsliv kan tidstyver v\u00e6re un\u00f8dig tid de m\u00e5 bruke p\u00e5 \u00e5 forholde seg til offentlig sektor. Det kan dreie seg om vanskelig skjemaer som skal fylles ut, manglende nettl\u00f8sninger, \u0026laquo;byr\u00e5kratiske ordninger\u0026raquo; osv.\u003C\/p\u003E\u003Cp\u003ETidstyver kan v\u00e6re for\u00e5rsaket av forhold som virksomheten og virksomhetsledelsen selv kan gj\u00f8re noe med, slik som tungvinte arbeidsrutiner, manglende IT-systemer, kompetanse osv. Tidstyver kan ogs\u00e5 skyldes forhold virksomheten ikke har kontroll med, slik som lov, regelverk, innrapporteringskrav og prosedyrer fastsatt av andre myndigheter.\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/1175",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/mettelouise.mannsaker@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Mette Luise Manns\u00e5ker"
+					},
+					"vcard:hasEmail": {
+						"@value": "mettelouise.mannsaker@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/1174"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dct:accrualPeriodicity": {
+				"@id": "continuous"
+			},
+			"dcat:landingPage": {
+				"@id": "http:\/\/tidstyv.difi.no\/"
+			},
+			"dct:relation": [{
+					"@id": "http:\/\/www.difi.no\/artikkel\/2014\/11\/tidstyvdatabasen"
+				}
+			],
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "tidstyver"
+				}, {
+					"@language": "no",
+					"@value": "effektivisering"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1231",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Norge.no - digitale tjenester fra det offentlige"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003ETjenestene er registrert med\u003C\/p\u003E\u003Cp\u003E* tittel p\u00e5 tjenesten* navn p\u00e5 tjenesteeier* beskrivelse av tjenesten* emneord i Los* lenke til tjenesten\u003C\/p\u003E\u003Cp\u003ETjenestene er tilgjengelige p\u00e5 Norge.no.\u003C\/p\u003E\u003Cp\u003ENorge.no er en veiviser til digitale tjenester (selvbetjeningsl\u00f8sninger)\u0026nbsp;fra det offentlige.\u003C\/p\u003E\u003Cp\u003E\u0026nbsp;\u003C\/p\u003E\u003Cp\u003E\u0026nbsp;\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/1231",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/msc@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Marta Kari Schawlann"
+					},
+					"vcard:hasEmail": {
+						"@value": "msc@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/1235"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dct:temporal": {
+				"@id": "http:\/\/data.norge.no\/data\/direktoratet-forvaltning-og-ikt\/norgeno-digitale-tjenester-fra-det-offentlige\/temporal\/1"
+			},
+			"dct:accrualPeriodicity": {
+				"@id": "daily"
+			},
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "digitale tjenester fra det offentlige"
+				}, {
+					"@language": "no",
+					"@value": "statlige virksomheter"
+				}, {
+					"@language": "no",
+					"@value": "kommuner"
+				}, {
+					"@language": "no",
+					"@value": "fylkeskommuner"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1233",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Norge.no - tjenesteeiere. Statlige virksomheter, kommuner og fylkeskommuner."
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003ETjenesteiere som har registrert tjenester p\u00e5 Norge.no. En tjenesteeier er registrert med\u003C\/p\u003E\u003Cp\u003E* navn* organisasjonsnummer* url til tjenesteiers nettsted* kommunenummer for kommuner og fylkeskommuner\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/1233",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/msc@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Marta Kari Schawlann"
+					},
+					"vcard:hasEmail": {
+						"@value": "msc@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/1234"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dct:temporal": {
+				"@id": "http:\/\/data.norge.no\/data\/direktoratet-forvaltning-og-ikt\/norgeno-tjenesteeiere-statlige-virksomheter-kommuner-og\/temporal\/1"
+			},
+			"dct:accrualPeriodicity": {
+				"@id": "daily"
+			},
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "tjenesteeiere"
+				}, {
+					"@language": "no",
+					"@value": "statlige virksomheter"
+				}, {
+					"@language": "no",
+					"@value": "kommuner"
+				}, {
+					"@language": "no",
+					"@value": "fylkeskommuner"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge-totalt"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1237",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Data.norge.no - nasjonal katalog over \u00e5pne offentlige datasett "
+				}, {
+					"@language": "no",
+					"@value": "Data.norge.no - nasjonal katalog over \u00e5pne offentlige datasett "
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EHent ut beskrivelsene fra norges offisielle katalog over \u00e5pne offentlige data som\u0026nbsp;JSON, JSON-LD eller RSS. B\u00e5de JSON-API-et\u0026nbsp;og RSS-en kan filtreres etter virksomhet. For JSON-formatet kan du filtrere p\u00e5 virksomhet ved \u00e5 legge til organisasjonsnummer fra enhetsregisteret i URLen:\u0026nbsp;http:\/\/data.norge.no\/api\/dcat\/(orgnummer)\/data.json\u0026nbsp;\u003C\/p\u003E\u003Cp\u003EMed Difi\u0026nbsp;som eksempel:\u0026nbsp;http:\/\/data.norge.no\/api\/dcat\/991825827\/data.json\u003C\/p\u003E\u003Cp\u003EURL-struktur for filtrering av RSS for en virksomheten:\u0026nbsp;http:\/\/data.norge.no\/organization\/(navn-p\u00e5-virksomhet).rss.xml\u003C\/p\u003E\u003Cp\u003EEksempel:\u0026nbsp;\u0026nbsp;http:\/\/data.norge.no\/organization\/direktoratet-forvaltning-og-ikt\/rss.xml\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/1237",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/oystein.asnes@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "\u00d8ystein \u00c5snes"
+					},
+					"vcard:hasEmail": {
+						"@value": "oystein.asnes@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/1236"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/1238"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/2073"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dct:accrualPeriodicity": {
+				"@id": "continuous"
+			},
+			"dct:relation": [{
+					"@id": "http:\/\/spec.dataportals.org\/"
+				}
+			],
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "\u00e5pne data"
+				}, {
+					"@language": "no",
+					"@value": "offentlige data"
+				}, {
+					"@language": "no",
+					"@value": "datakatalog"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1264",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Kvalitet p\u00e5 nett - resultatliste 2010"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EResultatliste fra kvalitetsvurderingen av n\u00e6r 700 offentlige nettsteder 2010. Vurderingen er utf\u00f8rt av Direktoratet for forvaltning og IKT. Detaljerte vurderinger for hvert enkelt nettsted finnes i eget datasett. Se http:\/\/kvalitet.difi.no for mer informasjon om vurderingsarbeidet.\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/1264",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/anr@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Anders Nedland R\u00f8neid"
+					},
+					"vcard:hasEmail": {
+						"@value": "anr@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/1263"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dct:temporal": {
+				"@id": "http:\/\/data.norge.no\/data\/direktoratet-forvaltning-og-ikt\/kvalitet-p%C3%A5-nett-resultatliste-2010\/temporal\/1"
+			},
+			"dcat:landingPage": {
+				"@id": "https:\/\/kvalitet.difi.no"
+			},
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "kvalitet"
+				}, {
+					"@language": "no",
+					"@value": "uu"
+				}, {
+					"@language": "no",
+					"@value": "brukskvalitet"
+				}, {
+					"@language": "no",
+					"@value": "nettsteder"
+				}, {
+					"@language": "no",
+					"@value": "offentlig"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1266",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Kvalitet p\u00e5 nett - resultatliste 2011"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EResultatliste fra kvalitetsvurderingen av n\u00e6r 700 offentlige nettsteder 2011. Vurderingen er utf\u00f8rt av Direktoratet for forvaltning og IKT. Detaljerte vurderinger for hvert enkelt nettsted finnes i eget datasett. Se http:\/\/kvalitet.difi.no for mer informasjon om vurderingsarbeidet.\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/1266",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/anr@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Anders Nedland R\u00f8neid"
+					},
+					"vcard:hasEmail": {
+						"@value": "anr@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/1265"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dct:temporal": {
+				"@id": "http:\/\/data.norge.no\/data\/direktoratet-forvaltning-og-ikt\/kvalitet-p%C3%A5-nett-resultatliste-2011\/temporal\/1"
+			},
+			"dcat:landingPage": {
+				"@id": "https:\/\/kvalitet.difi.no"
+			},
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "kvalitet"
+				}, {
+					"@language": "no",
+					"@value": "uu"
+				}, {
+					"@language": "no",
+					"@value": "brukskvalitet"
+				}, {
+					"@language": "no",
+					"@value": "nettsteder"
+				}, {
+					"@language": "no",
+					"@value": "offentlig"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1268",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Kvalitet p\u00e5 nett - resultatliste 2013"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EResultatliste fra kvalitetsvurderingen av n\u00e6r 700 offentlige nettsteder 2013. Vurderingen er utf\u00f8rt av Direktoratet for forvaltning og IKT. Detaljerte vurderinger for hvert enkelt nettsted finnes i eget datasett. Se http:\/\/kvalitet.difi.no for mer informasjon om vurderingsarbeidet.\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/1268",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/anr@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Anders Nedland R\u00f8neid"
+					},
+					"vcard:hasEmail": {
+						"@value": "anr@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/1267"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:temporal": {
+				"@id": "http:\/\/data.norge.no\/data\/direktoratet-forvaltning-og-ikt\/kvalitet-p%C3%A5-nett-resultatliste-2013\/temporal\/1"
+			},
+			"dcat:landingPage": {
+				"@id": "https:\/\/kvalitet.difi.no"
+			},
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "kvalitet"
+				}, {
+					"@language": "no",
+					"@value": "uu"
+				}, {
+					"@language": "no",
+					"@value": "brukskvalitet"
+				}, {
+					"@language": "no",
+					"@value": "nettsteder"
+				}, {
+					"@language": "no",
+					"@value": "offentlig"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1270",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Kvalitet p\u00e5 digitale tjenester - resultatliste 2014"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EResultatliste fra kvalitetsvurderingen av 52 offentlige digitale tjenester i 2014. Vurderingen er utf\u00f8rt av Direktoratet for forvaltning og IKT. Detaljerte vurderinger for hvert enkelt nettsted finnes i eget datasett. Se http:\/\/kvalitet.difi.no for mer informasjon om vurderingsarbeidet.\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/1270",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/anr@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Anders Nedland R\u00f8neid"
+					},
+					"vcard:hasEmail": {
+						"@value": "anr@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/1269"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dcat:landingPage": {
+				"@id": "https:\/\/kvalitet.difi.no"
+			},
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "kvalitet"
+				}, {
+					"@language": "no",
+					"@value": "uu"
+				}, {
+					"@language": "no",
+					"@value": "brukskvalitet"
+				}, {
+					"@language": "no",
+					"@value": "nettsteder"
+				}, {
+					"@language": "no",
+					"@value": "offentlig"
+				}, {
+					"@language": "no",
+					"@value": "tjenester"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1272",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Kvalitet p\u00e5 nett - detaljresultat 2010"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EResultater fra kvalitetsvurderingen av n\u00e6r 700 offentlige nettsteder 2010. Inneholder vurderingsrapport for hver av de vurderte nettstedene. Vurderingen er utf\u00f8rt av Direktoratet for forvaltning og IKT. Resultatliste finnes i eget datasett. Se http:\/\/kvalitet.difi.no for mer informasjon om vurderingsarbeidet.\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/1272",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/anr@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Anders Nedland R\u00f8neid"
+					},
+					"vcard:hasEmail": {
+						"@value": "anr@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/1271"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dct:temporal": {
+				"@id": "http:\/\/data.norge.no\/data\/direktoratet-forvaltning-og-ikt\/kvalitet-p%C3%A5-nett-detaljresultat-2010\/temporal\/1"
+			},
+			"dcat:landingPage": {
+				"@id": "https:\/\/kvalitet.difi.no"
+			},
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "kvalitet"
+				}, {
+					"@language": "no",
+					"@value": "uu"
+				}, {
+					"@language": "no",
+					"@value": "brukskvalitet"
+				}, {
+					"@language": "no",
+					"@value": "nettsteder"
+				}, {
+					"@language": "no",
+					"@value": "offentlig"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1274",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Kvalitet p\u00e5 nett - detaljresultat 2011"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EResultater fra kvalitetsvurderingen av n\u00e6r 700 offentlige nettsteder 2010. Inneholder vurderingsrapport for hver av de vurderte nettstedene. Vurderingen er utf\u00f8rt av Direktoratet for forvaltning og IKT. Resultatliste finnes i eget datasett. Se http:\/\/kvalitet.difi.no for mer informasjon om vurderingsarbeidet.\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/1274",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/anr@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Anders Nedland R\u00f8neid"
+					},
+					"vcard:hasEmail": {
+						"@value": "anr@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/1273"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dct:temporal": {
+				"@id": "http:\/\/data.norge.no\/data\/direktoratet-forvaltning-og-ikt\/kvalitet-p%C3%A5-nett-detaljresultat-2011\/temporal\/1"
+			},
+			"dcat:landingPage": {
+				"@id": "https:\/\/kvalitet.difi.no"
+			},
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "kvalitet"
+				}, {
+					"@language": "no",
+					"@value": "uu"
+				}, {
+					"@language": "no",
+					"@value": "brukskvalitet"
+				}, {
+					"@language": "no",
+					"@value": "nettsteder"
+				}, {
+					"@language": "no",
+					"@value": "offentlig"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1276",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Kvalitet p\u00e5 nett - detaljresultat 2013"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EResultater fra kvalitetsvurderingen av n\u00e6r 700 offentlige nettsteder 2010. Inneholder vurderingsrapport for hver av de vurderte nettstedene. Vurderingen er utf\u00f8rt av Direktoratet for forvaltning og IKT. Resultatliste finnes i eget datasett. Se http:\/\/kvalitet.difi.no for mer informasjon om vurderingsarbeidet.\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/1276",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/anr@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Anders Nedland R\u00f8neid"
+					},
+					"vcard:hasEmail": {
+						"@value": "anr@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/1275"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dct:temporal": {
+				"@id": "http:\/\/data.norge.no\/data\/direktoratet-forvaltning-og-ikt\/kvalitet-p%C3%A5-nett-detaljresultat-2013\/temporal\/1"
+			},
+			"dcat:landingPage": {
+				"@id": "https:\/\/kvalitet.difi.no"
+			},
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "kvalitet"
+				}, {
+					"@language": "no",
+					"@value": "uu"
+				}, {
+					"@language": "no",
+					"@value": "brukskvalitet"
+				}, {
+					"@language": "no",
+					"@value": "nettsteder"
+				}, {
+					"@language": "no",
+					"@value": "offentlig"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1278",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Kvalitet p\u00e5 digitale tjenester - detaljresultat 2014"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EResultater fra kvalitetsvurderingen av 52 offentlige digitale tjenester 2014. Inneholder vurderingsrapport for hver tjeneste som er vurdert. Vurderingen er utf\u00f8rt av Direktoratet for forvaltning og IKT. Resultatliste finnes i eget datasett. Se http:\/\/kvalitet.difi.no for mer informasjon om vurderingsarbeidet.\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/1278",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/anr@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Anders Nedland R\u00f8neid"
+					},
+					"vcard:hasEmail": {
+						"@value": "anr@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/1277"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dct:temporal": {
+				"@id": "http:\/\/data.norge.no\/data\/direktoratet-forvaltning-og-ikt\/kvalitet-p%C3%A5-digitale-tjenester-detaljresultat-2014\/temporal\/1"
+			},
+			"dcat:landingPage": {
+				"@id": "https:\/\/kvalitet.difi.no"
+			},
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "kvalitet"
+				}, {
+					"@language": "no",
+					"@value": "uu"
+				}, {
+					"@language": "no",
+					"@value": "brukskvalitet"
+				}, {
+					"@language": "no",
+					"@value": "nettsteder"
+				}, {
+					"@language": "no",
+					"@value": "offentlig"
+				}, {
+					"@language": "no",
+					"@value": "tjenester"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1357",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Innbyggerunders\u00f8kelsen 2015"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EInnbyggerunders\u00f8kelsen 2015 ble gjennomf\u00f8rt h\u00f8sten 2014 og v\u00e5ren 2015 av Epinion p\u00e5 oppdrag fra Difi. 30 000 tilfeldig utvalgte innbyggere fikk tilsendt sp\u00f8rreskjema og 41 prosent av disse svarte. Unders\u00f8kelsen er gjennomf\u00f8rt for tredje gang, og den er Norges mest omfattende unders\u00f8kelse om innbyggernes inntrykk av og erfaringer med offentlige tjenester og om det \u00e5 bo i Norge.\u0026nbsp;\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/1357",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/john.nonseid@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "John Nonseid"
+					},
+					"vcard:hasEmail": {
+						"@value": "john.nonseid@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/1356"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dcat:landingPage": {
+				"@id": "http:\/\/www.difi.no\/rapporter-og-undersokelser\/statistikk-og-undersokelser\/innbyggerundersokelsen-2015"
+			},
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "innbygger"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1633",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Medarbeiderunders\u00f8kelsen i staten"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EForm\u00e5let med medarbeiderunders\u00f8kelsen er \u00e5 gi et kunnskapsgrunnlag om hvordan ansatte i staten vurderer ulike sider ved sin arbeidssituasjon, samt hvordan disse forholdene henger sammen med viktige m\u00e5l som engasjerte medarbeidere og virksomheter med evne til \u00e5 gjennomf\u00f8re sitt mandat\u003C\/p\u003E\u003Cp\u003EUnders\u00f8kelsen er gjennomf\u00f8rt flere ganger siden 1998.\u0026nbsp;\u003C\/p\u003E\u003Cp\u003E\u0026nbsp;\u003C\/p\u003E\u003Cp\u003EHer kan du laste ned data fra siste unders\u00f8kelse i 2016 og en fil som inneholder alle data ifra alle gjennomf\u00f8rte unders\u00f8kelser. Filen lastes ned i Excel-format (xlsx) og SPSS-format (SAV)\u003C\/p\u003E\u003Cp\u003E\u0026nbsp;\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/1633",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/tbb@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Tore Basmo Bergh"
+					},
+					"vcard:hasEmail": {
+						"@value": "tbb@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/1632"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dct:accrualPeriodicity": {
+				"@id": "irregular"
+			},
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "Medarbeiderunders\u00f8kelser"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1651",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Kvalitet p\u00e5 nett - resultatliste 2016"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EResultatliste fra kvalitetsvurderingen av 64 offentlige digitale tjenester i 2016. Inneholder totalscore, antall stjerner (fra 1 til 6) og poengscore p\u00e5 6 delomr\u00e5der.\u003C\/p\u003E\u003Cp\u003EVurderingen er utf\u00f8rt av Direktoratet for forvaltning og IKT (Difi) og er basert p\u00e5 et eget kriteriesett med 33 kriterier. Se \u003Ca href=\u0022http:\/\/kvalitet.difi.no\u0022\u003Ehttp:\/\/kvalitet.difi.no\u003C\/a\u003E for kriteriesett og mer informasjon om vurderingsarbeidet.\u003C\/p\u003E\u003Cp\u003EDetaljerte vurderinger for hver enkelt tjeneste finnes i eget datasett p\u00e5 data.norge.no\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/1651",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/anr@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Anders Nedland R\u00f8neid"
+					},
+					"vcard:hasEmail": {
+						"@value": "anr@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/1652"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dcat:landingPage": {
+				"@id": "https:\/\/kvalitet.difi.no"
+			},
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "brukskvalitet"
+				}, {
+					"@language": "no",
+					"@value": "nettsteder"
+				}, {
+					"@language": "no",
+					"@value": "offentlige tjenester"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge"
+				}
+			]
+		}, {
+			"@id": "http:\/\/data.norge.no\/node\/1654",
+			"@type": "dcat:Dataset",
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Kvalitet p\u00e5 nett - detaljresultat 2016"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "\u003Cp\u003EDetaljerte vurderinger fra kvalitetsvurderingen av 64 offentlige digitale tjenester i 2016. Inneholder tjenestene sine poeng og Difi sin kommentar p\u00e5 hvert kriterium.\u003C\/p\u003E\u003Cp\u003EVurderingen er utf\u00f8rt av Direktoratet for forvaltning og IKT (Difi) og er basert p\u00e5 et eget kriteriesett med 33 kriterier. Se https:\/\/kvalitet.difi.no for kriteriesett og mer informasjon om vurderingsarbeidet.\u003C\/p\u003E\u003Cp\u003E\u003Ca href=\u0022http:\/\/data.norge.no\/data\/direktoratet-forvaltning-og-ikt\/kvalitet-p%C3%A5-nett-resultatliste-2016\u0022\u003EResultatlisten\u003C\/a\u003E finnes som eget datasett.\u003C\/p\u003E"
+				}
+			],
+			"dct:identifier": "http:\/\/data.norge.no\/node\/1654",
+			"dcat:contactPoint": [{
+					"@id": "http:\/\/data.norge.no\/contacts\/anr@difi.no",
+					"@type": "vcard:Kind",
+					"vcard:fn": {
+						"@value": "Anders Nedland R\u00f8neid"
+					},
+					"vcard:hasEmail": {
+						"@value": "anr@difi.no"
+					}
+				}
+			],
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dcat:distribution": [{
+					"@id": "http:\/\/data.norge.no\/node\/1653"
+				}
+			],
+			"dcat:theme": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/GOVE"
+				}
+			],
+			"dct:accessRights": {
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/access-right\/PUBLIC"
+			},
+			"dct:language": [{
+					"@id": "NOR"
+				}
+			],
+			"dcat:landingPage": {
+				"@id": "https:\/\/kvalitet.difi.no"
+			},
+			"dcat:keyword": [{
+					"@language": "no",
+					"@value": "brukskvalitet"
+				}, {
+					"@language": "no",
+					"@value": "nettsteder"
+				}, {
+					"@language": "no",
+					"@value": "offentlige tjenester"
+				}
+			],
+			"dct:spatial": [{
+					"@id": "Norge"
+				}
+			]
+		}, [{
+				"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/",
+				"@type": "skos:ConceptScheme",
+				"dct:title": {
+					"@language": "no",
+					"@value": "Kategorier"
+				}
+			}
+		], {
+			"@id": "http:\/\/data.norge.no\/api\/dcat2\/991825827\/data.jsonld",
+			"@type": "dcat:Catalog",
+			"dct:publisher": {
+				"@id": "http:\/\/data.brreg.no\/enhetsregisteret\/enhet\/991825827"
+			},
+			"dct:title": [{
+					"@language": "no",
+					"@value": "Katalog for Direktoratet for forvaltning og IKT"
+				}
+			],
+			"dct:description": [{
+					"@language": "no",
+					"@value": "Datasett fra Direktoratet for forvaltning og IKT"
+				}
+			],
+			"dcat:dataset": [{
+					"@id": "http:\/\/data.norge.no\/node\/95"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/126"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/166"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/183"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/215"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/430"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/579"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/580"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/581"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/582"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/583"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/584"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/585"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/811"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/813"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/966"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/1152"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/1175"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/1231"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/1233"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/1237"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/1264"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/1266"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/1268"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/1270"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/1272"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/1274"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/1276"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/1278"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/1357"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/1633"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/1651"
+				}, {
+					"@id": "http:\/\/data.norge.no\/node\/1654"
+				}
+			],
+			"dct:language": [{
+					"@id": "NOR"
+				}, {
+					"@id": "ENG"
+				}
+			],
+			"dcat:themeTaxonomy": [{
+					"@id": "http:\/\/publications.europa.eu\/resource\/authority\/data-theme\/"
+				}
+			],
+			"foaf:homepage": "http:\/\/www.difi.no\/",
+			"dct:modified": "2015-01-08"
+		}
+	]
+}

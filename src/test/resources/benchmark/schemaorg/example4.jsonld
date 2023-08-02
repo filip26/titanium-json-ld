@@ -1,0 +1,50 @@
+[{
+    "@type" : "MusicEvent",
+    "name" : "B.B. King with Jonathon \"Boogie\" Long",
+    "image" : "http://www.bbking.com/gallery/b-b-king-live.jpg",
+    "url" : "http://www.bbking.com/events/apr12-providence.html",
+    "startDate" : "2014-04-12T19:30",
+    "doorTime" : "18:30:00",
+    "endDate" : "2014-04-12T22:00",
+    "location" : {
+        "@type" : "Place",
+        "name" : "Lupo's Heartbreak Hotel",
+        "sameAs" : "http://lupos.com/",
+        "address" : {
+            "@type" : "PostalAddress",
+            "streetAddress" : "79 Washington St.",
+            "addressLocality" : "Providence",
+            "addressRegion" : "RI",
+            "postalCode" : "02903",
+            "addressCountry" : "US"
+        }
+    },
+    "offers" : [ {
+        "@type" : "Offer",
+        "name" : "General Admission",
+        "priceCurrency": "USD",
+        "price" : "63.25",
+        "availability" : "SoldOut",
+        "url" : "http://www.ticketmaster.com/event/17004C29"
+    },{
+        "@type" : "Offer",
+        "name" : "VIP Experience",
+        "url" : "http://www.example.com/Abcde12345",
+        "priceCurrency": "USD",
+        "price" : "299.00",
+        "validFrom" : "2014-02-05T10:00",
+        "validThrough" : "2014-03-19T23:59"
+    } ],
+    "performer" : [ {
+        "@type" : "MusicGroup",
+        "name" : "B.B. King",
+        "sameAs" : "http://en.wikipedia.org/wiki/B.B._King"
+    },{
+        "@type" : "MusicGroup",
+        "name" : "Jonathon \"Boogie\" Long",
+        "sameAs" : "http://jonathonboogielong.com/"
+    } ],
+    "eventStatus" : "EventRescheduled",
+    "previousStartDate" : "2013-09-30T19:30",
+    "typicalAgeRange" : "18+"
+}]

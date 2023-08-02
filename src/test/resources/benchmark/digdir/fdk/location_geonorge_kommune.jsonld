@@ -1,0 +1,29 @@
+{
+    "@graph": [
+        {
+            "@id": "http://data.geonorge.no/administrativeEnheter/kommune/id/172746",
+            "@type": [
+                "http://rdf.kartverket.no/onto/adm_enhet_4.0.owl#Kommune",
+                "http://www.w3.org/2002/07/owl#NamedIndividual"
+            ],
+            "http://rdf.kartverket.no/onto/adm_enhet_4.0.owl#kommunenummer": {
+                "@value": "http://skjema.geonorge.no/SOSI/kodeliste/AdmEnheter/2018/Kommunenummer/1431.rdf",
+                "@type": "http://www.w3.org/2001/XMLSchema#anyURI"
+            },
+            "http://rdf.kartverket.no/onto/adm_enhet_4.0.owl#kommunenavn": {
+                "@value": "Jølster",
+                "@type": "http://www.w3.org/2001/XMLSchema#string"
+            },
+            "http://rdf.kartverket.no/onto/adm_enhet_4.0.owl#status": {
+                "@value": "true",
+                "@type": "http://www.w3.org/2001/XMLSchema#string"
+            },
+            "http://www.opengis.net/ont/geosparql#hasGeometry": {
+                "@id": "http://data.geonorge.no/administrativeEnheter/kommune/id/geometry/172746"
+            },
+            "http://www.opengis.net/ont/geosparql#sfWithin": {
+                "@id": "http://data.geonorge.no/administrativeEnheter/fylke/id/173150"
+            }
+        }
+    ]
+}
