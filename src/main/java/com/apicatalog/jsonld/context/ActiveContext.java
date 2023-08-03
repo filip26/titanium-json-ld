@@ -15,12 +15,6 @@
  */
 package com.apicatalog.jsonld.context;
 
-import java.net.URI;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
-
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.compaction.UriCompaction;
@@ -28,13 +22,19 @@ import com.apicatalog.jsonld.compaction.ValueCompaction;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.expansion.ValueExpansion;
 import com.apicatalog.jsonld.lang.DirectionType;
-
 import jakarta.json.JsonObject;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * A context that is used to resolve terms while the processing algorithm is
  * running.
- *
  */
 public final class ActiveContext {
 
@@ -95,7 +95,7 @@ public final class ActiveContext {
 
     public void createInverseContext() {
         this.inverseContext = InverseContextBuilder.with(this).build();
-   }
+    }
 
     public boolean containsTerm(final String term) {
         return terms.containsKey(term);
@@ -112,11 +112,15 @@ public final class ActiveContext {
         return Optional.empty();
     }
 
-    public Optional<TermDefinition>  getTerm(final String value) {
+    public Optional<TermDefinition> getTerm(final String value) {
+        if (value == null) {
+            return Optional.empty();
+        }
         return Optional.ofNullable(terms.get(value));
     }
 
-    public TermDefinition  getTermNullable(final String value) {
+    public TermDefinition getTermNullable(final String value) {
+        if(value == null) return null;
         return terms.get(value);
     }
 
@@ -227,5 +231,38 @@ public final class ActiveContext {
     @Override
     public String toString() {
         return "ActiveContext[terms=" + terms + ", previousContext=" + previousContext + "]";
+    }
+
+
+    List<CachedPrefix> prefixCache = new ArrayList<>(10);
+
+    public TermDefinition getPrefix(String prefix) {
+        if (prefixCache.size() <= 10) {
+            for (CachedPrefix cachedPrefix : prefixCache) {
+                if (cachedPrefix.prefix.equals(prefix)) {
+                    return cachedPrefix.termDefinition;
+                }
+            }
+        }else {
+            prefixCache.clear();
+        }
+
+        TermDefinition termDefinition = terms.get(prefix);
+        if (termDefinition != null) {
+            prefixCache.add(new CachedPrefix(prefix, termDefinition));
+        }
+        return termDefinition;
+
+
+    }
+
+    private static class CachedPrefix {
+        private final String prefix;
+        private final TermDefinition termDefinition;
+
+        private CachedPrefix(String prefix, TermDefinition termDefinition) {
+            this.prefix = prefix;
+            this.termDefinition = termDefinition;
+        }
     }
 }

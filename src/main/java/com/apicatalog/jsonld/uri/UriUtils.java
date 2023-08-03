@@ -15,12 +15,60 @@
  */
 package com.apicatalog.jsonld.uri;
 
-import java.net.URI;
-
 import com.apicatalog.jsonld.StringUtils;
+import com.apicatalog.jsonld.context.cache.ConcurrentLruCache;
+import com.apicatalog.jsonld.context.cache.LruCache;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.rdf.Rdf;
+import com.apicatalog.rdf.lang.RdfConstants;
+
+import java.net.URI;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 public final class UriUtils {
+
+
+    private static final ConcurrentLruCache<String, URI> LRU_CACHE = new ConcurrentLruCache<>(4096);
+
+    private static final Map<String, URI> COMMON_CONSTANTS = new HashMap<>();
+    static {
+        List<String> uris = List.of(
+        "http://data.europa.eu/eli/ontology#",
+        "http://publications.europa.eu/mdr/eli/index.html",
+        "http://purl.bioontology.org/ontology/SNOMEDCT/",
+        "http://purl.org/dc/dcmitype/",
+        "http://purl.org/dc/elements/1.1",
+        "http://purl.org/dc/elements/1.1/",
+        "http://purl.org/dc/terms/",
+        "http://purl.org/ontology/bibo/",
+        "http://rdfs.org/ns/void#",
+        "http://schema.org/",
+        "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML",
+        "http://www.w3.org/2000/01/rdf-schema#",
+        "http://www.w3.org/2001/XMLSchema#",
+        "http://www.w3.org/2002/07/owl#",
+        "http://www.w3.org/2004/02/skos/core#",
+        "http://www.w3.org/XML/1998/namespace",
+        "http://www.w3.org/ns/dcat#",
+        "http://www.w3.org/ns/rdfa#",
+        "http://xmlns.com/foaf/0.1/"
+        );
+
+        for (String uri : uris) {
+            try {
+                COMMON_CONSTANTS.put(uri, URI.create(uri));
+                COMMON_CONSTANTS.put(uri.substring(0, uri.length()-1), URI.create(uri));
+            }catch (Exception ignored){
+            }
+
+        }
+
+    }
+
 
     private UriUtils() {
     }
@@ -34,13 +82,13 @@ public final class UriUtils {
     }
 
 
-    public static URI create(final String uri) {
+    public static URI create(final String uriString) {
 
-        if (uri == null) {
+        if (uriString == null) {
             throw new IllegalArgumentException("The uri cannot be null.");
         }
 
-        String uriValue = StringUtils.strip(uri);
+        String uriValue = StringUtils.strip(uriString);
 
         if (uriValue.isEmpty()) {
             return null;
@@ -54,9 +102,7 @@ public final class UriUtils {
         }
 
         try {
-
-            return URI.create(uriValue);
-
+            return getUriWithCache(uriValue);
         } catch (IllegalArgumentException e) {
             return null;
         }
@@ -121,15 +167,29 @@ public final class UriUtils {
         }
 
         // minimal form s(1):ssp(1)
-        if (uri == null || uri.length() < 3 ) {
+        if (uri == null || uri.length() < 3) {
             return false;
         }
 
         try {
-            return URI.create(uri).isAbsolute();
+            return  getUriWithCache(uri).isAbsolute();
         } catch (IllegalArgumentException e) {
             return false;
         }
+    }
+
+    private static URI getUriWithCache(String uriString) {
+        // TODO: It's not so much a cache that we need here, but rather a faster URI validation method
+
+        URI commonUri = COMMON_CONSTANTS.get(uriString);
+        if(commonUri != null) return commonUri;
+
+        URI uri = LRU_CACHE.get(uriString);
+        if(uri == null){
+            uri = URI.create(uriString);
+            LRU_CACHE.put(uriString, uri);
+        }
+        return uri;
     }
 
     private static boolean startsWithScheme(final String uri) {
@@ -160,7 +220,7 @@ public final class UriUtils {
     protected static String recompose(final String scheme, final String authority, final String path, final String query, final String fragment) {
 
         boolean includeScheme = isDefined(scheme);
-        boolean includeAuthority =authority != null;
+        boolean includeAuthority = authority != null;
         boolean includePath = isDefined(path);
         boolean includeQuery = isDefined(query);
         boolean includeFragment = isDefined(fragment);
@@ -200,31 +260,31 @@ public final class UriUtils {
     }
 
     private static String recomposeCommonCases(String scheme, String authority, String path, String query, String fragment, boolean includeScheme, boolean includeAuthority, boolean includePath, boolean includeQuery, boolean includeFragment) {
-        if(includeScheme && !includeAuthority && !includePath && !includeQuery && !includeFragment){
+        if (includeScheme && !includeAuthority && !includePath && !includeQuery && !includeFragment) {
             return scheme + ":";
         }
 
-        if(includeScheme && includeAuthority && !includePath && !includeQuery && !includeFragment){
+        if (includeScheme && includeAuthority && !includePath && !includeQuery && !includeFragment) {
             return scheme + ":" + "//" + authority;
         }
 
-        if(includeScheme &&!includeAuthority && includePath && !includeQuery && !includeFragment){
+        if (includeScheme && !includeAuthority && includePath && !includeQuery && !includeFragment) {
             return scheme + ":" + path;
         }
 
-        if(includeScheme && includeAuthority && includePath && !includeQuery && !includeFragment){
+        if (includeScheme && includeAuthority && includePath && !includeQuery && !includeFragment) {
             return scheme + ":" + "//" + authority + path;
-       }
+        }
 
-        if(includeScheme && includeAuthority && includePath && !includeQuery && includeFragment){
+        if (includeScheme && includeAuthority && includePath && !includeQuery && includeFragment) {
             return scheme + ":" + "//" + authority + path + "#" + fragment;
-       }
+        }
 
-        if(includeScheme && includeAuthority && includePath && includeQuery && !includeFragment){
+        if (includeScheme && includeAuthority && includePath && includeQuery && !includeFragment) {
             return scheme + ":" + "//" + authority + path + "?" + query;
         }
 
-        if(includeScheme && includeAuthority && includePath && includeQuery && includeFragment){
+        if (includeScheme && includeAuthority && includePath && includeQuery && includeFragment) {
             return scheme + ":" + "//" + authority + path + "?" + query + "#" + fragment;
         }
         return null;
@@ -263,10 +323,10 @@ public final class UriUtils {
         return builder.toString();
     }
 
-    protected static String recompose( final String fragment) {
+    protected static String recompose(final String fragment) {
 
         if (isDefined(fragment)) {
-            return "#"+fragment;
+            return "#" + fragment;
         }
 
         return "";

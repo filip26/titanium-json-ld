@@ -61,10 +61,10 @@ public class LoadingSmallFilesBenchmark {
 
     public static void main(String[] args) throws URISyntaxException, JsonLdError {
         LoadingSmallFilesBenchmark loadingBenchmark = new LoadingSmallFilesBenchmark();
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 5000; i++) {
             System.out.println("Iteration " + i);
             loadingBenchmark.setUp();
-            loadingBenchmark.schemaExample1();
+            loadingBenchmark.schemaExample4();
         }
     }
 

@@ -176,12 +176,12 @@ public final class UriExpansion {
     private String initPropertyContext(final String prefix, final String suffix, final String result) throws JsonLdError {
 
         // 6.3.
-        if (localContext != null && localContext.containsKey(prefix) && !Boolean.TRUE.equals(defined.get(prefix))) {
+        if (localContext != null && !Boolean.TRUE.equals(defined.get(prefix)) && localContext.containsKey(prefix)) {
             activeContext.newTerm(localContext, defined).create(prefix);
         }
 
         // 6.4.
-        final TermDefinition prefixDefinition = activeContext.getTermNullable(prefix);
+        final TermDefinition prefixDefinition = activeContext.getPrefix(prefix);
 
         if (prefixDefinition != null && prefixDefinition.isPrefix()) {
             String uriMapping = prefixDefinition.getUriMapping();

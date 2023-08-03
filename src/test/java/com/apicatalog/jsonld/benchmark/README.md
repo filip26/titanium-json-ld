@@ -84,16 +84,17 @@ BasicProcessingAlgorithmsBenchmark.flatten  avgt    5   809.893 ±   6.818  ms/o
 Lower is better
 
 Benchmark                                          Mode  Cnt  Score   Error  Units
-LoadingSmallFilesBenchmark.csiro                   avgt    5  0.150 ± 0.019  ms/op
-LoadingSmallFilesBenchmark.difiDataset             avgt    5  1.738 ± 0.119  ms/op
-LoadingSmallFilesBenchmark.geonorge                avgt    5  0.017 ± 0.001  ms/op
-LoadingSmallFilesBenchmark.schemaExample1          avgt    5  2.085 ± 0.010  ms/op
-LoadingSmallFilesBenchmark.schemaExample2          avgt    5  2.158 ± 0.006  ms/op
-LoadingSmallFilesBenchmark.schemaExample3          avgt    5  2.125 ± 0.008  ms/op
-LoadingSmallFilesBenchmark.schemaExample4          avgt    5  2.199 ± 0.118  ms/op
-LoadingSmallFilesBenchmark.schemaExtBib            avgt    5  2.517 ± 0.009  ms/op
-LoadingSmallFilesBenchmark.schemaExtHealthLifeSci  avgt    5  4.880 ± 0.031  ms/op
-LoadingSmallFilesBenchmark.schemaExtMeta           avgt    5  2.193 ± 0.010  ms/op```
+LoadingSmallFilesBenchmark.csiro                   avgt    5  0.111 ± 0.015  ms/op
+LoadingSmallFilesBenchmark.difiDataset             avgt    5  1.308 ± 0.007  ms/op
+LoadingSmallFilesBenchmark.geonorge                avgt    5  0.014 ± 0.010  ms/op
+LoadingSmallFilesBenchmark.schemaExample1          avgt    5  1.399 ± 0.010  ms/op
+LoadingSmallFilesBenchmark.schemaExample2          avgt    5  1.389 ± 0.012  ms/op
+LoadingSmallFilesBenchmark.schemaExample3          avgt    5  1.392 ± 0.004  ms/op
+LoadingSmallFilesBenchmark.schemaExample4          avgt    5  1.370 ± 0.012  ms/op
+LoadingSmallFilesBenchmark.schemaExtBib            avgt    5  1.649 ± 0.256  ms/op
+LoadingSmallFilesBenchmark.schemaExtHealthLifeSci  avgt    5  3.702 ± 0.577  ms/op
+LoadingSmallFilesBenchmark.schemaExtMeta           avgt    5  1.590 ± 0.726  ms/op
+```
 
 #### OOMBenchmark.toRdfApiGet
 ```
