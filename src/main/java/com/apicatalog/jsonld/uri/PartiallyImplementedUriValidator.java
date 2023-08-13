@@ -48,58 +48,59 @@ class PartiallyImplementedUriValidator {
         }
 
 
+        int codePointCount = uri.codePointCount(0, uri.length());
         int index = 0;
         boolean valid;
 
         // scheme
-        valid = matches(uri, index++, ALPHA);
+        valid = matches(uri, codePointCount, index++, ALPHA);
         if (!valid) {
             return false;
         }
 
-        while (matches(uri, index, SCHEME)) {
+        while (matches(uri, codePointCount, index, SCHEME)) {
             index++;
         }
 
-        valid = matches(uri, index++, COLON);
+        valid = matches(uri, codePointCount, index++, COLON);
         if (!valid) {
             return false;
         }
 
-        if (matches(uri, index, SLASH) && matches(uri, index + 1, SLASH)) {
+        if (matches(uri, codePointCount, index, SLASH) && matches(uri, codePointCount, index + 1, SLASH)) {
             index += 2;
 
             // host
-            valid = matches(uri, index++, UNRESERVED);
+            valid = matches(uri, codePointCount, index++, UNRESERVED);
             if (!valid) {
                 return false;
             }
 
-            while (matches(uri, index, UNRESERVED)) {
+            while (matches(uri, codePointCount, index, UNRESERVED)) {
                 index++;
             }
 
         }
 
         // simplest to just require at least one character for the path
-        if (!(matches(uri, index, PCHAR_EXCEPT_PCT_ENCODED) || matches(uri, index, SLASH))) {
+        if (!(matches(uri, codePointCount, index, PCHAR_EXCEPT_PCT_ENCODED) || matches(uri, codePointCount, index, SLASH))) {
             return false;
         } else {
             // handle path
             index++;
-            if (matches(uri, index, SLASH)) {
+            if (matches(uri, codePointCount, index, SLASH)) {
                 return false;
             }
 
             while (true) {
-                if (matches(uri, index, PCHAR_EXCEPT_PCT_ENCODED)) {
+                if (matches(uri, codePointCount, index, PCHAR_EXCEPT_PCT_ENCODED)) {
                     index++;
-                } else if (matches(uri, index, SLASH)) {
+                } else if (matches(uri, codePointCount, index, SLASH)) {
                     index++;
-                } else if (matches(uri, index, PCT_ENCODED_START)) {
+                } else if (matches(uri, codePointCount, index, PCT_ENCODED_START)) {
                     // handle percent encoded
                     index++;
-                    boolean doubleHex = matches(uri, index++, HEXDIG) && matches(uri, index++, HEXDIG);
+                    boolean doubleHex = matches(uri, codePointCount, index++, HEXDIG) && matches(uri, codePointCount, index++, HEXDIG);
                     if (!doubleHex) {
                         return false;
                     }
@@ -110,15 +111,15 @@ class PartiallyImplementedUriValidator {
 
         }
 
-        if (matches(uri, index, QUERY_START)) {
+        if (matches(uri, codePointCount, index, QUERY_START)) {
             index++;
             while (true) {
-                if (matches(uri, index, QUERY)) {
+                if (matches(uri, codePointCount, index, QUERY)) {
                     index++;
-                } else if (matches(uri, index, PCT_ENCODED_START)) {
+                } else if (matches(uri, codePointCount, index, PCT_ENCODED_START)) {
                     // handle percent encoded
                     index++;
-                    boolean doubleHex = matches(uri, index++, HEXDIG) && matches(uri, index++, HEXDIG);
+                    boolean doubleHex = matches(uri, codePointCount, index++, HEXDIG) && matches(uri, codePointCount, index++, HEXDIG);
                     if (!doubleHex) {
                         return false;
                     }
@@ -129,15 +130,15 @@ class PartiallyImplementedUriValidator {
         }
 
 
-        if (matches(uri, index, FRAGMENT_START)) {
+        if (matches(uri, codePointCount, index, FRAGMENT_START)) {
             index++;
             while (true) {
-                if (matches(uri, index, FRAGMENT)) {
+                if (matches(uri, codePointCount, index, FRAGMENT)) {
                     index++;
-                } else if (matches(uri, index, PCT_ENCODED_START)) {
+                } else if (matches(uri, codePointCount, index, PCT_ENCODED_START)) {
                     // handle percent encoded
                     index++;
-                    boolean doubleHex = matches(uri, index++, HEXDIG) && matches(uri, index++, HEXDIG);
+                    boolean doubleHex = matches(uri, codePointCount, index++, HEXDIG) && matches(uri, codePointCount, index++, HEXDIG);
                     if (!doubleHex) {
                         return false;
                     }
@@ -148,18 +149,17 @@ class PartiallyImplementedUriValidator {
         }
 
 
-        return noMoreCodepoints(uri, index);
+        return noMoreCodepoints(codePointCount, index);
     }
 
-    private static boolean noMoreCodepoints(String s, int index) {
-        return index == s.length();
+    private static boolean noMoreCodepoints(int codePointCount, int index) {
+        return index == codePointCount;
     }
 
-    private static boolean matches(String s, int i, boolean[] lookupArray) {
-        if (i >= s.length()) {
+    private static boolean matches(String s, int codePointCount, int i, boolean[] lookupArray) {
+        if (i >= codePointCount) {
             return false;
         }
-
 
         if (s.codePointAt(i) >= lookupArray.length) {
             return false;
