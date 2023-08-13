@@ -15,12 +15,6 @@
  */
 package com.apicatalog.jsonld.expansion;
 
-import java.net.URI;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.StringUtils;
@@ -33,11 +27,14 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.uri.UriUtils;
-
-import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
+
+import java.net.URI;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @see <a href=
@@ -204,7 +201,30 @@ public final class ObjectExpansion {
 
         if (element.containsKey(Keywords.TYPE)) {
             // TODO: This is safe only if an element can't have two different keys for TYPE.
-            handle11_2(typeContext, Keywords.TYPE);
+            // 11.2
+
+            JsonValue value = element.get(Keywords.TYPE);
+            List<String> terms = JsonUtils.optimizedGetStrings(value);
+
+            for (final String term : terms) {
+
+                Optional<JsonValue> localContext = typeContext.getTerm(term).map(TermDefinition::getLocalContext);
+
+                if (localContext.isPresent()) {
+
+                    Optional<TermDefinition> valueDefinition = activeContext.getTerm(term);
+
+                    activeContext =
+                            activeContext
+                                    .newContext()
+                                    .propagate(false)
+                                    .create(localContext.get(),
+                                            valueDefinition
+                                                    .map(TermDefinition::getBaseUrl)
+                                                    .orElse(null)
+                                    );
+                }
+            }
             return Keywords.TYPE;
         }
 
@@ -226,39 +246,34 @@ public final class ObjectExpansion {
                 typeKey = key;
             }
 
-            handle11_2(typeContext, key);
+            // 11.2
+
+            JsonValue value = element.get(key);
+            List<String> terms = JsonUtils.optimizedGetStrings(value);
+
+            for (final String term : terms) {
+
+                Optional<JsonValue> localContext = typeContext.getTerm(term).map(TermDefinition::getLocalContext);
+
+                if (localContext.isPresent()) {
+
+                    Optional<TermDefinition> valueDefinition = activeContext.getTerm(term);
+
+                    activeContext =
+                            activeContext
+                                    .newContext()
+                                    .propagate(false)
+                                    .create(localContext.get(),
+                                            valueDefinition
+                                                    .map(TermDefinition::getBaseUrl)
+                                                    .orElse(null)
+                                    );
+                }
+            }
         }
 
         return typeKey;
     }
-
-    private void handle11_2(ActiveContext typeContext, String key) throws JsonLdError {
-        // 11.2
-
-        JsonValue value = element.get(key);
-        List<String> terms = JsonUtils.optimizedGetStrings(value);
-
-        for (final String term : terms) {
-
-            Optional<JsonValue> localContext = typeContext.getTerm(term).map(TermDefinition::getLocalContext);
-
-            if (localContext.isPresent()) {
-
-                Optional<TermDefinition> valueDefinition = activeContext.getTerm(term);
-
-                activeContext =
-                        activeContext
-                                .newContext()
-                                .propagate(false)
-                                .create(localContext.get(),
-                                        valueDefinition
-                                                .map(TermDefinition::getBaseUrl)
-                                                .orElse(null)
-                                );
-            }
-        }
-    }
-
 
 
     private String findInputType(final String typeKey) throws JsonLdError {
