@@ -55,8 +55,6 @@ public final class JsonLdToRdf {
     private RdfDirection rdfDirection;
     private boolean uriValidation;
 
-    private final Set<String> absoluteIris = new HashSet<>();
-
     private JsonLdToRdf(NodeMap nodeMap, RdfDataset dataset) {
         this.nodeMap = nodeMap;
         this.dataset = dataset;
@@ -99,10 +97,7 @@ public final class JsonLdToRdf {
 
                     rdfGraphName = Rdf.createBlankNode(graphName);
 
-                } else if (absoluteIris.contains(graphName)) {
-                    rdfGraphName = Rdf.createIRI(graphName);
-                } else if (UriUtils.isAbsoluteUri(graphName, uriValidation)) {
-                    absoluteIris.add(graphName);
+                }  else if (UriUtils.isAbsoluteUri(graphName, uriValidation)) {
                     rdfGraphName = Rdf.createIRI(graphName);
                 } else {
                     continue;
@@ -117,11 +112,7 @@ public final class JsonLdToRdf {
                 // 1.3.1.
                 if (BlankNode.isWellFormed(subject)) {
                     rdfSubject = Rdf.createBlankNode(subject);
-
-                } else if (absoluteIris.contains(subject)) {
-                    rdfSubject = Rdf.createIRI(subject);
                 } else if (UriUtils.isAbsoluteUri(subject, uriValidation)) {
-                    absoluteIris.add(subject);
                     rdfSubject = Rdf.createIRI(subject);
                 } else {
                     LOGGER.log(Level.WARNING, "Non well-formed subject [{0}] has been skipped.", subject);
@@ -147,10 +138,7 @@ public final class JsonLdToRdf {
                             if (BlankNode.isWellFormed(typeString)) {
                                 rdfObject = Rdf.createBlankNode(typeString);
 
-                            } else if (absoluteIris.contains(typeString)) {
-                                rdfObject = Rdf.createIRI(typeString);
                             } else if (UriUtils.isAbsoluteUri(typeString, uriValidation)) {
-                                absoluteIris.add(typeString);
                                 rdfObject = Rdf.createIRI(typeString);
                             } else {
                                 continue;
@@ -172,10 +160,7 @@ public final class JsonLdToRdf {
                         if (BlankNode.isWellFormed(property)) {
                             rdfProperty = !produceGeneralizedRdf ? Rdf.createBlankNode(property) : null;
 
-                        } else if (absoluteIris.contains(property)) {
-                            rdfProperty = Rdf.createIRI(property);
-                        } else if (UriUtils.isAbsoluteUri(property, uriValidation)) {
-                            absoluteIris.add(property);
+                        }  else if (UriUtils.isAbsoluteUri(property, uriValidation)) {
                             rdfProperty = Rdf.createIRI(property);
                         }  else {
                             rdfProperty = null;

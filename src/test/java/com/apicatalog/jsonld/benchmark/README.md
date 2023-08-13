@@ -68,45 +68,46 @@ JsonLdImplementationsBenchmark.toRdfTitanium      thrpt   10   375.482 ±  7.964
 Lower is better
 
 Benchmark                     Mode  Cnt     Score     Error  Units
-LoadingBenchmark.toRdfApiGet  avgt    5  1998.111 ± 135.659  ms/op
+LoadingBenchmark.toRdfApiGet  avgt    5  1858.771 ± 94.786  ms/op
 ```
 
 ```
 Lower is better
 
 Benchmark                                   Mode  Cnt     Score     Error  Units
-BasicProcessingAlgorithmsBenchmark.compact  avgt    5  1582.788 ± 134.656  ms/op
-BasicProcessingAlgorithmsBenchmark.expand   avgt    5   364.495 ±  11.532  ms/op
-BasicProcessingAlgorithmsBenchmark.flatten  avgt    5   809.893 ±   6.818  ms/op
+BasicProcessingAlgorithmsBenchmark.compact  avgt    5  1558.660 ± 127.727  ms/op
+BasicProcessingAlgorithmsBenchmark.expand   avgt    5   377.491 ±  12.128  ms/op
+BasicProcessingAlgorithmsBenchmark.flatten  avgt    5   811.637 ±  47.212  ms/op
 ```
 
 ```
 Lower is better
 
-Benchmark                                          Mode  Cnt  Score   Error  Units
-LoadingSmallFilesBenchmark.csiro                   avgt    5  0.111 ± 0.015  ms/op
-LoadingSmallFilesBenchmark.difiDataset             avgt    5  1.308 ± 0.007  ms/op
-LoadingSmallFilesBenchmark.geonorge                avgt    5  0.014 ± 0.010  ms/op
-LoadingSmallFilesBenchmark.schemaExample1          avgt    5  1.399 ± 0.010  ms/op
-LoadingSmallFilesBenchmark.schemaExample2          avgt    5  1.389 ± 0.012  ms/op
-LoadingSmallFilesBenchmark.schemaExample3          avgt    5  1.392 ± 0.004  ms/op
-LoadingSmallFilesBenchmark.schemaExample4          avgt    5  1.370 ± 0.012  ms/op
-LoadingSmallFilesBenchmark.schemaExtBib            avgt    5  1.649 ± 0.256  ms/op
-LoadingSmallFilesBenchmark.schemaExtHealthLifeSci  avgt    5  3.702 ± 0.577  ms/op
-LoadingSmallFilesBenchmark.schemaExtMeta           avgt    5  1.590 ± 0.726  ms/op
+Benchmark                                          Mode  Cnt  Score    Error  Units
+LoadingSmallFilesBenchmark.csiro                   avgt    5  0.110 ±  0.006  ms/op
+LoadingSmallFilesBenchmark.difiDataset             avgt    5  1.321 ±  0.040  ms/op
+LoadingSmallFilesBenchmark.geonorge                avgt    5  0.013 ±  0.001  ms/op
+LoadingSmallFilesBenchmark.schemaExample1          avgt    5  1.236 ±  0.006  ms/op
+LoadingSmallFilesBenchmark.schemaExample2          avgt    5  1.249 ±  0.079  ms/op
+LoadingSmallFilesBenchmark.schemaExample3          avgt    5  1.306 ±  0.051  ms/op
+LoadingSmallFilesBenchmark.schemaExample4          avgt    5  1.286 ±  0.005  ms/op
+LoadingSmallFilesBenchmark.schemaExtBib            avgt    5  1.560 ±  0.015  ms/op
+LoadingSmallFilesBenchmark.schemaExtHealthLifeSci  avgt    5  3.562 ±  0.018  ms/op
+LoadingSmallFilesBenchmark.schemaExtMeta           avgt    5  1.365 ±  0.009  ms/op
 ```
 
 #### OOMBenchmark.toRdfApiGet
 ```
 More iterations is better
 
-Iteration   1: 2420.124 ms/op
-Iteration   2: 1260.448 ms/op
-Iteration   3: 1204.927 ms/op
-Iteration   4: 1191.012 ms/op
-Iteration   5: 1193.424 ms/op
-Iteration   6: 1209.333 ms/op
-Iteration   7: Terminating due to java.lang.OutOfMemoryError: Java heap space
+Iteration   1: 2619.442 ms/op
+Iteration   2: 1474.245 ms/op
+Iteration   3: 1467.797 ms/op
+Iteration   4: 1563.119 ms/op
+Iteration   5: 1623.688 ms/op
+Iteration   6: 1647.819 ms/op
+Iteration   7: 1568.830 ms/op
+Iteration   8: Terminating due to java.lang.OutOfMemoryError: Java heap space
 ```
 
 #### JSON-LD Benchmarks - https://github.com/umbreak/jsonld-benchmarks/

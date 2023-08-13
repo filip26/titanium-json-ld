@@ -18,17 +18,14 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 @State(Scope.Benchmark)
 @Warmup(iterations = 5)
-@BenchmarkMode({ Mode.AverageTime })
-@Fork(value = 1, jvmArgs = { "-Xmx1024M", "-Xms1024M" })
+@BenchmarkMode({Mode.AverageTime})
+@Fork(value = 1, jvmArgs = {"-Xmx1024M", "-Xms1024M"})
 @Measurement(iterations = 5)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class LoadingBenchmark {
@@ -44,7 +41,7 @@ public class LoadingBenchmark {
 
     public static void main(String[] args) throws URISyntaxException, JsonLdError {
         LoadingBenchmark loadingBenchmark = new LoadingBenchmark();
-        for (int i = 0; i<200; i++){
+        for (int i = 0; i < 200; i++) {
             System.out.println("Iteration " + i);
             loadingBenchmark.setUp();
             loadingBenchmark.toRdfApiGet();

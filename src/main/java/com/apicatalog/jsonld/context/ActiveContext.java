@@ -120,7 +120,9 @@ public final class ActiveContext {
     }
 
     public TermDefinition getTermNullable(final String value) {
-        if(value == null) return null;
+        if (value == null) {
+            return null;
+        }
         return terms.get(value);
     }
 
@@ -237,13 +239,16 @@ public final class ActiveContext {
     List<CachedPrefix> prefixCache = new ArrayList<>(10);
 
     public TermDefinition getPrefix(String prefix) {
+        if (prefix == null) {
+            return null;
+        }
         if (prefixCache.size() <= 10) {
             for (CachedPrefix cachedPrefix : prefixCache) {
                 if (cachedPrefix.prefix.equals(prefix)) {
                     return cachedPrefix.termDefinition;
                 }
             }
-        }else {
+        } else {
             prefixCache.clear();
         }
 
