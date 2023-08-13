@@ -15,10 +15,8 @@
  */
 package com.apicatalog.jsonld.context;
 
-import java.awt.*;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 /**
  *

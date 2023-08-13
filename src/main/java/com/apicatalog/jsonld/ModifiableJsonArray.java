@@ -139,8 +139,12 @@ public class ModifiableJsonArray extends AbstractList<JsonValue> implements Json
 
     @Override
     public boolean contains(Object o) {
-        if(valueList.isEmpty()) return false;
-        if(o == null) return false;
+        if (valueList.isEmpty()) {
+            return false;
+        }
+        if (o == null) {
+            return false;
+        }
 
         if (filter == null && valueList.size() > 100) {
             filter = BloomFilter.create(
@@ -159,18 +163,16 @@ public class ModifiableJsonArray extends AbstractList<JsonValue> implements Json
         }
 
         int oHashCode = o.hashCode();
-        if(valueList.size() == 1){
+        if (valueList.size() == 1) {
             JsonValue jsonValue = valueList.get(0);
-            if(oHashCode == jsonValue.hashCode()){
-                return jsonValue.equals(o);
+            if (oHashCode == jsonValue.hashCode() && jsonValue.equals(o)) {
+                return true;
             }
         }
 
         for (JsonValue value : valueList) {
-            if (value.hashCode() == oHashCode) {
-                if (value.equals(o)) {
-                    return true;
-                }
+            if (value.hashCode() == oHashCode && value.equals(o)) {
+                return true;
             }
         }
         return false;

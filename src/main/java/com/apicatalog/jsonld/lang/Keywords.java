@@ -17,7 +17,6 @@ package com.apicatalog.jsonld.lang;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 public final class Keywords {

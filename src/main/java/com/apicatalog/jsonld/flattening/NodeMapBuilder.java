@@ -459,10 +459,8 @@ public final class NodeMapBuilder {
 
         for (int i = 0, activePropertyValueSize = activePropertyValue.size(); i < activePropertyValueSize; i++) {
             JsonValue e = activePropertyValue.get(i);
-            if (referenceHashCode == e.hashCode()) {
-                if (reference.equals(e)) {
-                    return false;
-                }
+            if (referenceHashCode == e.hashCode() && reference.equals(e)) {
+                return false;
             }
         }
 

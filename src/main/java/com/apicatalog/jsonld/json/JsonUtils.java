@@ -15,6 +15,14 @@
  */
 package com.apicatalog.jsonld.json;
 
+import com.apicatalog.jsonld.StringUtils;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
+import jakarta.json.JsonValue.ValueType;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -23,15 +31,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.apicatalog.jsonld.StringUtils;
-
-import jakarta.json.JsonArray;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
-import jakarta.json.JsonValue.ValueType;
 
 public final class JsonUtils {
 
@@ -70,9 +69,9 @@ public final class JsonUtils {
 
     public static final boolean isScalar(final JsonValue value) {
         return value != null
-                    && !ValueType.ARRAY.equals(value.getValueType())
-                    && !ValueType.OBJECT.equals(value.getValueType())
-                    ;
+                && !ValueType.ARRAY.equals(value.getValueType())
+                && !ValueType.OBJECT.equals(value.getValueType())
+                ;
     }
 
     public static final boolean isNotScalar(final JsonValue value) {
@@ -118,7 +117,7 @@ public final class JsonUtils {
     public static boolean isNotBoolean(JsonValue value) {
         return value == null
                 || (!ValueType.TRUE.equals(value.getValueType())
-                        && !ValueType.FALSE.equals(value.getValueType()));
+                && !ValueType.FALSE.equals(value.getValueType()));
     }
 
     public static boolean isNotNumber(JsonValue value) {
@@ -184,10 +183,10 @@ public final class JsonUtils {
     }
 
     public static JsonArray toJsonArray(JsonValue value) {
-       return JsonUtils.isArray(value)
-                    ? value.asJsonArray()
-                    : JsonProvider.instance().createArrayBuilder().add(value).build()
-                    ;
+        return JsonUtils.isArray(value)
+                ? value.asJsonArray()
+                : JsonProvider.instance().createArrayBuilder().add(value).build()
+                ;
     }
 
     public static boolean isBlankString(JsonValue value) {
@@ -196,9 +195,9 @@ public final class JsonUtils {
 
     public static JsonValue toJsonValue(String value) {
         return value != null && StringUtils.isNotBlank(value)
-                    ? JsonProvider.instance().createValue(value)
-                    : JsonValue.NULL
-                    ;
+                ? JsonProvider.instance().createValue(value)
+                : JsonValue.NULL
+                ;
     }
 
     public static boolean isNonEmptyArray(JsonValue value) {
@@ -243,7 +242,7 @@ public final class JsonUtils {
                 }
             }
 
-        }else if (JsonUtils.isString(value)) {
+        } else if (JsonUtils.isString(value)) {
             addContainerMapping.accept(((JsonString) value).getString());
         }
     }
@@ -256,18 +255,16 @@ public final class JsonUtils {
             } else if (jsonArray.size() == 1) {
                 if (JsonUtils.isString(jsonArray.get(0))) {
                     return List.of(jsonArray.getString(0));
-                }else {
+                } else {
                     return List.of();
                 }
-            } else if (jsonArray.size() == 2) {
-                if (JsonUtils.isString(jsonArray.get(0)) && JsonUtils.isString(jsonArray.get(1))) {
-                    String string0 = jsonArray.getString(0);
-                    String string1 = jsonArray.getString(1);
-                    if (string0.compareTo(string1) <= 0) {
-                        return List.of(string0, string1);
-                    } else {
-                        return List.of(string1, string0);
-                    }
+            } else if (jsonArray.size() == 2 && JsonUtils.isString(jsonArray.get(0)) && JsonUtils.isString(jsonArray.get(1))) {
+                String string0 = jsonArray.getString(0);
+                String string1 = jsonArray.getString(1);
+                if (string0.compareTo(string1) <= 0) {
+                    return List.of(string0, string1);
+                } else {
+                    return List.of(string1, string0);
                 }
             }
         } else if (JsonUtils.isString(value)) {

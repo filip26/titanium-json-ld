@@ -15,18 +15,11 @@
  */
 package com.apicatalog.jsonld.lang;
 
-import com.apicatalog.jsonld.json.JsonUtils;
-import jakarta.json.JsonArray;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public final class Utils {
 

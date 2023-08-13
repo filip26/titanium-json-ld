@@ -64,6 +64,9 @@ public final class ActiveContext {
 
     private final JsonLdOptions options;
 
+    // a cache of prefixes that can be iterated through for quick lookup
+    private final List<CachedPrefix> prefixCache = new ArrayList<>(10);
+
     public ActiveContext(final JsonLdOptions options) {
         this(null, null, null, options);
     }
@@ -234,9 +237,6 @@ public final class ActiveContext {
     public String toString() {
         return "ActiveContext[terms=" + terms + ", previousContext=" + previousContext + "]";
     }
-
-
-    List<CachedPrefix> prefixCache = new ArrayList<>(10);
 
     public TermDefinition getPrefix(String prefix) {
         if (prefix == null) {

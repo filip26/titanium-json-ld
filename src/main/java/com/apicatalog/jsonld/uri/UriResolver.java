@@ -20,9 +20,7 @@ import com.apicatalog.jsonld.StringUtils;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
-import java.util.List;
 
 /**
  * @see <a href="https://tools.ietf.org/html/rfc3986#section-5.2">Relative

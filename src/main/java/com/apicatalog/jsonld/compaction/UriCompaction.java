@@ -18,8 +18,6 @@ package com.apicatalog.jsonld.compaction;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
@@ -44,9 +42,7 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
 /**
- *
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#iri-compaction">IRI Compaction</a>
- *
  */
 public final class UriCompaction {
 
@@ -57,7 +53,6 @@ public final class UriCompaction {
     private JsonValue value;
     private boolean vocab;
     private boolean reverse;
-    private Map<String, URI> uriCache = new HashMap<>();
 
     private UriCompaction(final ActiveContext activeContext) {
         this.activeContext = activeContext;
@@ -152,7 +147,7 @@ public final class UriCompaction {
 
                 containers.add(Keywords.SET);
 
-            // 4.7.
+                // 4.7.
             } else if (ListObject.isListObject(value)) {
 
                 // 4.7.1.
@@ -166,8 +161,8 @@ public final class UriCompaction {
                 // 4.7.3.
                 String commonType = null;
                 String commonLanguage = list.isEmpty()
-                                            ? defaultLanguage
-                                            : null;
+                        ? defaultLanguage
+                        : null;
                 // 4.7.4.
                 for (JsonValue item : list) {
 
@@ -189,22 +184,22 @@ public final class UriCompaction {
 
                             itemLanguage += "_".concat(item.asJsonObject().getString(Keywords.DIRECTION).toLowerCase());
 
-                        // 4.7.4.2.2.
+                            // 4.7.4.2.2.
                         } else if (item.asJsonObject().containsKey(Keywords.LANGUAGE)) {
 
                             itemLanguage = item.asJsonObject().getString(Keywords.LANGUAGE).toLowerCase();
 
-                        // 4.7.4.2.3.
+                            // 4.7.4.2.3.
                         } else if (item.asJsonObject().containsKey(Keywords.TYPE)) {
 
                             itemType = item.asJsonObject().getString(Keywords.TYPE);
 
-                        // 4.7.4.2.4.
+                            // 4.7.4.2.4.
                         } else {
                             itemLanguage = Keywords.NULL;
                         }
 
-                    // 4.7.4.3.
+                        // 4.7.4.3.
                     } else {
                         itemType = Keywords.ID;
                     }
@@ -213,10 +208,10 @@ public final class UriCompaction {
                     if (commonLanguage == null) {
                         commonLanguage = itemLanguage;
 
-                    // 4.7.4.5.
+                        // 4.7.4.5.
                     } else if (!Objects.equals(itemLanguage, commonLanguage)
                             && JsonUtils.containsKey(item, Keywords.VALUE)
-                            ) {
+                    ) {
                         commonLanguage = Keywords.NONE;
                     }
 
@@ -224,7 +219,7 @@ public final class UriCompaction {
                     if (commonType == null) {
                         commonType = itemType;
 
-                    // 4.7.4.7.
+                        // 4.7.4.7.
                     } else if (!Objects.equals(itemType, commonType)) {
                         commonType = Keywords.NONE;
                     }
@@ -250,12 +245,12 @@ public final class UriCompaction {
                     typeLanguage = Keywords.TYPE;
                     typeLanguageValue = commonType;
 
-                // 4.7.8.
+                    // 4.7.8.
                 } else {
                     typeLanguageValue = commonLanguage;
                 }
 
-            // 4.8.
+                // 4.8.
             } else if (GraphObject.isGraphObject(value)) {
 
                 // 4.8.1.
@@ -295,7 +290,7 @@ public final class UriCompaction {
                 typeLanguage = Keywords.TYPE;
                 typeLanguageValue = Keywords.ID;
 
-            // 4.9.
+                // 4.9.
             } else {
 
                 // 4.9.1.
@@ -304,7 +299,7 @@ public final class UriCompaction {
                     // 4.9.1.1.
                     if (JsonUtils.contains(Keywords.DIRECTION, value)
                             && !JsonUtils.contains(Keywords.INDEX, value)
-                            ) {
+                    ) {
 
                         typeLanguageValue = "";
 
@@ -313,36 +308,36 @@ public final class UriCompaction {
                             JsonValue language = value.asJsonObject().get(Keywords.LANGUAGE);
 
                             if (JsonUtils.isString(language)) {
-                                typeLanguageValue = ((JsonString)language).getString().toLowerCase();
+                                typeLanguageValue = ((JsonString) language).getString().toLowerCase();
                             }
                         }
 
                         JsonValue direction = value.asJsonObject().get(Keywords.DIRECTION);
                         if (JsonUtils.isString(direction)) {
-                            typeLanguageValue += "_".concat(((JsonString)direction).getString().toLowerCase());
+                            typeLanguageValue += "_".concat(((JsonString) direction).getString().toLowerCase());
                         }
 
                         containers.add(Keywords.LANGUAGE);
                         containers.add(Keywords.LANGUAGE.concat(Keywords.SET));
 
-                    // 4.9.1.2.
+                        // 4.9.1.2.
                     } else if (JsonUtils.contains(Keywords.LANGUAGE, value)
                             && !JsonUtils.contains(Keywords.INDEX, value)
-                            ) {
+                    ) {
 
                         if (JsonUtils.contains(Keywords.LANGUAGE, value)) {
 
                             JsonValue language = value.asJsonObject().get(Keywords.LANGUAGE);
 
                             if (JsonUtils.isString(language)) {
-                                typeLanguageValue = ((JsonString)language).getString().toLowerCase();
+                                typeLanguageValue = ((JsonString) language).getString().toLowerCase();
                             }
                         }
 
                         containers.add(Keywords.LANGUAGE);
                         containers.add(Keywords.LANGUAGE.concat(Keywords.SET));
 
-                    // 4.9.1.3.
+                        // 4.9.1.3.
                     } else if (JsonUtils.contains(Keywords.TYPE, value)) {
 
                         typeLanguage = Keywords.TYPE;
@@ -350,7 +345,7 @@ public final class UriCompaction {
 
                     }
 
-                // 4.9.2.
+                    // 4.9.2.
                 } else {
 
                     typeLanguage = Keywords.TYPE;
@@ -372,8 +367,8 @@ public final class UriCompaction {
             // 4.11.
             if (!activeContext.inMode(JsonLdVersion.V1_0)
                     && (JsonUtils.isNotObject(value)
-                            || !value.asJsonObject().containsKey(Keywords.INDEX))
-                    ) {
+                    || !value.asJsonObject().containsKey(Keywords.INDEX))
+            ) {
                 containers.add(Keywords.INDEX);
                 containers.add(Keywords.INDEX.concat(Keywords.SET));
             }
@@ -382,7 +377,7 @@ public final class UriCompaction {
             if (!activeContext.inMode(JsonLdVersion.V1_0)
                     && JsonUtils.containsKey(value, Keywords.VALUE)
                     && value.asJsonObject().size() == 1
-                    ) {
+            ) {
 
                 containers.add(Keywords.LANGUAGE);
                 containers.add(Keywords.LANGUAGE.concat(Keywords.SET));
@@ -403,8 +398,8 @@ public final class UriCompaction {
 
             // 4.16.
             if ((Keywords.REVERSE.equals(typeLanguageValue) || Keywords.ID.equals(typeLanguageValue))
-                   && JsonUtils.containsKey(value, Keywords.ID)
-                   ) {
+                    && JsonUtils.containsKey(value, Keywords.ID)
+            ) {
 
                 final JsonValue idValue = value.asJsonObject().get(Keywords.ID);
 
@@ -415,31 +410,30 @@ public final class UriCompaction {
 
                 } else if (JsonUtils.isString(idValue)) {
                     // 4.16.1.
-                    final String idString = ((JsonString)idValue).getString();
+                    final String idString = ((JsonString) idValue).getString();
 
                     final String compactedIdValue = activeContext.uriCompaction().vocab(true).compact(idString);
 
                     final TermDefinition compactedIdValueTermDefinition = activeContext.getTermNullable(compactedIdValue);
 
 
-
                     if (compactedIdValueTermDefinition != null && idString.equals(compactedIdValueTermDefinition.getUriMapping())) {
                         preferredValues.add(Keywords.VOCAB);
                         preferredValues.add(Keywords.ID);
 
-                    // 4.16.2.
+                        // 4.16.2.
                     } else {
                         preferredValues.add(Keywords.ID);
                         preferredValues.add(Keywords.VOCAB);
                     }
 
                 } else {
-                  throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE, "An @id entry was encountered whose value was not a string but [" + idValue + "].");
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE, "An @id entry was encountered whose value was not a string but [" + idValue + "].");
                 }
 
                 preferredValues.add(Keywords.NONE);
 
-            // 4.17.
+                // 4.17.
             } else {
 
                 preferredValues.add(typeLanguageValue);
@@ -479,7 +473,7 @@ public final class UriCompaction {
         // 5., 5.1.
         if ((vocab && activeContext.getVocabularyMapping() != null)
                 && (variable.startsWith(activeContext.getVocabularyMapping())
-                    && variable.length() > activeContext.getVocabularyMapping().length())) {
+                && variable.length() > activeContext.getVocabularyMapping().length())) {
 
             String suffix = variable.substring(activeContext.getVocabularyMapping().length());
 
@@ -501,27 +495,27 @@ public final class UriCompaction {
                     || variable.equals(termDefinition.getUriMapping())
                     || !variable.startsWith(termDefinition.getUriMapping())
                     || termDefinition.isNotPrefix()
-                    ) {
+            ) {
                 continue;
             }
 
             // 7.2.
             String compactUriCandidate =
-                            termEntry.getKey()
-                                    .concat(":")
-                                    .concat(variable.substring(termDefinition.getUriMapping().length()));
+                    termEntry.getKey()
+                            .concat(":")
+                            .concat(variable.substring(termDefinition.getUriMapping().length()));
 
             // 7.3.
             if (((compactUri == null || (compactUriCandidate.compareTo(compactUri) < 0))
-                            && !activeContext.containsTerm(compactUriCandidate))
+                    && !activeContext.containsTerm(compactUriCandidate))
                     || (activeContext
-                                .getTerm(compactUriCandidate)
-                                .map(TermDefinition::getUriMapping)
-                                .filter(u -> u.equals(variable))
-                                .isPresent()
-                            && JsonUtils.isNull(value)
-                            )
-                    ) {
+                    .getTerm(compactUriCandidate)
+                    .map(TermDefinition::getUriMapping)
+                    .filter(u -> u.equals(variable))
+                    .isPresent()
+                    && JsonUtils.isNull(value)
+            )
+            ) {
                 compactUri = compactUriCandidate;
             }
         }
@@ -540,16 +534,16 @@ public final class UriCompaction {
                     && uri.getScheme() != null
                     && uri.getAuthority() == null
                     && activeContext.getTerm(uri.getScheme()).filter(TermDefinition::isPrefix).isPresent()
-                ) {
-                    throw new JsonLdError(JsonLdErrorCode.IRI_CONFUSED_WITH_PREFIX);
+            ) {
+                throw new JsonLdError(JsonLdErrorCode.IRI_CONFUSED_WITH_PREFIX);
             }
         } catch (IllegalArgumentException e) { /* variable is not URI */ }
 
         // 10.
         if (!vocab && activeContext.getBaseUri() != null && !BlankNode.hasPrefix(variable)) {
-             final String relativeUri = UriRelativizer.relativize(activeContext.getBaseUri(), variable);
+            final String relativeUri = UriRelativizer.relativize(activeContext.getBaseUri(), variable);
 
-             return Keywords.matchForm(relativeUri) ? "./".concat(relativeUri) : relativeUri;
+            return Keywords.matchForm(relativeUri) ? "./".concat(relativeUri) : relativeUri;
         }
 
         // 11.
