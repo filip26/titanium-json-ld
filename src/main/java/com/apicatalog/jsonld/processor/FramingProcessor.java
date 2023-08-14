@@ -365,9 +365,17 @@ public final class FramingProcessor {
 
     private static final List<String> findBlankNodes(final JsonArray array) {
 
+        if(array.isEmpty()) {
+            return List.of();
+        }
+
         Map<String, Integer> candidates = new HashMap<>();
 
         array.forEach(v -> findBlankNodes(v, candidates));
+
+        if(candidates.isEmpty()) {
+            return List.of();
+        }
 
         return candidates.entrySet().stream().filter(e -> e.getValue() == 1).map(Entry::getKey).collect(Collectors.toList());
     }

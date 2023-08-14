@@ -197,7 +197,6 @@ public final class UriUtils {
             if (PartiallyImplementedUriValidator.isDefinitivelyValidAbsoluteUri(uri)) {
                 return true;
             }
-            PartiallyImplementedUriValidator.isDefinitivelyValidAbsoluteUri(uri);
             return getUriWithCache(uri).isAbsolute();
         } catch (IllegalArgumentException e) {
             return false;
