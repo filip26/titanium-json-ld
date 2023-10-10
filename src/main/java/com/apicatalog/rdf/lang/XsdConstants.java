@@ -22,6 +22,8 @@ public final class XsdConstants {
     public static final String BOOLEAN = "http://www.w3.org/2001/XMLSchema#boolean";
 
     public static final String DOUBLE = "http://www.w3.org/2001/XMLSchema#double";
+    
+    public static final String FLOAT = "http://www.w3.org/2001/XMLSchema#float";
 
     public static final String INTEGER = "http://www.w3.org/2001/XMLSchema#integer";
 

@@ -110,7 +110,7 @@ final class RdfToObject {
 
                     convertedValue = JsonProvider.instance().createValue(Long.parseLong(literal.getValue()));
 
-                } else if (XsdConstants.DOUBLE.equals(literal.getDatatype())) {
+                } else if (XsdConstants.DOUBLE.equals(literal.getDatatype())||XsdConstants.FLOAT.equals(literal.getDatatype())) {
 
                     convertedValue = JsonProvider.instance().createValue(Double.parseDouble(literal.getValue()));
 
