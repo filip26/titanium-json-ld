@@ -12,23 +12,23 @@
     <packaging>pom</packaging>
 
     <name>Titanium JSON-LD 1.1</name>
-    
+
     <description>
         A JSON-LD 1.1 Processor &amp; API
     </description>
-    
+
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
             <url>http://apache.org/licenses/LICENSE-2.0</url>
         </license>
-    </licenses>    
-   
+    </licenses>
+
     <issueManagement>
         <system>github</system>
         <url>https://github.com/filip26/titanium-json-ld/issues</url>
     </issueManagement>
-    
+
     <developers>
         <developer>
           <id>filip26</id>
@@ -37,20 +37,21 @@
           <roles><role>author</role></roles>
         </developer>
     </developers>
-    
+
     <inceptionYear>2020</inceptionYear>
-    
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        
-        <jakarta.json.version>2.0.1</jakarta.json.version> 
+
+        <jakarta.json.version>2.0.1</jakarta.json.version>
 
         <argLine>-Dfile.encoding=UTF-8</argLine>
 
         <!--  test resources -->
         <junit.version>5.10.0</junit.version>
         <wiremock.version>2.35.1</wiremock.version>
+        <jmh.version>1.36</jmh.version>
 
         <sonar.projectKey>filip26_titanium-json-ld</sonar.projectKey>
         <sonar.organization>apicatalog</sonar.organization>
@@ -75,15 +76,27 @@
 	    <artifactId>junit-jupiter</artifactId>
             <version>${junit.version}</version>
 	    <scope>test</scope>
-	</dependency>   
+	</dependency>
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock-jre8</artifactId>
             <version>${wiremock.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-core</artifactId>
+            <version>${jmh.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-generator-annprocess</artifactId>
+            <version>${jmh.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-    <build>        
+    <build>
         <plugins>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -109,7 +122,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>            
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -122,7 +135,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin> 
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -135,7 +148,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>                    
+            </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -155,7 +168,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin> 
+            </plugin>
    <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>flatten-maven-plugin</artifactId>
@@ -189,7 +202,7 @@
         	<plugin>
             	<artifactId>maven-failsafe-plugin</artifactId>
             	<version>3.1.2</version>
-        	</plugin>            
+        	</plugin>
         </plugins>
     </build>
     <profiles>
@@ -199,7 +212,7 @@
                     <activeByDefault>false</activeByDefault>
 		</activation>
                 <build>
-                    <plugins>				
+                    <plugins>
                         <plugin>
 		            <groupId>org.apache.maven.plugins</groupId>
 		            <artifactId>maven-gpg-plugin</artifactId>
@@ -213,7 +226,7 @@
 		                    </goals>
 		                </execution>
 		            </executions>
-		        </plugin> 
+		        </plugin>
 			<plugin>
                             <groupId>org.sonatype.plugins</groupId>
                             <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -224,7 +237,7 @@
 				<nexusUrl>https://oss.sonatype.org/</nexusUrl>
 				<autoReleaseAfterClose>true</autoReleaseAfterClose>
                             </configuration>
-			</plugin>   				
+			</plugin>
                     </plugins>
 		</build>
 		<distributionManagement>
@@ -232,7 +245,7 @@
 		    <id>ossrh</id>
 		    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
                     </snapshotRepository>
-		</distributionManagement>		
-        </profile>   
+		</distributionManagement>
+        </profile>
     </profiles>
 </project>

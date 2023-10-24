@@ -1,0 +1,19 @@
+{
+  "@type": "JobPosting",
+  "title": "Junior software developer",
+  "skills": {
+    "@type": "DefinedTerm",
+    "termCode": "K0016",
+    "description": "Knowledge of computer programming principles",
+    "inDefinedTermSet": {
+      "@type": "DefinedTermSet",
+      "name": "National Initiative for Cybersecurity Education (NICE) Cybersecurity Workforce Framework",
+      "url": "https://doi.org/10.6028/NIST.SP.800-181",
+      "publisher": {
+        "@type": "Organization",
+        "name": "National Institute of Standards and Technology (NIST)"
+      },
+      "datePublished": "2017-08"
+    }
+  }
+}
