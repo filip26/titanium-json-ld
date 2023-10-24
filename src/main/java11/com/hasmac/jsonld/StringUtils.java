@@ -1,4 +1,4 @@
-package com.hasmac.jsonld;
+package no.hasmac.jsonld;
 
 public final class StringUtils {
 

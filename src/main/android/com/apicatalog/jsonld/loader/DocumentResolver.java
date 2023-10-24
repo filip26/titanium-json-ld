@@ -1,17 +1,17 @@
-package com.hasmac.jsonld.loader;
+package no.hasmac.jsonld.loader;
 
 import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import com.hasmac.jsonld.JsonLdError;
-import com.hasmac.jsonld.JsonLdErrorCode;
-import com.hasmac.jsonld.document.Document;
-import com.hasmac.jsonld.document.JsonDocument;
-import com.hasmac.jsonld.document.RdfDocument;
-import com.hasmac.jsonld.http.media.MediaType;
-import com.hasmac.rdf.Rdf;
+import no.hasmac.jsonld.JsonLdError;
+import no.hasmac.jsonld.JsonLdErrorCode;
+import no.hasmac.jsonld.document.Document;
+import no.hasmac.jsonld.document.JsonDocument;
+import no.hasmac.jsonld.document.RdfDocument;
+import no.hasmac.jsonld.http.media.MediaType;
+import no.hasmac.rdf.Rdf;
 
 class DocumentResolver {
 

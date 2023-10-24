@@ -1,14 +1,14 @@
-package com.hasmac.jsonld.loader;
+package no.hasmac.jsonld.loader;
 
-import com.hasmac.jsonld.http.DefaultHttpClient;
-import com.hasmac.jsonld.http.HttpClient;
+import no.hasmac.jsonld.http.DefaultHttpClient;
+import no.hasmac.jsonld.http.HttpClient;
 
 public class HttpLoader extends DefaultHttpLoader {
 
     private static final HttpLoader INSTANCE = new HttpLoader(DefaultHttpClient.defaultInstance());
 
     /**
-     * @deprecated use <code>HttpLoader(com.hasmac.jsonld.http.HttpClient httpClient)</code>
+     * @deprecated use <code>HttpLoader(no.hasmac.jsonld.http.HttpClient httpClient)</code>
      *
      * @param httpClient
      */
@@ -18,7 +18,7 @@ public class HttpLoader extends DefaultHttpLoader {
     }
 
     /**
-     * @deprecated use <code>HttpLoader(com.hasmac.jsonld.http.HttpClient httpClient, int maxRedirection)</code>
+     * @deprecated use <code>HttpLoader(no.hasmac.jsonld.http.HttpClient httpClient, int maxRedirection)</code>
      *
      * @param httpClient
      * @param maxRedirections

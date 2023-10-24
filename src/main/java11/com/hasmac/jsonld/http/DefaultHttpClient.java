@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hasmac.jsonld.http;
+package no.hasmac.jsonld.http;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,8 +24,8 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.util.Collection;
 import java.util.Optional;
 
-import com.hasmac.jsonld.JsonLdError;
-import com.hasmac.jsonld.JsonLdErrorCode;
+import no.hasmac.jsonld.JsonLdError;
+import no.hasmac.jsonld.JsonLdErrorCode;
 
 public final class DefaultHttpClient implements HttpClient {
 

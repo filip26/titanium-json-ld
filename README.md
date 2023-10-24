@@ -5,7 +5,7 @@ purpose of incorporating performance improvements. Merging the performance impro
 Titanium JSON-LD is a work in progress. Once complete, HASMAC JSON-LD will be deprecated and
 eventually removed.
 
-- [![Maven Central](https://img.shields.io/maven-central/v/com.hasmac/hasmac-json-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.hasmac%22%20AND%20a:%22hasmac-json-ld%22)
+- [![Maven Central](https://img.shields.io/maven-central/v/no.hasmac/hasmac-json-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22no.hasmac%22%20AND%20a:%22hasmac-json-ld%22)
   [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Table of Contents
@@ -59,7 +59,7 @@ Java 11 or higher
 ```xml
 
 <dependency>
-  <groupId>com.hasmac</groupId>
+  <groupId>no.hasmac</groupId>
   <artifactId>hasmac-json-ld</artifactId>
   <version>1.0.0</version>
 </dependency>
@@ -69,7 +69,7 @@ Java 11 or higher
 Java 8+, Android API Level >=21
 
 ```gradle
-compile group: 'com.hasmac', name: 'hasmac-json-ld-jre8', version: '1.3.2'
+compile group: 'no.hasmac', name: 'hasmac-json-ld-jre8', version: '1.3.2'
 ```
 
 #### JSON-P Provider
@@ -95,11 +95,11 @@ compile group: 'org.glassfish', name: 'jakarta.json', version: '2.0.1'
 
 ### Documentation
 
-[![javadoc](https://javadoc.io/badge2/com.hasmac/hasmac-json-ld/javadoc.svg)](https://javadoc.io/doc/com.hasmac/hasmac-json-ld)
+[![javadoc](https://javadoc.io/badge2/no.hasmac/hasmac-json-ld/javadoc.svg)](https://javadoc.io/doc/no.hasmac/hasmac-json-ld)
 
 ### Examples
 
-HASMAC JSON-LD provides high-level [JsonLd](https://javadoc.io/doc/com.hasmac/hasmac-json-ld/latest/com/hasmac/jsonld/JsonLd.html) API to interact with the processor.
+HASMAC JSON-LD provides high-level [JsonLd](https://javadoc.io/doc/no.hasmac/hasmac-json-ld/latest/no/hasmac/jsonld/JsonLd.html) API to interact with the processor.
 
 ```javascript
 

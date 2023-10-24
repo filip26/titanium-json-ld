@@ -6,9 +6,9 @@
 >
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.hasmac</groupId>
+    <groupId>no.hasmac</groupId>
     <artifactId>hasmac</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>HASMAC JSON-LD 1.1</name>
