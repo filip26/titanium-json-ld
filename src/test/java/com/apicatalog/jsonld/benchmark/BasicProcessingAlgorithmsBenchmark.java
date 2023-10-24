@@ -2,6 +2,8 @@ package com.apicatalog.jsonld.benchmark;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.api.ExpansionApi;
+import com.apicatalog.jsonld.api.FlatteningApi;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
@@ -21,6 +23,10 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -32,43 +38,70 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Benchmark)
 @Warmup(iterations = 5)
 @BenchmarkMode({Mode.AverageTime})
-@Fork(value = 1, jvmArgs = {"-Xmx1024M", "-Xms1024M"})
+@Fork(value = 1, jvmArgs = {"-Xmx2048M", "-Xms2048M"})
 @Measurement(iterations = 5)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class BasicProcessingAlgorithmsBenchmark {
 
-    Document document;
+    private Document datagovbeDcat;
+    private Document datagovbeDcatContext;
+    private Document datagovbeDcatCompact;
+    private Document datagovbeDcatFlatten;
 
     @Setup(Level.Invocation)
     public void setUp() throws URISyntaxException, JsonLdError {
-        URL fileUrl = getClass().getClassLoader().getResource("benchmark/datagovbe-valid.jsonld");
-
-        document = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions());
+        datagovbeDcat = loadDocument("benchmark/datagovbe/dcat.jsonld");
+        datagovbeDcatCompact = loadDocument("benchmark/datagovbe/dcat-compact.jsonld");
+        datagovbeDcatFlatten = loadDocument("benchmark/datagovbe/dcat-flatten.jsonld");
+        datagovbeDcatContext = loadDocument("benchmark/datagovbe/context/context.jsonld");
     }
 
-    public static void main(String[] args) throws URISyntaxException, JsonLdError {
-        BasicProcessingAlgorithmsBenchmark loadingBenchmark = new BasicProcessingAlgorithmsBenchmark();
-        for (int i = 0; i < 20; i++) {
-            System.out.println("Iteration " + i);
-            loadingBenchmark.setUp();
-            loadingBenchmark.compact();
-        }
+    public static void main(String[] args) throws RunnerException {
+
+        // The classe(s) that are included may not get compiled by your IDE.
+        // Run `mvn clean verify -DskipTests` before running the benchmarks.
+
+        Options opt = new OptionsBuilder()
+                .include(BasicProcessingAlgorithmsBenchmark.class.getName()+".*")
+                .build();
+
+        new Runner(opt).run();
     }
 
     @Benchmark
-    public JsonObject compact() throws JsonLdError {
-        return JsonLd.compact(document, JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).get();
+    public JsonObject compactDatagovbeDcat() throws JsonLdError {
+        return JsonLd.compact(datagovbeDcat, datagovbeDcatContext).get();
     }
 
     @Benchmark
-    public JsonArray expand() throws JsonLdError {
-        return JsonLd.expand(document).get();
+    public JsonObject compactDatagovbeDcatEmptyContext() throws JsonLdError {
+        return JsonLd.compact(datagovbeDcat, JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).get();
     }
 
+    @Benchmark
+    public JsonArray expandDatagovbeDcatFromCompact() throws JsonLdError {
+        return new ExpansionApi(datagovbeDcatCompact).context(datagovbeDcatContext.getJsonContent().get()).get();
+    }
 
     @Benchmark
-    public JsonStructure flatten() throws JsonLdError {
-        return JsonLd.flatten(document).get();
+    public JsonArray expandDatagovbeDcatFromFlatten() throws JsonLdError {
+        return JsonLd.expand(datagovbeDcatFlatten).get();
+    }
+
+    @Benchmark
+    public JsonStructure flattenDatagovbeDcat() throws JsonLdError {
+        return JsonLd.flatten(datagovbeDcat).get();
+    }
+
+    @Benchmark
+    public JsonStructure flattenDatagovbeDcatFromCompact() throws JsonLdError {
+        return new FlatteningApi(datagovbeDcatCompact).context(datagovbeDcatContext.getJsonContent().get()).get();
+    }
+
+    private Document loadDocument(String name) throws JsonLdError, URISyntaxException {
+        URL fileUrl = getClass().getClassLoader().getResource(name);
+        Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions());
+        return document;
     }
 
 }

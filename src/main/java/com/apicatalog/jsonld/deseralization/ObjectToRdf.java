@@ -186,6 +186,7 @@ final class ObjectToRdf {
             // 11.
             if ((!number.isIntegral() && number.doubleValue() % -1 != 0)
                     || XsdConstants.DOUBLE.equals(datatype)
+                    || XsdConstants.FLOAT.equals(datatype)
                     || number.bigDecimalValue().compareTo(BigDecimal.ONE.movePointRight(21)) >= 0
             ) {
 

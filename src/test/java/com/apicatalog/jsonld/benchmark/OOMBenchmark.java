@@ -17,6 +17,10 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -34,18 +38,30 @@ import java.util.concurrent.TimeUnit;
  */
 public class OOMBenchmark {
 
-    Document document;
+    private Document datagovbeDcat;
 
     @Setup(Level.Invocation)
     public void setUp() throws URISyntaxException, JsonLdError {
-        document = null;
-        URL fileUrl = getClass().getClassLoader().getResource("benchmark/datagovbe-valid.jsonld");
-        document = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions());
+        datagovbeDcat = null;
+        URL fileUrl = getClass().getClassLoader().getResource("benchmark/datagovbe/dcat.jsonld");
+        datagovbeDcat = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions());
+    }
+
+    public static void main(String[] args) throws RunnerException {
+
+        // The classe(s) that are included may not get compiled by your IDE.
+        // Run `mvn clean verify -DskipTests` before running the benchmarks.
+
+        Options opt = new OptionsBuilder()
+                .include(OOMBenchmark.class.getName()+".*")
+                .build();
+
+        new Runner(opt).run();
     }
 
     @Benchmark
-    public int toRdfApiGet() throws JsonLdError {
-        RdfDataset rdfDataset = new ToRdfApi(document).get();
+    public int datagovbeDcatToRdf() throws JsonLdError {
+        RdfDataset rdfDataset = new ToRdfApi(datagovbeDcat).get();
         return rdfDataset.size();
     }
 
