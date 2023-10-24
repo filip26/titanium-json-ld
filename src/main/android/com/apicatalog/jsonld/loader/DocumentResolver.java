@@ -1,17 +1,17 @@
-package com.apicatalog.jsonld.loader;
+package com.hasmac.jsonld.loader;
 
 import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.document.RdfDocument;
-import com.apicatalog.jsonld.http.media.MediaType;
-import com.apicatalog.rdf.Rdf;
+import com.hasmac.jsonld.JsonLdError;
+import com.hasmac.jsonld.JsonLdErrorCode;
+import com.hasmac.jsonld.document.Document;
+import com.hasmac.jsonld.document.JsonDocument;
+import com.hasmac.jsonld.document.RdfDocument;
+import com.hasmac.jsonld.http.media.MediaType;
+import com.hasmac.rdf.Rdf;
 
 class DocumentResolver {
 

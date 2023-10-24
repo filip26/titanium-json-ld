@@ -6,12 +6,12 @@
 >
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.apicatalog</groupId>
-    <artifactId>titanium</artifactId>
-    <version>1.3.3-SNAPSHOT</version>
+    <groupId>com.hasmac</groupId>
+    <artifactId>hasmac</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>Titanium JSON-LD 1.1</name>
+    <name>HASMAC JSON-LD 1.1</name>
 
     <description>
         A JSON-LD 1.1 Processor &amp; API
@@ -26,7 +26,7 @@
 
     <issueManagement>
         <system>github</system>
-        <url>https://github.com/filip26/titanium-json-ld/issues</url>
+        <url>https://github.com/filip26/hasmac-json-ld/issues</url>
     </issueManagement>
 
     <developers>
@@ -55,9 +55,9 @@
         <wiremock.version>2.35.1</wiremock.version>
         <jmh.version>1.36</jmh.version>
 
-        <sonar.projectKey>filip26_titanium-json-ld</sonar.projectKey>
-        <sonar.organization>apicatalog</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.projectKey></sonar.projectKey>
+        <sonar.organization></sonar.organization>
+        <sonar.host.url></sonar.host.url>
     </properties>
     <dependencies>
         <dependency>

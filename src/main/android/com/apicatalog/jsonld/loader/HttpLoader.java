@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.loader;
+package com.hasmac.jsonld.loader;
 
-import com.apicatalog.jsonld.http.DefaultHttpClient;
-import com.apicatalog.jsonld.http.HttpClient;
+import com.hasmac.jsonld.http.DefaultHttpClient;
+import com.hasmac.jsonld.http.HttpClient;
 
 public class HttpLoader extends DefaultHttpLoader {
 

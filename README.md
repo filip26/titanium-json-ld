@@ -1,21 +1,15 @@
-# Titanium JSON-LD 1.1 Processor & API
+# HASMAC JSON-LD 1.1 Processor & API
 
 An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-based Serialization for Linked Data) specification in Java utilizing [Jakarta JSON Processing](https://github.com/eclipse-ee4j/jsonp).
 
-The goals of Titanium are:
+The goals of HASMAC JSON-LD are:
 - conformance to the specification
 - secure, stable, fast, A+ code
 - minimal external dependencies
   - only `jakarta.json-api` is required
 - simple to use
 
-[![Java 11 CI](https://github.com/filip26/titanium-json-ld/actions/workflows/java11-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java11-build.yml)
-[![Android (Java 8) CI](https://github.com/filip26/titanium-json-ld/actions/workflows/java8-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java8-build.yml)
-[![CodeQL](https://github.com/filip26/titanium-json-ld/actions/workflows/codeql.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/codeql.yml)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/c530c6b43b0243c08ce81521c5b4cf6a)](https://www.codacy.com/gh/filip26/titanium-json-ld/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=filip26/titanium-json-ld&amp;utm_campaign=Badge_Grade)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=filip26_titanium-json-ld&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=filip26_titanium-json-ld)
-[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/c530c6b43b0243c08ce81521c5b4cf6a)](https://www.codacy.com/manual/filip26/titanium-json-ld?utm_source=github.com&utm_medium=referral&utm_content=filip26/titanium-json-ld&utm_campaign=Badge_Coverage)
-[![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/titanium-json-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.apicatalog%22%20AND%20a:%22titanium-json-ld%22)
+- [![Maven Central](https://img.shields.io/maven-central/v/com.hasmac/hasmac-json-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.hasmac%22%20AND%20a:%22hasmac-json-ld%22)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 
@@ -47,7 +41,7 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 | [Framing](https://www.w3.org/TR/json-ld11-framing/#framing) | 89 | 88 | 98.8% | <ul><li>[t0059 - @embed: @last](https://w3c.github.io/json-ld-framing/tests/frame-manifest#t0059)</li></ul> |
 | [Remote Document and Context Retrieval](https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval) | 18 | 17 | 94.4% | <ul><li>[t0013 - HTML document](https://w3c.github.io/json-ld-api/tests/remote-doc-manifest#t0013)</li></ul> |
 
-See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld-api/reports/#subj_Titanium_JSON_LD_Java) for more details.
+See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld-api/reports/#subj_HASMAC JSON-LD_JSON_LD_Java) for more details.
 
 ## CLI
 
@@ -62,16 +56,17 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 
 ### Installation
 
-#### Titanium
+#### HASMAC JSON-LD
 
 ##### Maven
 Java 11 or higher
 
 ```xml
+
 <dependency>
-    <groupId>com.apicatalog</groupId>
-    <artifactId>titanium-json-ld</artifactId>
-    <version>1.3.2</version>
+  <groupId>com.hasmac</groupId>
+  <artifactId>hasmac-json-ld</artifactId>
+  <version>1.0.0</version>
 </dependency>
 ```
 
@@ -79,7 +74,7 @@ Java 11 or higher
 Java 8+, Android API Level >=21
 
 ```gradle
-compile group: 'com.apicatalog', name: 'titanium-json-ld-jre8', version: '1.3.2'
+compile group: 'com.hasmac', name: 'hasmac-json-ld-jre8', version: '1.3.2'
 ```
 
 #### JSON-P Provider
@@ -105,11 +100,11 @@ compile group: 'org.glassfish', name: 'jakarta.json', version: '2.0.1'
 
 ### Documentation
 
-[![javadoc](https://javadoc.io/badge2/com.apicatalog/titanium-json-ld/javadoc.svg)](https://javadoc.io/doc/com.apicatalog/titanium-json-ld)
+[![javadoc](https://javadoc.io/badge2/com.hasmac/hasmac-json-ld/javadoc.svg)](https://javadoc.io/doc/com.hasmac/hasmac-json-ld)
 
 ### Examples
 
-Titanium provides high-level [JsonLd](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/JsonLd.html) API to interact with the processor.
+HASMAC JSON-LD provides high-level [JsonLd](https://javadoc.io/doc/com.hasmac/hasmac-json-ld/latest/com/hasmac/jsonld/JsonLd.html) API to interact with the processor.
 
 ```javascript
 
@@ -180,14 +175,14 @@ Fork and clone the project repository.
 #### Java 11
 
 ```bash
-> cd titanium-json-ld
+> cd hasmac-json-ld
 > ./mvnw clean package
 ```
 
 #### Java 8
 
 ```bash
-> cd titanium-json-ld
+> cd hasmac-json-ld
 > ./mvnw -f pom_jre8.xml clean package
 ```
 

@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.document;
+package com.hasmac.jsonld.document;
 
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.stream.Collectors;
 
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.http.media.MediaType;
-import com.apicatalog.rdf.Rdf;
+import com.hasmac.jsonld.JsonLdError;
+import com.hasmac.jsonld.JsonLdErrorCode;
+import com.hasmac.jsonld.http.media.MediaType;
+import com.hasmac.rdf.Rdf;
 
 /**
  * @deprecated use {@link JsonDocument#of} or {@link RdfDocument#of} directly

@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.http;
+package com.hasmac.jsonld.http;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,8 +7,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.hasmac.jsonld.JsonLdError;
+import com.hasmac.jsonld.JsonLdErrorCode;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
