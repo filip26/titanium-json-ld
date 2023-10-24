@@ -1,22 +1,17 @@
 # HASMAC JSON-LD 1.1 Processor & API
 
-An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-based Serialization for Linked Data) specification in Java utilizing [Jakarta JSON Processing](https://github.com/eclipse-ee4j/jsonp).
-
-The goals of HASMAC JSON-LD are:
-- conformance to the specification
-- secure, stable, fast, A+ code
-- minimal external dependencies
-  - only `jakarta.json-api` is required
-- simple to use
+HASMAC JSON-LD is a fork of [Titanium JSON-LD](https://github.com/filip26/titanium-json-ld) for the
+purpose of incorporating performance improvements. Merging the performance improvements back into
+Titanium JSON-LD is a work in progress. Once complete, HASMAC JSON-LD will be deprecated and
+eventually removed.
 
 - [![Maven Central](https://img.shields.io/maven-central/v/com.hasmac/hasmac-json-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.hasmac%22%20AND%20a:%22hasmac-json-ld%22)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+  [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-
-## Table of Contents  
-- [Conformance](#conformance)  
+## Table of Contents
+- [Conformance](#conformance)
 - [CLI](#cli)
-- [Extensions](#extensions)  
+- [Extensions](#extensions)
 - [Usage](#usage)
   * [Installation](#installation)
   * [Documentation](#documentation)
@@ -31,7 +26,7 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 
 ### Status
 
- | Feature | Tests | Pass | Status | Notes |
+| Feature | Tests | Pass | Status | Notes |
  | --- | ---: | ---: | ---: | --- |
 | [Expansion](https://www.w3.org/TR/json-ld/#expanded-document-form) | 371 |  371 | 100% | |
 | [Compaction](https://www.w3.org/TR/json-ld/#compacted-document-form) | 242 | 242 | 100% | |
@@ -70,7 +65,7 @@ Java 11 or higher
 </dependency>
 ```
 
-##### Gradle 
+##### Gradle
 Java 8+, Android API Level >=21
 
 ```gradle
@@ -85,9 +80,9 @@ Maven
 
 ```xml
 <dependency>
-    <groupId>org.glassfish</groupId>
-    <artifactId>jakarta.json</artifactId>
-    <version>2.0.1</version>
+  <groupId>org.glassfish</groupId>
+  <artifactId>jakarta.json</artifactId>
+  <version>2.0.1</version>
 </dependency>
 ```
 
@@ -110,17 +105,17 @@ HASMAC JSON-LD provides high-level [JsonLd](https://javadoc.io/doc/com.hasmac/ha
 
 // Expansion
 JsonLd.expand("https://w3c.github.io/json-ld-api/tests/expand/0001-in.jsonld")
-      .ordered()
-      .get();
+        .ordered()
+        .get();
 
 JsonLd.expand("file:/home/filip/document.json")    // HTTP(S) and File schemes supported
-      .context("file:/home/filip/context.jsonld")  // external context
-      .get();
+        .context("file:/home/filip/context.jsonld")  // external context
+        .get();
 
 // Compaction
 JsonLd.compact("https://example/expanded.jsonld", "https://example/context.jsonld")
-      .compactToRelative(false)
-      .get();
+        .compactToRelative(false)
+        .get();
 
 // Flattening
 JsonLd.flatten("https://example/document.jsonld").get();
@@ -151,7 +146,7 @@ JsonLd.compact(document, contextDocument).get();
 All PR's welcome!
 
 - develop
-  - implement a new feature 
+  - implement a new feature
   - fix an existing issue
   - improve an existing implementation
 - test
