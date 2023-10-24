@@ -17,6 +17,7 @@ package com.apicatalog.jsonld.lang;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Set;
 
 public final class Keywords {
 
@@ -94,7 +95,7 @@ public final class Keywords {
     // Extension: JSON-LD-STAR (Experimental)
     public static final String ANNOTATION = "@annotation";
 
-    private static final Collection<String> ALL_KEYWORDS = Arrays.asList(ANY, BASE, CONTAINER, CONTEXT, DIRECTION, GRAPH,
+    private static final Set<String> ALL_KEYWORDS = Set.of(ANY, BASE, CONTAINER, CONTEXT, DIRECTION, GRAPH,
             ID, IMPORT, INCLUDED, INDEX, JSON, LANGUAGE, LIST, NEST, NONE, PREFIX, PRESERVE, PROPAGATE, PROTECTED, REVERSE, SET,
             TYPE, VALUE, VERSION, VOCAB,
             // framing
@@ -103,12 +104,22 @@ public final class Keywords {
             ANNOTATION
             );
 
+    private static final int ALL_KEYWORDS_MAX_LENGTH = ALL_KEYWORDS.stream().mapToInt(String::length).max().getAsInt();
+    private static final int ALL_KEYWORDS_MIN_LENGTH = ALL_KEYWORDS.stream().mapToInt(String::length).min().getAsInt();
 
     protected Keywords() {
     }
 
     public static boolean contains(final String value) {
-        return ALL_KEYWORDS.contains(value);
+        if (value == null) {
+            return false;
+        }
+        int length = value.length();
+        if (length >= ALL_KEYWORDS_MIN_LENGTH && length <= ALL_KEYWORDS_MAX_LENGTH) {
+            return ALL_KEYWORDS.contains(value);
+        }
+
+        return false;
     }
 
     /**

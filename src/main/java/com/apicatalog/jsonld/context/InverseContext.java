@@ -35,10 +35,18 @@ public final class InverseContext {
     }
 
     private boolean doesNotContain(final String variable, final String container, final String type, final String key) {
-        return !context.containsKey(variable)
-                || !context.get(variable).containsKey(container)
-                || !context.get(variable).get(container).containsKey(type)
-                || !context.get(variable).get(container).get(type).containsKey(key);
+        var stringMapMap = context.get(variable);
+        if(stringMapMap != null){
+            var stringMapMap1 = stringMapMap.get(container);
+            if(stringMapMap1 != null){
+                var stringStringMap = stringMapMap1.get(type);
+                if(stringStringMap != null){
+                    return !stringStringMap.containsKey(key);
+                }
+            }
+        }
+        return true;
+
     }
 
     public boolean contains(final String variable) {
@@ -46,9 +54,14 @@ public final class InverseContext {
     }
 
     public boolean contains(final String variable, final String container, final String type) {
-        return context.containsKey(variable)
-                && context.get(variable).containsKey(container)
-                && context.get(variable).get(container).containsKey(type);
+        var stringMapMap = context.get(variable);
+        if(stringMapMap != null){
+            var stringMapMap1 = stringMapMap.get(container);
+            if(stringMapMap1 != null){
+                return stringMapMap1.containsKey(type);
+            }
+        }
+        return false;
     }
 
     public boolean contains(final String variable, final String container, final String type, final String key) {

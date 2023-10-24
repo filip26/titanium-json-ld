@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project
-    xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-    >
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.apicatalog</groupId>
@@ -31,10 +31,12 @@
 
     <developers>
         <developer>
-          <id>filip26</id>
-          <name>Filip Kolarik</name>
-          <email>filip26@gmail.com</email>
-          <roles><role>author</role></roles>
+            <id>filip26</id>
+            <name>Filip Kolarik</name>
+            <email>filip26@gmail.com</email>
+            <roles>
+                <role>author</role>
+            </roles>
         </developer>
     </developers>
 
@@ -64,23 +66,40 @@
             <version>${jakarta.json.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>31.0.1-jre</version>
+        </dependency>
         <!--  Tests -->
-	<dependency>
+        <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>jakarta.json</artifactId>
             <version>${jakarta.json.version}</version>
             <scope>test</scope>
-	</dependency>
-	<dependency>
-	    <groupId>org.junit.jupiter</groupId>
-	    <artifactId>junit-jupiter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
             <version>${junit.version}</version>
-	    <scope>test</scope>
-	</dependency>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock-jre8</artifactId>
             <version>${wiremock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-core</artifactId>
+            <version>1.36</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-generator-annprocess</artifactId>
+            <version>1.36</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -169,83 +188,83 @@
                     </execution>
                 </executions>
             </plugin>
-   <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>flatten-maven-plugin</artifactId>
-        <version>1.5.0</version>
-        <configuration>
-          <flattenMode>oss</flattenMode>
-        </configuration>
-        <executions>
-          <!-- enable flattening -->
-          <execution>
-            <id>flatten</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>flatten</goal>
-            </goals>
-          </execution>
-          <!-- ensure proper cleanup -->
-          <execution>
-            <id>flatten.clean</id>
-            <phase>clean</phase>
-            <goals>
-              <goal>clean</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-        	<plugin>
-            	<artifactId>maven-surefire-plugin</artifactId>
-            	<version>3.1.2</version>
-        	</plugin>
-        	<plugin>
-            	<artifactId>maven-failsafe-plugin</artifactId>
-            	<version>3.1.2</version>
-        	</plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.5.0</version>
+                <configuration>
+                    <flattenMode>oss</flattenMode>
+                </configuration>
+                <executions>
+                    <!-- enable flattening -->
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <!-- ensure proper cleanup -->
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.1.2</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.1.2</version>
+            </plugin>
         </plugins>
     </build>
     <profiles>
         <profile>
             <id>maven-central</id>
-                <activation>
-                    <activeByDefault>false</activeByDefault>
-		</activation>
-                <build>
-                    <plugins>
-                        <plugin>
-		            <groupId>org.apache.maven.plugins</groupId>
-		            <artifactId>maven-gpg-plugin</artifactId>
-		            <version>3.1.0</version>
-		            <executions>
-                                <execution>
-		                    <id>sign-artifacts</id>
-		                    <phase>verify</phase>
-		                    <goals>
-                                        <goal>sign</goal>
-		                    </goals>
-		                </execution>
-		            </executions>
-		        </plugin>
-			<plugin>
-                            <groupId>org.sonatype.plugins</groupId>
-                            <artifactId>nexus-staging-maven-plugin</artifactId>
-                            <version>1.6.13</version>
-                            <extensions>true</extensions>
-                            <configuration>
-                                <serverId>ossrh</serverId>
-				<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-				<autoReleaseAfterClose>true</autoReleaseAfterClose>
-                            </configuration>
-			</plugin>
-                    </plugins>
-		</build>
-		<distributionManagement>
-                    <snapshotRepository>
-		    <id>ossrh</id>
-		    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-                    </snapshotRepository>
-		</distributionManagement>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.13</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+            </distributionManagement>
         </profile>
     </profiles>
 </project>

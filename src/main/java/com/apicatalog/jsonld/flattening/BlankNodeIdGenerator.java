@@ -28,7 +28,7 @@ public final class BlankNodeIdGenerator {
 
     private final Map<String, String> map;
 
-    private Integer counter;
+    private int counter;
 
     public BlankNodeIdGenerator() {
         this.map = new HashMap<>();
@@ -36,24 +36,16 @@ public final class BlankNodeIdGenerator {
     }
 
     public String createIdentifier() {
-        return "_:b".concat(Integer.toString(counter++));
+     return "_:b" + counter++;
     }
 
     public String createIdentifier(String identifier) {
-
         if (identifier == null || StringUtils.isBlank(identifier)) {
             return createIdentifier();
         }
 
-        if (map.containsKey(identifier)) {
-            return map.get(identifier);
-        }
+        return map.computeIfAbsent(identifier, x -> createIdentifier());
 
-        final String blankId = createIdentifier();
-
-        map.put(identifier, blankId);
-
-        return blankId;
     }
 
 }

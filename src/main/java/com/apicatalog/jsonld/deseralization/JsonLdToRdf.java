@@ -75,6 +75,7 @@ public final class JsonLdToRdf {
         return this;
     }
 
+
     public RdfDataset build() throws JsonLdError {
 
         // 1.
@@ -93,10 +94,8 @@ public final class JsonLdToRdf {
 
                     rdfGraphName = Rdf.createBlankNode(graphName);
 
-                } else if (UriUtils.isAbsoluteUri(graphName, uriValidation)) {
-
+                }  else if (UriUtils.isAbsoluteUri(graphName, uriValidation)) {
                     rdfGraphName = Rdf.createIRI(graphName);
-
                 } else {
                     continue;
                 }
@@ -110,10 +109,8 @@ public final class JsonLdToRdf {
                 // 1.3.1.
                 if (BlankNode.isWellFormed(subject)) {
                     rdfSubject = Rdf.createBlankNode(subject);
-
                 } else if (UriUtils.isAbsoluteUri(subject, uriValidation)) {
                     rdfSubject = Rdf.createIRI(subject);
-
                 } else {
                     LOGGER.log(Level.WARNING, "Non well-formed subject [{0}] has been skipped.", subject);
                     continue;
@@ -131,7 +128,7 @@ public final class JsonLdToRdf {
                                 continue;
                             }
 
-                            final String typeString = ((JsonString)type).getString();
+                            final String typeString = ((JsonString) type).getString();
 
                             final RdfValue rdfObject;
 
@@ -140,20 +137,19 @@ public final class JsonLdToRdf {
 
                             } else if (UriUtils.isAbsoluteUri(typeString, uriValidation)) {
                                 rdfObject = Rdf.createIRI(typeString);
-
                             } else {
                                 continue;
                             }
 
                             dataset.add(Rdf.createNQuad(
-                                                rdfSubject,
-                                                Rdf.createIRI(RdfConstants.TYPE),
-                                                rdfObject,
-                                                rdfGraphName
-                                            ));
+                                    rdfSubject,
+                                    Rdf.createIRI(RdfConstants.TYPE),
+                                    rdfObject,
+                                    rdfGraphName
+                            ));
                         }
 
-                    // 1.3.2.2.
+                        // 1.3.2.2.
                     } else if (!Keywords.contains(property)) {
 
                         final RdfResource rdfProperty;
@@ -161,10 +157,9 @@ public final class JsonLdToRdf {
                         if (BlankNode.isWellFormed(property)) {
                             rdfProperty = !produceGeneralizedRdf ? Rdf.createBlankNode(property) : null;
 
-                        } else if (UriUtils.isAbsoluteUri(property, uriValidation)) {
+                        }  else if (UriUtils.isAbsoluteUri(property, uriValidation)) {
                             rdfProperty = Rdf.createIRI(property);
-
-                        } else {
+                        }  else {
                             rdfProperty = null;
                         }
 
@@ -177,22 +172,25 @@ public final class JsonLdToRdf {
                                 final List<RdfTriple> listTriples = new ArrayList<>();
 
                                 // 1.3.2.5.2.
-                                ObjectToRdf
+                                RdfValue rdfValue = ObjectToRdf
                                         .with(item.asJsonObject(), listTriples, nodeMap)
                                         .rdfDirection(rdfDirection)
                                         .uriValidation(uriValidation)
-                                        .build()
-                                        .ifPresent(rdfObject ->
-                                                            dataset.add(Rdf.createNQuad(
-                                                                        rdfSubject,
-                                                                        rdfProperty,
-                                                                        rdfObject,
-                                                                        rdfGraphName
-                                                                        )));
+                                        .build();
+
+                                if (rdfValue != null) {
+                                    dataset.add(Rdf.createNQuad(
+                                            rdfSubject,
+                                            rdfProperty,
+                                            rdfValue,
+                                            rdfGraphName
+                                    ));
+                                }
+
                                 // 1.3.2.5.3.
                                 listTriples.stream()
-                                            .map(triple -> Rdf.createNQuad(triple, rdfGraphName))
-                                            .forEach(dataset::add);
+                                        .map(triple -> Rdf.createNQuad(triple, rdfGraphName))
+                                        .forEach(dataset::add);
                             }
                         }
                     }

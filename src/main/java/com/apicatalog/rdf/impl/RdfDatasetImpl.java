@@ -37,7 +37,7 @@ final class RdfDatasetImpl implements RdfDataset {
     private final RdfGraphImpl defaultGraph;
 
     protected RdfDatasetImpl() {
-        this.graphs = new HashMap<>();
+        this.graphs = new HashMap<>(1);
         this.nquads = new ArrayList<>();
         this.defaultGraph = new RdfGraphImpl();
     }

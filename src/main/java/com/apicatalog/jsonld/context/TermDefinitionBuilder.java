@@ -411,13 +411,13 @@ public final class TermDefinitionBuilder {
             // 15.2.
             if (compactUri != null && compactUri.isNotBlank() && activeContext.containsTerm(compactUri.getPrefix())) {
 
-                definition.setUriMapping(
-                                activeContext
-                                        .getTerm(compactUri.getPrefix())
-                                        .map(TermDefinition::getUriMapping)
-                                        .map(u -> u.concat(compactUri.getSuffix()))
-                                        .orElse(null)
-                                        );
+                TermDefinition term1 = activeContext.getTermNullable(compactUri.getPrefix());
+                if(term1 != null && term1.getUriMapping() != null) {
+                    definition.setUriMapping(term1.getUriMapping()+compactUri.getSuffix());
+                }else {
+                    definition.setUriMapping(null);
+                }
+
 
             // 15.3.
             } else if (UriUtils.isURI(term) || BlankNode.hasPrefix(term)) {
@@ -462,11 +462,7 @@ public final class TermDefinitionBuilder {
             }
 
             // 19.3.
-            JsonUtils.toStream(containerValue)
-                        .filter(JsonUtils::isString)
-                        .map(JsonString.class::cast)
-                        .map(JsonString::getString)
-                        .forEach(definition::addContainerMapping);
+            JsonUtils.withStrings(containerValue, definition::addContainerMapping);
 
             // 19.4.
             if (definition.getContainerMapping().contains(Keywords.TYPE)) {

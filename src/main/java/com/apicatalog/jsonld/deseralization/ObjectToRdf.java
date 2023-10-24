@@ -15,15 +15,6 @@
  */
 package com.apicatalog.jsonld.deseralization;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
@@ -44,16 +35,21 @@ import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.RdfValue;
 import com.apicatalog.rdf.lang.RdfConstants;
 import com.apicatalog.rdf.lang.XsdConstants;
-
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.List;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- *
  * @see <a href="https://w3c.github.io/json-ld-api/#deserialize-json-ld-to-rdf-algorithm">Object to RDF Conversion</a>
- *
  */
 final class ObjectToRdf {
 
@@ -62,7 +58,9 @@ final class ObjectToRdf {
     private static final DecimalFormat xsdNumberFormat =
             new DecimalFormat("0.0##############E0", new DecimalFormatSymbols(Locale.ENGLISH));
 
-    static { xsdNumberFormat.setMinimumFractionDigits(1); }
+    static {
+        xsdNumberFormat.setMinimumFractionDigits(1);
+    }
 
     // required
     private JsonObject item;
@@ -84,7 +82,7 @@ final class ObjectToRdf {
     }
 
     public static final ObjectToRdf with(JsonObject item, List<RdfTriple> triples, NodeMap nodeMap) {
-        return  new ObjectToRdf(item, triples, nodeMap);
+        return new ObjectToRdf(item, triples, nodeMap);
     }
 
     public ObjectToRdf rdfDirection(RdfDirection rdfDirection) {
@@ -92,7 +90,7 @@ final class ObjectToRdf {
         return this;
     }
 
-    public Optional<RdfValue> build() throws JsonLdError {
+    public RdfValue build() throws JsonLdError {
 
         // 1. - 2.
         if (NodeObject.isNodeObject(item)) {
@@ -100,55 +98,58 @@ final class ObjectToRdf {
             JsonValue id = item.get(Keywords.ID);
 
             if (JsonUtils.isNotString(id) || JsonUtils.isNull(id)) {
-                return Optional.empty();
+                return null;
             }
 
-            String idString = ((JsonString)id).getString();
+            String idString = ((JsonString) id).getString();
 
             if (BlankNode.isWellFormed(idString)) {
-                return Optional.of(Rdf.createBlankNode(idString));
+                return Rdf.createBlankNode(idString);
 
             } else if (UriUtils.isAbsoluteUri(idString, uriValidation)) {
-                return Optional.of(Rdf.createIRI(idString));
+                return Rdf.createIRI(idString);
             }
 
-            return Optional.empty();
+            return null;
         }
 
         // 3.
         if (ListObject.isListObject(item)) {
-            return Optional.of(ListToRdf
-                        .with(item.get(Keywords.LIST).asJsonArray(), triples, nodeMap)
-                        .rdfDirection(rdfDirection)
-                        .uriValidation(uriValidation)
-                        .build());
+            return ListToRdf
+                    .with(item.get(Keywords.LIST).asJsonArray(), triples, nodeMap)
+                    .rdfDirection(rdfDirection)
+                    .uriValidation(uriValidation)
+                    .build();
         }
 
         // 4.
         if (!ValueObject.isValueObject(item)) {
-            return Optional.empty();
+            return null;
         }
 
         final JsonValue value = item.get(Keywords.VALUE);
 
         // 5.
         String datatype = item.containsKey(Keywords.TYPE) && JsonUtils.isString(item.get(Keywords.TYPE))
-                            ? item.getString(Keywords.TYPE)
-                            : null;
+                ? item.getString(Keywords.TYPE)
+                : null;
 
         // 6.
-        if (datatype != null && !Keywords.JSON.equals(datatype) && !UriUtils.isAbsoluteUri(datatype, uriValidation)) {
-            LOGGER.log(Level.WARNING, "Datatype [{0}] is not an absolute IRI nor @json and value is skipped.", datatype);
-            return Optional.empty();
+        if (datatype != null && !Keywords.JSON.equals(datatype)) {
+            boolean absoluteUri = UriUtils.isAbsoluteUri(datatype, uriValidation);
+            if (!absoluteUri) {
+                LOGGER.log(Level.WARNING, "Datatype [{0}] is not an absolute IRI nor @json and value is skipped.", datatype);
+                return null;
+            }
         }
 
         // 7.
         if (item.containsKey(Keywords.LANGUAGE)
                 && (JsonUtils.isNotString(item.get(Keywords.LANGUAGE))
-                        || !LanguageTag.isWellFormed(item.getString(Keywords.LANGUAGE)))
-                ) {
+                || !LanguageTag.isWellFormed(item.getString(Keywords.LANGUAGE)))
+        ) {
             LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed string and value is skipped.", item.get(Keywords.LANGUAGE));
-            return Optional.empty();
+            return null;
         }
 
         String valueString = null;
@@ -158,7 +159,7 @@ final class ObjectToRdf {
             valueString = JsonCanonicalizer.canonicalize(value);
             datatype = RdfConstants.JSON;
 
-        // 9.
+            // 9.
         } else if (JsonUtils.isTrue(value)) {
 
             valueString = "true";
@@ -176,18 +177,18 @@ final class ObjectToRdf {
             }
 
 
-        // 10. - 11.
+            // 10. - 11.
         } else if (JsonUtils.isNumber(value)) {
 
-            JsonNumber number = ((JsonNumber)value);
+            JsonNumber number = ((JsonNumber) value);
 
 
             // 11.
-            if ((!number.isIntegral()  && number.doubleValue() % -1 != 0)
+            if ((!number.isIntegral() && number.doubleValue() % -1 != 0)
                     || XsdConstants.DOUBLE.equals(datatype)
                     || XsdConstants.FLOAT.equals(datatype)
                     || number.bigDecimalValue().compareTo(BigDecimal.ONE.movePointRight(21)) >= 0
-                    ) {
+            ) {
 
                 valueString = toXsdDouble(number.bigDecimalValue());
 
@@ -195,7 +196,7 @@ final class ObjectToRdf {
                     datatype = XsdConstants.DOUBLE;
                 }
 
-            // 10.
+                // 10.
             } else {
 
                 valueString = number.bigIntegerValue().toString();
@@ -206,22 +207,22 @@ final class ObjectToRdf {
 
             }
 
-        // 12.
+            // 12.
         } else if (datatype == null) {
 
             datatype = item.containsKey(Keywords.LANGUAGE)
-                                ? RdfConstants.LANG_STRING
-                                : XsdConstants.STRING
-                                ;
+                    ? RdfConstants.LANG_STRING
+                    : XsdConstants.STRING
+            ;
         }
 
         if (valueString == null) {
 
             if (JsonUtils.isNotString(value)) {
-                return Optional.empty();
+                return null;
             }
 
-            valueString = ((JsonString)value).getString();
+            valueString = ((JsonString) value).getString();
         }
 
         RdfLiteral rdfLiteral = null;
@@ -231,18 +232,18 @@ final class ObjectToRdf {
 
             // 13.1.
             final String language = item.containsKey(Keywords.LANGUAGE)
-                                ? item.getString(Keywords.LANGUAGE).toLowerCase()
-                                : "";
+                    ? item.getString(Keywords.LANGUAGE).toLowerCase()
+                    : "";
             // 13.2.
             if (RdfDirection.I18N_DATATYPE == rdfDirection) {
                 datatype = "https://www.w3.org/ns/i18n#"
-                                .concat(language)
-                                .concat("_")
-                                .concat(item.getString(Keywords.DIRECTION));
+                        .concat(language)
+                        .concat("_")
+                        .concat(item.getString(Keywords.DIRECTION));
 
                 rdfLiteral = Rdf.createTypedString(valueString, datatype);
 
-            // 13.3.
+                // 13.3.
             } else if (RdfDirection.COMPOUND_LITERAL == rdfDirection) {
 
                 final String blankNodeId = nodeMap.createIdentifier();
@@ -252,31 +253,31 @@ final class ObjectToRdf {
 
                 // 13.3.2.
                 triples.add(Rdf.createTriple(
-                                    subject,
-                                    Rdf.createIRI(RdfConstants.VALUE),
-                                    Rdf.createString(valueString))
-                                    );
+                        subject,
+                        Rdf.createIRI(RdfConstants.VALUE),
+                        Rdf.createString(valueString))
+                );
 
                 // 13.3.3.
                 if (item.containsKey(Keywords.LANGUAGE) && JsonUtils.isString(item.get(Keywords.LANGUAGE))) {
                     triples.add(Rdf.createTriple(
-                                    subject,
-                                    Rdf.createIRI(RdfConstants.LANGUAGE),
-                                    Rdf.createString(item.getString(Keywords.LANGUAGE).toLowerCase()))
-                                    );
+                            subject,
+                            Rdf.createIRI(RdfConstants.LANGUAGE),
+                            Rdf.createString(item.getString(Keywords.LANGUAGE).toLowerCase()))
+                    );
                 }
 
                 // 13.3.4.
                 triples.add(Rdf.createTriple(
-                                    subject,
-                                    Rdf.createIRI(RdfConstants.DIRECTION),
-                                    Rdf.createString(item.getString(Keywords.DIRECTION)))
-                                    );
+                        subject,
+                        Rdf.createIRI(RdfConstants.DIRECTION),
+                        Rdf.createString(item.getString(Keywords.DIRECTION)))
+                );
 
-                return Optional.of(Rdf.createBlankNode(blankNodeId));
+                return Rdf.createBlankNode(blankNodeId);
             }
 
-        // 14.
+            // 14.
         } else {
             if (item.containsKey(Keywords.LANGUAGE) && JsonUtils.isString(item.get(Keywords.LANGUAGE))) {
 
@@ -288,7 +289,7 @@ final class ObjectToRdf {
         }
 
         // 15.
-        return Optional.ofNullable(rdfLiteral);
+        return rdfLiteral;
     }
 
     private static final String toXsdDouble(BigDecimal bigDecimal) {

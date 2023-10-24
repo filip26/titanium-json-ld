@@ -90,16 +90,17 @@ final class ListToRdf {
             final List<RdfTriple> embeddedTriples = new ArrayList<>();
 
             // 3.2.
-            ObjectToRdf
-                .with(item.asJsonObject(), embeddedTriples, nodeMap)
-                .rdfDirection(rdfDirection)
-                .uriValidation(uriValidation)
-                .build()
-                .ifPresent(object ->
+            RdfValue rdfValue = ObjectToRdf
+                    .with(item.asJsonObject(), embeddedTriples, nodeMap)
+                    .rdfDirection(rdfDirection)
+                    .uriValidation(uriValidation)
+                    .build();
+            if(rdfValue != null) {
                                 triples.add(Rdf.createTriple(
                                                 Rdf.createBlankNode(subject),
                                                 Rdf.createIRI(RdfConstants.FIRST),
-                                                object)));
+                                                rdfValue));
+            }
 
             // 3.4.
             final RdfValue rest = (index < bnodes.length) ? Rdf.createBlankNode(bnodes[index])

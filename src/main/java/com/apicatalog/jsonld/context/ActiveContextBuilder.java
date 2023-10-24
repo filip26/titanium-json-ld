@@ -441,7 +441,7 @@ public final class ActiveContextBuilder {
 
             final TermDefinitionBuilder termBuilder =
                             result
-                                .newTerm(contextDefinition, new HashMap<>())
+                                .newTerm(contextDefinition, new HashMap<>(1))
                                 .baseUrl(baseUrl)
                                 .overrideProtectedFlag(overrideProtected);
 

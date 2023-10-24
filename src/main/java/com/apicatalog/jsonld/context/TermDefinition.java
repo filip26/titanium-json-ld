@@ -57,7 +57,7 @@ public final class TermDefinition {
         this.prefixFlag = prefixFlag;
         this.protectedFlag = protectedFlag;
         this.reversePropertyFlag = reversePropertyFlag;
-        this.containerMapping = new HashSet<>();
+        this.containerMapping = new HashSet<>(1);
     }
 
     public void setLocalContext(JsonValue context) {

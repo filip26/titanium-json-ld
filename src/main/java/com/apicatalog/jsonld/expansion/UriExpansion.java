@@ -15,11 +15,6 @@
  */
 package com.apicatalog.jsonld.expansion;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.ActiveContext;
@@ -29,17 +24,17 @@ import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.uri.UriResolver;
 import com.apicatalog.jsonld.uri.UriUtils;
-
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- *
- *
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#algorithm-4">IRI
- *      Expansion</a>
- *
+ * Expansion</a>
  */
 public final class UriExpansion {
 
@@ -108,14 +103,14 @@ public final class UriExpansion {
 
         initLocalContext(value);
 
-        Optional<TermDefinition> definition = activeContext.getTerm(value);
+        TermDefinition definition = activeContext.getTermNullable(value);
 
         // 4. if active context has a term definition for value,
         // and the associated IRI mapping is a keyword, return that keyword.
         // 5. If vocab is true and the active context has a term definition for value,
         // return the associated IRI mapping
-        if (definition.isPresent() && (Keywords.contains(definition.get().getUriMapping()) || vocab)) {
-            return definition.get().getUriMapping();
+        if (definition != null && (Keywords.contains(definition.getUriMapping()) || vocab)) {
+            return definition.getUriMapping();
         }
 
         String result = value;
@@ -123,18 +118,26 @@ public final class UriExpansion {
         // 6. If value contains a colon (:) anywhere after the first character, it is
         // either an IRI,
         // a compact IRI, or a blank node identifier
-        if (result.indexOf(':', 1) != -1) {
+        int indexOfColon = result.indexOf(':', 1);
+        if (indexOfColon != -1) {
+
+            // 6.2. If prefix is underscore (_)
+            // return value as it is a blank node identifier.
+            if (indexOfColon == 1 && result.charAt(0) == '_') {
+                return result;
+            }
+
+
+            // 6.2. If suffix begins with double-forward-slash
+            // (//),
+            // return value as it is already an IRI or a blank node identifier.
+            if (result.length() > indexOfColon + 2 && result.charAt(indexOfColon + 1) == '/' && result.charAt(indexOfColon + 2) == '/') {
+                return result;
+            }
 
             // 6.1. Split value into a prefix and suffix at the first occurrence of a colon
             // (:).
             String[] split = result.split(":", 2);
-
-            // 6.2. If prefix is underscore (_) or suffix begins with double-forward-slash
-            // (//),
-            // return value as it is already an IRI or a blank node identifier.
-            if ("_".equals(split[0]) || split[1].startsWith("//")) {
-                return result;
-            }
 
             result = initPropertyContext(split[0], split[1], result);
 
@@ -173,18 +176,18 @@ public final class UriExpansion {
     private String initPropertyContext(final String prefix, final String suffix, final String result) throws JsonLdError {
 
         // 6.3.
-        if (localContext != null && localContext.containsKey(prefix) && !Boolean.TRUE.equals(defined.get(prefix))) {
+        if (localContext != null && !Boolean.TRUE.equals(defined.get(prefix)) && localContext.containsKey(prefix)) {
             activeContext.newTerm(localContext, defined).create(prefix);
         }
 
         // 6.4.
-        final Optional<TermDefinition> prefixDefinition = activeContext.getTerm(prefix);
+        final TermDefinition prefixDefinition = activeContext.getPrefix(prefix);
 
-        if (prefixDefinition.map(TermDefinition::getUriMapping).isPresent()
-                && prefixDefinition.filter(TermDefinition::isPrefix).isPresent()) {
-
-            // deepcode ignore checkIsPresent~Optional: false positive
-            return prefixDefinition.map(TermDefinition::getUriMapping).map(m -> m.concat(suffix)).get();
+        if (prefixDefinition != null && prefixDefinition.isPrefix()) {
+            String uriMapping = prefixDefinition.getUriMapping();
+            if (uriMapping != null) {
+                return uriMapping + suffix;
+            }
         }
 
         return result;
@@ -197,7 +200,7 @@ public final class UriExpansion {
 
             return activeContext.getVocabularyMapping().concat(result);
 
-        // 8.
+            // 8.
         } else if (documentRelative) {
 
             return UriResolver.resolve(activeContext.getBaseUri(), result);
