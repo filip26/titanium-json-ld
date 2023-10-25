@@ -42,7 +42,7 @@ public final class CompactionProcessor {
     private CompactionProcessor() {
     }
 
-    public static final JsonObject compact(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError {
+    public static JsonObject compact(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + context + "].");
@@ -57,7 +57,7 @@ public final class CompactionProcessor {
         return compact(input, contextDocument, options);
     }
 
-    public static final JsonObject compact(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError {
+    public static JsonObject compact(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
@@ -75,7 +75,7 @@ public final class CompactionProcessor {
         return compact(remoteDocument, context, options);
     }
 
-    public static final JsonObject compact(final Document input, final URI context, final JsonLdOptions options) throws JsonLdError {
+    public static JsonObject compact(final Document input, final URI context, final JsonLdOptions options) throws JsonLdError {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + context + "].");
@@ -90,7 +90,7 @@ public final class CompactionProcessor {
         return compact(input, contextDocument, options);
     }
 
-    public static final JsonObject compact(final Document input, final Document context, final JsonLdOptions options) throws JsonLdError {
+    public static JsonObject compact(final Document input, final Document context, final JsonLdOptions options) throws JsonLdError {
 
         // 4.
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);

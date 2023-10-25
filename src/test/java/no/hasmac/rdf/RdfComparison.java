@@ -38,7 +38,7 @@ public final class RdfComparison {
         this.dataset2 = dataset2;
     }
 
-    public static final boolean equals(final RdfDataset dataset1, final RdfDataset dataset2) {
+    public static boolean equals(final RdfDataset dataset1, final RdfDataset dataset2) {
         return new RdfComparison(dataset1, dataset2).areIsomorphic();
     }
 

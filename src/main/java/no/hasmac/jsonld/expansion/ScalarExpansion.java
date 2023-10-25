@@ -46,8 +46,8 @@ public final class ScalarExpansion {
         this.activeProperty = activeProperty;
     }
 
-    public static final ScalarExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
-            final JsonValue element, final String activeProperty) {
+    public static ScalarExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
+                                       final JsonValue element, final String activeProperty) {
         return new ScalarExpansion(activeContext, propertyContext, element, activeProperty);
     }
 

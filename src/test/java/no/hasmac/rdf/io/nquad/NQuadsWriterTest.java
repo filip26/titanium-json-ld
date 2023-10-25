@@ -103,7 +103,7 @@ class NQuadsWriterTest {
         }
     }
 
-    static final Stream<NQuadsWriterTestCase> data() throws IOException, URISyntaxException {
+    static Stream<NQuadsWriterTestCase> data() throws IOException, URISyntaxException {
         return NQuadsWriterTestSuite.load();
     }
 

@@ -69,8 +69,8 @@ public final class ObjectExpansion {
         this.fromMap = false;
     }
 
-    public static final ObjectExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
-                                             final JsonObject element, final String activeProperty, final URI baseUrl) {
+    public static ObjectExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
+                                       final JsonObject element, final String activeProperty, final URI baseUrl) {
         return new ObjectExpansion(activeContext, propertyContext, element, activeProperty, baseUrl);
     }
 

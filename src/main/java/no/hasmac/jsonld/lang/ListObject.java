@@ -37,7 +37,7 @@ public final class ListObject {
      * @param value to check
      * @return <code>true</code> if the provided value is valid list object
      */
-    public static final boolean isListObject(JsonValue value) {
+    public static boolean isListObject(JsonValue value) {
         return JsonUtils.containsKey(value, Keywords.LIST)
                     && (value.asJsonObject().size() == 1
                             || (value.asJsonObject().size() == 2
@@ -54,7 +54,7 @@ public final class ListObject {
      * @param value to convert
      * @return list object containing the provided value
      */
-    public static final JsonObject toListObject(JsonValue value) {
+    public static JsonObject toListObject(JsonValue value) {
         if (JsonUtils.isArray(value)) {
             return JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, value).build();
         }

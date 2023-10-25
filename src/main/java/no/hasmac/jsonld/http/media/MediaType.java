@@ -81,7 +81,7 @@ public final class MediaType {
         return String.valueOf(type).concat("/").concat(subtype);
     }
 
-    public static final MediaType of(String type, String subtype) {
+    public static MediaType of(String type, String subtype) {
         if (type == null || subtype == null) {
             throw new IllegalArgumentException();
         }
@@ -89,7 +89,7 @@ public final class MediaType {
         return new MediaType(type, subtype);
     }
 
-    public static final MediaType of(final String value) {
+    public static MediaType of(final String value) {
         if (value == null) {
             throw new IllegalArgumentException();
         }

@@ -49,7 +49,7 @@ public final class ValueExpansion {
         this.activeContext = activeContext;
     }
 
-    public static final ValueExpansion with(final ActiveContext activeContext) {
+    public static ValueExpansion with(final ActiveContext activeContext) {
         return new ValueExpansion(activeContext);
     }
 

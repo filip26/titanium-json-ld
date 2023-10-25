@@ -62,7 +62,7 @@ public final class DefaultHttpClient implements HttpClient {
         }
     }
 
-    public static final HttpClient defaultInstance() {
+    public static HttpClient defaultInstance() {
         return INSTANCE;
     }
 

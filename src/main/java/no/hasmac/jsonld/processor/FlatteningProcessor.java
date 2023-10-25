@@ -39,7 +39,7 @@ public final class FlatteningProcessor {
     private FlatteningProcessor() {
     }
 
-    public static final JsonStructure flatten(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError {
+    public static JsonStructure flatten(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError {
 
         if (context == null) {
             return flatten(input, (Document)null, options);
@@ -56,7 +56,7 @@ public final class FlatteningProcessor {
         return flatten(input, contextDocument, options);
     }
 
-    public static final JsonStructure flatten(final Document input, final URI context, final JsonLdOptions options) throws JsonLdError {
+    public static JsonStructure flatten(final Document input, final URI context, final JsonLdOptions options) throws JsonLdError {
 
         if (context == null) {
             return flatten(input, (Document)null, options);
@@ -73,7 +73,7 @@ public final class FlatteningProcessor {
         return flatten(input, contextDocument, options);
     }
 
-    public static final JsonStructure flatten(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError {
+    public static JsonStructure flatten(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError {
 
         assertDocumentLoader(options, input);
 
@@ -89,7 +89,7 @@ public final class FlatteningProcessor {
         return flatten(remoteDocument, context, options);
     }
 
-    public static final JsonStructure flatten(final Document input, final Document context, final JsonLdOptions options) throws JsonLdError {
+    public static JsonStructure flatten(final Document input, final Document context, final JsonLdOptions options) throws JsonLdError {
 
         // 4.
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);

@@ -85,7 +85,7 @@ public final class ActiveContextBuilder {
         this.result = null;
     }
 
-    public static final ActiveContextBuilder with(final ActiveContext activeContext) {
+    public static ActiveContextBuilder with(final ActiveContext activeContext) {
         return new ActiveContextBuilder(activeContext);
     }
 

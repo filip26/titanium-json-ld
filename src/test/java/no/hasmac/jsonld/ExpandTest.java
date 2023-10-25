@@ -41,7 +41,7 @@ class ExpandTest {
         assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
     }
 
-    static final Stream<JsonLdTestCase> jsonLdApi() throws JsonLdError {
+    static Stream<JsonLdTestCase> jsonLdApi() throws JsonLdError {
         return JsonLdManifestLoader
                     .load(JsonLdManifestLoader.JSON_LD_API_BASE, "expand-manifest.jsonld", new ZipResourceLoader())
                     .stream()
@@ -49,7 +49,7 @@ class ExpandTest {
                     ;
     }
 
-    static final Stream<JsonLdTestCase> jsonLdStar() throws JsonLdError {
+    static Stream<JsonLdTestCase> jsonLdStar() throws JsonLdError {
         return JsonLdManifestLoader
                     .load(JsonLdManifestLoader.JSON_LD_STAR_BASE, "expand-manifest.jsonld", new ZipResourceLoader())
                     .stream()

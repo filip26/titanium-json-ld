@@ -71,7 +71,7 @@ class LanguageTagTest {
         assertEquals(region, languageTag.getRegion());
     }
 
-    static final Stream<Arguments> data() {
+    static Stream<Arguments> data() {
         return Stream.of(
                 arguments("", false),
                 arguments("   ", false),
@@ -120,7 +120,7 @@ class LanguageTagTest {
                 arguments("zh-min-nan", true));
     }
 
-    static final Stream<Arguments> validTags() {
+    static Stream<Arguments> validTags() {
         return Stream.of(
                 arguments("cs", "cs", null, null, null),
                 arguments("cs-CZ", "cs", null, null, "CZ"),

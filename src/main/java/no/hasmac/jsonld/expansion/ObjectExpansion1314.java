@@ -90,8 +90,8 @@ final class ObjectExpansion1314 {
         this.ordered = false;
     }
 
-    public static final ObjectExpansion1314 with(final ActiveContext activeContext, final JsonObject element,
-            final String activeProperty, final URI baseUrl) {
+    public static ObjectExpansion1314 with(final ActiveContext activeContext, final JsonObject element,
+                                           final String activeProperty, final URI baseUrl) {
         return new ObjectExpansion1314(activeContext, element, activeProperty, baseUrl);
     }
 

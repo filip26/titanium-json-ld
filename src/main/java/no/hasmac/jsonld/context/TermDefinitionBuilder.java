@@ -79,7 +79,7 @@ public final class TermDefinitionBuilder {
         this.remoteContexts = new ArrayList<>();
     }
 
-    public static final TermDefinitionBuilder with(ActiveContext activeContext, JsonObject localContext, Map<String, Boolean> defined) {
+    public static TermDefinitionBuilder with(ActiveContext activeContext, JsonObject localContext, Map<String, Boolean> defined) {
         return new TermDefinitionBuilder(activeContext, localContext, defined);
     }
 

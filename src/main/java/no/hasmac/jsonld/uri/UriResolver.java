@@ -31,7 +31,7 @@ public final class UriResolver {
     private UriResolver() {
     }
 
-    public static final String resolve(final URI base, final String relative) {
+    public static String resolve(final URI base, final String relative) {
 
         if (base == null) {
             return relative;
@@ -40,7 +40,7 @@ public final class UriResolver {
         return resolve(base, UriUtils.create(relative));
     }
 
-    public static final String resolve(final URI base, final URI relative) {
+    public static String resolve(final URI base, final URI relative) {
 
         if (relative == null) {
             return base != null ? base.toString() : null;
@@ -55,7 +55,7 @@ public final class UriResolver {
         return UriUtils.recompose(components[0], components[1], components[2], components[3], components[4]);
     }
 
-    public static final URI resolveAsUri(final URI base, final String relative) {
+    public static URI resolveAsUri(final URI base, final String relative) {
 
         if (StringUtils.isBlank(relative)) {
             return base;
@@ -68,7 +68,7 @@ public final class UriResolver {
         return resolveAsUri(base, UriUtils.create(relative));
     }
 
-    public static final URI resolveAsUri(final URI base, final URI relative) {
+    public static URI resolveAsUri(final URI base, final URI relative) {
 
         if (relative == null) {
             return base;

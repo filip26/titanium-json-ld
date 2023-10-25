@@ -68,7 +68,7 @@ public final class Framing {
         this.ordered = false;
     }
 
-    public static final Framing with(FramingState state, List<String> subjects, Frame frame, JsonMapBuilder parent, String activeProperty) {
+    public static Framing with(FramingState state, List<String> subjects, Frame frame, JsonMapBuilder parent, String activeProperty) {
         return new Framing(state, subjects, frame, parent, activeProperty);
     }
 

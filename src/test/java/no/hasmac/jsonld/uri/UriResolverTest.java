@@ -33,7 +33,7 @@ class UriResolverTest {
         assertEquals(expected, UriResolver.resolve(URI.create(base), relative));
     }
 
-    static final Stream<Arguments> data() {
+    static Stream<Arguments> data() {
         return Stream.of(
             arguments("file:///a/bb/ccc/d;p?q,", "g", "file:///a/bb/ccc/g"),
             arguments("file:///a/bb/ccc/d;p?q,", "/g", "file:///g"),

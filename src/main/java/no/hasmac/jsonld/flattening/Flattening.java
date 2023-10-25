@@ -44,7 +44,7 @@ public final class Flattening {
         this.ordered = false;
     }
 
-    public static final Flattening with(final JsonStructure element) {
+    public static Flattening with(final JsonStructure element) {
         return new Flattening(element);
     }
 

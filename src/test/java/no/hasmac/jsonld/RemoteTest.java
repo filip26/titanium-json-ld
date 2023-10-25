@@ -86,7 +86,7 @@ class RemoteTest {
         }
     }
 
-    static final Stream<JsonLdTestCase> data() throws JsonLdError {
+    static Stream<JsonLdTestCase> data() throws JsonLdError {
         return JsonLdManifestLoader
                     .load(JsonLdManifestLoader.JSON_LD_API_BASE, "remote-doc-manifest.jsonld", new ZipResourceLoader())
                     .stream()

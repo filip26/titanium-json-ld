@@ -169,11 +169,11 @@ class DefaultHttpLoader implements DocumentLoader {
         }
     }
 
-    public static final String getAcceptHeader() {
+    public static String getAcceptHeader() {
         return getAcceptHeader(null);
     }
 
-    public static final String getAcceptHeader(final Collection<String> profiles) {
+    public static String getAcceptHeader(final Collection<String> profiles) {
         final StringBuilder builder = new StringBuilder();
 
         builder.append(MediaType.JSON_LD.toString());

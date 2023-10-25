@@ -81,7 +81,7 @@ final class ObjectToRdf {
         this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
-    public static final ObjectToRdf with(JsonObject item, List<RdfTriple> triples, NodeMap nodeMap) {
+    public static ObjectToRdf with(JsonObject item, List<RdfTriple> triples, NodeMap nodeMap) {
         return new ObjectToRdf(item, triples, nodeMap);
     }
 

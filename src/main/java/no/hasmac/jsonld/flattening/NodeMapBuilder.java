@@ -67,7 +67,7 @@ public final class NodeMapBuilder {
         this.referencedNode = null;
     }
 
-    public static final NodeMapBuilder with(final JsonStructure element, final NodeMap nodeMap) {
+    public static NodeMapBuilder with(final JsonStructure element, final NodeMap nodeMap) {
         return new NodeMapBuilder(element, nodeMap);
     }
 

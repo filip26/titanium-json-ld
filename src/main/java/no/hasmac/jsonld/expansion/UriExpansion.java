@@ -62,7 +62,7 @@ public final class UriExpansion {
         this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
-    public static final UriExpansion with(final ActiveContext activeContext) {
+    public static UriExpansion with(final ActiveContext activeContext) {
         return new UriExpansion(activeContext);
     }
 

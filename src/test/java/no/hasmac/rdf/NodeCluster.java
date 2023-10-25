@@ -48,7 +48,7 @@ final class NodeCluster {
         return target;
     }
 
-    public static final NodeCluster create(Collection<String> source, Collection<String> target) {
+    public static NodeCluster create(Collection<String> source, Collection<String> target) {
 
         if (source.size() != target.size()) {
             throw new IllegalArgumentException();

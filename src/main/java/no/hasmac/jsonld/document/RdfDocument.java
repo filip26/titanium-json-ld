@@ -53,7 +53,7 @@ public final class RdfDocument implements Document {
      * @param dataset representing parsed RDF content
      * @return {@link Document} representing RDF document
      */
-    public static final Document of(final RdfDataset dataset) {
+    public static Document of(final RdfDataset dataset) {
         return of(MediaType.N_QUADS, dataset);
     }
 
@@ -64,7 +64,7 @@ public final class RdfDocument implements Document {
      * @param dataset representing parsed RDF content
      * @return {@link Document} representing RDF document
      */
-    public static final Document of(final MediaType contentType, final RdfDataset dataset) {
+    public static Document of(final MediaType contentType, final RdfDataset dataset) {
 
         assertContentType(contentType);
 
@@ -81,11 +81,11 @@ public final class RdfDocument implements Document {
      * @param is representing parsed RDF content
      * @return {@link Document} representing RDF document
      */
-    public static final RdfDocument of(final InputStream is)  throws JsonLdError {
+    public static RdfDocument of(final InputStream is)  throws JsonLdError {
         return of(MediaType.N_QUADS, is);
     }
 
-    public static final RdfDocument of(final MediaType type, final InputStream is)  throws JsonLdError {
+    public static RdfDocument of(final MediaType type, final InputStream is)  throws JsonLdError {
 
         assertContentType(type);
 
@@ -106,11 +106,11 @@ public final class RdfDocument implements Document {
      * @param reader providing RDF content
      * @return {@link Document} representing RDF document
      */
-    public static final Document of(final Reader reader)  throws JsonLdError {
+    public static Document of(final Reader reader)  throws JsonLdError {
         return of(MediaType.N_QUADS, reader);
     }
 
-    public static final Document of(final MediaType type, final Reader reader)  throws JsonLdError {
+    public static Document of(final MediaType type, final Reader reader)  throws JsonLdError {
 
         assertContentType(type);
 
@@ -125,7 +125,7 @@ public final class RdfDocument implements Document {
         }
     }
 
-    public static final boolean accepts(final MediaType contentType) {
+    public static boolean accepts(final MediaType contentType) {
         return Rdf.canRead().contains(contentType);
     }
 

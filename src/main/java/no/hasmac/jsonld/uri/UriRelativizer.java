@@ -23,7 +23,7 @@ public final class UriRelativizer {
     private UriRelativizer() {
     }
 
-    public static final String relativize(final URI base, final String uri) {
+    public static String relativize(final URI base, final String uri) {
 
         if (base == null) {
             return uri;
@@ -32,7 +32,7 @@ public final class UriRelativizer {
         return relativize(base, URI.create(uri));
     }
 
-    public static final String relativize(final URI base, final URI uri) {
+    public static String relativize(final URI base, final URI uri) {
 
         if (base == null || !base.isAbsolute() || !uri.isAbsolute()) {
             return uri.toString();

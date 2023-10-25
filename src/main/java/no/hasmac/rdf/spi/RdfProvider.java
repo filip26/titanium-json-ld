@@ -39,11 +39,11 @@ public abstract class RdfProvider {
     protected RdfProvider() {
     }
 
-    public static final RdfProvider provider() {
+    public static RdfProvider provider() {
         return provider != null ? provider : DefaultRdfProvider.INSTANCE;
     }
 
-    public static final void setProvider(RdfProvider instance) {
+    public static void setProvider(RdfProvider instance) {
         provider = instance;
     }
 

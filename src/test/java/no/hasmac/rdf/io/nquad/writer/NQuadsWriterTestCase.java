@@ -26,7 +26,7 @@ public final class NQuadsWriterTestCase {
     private String input;
     private String expected;
 
-    public static final NQuadsWriterTestCase of(final JsonObject json) {
+    public static NQuadsWriterTestCase of(final JsonObject json) {
 
         final NQuadsWriterTestCase testCase = new NQuadsWriterTestCase();
 

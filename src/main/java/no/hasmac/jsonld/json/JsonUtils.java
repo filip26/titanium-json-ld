@@ -37,7 +37,7 @@ public final class JsonUtils {
     JsonUtils() {
     }
 
-    public static final boolean contains(String text, JsonValue value) {
+    public static boolean contains(String text, JsonValue value) {
 
         if (text == null) {
             return value == null;
@@ -61,28 +61,28 @@ public final class JsonUtils {
         return false;
     }
 
-    public static final boolean containsKey(JsonValue object, String key) {
+    public static boolean containsKey(JsonValue object, String key) {
         return object != null
                 && ValueType.OBJECT.equals(object.getValueType())
                 && object.asJsonObject().containsKey(key);
     }
 
-    public static final boolean isScalar(final JsonValue value) {
+    public static boolean isScalar(final JsonValue value) {
         return value != null
                 && !ValueType.ARRAY.equals(value.getValueType())
                 && !ValueType.OBJECT.equals(value.getValueType())
                 ;
     }
 
-    public static final boolean isNotScalar(final JsonValue value) {
+    public static boolean isNotScalar(final JsonValue value) {
         return !isScalar(value);
     }
 
-    public static final boolean isNull(final JsonValue value) {
+    public static boolean isNull(final JsonValue value) {
         return value == null || ValueType.NULL.equals(value.getValueType());
     }
 
-    public static final boolean isNotNull(final JsonValue value) {
+    public static boolean isNotNull(final JsonValue value) {
         return !isNull(value);
     }
 

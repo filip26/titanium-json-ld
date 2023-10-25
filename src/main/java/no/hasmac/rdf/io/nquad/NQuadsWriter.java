@@ -122,7 +122,7 @@ public class NQuadsWriter implements RdfWriter {
         }
     }
 
-    public static final String escape(String value) {
+    public static String escape(String value) {
 
         final StringBuilder escaped = new StringBuilder();
 

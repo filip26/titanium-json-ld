@@ -137,7 +137,7 @@ public class ZipResourceLoader implements DocumentLoader, TestLoader {
         }
     }
 
-    static final byte[] readAsByteArray(InputStream is) throws IOException {
+    static byte[] readAsByteArray(InputStream is) throws IOException {
 
         final ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
 

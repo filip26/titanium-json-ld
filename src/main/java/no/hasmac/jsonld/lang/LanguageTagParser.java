@@ -49,11 +49,11 @@ final class LanguageTagParser {
      * @param languageTag used to initialize the parser
      * @return a new instance
      */
-    public static final LanguageTagParser create(final String languageTag) {
+    public static LanguageTagParser create(final String languageTag) {
         return create(languageTag, false);
     }
 
-    public static final boolean isWellFormed(final String languageTag) {
+    public static boolean isWellFormed(final String languageTag) {
 
         try {
             return create(languageTag, true).parse() != null;

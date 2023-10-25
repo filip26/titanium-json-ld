@@ -45,7 +45,7 @@ public final class NQuadsReaderTestCase {
         return type;
     }
 
-    public static final NQuadsReaderTestCase of(JsonObject json) {
+    public static NQuadsReaderTestCase of(JsonObject json) {
 
         Type type = null;
 

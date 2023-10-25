@@ -61,7 +61,7 @@ public final class JsonLdToRdf {
         this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
-    public static final JsonLdToRdf with(NodeMap nodeMap, RdfDataset dataset) {
+    public static JsonLdToRdf with(NodeMap nodeMap, RdfDataset dataset) {
         return new JsonLdToRdf(nodeMap, dataset);
     }
 

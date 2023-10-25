@@ -80,7 +80,7 @@ public final class JsonLdTestCase {
         this.loader = loader;
     }
 
-    public static final JsonLdTestCase of(JsonObject o, String manifestUri, String manifestBase, String baseUri, final DocumentLoader loader) {
+    public static JsonLdTestCase of(JsonObject o, String manifestUri, String manifestBase, String baseUri, final DocumentLoader loader) {
 
         final JsonLdTestCase testCase = new JsonLdTestCase(manifestBase, loader);
 
@@ -184,7 +184,7 @@ public final class JsonLdTestCase {
         return jsonLdOptions;
     }
 
-    public static final JsonLdErrorCode errorCode(String errorCode) {
+    public static JsonLdErrorCode errorCode(String errorCode) {
 
         if (errorCode == null ||  StringUtils.isBlank(errorCode)) {
             return null;

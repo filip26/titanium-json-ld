@@ -47,7 +47,7 @@ public final class Frame {
         this.frameObject = frameObject;
     }
 
-    public static final Frame of(final JsonStructure structure) throws JsonLdError {
+    public static Frame of(final JsonStructure structure) throws JsonLdError {
 
         final JsonObject frameObject;
 
@@ -128,7 +128,7 @@ public final class Frame {
         return getBoolean(frameObject, Keywords.REQUIRE_ALL, defaultValue);
     }
 
-    public static final boolean getBoolean(JsonObject frame, String key, boolean defaultValue) throws JsonLdError {
+    public static boolean getBoolean(JsonObject frame, String key, boolean defaultValue) throws JsonLdError {
 
         if (frame.containsKey(key)) {
 

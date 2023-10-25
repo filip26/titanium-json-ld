@@ -44,7 +44,7 @@ class CompactTest {
         assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
     }
 
-    static final Stream<JsonLdTestCase> jsonLdApi() throws JsonLdError {
+    static Stream<JsonLdTestCase> jsonLdApi() throws JsonLdError {
         return JsonLdManifestLoader
                 .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld", new ZipResourceLoader())
                 .stream()
@@ -52,7 +52,7 @@ class CompactTest {
                 ;
     }
 
-    static final Stream<JsonLdTestCase> jsonLdStar() throws JsonLdError {
+    static Stream<JsonLdTestCase> jsonLdStar() throws JsonLdError {
         return JsonLdManifestLoader
                     .load(JsonLdManifestLoader.JSON_LD_STAR_BASE, "compact-manifest.jsonld", new ZipResourceLoader())
                     .stream()

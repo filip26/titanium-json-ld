@@ -53,7 +53,7 @@ final class RdfToObject {
         this.processingMode = JsonLdVersion.V1_1;
     }
 
-    public static final RdfToObject with(final RdfValue object, final RdfDirection rdfDirection, final boolean useNativeTypes) {
+    public static RdfToObject with(final RdfValue object, final RdfDirection rdfDirection, final boolean useNativeTypes) {
         return new RdfToObject(object, rdfDirection, useNativeTypes);
     }
 

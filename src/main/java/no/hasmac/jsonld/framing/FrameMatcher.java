@@ -44,7 +44,7 @@ public final class FrameMatcher {
         this.requireAll = requireAll;
     }
 
-    public static final FrameMatcher with(FramingState state, Frame frame, boolean requireAll) {
+    public static FrameMatcher with(FramingState state, Frame frame, boolean requireAll) {
         return new FrameMatcher(state, frame, requireAll);
     }
 

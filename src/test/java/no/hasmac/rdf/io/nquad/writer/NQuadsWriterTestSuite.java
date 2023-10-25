@@ -31,7 +31,7 @@ import jakarta.json.stream.JsonParser;
 
 public final class NQuadsWriterTestSuite {
 
-    public static final Stream<NQuadsWriterTestCase> load() throws ZipException, IOException, URISyntaxException {
+    public static Stream<NQuadsWriterTestCase> load() throws ZipException, IOException, URISyntaxException {
 
         try (final InputStream is = NQuadsWriterTestSuite.class.getResourceAsStream("/no/hasmac/rdf/io/nquad/manifest.json")) {
 

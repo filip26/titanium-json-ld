@@ -48,11 +48,11 @@ public final class Link {
         this.attributes = attributes;
     }
 
-    public static final Collection<Link> of(final String linkHeader) {
+    public static Collection<Link> of(final String linkHeader) {
         return of(linkHeader, null);
     }
 
-    public static final Collection<Link> of(final String linkHeader, final URI baseUri) {
+    public static Collection<Link> of(final String linkHeader, final URI baseUri) {
         if (linkHeader == null) {
             throw new IllegalArgumentException("Link header value cannot be null.");
         }

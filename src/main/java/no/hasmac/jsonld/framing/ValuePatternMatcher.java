@@ -40,7 +40,7 @@ public final class ValuePatternMatcher {
         this.value = value;
     }
 
-    public static final  ValuePatternMatcher with(final JsonObject pattern, final JsonObject value) {
+    public static ValuePatternMatcher with(final JsonObject pattern, final JsonObject value) {
         return new ValuePatternMatcher(pattern, value);
     }
 
@@ -90,7 +90,7 @@ public final class ValuePatternMatcher {
                                         .anyMatch(x -> x.equalsIgnoreCase(lang1)));
     }
 
-    protected static final boolean isWildcard(final JsonValue value, final String...except) {
+    protected static boolean isWildcard(final JsonValue value, final String... except) {
 
         if (JsonUtils.isEmptyObject(value)) {
             return true;
@@ -119,7 +119,7 @@ public final class ValuePatternMatcher {
         ).containsAll(frame.keySet()));
     }
 
-    protected static final boolean isNone(JsonValue value) {
+    protected static boolean isNone(JsonValue value) {
         return JsonUtils.isNull(value) || JsonUtils.isEmptyArray(value);
     }
 }

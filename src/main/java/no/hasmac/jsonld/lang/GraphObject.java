@@ -35,7 +35,7 @@ public final class GraphObject {
     private GraphObject() {
     }
 
-    public static final boolean isGraphObject(JsonValue value) {
+    public static boolean isGraphObject(JsonValue value) {
         if (!JsonUtils.isObject(value) || !value.asJsonObject().containsKey(Keywords.GRAPH)) {
             return false;
         }
@@ -44,12 +44,12 @@ public final class GraphObject {
         return allowed.containsAll(value.asJsonObject().keySet());
     }
 
-    public static final boolean isSimpleGraphObject(JsonValue value) {
+    public static boolean isSimpleGraphObject(JsonValue value) {
 
         return isGraphObject(value) && !value.asJsonObject().containsKey(Keywords.ID);
     }
 
-    public static final JsonObject toGraphObject(JsonValue value) {
+    public static JsonObject toGraphObject(JsonValue value) {
         return JsonProvider.instance().createObjectBuilder().add(Keywords.GRAPH, JsonUtils.toJsonArray(value)).build();
     }
 

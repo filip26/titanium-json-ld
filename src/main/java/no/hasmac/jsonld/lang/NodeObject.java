@@ -37,7 +37,7 @@ public final class NodeObject {
      * @param value to check
      * @return <code>true</code> if the provided value is valid node object
      */
-    public static final boolean isNodeObject(JsonValue value) {
+    public static boolean isNodeObject(JsonValue value) {
         return JsonUtils.isObject(value)
                     && ((!value.asJsonObject().containsKey(Keywords.VALUE)
                                 && !value.asJsonObject().containsKey(Keywords.LIST)
@@ -47,16 +47,16 @@ public final class NodeObject {
                         );
     }
 
-    public static final boolean isNotNodeObject(JsonValue value) {
+    public static boolean isNotNodeObject(JsonValue value) {
         return !isNodeObject(value);
     }
 
-    public static final boolean isNodeReference(JsonValue value) {
+    public static boolean isNodeReference(JsonValue value) {
         return JsonUtils.containsKey(value, Keywords.ID) && value.asJsonObject().size() == 1;
     }
 
     // Extension: JSON-LD-STAR (Experimental)
-    public static final boolean isEmbeddedNode(JsonValue value) {
+    public static boolean isEmbeddedNode(JsonValue value) {
 
         if (JsonUtils.isNotObject(value)) {
             return false;
@@ -112,11 +112,11 @@ public final class NodeObject {
     }
 
     // Extension: JSON-LD-STAR (Experimental)
-    public static final boolean  isNotAnnotationObject(final JsonValue annotation) {
+    public static boolean  isNotAnnotationObject(final JsonValue annotation) {
         return !isAnnotationObject(annotation);
     }
 
-    public static final boolean  isAnnotationObject(final JsonValue annotation) {
+    public static boolean  isAnnotationObject(final JsonValue annotation) {
 
         JsonValue value = annotation;
 

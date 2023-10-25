@@ -160,7 +160,7 @@ public class JsonLdTestRunnerJunit {
         return false;
     }
 
-    public static final boolean compareJson(final JsonLdTestCase testCase, final JsonStructure result, final JsonStructure expected) {
+    public static boolean compareJson(final JsonLdTestCase testCase, final JsonStructure result, final JsonStructure expected) {
 
         if (JsonLdComparison.equals(expected, result)) {
             return true;
@@ -201,7 +201,7 @@ public class JsonLdTestRunnerJunit {
         System.out.println(stringWriter.toString());
     }
 
-    public static final void write(final PrintWriter writer, final JsonWriterFactory writerFactory, final String name, final JsonValue result) {
+    public static void write(final PrintWriter writer, final JsonWriterFactory writerFactory, final String name, final JsonValue result) {
 
         writer.println(name + ":");
 
@@ -215,7 +215,7 @@ public class JsonLdTestRunnerJunit {
         writer.println();
     }
 
-    public static final boolean compareRdf(final JsonLdTestCase testCase, final RdfDataset result, final RdfDataset expected) {
+    public static boolean compareRdf(final JsonLdTestCase testCase, final RdfDataset result, final RdfDataset expected) {
 
         try {
 

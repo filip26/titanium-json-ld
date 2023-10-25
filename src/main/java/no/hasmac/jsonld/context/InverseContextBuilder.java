@@ -38,7 +38,7 @@ public final class InverseContextBuilder {
         this.activeContext = activeContext;
     }
 
-    public static final InverseContextBuilder with(final ActiveContext activeContext) {
+    public static InverseContextBuilder with(final ActiveContext activeContext) {
         return new InverseContextBuilder(activeContext);
     }
 

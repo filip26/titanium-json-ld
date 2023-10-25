@@ -61,7 +61,7 @@ public final class FramingProcessor {
     private FramingProcessor() {
     }
 
-    public static final JsonObject frame(final URI input, final Document frame, final JsonLdOptions options) throws JsonLdError {
+    public static JsonObject frame(final URI input, final Document frame, final JsonLdOptions options) throws JsonLdError {
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
@@ -78,7 +78,7 @@ public final class FramingProcessor {
         return frame(remoteDocument, frame, options);
     }
 
-    public static final JsonObject frame(final Document input, final URI frameUri, final JsonLdOptions options) throws JsonLdError {
+    public static JsonObject frame(final Document input, final URI frameUri, final JsonLdOptions options) throws JsonLdError {
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + frameUri + "].");
         }
@@ -92,7 +92,7 @@ public final class FramingProcessor {
         return frame(input, frameDocument, options);
     }
 
-    public static final JsonObject frame(final Document input, final Document frame, final JsonLdOptions options) throws JsonLdError {
+    public static JsonObject frame(final Document input, final Document frame, final JsonLdOptions options) throws JsonLdError {
 
         if (frame == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame or Frame.Document is null.");
@@ -254,7 +254,7 @@ public final class FramingProcessor {
         return compactedResults.asJsonObject();
     }
 
-    public static final JsonObject frame(final URI input, final URI frame, final JsonLdOptions options) throws JsonLdError {
+    public static JsonObject frame(final URI input, final URI frame, final JsonLdOptions options) throws JsonLdError {
         return frame(getDocument(input, options), getDocument(frame, options), options);
     }
 

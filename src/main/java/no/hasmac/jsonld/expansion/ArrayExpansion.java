@@ -63,8 +63,8 @@ public final class ArrayExpansion {
         this.fromMap = false;
     }
 
-    public static final ArrayExpansion with(final ActiveContext activeContext, final JsonArray element,
-            final String activeProperty, final URI baseUrl) {
+    public static ArrayExpansion with(final ActiveContext activeContext, final JsonArray element,
+                                      final String activeProperty, final URI baseUrl) {
         return new ArrayExpansion(activeContext, element, activeProperty, baseUrl);
     }
 

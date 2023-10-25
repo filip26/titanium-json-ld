@@ -41,7 +41,7 @@ public class JsonLdTestCaseOptions {
     public Boolean numericId;
     public Boolean rdfStar;
 
-    public static final JsonLdTestCaseOptions of(JsonObject o, String baseUri) {
+    public static JsonLdTestCaseOptions of(JsonObject o, String baseUri) {
 
         final JsonLdTestCaseOptions options = new JsonLdTestCaseOptions();
 

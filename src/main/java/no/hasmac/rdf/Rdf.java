@@ -38,15 +38,15 @@ public final class Rdf {
     private Rdf() {
     }
 
-    public static final RdfGraph createGraph() {
+    public static RdfGraph createGraph() {
         return RdfProvider.provider().createGraph();
     }
 
-    public static final Collection<MediaType> canRead() {
+    public static Collection<MediaType> canRead() {
         return RdfProvider.provider().canRead();
     }
 
-    public static final RdfReader createReader(final MediaType contentType, Reader reader) throws UnsupportedContentException {
+    public static RdfReader createReader(final MediaType contentType, Reader reader) throws UnsupportedContentException {
 
         if (reader == null || contentType == null) {
             throw new IllegalArgumentException();
@@ -55,7 +55,7 @@ public final class Rdf {
         return RdfProvider.provider().createReader(contentType, reader);
     }
 
-    public static final RdfReader createReader(final MediaType contentType, final InputStream is) throws UnsupportedContentException {
+    public static RdfReader createReader(final MediaType contentType, final InputStream is) throws UnsupportedContentException {
 
         if (is == null || contentType == null) {
             throw new IllegalArgumentException();
@@ -64,11 +64,11 @@ public final class Rdf {
         return createReader(contentType, new InputStreamReader(is));
     }
 
-    public static final Collection<MediaType> canWrite() {
+    public static Collection<MediaType> canWrite() {
         return RdfProvider.provider().canWrite();
     }
 
-    public static final RdfWriter createWriter(final MediaType contentType, final Writer writer) throws UnsupportedContentException {
+    public static RdfWriter createWriter(final MediaType contentType, final Writer writer) throws UnsupportedContentException {
 
         if (writer == null || contentType == null) {
             throw new IllegalArgumentException();
@@ -77,7 +77,7 @@ public final class Rdf {
         return RdfProvider.provider().createWriter(contentType, writer);
     }
 
-    public static final RdfWriter createWriter(final MediaType contentType, final OutputStream os) throws UnsupportedContentException {
+    public static RdfWriter createWriter(final MediaType contentType, final OutputStream os) throws UnsupportedContentException {
 
         if (os == null || contentType == null) {
             throw new IllegalArgumentException();
@@ -86,11 +86,11 @@ public final class Rdf {
         return createWriter(contentType, new OutputStreamWriter(os));
     }
 
-    public static final RdfDataset createDataset() {
+    public static RdfDataset createDataset() {
         return RdfProvider.provider().createDataset();
     }
 
-    public static final RdfTriple createTriple(RdfResource subject, RdfResource predicate, RdfValue object) {
+    public static RdfTriple createTriple(RdfResource subject, RdfResource predicate, RdfValue object) {
 
         if (subject == null || predicate == null || object == null) {
             throw new IllegalArgumentException();
@@ -99,7 +99,7 @@ public final class Rdf {
         return RdfProvider.provider().createTriple(subject, predicate, object);
     }
 
-    public static final RdfNQuad createNQuad(RdfResource subject, RdfResource predicate, RdfValue object, RdfResource graphName) {
+    public static RdfNQuad createNQuad(RdfResource subject, RdfResource predicate, RdfValue object, RdfResource graphName) {
 
         if (subject == null) {
             throw new IllegalArgumentException("Subject cannot be null.");
@@ -114,7 +114,7 @@ public final class Rdf {
         return RdfProvider.provider().createNQuad(subject, predicate, object, graphName);
     }
 
-    public static final RdfNQuad createNQuad(RdfTriple triple, RdfResource graphName) {
+    public static RdfNQuad createNQuad(RdfTriple triple, RdfResource graphName) {
 
         if (triple == null) {
             throw new IllegalArgumentException("Triple cannot be null.");

@@ -58,7 +58,7 @@ final class ListToRdf {
         this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
-    public static final ListToRdf with(final JsonArray list, final List<RdfTriple> triples, NodeMap nodeMap) {
+    public static ListToRdf with(final JsonArray list, final List<RdfTriple> triples, NodeMap nodeMap) {
         return new ListToRdf(list, triples, nodeMap);
     }
 

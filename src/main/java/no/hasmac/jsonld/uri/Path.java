@@ -36,7 +36,7 @@ public final class Path {
         this.relative = relative;
     }
 
-    public static final Path of(final String path) {
+    public static Path of(final String path) {
 
         final boolean relative = !path.startsWith("/");
 

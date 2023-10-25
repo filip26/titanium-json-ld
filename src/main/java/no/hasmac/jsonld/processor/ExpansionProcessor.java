@@ -44,7 +44,7 @@ public final class ExpansionProcessor {
     ExpansionProcessor() {
     }
 
-    public static final JsonArray expand(final URI input, final JsonLdOptions options) throws JsonLdError {
+    public static JsonArray expand(final URI input, final JsonLdOptions options) throws JsonLdError {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
@@ -62,7 +62,7 @@ public final class ExpansionProcessor {
         return expand(remoteDocument, options, false);
     }
 
-    public static final JsonArray expand(Document input, final JsonLdOptions options, boolean frameExpansion) throws JsonLdError {
+    public static JsonArray expand(Document input, final JsonLdOptions options, boolean frameExpansion) throws JsonLdError {
 
         if (input == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "RemoteDocument is null.");

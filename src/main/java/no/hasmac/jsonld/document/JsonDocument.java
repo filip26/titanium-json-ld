@@ -86,7 +86,7 @@ public final class JsonDocument implements Document {
      * @param is representing parsed JSON content
      * @return {@link Document} representing JSON document
      */
-    public static final JsonDocument of(final InputStream is)  throws JsonLdError {
+    public static JsonDocument of(final InputStream is)  throws JsonLdError {
         return of(MediaType.JSON, is);
     }
 
@@ -99,7 +99,7 @@ public final class JsonDocument implements Document {
      *
      * @throws JsonLdError
      */
-    public static final JsonDocument of(final MediaType contentType, final InputStream is)  throws JsonLdError {
+    public static JsonDocument of(final MediaType contentType, final InputStream is)  throws JsonLdError {
 
         assertContentType(contentType);
 
@@ -122,7 +122,7 @@ public final class JsonDocument implements Document {
      * @param reader providing JSON content
      * @return {@link Document} representing JSON document
      */
-    public static final JsonDocument of(final Reader reader)  throws JsonLdError {
+    public static JsonDocument of(final Reader reader)  throws JsonLdError {
         return of(MediaType.JSON, reader);
     }
 
@@ -135,7 +135,7 @@ public final class JsonDocument implements Document {
      *
      * @throws JsonLdError
      */
-    public static final JsonDocument of(final MediaType contentType, final Reader reader)  throws JsonLdError {
+    public static JsonDocument of(final MediaType contentType, final Reader reader)  throws JsonLdError {
 
         assertContentType(contentType);
 
@@ -175,7 +175,7 @@ public final class JsonDocument implements Document {
         throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "JSON document's top level element must be JSON array or object.");
     }
 
-    public static final boolean accepts(final MediaType contentType) {
+    public static boolean accepts(final MediaType contentType) {
         return contentType != null &&
                 (MediaType.JSON_LD.match(contentType)
                 || MediaType.JSON.match(contentType)

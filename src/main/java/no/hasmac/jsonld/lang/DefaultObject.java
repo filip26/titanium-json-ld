@@ -35,7 +35,7 @@ public final class DefaultObject {
      * @param value to check
      * @return <code>true</code> if the provided value is valid default object
      */
-    public static final boolean isDefaultObject(JsonValue value) {
+    public static boolean isDefaultObject(JsonValue value) {
         return JsonUtils.containsKey(value, Keywords.DEFAULT);
     }
 

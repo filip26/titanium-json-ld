@@ -36,7 +36,7 @@ public final class JsonLdComparison {
     private JsonLdComparison() {
     }
 
-    public static final boolean equals(final JsonValue value1, final JsonValue value2) {
+    public static boolean equals(final JsonValue value1, final JsonValue value2) {
 
         return equals(value1, value2, null);
     }

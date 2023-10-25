@@ -58,7 +58,7 @@ public final class Expansion {
         this.fromMap = false;
     }
 
-    public static final Expansion with(final ActiveContext activeContext, final JsonValue element, final String activeProperty, final URI baseUrl) {
+    public static Expansion with(final ActiveContext activeContext, final JsonValue element, final String activeProperty, final URI baseUrl) {
         return new Expansion(activeContext, element, activeProperty, baseUrl);
     }
 

@@ -37,7 +37,7 @@ public final class SchemeRouter implements DocumentLoader {
         this.loaders = new LinkedHashMap<>();
     }
 
-    public static final DocumentLoader defaultInstance() {
+    public static DocumentLoader defaultInstance() {
         return INSTANCE;
     }
 

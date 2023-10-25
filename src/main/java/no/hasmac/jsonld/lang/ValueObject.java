@@ -26,7 +26,7 @@ public final class ValueObject {
     private ValueObject() {
     }
 
-    public static final boolean isValueObject(JsonValue value) {
+    public static boolean isValueObject(JsonValue value) {
         return JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.VALUE);
     }
 

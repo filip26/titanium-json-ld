@@ -72,7 +72,7 @@ class NQuadsReaderTest {
         }
     }
 
-    static final Stream<NQuadsReaderTestCase> data() throws ZipException, IOException, URISyntaxException {
+    static Stream<NQuadsReaderTestCase> data() throws ZipException, IOException, URISyntaxException {
         return (new NQuadsReaderTestSuite(TEST_SUITE_NAME, TEST_CASE_BASE_PATH + "manifest.json")).load();
     }
 }

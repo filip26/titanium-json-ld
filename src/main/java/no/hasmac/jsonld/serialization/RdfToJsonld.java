@@ -79,7 +79,7 @@ public final class RdfToJsonld {
         this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
-    public static final RdfToJsonld with(final RdfDataset dataset) {
+    public static RdfToJsonld with(final RdfDataset dataset) {
         return new RdfToJsonld(dataset);
     }
 
