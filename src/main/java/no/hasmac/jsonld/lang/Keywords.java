@@ -144,6 +144,13 @@ public final class Keywords {
         return true;
     }
 
+    public static boolean noneMatch(final String key, String keyword1, String keyword2) {
+        if(key.equals(keyword1) || key.equals(keyword2)){
+            return false;
+        }
+        return true;
+    }
+
     public static boolean noneMatch(final String key, final String... keywords) {
         // vanilla approach is 3 times faster than stream.noneMatch
         for (String k : keywords) {

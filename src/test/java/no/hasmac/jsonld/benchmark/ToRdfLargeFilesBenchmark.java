@@ -42,16 +42,15 @@ public class ToRdfLargeFilesBenchmark {
         datagovbeDcat = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions());
     }
 
-    public static void main(String[] args) throws RunnerException {
+    public static void main(String[] args) throws RunnerException, JsonLdError, URISyntaxException {
 
-        // The classe(s) that are included may not get compiled by your IDE.
-        // Run `mvn clean verify -DskipTests` before running the benchmarks.
+        for (int i = 0; i<20; i++){
+            ToRdfLargeFilesBenchmark toRdfLargeFilesBenchmark = new ToRdfLargeFilesBenchmark();
+            toRdfLargeFilesBenchmark.setUp();
+            Object o = toRdfLargeFilesBenchmark.datagovbeDcat();
+            System.out.println(o.hashCode());
+        }
 
-        Options opt = new OptionsBuilder()
-                .include(ToRdfLargeFilesBenchmark.class.getName()+".*")
-                .build();
-
-        new Runner(opt).run();
     }
 
     @Benchmark

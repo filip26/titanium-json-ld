@@ -15,12 +15,11 @@
  */
 package no.hasmac.jsonld.lang;
 
-import java.util.ArrayList;
-import java.util.function.Consumer;
-import java.util.function.IntPredicate;
-
 import no.hasmac.jsonld.lang.LanguageTag.Extension;
 import no.hasmac.rdf.lang.RdfAlphabet;
+
+import java.util.ArrayList;
+import java.util.function.Consumer;
 
 /**
  * Language tags are used to help identify languages and are defined by <code>RFC 5646</code>.
@@ -34,12 +33,19 @@ final class LanguageTagParser {
 
     int tagIndex;
 
-    boolean verififierMode;
+    boolean verifierMode;
 
     LanguageTagParser(final String languageTag, final String[] tags, final boolean verifierMode) {
         this.languageTag = languageTag;
         this.tags = tags;
-        this.verififierMode = verifierMode;
+        this.verifierMode = verifierMode;
+        this.tagIndex = 0;
+    }
+
+    LanguageTagParser(final String languageTag, String tags, final boolean verifierMode) {
+        this.languageTag = languageTag;
+        this.tags = new String[]{tags};
+        this.verifierMode = verifierMode;
         this.tagIndex = 0;
     }
 
@@ -69,31 +75,44 @@ final class LanguageTagParser {
             throw new IllegalArgumentException("The parameter 'laguageTag' must not be null");
         }
 
+        if(languageTag.isEmpty()){
+            return new LanguageTagParser(languageTag, (String[]) null, verifierMode);
+        }
+
         final String stripped = languageTag.trim();
 
         // must start with ALPHA  and ends with ALPHANUM
-        if (stripped.length() == 0
-                || RdfAlphabet.ASCII_ALPHA.negate().test(stripped.codePointAt(0))
-                || RdfAlphabet.ASCII_ALPHA_NUM.negate().test(stripped.codePointAt(stripped.length() - 1))
-                ) {
-            return new LanguageTagParser(languageTag, null, verifierMode);
+        if (stripped.isEmpty()
+                || doesNotStartWithAlpha(stripped)
+                || doesNotEndWithAlphanum(stripped)
+        ) {
+            return new LanguageTagParser(languageTag, (String[]) null, verifierMode);
         }
 
-        final String[] tags = stripped.split("-");
-
-
-        if (tags == null || tags.length == 0) {
-            return new LanguageTagParser(languageTag, null, verifierMode);
+        if(stripped.contains("-")){
+            return new LanguageTagParser(languageTag, stripped.split("-"), verifierMode);
+        }else {
+            return new LanguageTagParser(languageTag, stripped, verifierMode);
         }
 
-        return new LanguageTagParser(languageTag, tags, verifierMode);
+
     }
+
+    private static boolean doesNotEndWithAlphanum(String stripped) {
+        int ch = stripped.codePointAt(stripped.length()-1);
+        return !('a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ('0' <= ch && ch <= '9'));
+    }
+
+    private static boolean doesNotStartWithAlpha(String stripped) {
+        int ch = stripped.codePointAt(0);
+        return !('a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z');
+    }
+
     /**
      * Parses the language tag.
      *
-     * @throws IllegalArgumentException if the language tag is not well-formed
-     *
      * @return the language tag
+     * @throws IllegalArgumentException if the language tag is not well-formed
      */
     LanguageTag parse() throws IllegalArgumentException {
 
@@ -116,10 +135,10 @@ final class LanguageTagParser {
                 acceptAlpha(3, tag::addLanguageExtension);
             }
 
-        // reserved 4ALPHA or registered for future use 5*8ALPHA
+            // reserved 4ALPHA or registered for future use 5*8ALPHA
         } else if (acceptAlpha(4, 8, tag::setLanguage)) {
 
-        // private use
+            // private use
         } else if (acceptPrivateUse(tag)) {
 
             if (tagIndex != tags.length) {
@@ -137,28 +156,28 @@ final class LanguageTagParser {
 
         // ["-" region]
         if (!acceptAlpha(2, tag::setRegion)) {  // region = 2ALPHA | 3DIGIT
-            acceptDigit(3, tag::setRegion);
+            acceptDigit(tag::setRegion);
         }
 
         // *("-" variant)
         // variant = 5*8alphanum | (DIGIT 3alphanum)
-        while (acceptAlphaNun(5, 8, tag::addVariant)
-                || (digitRange(0, 1) && alphaNumRange(1, 3) && accept(4, tag::addVariant)));
+        while (acceptAlphaNun(5, tag::addVariant)
+                || (digitRange() && alphaNumRange() && accept(tag::addVariant))) ;
 
         // *("-" extension)
         // extension = singleton 1*("-" (2*8alphanum))
         // singleton = DIGIT | a-z !- x
-        while (acceptDigit(1) || (alphaRange(0, 1) && !tags[tagIndex].equalsIgnoreCase("x") && accept(1))) {
+        while (acceptDigit() || (alphaRange() && !tags[tagIndex].equalsIgnoreCase("x") && accept())) {
 
             final Extension extension = new Extension(tags[tagIndex - 1].charAt(0), new ArrayList<>());
 
             // 1*("-" (2*8alphanum))
-            if (!acceptAlphaNun(2, 8, extension::addTag)) {
+            if (!acceptAlphaNun(2, extension::addTag)) {
                 tagIndex--;
                 break;
             }
 
-            while (acceptAlphaNun(2, 8, extension::addTag));
+            while (acceptAlphaNun(2, extension::addTag)) ;
 
             tag.addExtension(extension);
         }
@@ -175,14 +194,14 @@ final class LanguageTagParser {
     boolean acceptPrivateUse(final LanguageTag tag) {
         // ["-" privateuse]
         // privateuse = "x" 1*("-" (1*8alphanum))
-        if (alphaRange(0, 1) && tags[tagIndex].equalsIgnoreCase("x") && accept(1)) {
+        if (alphaRange() && tags[tagIndex].equalsIgnoreCase("x") && accept()) {
 
             // 1*("-" (1*8alphanum))
-            if (!acceptAlphaNun(1, 8, tag::addPrivateUse)) {
+            if (!acceptAlphaNun(1, tag::addPrivateUse)) {
                 tagIndex--;
 
             } else {
-                while (acceptAlphaNun(1, 8, tag::addPrivateUse));
+                while (acceptAlphaNun(1, tag::addPrivateUse)) ;
                 return true;
             }
         }
@@ -190,36 +209,41 @@ final class LanguageTagParser {
     }
 
     boolean acceptAlpha(int length, Consumer<String> consumer) {
-        return acceptAlpha(length, length, consumer);
+        if (tagIndex < tags.length
+                && tags[tagIndex].length() >= length
+                && tags[tagIndex].length() <= length
+                && allAsciiAlpha()) {
+
+            if (!verifierMode && consumer != null) {
+                consumer.accept(tags[tagIndex]);
+            }
+
+            tagIndex++;
+            return true;
+        }
+        return false;
+    }
+
+    private boolean allAsciiAlpha() {
+        String tag = tags[tagIndex];
+
+        for (int i = 0; i < tag.length(); i++) {
+            int ch = tag.codePointAt(i);
+            if (!('a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z')) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     boolean acceptAlpha(int min, int max, Consumer<String> consumer) {
-        return accept(min, max, RdfAlphabet.ASCII_ALPHA, consumer);
-    }
-
-    boolean acceptDigit(int length) {
-        return acceptDigit(length, length, null);
-    }
-
-    boolean acceptDigit(int length, Consumer<String> consumer) {
-        return acceptDigit(length, length, consumer);
-    }
-
-    boolean acceptDigit(int min, int max, Consumer<String> consumer) {
-        return accept(min, max, RdfAlphabet.ASCII_DIGIT, consumer);
-    }
-
-    boolean acceptAlphaNun(int min, int max, Consumer<String> consumer) {
-        return accept(min, max, RdfAlphabet.ASCII_ALPHA_NUM, consumer);
-    }
-
-    boolean accept(int min, int max, IntPredicate predicate, Consumer<String> consumer) {
         if (tagIndex < tags.length
                 && tags[tagIndex].length() >= min
                 && tags[tagIndex].length() <= max
-                && tags[tagIndex].chars().allMatch(predicate)) {
+                && allAsciiAlpha()) {
 
-            if (!verififierMode && consumer != null) {
+            if (!verifierMode && consumer != null) {
                 consumer.accept(tags[tagIndex]);
             }
 
@@ -229,14 +253,23 @@ final class LanguageTagParser {
         return false;
     }
 
-    boolean accept(int length) {
-        return accept(length, null);
+    boolean acceptDigit() {
+        if (tagIndex < tags.length
+                && tags[tagIndex].length() == 1
+                && tags[tagIndex].chars().allMatch(RdfAlphabet.ASCII_DIGIT)) {
+
+            tagIndex++;
+            return true;
+        }
+        return false;
     }
 
-    boolean accept(int length, Consumer<String> consumer) {
-        if (tagIndex < tags.length && tags[tagIndex].length() == length) {
+    boolean acceptDigit(Consumer<String> consumer) {
+        if (tagIndex < tags.length
+                && tags[tagIndex].length() == 3
+                && tags[tagIndex].chars().allMatch(RdfAlphabet.ASCII_DIGIT)) {
 
-            if (!verififierMode && consumer != null) {
+            if (!verifierMode && consumer != null) {
                 consumer.accept(tags[tagIndex]);
             }
 
@@ -246,24 +279,69 @@ final class LanguageTagParser {
         return false;
     }
 
-    boolean alphaRange(int index, int length) {
-        return range(index, length, RdfAlphabet.ASCII_ALPHA);
+
+    boolean acceptAlphaNun(int min, Consumer<String> consumer) {
+        if (tagIndex < tags.length
+                && tags[tagIndex].length() >= min
+                && tags[tagIndex].length() <= 8
+                && tags[tagIndex].chars().allMatch(RdfAlphabet.ASCII_ALPHA_NUM)) {
+
+            if (!verifierMode && consumer != null) {
+                consumer.accept(tags[tagIndex]);
+            }
+
+            tagIndex++;
+            return true;
+        }
+        return false;
     }
 
-    boolean alphaNumRange(int index, int length) {
-        return range(index, length, RdfAlphabet.ASCII_ALPHA_NUM);
+    boolean accept() {
+        if (tagIndex < tags.length && tags[tagIndex].length() == 1) {
+
+            tagIndex++;
+            return true;
+        }
+        return false;
     }
 
-    boolean digitRange(int index, int length) {
-        return range(index, length, RdfAlphabet.ASCII_DIGIT);
+    boolean accept(Consumer<String> consumer) {
+        if (tagIndex < tags.length && tags[tagIndex].length() == 4) {
+
+            if (!verifierMode && consumer != null) {
+                consumer.accept(tags[tagIndex]);
+            }
+
+            tagIndex++;
+            return true;
+        }
+        return false;
     }
 
-    boolean range(int index, int length, IntPredicate predicate) {
+    boolean alphaRange() {
         return
-            tagIndex < tags.length
-            && index < tags[tagIndex].length()
-            && (index + length) <= tags[tagIndex].length()
-            && tags[tagIndex].substring(index, index + length).chars().allMatch(predicate)
-            ;
+                tagIndex < tags.length
+                        && !tags[tagIndex].isEmpty()
+                        && tags[tagIndex].substring(0, 1).chars().allMatch(RdfAlphabet.ASCII_ALPHA)
+                ;
     }
+
+    boolean alphaNumRange() {
+        return
+                tagIndex < tags.length
+                        && 1 < tags[tagIndex].length()
+                        && (4) <= tags[tagIndex].length()
+                        && tags[tagIndex].substring(1, 4).chars().allMatch(RdfAlphabet.ASCII_ALPHA_NUM)
+                ;
+    }
+
+    boolean digitRange() {
+        return
+                tagIndex < tags.length
+                        && !tags[tagIndex].isEmpty()
+                        && tags[tagIndex].substring(0, 1).chars().allMatch(RdfAlphabet.ASCII_DIGIT)
+                ;
+    }
+
+
 }

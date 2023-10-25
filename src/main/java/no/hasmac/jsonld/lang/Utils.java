@@ -54,6 +54,13 @@ public final class Utils {
                     return Arrays.asList(array[1], array[0]);
                 }
             } else {
+                if(keys.size() == 3){
+                    String[] array = keys.toArray(String[]::new);
+                    if (array[0].compareTo(array[1]) <= 0 && array[1].compareTo(array[2]) <= 0) {
+                        return Arrays.asList(array);
+                    }
+                }
+
                 ArrayList<String> sorted = new ArrayList<>(keys);
                 sorted.sort(String::compareTo);
                 return sorted;
