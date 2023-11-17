@@ -137,10 +137,12 @@ public final class FramingProcessor {
                                             .newContext()
                                             .create(context, contextBase);
 
+        final String graphKey = activeContext.uriCompaction().vocab(true).compact(Keywords.GRAPH);
+
         // 13.
         boolean frameDefault = false;
         for (final String key : frameObject.keySet()) {
-            if(activeContext.uriExpansion().vocab(true).expand(key).equals(Keywords.GRAPH)) {
+            if(key.equals(graphKey)) {
                 frameDefault = true;
                 break;
             }
@@ -209,10 +211,8 @@ public final class FramingProcessor {
         // 19.2.
         } else if (JsonUtils.isArray(compactedResults)) {
 
-            final String key = activeContext.uriCompaction().vocab(true).compact(Keywords.GRAPH);
-
             compactedResults = JsonProvider.instance().createObjectBuilder()
-                                    .add(key, compactedResults).build();
+                                    .add(graphKey, compactedResults).build();
 
         }
 
@@ -230,17 +230,16 @@ public final class FramingProcessor {
         }
 
         // 21.
-        if (!omitGraph && !compactedResults.asJsonObject().containsKey(Keywords.GRAPH)) {
-
+        if (!omitGraph && !compactedResults.asJsonObject().containsKey(graphKey)) {
             if (compactedResults.asJsonObject().isEmpty()) {
 
-                compactedResults = JsonProvider.instance().createObjectBuilder().add(Keywords.GRAPH,
+                compactedResults = JsonProvider.instance().createObjectBuilder().add(graphKey,
                         JsonValue.EMPTY_JSON_ARRAY
                         ).build();
 
             } else {
 
-                compactedResults = JsonProvider.instance().createObjectBuilder().add(Keywords.GRAPH,
+                compactedResults = JsonProvider.instance().createObjectBuilder().add(graphKey,
                                         JsonProvider.instance().createArrayBuilder().add(compactedResults)
                                         ).build();
             }
