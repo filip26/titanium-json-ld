@@ -57,6 +57,7 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 
 - [JSON-LD-star](https://json-ld.github.io/json-ld-star) expansion and compaction built-in support (experimental)
 - [Universal RDF Dataset Normalization Algorithm - URDNA2015](https://github.com/simon-greatrix/rdf-urdna)
+- [Iridium CBOR-LD](https://github.com/filip26/iridium-cbor-ld) - A CBOR-based Processor for Linked Data
 
 ## Usage
 
@@ -71,7 +72,7 @@ Java 11 or higher
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium-json-ld</artifactId>
-    <version>1.3.2</version>
+    <version>1.3.3</version>
 </dependency>
 ```
 
@@ -79,7 +80,7 @@ Java 11 or higher
 Java 8+, Android API Level >=21
 
 ```gradle
-compile group: 'com.apicatalog', name: 'titanium-json-ld-jre8', version: '1.3.2'
+compile group: 'com.apicatalog', name: 'titanium-json-ld-jre8', version: '1.3.3'
 ```
 
 #### JSON-P Provider
