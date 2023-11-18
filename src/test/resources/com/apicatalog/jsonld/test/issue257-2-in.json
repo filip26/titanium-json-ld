@@ -1,0 +1,4 @@
+{
+  "@id": "http://example.org/foo",
+  "http://example.org/name": "Foo"
+}

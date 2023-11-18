@@ -121,6 +121,24 @@
       "input": "issue198-in.json",
       "expect": "issue198-out.json",
       "option": { "expandContext" : "issue198-context.json", "base": "http://leanix.net/" }
+    },
+    {
+      "@id": "#t0015",
+      "@type": ["jld:PositiveEvaluationTest", "jld:FrameTest"],
+      "name": "Issue #257: Frame aliasing @graph",
+      "input": "issue257-in.json",
+      "expect": "issue257-out.json",
+      "frame": "issue257-frame.json",
+      "option": { "omitGraph" : false }
+    },
+    {
+      "@id": "#t0016",
+      "@type": ["jld:PositiveEvaluationTest", "jld:FrameTest"],
+      "name": "Issue #257: Frame aliasing @graph compact input",
+      "input": "issue257-2-in.json",
+      "expect": "issue257-2-out.json",
+      "frame": "issue257-2-frame.json",
+      "option": { "omitGraph" : false }
     }
   ]
 }
