@@ -66,7 +66,7 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 #### Titanium
 
 ##### Maven
-Java 11 or higher
+Java 11+
 
 ```xml
 <dependency>
@@ -80,7 +80,7 @@ Java 11 or higher
 Java 8+, Android API Level >=24
 
 ```gradle
-implementation("com.apicatalog:titanium-json-ld:1.3.3")
+implementation("com.apicatalog:titanium-json-ld-jre8:1.3.3")
 ```
 
 #### JSON-P Provider
