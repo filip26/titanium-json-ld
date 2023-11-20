@@ -87,7 +87,7 @@ implementation("com.apicatalog:titanium-json-ld-jre8:1.3.3")
 
 Add JSON-P provider, if it is not on the classpath already.
 
-Maven
+##### Maven
 
 ```xml
 <dependency>
@@ -97,7 +97,7 @@ Maven
 </dependency>
 ```
 
-Gradle
+##### Gradle
 
 ```gradle
 implementation("org.glassfish:jakarta.json:2.0.1")
