@@ -77,10 +77,10 @@ Java 11 or higher
 ```
 
 ##### Gradle 
-Java 8+, Android API Level >=21
+Java 8+, Android API Level >=24
 
 ```gradle
-compile group: 'com.apicatalog', name: 'titanium-json-ld-jre8', version: '1.3.3'
+implementation("com.apicatalog:titanium-json-ld:1.3.3")
 ```
 
 #### JSON-P Provider
