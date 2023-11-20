@@ -100,8 +100,7 @@ Maven
 Gradle
 
 ```gradle
-compile group: 'org.glassfish', name: 'jakarta.json', version: '2.0.1'
-
+implementation("org.glassfish:jakarta.json:2.0.1")
 ```
 
 ### Documentation
