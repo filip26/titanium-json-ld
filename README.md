@@ -15,7 +15,7 @@ The goals of Titanium are:
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/c530c6b43b0243c08ce81521c5b4cf6a)](https://www.codacy.com/gh/filip26/titanium-json-ld/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=filip26/titanium-json-ld&amp;utm_campaign=Badge_Grade)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=filip26_titanium-json-ld&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=filip26_titanium-json-ld)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/c530c6b43b0243c08ce81521c5b4cf6a)](https://www.codacy.com/manual/filip26/titanium-json-ld?utm_source=github.com&utm_medium=referral&utm_content=filip26/titanium-json-ld&utm_campaign=Badge_Coverage)
-[![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/titanium-json-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.apicatalog%22%20AND%20a:%22titanium-json-ld%22)
+[![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/titanium-json-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:com.apicatalog%20AND%20a:titanium-json-ld)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 
