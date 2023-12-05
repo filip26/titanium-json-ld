@@ -151,6 +151,16 @@ JsonLd.compact(document, contextDocument).get();
 ...
 ```
 
+#### Processing Timeout
+A processor gets terminated eventually after a specified time. Please note 
+the duration does not cover `DocumentLoader` calls processing time. 
+You have to set-up a read timeout separately.
+
+```javascript
+// since 1.4.0 -
+JsonLd.expand(...).timeout(duration)...get();
+```
+
 #### HTTP Document Loader Timeout
 Configure and set a custom HTTP document loader instance.
 

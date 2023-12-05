@@ -124,6 +124,8 @@ public final class JsonLdOptions {
     private Cache<String, Document> documentCache;
 
     private boolean uriValidation;
+    
+    private Duration timeout;
 
     public JsonLdOptions() {
         this(SchemeRouter.defaultInstance());
@@ -160,6 +162,7 @@ public final class JsonLdOptions {
         this.contextCache = new LruCache<>(256);
         this.documentCache = null;
         this.uriValidation = DEFAULT_URI_VALIDATION;
+        this.timeout = null;
     }
 
     public JsonLdOptions(JsonLdOptions options) {
@@ -191,6 +194,7 @@ public final class JsonLdOptions {
         this.contextCache = options.contextCache;
         this.documentCache = options.documentCache;
         this.uriValidation = options.uriValidation;
+        this.timeout = options.timeout;
     }
 
     /**
@@ -504,7 +508,19 @@ public final class JsonLdOptions {
      * @return a duration after which a processing is prematurely terminated.
      */
     public Duration getTimeout() {
-        // TODO Auto-generated method stub
-        return null;
+        return timeout;
+    }
+    
+    /**
+     * Set a pressing timeout. A processing is eventually terminated after the 
+     * specified duration. Set <code>null</code> for no timeout. 
+     * 
+     * Please note, the timeout does not include time consumed by
+     * {@link DocumentLoader}.
+     *  
+     * @param timeout to limit processing time
+     */
+    public void setTimeout(Duration timeout) {
+        this.timeout = timeout;
     }
 }
