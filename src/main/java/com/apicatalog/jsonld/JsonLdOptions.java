@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld;
 
 import java.net.URI;
+import java.time.Duration;
 
 import com.apicatalog.jsonld.context.cache.Cache;
 import com.apicatalog.jsonld.context.cache.LruCache;
@@ -29,9 +30,11 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
 /**
- * The {@link JsonLdOptions} type is used to pass various options to the processor.
+ * The {@link JsonLdOptions} type is used to pass various options to the
+ * processor.
  *
- * @see <a href="https://www.w3.org/TR/json-ld11-api/#the-jsonldoptions-type">The
+ * @see <a href=
+ *      "https://www.w3.org/TR/json-ld11-api/#the-jsonldoptions-type">The
  *      JsonLdOptions Specification.</a>
  *
  */
@@ -48,35 +51,35 @@ public final class JsonLdOptions {
     public static final boolean DEFAULT_URI_VALIDATION = true;
 
     /**
-     * The base IRI to use when expanding or compacting the document.
-     * If set, this overrides the input document's IRI.
+     * The base IRI to use when expanding or compacting the document. If set, this
+     * overrides the input document's IRI.
      */
     private URI base;
 
     /**
-     * If set to true, the JSON-LD processor replaces arrays with
-     * just one element with that element during compaction.
-     * If set to false, all arrays will remain arrays
-     * even if they have just one element.
+     * If set to true, the JSON-LD processor replaces arrays with just one element
+     * with that element during compaction. If set to false, all arrays will remain
+     * arrays even if they have just one element.
      */
     private boolean compactArrays;
 
     /**
-     * Determines if IRIs are compacted relative to the base option
-     * or document location when compacting.
+     * Determines if IRIs are compacted relative to the base option or document
+     * location when compacting.
      */
     private boolean compactToRelative;
 
     /**
-     * The callback of the loader to be used to retrieve remote documents and contexts,
-     *  implementing the LoadDocumentCallback. If specified, it is used to retrieve
-     *  remote documents and contexts; otherwise, if not specified,
-     *  the processor's built-in loader is used.
+     * The callback of the loader to be used to retrieve remote documents and
+     * contexts, implementing the LoadDocumentCallback. If specified, it is used to
+     * retrieve remote documents and contexts; otherwise, if not specified, the
+     * processor's built-in loader is used.
      */
     private DocumentLoader documentLoader;
 
     /**
-     * A context that is used to initialize the active context when expanding a document.
+     * A context that is used to initialize the active context when expanding a
+     * document.
      */
     private Document expandContext;
 
@@ -215,8 +218,8 @@ public final class JsonLdOptions {
     }
 
     /**
-     * Determines if IRIs are compacted relative to the {@link #getBase()} option
-     * or document location when
+     * Determines if IRIs are compacted relative to the {@link #getBase()} option or
+     * document location when
      * <a href="https://www.w3.org/TR/json-ld11-api/#dfn-compact">compacting</a>.
      *
      * @return <code>true</code> if IRI relativization is enabled
@@ -227,9 +230,9 @@ public final class JsonLdOptions {
 
     /**
      * The callback of the loader to be used to retrieve remote documents and
-     * contexts, implementing the {@link DocumentLoader}. If specified, it is
-     * used to retrieve remote documents and contexts; otherwise, if not specified,
-     * the processor's built-in loader is used.
+     * contexts, implementing the {@link DocumentLoader}. If specified, it is used
+     * to retrieve remote documents and contexts; otherwise, if not specified, the
+     * processor's built-in loader is used.
      *
      * @return the loader or <code>null</code> is is not set
      */
@@ -446,7 +449,8 @@ public final class JsonLdOptions {
     }
 
     /**
-     * Experimental: Enables JSON-LD-STAR extension. Only expansion is supported. Disabled by default.
+     * Experimental: Enables JSON-LD-STAR extension. Only expansion is supported.
+     * Disabled by default.
      *
      * @see <a href="https://json-ld.github.io/json-ld-star">JSON-LD-STAR Draft</a>
      *
@@ -457,7 +461,8 @@ public final class JsonLdOptions {
 
     /**
      * if disabled only URIs required for processing are parsed and validated.
-     * Disabling URI validation might improve performance depending on the number of processed URIs.
+     * Disabling URI validation might improve performance depending on the number of
+     * processed URIs.
      * <p>
      * <b>Warning:</b> Disabled validation could cause an invalid output.
      * </p>
@@ -473,7 +478,8 @@ public final class JsonLdOptions {
 
     /**
      * if disabled only URIs required for processing are parsed and validated.
-     * Disabling URI validation might improve performance depending on the number of processed URIs.
+     * Disabling URI validation might improve performance depending on the number of
+     * processed URIs.
      * <p>
      * <b>Warning:</b> Disabled validation could cause an invalid output.
      * </p>
@@ -485,5 +491,20 @@ public final class JsonLdOptions {
      */
     public void setUriValidation(boolean enabled) {
         this.uriValidation = enabled;
+    }
+
+    /**
+     * A processing timeout. An exception is thrown when a processing time exceeds
+     * the duration, if set. There is no currency that processing gets terminated
+     * immediately, but eventually.  
+     * 
+     * Please note, the timeout does not include time consumed by
+     * {@link DocumentLoader}.
+     * 
+     * @return a duration after which a processing is prematurely terminated.
+     */
+    public Duration getTimeout() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

@@ -1,6 +1,6 @@
 package com.apicatalog.jsonld.processor;
 
-import java.time.Duration;
+import java.time.Instant;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
@@ -19,11 +19,11 @@ import jakarta.json.JsonValue;
 public class ProcessingRuntime {
 
     protected final JsonLdOptions options;
-    protected Duration timeout;
+    protected Instant ticker;
 
     protected ProcessingRuntime(JsonLdOptions options) {
         this.options = options;
-        this.timeout = null;
+        this.ticker =  options.getTimeout() != null ? Instant.now() : null;
     }
 
     /**
@@ -36,21 +36,24 @@ public class ProcessingRuntime {
      * @throws JsonLdError if a processing has exceeded
      */
     public void tick() throws JsonLdError {
-
+        if (ticker == null) {
+            return;
+        }
+        //TODO
     }
 
     /**
      * Resume ticker, a next ping decreases remaining time if timeout is set. Is
      * used after an external method call, to exclude time consumed by
      * the external call. e.g. when calling HTTP client.
+     * 
+     * Does nothing if timeout is not set.
      */
     public void resetTicker() {
-
-    }
-
-    public ProcessingRuntime timout(Duration timout) {
-        this.timeout = timout;
-        return this;
+        if (ticker == null) {
+            return;
+        }
+        //TODO
     }
 
     public boolean isUriValidation() {
