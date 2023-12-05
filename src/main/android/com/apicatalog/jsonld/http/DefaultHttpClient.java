@@ -59,7 +59,7 @@ public class DefaultHttpClient implements HttpClient {
     public HttpClient timeout(Duration timeout) {
         okHttpClient = okHttpClient
                 .newBuilder()
-                .readTimeout(timeount != null
+                .readTimeout(timeout != null
                         ? timeout.toMillis()
                         : 0,
                         TimeUnit.MILLISECONDS)
