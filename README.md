@@ -111,6 +111,8 @@ implementation("org.glassfish:jakarta.json:2.0.1")
 
 Titanium provides high-level [JsonLd](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/JsonLd.html) API to interact with the processor.
 
+#### Transformations
+
 ```javascript
 
 // Expansion
@@ -141,8 +143,9 @@ JsonLd.frame("https://example/document.jsonld", "https://example/frame.jsonld").
 
 ```
 
+#### Local JSON Document
+
 ```javascript
-// Local document
 Document document = JsonDocument.of(InputStream) or JsonDocument.of(Reader) ...
 
 JsonLd.expand(document).get();
@@ -153,7 +156,7 @@ JsonLd.compact(document, contextDocument).get();
 
 #### Processing Timeout
 A processor gets terminated eventually after a specified time. Please note 
-the duration does not cover `DocumentLoader` calls processing time. 
+the duration does not cover `DocumentLoader` processing time. 
 You have to set-up a read timeout separately.
 
 ```javascript
