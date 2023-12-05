@@ -69,7 +69,7 @@ public final class ValueExpansion {
                 if (JsonUtils.isString(value)) {
                     idValue = ((JsonString) value).getString();
 
-                // custom extension allowing to process numeric ids
+                    // custom extension allowing to process numeric ids
                 } else if (activeContext.getOptions().isNumericId() && JsonUtils.isNumber(value)) {
                     idValue = ((JsonNumber) value).toString();
                 }
@@ -81,7 +81,7 @@ public final class ValueExpansion {
                     return JsonProvider.instance().createObjectBuilder().add(Keywords.ID, expandedValue).build();
                 }
 
-            // 2.
+                // 2.
             } else if (Keywords.VOCAB.equals(typeMapping.get()) && JsonUtils.isString(value)) {
 
                 String expandedValue = activeContext.uriExpansion().documentRelative(true)
@@ -96,8 +96,8 @@ public final class ValueExpansion {
 
         // 4.
         if (typeMapping
-                    .filter(t -> !Keywords.ID.equals(t) && !Keywords.VOCAB.equals(t) && !Keywords.NONE.equals(t))
-                    .isPresent()) {
+                .filter(t -> !Keywords.ID.equals(t) && !Keywords.VOCAB.equals(t) && !Keywords.NONE.equals(t))
+                .isPresent()) {
 
             result.add(Keywords.TYPE, typeMapping.get());
 
@@ -114,14 +114,16 @@ public final class ValueExpansion {
 
         // 5.1.
         final JsonValue language = definition
-                                            .map(TermDefinition::getLanguageMapping)
-                                            .orElseGet(() -> activeContext.getDefaultLanguage() != null
-                                                                ? JsonProvider.instance().createValue(activeContext.getDefaultLanguage())
-                                                                : null);
+                .map(TermDefinition::getLanguageMapping)
+                .orElseGet(() -> activeContext.getDefaultLanguage() != null
+                            ? JsonProvider.instance().createValue(activeContext.getDefaultLanguage())
+                            : null
+                        );
+
         // 5.2.
         final DirectionType direction = definition
-                                            .map(TermDefinition::getDirectionMapping)
-                                            .orElseGet(() -> activeContext.getDefaultBaseDirection());
+                .map(TermDefinition::getDirectionMapping)
+                .orElseGet(() -> activeContext.getDefaultBaseDirection());
 
         // 5.3.
         if (JsonUtils.isNotNull(language)) {

@@ -19,12 +19,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import com.apicatalog.jsonld.StringUtils;
 
 public final class Path {
 
     public static final Path EMPTY = new Path(new ArrayList<>(), null, true);
+
+    private static final Pattern SEGMENTS_DEL_RE = Pattern.compile("/");
 
     private final List<String> segments;
     private final String last;
@@ -41,17 +44,15 @@ public final class Path {
         final boolean relative = !path.startsWith("/");
 
         final List<String> segments = new ArrayList<>(
-                                        Arrays.asList(
-                                                (relative
-                                                    ? path
-                                                    : path.substring(1)
-                                                    )
-                                                .split("/")
-                                                )
-                                        );
+                Arrays.asList(
+                        SEGMENTS_DEL_RE.split(
+                                (relative
+                                        ? path
+                                        : path.substring(1)))));
+        
         final String last = (path.length() > 1 && path.endsWith("/"))
-                                ?  null
-                                : segments.remove(segments.size() - 1);
+                ? null
+                : segments.remove(segments.size() - 1);
 
         return new Path(segments, (last == null || StringUtils.isBlank(last)) ? null : last, relative);
     }
@@ -105,13 +106,13 @@ public final class Path {
             if (!segments.get(segments.size() - rightIndex - 1).equals(base.segments.get(base.segments.size() - rightIndex - 1))) {
                 break;
             }
-            diff.add("..");     //TOD ?!?
+            diff.add(".."); // TOD ?!?
         }
-        for (int i=0; i < (base.segments.size() - leftIndex - rightIndex); i++) {
+        for (int i = 0; i < (base.segments.size() - leftIndex - rightIndex); i++) {
             diff.add("..");
         }
 
-        for (int i=0; i < (segments.size() - leftIndex - rightIndex ); i++) {
+        for (int i = 0; i < (segments.size() - leftIndex - rightIndex); i++) {
             diff.add(segments.get(i + leftIndex));
         }
 
@@ -133,12 +134,11 @@ public final class Path {
     @Override
     public String toString() {
         return (relative
-                    ? ""
-                    : "/")
-                    .concat(String.join("/", segments))
-                    .concat(segments.isEmpty() ? "" : "/")
-                    .concat(last != null ? last : "")
-                ;
+                ? ""
+                : "/")
+                .concat(String.join("/", segments))
+                .concat(segments.isEmpty() ? "" : "/")
+                .concat(last != null ? last : "");
     }
 
     public String getLeaf() {

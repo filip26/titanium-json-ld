@@ -17,6 +17,7 @@ package com.apicatalog.jsonld.context;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -50,6 +51,28 @@ import jakarta.json.JsonValue;
 public final class TermDefinitionBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(TermDefinitionBuilder.class.getName());
+
+    private static final Collection<String> CONTAINER_KEYWORDS = Arrays.asList(
+            Keywords.GRAPH,
+            Keywords.ID,
+            Keywords.INDEX,
+            Keywords.LANGUAGE,
+            Keywords.LIST,
+            Keywords.SET,
+            Keywords.TYPE);
+
+    private static final Collection<String> PROTECTED_KEYWORDS = Arrays.asList(
+            Keywords.ID,
+            Keywords.REVERSE,
+            Keywords.CONTAINER,
+            Keywords.CONTEXT,
+            Keywords.DIRECTION,
+            Keywords.INDEX,
+            Keywords.LANGUAGE,
+            Keywords.NEST,
+            Keywords.PREFIX,
+            Keywords.PROTECTED,
+            Keywords.TYPE);
 
     // mandatory
     private final ActiveContext activeContext;
@@ -160,7 +183,7 @@ public final class TermDefinitionBuilder {
                 throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
             }
 
-        // 5.
+            // 5.
         } else if (Keywords.contains(term)) {
             throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION, "A keyword [" + term + "] redefinition has been detected.");
 
@@ -184,14 +207,14 @@ public final class TermDefinitionBuilder {
             idValue = JsonValue.NULL;
             simpleTerm = false;
 
-        // 8.
+            // 8.
         } else if (JsonUtils.isString(value)) {
 
             valueObject = Collections.emptyMap();
             idValue = value;
             simpleTerm = true;
 
-        // 9.
+            // 9.
         } else if (JsonUtils.isObject(value)) {
 
             valueObject = value.asJsonObject();
@@ -232,13 +255,12 @@ public final class TermDefinitionBuilder {
             }
 
             // 12.2.
-            final String expandedTypeString =
-                        activeContext
-                            .uriExpansion()
-                            .localContext(localContext)
-                            .defined(defined)
-                            .vocab(true)
-                            .expand(((JsonString) type).getString());
+            final String expandedTypeString = activeContext
+                    .uriExpansion()
+                    .localContext(localContext)
+                    .defined(defined)
+                    .vocab(true)
+                    .expand(((JsonString) type).getString());
 
             if (expandedTypeString == null) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING);
@@ -282,7 +304,7 @@ public final class TermDefinitionBuilder {
 
             // 13.4.
             definition.setUriMapping(
-                        activeContext
+                    activeContext
                             .uriExpansion()
                             .localContext(localContext)
                             .defined(defined)
@@ -306,7 +328,7 @@ public final class TermDefinitionBuilder {
 
                     final String containerString = ((JsonString) container).getString();
 
-                    if (Keywords.anyMatch(containerString, Keywords.SET, Keywords.INDEX)) {
+                    if (Keywords.SET.equals(containerString) || Keywords.INDEX.equals(containerString)) {
                         definition.addContainerMapping(containerString);
 
                     } else {
@@ -345,12 +367,12 @@ public final class TermDefinitionBuilder {
 
                 // 14.2.3
                 definition.setUriMapping(
-                                activeContext
-                                    .uriExpansion()
-                                    .localContext(localContext)
-                                    .defined(defined)
-                                    .vocab(true)
-                                    .expand(idValueString));
+                        activeContext
+                                .uriExpansion()
+                                .localContext(localContext)
+                                .defined(defined)
+                                .vocab(true)
+                                .expand(idValueString));
 
                 if (Keywords.CONTEXT.equals(definition.getUriMapping())) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ALIAS);
@@ -369,13 +391,12 @@ public final class TermDefinitionBuilder {
                     defined.put(term, Boolean.TRUE);
 
                     // 14.2.4.2
-                    final String expandedTerm =
-                                activeContext
-                                    .uriExpansion()
-                                    .localContext(localContext)
-                                    .defined(defined)
-                                    .vocab(true)
-                                    .expand(term);
+                    final String expandedTerm = activeContext
+                            .uriExpansion()
+                            .localContext(localContext)
+                            .defined(defined)
+                            .vocab(true)
+                            .expand(term);
 
                     if (expandedTerm == null || !expandedTerm.equals(definition.getUriMapping())) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
@@ -385,20 +406,16 @@ public final class TermDefinitionBuilder {
                 // 14.2.5
                 if (definition.isNotPrefix()) {
                     definition.setPrefix(!term.contains(":")
-                                            && !term.contains("/")
-                                            && simpleTerm
-                                            && (definition.getUriMapping() != null
-                                                && ((
-                                                    UriUtils.endsWithGenDelim(definition.getUriMapping())
-                                                        && UriUtils.isURI(definition.getUriMapping().substring(0, definition.getUriMapping().length() - 1))
-                                                        )
-                                                    || BlankNode.hasPrefix(definition.getUriMapping()))
-                                                )
-                                    );
+                            && !term.contains("/")
+                            && simpleTerm
+                            && (definition.getUriMapping() != null
+                                    && ((UriUtils.endsWithGenDelim(definition.getUriMapping())
+                                            && UriUtils.isURI(definition.getUriMapping().substring(0, definition.getUriMapping().length() - 1)))
+                                            || BlankNode.hasPrefix(definition.getUriMapping()))));
                 }
             }
 
-        // 15.
+            // 15.
         } else if (term.indexOf(':', 1) != -1) {
 
             final CompactUri compactUri = CompactUri.create(term);
@@ -412,38 +429,37 @@ public final class TermDefinitionBuilder {
             if (compactUri != null && compactUri.isNotBlank() && activeContext.containsTerm(compactUri.getPrefix())) {
 
                 definition.setUriMapping(
-                                activeContext
-                                        .getTerm(compactUri.getPrefix())
-                                        .map(TermDefinition::getUriMapping)
-                                        .map(u -> u.concat(compactUri.getSuffix()))
-                                        .orElse(null)
-                                        );
+                        activeContext
+                                .getTerm(compactUri.getPrefix())
+                                .map(TermDefinition::getUriMapping)
+                                .map(u -> u.concat(compactUri.getSuffix()))
+                                .orElse(null));
 
-            // 15.3.
+                // 15.3.
             } else if (UriUtils.isURI(term) || BlankNode.hasPrefix(term)) {
                 definition.setUriMapping(term);
             }
 
-        // 16.
+            // 16.
         } else if (term.contains("/")) {
 
             definition.setUriMapping(
-                            activeContext
-                                .uriExpansion()
-                                .localContext(localContext)
-                                .defined(defined)
-                                .vocab(true)
-                                .expand(term));
+                    activeContext
+                            .uriExpansion()
+                            .localContext(localContext)
+                            .defined(defined)
+                            .vocab(true)
+                            .expand(term));
 
             if (UriUtils.isNotURI(definition.getUriMapping())) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
             }
 
-        // 17.
+            // 17.
         } else if (Keywords.TYPE.equals(term)) {
             definition.setUriMapping(Keywords.TYPE);
 
-        // 18.
+            // 18.
         } else if (activeContext.getVocabularyMapping() == null) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
 
@@ -463,10 +479,10 @@ public final class TermDefinitionBuilder {
 
             // 19.3.
             JsonUtils.toStream(containerValue)
-                        .filter(JsonUtils::isString)
-                        .map(JsonString.class::cast)
-                        .map(JsonString::getString)
-                        .forEach(definition::addContainerMapping);
+                    .filter(JsonUtils::isString)
+                    .map(JsonString.class::cast)
+                    .map(JsonString::getString)
+                    .forEach(definition::addContainerMapping);
 
             // 19.4.
             if (definition.getContainerMapping().contains(Keywords.TYPE)) {
@@ -501,13 +517,12 @@ public final class TermDefinitionBuilder {
 
             final String indexString = ((JsonString) index).getString();
 
-            final String expandedIndex =
-                            activeContext
-                                .uriExpansion()
-                                .localContext(localContext)
-                                .defined(defined)
-                                .vocab(true)
-                                .expand(indexString);
+            final String expandedIndex = activeContext
+                    .uriExpansion()
+                    .localContext(localContext)
+                    .defined(defined)
+                    .vocab(true)
+                    .expand(indexString);
 
             if (expandedIndex == null || UriUtils.isNotURI(expandedIndex)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
@@ -553,8 +568,8 @@ public final class TermDefinitionBuilder {
 
             if (JsonUtils.isNull(language) || JsonUtils.isString(language)) {
 
-                if (JsonUtils.isString(language) && !LanguageTag.isWellFormed(((JsonString)language).getString())) {
-                    LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", ((JsonString)language).getString());
+                if (JsonUtils.isString(language) && !LanguageTag.isWellFormed(((JsonString) language).getString())) {
+                    LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", ((JsonString) language).getString());
                 }
 
                 definition.setLanguageMapping(language);
@@ -642,9 +657,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 26.
-        if (!Keywords.allMatch(valueObject.keySet(), Keywords.ID, Keywords.REVERSE, Keywords.CONTAINER,
-                Keywords.CONTEXT, Keywords.DIRECTION, Keywords.INDEX, Keywords.LANGUAGE, Keywords.NEST, Keywords.PREFIX,
-                Keywords.PROTECTED, Keywords.TYPE)) {
+        if (!PROTECTED_KEYWORDS.containsAll(valueObject.keySet())) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
         }
 
@@ -677,28 +690,19 @@ public final class TermDefinitionBuilder {
         if (activeContext.inMode(JsonLdVersion.V1_0)) {
 
             return JsonUtils.isString(container)
-                        && Keywords.noneMatch(
-                                        ((JsonString)container).getString(),
-                                        Keywords.GRAPH,
-                                        Keywords.ID,
-                                        Keywords.TYPE
-                                        );
+                    && Keywords.noneMatch(
+                            ((JsonString) container).getString(),
+                            Keywords.GRAPH,
+                            Keywords.ID,
+                            Keywords.TYPE);
         }
 
         if (JsonUtils.isArray(container) && container.asJsonArray().size() == 1) {
             container = container.asJsonArray().get(0);
         }
 
-        if (JsonUtils.isString(container) ) {
-
-            return Keywords.anyMatch(((JsonString)container).getString(),
-                                Keywords.GRAPH,
-                                Keywords.ID,
-                                Keywords.INDEX,
-                                Keywords.LANGUAGE,
-                                Keywords.LIST,
-                                Keywords.SET,
-                                Keywords.TYPE);
+        if (JsonUtils.isString(container)) {
+            return CONTAINER_KEYWORDS.contains(((JsonString) container).getString());
         }
 
         return JsonUtils.isArray(container) && validateContainerArray(container.asJsonArray());
@@ -712,20 +716,18 @@ public final class TermDefinitionBuilder {
 
         if (JsonUtils.contains(Keywords.GRAPH, containers)
                 && (JsonUtils.contains(Keywords.ID, containers)
-                        || JsonUtils.contains(Keywords.INDEX, containers))
-                ) {
+                        || JsonUtils.contains(Keywords.INDEX, containers))) {
 
             return containers.size() == 2 || JsonUtils.contains(Keywords.SET, containers);
         }
 
         return containers.size() == 2
-                    && JsonUtils.contains(Keywords.SET, containers)
-                    && (JsonUtils.contains(Keywords.GRAPH, containers)
+                && JsonUtils.contains(Keywords.SET, containers)
+                && (JsonUtils.contains(Keywords.GRAPH, containers)
                         || JsonUtils.contains(Keywords.ID, containers)
                         || JsonUtils.contains(Keywords.INDEX, containers)
                         || JsonUtils.contains(Keywords.LANGUAGE, containers)
-                        || JsonUtils.contains(Keywords.TYPE, containers)
-                        );
+                        || JsonUtils.contains(Keywords.TYPE, containers));
     }
 
 }
