@@ -3,14 +3,16 @@ package com.apicatalog.jsonld.processor;
 import java.time.Duration;
 
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdOptions;
 
 /**
  * A runtime context used during a transformation processing.
  * 
  * @since 1.4.0
  */
-public class ProcessingContext {
+public class ProcessingRuntime {
 
+    protected JsonLdOptions options;
     protected Duration timout;
 
     /**
@@ -34,9 +36,22 @@ public class ProcessingContext {
 
     }
 
-    public ProcessingContext timout(Duration timout) {
+    public ProcessingRuntime timout(Duration timout) {
         this.timout = timout;
         return this;
     }
 
+    public JsonLdOptions getOptions() {
+        return options;
+    }
+
+    public boolean isUriValidation() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public static ProcessingRuntime from(JsonLdOptions options) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
