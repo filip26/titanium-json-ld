@@ -406,7 +406,7 @@ public final class UriCompaction {
                 final JsonValue idValue = value.asJsonObject().get(Keywords.ID);
 
                 // json-ld-star
-                if (activeContext.getOptions().isRdfStar() && NodeObject.isEmbeddedNode(idValue)) {
+                if (activeContext.runtime().isRdfStar() && NodeObject.isEmbeddedNode(idValue)) {
                     preferredValues.add(Keywords.ID);
                     preferredValues.add(Keywords.VOCAB);
 

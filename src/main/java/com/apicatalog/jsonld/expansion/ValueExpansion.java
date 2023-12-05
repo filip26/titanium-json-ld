@@ -70,7 +70,7 @@ public final class ValueExpansion {
                     idValue = ((JsonString) value).getString();
 
                     // custom extension allowing to process numeric ids
-                } else if (activeContext.getOptions().isNumericId() && JsonUtils.isNumber(value)) {
+                } else if (activeContext.runtime().isNumericId() && JsonUtils.isNumber(value)) {
                     idValue = ((JsonNumber) value).toString();
                 }
 

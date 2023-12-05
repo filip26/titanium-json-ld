@@ -173,10 +173,10 @@ final class ObjectExpansion1314 {
                 if (Keywords.ID.equals(expandedProperty)) {
 
                     // Extension: JSON-LD-STAR (Experimental)
-                    if (!activeContext.getOptions().isRdfStar() && Keywords.ANNOTATION.equals(activeProperty)) {
+                    if (!activeContext.runtime().isRdfStar() && Keywords.ANNOTATION.equals(activeProperty)) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_ANNOTATION);
 
-                    } else if (activeContext.getOptions().isRdfStar() && JsonUtils.isNonEmptyObject(value)) {
+                    } else if (activeContext.runtime().isRdfStar() && JsonUtils.isNonEmptyObject(value)) {
 
                         expandedValue = Expansion
                                 .with(activeContext, value, null, baseUrl)
@@ -189,7 +189,7 @@ final class ObjectExpansion1314 {
                         }
 
                         // 13.4.3.1
-                    } else if (!frameExpansion && JsonUtils.isNotString(value) && (!activeContext.getOptions().isNumericId() || JsonUtils.isNotNumber(value))
+                    } else if (!frameExpansion && JsonUtils.isNotString(value) && (!activeContext.runtime().isNumericId() || JsonUtils.isNotNumber(value))
                             || frameExpansion
                                     && JsonUtils.isNotString(value)
                                     && JsonUtils.isNonEmptyObject(value)
@@ -641,7 +641,7 @@ final class ObjectExpansion1314 {
                 // Extension: JSON-LD-STAR (Experimental)
                 if (Keywords.ANNOTATION.equals(expandedProperty)) {
 
-                    if (!activeContext.getOptions().isRdfStar()) {
+                    if (!activeContext.runtime().isRdfStar()) {
                         continue;
                     }
 

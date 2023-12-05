@@ -133,7 +133,6 @@ public final class ActiveContext {
         return vocabularyMapping;
     }
 
-    //TODO move to runtime
     @Deprecated(since="1.4.0")
     public boolean inMode(final JsonLdVersion version) {
         return getOptions().getProcessingMode() != null && getOptions().getProcessingMode().equals(version);
@@ -229,7 +228,7 @@ public final class ActiveContext {
         return "ActiveContext[terms=" + terms + ", previousContext=" + previousContext + "]";
     }
     
-    public ProcessingRuntime getRuntime() {
+    public ProcessingRuntime runtime() {
         return runtime;
     }
 }

@@ -4,6 +4,12 @@ import java.time.Duration;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.context.cache.Cache;
+import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.loader.DocumentLoader;
+
+import jakarta.json.JsonValue;
 
 /**
  * A runtime context used during a transformation processing.
@@ -12,8 +18,13 @@ import com.apicatalog.jsonld.JsonLdOptions;
  */
 public class ProcessingRuntime {
 
-    protected JsonLdOptions options;
-    protected Duration timout;
+    protected final JsonLdOptions options;
+    protected Duration timeout;
+
+    protected ProcessingRuntime(JsonLdOptions options) {
+        this.options = options;
+        this.timeout = null;
+    }
 
     /**
      * Called in multiple places during a processing to check processing timeout if
@@ -37,7 +48,7 @@ public class ProcessingRuntime {
     }
 
     public ProcessingRuntime timout(Duration timout) {
-        this.timout = timout;
+        this.timeout = timout;
         return this;
     }
 
@@ -46,12 +57,34 @@ public class ProcessingRuntime {
     }
 
     public boolean isUriValidation() {
-        // TODO Auto-generated method stub
-        return false;
+        return options.isUriValidation();
+    }
+
+    public boolean inMode(final JsonLdVersion version) {
+        return options.getProcessingMode() != null && options.getProcessingMode().equals(version);
     }
 
     public static ProcessingRuntime from(JsonLdOptions options) {
-        // TODO Auto-generated method stub
-        return null;
+        return new ProcessingRuntime(options);
+    }
+
+    public DocumentLoader getDocumentLoader() {
+        return options.getDocumentLoader();
+    }
+
+    public Cache<String, JsonValue> getContextCache() {
+        return options.getContextCache();
+    }
+
+    public Cache<String, Document> getDocumentCache() {
+        return options.getDocumentCache();
+    }
+
+    public boolean isRdfStar() {
+        return options.isRdfStar();
+    }
+
+    public boolean isNumericId() {
+        return options.isNumericId();
     }
 }

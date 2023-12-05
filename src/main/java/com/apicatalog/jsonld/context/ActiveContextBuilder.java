@@ -160,8 +160,8 @@ public final class ActiveContextBuilder {
                 // and, if propagate is false, previous context in result to the previous value
                 // of result.
                 result = propagate
-                        ? new ActiveContext(activeContext.getBaseUrl(), activeContext.getBaseUrl(), activeContext.getRuntime())
-                        : new ActiveContext(activeContext.getBaseUrl(), activeContext.getBaseUrl(), result.getPreviousContext(), activeContext.getRuntime());
+                        ? new ActiveContext(activeContext.getBaseUrl(), activeContext.getBaseUrl(), activeContext.runtime())
+                        : new ActiveContext(activeContext.getBaseUrl(), activeContext.getBaseUrl(), result.getPreviousContext(), activeContext.runtime());
 
                 // 5.1.3. Continue with the next context
                 continue;
@@ -230,7 +230,7 @@ public final class ActiveContextBuilder {
                 final URI contextImportUri = UriResolver.resolveAsUri(baseUrl, ((JsonString) contextImport).getString());
 
                 // 5.6.4.
-                if (activeContext.getOptions().getDocumentLoader() == null) {
+                if (activeContext.runtime().getDocumentLoader() == null) {
                     throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED);
                 }
 
@@ -242,7 +242,7 @@ public final class ActiveContextBuilder {
 
                 try {
 
-                    final Document importedDocument = activeContext.getOptions().getDocumentLoader().loadDocument(contextImportUri, loaderOptions);
+                    final Document importedDocument = activeContext.runtime().getDocumentLoader().loadDocument(contextImportUri, loaderOptions);
 
                     if (importedDocument == null) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context[" + contextImportUri + "] is null.");
@@ -494,11 +494,10 @@ public final class ActiveContextBuilder {
         remoteContexts.add(contextKey);
 
         // 5.2.4
-        if (activeContext.getOptions() != null
-                && activeContext.getOptions().getContextCache() != null
-                && activeContext.getOptions().getContextCache().containsKey(contextKey) && !validateScopedContext) {
+        if (activeContext.runtime().getContextCache() != null
+                && activeContext.runtime().getContextCache().containsKey(contextKey) && !validateScopedContext) {
 
-            JsonValue cachedContext = activeContext.getOptions().getContextCache().get(contextKey);
+            JsonValue cachedContext = activeContext.runtime().getContextCache().get(contextKey);
             result = result
                     .newContext()
                     .remoteContexts(new ArrayList<>(remoteContexts))
@@ -508,17 +507,16 @@ public final class ActiveContextBuilder {
         }
 
         // 5.2.5.
-        if (activeContext.getOptions().getDocumentLoader() == null) {
+        if (activeContext.runtime().getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Document loader is null. Cannot fetch [" + contextUri + "].");
         }
 
         Document remoteImport = null;
 
-        if (activeContext.getOptions() != null
-                && activeContext.getOptions().getDocumentCache() != null
-                && activeContext.getOptions().getDocumentCache().containsKey(contextKey)) {
+        if (activeContext.runtime().getDocumentCache() != null
+                && activeContext.runtime().getDocumentCache().containsKey(contextKey)) {
 
-            remoteImport = activeContext.getOptions().getDocumentCache().get(contextKey);
+            remoteImport = activeContext.runtime().getDocumentCache().get(contextKey);
         }
 
         if (remoteImport == null) {
@@ -529,7 +527,7 @@ public final class ActiveContextBuilder {
 
             try {
 
-                remoteImport = activeContext.getOptions().getDocumentLoader().loadDocument(contextUri, loaderOptions);
+                remoteImport = activeContext.runtime().getDocumentLoader().loadDocument(contextUri, loaderOptions);
 
                 // 5.2.5.1.
             } catch (JsonLdError e) {
@@ -563,10 +561,8 @@ public final class ActiveContextBuilder {
             importedContext = JsonProvider.instance().createObjectBuilder(importedContext.asJsonObject()).remove(Keywords.BASE).build();
         }
 
-        if (activeContext.getOptions() != null
-                && activeContext.getOptions().getDocumentCache() != null) {
-
-            activeContext.getOptions().getDocumentCache().put(contextKey, remoteImport);
+        if (activeContext.runtime().getDocumentCache() != null) {
+            activeContext.runtime().getDocumentCache().put(contextKey, remoteImport);
         }
 
         // 5.2.6
@@ -577,8 +573,8 @@ public final class ActiveContextBuilder {
                     .validateScopedContext(validateScopedContext)
                     .create(importedContext, remoteImport.getDocumentUrl());
 
-            if (result.getOptions() != null && result.getOptions().getContextCache() != null && !validateScopedContext) {
-                result.getOptions().getContextCache().put(contextKey, importedContext);
+            if (result.runtime().getContextCache() != null && !validateScopedContext) {
+                result.runtime().getContextCache().put(contextKey, importedContext);
             }
 
         } catch (JsonLdError e) {
