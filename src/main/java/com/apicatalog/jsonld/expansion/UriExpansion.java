@@ -122,20 +122,18 @@ public final class UriExpansion {
         String result = value;
 
         // 6. If value contains a colon (:) anywhere after the first character, it is
-        // either an IRI,
         // a compact IRI, or a blank node identifier
         final int splitIndex = result.indexOf(':', 1);
 
         if (splitIndex != -1) {
-
-            // 6.1. Split value into a prefix and suffix at the first occurrence of a colon
-            // (:).
+            // 6.1. Split value into a prefix and suffix 
+            // at the first occurrence of a colon (:).
             // 6.2. If prefix is underscore (_) or suffix begins with double-forward-slash
-            // (//),
-            // return value as it is already an IRI or a blank node identifier.
-            if (result.charAt(0) == '_' || (((splitIndex + 2) < result.length())
-                    && result.charAt(splitIndex + 1) == '/'
-                    && result.charAt(splitIndex + 2) == '/')) {
+            // (//), return value as it is already an IRI or a blank node identifier.
+            if ((splitIndex == 1 && result.charAt(0) == '_')
+                    || (((splitIndex + 2) < result.length())
+                            && result.charAt(splitIndex + 1) == '/'
+                            && result.charAt(splitIndex + 2) == '/')) {
                 return result;
             }
 
