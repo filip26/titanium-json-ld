@@ -21,6 +21,7 @@ import java.net.URI;
 import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -34,22 +35,26 @@ public final class DefaultHttpClient implements HttpClient {
     private static final DefaultHttpClient INSTANCE = new DefaultHttpClient(CLIENT);
 
     private final java.net.http.HttpClient httpClient;
+    private Duration timeout;
 
     public DefaultHttpClient(final java.net.http.HttpClient httpClient) {
         this.httpClient = httpClient;
+        this.timeout = null;
     }
 
     public HttpResponse send(URI targetUri, String requestProfile) throws JsonLdError {
 
-        HttpRequest request =
-                HttpRequest.newBuilder()
-                    .GET()
-                    .uri(targetUri)
-                    .header("Accept", requestProfile)
-                    .build();
+        HttpRequest.Builder request = HttpRequest.newBuilder()
+                .GET()
+                .uri(targetUri)
+                .header("Accept", requestProfile);
+
+        if (timeout != null && !timeout.isNegative() && !timeout.isZero()) {
+            request = request.timeout(timeout);
+        }
 
         try {
-            return new HttpResponseImpl(httpClient.send(request, BodyHandlers.ofInputStream()));
+            return new HttpResponseImpl(httpClient.send(request.build(), BodyHandlers.ofInputStream()));
 
         } catch (InterruptedException e) {
 
@@ -64,6 +69,12 @@ public final class DefaultHttpClient implements HttpClient {
 
     public static final HttpClient defaultInstance() {
         return INSTANCE;
+    }
+
+    @Override
+    public HttpClient timeout(Duration timeout) {
+        this.timeout = timeout;
+        return this;
     }
 
     public static class HttpResponseImpl implements HttpResponse {
@@ -100,6 +111,7 @@ public final class DefaultHttpClient implements HttpClient {
         }
 
         @Override
-        public void close() { /* unused */ }
+        public void close() {
+            /* unused */ }
     }
 }
