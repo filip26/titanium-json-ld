@@ -40,10 +40,11 @@ public class ProcessingRuntime {
     }
 
     /**
-     * Update remaining time and resets timestamp. Is used top stop counting
-     * processing time when an external library is called, e.g. a HTTP call.
+     * Resume ticker, a next ping decreases remaining time if timeout is set. Is
+     * used after an external method call, to exclude time consumed by
+     * the external call. e.g. when calling HTTP client.
      */
-    public void pause() {
+    public void resetTicker() {
 
     }
 
@@ -59,11 +60,11 @@ public class ProcessingRuntime {
     public boolean isV10() {
         return options.getProcessingMode() != null && options.getProcessingMode().equals(JsonLdVersion.V1_0);
     }
-    
+
     public boolean isV11() {
         return options.getProcessingMode() != null && options.getProcessingMode().equals(JsonLdVersion.V1_1);
     }
-    
+
     public static ProcessingRuntime from(JsonLdOptions options) {
         return new ProcessingRuntime(options);
     }

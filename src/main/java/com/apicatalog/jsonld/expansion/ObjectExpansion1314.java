@@ -134,6 +134,8 @@ final class ObjectExpansion1314 {
                 continue;
             }
 
+            activeContext.runtime().tick();
+            
             // 13.2.
             String expandedProperty = activeContext
                     .uriExpansion()
@@ -973,6 +975,8 @@ final class ObjectExpansion1314 {
     }
 
     private void recurse() throws JsonLdError {
+
+        activeContext.runtime().tick();
 
         // step 3
         final Optional<JsonValue> propertyContext = activeContext
