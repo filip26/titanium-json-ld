@@ -88,6 +88,8 @@ public final class ArrayExpansion {
 
         // 5.2.
         for (final JsonValue item : element) {
+            
+            activeContext.runtime().tick();
 
             // 5.2.1
             JsonValue expanded = Expansion

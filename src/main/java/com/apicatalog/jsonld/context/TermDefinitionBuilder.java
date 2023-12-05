@@ -26,7 +26,6 @@ import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
@@ -150,7 +149,7 @@ public final class TermDefinitionBuilder {
         // 4.
         if (Keywords.TYPE.equals(term)) {
 
-            if (activeContext.inMode(JsonLdVersion.V1_0)) {
+            if (activeContext.runtime().isV10()) {
                 throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
             }
 
@@ -231,7 +230,7 @@ public final class TermDefinitionBuilder {
         // 11.
         if (valueObject.containsKey(Keywords.PROTECTED)) {
 
-            if (activeContext.inMode(JsonLdVersion.V1_0)) {
+            if (activeContext.runtime().isV10()) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
 
@@ -268,7 +267,7 @@ public final class TermDefinitionBuilder {
 
             // 12.3.
             if (((Keywords.JSON.equals(expandedTypeString) || Keywords.NONE.equals(expandedTypeString))
-                    && activeContext.inMode(JsonLdVersion.V1_0))
+                    && activeContext.runtime().isV10())
                     // 12.4.
                     || (Keywords.noneMatch(expandedTypeString, Keywords.ID, Keywords.JSON, Keywords.NONE, Keywords.VOCAB)
                             && UriUtils.isNotAbsoluteUri(expandedTypeString, true))) {
@@ -504,7 +503,7 @@ public final class TermDefinitionBuilder {
         if (valueObject.containsKey(Keywords.INDEX)) {
 
             // 20.1.
-            if (activeContext.inMode(JsonLdVersion.V1_0) || !definition.getContainerMapping().contains(Keywords.INDEX)) {
+            if (activeContext.runtime().isV10() || !definition.getContainerMapping().contains(Keywords.INDEX)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
 
@@ -535,7 +534,7 @@ public final class TermDefinitionBuilder {
         if (valueObject.containsKey(Keywords.CONTEXT)) {
 
             // 21.1.
-            if (activeContext.inMode(JsonLdVersion.V1_0)) {
+            if (activeContext.runtime().isV10()) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
 
@@ -610,7 +609,7 @@ public final class TermDefinitionBuilder {
         if (valueObject.containsKey(Keywords.NEST)) {
 
             // 24.1
-            if (activeContext.inMode(JsonLdVersion.V1_0)) {
+            if (activeContext.runtime().isV10()) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
 
@@ -633,7 +632,7 @@ public final class TermDefinitionBuilder {
         if (valueObject.containsKey(Keywords.PREFIX)) {
 
             // 25.1.
-            if (activeContext.inMode(JsonLdVersion.V1_0) || term.contains(":") || term.contains("/")) {
+            if (activeContext.runtime().isV10() || term.contains(":") || term.contains("/")) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
 
@@ -687,7 +686,7 @@ public final class TermDefinitionBuilder {
             return false;
         }
 
-        if (activeContext.inMode(JsonLdVersion.V1_0)) {
+        if (activeContext.runtime().isV10()) {
 
             return JsonUtils.isString(container)
                     && Keywords.noneMatch(

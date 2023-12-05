@@ -35,7 +35,7 @@ public class ProcessingRuntime {
      * 
      * @throws JsonLdError if a processing has exceeded
      */
-    public void ping() throws JsonLdError {
+    public void tick() throws JsonLdError {
 
     }
 
@@ -56,10 +56,14 @@ public class ProcessingRuntime {
         return options.isUriValidation();
     }
 
-    public boolean inMode(final JsonLdVersion version) {
-        return options.getProcessingMode() != null && options.getProcessingMode().equals(version);
+    public boolean isV10() {
+        return options.getProcessingMode() != null && options.getProcessingMode().equals(JsonLdVersion.V1_0);
     }
-
+    
+    public boolean isV11() {
+        return options.getProcessingMode() != null && options.getProcessingMode().equals(JsonLdVersion.V1_1);
+    }
+    
     public static ProcessingRuntime from(JsonLdOptions options) {
         return new ProcessingRuntime(options);
     }

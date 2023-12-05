@@ -25,7 +25,6 @@ import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonMapBuilder;
@@ -294,7 +293,7 @@ public final class Compaction {
 
                 // 12.2.4.
                 final boolean asArray = !compactArrays
-                        || (activeContext.inMode(JsonLdVersion.V1_1)
+                        || (activeContext.runtime().isV11()
                                 && activeContext.getTerm(alias).filter(t -> t.hasContainerMapping(Keywords.SET)).isPresent());
 
                 // 12.2.5.

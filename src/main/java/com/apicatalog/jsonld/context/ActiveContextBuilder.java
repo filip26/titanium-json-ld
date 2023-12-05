@@ -25,7 +25,6 @@ import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.http.ProfileConstants;
@@ -206,7 +205,7 @@ public final class ActiveContextBuilder {
                 }
 
                 // 5.5.2.
-                if (activeContext.inMode(JsonLdVersion.V1_0)) {
+                if (activeContext.runtime().isV10()) {
                     throw new JsonLdError(JsonLdErrorCode.PROCESSING_MODE_CONFLICT);
                 }
             }
@@ -215,7 +214,7 @@ public final class ActiveContextBuilder {
             if (contextDefinition.containsKey(Keywords.IMPORT)) {
 
                 // 5.6.1.
-                if (activeContext.inMode(JsonLdVersion.V1_0)) {
+                if (activeContext.runtime().isV10()) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_CONTEXT_ENTRY);
                 }
 
@@ -394,7 +393,7 @@ public final class ActiveContextBuilder {
             if (contextDefinition.containsKey(Keywords.DIRECTION)) {
 
                 // 5.10.1.
-                if (activeContext.inMode(JsonLdVersion.V1_0)) {
+                if (activeContext.runtime().isV10()) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_CONTEXT_ENTRY);
                 }
 
@@ -428,7 +427,7 @@ public final class ActiveContextBuilder {
             // 5.11.
             if (contextDefinition.containsKey(Keywords.PROPAGATE)) {
                 // 5.11.1.
-                if (activeContext.inMode(JsonLdVersion.V1_0)) {
+                if (activeContext.runtime().isV10()) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_CONTEXT_ENTRY);
                 }
                 // 5.11.2.

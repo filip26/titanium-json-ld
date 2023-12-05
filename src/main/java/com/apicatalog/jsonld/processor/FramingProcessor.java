@@ -27,7 +27,6 @@ import java.util.stream.Stream;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.Document;
@@ -179,7 +178,7 @@ public final class FramingProcessor {
         Stream<JsonValue> result = resultMap.valuesToArray().stream();
 
         // 17. - remove blank @id
-        if (!activeContext.inMode(JsonLdVersion.V1_0)) {
+        if (!activeContext.runtime().isV10()) {
 
             final List<String> remove = findBlankNodes(resultMap.valuesToArray());
 
@@ -219,7 +218,7 @@ public final class FramingProcessor {
 
         if (options.isOmitGraph() == null) {
 
-            omitGraph = activeContext.inMode(JsonLdVersion.V1_1);
+            omitGraph = activeContext.runtime().isV11();
 
         } else {
             omitGraph = options.isOmitGraph();

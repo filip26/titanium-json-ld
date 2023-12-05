@@ -21,8 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.compaction.UriCompaction;
 import com.apicatalog.jsonld.compaction.ValueCompaction;
 import com.apicatalog.jsonld.expansion.UriExpansion;
@@ -133,11 +131,6 @@ public final class ActiveContext {
         return vocabularyMapping;
     }
 
-    @Deprecated(since="1.4.0")
-    public boolean inMode(final JsonLdVersion version) {
-        return getOptions().getProcessingMode() != null && getOptions().getProcessingMode().equals(version);
-    }
-
     public ActiveContext getPreviousContext() {
         return previousContext;
     }
@@ -188,11 +181,6 @@ public final class ActiveContext {
 
     public TermSelector termSelector(final String variable, final Collection<String> containerMapping, final String typeLanguage) {
         return TermSelector.with(this, variable, containerMapping, typeLanguage);
-    }
-
-    @Deprecated(since="1.4.0")
-    public JsonLdOptions getOptions() {
-        return runtime.getOptions();
     }
 
     protected void setDefaultBaseDirection(final DirectionType defaultBaseDirection) {
