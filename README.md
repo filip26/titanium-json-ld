@@ -151,6 +151,17 @@ JsonLd.compact(document, contextDocument).get();
 ...
 ```
 
+#### HTTP Document Loader Timeout
+Configure and set a custom HTTP document loader instance.
+
+```javascript
+// since 1.4.0 - set read timeout
+static DocumentLoader LOADER = HttpLoader.defaultInstance().timeount(Duration.ofSeconds(30));
+...
+JsonLd.expand(...).loader(LOADER).get();
+```
+
+
 ## Contributing
 
 All PR's welcome!
