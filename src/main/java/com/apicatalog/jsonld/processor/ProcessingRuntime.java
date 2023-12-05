@@ -52,10 +52,6 @@ public class ProcessingRuntime {
         return this;
     }
 
-    public JsonLdOptions getOptions() {
-        return options;
-    }
-
     public boolean isUriValidation() {
         return options.isUriValidation();
     }
