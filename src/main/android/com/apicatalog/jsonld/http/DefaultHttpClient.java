@@ -3,9 +3,11 @@ package com.apicatalog.jsonld.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -51,6 +53,17 @@ public class DefaultHttpClient implements HttpClient {
 
     public static final HttpClient defaultInstance() {
         return INSTANCE;
+    }
+
+    @Override
+    public void setTimeout(Duration timeout) {
+        okHttpClient = okHttpClient
+                .newBuilder()
+                .readTimeout(timeount != null
+                        ? timeout.toMillis()
+                        : 0,
+                        TimeUnit.MILLISECONDS)
+                .build();
     }
 
     static class HttpResponseImpl implements HttpResponse {

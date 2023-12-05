@@ -21,6 +21,7 @@ import java.net.URI;
 import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -34,19 +35,21 @@ public final class DefaultHttpClient implements HttpClient {
     private static final DefaultHttpClient INSTANCE = new DefaultHttpClient(CLIENT);
 
     private final java.net.http.HttpClient httpClient;
+    private Duration timeout;
 
     public DefaultHttpClient(final java.net.http.HttpClient httpClient) {
         this.httpClient = httpClient;
+        this.timeout = null;
     }
 
     public HttpResponse send(URI targetUri, String requestProfile) throws JsonLdError {
 
-        HttpRequest request =
-                HttpRequest.newBuilder()
-                    .GET()
-                    .uri(targetUri)
-                    .header("Accept", requestProfile)
-                    .build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(targetUri)
+                .header("Accept", requestProfile)
+                .timeout(timeout)
+                .build();
 
         try {
             return new HttpResponseImpl(httpClient.send(request, BodyHandlers.ofInputStream()));
@@ -64,6 +67,11 @@ public final class DefaultHttpClient implements HttpClient {
 
     public static final HttpClient defaultInstance() {
         return INSTANCE;
+    }
+
+    @Override
+    public void setTimeout(Duration timeout) {
+        this.timeout = timeout;
     }
 
     public static class HttpResponseImpl implements HttpResponse {
@@ -100,6 +108,7 @@ public final class DefaultHttpClient implements HttpClient {
         }
 
         @Override
-        public void close() { /* unused */ }
+        public void close() {
+            /* unused */ }
     }
 }
