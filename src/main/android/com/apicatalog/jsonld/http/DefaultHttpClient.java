@@ -56,7 +56,7 @@ public class DefaultHttpClient implements HttpClient {
     }
 
     @Override
-    public void setTimeout(Duration timeout) {
+    public HttpClient timeout(Duration timeout) {
         okHttpClient = okHttpClient
                 .newBuilder()
                 .readTimeout(timeount != null
@@ -64,6 +64,7 @@ public class DefaultHttpClient implements HttpClient {
                         : 0,
                         TimeUnit.MILLISECONDS)
                 .build();
+        return this;
     }
 
     static class HttpResponseImpl implements HttpResponse {

@@ -72,8 +72,9 @@ public final class DefaultHttpClient implements HttpClient {
     }
 
     @Override
-    public void setTimeout(Duration timeout) {
+    public HttpClient timeout(Duration timeout) {
         this.timeout = timeout;
+        return this;
     }
 
     public static class HttpResponseImpl implements HttpResponse {

@@ -206,14 +206,22 @@ class DefaultHttpLoader implements DocumentLoader {
     }
 
     /**
+     * @deprecated use {@code DefaultHttpLoader#fallbackContentType(MediaType)}
+     *  
      * Set fallback content-type used when received content-type is not supported.
      * e.g. <code>setFallbackContentType(MediaType.JSON_LD)</code>
      *
      * @param fallbackContentType a content type that overrides unsupported received
      *                            content-type
      */
+    @Deprecated
     public void setFallbackContentType(MediaType fallbackContentType) {
         resolver.setFallbackContentType(fallbackContentType);
+    }
+
+    public DefaultHttpLoader fallbackContentType(MediaType fallbackContentType) {
+        resolver.setFallbackContentType(fallbackContentType);
+        return this;
     }
 
     /**
@@ -221,7 +229,8 @@ class DefaultHttpLoader implements DocumentLoader {
      * 
      * @param timeount to set or <code>null</code> for no timeout
      */
-    public void setTimeount(Duration timeount) {
-        httpClient.setTimeout(timeount);
+    public DefaultHttpLoader timeount(Duration timeount) {
+        httpClient.timeout(timeount);
+        return this;
     }
 }

@@ -10,13 +10,15 @@ public interface HttpClient {
     HttpResponse send(URI targetUri, String requestProfile) throws JsonLdError;
     
     /**
-     * Set read timeout
+     * Configure read timeout
      * 
      * @param timeout to set or <code>null</code> for no timeout
      * 
+     * @return {@link HttpClient} instance,
+     * 
      * @since 1.4.0
      */
-    default void setTimeout(Duration timeout) {
+    default HttpClient timeout(Duration timeout) {
         throw new UnsupportedOperationException();
     }
 
