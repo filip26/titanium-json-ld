@@ -44,15 +44,17 @@ public final class DefaultHttpClient implements HttpClient {
 
     public HttpResponse send(URI targetUri, String requestProfile) throws JsonLdError {
 
-        HttpRequest request = HttpRequest.newBuilder()
+        HttpRequest.Builder request = HttpRequest.newBuilder()
                 .GET()
                 .uri(targetUri)
-                .header("Accept", requestProfile)
-                .timeout(timeout)
-                .build();
+                .header("Accept", requestProfile);
+
+        if (timeout != null && !timeout.isNegative() && !timeout.isZero()) {
+            request = request.timeout(timeout);
+        }
 
         try {
-            return new HttpResponseImpl(httpClient.send(request, BodyHandlers.ofInputStream()));
+            return new HttpResponseImpl(httpClient.send(request.build(), BodyHandlers.ofInputStream()));
 
         } catch (InterruptedException e) {
 

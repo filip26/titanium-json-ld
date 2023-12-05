@@ -13,7 +13,11 @@ public interface HttpClient {
      * Set read timeout
      * 
      * @param timeout to set or <code>null</code> for no timeout
+     * 
+     * @since 1.4.0
      */
-    void setTimeout(Duration timeout);
+    default void setTimeout(Duration timeout) {
+        throw new UnsupportedOperationException();
+    }
 
 }
