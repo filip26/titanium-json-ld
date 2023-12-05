@@ -16,7 +16,6 @@
 package com.apicatalog.jsonld.expansion;
 
 import java.net.URI;
-import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
@@ -85,46 +84,40 @@ public final class ArrayExpansion {
 
     public JsonArray expand() throws JsonLdError {
 
-        // 5.1
         final JsonArrayBuilder result = JsonProvider.instance().createArrayBuilder();
 
         // 5.2.
         for (final JsonValue item : element) {
 
             // 5.2.1
-            JsonValue expanded =
-                            Expansion
-                                .with(activeContext, item, activeProperty, baseUrl)
-                                .frameExpansion(frameExpansion)
-                                .ordered(ordered)
-                                .fromMap(fromMap)
-                                .compute();
-
-            final Optional<TermDefinition> definition = activeContext.getTerm(activeProperty);
+            JsonValue expanded = Expansion
+                    .with(activeContext, item, activeProperty, baseUrl)
+                    .frameExpansion(frameExpansion)
+                    .ordered(ordered)
+                    .fromMap(fromMap)
+                    .compute();
 
             // 5.2.2
-            if (definition
-                        .map(TermDefinition::getContainerMapping)
-                        .filter(c -> c.contains(Keywords.LIST)).isPresent()
-                    && JsonUtils.isArray(expanded)) {
+            if (JsonUtils.isArray(expanded)
+                    && activeContext.getTerm(activeProperty)
+                            .map(TermDefinition::getContainerMapping)
+                            .filter(c -> c.contains(Keywords.LIST)).isPresent()) {
 
                 expanded = ListObject.toListObject(expanded);
             }
 
             // 5.2.3
             if (JsonUtils.isArray(expanded)) {
+                expanded.asJsonArray()
+                        .stream()
+                        .filter(JsonUtils::isNotNull)
+                        .forEach(result::add);
 
-                // append array
-                expanded
-                    .asJsonArray()
-                    .stream()
-                    .filter(JsonUtils::isNotNull)
-                    .forEach(result::add);
-
-            // append non-null element
+                // append non-null element
             } else if (JsonUtils.isNotNull(expanded)) {
                 result.add(expanded);
             }
+
         }
 
         // 5.3

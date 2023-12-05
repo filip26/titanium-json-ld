@@ -108,16 +108,16 @@ public final class UriExpansion {
 
         initLocalContext(value);
 
-        Optional<TermDefinition> definition = activeContext.getTerm(value);
+        final Optional<TermDefinition> definition = activeContext.getTerm(value);
 
         // 4. if active context has a term definition for value,
         // and the associated IRI mapping is a keyword, return that keyword.
         // 5. If vocab is true and the active context has a term definition for value,
         // return the associated IRI mapping
-        if (definition.isPresent() && (Keywords.contains(definition.get().getUriMapping()) || vocab)) {
+        if (definition.isPresent() && (vocab || Keywords.contains(definition.get().getUriMapping()))) {
             return definition.get().getUriMapping();
         }
-
+        
         String result = value;
 
         // 6. If value contains a colon (:) anywhere after the first character, it is
@@ -157,11 +157,11 @@ public final class UriExpansion {
          */
         if (localContext != null && localContext.containsKey(value)) {
 
-            JsonValue entryValue = localContext.get(value);
+            final JsonValue entryValue = localContext.get(value);
 
             if (JsonUtils.isString(entryValue)) {
 
-                String entryValueString = ((JsonString) entryValue).getString();
+                final String entryValueString = ((JsonString) entryValue).getString();
 
                 if (!defined.containsKey(entryValueString) || Boolean.FALSE.equals(defined.get(entryValueString))) {
                     activeContext.newTerm(localContext, defined).create(value);
@@ -178,28 +178,21 @@ public final class UriExpansion {
         }
 
         // 6.4.
-        final Optional<TermDefinition> prefixDefinition = activeContext.getTerm(prefix);
-
-        if (prefixDefinition.map(TermDefinition::getUriMapping).isPresent()
-                && prefixDefinition.filter(TermDefinition::isPrefix).isPresent()) {
-
-            // deepcode ignore checkIsPresent~Optional: false positive
-            return prefixDefinition.map(TermDefinition::getUriMapping).map(m -> m.concat(suffix)).get();
-        }
-
-        return result;
+        return activeContext.getTerm(prefix)
+                .filter(TermDefinition::isPrefix)
+                .map(TermDefinition::getUriMapping)
+                .map(uriMapping -> uriMapping.concat(suffix))
+                .orElse(result);
     }
 
     private String expandResult(final String result) {
         // 7. If vocab is true, and active context has a vocabulary mapping,
         // return the result of concatenating the vocabulary mapping with value.
         if (vocab && activeContext.getVocabularyMapping() != null) {
-
             return activeContext.getVocabularyMapping().concat(result);
 
-        // 8.
+            // 8.
         } else if (documentRelative) {
-
             return UriResolver.resolve(activeContext.getBaseUri(), result);
         }
 

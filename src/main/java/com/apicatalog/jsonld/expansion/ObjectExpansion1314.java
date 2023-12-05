@@ -136,12 +136,11 @@ final class ObjectExpansion1314 {
             }
 
             // 13.2.
-            String expandedProperty =
-                        activeContext
-                            .uriExpansion()
-                            .documentRelative(false)
-                            .vocab(true)
-                            .expand(key);
+            String expandedProperty = activeContext
+                    .uriExpansion()
+                    .documentRelative(false)
+                    .vocab(true)
+                    .expand(key);
 
             // 13.3.
             if (expandedProperty == null || (!expandedProperty.contains(":") && !Keywords.contains(expandedProperty))) {
@@ -165,9 +164,9 @@ final class ObjectExpansion1314 {
                         && Keywords.noneMatch(expandedProperty, Keywords.INCLUDED, Keywords.TYPE)) {
 
                     throw new JsonLdError(JsonLdErrorCode.COLLIDING_KEYWORDS,
-                                "Two properties which expand to the same keyword have been detected. A property '" + key + "'"
-                                + " expands to '" + expandedProperty + "'"
-                                + " but the '" + expandedProperty + "' property is already present." );
+                            "Two properties which expand to the same keyword have been detected. A property '" + key + "'"
+                                    + " expands to '" + expandedProperty + "'"
+                                    + " but the '" + expandedProperty + "' property is already present.");
                 }
 
                 // 13.4.3
@@ -180,35 +179,32 @@ final class ObjectExpansion1314 {
                     } else if (activeContext.getOptions().isRdfStar() && JsonUtils.isNonEmptyObject(value)) {
 
                         expandedValue = Expansion
-                                            .with(activeContext, value, null, baseUrl)
-                                            .frameExpansion(frameExpansion)
-                                            .ordered(ordered)
-                                            .compute();
+                                .with(activeContext, value, null, baseUrl)
+                                .frameExpansion(frameExpansion)
+                                .ordered(ordered)
+                                .compute();
 
                         if (!NodeObject.isEmbeddedNode(expandedValue)) {
                             throw new JsonLdError(JsonLdErrorCode.INVALID_EMBEDDED_NODE);
                         }
 
-                    // 13.4.3.1
+                        // 13.4.3.1
                     } else if (!frameExpansion && JsonUtils.isNotString(value) && (!activeContext.getOptions().isNumericId() || JsonUtils.isNotNumber(value))
                             || frameExpansion
                                     && JsonUtils.isNotString(value)
                                     && JsonUtils.isNonEmptyObject(value)
                                     && (JsonUtils.isNotArray(value)
-                                            || value.asJsonArray().stream().anyMatch(JsonUtils::isNotString)
-                                    )
-                            ) {
+                                            || value.asJsonArray().stream().anyMatch(JsonUtils::isNotString))) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE, "An @id entry was encountered whose value [" + value + "] was not a string.");
 
-                    // 13.4.3.2
+                        // 13.4.3.2
                     } else if (JsonUtils.isString(value)) {
 
-                        final String expandedStringValue =
-                                    activeContext
-                                        .uriExpansion()
-                                        .documentRelative(true)
-                                        .vocab(false)
-                                        .expand(((JsonString) value).getString());
+                        final String expandedStringValue = activeContext
+                                .uriExpansion()
+                                .documentRelative(true)
+                                .vocab(false)
+                                .expand(((JsonString) value).getString());
 
                         if (expandedStringValue != null) {
 
@@ -223,12 +219,11 @@ final class ObjectExpansion1314 {
 
                     } else if (JsonUtils.isNumber(value)) {
 
-                        final String expandedStringValue =
-                                    activeContext
-                                        .uriExpansion()
-                                        .documentRelative(true)
-                                        .vocab(false)
-                                        .expand(((JsonNumber) value).toString());
+                        final String expandedStringValue = activeContext
+                                .uriExpansion()
+                                .documentRelative(true)
+                                .vocab(false)
+                                .expand(((JsonNumber) value).toString());
 
                         if (expandedStringValue != null) {
 
@@ -249,18 +244,17 @@ final class ObjectExpansion1314 {
 
                         expandedValue = JsonValue.EMPTY_JSON_ARRAY;
 
-                    } else if (JsonUtils.isArray(value))  {
+                    } else if (JsonUtils.isArray(value)) {
 
                         final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
 
                         for (final JsonValue item : JsonUtils.toCollection(value)) {
 
-                            String expandedStringValue =
-                                    activeContext
-                                        .uriExpansion()
-                                        .documentRelative(true)
-                                        .vocab(false)
-                                        .expand(((JsonString) item).getString());
+                            String expandedStringValue = activeContext
+                                    .uriExpansion()
+                                    .documentRelative(true)
+                                    .vocab(false)
+                                    .expand(((JsonString) item).getString());
 
                             if (expandedStringValue != null) {
                                 array.add(expandedStringValue);
@@ -278,22 +272,19 @@ final class ObjectExpansion1314 {
                     if ((!frameExpansion
                             && JsonUtils.isNotString(value)
                             && (JsonUtils.isNotArray(value)
-                                    || value.asJsonArray().stream().anyMatch(JsonUtils::isNotString)
-                                ))
+                                    || value.asJsonArray().stream().anyMatch(JsonUtils::isNotString)))
                             || frameExpansion
                                     && JsonUtils.isNotString(value)
                                     && JsonUtils.isNonEmptyObject(value)
                                     && (JsonUtils.isNotArray(value)
-                                            || value.asJsonArray().stream().anyMatch(JsonUtils::isNotString)
-                                        )
+                                            || value.asJsonArray().stream().anyMatch(JsonUtils::isNotString))
                                     && !DefaultObject.isDefaultObject(value)
                                     && DefaultObject.getValue(value)
-                                                    .filter(JsonUtils::isString)
-                                                    .map(JsonString.class::cast)
-                                                    .map(JsonString::getString)
-                                                    .map(UriUtils::isNotURI)
-                                                    .orElse(true)
-                            ) {
+                                            .filter(JsonUtils::isString)
+                                            .map(JsonString.class::cast)
+                                            .map(JsonString::getString)
+                                            .map(UriUtils::isNotURI)
+                                            .orElse(true)) {
 
                         throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_VALUE, "@type value is not valid [" + value + "].");
                     }
@@ -302,7 +293,7 @@ final class ObjectExpansion1314 {
                     if (JsonUtils.isEmptyObject(value)) {
                         expandedValue = value;
 
-                    // 13.4.4.3
+                        // 13.4.4.3
                     } else if (DefaultObject.isDefaultObject(value)) {
 
                         final Optional<JsonValue> defaultValue = DefaultObject.getValue(value);
@@ -320,17 +311,16 @@ final class ObjectExpansion1314 {
                                     .build();
                         }
 
-                    // 13.4.4.4
+                        // 13.4.4.4
                     } else {
 
                         if (JsonUtils.isString(value)) {
 
-                            String expandedStringValue =
-                                        typeContext
-                                            .uriExpansion()
-                                            .vocab(true)
-                                            .documentRelative(true)
-                                            .expand(((JsonString) value).getString());
+                            String expandedStringValue = typeContext
+                                    .uriExpansion()
+                                    .vocab(true)
+                                    .documentRelative(true)
+                                    .expand(((JsonString) value).getString());
 
                             if (expandedStringValue != null) {
                                 expandedValue = JsonProvider.instance().createValue(expandedStringValue);
@@ -344,12 +334,11 @@ final class ObjectExpansion1314 {
 
                                 if (JsonUtils.isString(item)) {
 
-                                    final String expandedStringValue =
-                                            typeContext
-                                                .uriExpansion()
-                                                .vocab(true)
-                                                .documentRelative(true)
-                                                .expand(((JsonString) item).getString());
+                                    final String expandedStringValue = typeContext
+                                            .uriExpansion()
+                                            .vocab(true)
+                                            .documentRelative(true)
+                                            .expand(((JsonString) item).getString());
 
                                     if (expandedStringValue != null) {
                                         array.add(JsonProvider.instance().createValue(expandedStringValue));
@@ -378,11 +367,10 @@ final class ObjectExpansion1314 {
                 else if (Keywords.GRAPH.equals(expandedProperty)) {
 
                     expandedValue = JsonUtils.toJsonArray(Expansion
-                                        .with(typeContext, value, Keywords.GRAPH, baseUrl)
-                                        .frameExpansion(frameExpansion)
-                                        .ordered(ordered)
-                                        .compute()
-                                        );
+                            .with(typeContext, value, Keywords.GRAPH, baseUrl)
+                            .frameExpansion(frameExpansion)
+                            .ordered(ordered)
+                            .compute());
                 }
 
                 // 13.4.6
@@ -395,10 +383,10 @@ final class ObjectExpansion1314 {
 
                     // 13.4.6.2
                     expandedValue = Expansion
-                                        .with(activeContext, value, null, baseUrl)
-                                        .frameExpansion(frameExpansion)
-                                        .ordered(ordered)
-                                        .compute();
+                            .with(activeContext, value, null, baseUrl)
+                            .frameExpansion(frameExpansion)
+                            .ordered(ordered)
+                            .compute();
 
                     if (JsonUtils.isNotNull(expandedValue)) {
 
@@ -446,16 +434,14 @@ final class ObjectExpansion1314 {
 
                         expandedValue = value;
 
-                    // 13.4.7.2
+                        // 13.4.7.2
                     } else if (JsonUtils.isNull(value)
-                                || JsonUtils.isScalar(value)
-                                    || frameExpansion
-                                       && (JsonUtils.isEmptyObject(value)
-                                               || JsonUtils.isEmptyArray(value)
-                                               || JsonUtils.isArray(value)
-                                                       && value.asJsonArray().stream().allMatch(JsonUtils::isScalar)
-                                               )
-                            ) {
+                            || JsonUtils.isScalar(value)
+                            || frameExpansion
+                                    && (JsonUtils.isEmptyObject(value)
+                                            || JsonUtils.isEmptyArray(value)
+                                            || JsonUtils.isArray(value)
+                                                    && value.asJsonArray().stream().allMatch(JsonUtils::isScalar))) {
 
                         expandedValue = value;
 
@@ -481,18 +467,16 @@ final class ObjectExpansion1314 {
                     if (JsonUtils.isString(value)
                             || frameExpansion
                                     && (JsonUtils.isEmptyObject(value)
-                                        || JsonUtils.isEmptyArray(value)
-                                        || JsonUtils.isArray(value)
-                                                && value.asJsonArray().stream().allMatch(JsonUtils::isString)
-                                        )
-                            ) {
+                                            || JsonUtils.isEmptyArray(value)
+                                            || JsonUtils.isArray(value)
+                                                    && value.asJsonArray().stream().allMatch(JsonUtils::isString))) {
 
-                        if (JsonUtils.isString(value) && !LanguageTag.isWellFormed(((JsonString)value).getString())) {
-                            LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", ((JsonString)value).getString());
+                        if (JsonUtils.isString(value) && !LanguageTag.isWellFormed(((JsonString) value).getString())) {
+                            LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", ((JsonString) value).getString());
                         }
 
                         // 13.4.8.2
-                        expandedValue = JsonUtils.isString(value) ? JsonProvider.instance().createValue(((JsonString)value).getString().toLowerCase()) : value;
+                        expandedValue = JsonUtils.isString(value) ? JsonProvider.instance().createValue(((JsonString) value).getString().toLowerCase()) : value;
 
                         if (frameExpansion) {
                             expandedValue = JsonUtils.toJsonArray(expandedValue);
@@ -517,9 +501,7 @@ final class ObjectExpansion1314 {
                                     && (JsonUtils.isEmptyObject(value)
                                             || JsonUtils.isEmptyArray(value)
                                             || JsonUtils.isArray(value)
-                                                    && value.asJsonArray().stream().allMatch(JsonUtils::isString)
-                                            )
-                            ) {
+                                                    && value.asJsonArray().stream().allMatch(JsonUtils::isString))) {
 
                         // 13.4.9.3.
                         expandedValue = value;
@@ -555,10 +537,10 @@ final class ObjectExpansion1314 {
 
                     // 13.4.11.1
                     expandedValue = Expansion
-                                        .with(activeContext, value, activeProperty, baseUrl)
-                                        .frameExpansion(frameExpansion)
-                                        .ordered(ordered)
-                                        .compute();
+                            .with(activeContext, value, activeProperty, baseUrl)
+                            .frameExpansion(frameExpansion)
+                            .ordered(ordered)
+                            .compute();
 
                     if (JsonUtils.isNotArray(expandedValue)) {
                         expandedValue = JsonProvider.instance().createArrayBuilder().add(expandedValue).build();
@@ -569,10 +551,10 @@ final class ObjectExpansion1314 {
                 if (Keywords.SET.equals(expandedProperty)) {
 
                     expandedValue = Expansion
-                                        .with(activeContext, value, activeProperty, baseUrl)
-                                        .frameExpansion(frameExpansion)
-                                        .ordered(ordered)
-                                        .compute();
+                            .with(activeContext, value, activeProperty, baseUrl)
+                            .frameExpansion(frameExpansion)
+                            .ordered(ordered)
+                            .compute();
                 }
 
                 // 13.4.13
@@ -585,10 +567,10 @@ final class ObjectExpansion1314 {
 
                     // 13.4.13.2.
                     expandedValue = Expansion
-                                        .with(activeContext, value, Keywords.REVERSE, baseUrl)
-                                        .frameExpansion(frameExpansion)
-                                        .ordered(ordered)
-                                        .compute();
+                            .with(activeContext, value, Keywords.REVERSE, baseUrl)
+                            .frameExpansion(frameExpansion)
+                            .ordered(ordered)
+                            .compute();
 
                     if (JsonUtils.isObject(expandedValue)) {
 
@@ -606,7 +588,6 @@ final class ObjectExpansion1314 {
                         // 13.4.13.4.
                         if (expandedValueObject.size() > 1
                                 || !expandedValueObject.containsKey(Keywords.REVERSE)) {
-
 
                             final JsonMapBuilder reverseMap = result.getMapBuilder(Keywords.REVERSE);
 
@@ -677,13 +658,12 @@ final class ObjectExpansion1314 {
                                 || Keywords.EMBED.equals(expandedProperty)
                                 || Keywords.EXPLICIT.equals(expandedProperty)
                                 || Keywords.OMIT_DEFAULT.equals(expandedProperty)
-                                || Keywords.REQUIRE_ALL.equals(expandedProperty))
-                        ) {
+                                || Keywords.REQUIRE_ALL.equals(expandedProperty))) {
 
                     expandedValue = Expansion.with(activeContext, value, expandedProperty, baseUrl)
-                                            .frameExpansion(frameExpansion)
-                                            .ordered(ordered)
-                                            .compute();
+                            .frameExpansion(frameExpansion)
+                            .ordered(ordered)
+                            .compute();
                 }
 
                 // 13.4.16
@@ -701,8 +681,8 @@ final class ObjectExpansion1314 {
             final Optional<TermDefinition> keyTermDefinition = activeContext.getTerm(key);
 
             final Collection<String> containerMapping = keyTermDefinition
-                                                        .map(TermDefinition::getContainerMapping)
-                                                        .orElseGet(() -> Collections.emptyList());
+                    .map(TermDefinition::getContainerMapping)
+                    .orElse(Collections.emptyList());
 
             JsonValue expandedValue = null;
 
@@ -712,7 +692,7 @@ final class ObjectExpansion1314 {
                 expandedValue = JsonProvider.instance().createObjectBuilder().add(Keywords.VALUE, value)
                         .add(Keywords.TYPE, Keywords.JSON).build();
 
-            // 13.7.
+                // 13.7.
             } else if (containerMapping.contains(Keywords.LANGUAGE) && JsonUtils.isObject(value)) {
 
                 // 13.7.1.
@@ -720,9 +700,8 @@ final class ObjectExpansion1314 {
 
                 // 13.7.2.
                 final DirectionType direction = keyTermDefinition
-                                                    .map(TermDefinition::getDirectionMapping)
-                                                    .orElseGet(() -> activeContext.getDefaultBaseDirection())
-                                                    ;
+                        .map(TermDefinition::getDirectionMapping)
+                        .orElseGet(() -> activeContext.getDefaultBaseDirection());
 
                 final JsonObject valueObject = value.asJsonObject();
 
@@ -755,11 +734,10 @@ final class ObjectExpansion1314 {
                         // 13.7.4.2.4.
                         if (!Keywords.NONE.equals(langCode)) {
 
-                            final String expandedLangCode =
-                                                activeContext
-                                                    .uriExpansion()
-                                                    .vocab(true)
-                                                    .expand(langCode);
+                            final String expandedLangCode = activeContext
+                                    .uriExpansion()
+                                    .vocab(true)
+                                    .expand(langCode);
 
                             if (!Keywords.NONE.equals(expandedLangCode)) {
 
@@ -781,7 +759,7 @@ final class ObjectExpansion1314 {
                     }
                 }
 
-            // 13.8.
+                // 13.8.
             } else if ((containerMapping.contains(Keywords.INDEX) || containerMapping.contains(Keywords.TYPE)
                     || containerMapping.contains(Keywords.ID)) && JsonUtils.isObject(value)) {
 
@@ -790,8 +768,8 @@ final class ObjectExpansion1314 {
 
                 // 13.8.2.
                 final String indexKey = keyTermDefinition
-                                            .map(TermDefinition::getIndexMapping)
-                                            .orElse(Keywords.INDEX);
+                        .map(TermDefinition::getIndexMapping)
+                        .orElse(Keywords.INDEX);
 
                 // 13.8.3.
                 for (final String index : Utils.index(value.asJsonObject().keySet(), ordered)) {
@@ -811,13 +789,11 @@ final class ObjectExpansion1314 {
                     final Optional<TermDefinition> indexTermDefinition = mapContext.getTerm(index);
 
                     if (containerMapping.contains(Keywords.TYPE)
-                                && indexTermDefinition.map(TermDefinition::getLocalContext).isPresent()
-                                ) {
+                            && indexTermDefinition.map(TermDefinition::getLocalContext).isPresent()) {
 
-                        mapContext =
-                                mapContext
-                                    .newContext()
-                                    .create(
+                        mapContext = mapContext
+                                .newContext()
+                                .create(
                                         indexTermDefinition.get().getLocalContext(),
                                         indexTermDefinition.get().getBaseUrl());
                     }
@@ -828,11 +804,10 @@ final class ObjectExpansion1314 {
                     }
 
                     // 13.8.3.4.
-                    String expandedIndex =
-                                activeContext
-                                    .uriExpansion()
-                                    .vocab(true)
-                                    .expand(index);
+                    String expandedIndex = activeContext
+                            .uriExpansion()
+                            .vocab(true)
+                            .expand(index);
 
                     // 13.8.3.5.
                     if (JsonUtils.isNotArray(indexValue)) {
@@ -860,11 +835,10 @@ final class ObjectExpansion1314 {
                                     .expand(JsonProvider.instance().createValue(index), indexKey);
 
                             // 13.8.3.7.2.2.
-                            final String expandedIndexKey =
-                                        activeContext
-                                            .uriExpansion()
-                                            .vocab(true)
-                                            .expand(indexKey);
+                            final String expandedIndexKey = activeContext
+                                    .uriExpansion()
+                                    .vocab(true)
+                                    .expand(indexKey);
 
                             // 13.8.3.7.2.3.
                             final JsonArrayBuilder indexPropertyValues = JsonProvider.instance().createArrayBuilder().add(reExpandedIndex);
@@ -884,34 +858,33 @@ final class ObjectExpansion1314 {
                             item = JsonProvider.instance().createObjectBuilder(item.asJsonObject())
                                     .add(expandedIndexKey, indexPropertyValues).build();
 
-
                             // 13.8.3.7.2.5.
                             if (ValueObject.isValueObject(item) && item.asJsonObject().size() > 1) {
                                 throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
                             }
 
-                        // 13.8.3.7.3.
+                            // 13.8.3.7.3.
                         } else if (containerMapping.contains(Keywords.INDEX)
                                 && !item.asJsonObject().containsKey(Keywords.INDEX)
                                 && !Keywords.NONE.equals(expandedIndex)) {
 
                             item = JsonProvider.instance().createObjectBuilder(item.asJsonObject()).add(Keywords.INDEX, index).build();
 
-                        // 13.8.3.7.4.
+                            // 13.8.3.7.4.
                         } else if (containerMapping.contains(Keywords.ID)
                                 && !item.asJsonObject().containsKey(Keywords.ID)
                                 && !Keywords.NONE.equals(expandedIndex)) {
 
                             expandedIndex = activeContext
-                                                .uriExpansion()
-                                                .vocab(false)
-                                                .documentRelative(true)
-                                                .expand(index);
+                                    .uriExpansion()
+                                    .vocab(false)
+                                    .documentRelative(true)
+                                    .expand(index);
 
                             item = JsonProvider.instance().createObjectBuilder(item.asJsonObject()).add(Keywords.ID, expandedIndex)
                                     .build();
 
-                        // 13.8.3.7.5.
+                            // 13.8.3.7.5.
                         } else if (containerMapping.contains(Keywords.TYPE) && !Keywords.NONE.equals(expandedIndex)) {
 
                             final JsonArrayBuilder types = JsonProvider.instance().createArrayBuilder().add(expandedIndex);
@@ -936,14 +909,13 @@ final class ObjectExpansion1314 {
                     }
                 }
 
-            // 13.9.
+                // 13.9.
             } else {
-
                 expandedValue = Expansion
-                                    .with(activeContext, value, key, baseUrl)
-                                    .frameExpansion(frameExpansion)
-                                    .ordered(ordered)
-                                    .compute();
+                        .with(activeContext, value, key, baseUrl)
+                        .frameExpansion(frameExpansion)
+                        .ordered(ordered)
+                        .compute();
             }
 
             // 13.10.
@@ -964,9 +936,9 @@ final class ObjectExpansion1314 {
                 final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
 
                 JsonUtils
-                    .toStream(expandedValue)
-                    .map(GraphObject::toGraphObject)
-                    .forEach(array::add);
+                        .toStream(expandedValue)
+                        .map(GraphObject::toGraphObject)
+                        .forEach(array::add);
 
                 expandedValue = array.build();
             }
@@ -989,8 +961,7 @@ final class ObjectExpansion1314 {
                     result.getMapBuilder(Keywords.REVERSE).add(expandedProperty, item);
                 }
 
-
-            // 13.14
+                // 13.14
             } else {
                 result.add(expandedProperty, expandedValue);
             }
@@ -1005,25 +976,21 @@ final class ObjectExpansion1314 {
     private void recurse() throws JsonLdError {
 
         // step 3
-        final JsonValue propertyContext = activeContext
+        final Optional<JsonValue> propertyContext = activeContext
                 .getTerm(activeProperty)
-                .map(TermDefinition::getLocalContext)
-                .orElse(null);
-
+                .map(TermDefinition::getLocalContext);
 
         // step 8
-        if (propertyContext != null) {
-
+        if (propertyContext.isPresent()) {
             activeContext = activeContext
-                                .newContext()
-                                .overrideProtected(true)
-                                .create(
-                                    propertyContext,
-                                    activeContext
-                                            .getTerm(activeProperty)
-                                            .map(TermDefinition::getBaseUrl)
-                                            .orElse(null)
-                                        );
+                    .newContext()
+                    .overrideProtected(true)
+                    .create(
+                            propertyContext.get(),
+                            activeContext
+                                    .getTerm(activeProperty)
+                                    .map(TermDefinition::getBaseUrl)
+                                    .orElse(null));
         }
 
         // steps 13-14
@@ -1045,9 +1012,9 @@ final class ObjectExpansion1314 {
                 for (final String nestedValueKey : nestValue.asJsonObject().keySet()) {
 
                     if (Keywords.VALUE.equals(typeContext
-                                                .uriExpansion()
-                                                .vocab(true)
-                                                .expand(nestedValueKey))) {
+                            .uriExpansion()
+                            .vocab(true)
+                            .expand(nestedValueKey))) {
 
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }

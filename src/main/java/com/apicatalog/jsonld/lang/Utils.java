@@ -25,7 +25,7 @@ public final class Utils {
 
     public static final Collection<String> index(final Collection<String> keys, final boolean ordered) {
 
-        if (keys == null) {
+        if (keys == null || keys.isEmpty()) {
             return Collections.emptyList();
         }
 
