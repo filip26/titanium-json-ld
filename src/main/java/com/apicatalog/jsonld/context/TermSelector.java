@@ -21,7 +21,8 @@ import java.util.stream.Stream;
 
 /**
  *
- * @see <a href="https://www.w3.org/TR/json-ld11-api/#term-selection">Term Selection</a>
+ * @see <a href="https://www.w3.org/TR/json-ld11-api/#term-selection">Term
+ *      Selection</a>
  *
  */
 public final class TermSelector {
@@ -49,25 +50,24 @@ public final class TermSelector {
     public Optional<String> match(final Collection<String> preferredValues) {
 
         // 1. If the active context has a null inverse context,
-        //    set inverse context in active context to the result of calling
-        //    the Inverse Context Creation algorithm using active context.
+        // set inverse context in active context to the result of calling
+        // the Inverse Context Creation algorithm using active context.
         if (activeContext.getInverseContext() == null) {
             activeContext.createInverseContext();
         }
 
-        // 2. Initialize inverse context to the value of inverse context in active context.
+        // 2. Initialize inverse context to the value of inverse context in active
+        // context.
         final InverseContext inverseContext = activeContext.getInverseContext();
 
         // 4.
         return containers
-                    .stream()
-                    .filter(container -> inverseContext.contains(variable, container, typeLanguage))
-
-                    .flatMap(container -> preferredValues
-                                            .stream()
-                                            .map(item -> inverseContext.get(variable, container, typeLanguage, item)))
-
-                    .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty))
-                    .findFirst();
+                .stream()
+                .filter(container -> inverseContext.contains(variable, container, typeLanguage))
+                .flatMap(container -> preferredValues
+                        .stream()
+                        .map(item -> inverseContext.get(variable, container, typeLanguage, item)))
+                .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty))
+                .findFirst();
     }
 }

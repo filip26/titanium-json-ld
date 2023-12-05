@@ -108,35 +108,43 @@ public final class UriExpansion {
 
         initLocalContext(value);
 
-        final Optional<TermDefinition> definition = activeContext.getTerm(value);
+        final Optional<TermDefinition> definition = activeContext.getTerm(value)
+                .filter(term -> vocab || Keywords.contains(term.getUriMapping()));
 
         // 4. if active context has a term definition for value,
         // and the associated IRI mapping is a keyword, return that keyword.
         // 5. If vocab is true and the active context has a term definition for value,
         // return the associated IRI mapping
-        if (definition.isPresent() && (vocab || Keywords.contains(definition.get().getUriMapping()))) {
+        if (definition.isPresent()) {
             return definition.get().getUriMapping();
         }
-        
+
         String result = value;
 
         // 6. If value contains a colon (:) anywhere after the first character, it is
         // either an IRI,
         // a compact IRI, or a blank node identifier
-        if (result.indexOf(':', 1) != -1) {
+        final int splitIndex = result.indexOf(':', 1);
+
+        if (splitIndex != -1) {
 
             // 6.1. Split value into a prefix and suffix at the first occurrence of a colon
             // (:).
-            String[] split = result.split(":", 2);
-
             // 6.2. If prefix is underscore (_) or suffix begins with double-forward-slash
             // (//),
             // return value as it is already an IRI or a blank node identifier.
-            if ("_".equals(split[0]) || split[1].startsWith("//")) {
+            if (result.charAt(0) == '_' || (((splitIndex + 2) < result.length())
+                    && result.charAt(splitIndex + 1) == '/'
+                    && result.charAt(splitIndex + 2) == '/')) {
                 return result;
             }
 
-            result = initPropertyContext(split[0], split[1], result);
+            result = initPropertyContext(
+                    result.substring(0, splitIndex),
+                    (splitIndex + 1) < result.length()
+                            ? result.substring(splitIndex + 1)
+                            : "",
+                    result);
 
             // 6.5
             if (BlankNode.hasPrefix(result) || UriUtils.isAbsoluteUri(result, uriValidation)) {
