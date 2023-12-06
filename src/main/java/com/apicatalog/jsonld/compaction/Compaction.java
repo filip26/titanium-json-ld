@@ -25,7 +25,6 @@ import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonMapBuilder;
@@ -169,7 +168,7 @@ public final class Compaction {
         // 7.
         if ((elementObject.containsKey(Keywords.VALUE)
                 || elementObject.containsKey(Keywords.ID))
-                && (!activeContext.getOptions().isRdfStar() || !elementObject.containsKey(Keywords.ANNOTATION))) {
+                && (!activeContext.runtime().isRdfStar() || !elementObject.containsKey(Keywords.ANNOTATION))) {
 
             final JsonValue result = activeContext.valueCompaction().compact(elementObject, activeProperty);
 
@@ -242,7 +241,7 @@ public final class Compaction {
                     compactedValue = JsonUtils.toJsonValue(activeContext.uriCompaction().compact(((JsonString) expandedValue).getString()));
 
                     // json-ld-star
-                } else if (activeContext.getOptions().isRdfStar() && NodeObject.isEmbeddedNode(expandedValue)) {
+                } else if (activeContext.runtime().isRdfStar() && NodeObject.isEmbeddedNode(expandedValue)) {
                     compactedValue = Compaction.with(activeContext)
                             .compactArrays(compactArrays)
                             .ordered(ordered)
@@ -294,7 +293,7 @@ public final class Compaction {
 
                 // 12.2.4.
                 final boolean asArray = !compactArrays
-                        || (activeContext.inMode(JsonLdVersion.V1_1)
+                        || (activeContext.runtime().isV11()
                                 && activeContext.getTerm(alias).filter(t -> t.hasContainerMapping(Keywords.SET)).isPresent());
 
                 // 12.2.5.

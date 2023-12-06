@@ -93,7 +93,7 @@ public final class ExpansionProcessor {
             baseUri = options.getBase();
         }
 
-        ActiveContext activeContext = new ActiveContext(baseUri, baseUrl, options);
+        ActiveContext activeContext = new ActiveContext(baseUri, baseUrl, ProcessingRuntime.of(options));
 
         // 6. If the expandContext option in options is set, update the active context
         // using the Context Processing algorithm, passing the expandContext as

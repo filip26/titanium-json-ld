@@ -170,6 +170,8 @@ public final class ObjectExpansion {
 
             for (final String key : Utils.index(element.keySet(), true)) {
 
+                activeContext.runtime().tick();
+                
                 final String expandedKey = activeContext
                         .uriExpansion()
                         .vocab(true)
@@ -203,6 +205,8 @@ public final class ObjectExpansion {
         // 11.
         for (final String key : Utils.index(element.keySet(), true)) {
 
+            activeContext.runtime().tick();
+            
             final String expandedKey = activeContext
                     .uriExpansion()
                     .vocab(true)
@@ -226,6 +230,8 @@ public final class ObjectExpansion {
 
             while (terms.hasNext()) {
 
+                activeContext.runtime().tick();
+                
                 final String term = terms.next();
 
                 final Optional<JsonValue> localContext = typeContext.getTerm(term).map(TermDefinition::getLocalContext);

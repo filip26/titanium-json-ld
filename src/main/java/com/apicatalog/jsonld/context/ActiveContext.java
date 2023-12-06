@@ -21,13 +21,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.compaction.UriCompaction;
 import com.apicatalog.jsonld.compaction.ValueCompaction;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.expansion.ValueExpansion;
 import com.apicatalog.jsonld.lang.DirectionType;
+import com.apicatalog.jsonld.processor.ProcessingRuntime;
 
 import jakarta.json.JsonObject;
 
@@ -61,23 +60,23 @@ public final class ActiveContext {
 
     // an optional default base direction ("ltr" or "rtl")
     private DirectionType defaultBaseDirection;
+    
+    private final ProcessingRuntime runtime;
 
-    private final JsonLdOptions options;
-
-    public ActiveContext(final JsonLdOptions options) {
-        this(null, null, null, options);
+    public ActiveContext(final ProcessingRuntime runtime) {
+        this(null, null, null, runtime);
     }
 
-    public ActiveContext(final URI baseUri, final URI baseUrl, JsonLdOptions options) {
-        this(baseUri, baseUrl, null, options);
+    public ActiveContext(final URI baseUri, final URI baseUrl, ProcessingRuntime runtime) {
+        this(baseUri, baseUrl, null, runtime);
     }
 
-    public ActiveContext(final URI baseUri, final URI baseUrl, final ActiveContext previousContext, final JsonLdOptions options) {
+    public ActiveContext(final URI baseUri, final URI baseUrl, final ActiveContext previousContext, final ProcessingRuntime runtime) {
         this.baseUri = baseUri;
         this.baseUrl = baseUrl;
         this.previousContext = previousContext;
         this.terms = new LinkedHashMap<>();
-        this.options = options;
+        this.runtime = runtime;
     }
 
     // copy constructor
@@ -90,7 +89,7 @@ public final class ActiveContext {
         this.vocabularyMapping = origin.vocabularyMapping;
         this.defaultLanguage = origin.defaultLanguage;
         this.defaultBaseDirection = origin.defaultBaseDirection;
-        this.options = origin.options;
+        this.runtime = origin.runtime;
     }
 
     public void createInverseContext() {
@@ -132,10 +131,6 @@ public final class ActiveContext {
         return vocabularyMapping;
     }
 
-    public boolean inMode(final JsonLdVersion version) {
-        return options.getProcessingMode() != null && options.getProcessingMode().equals(version);
-    }
-
     public ActiveContext getPreviousContext() {
         return previousContext;
     }
@@ -165,7 +160,7 @@ public final class ActiveContext {
     }
 
     public UriExpansion uriExpansion() {
-        return UriExpansion.with(this).uriValidation(options.isUriValidation());
+        return UriExpansion.with(this).uriValidation(runtime.isUriValidation());
     }
 
     public ValueExpansion valueExpansion() {
@@ -186,10 +181,6 @@ public final class ActiveContext {
 
     public TermSelector termSelector(final String variable, final Collection<String> containerMapping, final String typeLanguage) {
         return TermSelector.with(this, variable, containerMapping, typeLanguage);
-    }
-
-    public JsonLdOptions getOptions() {
-        return options;
     }
 
     protected void setDefaultBaseDirection(final DirectionType defaultBaseDirection) {
@@ -223,5 +214,9 @@ public final class ActiveContext {
     @Override
     public String toString() {
         return "ActiveContext[terms=" + terms + ", previousContext=" + previousContext + "]";
+    }
+    
+    public ProcessingRuntime runtime() {
+        return runtime;
     }
 }
