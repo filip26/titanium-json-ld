@@ -10,11 +10,11 @@ public interface HttpClient {
     HttpResponse send(URI targetUri, String requestProfile) throws JsonLdError;
     
     /**
-     * Configure read timeout
+     * Configure read timeout and returns a new instance.
      * 
      * @param timeout to set or <code>null</code> for no timeout
      * 
-     * @return {@link HttpClient} instance,
+     * @return a new {@link HttpClient} instance,
      * 
      * @since 1.4.0
      */

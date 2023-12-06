@@ -57,14 +57,13 @@ public class DefaultHttpClient implements HttpClient {
 
     @Override
     public HttpClient timeout(Duration timeout) {
-        okHttpClient = okHttpClient
+        return new DefaultHttpClient(okHttpClient
                 .newBuilder()
                 .readTimeout(timeout != null
                         ? timeout.toMillis()
                         : 0,
                         TimeUnit.MILLISECONDS)
-                .build();
-        return this;
+                .build());
     }
 
     static class HttpResponseImpl implements HttpResponse {

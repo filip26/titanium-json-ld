@@ -38,8 +38,12 @@ public final class DefaultHttpClient implements HttpClient {
     private Duration timeout;
 
     public DefaultHttpClient(final java.net.http.HttpClient httpClient) {
+        this(httpClient, null);
+    }
+
+    public DefaultHttpClient(final java.net.http.HttpClient httpClient, Duration timeount) {
         this.httpClient = httpClient;
-        this.timeout = null;
+        this.timeout = timeount;
     }
 
     public HttpResponse send(URI targetUri, String requestProfile) throws JsonLdError {
@@ -73,8 +77,7 @@ public final class DefaultHttpClient implements HttpClient {
 
     @Override
     public HttpClient timeout(Duration timeout) {
-        this.timeout = timeout;
-        return this;
+        return new DefaultHttpClient(httpClient, timeout);
     }
 
     public static class HttpResponseImpl implements HttpResponse {
