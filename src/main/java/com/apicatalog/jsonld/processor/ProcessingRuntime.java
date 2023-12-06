@@ -1,8 +1,10 @@
 package com.apicatalog.jsonld.processor;
 
+import java.time.Duration;
 import java.time.Instant;
 
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.context.cache.Cache;
@@ -20,9 +22,11 @@ public class ProcessingRuntime {
 
     protected final JsonLdOptions options;
     protected Instant ticker;
+    protected Duration ttl;
 
     protected ProcessingRuntime(JsonLdOptions options) {
         this.options = options;
+        this.ttl = options.getTimeout();
         this.ticker =  options.getTimeout() != null ? Instant.now() : null;
     }
 
@@ -39,7 +43,14 @@ public class ProcessingRuntime {
         if (ticker == null) {
             return;
         }
-        //TODO
+        final Instant now = Instant.now();
+        
+        ttl = ttl.minus(Duration.between(now, ticker).abs());
+        
+        if (ttl.isNegative()) {
+            throw new JsonLdError(JsonLdErrorCode.PROCESSING_TIMEOUT_EXCEEDED);
+        }
+        ticker = now;
     }
 
     /**
@@ -53,7 +64,7 @@ public class ProcessingRuntime {
         if (ticker == null) {
             return;
         }
-        //TODO
+        ticker = Instant.now();
     }
 
     public boolean isUriValidation() {
