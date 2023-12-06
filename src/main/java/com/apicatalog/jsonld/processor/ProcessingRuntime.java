@@ -37,7 +37,7 @@ public class ProcessingRuntime {
      * 
      * @throws JsonLdError if a processing has exceeded
      */
-    public void tick() throws JsonLdError {}
+    public void tick() throws JsonLdError {/* NOP does nothing if timeout is not set */}
 
     /**
      * Resume ticker, a next ping decreases remaining time if timeout is set. Is
@@ -46,7 +46,7 @@ public class ProcessingRuntime {
      * 
      * Does nothing if timeout is not set.
      */
-    public void resetTicker() {}
+    public void resetTicker() {/* NOP does nothing if timeout is not set */}
 
     public boolean isUriValidation() {
         return options.isUriValidation();
