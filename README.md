@@ -77,7 +77,7 @@ Java 11+
 ```
 
 ##### Gradle 
-Java 8+, Android API Level >=24
+Java 8+, Android API Level >=26
 
 ```gradle
 implementation("com.apicatalog:titanium-json-ld-jre8:1.3.3")
