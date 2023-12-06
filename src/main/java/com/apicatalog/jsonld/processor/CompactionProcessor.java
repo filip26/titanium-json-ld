@@ -114,7 +114,7 @@ public final class CompactionProcessor {
 
         // 7.
         final ActiveContext activeContext = new ActiveContext(
-                ProcessingRuntime.from(options)).newContext().create(contextValue, contextBase);
+                ProcessingRuntime.of(options)).newContext().create(contextValue, contextBase);
 
         // 8.
         if (activeContext.getBaseUri() == null) {

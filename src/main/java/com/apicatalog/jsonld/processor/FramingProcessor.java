@@ -129,7 +129,7 @@ public final class FramingProcessor {
                 : options.getBase();
 
         // 10-11.
-        final ActiveContext activeContext = new ActiveContext(input.getDocumentUrl(), input.getDocumentUrl(), ProcessingRuntime.from(options))
+        final ActiveContext activeContext = new ActiveContext(input.getDocumentUrl(), input.getDocumentUrl(), ProcessingRuntime.of(options))
                 .newContext()
                 .create(context, contextBase);
 

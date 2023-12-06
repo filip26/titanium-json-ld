@@ -4,7 +4,6 @@ import java.time.Duration;
 import java.time.Instant;
 
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.context.cache.Cache;
@@ -30,6 +29,12 @@ public class ProcessingRuntime {
         this.ticker =  options.getTimeout() != null ? Instant.now() : null;
     }
 
+    public static ProcessingRuntime of(JsonLdOptions options) {
+        return options.getTimeout() != null
+                ? new Ticker(options)
+                : new ProcessingRuntime(options);
+    }
+
     /**
      * Called in multiple places during a processing to check processing timeout if
      * set. Does nothing if timeout is not set.
@@ -39,19 +44,7 @@ public class ProcessingRuntime {
      * 
      * @throws JsonLdError if a processing has exceeded
      */
-    public void tick() throws JsonLdError {
-        if (ticker == null) {
-            return;
-        }
-        final Instant now = Instant.now();
-        
-        ttl = ttl.minus(Duration.between(now, ticker).abs());
-        
-        if (ttl.isNegative()) {
-            throw new JsonLdError(JsonLdErrorCode.PROCESSING_TIMEOUT_EXCEEDED);
-        }
-        ticker = now;
-    }
+    public void tick() throws JsonLdError {}
 
     /**
      * Resume ticker, a next ping decreases remaining time if timeout is set. Is
@@ -60,12 +53,7 @@ public class ProcessingRuntime {
      * 
      * Does nothing if timeout is not set.
      */
-    public void resetTicker() {
-        if (ticker == null) {
-            return;
-        }
-        ticker = Instant.now();
-    }
+    public void resetTicker() {}
 
     public boolean isUriValidation() {
         return options.isUriValidation();
@@ -77,10 +65,6 @@ public class ProcessingRuntime {
 
     public boolean isV11() {
         return options.getProcessingMode() != null && options.getProcessingMode().equals(JsonLdVersion.V1_1);
-    }
-
-    public static ProcessingRuntime from(JsonLdOptions options) {
-        return new ProcessingRuntime(options);
     }
 
     public DocumentLoader getDocumentLoader() {
