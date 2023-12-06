@@ -18,7 +18,6 @@ package com.apicatalog.jsonld.loader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -46,7 +45,7 @@ class DefaultHttpLoader implements DocumentLoader {
 
     private final int maxRedirections;
 
-    private final HttpClient httpClient;
+    private HttpClient httpClient;
 
     private final DocumentResolver resolver;
 
@@ -55,9 +54,13 @@ class DefaultHttpLoader implements DocumentLoader {
     }
 
     public DefaultHttpLoader(HttpClient httpClient, int maxRedirections) {
+        this(httpClient, maxRedirections, new DocumentResolver());
+    }
+
+    public DefaultHttpLoader(HttpClient httpClient, int maxRedirections, DocumentResolver resolver) {
         this.httpClient = httpClient;
         this.maxRedirections = maxRedirections;
-        this.resolver = new DocumentResolver();
+        this.resolver = resolver;
     }
 
     @Override
@@ -206,7 +209,7 @@ class DefaultHttpLoader implements DocumentLoader {
     }
 
     /**
-     * @deprecated use {@code DefaultHttpLoader#fallbackContentType(MediaType)}
+     * @deprecated use {@code DefaultHttpLoader.Builder#fallbackContentType(MediaType)}
      * 
      *             Set fallback content-type used when received content-type is not
      *             supported. e.g.
@@ -218,31 +221,5 @@ class DefaultHttpLoader implements DocumentLoader {
     @Deprecated
     public void setFallbackContentType(MediaType fallbackContentType) {
         resolver.setFallbackContentType(fallbackContentType);
-    }
-
-    /**
-     * Set fallback content-type used when received content-type is not supported.
-     * e.g. <code>setFallbackContentType(MediaType.JSON_LD)</code>
-     *
-     * @param fallbackContentType a content type that overrides unsupported received
-     *                            content-type
-     * @return {@link DefaultHttpLoader} instance
-     * @since 1.4.0
-     */
-    public DefaultHttpLoader fallbackContentType(MediaType fallbackContentType) {
-        resolver.setFallbackContentType(fallbackContentType);
-        return this;
-    }
-
-    /**
-     * Set read timeout
-     * 
-     * @param timeount to set or <code>null</code> for no timeout
-     * @return {@link DefaultHttpLoader} instance
-     * @since 1.4.0
-     */
-    public DefaultHttpLoader timeount(Duration timeount) {
-        httpClient.timeout(timeount);
-        return this;
     }
 }

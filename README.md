@@ -169,7 +169,7 @@ Configure and set a custom HTTP document loader instance.
 
 ```javascript
 // since 1.4.0 - set read timeout
-static DocumentLoader LOADER = HttpLoader.defaultInstance().timeount(Duration.ofSeconds(30));
+static DocumentLoader LOADER = HttpLoader.newInstance().timeount(Duration.ofSeconds(30)).build();
 ...
 JsonLd.expand(...).loader(LOADER).get();
 ```
