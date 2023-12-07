@@ -49,13 +49,25 @@ public abstract class RdfProvider {
 
     public abstract RdfDataset createDataset();
 
+    @Deprecated(since="1.4.0")
     public abstract Collection<MediaType> canRead();
+    
+    public abstract Collection<String> readable();
 
+    @Deprecated(since="1.4.0")
     public abstract RdfReader createReader(MediaType contentType, Reader reader) throws UnsupportedContentException;
 
-    public abstract Collection<MediaType> canWrite();
+    public abstract RdfReader createReader(String contentType, Reader reader) throws UnsupportedContentException;
 
+    @Deprecated(since="1.4.0")
+    public abstract Collection<MediaType> canWrite();
+    
+    public abstract Collection<String> writable();
+
+    @Deprecated(since="1.4.0")
     public abstract RdfWriter createWriter(MediaType contentType, Writer writer) throws UnsupportedContentException;
+
+    public abstract RdfWriter createWriter(String contentType, Writer writer) throws UnsupportedContentException;
 
     public abstract RdfGraph createGraph();
 

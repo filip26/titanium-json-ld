@@ -42,10 +42,16 @@ public final class Rdf {
         return RdfProvider.provider().createGraph();
     }
 
+    @Deprecated(since="1.4.0")
     public static final Collection<MediaType> canRead() {
         return RdfProvider.provider().canRead();
     }
+    
+    public static final Collection<String> readable() {
+        return RdfProvider.provider().readable();
+    }
 
+    @Deprecated(since="1.4.0")
     public static final RdfReader createReader(final MediaType contentType, Reader reader) throws UnsupportedContentException {
 
         if (reader == null || contentType == null) {
@@ -55,6 +61,16 @@ public final class Rdf {
         return RdfProvider.provider().createReader(contentType, reader);
     }
 
+    public static final RdfReader createReader(final String contentType, Reader reader) throws UnsupportedContentException {
+
+        if (reader == null || contentType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return RdfProvider.provider().createReader(contentType, reader);
+    }
+
+    @Deprecated(since="1.4.0")    
     public static final RdfReader createReader(final MediaType contentType, final InputStream is) throws UnsupportedContentException {
 
         if (is == null || contentType == null) {
@@ -64,10 +80,25 @@ public final class Rdf {
         return createReader(contentType, new InputStreamReader(is));
     }
 
+    public static final RdfReader createReader(final String contentType, final InputStream is) throws UnsupportedContentException {
+
+        if (is == null || contentType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return createReader(contentType, new InputStreamReader(is));
+    }
+
+    @Deprecated(since="1.4.0")
     public static final Collection<MediaType> canWrite() {
         return RdfProvider.provider().canWrite();
     }
+    
+    public static final Collection<String> writable() {
+        return RdfProvider.provider().writable();
+    }
 
+    @Deprecated(since="1.4.0")
     public static final RdfWriter createWriter(final MediaType contentType, final Writer writer) throws UnsupportedContentException {
 
         if (writer == null || contentType == null) {
@@ -77,7 +108,26 @@ public final class Rdf {
         return RdfProvider.provider().createWriter(contentType, writer);
     }
 
+    public static final RdfWriter createWriter(final String contentType, final Writer writer) throws UnsupportedContentException {
+
+        if (writer == null || contentType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return RdfProvider.provider().createWriter(contentType, writer);
+    }
+
+    @Deprecated(since="1.4.0")
     public static final RdfWriter createWriter(final MediaType contentType, final OutputStream os) throws UnsupportedContentException {
+
+        if (os == null || contentType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return createWriter(contentType, new OutputStreamWriter(os));
+    }
+
+    public static final RdfWriter createWriter(final String contentType, final OutputStream os) throws UnsupportedContentException {
 
         if (os == null || contentType == null) {
             throw new IllegalArgumentException();

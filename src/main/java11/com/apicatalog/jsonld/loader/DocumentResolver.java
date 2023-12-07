@@ -47,7 +47,7 @@ class DocumentResolver {
                     + "'. Supported content types are ["
                     + MediaType.JSON_LD + ", "
                     + MediaType.JSON  + ", +json, "
-                    + (Rdf.canRead().stream().map(MediaType::toString).collect(Collectors.joining(", ")))
+                    + (Rdf.readable().stream().collect(Collectors.joining(", ")))
                     + "]"
                     ));
     }

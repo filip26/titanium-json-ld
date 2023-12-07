@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.URISyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,7 +32,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.apicatalog.jsonld.StringUtils;
-import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.rdf.Rdf;
@@ -82,7 +82,7 @@ class NQuadsWriterTest {
 
             final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-            Rdf.createWriter(MediaType.N_QUADS, os).write(dataset);
+            new NQuadsWriter(new OutputStreamWriter(os)).write(dataset);
 
             result = StringUtils.stripTrailing(os.toString());
         }

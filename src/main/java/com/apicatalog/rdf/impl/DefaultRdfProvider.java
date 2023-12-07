@@ -41,6 +41,7 @@ public final class DefaultRdfProvider extends RdfProvider {
     public static final RdfProvider INSTANCE = new DefaultRdfProvider();
 
     private static final Collection<MediaType> CAN_READWRITE = Arrays.asList(MediaType.N_QUADS);
+    private static final Collection<String> MEDIAS = Arrays.asList(MediaType.N_QUADS.toString());
 
     @Override
     public RdfDataset createDataset() {
@@ -49,29 +50,18 @@ public final class DefaultRdfProvider extends RdfProvider {
 
     @Override
     public RdfReader createReader(final MediaType contentType, final Reader reader) throws UnsupportedContentException {
-
         if (reader == null || contentType == null) {
             throw new IllegalArgumentException();
-        }
-
-        if (MediaType.N_QUADS.match(contentType)) {
-            return new NQuadsReader(reader);
-        }
-        throw new UnsupportedContentException(contentType.toString());
+        }        
+        return createReader(contentType.toString(), reader);
     }
 
     @Override
     public RdfWriter createWriter(final MediaType contentType, final Writer writer) throws UnsupportedContentException {
-
         if (writer == null || contentType == null) {
             throw new IllegalArgumentException();
-        }
-
-        if (MediaType.N_QUADS.match(contentType)) {
-            return new NQuadsWriter(writer);
-        }
-
-        throw new UnsupportedContentException(contentType.toString());
+        }        
+        return createWriter(contentType.toString(), writer);
     }
 
     @Override
@@ -152,5 +142,40 @@ public final class DefaultRdfProvider extends RdfProvider {
     private static final boolean isBlank(String value) {
         return value.isEmpty()
                 || StringUtils.isBlank(value) && value.chars().noneMatch(ch -> ch == '\n' || ch == '\r' || ch == '\t' || ch == '\f');
+    }
+
+    @Override
+    public Collection<String> readable() {
+        return MEDIAS;
+    }
+
+    @Override
+    public RdfReader createReader(String contentType, Reader reader) throws UnsupportedContentException {
+        if (reader == null || contentType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (MediaType.N_QUADS.toString().equals(contentType)) {
+            return new NQuadsReader(reader);
+        }
+        throw new UnsupportedContentException(contentType.toString());
+    }
+
+    @Override
+    public Collection<String> writable() {
+        return MEDIAS;
+    }
+
+    @Override
+    public RdfWriter createWriter(String contentType, Writer writer) throws UnsupportedContentException {
+        if (writer == null || contentType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (MediaType.N_QUADS.toString().equals(contentType)) {
+            return new NQuadsWriter(writer);
+        }
+
+        throw new UnsupportedContentException(contentType.toString());
     }
 }

@@ -30,15 +30,12 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
-import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.jsonld.test.JsonLdTestCase.Type;
-import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.io.error.RdfWriterException;
-import com.apicatalog.rdf.io.error.UnsupportedContentException;
+import com.apicatalog.rdf.io.nquad.NQuadsWriter;
 import com.google.common.base.Objects;
 
 import jakarta.json.Json;
@@ -229,15 +226,14 @@ public class JsonLdTestRunnerJunit {
                     writer.println("Test " + testCase.id + ": " + testCase.name);
                     writer.println("Expected:");
 
-                    Rdf.createWriter(MediaType.N_QUADS, writer).write(expected);
+                    new NQuadsWriter(writer).write(expected);
 
                     writer.println();
                     writer.println("Actual:");
 
-                    Rdf.createWriter(MediaType.N_QUADS, writer).write(result);
+                    new NQuadsWriter(writer).write(result);
 
                     writer.println();
-
                 }
 
                 System.out.print(stringWriter.toString());
@@ -247,7 +243,7 @@ public class JsonLdTestRunnerJunit {
 
             return match;
 
-        } catch (RdfWriterException | UnsupportedContentException | IOException e ) {
+        } catch (IOException e) {
             fail(e.getMessage());
         }
         return false;
