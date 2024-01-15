@@ -25,9 +25,9 @@ public class LRUDocumentCacheTest {
 
     }
 
-    static class DummyLoader implements DocumentLoader {
+    static class RecordRequestLoader implements DocumentLoader {
 
-        public List<Request> requests = new ArrayList<>();
+        final List<Request> requests = new ArrayList<>();
 
         @Override
         public Document loadDocument(URI url, DocumentLoaderOptions options) {
@@ -40,8 +40,8 @@ public class LRUDocumentCacheTest {
 
     @Test
     void testLoadDocument() throws JsonLdError {
-        DummyLoader dummyLoader = new DummyLoader();
-        LRUDocumentCache cachedLoader = new LRUDocumentCache(dummyLoader, 2);
+        RecordRequestLoader loader = new RecordRequestLoader();
+        LRUDocumentCache cachedLoader = new LRUDocumentCache(loader, 2);
 
         DocumentLoaderOptions options = new DocumentLoaderOptions();
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
@@ -49,17 +49,18 @@ public class LRUDocumentCacheTest {
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
 
         // There should be only one call as all other should be cached.
-        Assertions.assertEquals(1, dummyLoader.requests.size());
+        Assertions.assertEquals(1, loader.requests.size());
+
         // Make sure valid arguments were passed.
-        Request request = dummyLoader.requests.get(0);
+        Request request = loader.requests.get(0);
         Assertions.assertEquals("http://localhost/1",request.url.toString());
         Assertions.assertSame(options,request.options);
     }
 
     @Test
     void testCacheSize() throws JsonLdError {
-        DummyLoader dummyLoader = new DummyLoader();
-        LRUDocumentCache cachedLoader = new LRUDocumentCache(dummyLoader, 2);
+        RecordRequestLoader loader = new RecordRequestLoader();
+        LRUDocumentCache cachedLoader = new LRUDocumentCache(loader, 2);
 
         DocumentLoaderOptions options = new DocumentLoaderOptions();
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
@@ -69,34 +70,34 @@ public class LRUDocumentCacheTest {
         cachedLoader.loadDocument(URI.create("http://localhost/2"), options);
 
         // There should be only one call as all other should be cached.
-        Assertions.assertEquals(2, dummyLoader.requests.size());
+        Assertions.assertEquals(2, loader.requests.size());
 
         // Request of new resource.
         cachedLoader.loadDocument(URI.create("http://localhost/3"), options);
-        Assertions.assertEquals(3, dummyLoader.requests.size());
+        Assertions.assertEquals(3, loader.requests.size());
 
         // Using LRU the first resources should not be in cache anymore.
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
-        Assertions.assertEquals(4, dummyLoader.requests.size());
+        Assertions.assertEquals(4, loader.requests.size());
     }
 
     @Test
     void testLoadDocumentsWithDifferentOptions() throws JsonLdError {
-        DummyLoader dummyLoader = new DummyLoader();
-        LRUDocumentCache cachedLoader = new LRUDocumentCache(dummyLoader, 2);
+        RecordRequestLoader loader = new RecordRequestLoader();
+        LRUDocumentCache cachedLoader = new LRUDocumentCache(loader, 2);
 
         // Using options with same inside should lead to cache hit.
         DocumentLoaderOptions options = new DocumentLoaderOptions();
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
         DocumentLoaderOptions sameOptions = new DocumentLoaderOptions();
         cachedLoader.loadDocument(URI.create("http://localhost/1"), sameOptions);
-        Assertions.assertEquals(1, dummyLoader.requests.size());
+        Assertions.assertEquals(1, loader.requests.size());
 
         // Use of different options should cause cache miss.
         DocumentLoaderOptions differentOptions = new DocumentLoaderOptions();
         differentOptions.setProfile("profile");
         cachedLoader.loadDocument(URI.create("http://localhost/1"), differentOptions);
-        Assertions.assertEquals(2, dummyLoader.requests.size());
+        Assertions.assertEquals(2, loader.requests.size());
     }
 
 }
