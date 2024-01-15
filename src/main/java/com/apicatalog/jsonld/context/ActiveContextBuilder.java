@@ -233,35 +233,27 @@ public final class ActiveContextBuilder {
                     throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED);
                 }
 
-                JsonValue importedStructure;
-                final String contextImportUriKey = contextImportUri.toString();
-                if (activeContext.runtime().getContextCache() != null
-                        && activeContext.runtime().getContextCache().containsKey(contextImportUriKey)) {
-                    importedStructure = activeContext.runtime().getContextCache().get(contextImportUriKey);
-                } else {
-                    try {
-                        final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
-                        loaderOptions.setProfile(ProfileConstants.CONTEXT);
-                        loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
+                final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
+                loaderOptions.setProfile(ProfileConstants.CONTEXT);
+                loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
 
-                        final Document importedDocument = activeContext.runtime().getDocumentLoader().loadDocument(contextImportUri, loaderOptions);
+                JsonStructure importedStructure = null;
 
-                        if (importedDocument == null) {
-                            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context[" + contextImportUri + "] is null.");
-                        }
+                try {
 
-                        importedStructure = importedDocument
-                                .getJsonContent()
-                                .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE));
+                    final Document importedDocument = activeContext.runtime().getDocumentLoader().loadDocument(contextImportUri, loaderOptions);
 
-                        if (activeContext.runtime().getContextCache() != null) {
-                            activeContext.runtime().getContextCache().put(contextImportUriKey, importedStructure.asJsonObject());
-                        }
-
-                    } catch (JsonLdError e) {
-                        // 5.6.5
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE, e);
+                    if (importedDocument == null) {
+                        throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context[" + contextImportUri + "] is null.");
                     }
+
+                    importedStructure = importedDocument
+                            .getJsonContent()
+                            .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE));
+
+                    // 5.6.5
+                } catch (JsonLdError e) {
+                    throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE, e);
                 }
 
                 // 5.6.6
