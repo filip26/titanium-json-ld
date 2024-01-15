@@ -5,6 +5,7 @@ import com.apicatalog.jsonld.context.cache.LruCache;
 import com.apicatalog.jsonld.document.Document;
 
 import java.net.URI;
+import java.util.Collection;
 
 public class LRUDocumentCache implements DocumentLoader {
 
@@ -40,7 +41,7 @@ public class LRUDocumentCache implements DocumentLoader {
         // value for objects with same internal values.
         String optionsHash = options.getProfile() + ":" +
                 options.isExtractAllScripts() + ":";
-        var profiles = options.getRequestProfile();
+        Collection<String> profiles = options.getRequestProfile();
         if (profiles == null) {
             optionsHash += "null";
         } else {
