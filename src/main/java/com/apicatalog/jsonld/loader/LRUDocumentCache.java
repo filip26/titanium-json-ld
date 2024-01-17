@@ -13,11 +13,6 @@ public class LRUDocumentCache implements DocumentLoader {
 
     private final LruCache<String, Document> cache;
 
-    public LRUDocumentCache(int cacheSize) {
-        this.documentLoader = SchemeRouter.defaultInstance();
-        this.cache = new LruCache<>(cacheSize);
-    }
-
     public LRUDocumentCache(DocumentLoader documentLoader, int cacheSize) {
         this.documentLoader = documentLoader;
         this.cache = new LruCache<>(cacheSize);

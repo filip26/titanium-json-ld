@@ -174,11 +174,11 @@ static DocumentLoader LOADER = HttpLoader.defaultInstance().timeount(Duration.of
 JsonLd.expand(...).loader(LOADER).get();
 ```
 
-#### Caching
+#### Document caching
 Configure LRU-based cache for loading documents.
 The argument determines size of the LRU-cache.
 ```javascript
-JsonLd.toRdf("https://example/document.jsonld").loader(new LRUDocumentCache(12)).get();
+JsonLd.toRdf("https://example/document.jsonld").loader(new LRUDocumentCache(loader, 12)).get();
 ```
 
 You can share instance of `LRUDocumentCache` among multiple calls to reuse cached documents.
