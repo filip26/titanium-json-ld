@@ -342,11 +342,9 @@ public final class TermDefinitionBuilder {
             // 13.7.
             activeContext.setTerm(term, definition);
             defined.put(term, Boolean.TRUE);
-            return;
-        }
 
-        // 14.
-        if (idValue != null && (JsonUtils.isNotString(idValue) || !term.equals(((JsonString) idValue).getString()))) {
+            // 14.
+        } else if (idValue != null && (JsonUtils.isNotString(idValue) || !term.equals(((JsonString) idValue).getString()))) {
 
             // 14.1.
             if (JsonUtils.isNotNull(idValue)) {
