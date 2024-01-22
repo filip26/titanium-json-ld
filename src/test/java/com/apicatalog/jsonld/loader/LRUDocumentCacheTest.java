@@ -9,11 +9,16 @@ import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class LRUDocumentCacheTest {
 
     static class Request {
+
         final URI url;
 
         final DocumentLoaderOptions options;
@@ -99,5 +104,54 @@ public class LRUDocumentCacheTest {
         cachedLoader.loadDocument(URI.create("http://localhost/1"), differentOptions);
         Assertions.assertEquals(2, loader.requests.size());
     }
+
+    @Test
+    void testCachingEqualOptions() throws JsonLdError {
+        RecordRequestLoader loader = new RecordRequestLoader();
+        LRUDocumentCache cachedLoader = new LRUDocumentCache(loader, 2);
+        DocumentLoaderOptions options = null;
+
+        options = new DocumentLoaderOptions();
+        options.setProfile("profile");
+        options.setExtractAllScripts(true);
+        options.setRequestProfile(List.of("first", "second"));
+        cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
+
+        options = new DocumentLoaderOptions();
+        options.setProfile("profile");
+        options.setExtractAllScripts(true);
+        options.setRequestProfile(List.of("first", "second"));
+        cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
+
+        options = new DocumentLoaderOptions();
+        options.setProfile("profile");
+        options.setExtractAllScripts(true);
+        options.setRequestProfile(Arrays.asList("first", "second"));
+        cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
+
+        Assertions.assertEquals(1, loader.requests.size());
+    }
+
+    @Test
+    void testCachingProfilesOrderMatter() throws JsonLdError {
+        RecordRequestLoader loader = new RecordRequestLoader();
+        LRUDocumentCache cachedLoader = new LRUDocumentCache(loader, 2);
+        DocumentLoaderOptions options = null;
+
+        options = new DocumentLoaderOptions();
+        options.setProfile("profile");
+        options.setExtractAllScripts(true);
+        options.setRequestProfile(List.of("first", "second"));
+        cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
+
+        options = new DocumentLoaderOptions();
+        options.setProfile("profile");
+        options.setExtractAllScripts(true);
+        options.setRequestProfile(List.of("second", "first"));
+        cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
+
+        Assertions.assertEquals(2, loader.requests.size());
+    }
+
 
 }

@@ -15,7 +15,10 @@
  */
 package com.apicatalog.jsonld.loader;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * The {@link DocumentLoaderOptions} is used to pass various options to the
@@ -62,6 +65,51 @@ public class DocumentLoaderOptions {
 
     public void setRequestProfile(Collection<String> requestProfile) {
         this.requestProfile = requestProfile;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+        DocumentLoaderOptions options = (DocumentLoaderOptions) other;
+        if (extractAllScripts != options.extractAllScripts ||
+                !Objects.equals(profile, options.profile)) {
+            return false;
+        }
+        // We need to deal with the collection of profiles.
+        // We assume that the order does matter.
+        if (requestProfile == null && options.requestProfile == null) {
+            // They are bot null.
+            return true;
+        }
+        if (requestProfile == null || options.requestProfile == null) {
+            // Only one is null.
+            return false;
+        }
+        if (requestProfile.size() != options.requestProfile.size()) {
+            // Different size.
+            return false;
+        }
+        // We need to be sure the content is the same.
+        Iterator<String> thisIterator = requestProfile.iterator();
+        Iterator<String> otherIterator = options.requestProfile.iterator();
+        while (thisIterator.hasNext() && otherIterator.hasNext()) {
+            if (!Objects.equals(thisIterator.next(), otherIterator.next())) {
+                // One value is not the same.
+                return false;
+            }
+        }
+        // We have not found a difference thus they are the same.
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(extractAllScripts, profile, requestProfile);
     }
 
 }

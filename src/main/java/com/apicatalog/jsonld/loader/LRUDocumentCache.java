@@ -5,13 +5,43 @@ import com.apicatalog.jsonld.context.cache.LruCache;
 import com.apicatalog.jsonld.document.Document;
 
 import java.net.URI;
-import java.util.Collection;
+import java.util.Objects;
 
 public class LRUDocumentCache implements DocumentLoader {
 
+    protected static class CacheKey {
+
+        private final URI url;
+
+        private final DocumentLoaderOptions options;
+
+        public CacheKey(URI url, DocumentLoaderOptions options) {
+            this.url = url;
+            this.options = options;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (this == other) {
+                return true;
+            }
+            if (other == null || getClass() != other.getClass()) {
+                return false;
+            }
+            CacheKey cacheKey = (CacheKey) other;
+            return Objects.equals(url, cacheKey.url) &&
+                    Objects.equals(options, cacheKey.options);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(url, options);
+        }
+    }
+
     private final DocumentLoader documentLoader;
 
-    private final LruCache<String, Document> cache;
+    private final LruCache<Object, Document> cache;
 
     public LRUDocumentCache(DocumentLoader documentLoader, int cacheSize) {
         this.documentLoader = documentLoader;
@@ -20,7 +50,7 @@ public class LRUDocumentCache implements DocumentLoader {
 
     @Override
     public Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
-        String key = computeCacheKey(url, options);
+        Object key = createCacheKey(url, options);
         Document result = cache.get(key);
         if (result == null) {
             result = documentLoader.loadDocument(url, options);
@@ -29,19 +59,8 @@ public class LRUDocumentCache implements DocumentLoader {
         return result;
     }
 
-    protected String computeCacheKey(URI url, DocumentLoaderOptions options) {
-        // We can not use options.hashCode() as it does not return same
-        // value for objects with same internal values.
-        String optionsHash = options.getProfile() + ":" +
-                options.isExtractAllScripts() + ":";
-        Collection<String> profiles = options.getRequestProfile();
-        if (profiles == null) {
-            optionsHash += "null";
-        } else {
-            optionsHash += String.join(",", options.getRequestProfile());
-        }
-        //
-        return url.toString() + ";" + optionsHash;
+    protected Object createCacheKey(URI url, DocumentLoaderOptions options){
+        return new CacheKey(url, options);
     }
 
 }
