@@ -9,6 +9,10 @@ import java.util.Objects;
 
 public class LRUDocumentCache implements DocumentLoader {
 
+    private final DocumentLoader documentLoader;
+
+    private final LruCache<Object, Document> cache;
+
     protected static class CacheKey {
 
         private final URI url;
@@ -38,10 +42,6 @@ public class LRUDocumentCache implements DocumentLoader {
             return Objects.hash(url, options);
         }
     }
-
-    private final DocumentLoader documentLoader;
-
-    private final LruCache<Object, Document> cache;
 
     public LRUDocumentCache(DocumentLoader documentLoader, int cacheSize) {
         this.documentLoader = documentLoader;
