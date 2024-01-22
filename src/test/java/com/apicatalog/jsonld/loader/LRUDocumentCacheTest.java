@@ -114,19 +114,28 @@ public class LRUDocumentCacheTest {
         options = new DocumentLoaderOptions();
         options.setProfile("profile");
         options.setExtractAllScripts(true);
-        options.setRequestProfile(List.of("first", "second"));
+        List<String> firstList = new ArrayList<>();
+        firstList.add("first");
+        firstList.add("second");
+        options.setRequestProfile(firstList);
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
 
         options = new DocumentLoaderOptions();
         options.setProfile("profile");
         options.setExtractAllScripts(true);
-        options.setRequestProfile(List.of("first", "second"));
+        List<String> secondList = new ArrayList<>();
+        secondList.add("first");
+        secondList.add("second");
+        options.setRequestProfile(secondList);
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
 
         options = new DocumentLoaderOptions();
         options.setProfile("profile");
         options.setExtractAllScripts(true);
-        options.setRequestProfile(Arrays.asList("first", "second"));
+        List<String> thirdList = new LinkedList<>();
+        thirdList.add("first");
+        thirdList.add("second");
+        options.setRequestProfile(thirdList);
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
 
         Assertions.assertEquals(1, loader.requests.size());
@@ -141,13 +150,19 @@ public class LRUDocumentCacheTest {
         options = new DocumentLoaderOptions();
         options.setProfile("profile");
         options.setExtractAllScripts(true);
-        options.setRequestProfile(List.of("first", "second"));
+        List<String> firstList = new ArrayList<>();
+        firstList.add("first");
+        firstList.add("second");
+        options.setRequestProfile(firstList);
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
 
         options = new DocumentLoaderOptions();
         options.setProfile("profile");
         options.setExtractAllScripts(true);
-        options.setRequestProfile(List.of("second", "first"));
+        List<String> secondList = new ArrayList<>();
+        secondList.add("second");
+        secondList.add("first");
+        options.setRequestProfile(secondList);
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
 
         Assertions.assertEquals(2, loader.requests.size());
