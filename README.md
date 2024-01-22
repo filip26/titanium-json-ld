@@ -178,13 +178,14 @@ Configure LRU-based cache for loading documents.
 The argument determines size of the LRU-cache.
 ```javascript
 // since 1.4.0
-JsonLd.toRdf("https://example/document.jsonld").loader(new LRUDocumentCache(loader, 12)).get();
+JsonLd.toRdf("https://example/document.jsonld").loader(new LRUDocumentCache(loader, capacity)).get();
 ```
 
 You can share an instance of `LRUDocumentCache` among multiple calls to reuse cached documents.
 ```javascript
 // since 1.4.0
-DocumentLoader cachedLoader = new LRUDocumentCache(12);
+DocumentLoader cachedLoader = new LRUDocumentCache(loader, capacity);
+
 JsonLd.toRdf("https://example/document.jsonld").loader(cachedLoader).get();
 JsonLd.toRdf("https://example/another-document.jsonld").loader(cachedLoader).get();
 ```
