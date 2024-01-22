@@ -159,7 +159,7 @@ the duration does not cover `DocumentLoader` processing time.
 You have to set-up a read timeout separately.
 
 ```javascript
-// since 1.4.0 -
+// since 1.4.0
 JsonLd.expand(...).timeout(duration)...get();
 ```
 
@@ -177,11 +177,13 @@ JsonLd.expand(...).loader(LOADER).get();
 Configure LRU-based cache for loading documents.
 The argument determines size of the LRU-cache.
 ```javascript
+// since 1.4.0
 JsonLd.toRdf("https://example/document.jsonld").loader(new LRUDocumentCache(loader, 12)).get();
 ```
 
-You can share instance of `LRUDocumentCache` among multiple calls to reuse cached documents.
+You can share an instance of `LRUDocumentCache` among multiple calls to reuse cached documents.
 ```javascript
+// since 1.4.0
 DocumentLoader cachedLoader = new LRUDocumentCache(12);
 JsonLd.toRdf("https://example/document.jsonld").loader(cachedLoader).get();
 JsonLd.toRdf("https://example/another-document.jsonld").loader(cachedLoader).get();
