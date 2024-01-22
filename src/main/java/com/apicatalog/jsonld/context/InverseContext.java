@@ -53,9 +53,9 @@ public final class InverseContext {
 
     public boolean contains(final String variable, final String container, final String type, final String key) {
         return contains(variable)
-                    && context.get(variable).containsKey(container)
-                    && context.get(variable).get(container).containsKey(type)
-                    && context.get(variable).get(container).get(type).containsKey(key);
+                && context.get(variable).containsKey(container)
+                && context.get(variable).get(container).containsKey(type)
+                && context.get(variable).get(container).get(type).containsKey(key);
     }
 
     public InverseContext setIfAbsent(final String variable, final String container, final String type, final String key, final String value) {

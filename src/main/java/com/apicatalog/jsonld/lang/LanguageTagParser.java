@@ -18,16 +18,20 @@ package com.apicatalog.jsonld.lang;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import java.util.function.IntPredicate;
+import java.util.regex.Pattern;
 
 import com.apicatalog.jsonld.lang.LanguageTag.Extension;
 import com.apicatalog.rdf.lang.RdfAlphabet;
 
 /**
- * Language tags are used to help identify languages and are defined by <code>RFC 5646</code>.
+ * Language tags are used to help identify languages and are defined by
+ * <code>RFC 5646</code>.
  *
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc5646">RFC 5643</a>
  */
 final class LanguageTagParser {
+
+    static final Pattern LANG_DEL_RE = Pattern.compile("-");
 
     final String languageTag;
     final String[] tags;
@@ -71,16 +75,14 @@ final class LanguageTagParser {
 
         final String stripped = languageTag.trim();
 
-        // must start with ALPHA  and ends with ALPHANUM
+        // must start with ALPHA and ends with ALPHANUM
         if (stripped.length() == 0
                 || RdfAlphabet.ASCII_ALPHA.negate().test(stripped.codePointAt(0))
-                || RdfAlphabet.ASCII_ALPHA_NUM.negate().test(stripped.codePointAt(stripped.length() - 1))
-                ) {
+                || RdfAlphabet.ASCII_ALPHA_NUM.negate().test(stripped.codePointAt(stripped.length() - 1))) {
             return new LanguageTagParser(languageTag, null, verifierMode);
         }
 
-        final String[] tags = stripped.split("-");
-
+        final String[] tags = LANG_DEL_RE.split(stripped);
 
         if (tags == null || tags.length == 0) {
             return new LanguageTagParser(languageTag, null, verifierMode);
@@ -88,6 +90,7 @@ final class LanguageTagParser {
 
         return new LanguageTagParser(languageTag, tags, verifierMode);
     }
+
     /**
      * Parses the language tag.
      *
@@ -116,10 +119,10 @@ final class LanguageTagParser {
                 acceptAlpha(3, tag::addLanguageExtension);
             }
 
-        // reserved 4ALPHA or registered for future use 5*8ALPHA
+            // reserved 4ALPHA or registered for future use 5*8ALPHA
         } else if (acceptAlpha(4, 8, tag::setLanguage)) {
 
-        // private use
+            // private use
         } else if (acceptPrivateUse(tag)) {
 
             if (tagIndex != tags.length) {
@@ -136,14 +139,15 @@ final class LanguageTagParser {
         acceptAlpha(4, tag::setScript); // script = 4ALPHA
 
         // ["-" region]
-        if (!acceptAlpha(2, tag::setRegion)) {  // region = 2ALPHA | 3DIGIT
+        if (!acceptAlpha(2, tag::setRegion)) { // region = 2ALPHA | 3DIGIT
             acceptDigit(3, tag::setRegion);
         }
 
         // *("-" variant)
         // variant = 5*8alphanum | (DIGIT 3alphanum)
         while (acceptAlphaNun(5, 8, tag::addVariant)
-                || (digitRange(0, 1) && alphaNumRange(1, 3) && accept(4, tag::addVariant)));
+                || (digitRange(0, 1) && alphaNumRange(1, 3) && accept(4, tag::addVariant)))
+            ;
 
         // *("-" extension)
         // extension = singleton 1*("-" (2*8alphanum))
@@ -158,7 +162,8 @@ final class LanguageTagParser {
                 break;
             }
 
-            while (acceptAlphaNun(2, 8, extension::addTag));
+            while (acceptAlphaNun(2, 8, extension::addTag))
+                ;
 
             tag.addExtension(extension);
         }
@@ -182,7 +187,8 @@ final class LanguageTagParser {
                 tagIndex--;
 
             } else {
-                while (acceptAlphaNun(1, 8, tag::addPrivateUse));
+                while (acceptAlphaNun(1, 8, tag::addPrivateUse))
+                    ;
                 return true;
             }
         }
@@ -259,11 +265,9 @@ final class LanguageTagParser {
     }
 
     boolean range(int index, int length, IntPredicate predicate) {
-        return
-            tagIndex < tags.length
-            && index < tags[tagIndex].length()
-            && (index + length) <= tags[tagIndex].length()
-            && tags[tagIndex].substring(index, index + length).chars().allMatch(predicate)
-            ;
+        return tagIndex < tags.length
+                && index < tags[tagIndex].length()
+                && (index + length) <= tags[tagIndex].length()
+                && tags[tagIndex].substring(index, index + length).chars().allMatch(predicate);
     }
 }

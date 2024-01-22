@@ -1,0 +1,15 @@
+{
+  "@context": {
+    "data": "@graph"
+  },
+  "data": [
+    {
+      "@id": "http://example.org/bar",
+      "http://example.org/name": "Bar"
+    },
+    {
+      "@id": "http://example.org/foo",
+      "http://example.org/name": "Foo"
+    }
+  ]
+}

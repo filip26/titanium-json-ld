@@ -30,7 +30,7 @@ public final class SchemeRouter implements DocumentLoader {
                                         .set("http", HttpLoader.defaultInstance())
                                         .set("https", HttpLoader.defaultInstance())
                                         .set("file", new FileLoader());
-
+    
     private final Map<String, DocumentLoader> loaders;
 
     public SchemeRouter() {

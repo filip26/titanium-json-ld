@@ -15,7 +15,7 @@ The goals of Titanium are:
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/c530c6b43b0243c08ce81521c5b4cf6a)](https://www.codacy.com/gh/filip26/titanium-json-ld/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=filip26/titanium-json-ld&amp;utm_campaign=Badge_Grade)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=filip26_titanium-json-ld&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=filip26_titanium-json-ld)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/c530c6b43b0243c08ce81521c5b4cf6a)](https://www.codacy.com/manual/filip26/titanium-json-ld?utm_source=github.com&utm_medium=referral&utm_content=filip26/titanium-json-ld&utm_campaign=Badge_Coverage)
-[![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/titanium-json-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.apicatalog%22%20AND%20a:%22titanium-json-ld%22)
+[![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/titanium-json-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:com.apicatalog%20AND%20a:titanium-json-ld)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 
@@ -39,10 +39,10 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 
  | Feature | Tests | Pass | Status | Notes |
  | --- | ---: | ---: | ---: | --- |
-| [Expansion](https://www.w3.org/TR/json-ld/#expanded-document-form) | 371 |  371 | 100% | |
-| [Compaction](https://www.w3.org/TR/json-ld/#compacted-document-form) | 242 | 242 | 100% | |
+| [Expansion](https://www.w3.org/TR/json-ld/#expanded-document-form) | 373 |  373 | 100% | |
+| [Compaction](https://www.w3.org/TR/json-ld/#compacted-document-form) | 243 | 243 | 100% | |
 | [Flattening](https://www.w3.org/TR/json-ld/#flattened-document-form) | 55 | 55 | 100% | |
-| [JSON-LD to RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 451 | 449 | 99.5% | <ul><li>[te075 - @vocab as blank node identifier](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#te075)</li><li>[tli12 - List with bad @base](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#tli12)</li></ul> |
+| [JSON-LD to RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 453 | 451 | 99.5% | <ul><li>[te075 - @vocab as blank node identifier](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#te075)</li><li>[tli12 - List with bad @base](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#tli12)</li></ul> |
 | [RDF to JSON-LD](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 51 | 51  | 100% | |
 | [Framing](https://www.w3.org/TR/json-ld11-framing/#framing) | 89 | 88 | 98.8% | <ul><li>[t0059 - @embed: @last](https://w3c.github.io/json-ld-framing/tests/frame-manifest#t0059)</li></ul> |
 | [Remote Document and Context Retrieval](https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval) | 18 | 17 | 94.4% | <ul><li>[t0013 - HTML document](https://w3c.github.io/json-ld-api/tests/remote-doc-manifest#t0013)</li></ul> |
@@ -57,6 +57,7 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 
 - [JSON-LD-star](https://json-ld.github.io/json-ld-star) expansion and compaction built-in support (experimental)
 - [Universal RDF Dataset Normalization Algorithm - URDNA2015](https://github.com/simon-greatrix/rdf-urdna)
+- [Iridium CBOR-LD](https://github.com/filip26/iridium-cbor-ld) - A CBOR-based Processor for Linked Data
 
 ## Usage
 
@@ -65,28 +66,28 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 #### Titanium
 
 ##### Maven
-Java 11 or higher
+Java 11+
 
 ```xml
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium-json-ld</artifactId>
-    <version>1.3.2</version>
+    <version>1.3.3</version>
 </dependency>
 ```
 
 ##### Gradle 
-Java 8+, Android API Level >=21
+Java 8+, Android API Level >=24
 
 ```gradle
-compile group: 'com.apicatalog', name: 'titanium-json-ld-jre8', version: '1.3.2'
+implementation("com.apicatalog:titanium-json-ld-jre8:1.3.3")
 ```
 
 #### JSON-P Provider
 
 Add JSON-P provider, if it is not on the classpath already.
 
-Maven
+##### Maven
 
 ```xml
 <dependency>
@@ -96,11 +97,10 @@ Maven
 </dependency>
 ```
 
-Gradle
+##### Gradle
 
 ```gradle
-compile group: 'org.glassfish', name: 'jakarta.json', version: '2.0.1'
-
+implementation("org.glassfish:jakarta.json:2.0.1")
 ```
 
 ### Documentation
@@ -110,6 +110,8 @@ compile group: 'org.glassfish', name: 'jakarta.json', version: '2.0.1'
 ### Examples
 
 Titanium provides high-level [JsonLd](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/JsonLd.html) API to interact with the processor.
+
+#### Transformations
 
 ```javascript
 
@@ -141,14 +143,49 @@ JsonLd.frame("https://example/document.jsonld", "https://example/frame.jsonld").
 
 ```
 
+#### Local JSON Document
+
 ```javascript
-// Local document
 Document document = JsonDocument.of(InputStream) or JsonDocument.of(Reader) ...
 
 JsonLd.expand(document).get();
 
 JsonLd.compact(document, contextDocument).get();
 ...
+```
+
+#### Processing Timeout
+A processor gets terminated eventually after a specified time. Please note 
+the duration does not cover `DocumentLoader` processing time. 
+You have to set-up a read timeout separately.
+
+```javascript
+// since 1.4.0 -
+JsonLd.expand(...).timeout(duration)...get();
+```
+
+#### HTTP Document Loader Timeout
+Configure and set a custom HTTP document loader instance.
+
+```javascript
+// since 1.4.0 - set read timeout
+static DocumentLoader LOADER = HttpLoader.defaultInstance().timeount(Duration.ofSeconds(30));
+...
+JsonLd.expand(...).loader(LOADER).get();
+```
+
+#### Document caching
+Configure LRU-based cache for loading documents.
+The argument determines size of the LRU-cache.
+```javascript
+JsonLd.toRdf("https://example/document.jsonld").loader(new LRUDocumentCache(loader, 12)).get();
+```
+
+You can share instance of `LRUDocumentCache` among multiple calls to reuse cached documents.
+```javascript
+DocumentLoader cachedLoader = new LRUDocumentCache(12);
+JsonLd.toRdf("https://example/document.jsonld").loader(cachedLoader).get();
+JsonLd.toRdf("https://example/another-document.jsonld").loader(cachedLoader).get();
 ```
 
 ## Contributing

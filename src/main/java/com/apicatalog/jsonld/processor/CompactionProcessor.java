@@ -34,7 +34,8 @@ import jakarta.json.JsonValue;
 
 /**
  *
- * @see <a href="https://www.w3.org/TR/json-ld11-api/#dom-jsonldprocessor-compact">JsonLdProcessor.compact()</a>
+ * @see <a href=
+ *      "https://www.w3.org/TR/json-ld11-api/#dom-jsonldprocessor-compact">JsonLdProcessor.compact()</a>
  *
  */
 public final class CompactionProcessor {
@@ -108,11 +109,12 @@ public final class CompactionProcessor {
 
         // 6.
         final JsonValue contextValue = context.getJsonContent()
-                                        .map(ctx -> JsonUtils.flatten(ctx, Keywords.CONTEXT))
-                                        .orElse(JsonValue.EMPTY_JSON_OBJECT);
+                .map(ctx -> JsonUtils.flatten(ctx, Keywords.CONTEXT))
+                .orElse(JsonValue.EMPTY_JSON_OBJECT);
 
         // 7.
-        final ActiveContext activeContext = new ActiveContext(options).newContext().create(contextValue, contextBase);
+        final ActiveContext activeContext = new ActiveContext(
+                ProcessingRuntime.of(options)).newContext().create(contextValue, contextBase);
 
         // 8.
         if (activeContext.getBaseUri() == null) {
@@ -127,23 +129,22 @@ public final class CompactionProcessor {
 
         // 9.
         JsonValue compactedOutput = Compaction
-                                        .with(activeContext)
-                                        .compactArrays(options.isCompactArrays())
-                                        .ordered(options.isOrdered())
-                                        .compact(expandedInput);
+                .with(activeContext)
+                .compactArrays(options.isCompactArrays())
+                .ordered(options.isOrdered())
+                .compact(expandedInput);
 
         // 9.1.
         if (JsonUtils.isEmptyArray(compactedOutput)) {
             compactedOutput = JsonValue.EMPTY_JSON_OBJECT;
 
-        // 9.2.
+            // 9.2.
         } else if (JsonUtils.isArray(compactedOutput)) {
             compactedOutput = JsonProvider.instance().createObjectBuilder()
-                                    .add(
-                                        activeContext.uriCompaction().vocab(true).compact(Keywords.GRAPH),
-                                        compactedOutput
-                                        )
-                                    .build();
+                    .add(
+                            activeContext.uriCompaction().vocab(true).compact(Keywords.GRAPH),
+                            compactedOutput)
+                    .build();
         }
 
         if (JsonUtils.isNull(compactedOutput) || compactedOutput.asJsonObject().isEmpty()) {
@@ -153,11 +154,10 @@ public final class CompactionProcessor {
         // 9.3.
         if (JsonUtils.isNotNull(contextValue)
                 && !JsonUtils.isEmptyArray(contextValue)
-                && !JsonUtils.isEmptyObject(contextValue)
-                ) {
+                && !JsonUtils.isEmptyObject(contextValue)) {
             compactedOutput = JsonProvider.instance().createObjectBuilder(compactedOutput.asJsonObject())
-                                    .add(Keywords.CONTEXT, contextValue)
-                                    .build();
+                    .add(Keywords.CONTEXT, contextValue)
+                    .build();
         }
 
         return compactedOutput.asJsonObject();

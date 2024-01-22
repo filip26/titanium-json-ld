@@ -135,7 +135,7 @@ public final class Keywords {
 
     public static boolean noneMatch(final String key, final String... keywords) {
         // vanilla approach is 3 times faster than stream.noneMatch
-        for (String k : keywords) {
+        for (final String k : keywords) {
             if (k.equals(key)) {
                 return false;
             }
@@ -143,10 +143,12 @@ public final class Keywords {
         return true;
     }
 
+    @Deprecated
     public static boolean anyMatch(final String key, final String... keywords) {
         return Arrays.asList(keywords).contains(key);
     }
 
+    @Deprecated
     public static boolean allMatch(final Collection<String> values, final String... keywords) {
         return Arrays.asList(keywords).containsAll(values);
     }

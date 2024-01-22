@@ -289,6 +289,9 @@ public enum JsonLdErrorCode {
     INVALID_ANNOTATION,
 
     // Custom
+    
+    PROCESSING_TIMEOUT_EXCEEDED,
+    
     UNSPECIFIED;
 
     private static final Map<JsonLdErrorCode, String> CODE_TO_MESSAGE;
@@ -350,6 +353,7 @@ public enum JsonLdErrorCode {
         messages.put(INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag");
         messages.put(INVALID_EMBEDDED_NODE, "An invalid embedded node has been detected.");
         messages.put(INVALID_ANNOTATION, "An invalid annotation has been detected");
+        messages.put(PROCESSING_TIMEOUT_EXCEEDED, "A processing has exceeded a defined timeount");
 
         CODE_TO_MESSAGE = Collections.unmodifiableMap(messages);
     }

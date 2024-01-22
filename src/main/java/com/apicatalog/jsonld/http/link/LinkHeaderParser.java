@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.jsonld.http.HttpAlphabet;
@@ -32,7 +33,8 @@ import com.apicatalog.jsonld.uri.UriResolver;
 
 /**
  *
- * @see <a href="https://tools.ietf.org/html/rfc8288#appendix-B">Appendix B.  Algorithms for Parsing Link Header Fields</a>
+ * @see <a href="https://tools.ietf.org/html/rfc8288#appendix-B">Appendix B.
+ *      Algorithms for Parsing Link Header Fields</a>
  *
  */
 final class LinkHeaderParser {
@@ -41,8 +43,12 @@ final class LinkHeaderParser {
     private static final String ANCHOR = "anchor";
     private static final String TYPE = "type";
 
-    private enum State { INIT, URI_REF, PARAMS, PARAM_NAME_BEGIN, PARAM_NAME, PARAM_NAME_END, PARAM_VALUE,
-            STRING_VALUE, LITERAL_VALUE, ESCAPE, UNEXPECTED }
+    private static final Pattern REL_SPLIT_RE = Pattern.compile("[\\s\\t]+");
+
+    private enum State {
+        INIT, URI_REF, PARAMS, PARAM_NAME_BEGIN, PARAM_NAME, PARAM_NAME_END, PARAM_VALUE,
+        STRING_VALUE, LITERAL_VALUE, ESCAPE, UNEXPECTED
+    }
 
     private URI baseUri;
 
@@ -71,50 +77,50 @@ final class LinkHeaderParser {
         for (final char ch : linkHeader) {
 
             switch (state) {
-                case INIT:
-                    initParser(ch);
-                    break;
+            case INIT:
+                initParser(ch);
+                break;
 
-                case URI_REF:
-                    parseTargetUri(ch);
-                    break;
+            case URI_REF:
+                parseTargetUri(ch);
+                break;
 
-                case PARAMS:
-                    parseParameters(ch);
-                    break;
+            case PARAMS:
+                parseParameters(ch);
+                break;
 
-                case PARAM_NAME_BEGIN:
-                    parseParamNameBegin(ch);
-                    break;
+            case PARAM_NAME_BEGIN:
+                parseParamNameBegin(ch);
+                break;
 
-                case PARAM_NAME:
-                    parseParamName(ch);
-                    break;
+            case PARAM_NAME:
+                parseParamName(ch);
+                break;
 
-                case PARAM_NAME_END:
-                    parseParamNameEnd(ch);
-                    break;
+            case PARAM_NAME_END:
+                parseParamNameEnd(ch);
+                break;
 
-                case PARAM_VALUE:
-                    parseParamValue(ch);
-                    break;
+            case PARAM_VALUE:
+                parseParamValue(ch);
+                break;
 
-                case LITERAL_VALUE:
-                    parseLiteral(ch);
-                    break;
+            case LITERAL_VALUE:
+                parseLiteral(ch);
+                break;
 
-                case STRING_VALUE:
-                    parseString(ch);
-                    break;
+            case STRING_VALUE:
+                parseString(ch);
+                break;
 
-                case ESCAPE:
-                    escape(ch);
-                    break;
+            case ESCAPE:
+                escape(ch);
+                break;
 
-                default:
-                    addParameter();
-                    addLink();
-                    return links;
+            default:
+                addParameter();
+                addLink();
+                return links;
             }
         }
 
@@ -158,7 +164,7 @@ final class LinkHeaderParser {
             MediaType type = null;
 
             if (attributes.containsKey(REL) && attributes.get(REL) != null) {
-                rel = new HashSet<>(Arrays.asList(StringUtils.strip(attributes.get(REL).get(0).value()).split("[\\s\\t]+")));
+                rel = new HashSet<>(Arrays.asList(REL_SPLIT_RE.split(StringUtils.strip(attributes.get(REL).get(0).value()))));
                 attributes.remove(REL);
             }
             if (attributes.containsKey(ANCHOR) && attributes.get(ANCHOR) != null) {
@@ -345,7 +351,6 @@ final class LinkHeaderParser {
         addLink();
         state = State.UNEXPECTED;
     }
-
 
     private final void parseString(final char ch) {
         if (ch == '"') {

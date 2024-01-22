@@ -15,6 +15,8 @@
  */
 package com.apicatalog.jsonld.json;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -28,6 +30,14 @@ import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
 
 public final class JsonMapBuilder {
+
+    private static final Collection<String> VALUE_KEYWORDS = Arrays.asList(
+            Keywords.TYPE, 
+            Keywords.VALUE, 
+            Keywords.DIRECTION, 
+            Keywords.LANGUAGE, 
+            Keywords.INDEX, 
+            Keywords.ANNOTATION);
 
     private final Map<String, Object> map;
 
@@ -105,9 +115,9 @@ public final class JsonMapBuilder {
         }
         throw new IllegalStateException();
     }
-
+    
     public boolean isNotValueObject() {
-        return !Keywords.allMatch(map.keySet(), Keywords.TYPE, Keywords.VALUE, Keywords.DIRECTION, Keywords.LANGUAGE, Keywords.INDEX, Keywords.ANNOTATION);
+        return !VALUE_KEYWORDS.containsAll(map.keySet());
     }
 
     public JsonArray valuesToArray() {

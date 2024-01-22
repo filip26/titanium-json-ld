@@ -36,7 +36,7 @@ public class HttpLoader extends DefaultHttpLoader {
         super(httpClient, maxRedirections);
     }
 
-    public static final DocumentLoader defaultInstance() {
+    public static final DefaultHttpLoader defaultInstance() {
         return INSTANCE;
     }
 }
