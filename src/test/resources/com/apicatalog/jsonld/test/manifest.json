@@ -139,6 +139,13 @@
       "expect": "issue257-2-out.json",
       "frame": "issue257-2-frame.json",
       "option": { "omitGraph" : false }
+    },
+    {
+      "@id": "#t0017",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "name": "Issue #310: # as vocabulary mapping",
+      "input": "issue310-in.json",
+      "expect": "issue310-out.json"
     }
   ]
 }
