@@ -164,7 +164,7 @@ public final class UriUtils {
 
         final StringBuilder builder = new StringBuilder();
 
-        if (isDefined(scheme)) {
+        if (scheme != null) {
             builder.append(scheme);
             builder.append(":");
         }
@@ -172,26 +172,17 @@ public final class UriUtils {
             builder.append("//");
             builder.append(authority);
         }
-        if (isDefined(path)) {
+        if (path != null) {
             builder.append(path);
         }
-        if (isDefined(query)) {
+        if (query != null) {
             builder.append('?');
             builder.append(query);
         }
-        if (isDefined(fragment)) {
+        if (fragment != null) {
             builder.append('#');
             builder.append(fragment);
         }
         return builder.toString();
     }
-
-    protected static final boolean isDefined(final String value) {
-        return value != null && StringUtils.isNotBlank(value);
-    }
-
-    protected static final boolean isNotDefined(final String value) {
-        return value == null || StringUtils.isBlank(value);
-    }
-
 }
