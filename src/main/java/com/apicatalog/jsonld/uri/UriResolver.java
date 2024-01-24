@@ -149,7 +149,7 @@ public final class UriResolver {
                 } else {
                     target[2] = basePath;
 
-                    if (UriUtils.isDefined(relative.getQuery())) {
+                    if (relative.getQuery() != null) {
                         target[3] = relative.getQuery();
 
                     } else {
@@ -175,7 +175,7 @@ public final class UriResolver {
      */
     private static final String removeDotSegments(final String path) {
 
-        if (UriUtils.isNotDefined(path)) {
+        if (path == null) {
             return null;
         }
 
@@ -244,7 +244,7 @@ public final class UriResolver {
      */
     private static final String merge(String basePath, String path) {
 
-        if (UriUtils.isNotDefined(basePath)) {
+        if (basePath == null) {
             return "/".concat(path);
         }
 
