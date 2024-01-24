@@ -4,7 +4,7 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 
 The goals of Titanium are:
 - conformance to the specification
-- secure, stable, fast, A+ code (1700 tests)
+- secure, stable, fast, A+ code (covered by **~1800 tests**)
 - minimal external dependencies
   - only `jakarta.json-api` is required
 - simple to use
