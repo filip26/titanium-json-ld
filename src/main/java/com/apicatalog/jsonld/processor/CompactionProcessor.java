@@ -23,7 +23,6 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
@@ -112,9 +111,11 @@ public final class CompactionProcessor {
                 .map(ctx -> JsonUtils.flatten(ctx, Keywords.CONTEXT))
                 .orElse(JsonValue.EMPTY_JSON_OBJECT);
 
+        
+        final ProcessingRuntime runtime = ProcessingRuntime.of(options);
+        
         // 7.
-        final ActiveContext activeContext = new ActiveContext(
-                ProcessingRuntime.of(options)).newContext().create(contextValue, contextBase);
+        final ActiveContext activeContext = new ActiveContext(runtime).newContext().create(contextValue, contextBase);
 
         // 8.
         if (activeContext.getBaseUri() == null) {
@@ -140,7 +141,7 @@ public final class CompactionProcessor {
 
             // 9.2.
         } else if (JsonUtils.isArray(compactedOutput)) {
-            compactedOutput = JsonProvider.instance().createObjectBuilder()
+            compactedOutput = runtime.jsonProvider().createObjectBuilder()
                     .add(
                             activeContext.uriCompaction().vocab(true).compact(Keywords.GRAPH),
                             compactedOutput)
@@ -155,7 +156,7 @@ public final class CompactionProcessor {
         if (JsonUtils.isNotNull(contextValue)
                 && !JsonUtils.isEmptyArray(contextValue)
                 && !JsonUtils.isEmptyObject(contextValue)) {
-            compactedOutput = JsonProvider.instance().createObjectBuilder(compactedOutput.asJsonObject())
+            compactedOutput = runtime.jsonProvider().createObjectBuilder(compactedOutput.asJsonObject())
                     .add(Keywords.CONTEXT, contextValue)
                     .build();
         }

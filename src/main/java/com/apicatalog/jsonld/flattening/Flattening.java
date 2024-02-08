@@ -19,7 +19,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Utils;
@@ -28,6 +27,7 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
+import jakarta.json.spi.JsonProvider;
 
 public final class Flattening {
 
@@ -37,15 +37,19 @@ public final class Flattening {
     // optional
     private boolean ordered;
 
-    private Flattening(final JsonStructure element) {
+    // runtime
+    private JsonProvider jsonProvider;
+    
+    private Flattening(final JsonStructure element, final JsonProvider jsonProvider) {
         this.element = element;
+        this.jsonProvider = jsonProvider;
 
         // default values
         this.ordered = false;
     }
 
-    public static final Flattening with(final JsonStructure element) {
-        return new Flattening(element);
+    public static final Flattening with(final JsonStructure element, final JsonProvider jsonProvider) {
+        return new Flattening(element, jsonProvider);
     }
 
     public Flattening ordered(boolean ordered) {
@@ -75,14 +79,14 @@ public final class Flattening {
 
             // 4.1.
             if (!defaultGraph.containsKey(graphName)) {
-                defaultGraph.put(graphName, JsonProvider.instance().createObjectBuilder().add(Keywords.ID, graphName).build());
+                defaultGraph.put(graphName, jsonProvider.createObjectBuilder().add(Keywords.ID, graphName).build());
             }
 
             // 4.2.
             final Map<String, JsonValue> entry = new LinkedHashMap<>(defaultGraph.get(graphName));
 
             // 4.3.
-            final JsonArrayBuilder graphArray =  JsonProvider.instance().createArrayBuilder();
+            final JsonArrayBuilder graphArray = jsonProvider.createArrayBuilder();
 
             // 4.4.
             for (final String id : Utils.index(graph.keySet(), ordered)) {
@@ -102,7 +106,7 @@ public final class Flattening {
         }
 
         // 5.
-        final JsonArrayBuilder flattened = JsonProvider.instance().createArrayBuilder();
+        final JsonArrayBuilder flattened = jsonProvider.createArrayBuilder();
 
         // 6.
         for (String id : Utils.index(defaultGraph.keySet(), ordered)) {

@@ -8,6 +8,7 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import jakarta.json.JsonValue;
+import jakarta.json.spi.JsonProvider;
 
 /**
  * A runtime context used during a transformation processing.
@@ -37,16 +38,18 @@ public class ProcessingRuntime {
      * 
      * @throws JsonLdError if a processing has exceeded
      */
-    public void tick() throws JsonLdError {/* NOP does nothing if timeout is not set */}
+    public void tick() throws JsonLdError {
+        /* NOP does nothing if timeout is not set */}
 
     /**
      * Resume ticker, a next ping decreases remaining time if timeout is set. Is
-     * used after an external method call, to exclude time consumed by
-     * the external call. e.g. when calling HTTP client.
+     * used after an external method call, to exclude time consumed by the external
+     * call. e.g. when calling HTTP client.
      * 
      * Does nothing if timeout is not set.
      */
-    public void resetTicker() {/* NOP does nothing if timeout is not set */}
+    public void resetTicker() {
+        /* NOP does nothing if timeout is not set */}
 
     public boolean isUriValidation() {
         return options.isUriValidation();
@@ -78,5 +81,9 @@ public class ProcessingRuntime {
 
     public boolean isNumericId() {
         return options.isNumericId();
+    }
+
+    public JsonProvider jsonProvider() {
+        return null; // TODO
     }
 }

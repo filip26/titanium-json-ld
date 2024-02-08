@@ -24,7 +24,6 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.expansion.Expansion;
-import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
@@ -41,7 +40,7 @@ import jakarta.json.JsonValue;
  */
 public final class ExpansionProcessor {
 
-    ExpansionProcessor() {
+    protected ExpansionProcessor() {
     }
 
     public static final JsonArray expand(final URI input, final JsonLdOptions options) throws JsonLdError {
@@ -93,7 +92,9 @@ public final class ExpansionProcessor {
             baseUri = options.getBase();
         }
 
-        ActiveContext activeContext = new ActiveContext(baseUri, baseUrl, ProcessingRuntime.of(options));
+        final ProcessingRuntime runtime = ProcessingRuntime.of(options);
+        
+        ActiveContext activeContext = new ActiveContext(baseUri, baseUrl, runtime);
 
         // 6. If the expandContext option in options is set, update the active context
         // using the Context Processing algorithm, passing the expandContext as
@@ -113,7 +114,7 @@ public final class ExpansionProcessor {
         if (input.getContextUrl() != null) {
             activeContext = activeContext
                                 .newContext()
-                                .create(JsonProvider.instance().createValue(input.getContextUrl().toString()), input.getContextUrl());
+                                .create(runtime.jsonProvider().createValue(input.getContextUrl().toString()), input.getContextUrl());
         }
 
         // 8.
@@ -171,7 +172,7 @@ public final class ExpansionProcessor {
                           baseUrl);
 
       }
-      return activeContext.newContext().create(JsonProvider.instance().createArrayBuilder().add(expandedContext).build(), baseUrl);
+      return activeContext.newContext().create(activeContext.runtime().jsonProvider().createArrayBuilder().add(expandedContext).build(), baseUrl);
     }
 
 }

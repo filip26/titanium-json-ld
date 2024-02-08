@@ -22,12 +22,12 @@ import com.apicatalog.jsonld.context.cache.Cache;
 import com.apicatalog.jsonld.context.cache.LruCache;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.SchemeRouter;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import jakarta.json.spi.JsonProvider;
 
 /**
  * The {@link JsonLdOptions} type is used to pass various options to the
@@ -127,6 +127,8 @@ public final class JsonLdOptions {
     
     private Duration timeout;
 
+    private JsonProvider jsonProvider;
+    
     public JsonLdOptions() {
         this(SchemeRouter.defaultInstance());
     }
@@ -163,6 +165,7 @@ public final class JsonLdOptions {
         this.documentCache = null;
         this.uriValidation = DEFAULT_URI_VALIDATION;
         this.timeout = null;
+        this.jsonProvider = JsonProvider.provider();
     }
 
     public JsonLdOptions(JsonLdOptions options) {
@@ -195,6 +198,7 @@ public final class JsonLdOptions {
         this.documentCache = options.documentCache;
         this.uriValidation = options.uriValidation;
         this.timeout = options.timeout;
+        this.jsonProvider = options.jsonProvider;
     }
 
     /**
@@ -345,7 +349,7 @@ public final class JsonLdOptions {
             return;
         }
 
-        this.expandContext = JsonDocument.of(JsonProvider.instance().createArrayBuilder().add(contextLocation).build());
+        this.expandContext = JsonDocument.of(jsonProvider.createArrayBuilder().add(contextLocation).build());
     }
 
     public void setExpandContext(URI contextUri) {
@@ -522,5 +526,18 @@ public final class JsonLdOptions {
      */
     public void setTimeout(Duration timeout) {
         this.timeout = timeout;
+    }
+
+    /**
+     * Set a custom instance of {@link JsonProvider}.
+     * 
+     * @param jsonProvider a custom instance
+     */
+    public void setJsonProvider(JsonProvider jsonProvider) {
+        this.jsonProvider = jsonProvider;
+    }
+    
+    public JsonProvider jsonProvider() {
+        return jsonProvider;
     }
 }

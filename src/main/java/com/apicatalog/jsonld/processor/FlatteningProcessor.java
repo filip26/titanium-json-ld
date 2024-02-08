@@ -99,7 +99,7 @@ public final class FlatteningProcessor {
 
         // 5.
         // 6.
-        JsonStructure flattenedOutput = Flattening.with(expandedInput).ordered(options.isOrdered()).flatten();
+        JsonStructure flattenedOutput = Flattening.with(expandedInput, options.jsonProvider()).ordered(options.isOrdered()).flatten();
 
         // 6.1.
         if (context != null) {

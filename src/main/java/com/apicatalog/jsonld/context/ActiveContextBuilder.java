@@ -28,7 +28,6 @@ import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.http.ProfileConstants;
-import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.DirectionType;
@@ -557,7 +556,7 @@ public final class ActiveContextBuilder {
 
         // remote @base from a remote context
         if (JsonUtils.containsKey(importedContext, Keywords.BASE)) {
-            importedContext = JsonProvider.instance().createObjectBuilder(importedContext.asJsonObject()).remove(Keywords.BASE).build();
+            importedContext = activeContext.runtime().jsonProvider().createObjectBuilder(importedContext.asJsonObject()).remove(Keywords.BASE).build();
         }
 
         if (activeContext.runtime().getDocumentCache() != null) {

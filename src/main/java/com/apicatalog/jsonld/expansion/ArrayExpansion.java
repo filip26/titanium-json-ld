@@ -20,7 +20,6 @@ import java.net.URI;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
@@ -84,7 +83,7 @@ public final class ArrayExpansion {
 
     public JsonArray expand() throws JsonLdError {
 
-        final JsonArrayBuilder result = JsonProvider.instance().createArrayBuilder();
+        final JsonArrayBuilder result = activeContext.runtime().jsonProvider().createArrayBuilder();
 
         // 5.2.
         for (final JsonValue item : element) {

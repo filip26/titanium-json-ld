@@ -5,7 +5,11 @@ package com.apicatalog.jsonld.json;
  * is much faster to keep track of the provider in a static instance.  This
  * avoids the overhead of doing a service lookup on each call.  This improves
  * performance dramatically (about 200 to 300% for most calls).
+ * 
+ * @deprecated Pass {@link jakarta.json.spi.JsonProvider} as a processing option
+ * 
  */
+@Deprecated(since = "1.4.0")
 public class JsonProvider {
 
 	private static jakarta.json.spi.JsonProvider provider;

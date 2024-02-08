@@ -36,7 +36,6 @@ import com.apicatalog.jsonld.framing.Frame;
 import com.apicatalog.jsonld.framing.Framing;
 import com.apicatalog.jsonld.framing.FramingState;
 import com.apicatalog.jsonld.json.JsonMapBuilder;
-import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -49,6 +48,7 @@ import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonString;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
+import jakarta.json.spi.JsonProvider;
 
 /**
  *
@@ -171,7 +171,8 @@ public final class FramingProcessor {
                 new ArrayList<>(state.getGraphMap().subjects(state.getGraphName())),
                 Frame.of(expandedFrame),
                 resultMap,
-                null)
+                null,
+                options.jsonProvider())
                 .ordered(options.isOrdered())
                 .frame();
 
@@ -183,14 +184,14 @@ public final class FramingProcessor {
             final List<String> remove = findBlankNodes(resultMap.valuesToArray());
 
             if (!remove.isEmpty()) {
-                result = result.map(v -> FramingProcessor.removeBlankIdKey(v, remove));
+                result = result.map(v -> FramingProcessor.removeBlankIdKey(options.jsonProvider(), v, remove));
             }
         }
 
         // 18. - remove preserve
-        final JsonArrayBuilder filtered = JsonProvider.instance().createArrayBuilder();
+        final JsonArrayBuilder filtered = options.jsonProvider().createArrayBuilder();
 
-        result.map(FramingProcessor::removePreserve).forEach(filtered::add);
+        result.map(a -> removePreserve(options.jsonProvider(), a)).forEach(filtered::add);
 
         // 19.
         JsonValue compactedResults = Compaction
@@ -206,13 +207,13 @@ public final class FramingProcessor {
             // 19.2.
         } else if (JsonUtils.isArray(compactedResults)) {
 
-            compactedResults = JsonProvider.instance().createObjectBuilder()
+            compactedResults = options.jsonProvider().createObjectBuilder()
                     .add(graphKey, compactedResults).build();
 
         }
 
         // 20.
-        compactedResults = replaceNull(compactedResults);
+        compactedResults = replaceNull(options.jsonProvider(), compactedResults);
 
         final boolean omitGraph;
 
@@ -228,19 +229,19 @@ public final class FramingProcessor {
         if (!omitGraph && !compactedResults.asJsonObject().containsKey(graphKey)) {
             if (compactedResults.asJsonObject().isEmpty()) {
 
-                compactedResults = JsonProvider.instance().createObjectBuilder().add(graphKey,
+                compactedResults = options.jsonProvider().createObjectBuilder().add(graphKey,
                         JsonValue.EMPTY_JSON_ARRAY).build();
 
             } else {
 
-                compactedResults = JsonProvider.instance().createObjectBuilder().add(graphKey,
-                        JsonProvider.instance().createArrayBuilder().add(compactedResults)).build();
+                compactedResults = options.jsonProvider().createObjectBuilder().add(graphKey,
+                        options.jsonProvider().createArrayBuilder().add(compactedResults)).build();
             }
         }
 
         // 19.3.
         if (!JsonUtils.isEmptyArray(context) && !JsonUtils.isEmptyObject(context)) {
-            compactedResults = JsonProvider.instance().createObjectBuilder(compactedResults.asJsonObject()).add(Keywords.CONTEXT, context).build();
+            compactedResults = options.jsonProvider().createObjectBuilder(compactedResults.asJsonObject()).add(Keywords.CONTEXT, context).build();
         }
 
         return compactedResults.asJsonObject();
@@ -268,7 +269,7 @@ public final class FramingProcessor {
         return remoteDocument;
     }
 
-    private static final JsonValue removePreserve(JsonValue value) {
+    private static final JsonValue removePreserve(final JsonProvider jsonProvider, final JsonValue value) {
 
         if (JsonUtils.isScalar(value)) {
             return value;
@@ -276,14 +277,14 @@ public final class FramingProcessor {
 
         if (JsonUtils.isArray(value)) {
 
-            final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
+            final JsonArrayBuilder array = jsonProvider.createArrayBuilder();
 
-            value.asJsonArray().forEach(item -> array.add(removePreserve(item)));
+            value.asJsonArray().forEach(item -> array.add(removePreserve(jsonProvider, item)));
 
             return array.build();
         }
 
-        final JsonObjectBuilder object = JsonProvider.instance().createObjectBuilder();
+        final JsonObjectBuilder object = jsonProvider.createObjectBuilder();
 
         for (final Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
 
@@ -291,13 +292,13 @@ public final class FramingProcessor {
 
                 return entry.getValue().asJsonArray().get(0);
             }
-            object.add(entry.getKey(), removePreserve(entry.getValue()));
+            object.add(entry.getKey(), removePreserve(jsonProvider, entry.getValue()));
         }
 
         return object.build();
     }
 
-    private static final JsonValue replaceNull(JsonValue value) {
+    private static final JsonValue replaceNull(JsonProvider jsonProvider, JsonValue value) {
 
         if (JsonUtils.isString(value) && Keywords.NULL.equals(((JsonString) value).getString())) {
             return JsonValue.NULL;
@@ -307,23 +308,23 @@ public final class FramingProcessor {
 
         } else if (JsonUtils.isArray(value)) {
 
-            final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
+            final JsonArrayBuilder array = jsonProvider.createArrayBuilder();
 
-            value.asJsonArray().forEach(item -> array.add(replaceNull(item)));
+            value.asJsonArray().forEach(item -> array.add(replaceNull(jsonProvider, item)));
 
             final JsonArray result = array.build();
 
             return result.size() != 1 || JsonUtils.isNotNull(result.get(0)) ? result : JsonValue.EMPTY_JSON_ARRAY;
         }
 
-        final JsonObjectBuilder object = JsonProvider.instance().createObjectBuilder();
+        final JsonObjectBuilder object = jsonProvider.createObjectBuilder();
 
-        value.asJsonObject().entrySet().forEach(entry -> object.add(entry.getKey(), replaceNull(entry.getValue())));
+        value.asJsonObject().entrySet().forEach(entry -> object.add(entry.getKey(), replaceNull(jsonProvider, entry.getValue())));
 
         return object.build();
     }
 
-    private static final JsonValue removeBlankIdKey(JsonValue value, List<String> blankNodes) {
+    private static final JsonValue removeBlankIdKey(JsonProvider jsonProvider, JsonValue value, List<String> blankNodes) {
 
         if (JsonUtils.isScalar(value)) {
             return value;
@@ -331,14 +332,14 @@ public final class FramingProcessor {
 
         if (JsonUtils.isArray(value)) {
 
-            final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
+            final JsonArrayBuilder array = jsonProvider.createArrayBuilder();
 
-            value.asJsonArray().forEach(item -> array.add(removeBlankIdKey(item, blankNodes)));
+            value.asJsonArray().forEach(item -> array.add(removeBlankIdKey(jsonProvider, item, blankNodes)));
 
             return array.build();
         }
 
-        final JsonObjectBuilder object = JsonProvider.instance().createObjectBuilder();
+        final JsonObjectBuilder object = jsonProvider.createObjectBuilder();
 
         for (final Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
 
@@ -349,7 +350,7 @@ public final class FramingProcessor {
                 continue;
             }
 
-            object.add(entry.getKey(), removeBlankIdKey(entry.getValue(), blankNodes));
+            object.add(entry.getKey(), removeBlankIdKey(jsonProvider, entry.getValue(), blankNodes));
         }
 
         return object.build();
