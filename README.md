@@ -220,14 +220,14 @@ Fork and clone the project repository.
 
 ```bash
 > cd titanium-json-ld
-> ./mvnw clean package
+> mvn clean package
 ```
 
 #### Java 8
 
 ```bash
 > cd titanium-json-ld
-> ./mvnw -f pom_jre8.xml clean package
+> mvn -f pom_jre8.xml clean package
 ```
 
 ## Resources
