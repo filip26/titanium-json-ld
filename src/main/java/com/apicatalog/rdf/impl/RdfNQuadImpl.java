@@ -38,11 +38,19 @@ final class RdfNQuadImpl extends RdfTripleImpl implements RdfNQuad {
 
     @Override
     public String toString() {
-        return  "RdfNQuadImpl[subject=" + getSubject()
-                    + ", predicate=" + getPredicate()
-                    + ", object=" + getObject()
-                    + ", graph=" + graphName
-                    + "]";
+        final StringBuilder builder = new StringBuilder()
+                .append(getSubject())
+                .append(' ')
+                .append(getPredicate())
+                .append(' ')
+                .append(getObject())
+                .append(' ');
+
+        if (graphName != null) {
+            builder.append(graphName).append(' ');
+        }
+
+        return builder.append('.').toString();
     }
 
     @Override
@@ -64,5 +72,5 @@ final class RdfNQuadImpl extends RdfTripleImpl implements RdfNQuad {
         RdfNQuadImpl other = (RdfNQuadImpl) obj;
         return Objects.equals(graphName, other.graphName);
     }
-    
+
 }

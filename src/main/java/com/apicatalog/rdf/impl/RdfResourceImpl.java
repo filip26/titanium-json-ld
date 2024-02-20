@@ -66,6 +66,9 @@ final class RdfResourceImpl implements RdfResource {
 
     @Override
     public String toString() {
-        return Objects.toString(value);
+        if (blankNode) {
+            return Objects.toString(value);
+        }
+        return '<' + Objects.toString(value) + ">";
     }
 }
