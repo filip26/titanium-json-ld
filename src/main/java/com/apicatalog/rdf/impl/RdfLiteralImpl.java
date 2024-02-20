@@ -95,8 +95,9 @@ final class RdfLiteralImpl implements RdfLiteral {
             builder.append(langTag);
 
         } else if (dataType != null && !XsdConstants.STRING.equals(dataType)) {
-            builder.append("^^");
+            builder.append("^^<");
             builder.append(dataType);
+            builder.append('>');
         }
 
         return builder.toString();
