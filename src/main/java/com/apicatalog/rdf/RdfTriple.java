@@ -28,12 +28,12 @@ public interface RdfTriple {
     RdfResource getSubject();
 
     /**
-     * An absolute IRI or blank node identifier denoting the predicate of the triple.
+     * An absolute IRI or blank node identifier denoting the predicate of the
+     * triple.
      *
      * @return an absolute URI or blank node
      */
     RdfResource getPredicate();
-
 
     /**
      * An absolute IRI or blank node identifier or {@link RdfLiteral}.
@@ -41,5 +41,4 @@ public interface RdfTriple {
      * @return {@link RdfValue}
      */
     RdfValue getObject();
-
 }

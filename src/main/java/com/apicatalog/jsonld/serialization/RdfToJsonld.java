@@ -333,8 +333,8 @@ public final class RdfToJsonld {
         // 5.7.
         for (final RdfTriple triple : graph.toList()) {
 
-            final String subject = triple.getSubject().toString();
-            final String predicate = triple.getPredicate().toString();
+            final String subject = triple.getSubject().getValue();
+            final String predicate = triple.getPredicate().getValue();
 
             // 5.7.1.
             if (!graphMap.contains(graphName, subject)) {
@@ -350,9 +350,9 @@ public final class RdfToJsonld {
 
             // 5.7.4.
             if ((triple.getObject().isBlankNode() || triple.getObject().isIRI())
-                    && !graphMap.contains(graphName, triple.getObject().toString())) {
+                    && !graphMap.contains(graphName, triple.getObject().getValue())) {
 
-                graphMap.set(graphName, triple.getObject().toString(), Keywords.ID, JsonProvider.instance().createValue(triple.getObject().toString()));
+                graphMap.set(graphName, triple.getObject().getValue(), Keywords.ID, JsonProvider.instance().createValue(triple.getObject().getValue()));
             }
 
             // 5.7.5.
@@ -364,11 +364,11 @@ public final class RdfToJsonld {
 
                     JsonArray types = type.get().asJsonArray();
 
-                    graphMap.set(graphName, subject, Keywords.TYPE, JsonProvider.instance().createArrayBuilder(types).add(triple.getObject().toString()).build());
+                    graphMap.set(graphName, subject, Keywords.TYPE, JsonProvider.instance().createArrayBuilder(types).add(triple.getObject().getValue()).build());
 
                 } else {
 
-                    graphMap.set(graphName, subject, Keywords.TYPE, JsonProvider.instance().createArrayBuilder().add(triple.getObject().toString()).build());
+                    graphMap.set(graphName, subject, Keywords.TYPE, JsonProvider.instance().createArrayBuilder().add(triple.getObject().getValue()).build());
                 }
 
                 continue;
@@ -398,7 +398,7 @@ public final class RdfToJsonld {
             }
 
             // 5.7.9.
-            if (triple.getObject().isIRI() && RdfConstants.NIL.equals(triple.getObject().toString())) {
+            if (triple.getObject().isIRI() && RdfConstants.NIL.equals(triple.getObject().getValue())) {
 
                 Reference reference = new Reference();
                 reference.graphName = graphName;
@@ -406,12 +406,12 @@ public final class RdfToJsonld {
                 reference.property = predicate;
                 reference.value = value;
 
-                graphMap.addUsage(graphName, triple.getObject().toString(), reference);
+                graphMap.addUsage(graphName, triple.getObject().getValue(), reference);
 
             // 5.7.10.
-            } else if (referenceOnce.containsKey(triple.getObject().toString())) {
+            } else if (referenceOnce.containsKey(triple.getObject().getValue())) {
 
-                referenceOnce.put(triple.getObject().toString(), null);
+                referenceOnce.put(triple.getObject().getValue(), null);
 
             // 5.7.11.
             } else if (triple.getObject().isBlankNode()) {
@@ -422,7 +422,7 @@ public final class RdfToJsonld {
                 reference.property = predicate;
                 reference.value = value;
 
-                referenceOnce.put(triple.getObject().toString(), reference);
+                referenceOnce.put(triple.getObject().getValue(), reference);
             }
         }
     }

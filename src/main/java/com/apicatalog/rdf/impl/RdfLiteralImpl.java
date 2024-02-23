@@ -19,6 +19,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.apicatalog.rdf.RdfLiteral;
+import com.apicatalog.rdf.io.nquad.NQuadsWriter;
 import com.apicatalog.rdf.lang.RdfConstants;
 import com.apicatalog.rdf.lang.XsdConstants;
 
@@ -85,15 +86,18 @@ final class RdfLiteralImpl implements RdfLiteral {
     public String toString() {
         StringBuilder builder = new StringBuilder();
 
-        builder.append(value);
+        builder.append('"');
+        builder.append(NQuadsWriter.escape(value));
+        builder.append('"');
 
         if (langTag != null) {
             builder.append('@');
             builder.append(langTag);
 
-        } else if (dataType != null) {
-            builder.append("^^");
+        } else if (dataType != null && !XsdConstants.STRING.equals(dataType)) {
+            builder.append("^^<");
             builder.append(dataType);
+            builder.append('>');
         }
 
         return builder.toString();

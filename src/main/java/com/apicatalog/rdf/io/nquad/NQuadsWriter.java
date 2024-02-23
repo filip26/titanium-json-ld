@@ -77,7 +77,7 @@ public class NQuadsWriter implements RdfWriter {
         }
 
         if (object.isIRI()) {
-            writeIri(object.toString());
+            writeIri(object.getValue());
             return;
         }
 
@@ -87,7 +87,7 @@ public class NQuadsWriter implements RdfWriter {
         }
 
         if (object.isBlankNode()) {
-            writer.write(object.toString());
+            writer.write(object.getValue());
             return;
         }
 
