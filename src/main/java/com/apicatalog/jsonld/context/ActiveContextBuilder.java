@@ -530,7 +530,7 @@ public final class ActiveContextBuilder {
 
                 // 5.2.5.1.
             } catch (JsonLdError e) {
-                throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
+                throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "There wa a problem encountered loading a remote context [" + contextUri + "]", e);
             }
 
             if (remoteImport == null) {

@@ -43,6 +43,12 @@ public final class JsonLdError extends Exception {
         this.code = code;
     }
 
+    public JsonLdError(JsonLdErrorCode code, String message, Throwable cause) {
+        super(message, cause);
+        this.code = code;
+    }
+
+    
     public JsonLdErrorCode getCode() {
         return code;
     }
