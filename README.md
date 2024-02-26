@@ -71,7 +71,7 @@ Java 11+
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium-json-ld</artifactId>
-    <version>1.3.3</version>
+    <version>1.4.0</version>
 </dependency>
 ```
 
@@ -79,7 +79,7 @@ Java 11+
 Java 8+, Android API Level >=24
 
 ```gradle
-implementation("com.apicatalog:titanium-json-ld-jre8:1.3.3")
+implementation("com.apicatalog:titanium-json-ld-jre8:1.4.0")
 ```
 
 #### JSON-P Provider
@@ -153,7 +153,7 @@ JsonLd.compact(document, contextDocument).get();
 ...
 ```
 
-#### Processing Timeout
+#### Processing Timeout [experimental]
 A processor gets terminated eventually after a specified time. Please note 
 the duration does not cover `DocumentLoader` processing time. 
 You have to set-up a read timeout separately.
