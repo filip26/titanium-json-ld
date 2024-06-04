@@ -40,7 +40,7 @@ public final class JsonDocument implements Document {
     private final String profile;
 
     private URI documentUrl;
-    private URI contentUrl;
+    private URI contextUrl;
 
     private JsonDocument(final MediaType type, final String profile, final JsonStructure structure) {
         this.contentType = type;
@@ -204,12 +204,12 @@ public final class JsonDocument implements Document {
 
     @Override
     public URI getContextUrl() {
-        return contentUrl;
+        return contextUrl;
     }
 
     @Override
     public void setContextUrl(URI contextUrl) {
-        this.contentUrl = contextUrl;
+        this.contextUrl = contextUrl;
     }
 
     @Override
