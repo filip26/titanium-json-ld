@@ -1,0 +1,38 @@
+[
+  {
+    "@id": "https://api.example.com/data/02wBzNotDceDYnLYE2ndhH",
+    "@type": [
+      "https://api.example.com/classes/core:Group@1/core:Users"
+    ],
+    "https://api.example.com/classes/core:Group@1/core:Users": [
+      {
+        "@id": "https://api.example.com/data/02wBzNotbWW1ROCZxlUjmw",
+        "@type": [
+          "https://api.example.com/classes/core:User@1"
+        ],
+        "https://api.example.com/classes/core:User@1/core:Friends": [
+          {
+            "@id": "https://api.example.com/data/02w7bdDtj3RI0BJoMGltwK"
+          },
+          {
+            "@id": "https://api.example.com/data/02w7bdDtj3RI08x102ToY2"
+          }
+        ],
+        "https://api.example.com/classes/core:User@1/core:Path": [
+          {
+            "@list": [
+              {
+                "@value": "john"
+              }
+            ]
+          }
+        ],
+        "https://api.example.com/classes/core:User@1/core:Type": [
+          {
+            "@id": "https://api.example.com/data/02w7bdDtd7owQzsKGCALDs"
+          }
+        ]
+      }
+    ]
+  }
+]

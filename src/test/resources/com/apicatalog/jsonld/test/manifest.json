@@ -1,5 +1,10 @@
 {
-  "@context": ["context.jsonld", {"@base": "custom-manifest"}],
+  "@context": [
+    "context.jsonld",
+    {
+      "@base": "custom-manifest"
+    }
+  ],
   "@id": "",
   "@type": "mf:Manifest",
   "name": "Custom",
@@ -8,24 +13,35 @@
   "sequence": [
     {
       "@id": "#t0001",
-      "@type": ["jld:PositiveEvaluationTest", "jld:FromRDFTest"],
+      "@type": [
+        "jld:PositiveEvaluationTest",
+        "jld:FromRDFTest"
+      ],
       "name": "Issue #64",
       "purpose": "Use native types generate an invalid json ld",
       "input": "issue64-in.nq",
       "expect": "issue64-out.json",
-      "option": { "useNativeTypes": true }
-    }, 
+      "option": {
+        "useNativeTypes": true
+      }
+    },
     {
       "@id": "#t0002",
-      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "@type": [
+        "jld:PositiveEvaluationTest",
+        "jld:ExpandTest"
+      ],
       "name": "Issue #112: expand",
       "purpose": "expand two @base",
       "input": "issue112-in.json",
       "expect": "issue112-out.json"
     },
-	{
+    {
       "@id": "#t0003",
-      "@type": ["jld:PositiveEvaluationTest", "jld:ToRDFTest"],
+      "@type": [
+        "jld:PositiveEvaluationTest",
+        "jld:ToRDFTest"
+      ],
       "name": "Issue #112: toRdf",
       "purpose": "toRdf two @base",
       "input": "issue112-in.json",
@@ -33,73 +49,113 @@
     },
     {
       "@id": "#t0004",
-      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "@type": [
+        "jld:PositiveEvaluationTest",
+        "jld:ExpandTest"
+      ],
       "name": "Issue #120: expand",
       "purpose": "expand numeric @id",
       "input": "issue120-in.json",
       "expect": "issue120-out.json",
-      "option": { "useNumericId" : true, "base": "https://json-ld.org/playground/" }
+      "option": {
+        "useNumericId": true,
+        "base": "https://json-ld.org/playground/"
+      }
     },
-	{
+    {
       "@id": "#t0005",
-      "@type": ["jld:PositiveEvaluationTest", "jld:ToRDFTest"],
+      "@type": [
+        "jld:PositiveEvaluationTest",
+        "jld:ToRDFTest"
+      ],
       "name": "Issue #120: toRdf",
       "purpose": "toRdf numeric @id",
       "input": "issue120-in.json",
       "expect": "issue120-out.nq",
-      "option": { "useNumericId" : true, "base": "https://json-ld.org/playground/" }
+      "option": {
+        "useNumericId": true,
+        "base": "https://json-ld.org/playground/"
+      }
     },
     {
       "@id": "#t0006",
-      "@type": ["jld:PositiveEvaluationTest", "jld:FromRDFTest"],
+      "@type": [
+        "jld:PositiveEvaluationTest",
+        "jld:FromRDFTest"
+      ],
       "name": "Issue #58: fromRdf",
       "purpose": "one item list",
       "input": "issue58-in.nq",
       "expect": "issue58-out.json",
-      "option": { "ordered" : true }
+      "option": {
+        "ordered": true
+      }
     },
     {
       "@id": "#t0007",
-      "@type": ["jld:PositiveEvaluationTest", "jld:ToRDFTest"],
+      "@type": [
+        "jld:PositiveEvaluationTest",
+        "jld:ToRDFTest"
+      ],
       "name": "Issue #61: toRdf",
       "purpose": "triples with aliased @id and @base",
       "input": "issue61-in.json",
       "expect": "issue61-out.nq",
-      "option": { "expandContext" : "issue61-context.json", "base": "https://api.inaturalist.org/v1/observations/" }
+      "option": {
+        "expandContext": "issue61-context.json",
+        "base": "https://api.inaturalist.org/v1/observations/"
+      }
     },
     {
       "@id": "#t0008",
-      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "@type": [
+        "jld:PositiveEvaluationTest",
+        "jld:ExpandTest"
+      ],
       "name": "Issue #124: remote",
       "purpose": "missing content-type",
       "input": "plain.txt",
       "expectErrorCode": "loading document failed",
-      "option": { "contentType": "text/plain" }
+      "option": {
+        "contentType": "text/plain"
+      }
     },
     {
       "@id": "#t0009",
-      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "@type": [
+        "jld:PositiveEvaluationTest",
+        "jld:ExpandTest"
+      ],
       "name": "Expand: relative base in local context",
       "input": "relative-base-in.json",
       "expect": "relative-base-out.json"
     },
-	  {
+    {
       "@id": "#t0010",
-      "@type": ["jld:PositiveEvaluationTest", "jld:ToRDFTest"],
+      "@type": [
+        "jld:PositiveEvaluationTest",
+        "jld:ToRDFTest"
+      ],
       "name": "ToRDF: relative base in local context",
       "input": "relative-base-in.json",
       "expect": "relative-base-out.nq"
     },
     {
       "@id": "#t0011",
-      "@type": ["jld:PositiveEvaluationTest", "jld:ToRDFTest"],
+      "@type": [
+        "jld:PositiveEvaluationTest",
+        "jld:ToRDFTest"
+      ],
       "name": "ToRDF: document relative subject",
       "input": "issue145-in.json",
       "expect": "issue145-out.nq"
-    },    
+    },
     {
       "@id": "#t0012",
-      "@type": ["jld:PositiveEvaluationTest", "jld:FrameTest"],
+      "@type": [
+        "jld:PositiveEvaluationTest",
+        "jld:FrameTest"
+      ],
       "name": "Frame: @container: @id",
       "input": "issue172-in.json",
       "expect": "issue172-out.json",
@@ -107,45 +163,79 @@
     },
     {
       "@id": "#t0013",
-      "@type": ["jld:PositiveEvaluationTest", "jld:FromRDFTest"],
+      "@type": [
+        "jld:PositiveEvaluationTest",
+        "jld:FromRDFTest"
+      ],
       "name": "Issue #179: xsd:int, xsd:long",
       "purpose": "FromRDF: xsd:int, xsd:long support",
       "input": "issue179-in.nq",
       "expect": "issue179-out.json",
-      "option": { "useNativeTypes": true }
+      "option": {
+        "useNativeTypes": true
+      }
     },
     {
       "@id": "#t0014",
-      "@type": ["jld:PositiveEvaluationTest", "jld:FlattenTest"],
+      "@type": [
+        "jld:PositiveEvaluationTest",
+        "jld:FlattenTest"
+      ],
       "name": "Issue #198: @reverse in @context",
       "input": "issue198-in.json",
       "expect": "issue198-out.json",
-      "option": { "expandContext" : "issue198-context.json", "base": "http://leanix.net/" }
+      "option": {
+        "expandContext": "issue198-context.json",
+        "base": "http://leanix.net/"
+      }
     },
     {
       "@id": "#t0015",
-      "@type": ["jld:PositiveEvaluationTest", "jld:FrameTest"],
+      "@type": [
+        "jld:PositiveEvaluationTest",
+        "jld:FrameTest"
+      ],
       "name": "Issue #257: Frame aliasing @graph",
       "input": "issue257-in.json",
       "expect": "issue257-out.json",
       "frame": "issue257-frame.json",
-      "option": { "omitGraph" : false }
+      "option": {
+        "omitGraph": false
+      }
     },
     {
       "@id": "#t0016",
-      "@type": ["jld:PositiveEvaluationTest", "jld:FrameTest"],
+      "@type": [
+        "jld:PositiveEvaluationTest",
+        "jld:FrameTest"
+      ],
       "name": "Issue #257: Frame aliasing @graph compact input",
       "input": "issue257-2-in.json",
       "expect": "issue257-2-out.json",
       "frame": "issue257-2-frame.json",
-      "option": { "omitGraph" : false }
+      "option": {
+        "omitGraph": false
+      }
     },
     {
       "@id": "#t0017",
-      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "@type": [
+        "jld:PositiveEvaluationTest",
+        "jld:ExpandTest"
+      ],
       "name": "Issue #310: # as vocabulary mapping",
       "input": "issue310-in.json",
       "expect": "issue310-out.json"
+    },
+    {
+      "@id": "#t0018",
+      "@type": [
+        "jld:PositiveEvaluationTest",
+        "jld:ExpandTest"
+      ],
+      "name": "Issue #333: type coercion: @container in @container",
+      "input": "issue333-in.json",
+      "expect": "issue333-out.json"
     }
   ]
 }
