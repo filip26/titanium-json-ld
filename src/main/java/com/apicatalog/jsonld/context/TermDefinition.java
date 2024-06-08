@@ -140,10 +140,6 @@ public final class TermDefinition {
         this.indexMapping = indexMapping;
     }
 
-    protected void setContainerMapping(Set<String> containerMapping) {
-        this.containerMapping = containerMapping;
-    }
-
     protected void setPrefix(boolean prefixFlag) {
         this.prefixFlag = prefixFlag;
     }
@@ -189,6 +185,8 @@ public final class TermDefinition {
         return "TermDefinition[uriMapping=" + uriMapping + ", "
                     + "localContext=" + localContext + ", "
                     + "indexMapping=" + indexMapping + ", "
-                    + "typeMapping=" + typeMapping + "]";
+                    + "typeMapping=" + typeMapping + ", "
+                    + "containerMapping=" + containerMapping 
+                    + "]";
     }
 }

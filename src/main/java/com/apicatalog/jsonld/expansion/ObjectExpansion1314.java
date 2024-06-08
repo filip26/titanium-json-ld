@@ -135,7 +135,7 @@ final class ObjectExpansion1314 {
             }
 
             activeContext.runtime().tick();
-            
+
             // 13.2.
             String expandedProperty = activeContext
                     .uriExpansion()
@@ -550,7 +550,6 @@ final class ObjectExpansion1314 {
 
                 // 13.4.12
                 if (Keywords.SET.equals(expandedProperty)) {
-
                     expandedValue = Expansion
                             .with(activeContext, value, activeProperty, baseUrl)
                             .frameExpansion(frameExpansion)
@@ -781,8 +780,7 @@ final class ObjectExpansion1314 {
                     ActiveContext mapContext = activeContext;
 
                     if (activeContext.getPreviousContext() != null
-                            && (containerMapping.contains(Keywords.ID) || containerMapping.contains(Keywords.TYPE))) {
-
+                            && ((containerMapping.contains(Keywords.ID) && !containerMapping.contains(Keywords.SET)) || containerMapping.contains(Keywords.TYPE))) {
                         mapContext = activeContext.getPreviousContext();
                     }
 

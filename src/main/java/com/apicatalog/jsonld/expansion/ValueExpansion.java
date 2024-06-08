@@ -60,7 +60,6 @@ public final class ValueExpansion {
         final Optional<String> typeMapping = definition.map(TermDefinition::getTypeMapping);
 
         if (typeMapping.isPresent()) {
-
             // 1.
             if (Keywords.ID.equals(typeMapping.get())) {
 
