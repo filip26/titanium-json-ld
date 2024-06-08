@@ -1,0 +1,57 @@
+  {
+  "@context": {
+    "@base": "https://api.example.com/data/",
+    "core": "https://api.example.com/classes/core:",
+    "sh": "http://www.w3.org/ns/shacl#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "users": {
+      "@id": "core:Group@1/core:Users",
+      "@container": "@set"
+    },
+    "core:User@1": {
+      "@context": {
+        "type": {
+          "@id": "core:User@1/core:Type",
+          "@type": "@id"
+        },
+        "friends": {
+          "@id": "core:User@1/core:Friends",
+          "@type": "@id",
+          "@container": [
+            "@id",
+            "@set"
+          ]
+        },
+        "path": {
+          "@id": "core:User@1/core:Path",
+          "@type": "xsd:string",
+          "@container": "@list"
+        }
+      }
+    }
+  },
+  "@id": "02wBzNotDceDYnLYE2ndhH",
+  "@type": "core:Group@1/core:Users",
+  "users": {
+    "@set": [
+      {
+        "@id": "02wBzNotbWW1ROCZxlUjmw",
+        "@type": "core:User@1",
+        "type": "02w7bdDtd7owQzsKGCALDs",
+        "friends": {
+          "@set": [
+            "02w7bdDtj3RI0BJoMGltwK",
+            "02w7bdDtj3RI08x102ToY2"
+          ]
+        },
+        "path": {
+          "@list": [
+            "john"
+          ]
+        }
+      }
+    ]
+  }
+}
