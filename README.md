@@ -1,5 +1,5 @@
 > [!IMPORTANT]
-> The open-source version will be discontinued in the near future because of lack of funding. No further version will be available for free, including security updates. Please consider a donation to keep Titanium JSON-LD available and maintained as an open-source.
+> The open-source version development and support will be discontinued in the near future because of lack of funding. No further version will be available for free nor security updates. Please consider a donation to keep Titanium JSON-LD available and maintained as an open-source.
 
 # Titanium JSON-LD 1.1 Processor & API
 
