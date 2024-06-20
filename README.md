@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> The open-source version will be discontinued in the near future because of lack of funding. No further version will be available for free, including security updates. Please consider a donation to keep Titanium JSON-LD available and maintained as an open-source.
+
 # Titanium JSON-LD 1.1 Processor & API
 
 An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-based Serialization for Linked Data) specification in Java utilizing [Jakarta JSON Processing](https://github.com/eclipse-ee4j/jsonp).
@@ -16,7 +19,6 @@ The goals of Titanium are:
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/c530c6b43b0243c08ce81521c5b4cf6a)](https://app.codacy.com/gh/filip26/titanium-json-ld/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
 [![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/titanium-json-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:com.apicatalog%20AND%20a:titanium-json-ld)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-
 
 ## Table of Contents  
 - [Conformance](#conformance)  
