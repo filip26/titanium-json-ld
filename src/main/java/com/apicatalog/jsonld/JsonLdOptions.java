@@ -44,6 +44,12 @@ public final class JsonLdOptions {
         I18N_DATATYPE,
         COMPOUND_LITERAL
     }
+    
+    public enum ProcessingPolicy {
+        Ignore,   // ignore, the current and default behavior
+        Fail,     // stop processing with an error
+        Warn      // print warning to log        
+    }
 
     /* default values */
     public static final boolean DEFAULT_RDF_STAR = false;
@@ -126,6 +132,9 @@ public final class JsonLdOptions {
     private boolean uriValidation;
     
     private Duration timeout;
+    
+    // a policy on how proceed with undefined terms during expansion
+    private ProcessingPolicy undefinedTerms;
 
     public JsonLdOptions() {
         this(SchemeRouter.defaultInstance());
@@ -163,6 +172,7 @@ public final class JsonLdOptions {
         this.documentCache = null;
         this.uriValidation = DEFAULT_URI_VALIDATION;
         this.timeout = null;
+        this.undefinedTerms = ProcessingPolicy.Ignore;
     }
 
     public JsonLdOptions(JsonLdOptions options) {
@@ -195,6 +205,7 @@ public final class JsonLdOptions {
         this.documentCache = options.documentCache;
         this.uriValidation = options.uriValidation;
         this.timeout = options.timeout;
+        this.undefinedTerms = options.undefinedTerms;
     }
 
     /**
@@ -522,5 +533,24 @@ public final class JsonLdOptions {
      */
     public void setTimeout(Duration timeout) {
         this.timeout = timeout;
+    }
+    
+    /**
+     * A processing policy on how proceed with undefined terms during expansion.
+     * 
+     * @return the processing policy, never <code>null</code>
+     */
+    public ProcessingPolicy getUndefinedTermsPolicy() {
+        return undefinedTerms;
+    }
+
+    /**
+     * Set processing policy on how proceed with undefined terms during expansion. Ignore by default.
+     * 
+     * @param the processing policy, never <code>null</code>
+     * 
+     */
+    public void setUndefinedTermsPolicy(ProcessingPolicy undefinedTerms) {
+        this.undefinedTerms = undefinedTerms;
     }
 }

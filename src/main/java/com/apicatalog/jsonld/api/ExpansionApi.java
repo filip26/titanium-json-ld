@@ -20,6 +20,7 @@ import java.net.URI;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.JsonLdOptions.ProcessingPolicy;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.DocumentLoader;
@@ -155,6 +156,18 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
      */
     public ExpansionApi rdfStar() {
         options.setRdfStar(true);
+        return this;
+    }
+
+    /**
+     * Set a processing policy determining how to proceed when an undefined term is
+     * found during an expansion. An unknown term is ignored by default.
+     * 
+     * @param policy a processing policy
+     * @return builder instance
+     */
+    public ExpansionApi undefinedTermsPolicy(ProcessingPolicy policy) {
+        options.setUndefinedTermsPolicy(policy);
         return this;
     }
 }
