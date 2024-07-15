@@ -196,6 +196,15 @@ JsonLd.toRdf("https://example/document.jsonld").loader(cachedLoader).get();
 JsonLd.toRdf("https://example/another-document.jsonld").loader(cachedLoader).get();
 ```
 
+#### Undefined Terms Processing Policy
+
+Set processing policy on undefined terms. `Ignore` by default.
+
+```javascript
+// since 1.4.1
+JsonLd.expand(...).undefinedTermsPolicy(Fail|Warn|Ignore).get();
+```
+
 ## Contributing
 
 All PR's welcome!
