@@ -262,7 +262,7 @@
       "expect": "undefined-term-2-out.json",
       "option": {
         "expandContext": "undefined-term-context.json",
-        "undefintedTermPolicy": "Ignore"
+        "undefinedTermPolicy": "Warn"
       }
     },
     {
@@ -276,7 +276,7 @@
       "expect": "undefined-term-3-out.json",
       "option": {
         "expandContext": "undefined-term-context.json",
-        "undefintedTermPolicy": "Fail"
+        "undefinedTermPolicy": "Fail"
       }
     }
   ]
