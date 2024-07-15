@@ -137,15 +137,23 @@ final class ObjectExpansion1314 {
             activeContext.runtime().tick();
 
             // 13.2.
-            String expandedProperty = activeContext
+            final String expandedProperty = activeContext
                     .uriExpansion()
                     .documentRelative(false)
                     .vocab(true)
                     .expand(key);
 
-            // 13.3.
+            // if the term is undefined and
             if (expandedProperty == null || (!expandedProperty.contains(":") && !Keywords.contains(expandedProperty))) {
-                continue;
+                switch (activeContext.runtime().getUndefinedTermPolicy()) {
+                case Fail:
+                    throw new JsonLdError(JsonLdErrorCode.UNDEFINED_TERM,
+                            "An undefined term has been found [" + key + "]. Change policy to Ignore or Warn or define the term in a context");
+                case Warn:
+                    LOGGER.log(Level.WARNING, "An undefined term has been found [{0}]", key);
+                case Ignore:
+                    continue;
+                }
             }
 
             JsonValue value = element.get(key);
@@ -163,7 +171,6 @@ final class ObjectExpansion1314 {
                 // 13.4.2
                 if (result.containsKey(expandedProperty)
                         && Keywords.noneMatch(expandedProperty, Keywords.INCLUDED, Keywords.TYPE)) {
-
                     throw new JsonLdError(JsonLdErrorCode.COLLIDING_KEYWORDS,
                             "Two properties which expand to the same keyword have been detected. A property '" + key + "'"
                                     + " expands to '" + expandedProperty + "'"

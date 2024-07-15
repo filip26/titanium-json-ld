@@ -31,8 +31,7 @@ import java.util.Map;
 public enum JsonLdErrorCode {
 
     /**
-     * Two
-     * <a href="https://www.w3.org/TR/rdf11-concepts/#dfn-property">properties</a>
+     * Two <a href="https://www.w3.org/TR/rdf11-concepts/#dfn-property">properties</a>
      * which expand to the same keyword have been detected. This might occur if a
      * keyword and an alias thereof are used at the same time.
      */
@@ -255,20 +254,22 @@ public enum JsonLdErrorCode {
      */
     PROTECTED_TERM_REDEFINITION,
 
-
     // Framing Error Codes https://www.w3.org/TR/json-ld11-framing/#error-handling
 
     /**
      * The frame is invalid.
      *
-     * @see <a href="https://www.w3.org/TR/json-ld11-framing/#dom-jsonldframingerrorcode-invalid-frame">invalid frame</a>
+     * @see <a href=
+     *      "https://www.w3.org/TR/json-ld11-framing/#dom-jsonldframingerrorcode-invalid-frame">invalid
+     *      frame</a>
      */
     INVALID_FRAME,
 
     /**
-     * The value for <code>@embed</code> is not one recognized for the object embed flag.
+     * The value for <code>@embed</code> is not one recognized for the object embed
+     * flag.
      *
-     * @see <a href="https://www.w3.org/TR/json-ld11-framing/#dom-jsonldframingerrorcode-invalid-@embed-value">invalid @embed value</a>
+     * @see <a href="https://www.w3.org/TR/json-ld11-framing/#dom-jsonldframingerrorcode-invalid-@embed-value">invalid @embedvalue</a>
      */
     INVALID_KEYWORD_EMBED_VALUE,
 
@@ -289,9 +290,14 @@ public enum JsonLdErrorCode {
     INVALID_ANNOTATION,
 
     // Custom
-    
+
     PROCESSING_TIMEOUT_EXCEEDED,
-    
+
+    /**
+     * An undefined term has been detected during expansion
+     */
+    UNDEFINED_TERM,
+
     UNSPECIFIED;
 
     private static final Map<JsonLdErrorCode, String> CODE_TO_MESSAGE;
@@ -351,9 +357,10 @@ public enum JsonLdErrorCode {
         messages.put(PROTECTED_TERM_REDEFINITION, "An attempt was made to redefine a protected term");
         messages.put(INVALID_FRAME, "The frame is invalid");
         messages.put(INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag");
-        messages.put(INVALID_EMBEDDED_NODE, "An invalid embedded node has been detected.");
+        messages.put(INVALID_EMBEDDED_NODE, "An invalid embedded node has been detected");
         messages.put(INVALID_ANNOTATION, "An invalid annotation has been detected");
-        messages.put(PROCESSING_TIMEOUT_EXCEEDED, "A processing has exceeded a defined timeount");
+        messages.put(PROCESSING_TIMEOUT_EXCEEDED, "A processing has exceeded a defined timeout");
+        messages.put(UNDEFINED_TERM, "An undefined term has been found. Set policy to ignore to pass");
 
         CODE_TO_MESSAGE = Collections.unmodifiableMap(messages);
     }
@@ -362,4 +369,3 @@ public enum JsonLdErrorCode {
         return CODE_TO_MESSAGE.getOrDefault(this, "Processing error") + " [code=" + this + "].";
     }
 }
-

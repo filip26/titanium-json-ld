@@ -45,6 +45,15 @@ public final class JsonLdOptions {
         COMPOUND_LITERAL
     }
 
+    public enum ProcessingPolicy {
+        /** ignore, the current and default behavior */
+        Ignore,
+        /** stop processing with an error */
+        Fail,
+        /** print warning to log */
+        Warn
+    }
+
     /* default values */
     public static final boolean DEFAULT_RDF_STAR = false;
     public static final boolean DEFAULT_NUMERIC_ID = false;
@@ -124,8 +133,11 @@ public final class JsonLdOptions {
     private Cache<String, Document> documentCache;
 
     private boolean uriValidation;
-    
+
     private Duration timeout;
+
+    // a policy on how proceed with undefined terms during expansion
+    private ProcessingPolicy undefinedTerms;
 
     public JsonLdOptions() {
         this(SchemeRouter.defaultInstance());
@@ -163,6 +175,7 @@ public final class JsonLdOptions {
         this.documentCache = null;
         this.uriValidation = DEFAULT_URI_VALIDATION;
         this.timeout = null;
+        this.undefinedTerms = ProcessingPolicy.Ignore;
     }
 
     public JsonLdOptions(JsonLdOptions options) {
@@ -195,6 +208,7 @@ public final class JsonLdOptions {
         this.documentCache = options.documentCache;
         this.uriValidation = options.uriValidation;
         this.timeout = options.timeout;
+        this.undefinedTerms = options.undefinedTerms;
     }
 
     /**
@@ -500,7 +514,7 @@ public final class JsonLdOptions {
     /**
      * A processing timeout. An exception is thrown when a processing time exceeds
      * the duration, if set. There is no currency that processing gets terminated
-     * immediately, but eventually.  
+     * immediately, but eventually.
      * 
      * Please note, the timeout does not include time consumed by
      * {@link DocumentLoader}.
@@ -510,17 +524,37 @@ public final class JsonLdOptions {
     public Duration getTimeout() {
         return timeout;
     }
-    
+
     /**
-     * Set a pressing timeout. A processing is eventually terminated after the 
-     * specified duration. Set <code>null</code> for no timeout. 
+     * Set a pressing timeout. A processing is eventually terminated after the
+     * specified duration. Set <code>null</code> for no timeout.
      * 
      * Please note, the timeout does not include time consumed by
      * {@link DocumentLoader}.
-     *  
+     * 
      * @param timeout to limit processing time
      */
     public void setTimeout(Duration timeout) {
         this.timeout = timeout;
+    }
+
+    /**
+     * A processing policy on how proceed with an undefined term during expansion.
+     * 
+     * @return the processing policy, never <code>null</code>
+     */
+    public ProcessingPolicy getUndefinedTermsPolicy() {
+        return undefinedTerms;
+    }
+
+    /**
+     * Set processing policy on how proceed with an undefined term during expansion.
+     * Ignore by default.
+     * 
+     * @param undefinedTerms the processing policy, never <code>null</code>
+     * 
+     */
+    public void setUndefinedTermsPolicy(ProcessingPolicy undefinedTerms) {
+        this.undefinedTerms = undefinedTerms;
     }
 }
