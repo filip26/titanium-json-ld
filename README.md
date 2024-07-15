@@ -8,12 +8,14 @@
 
 An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-based Serialization for Linked Data) specification in Java utilizing [Jakarta JSON Processing](https://github.com/eclipse-ee4j/jsonp).
 
-The goals of Titanium are:
+### Goals
 - conformance to the specification
 - secure, stable, fast, A+ code (covered by **~1800 tests**)
 - minimal external dependencies
   - only `jakarta.json-api` is required
 - simple to use
+
+### Status
 
 [![Java 11 CI](https://github.com/filip26/titanium-json-ld/actions/workflows/java11-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java11-build.yml)
 [![Android (Java 8) CI](https://github.com/filip26/titanium-json-ld/actions/workflows/java8-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java8-build.yml)
