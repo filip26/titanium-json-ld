@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium</artifactId>
-    <version>1.4.1-SNAPSHOT</version>
+    <version>1.4.1</version>
     <relativePath>pom_parent.xml</relativePath>
   </parent>
   <artifactId>titanium-json-ld-jre8</artifactId>

@@ -77,7 +77,7 @@ Java 11+
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium-json-ld</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
 </dependency>
 ```
 
@@ -85,7 +85,7 @@ Java 11+
 Java 8+, Android API Level >=24
 
 ```gradle
-implementation("com.apicatalog:titanium-json-ld-jre8:1.4.0")
+implementation("com.apicatalog:titanium-json-ld-jre8:1.4.1")
 ```
 
 #### JSON-P Provider
