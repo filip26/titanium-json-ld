@@ -1,26 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>com.apicatalog</groupId>
-    <artifactId>titanium</artifactId>
-    <version>1.4.1-SNAPSHOT</version>
-    <relativePath>pom_parent.xml</relativePath>
-  </parent>
-  <artifactId>titanium-json-ld</artifactId>
-  <packaging>jar</packaging>
-  <name>Titanium JSON-LD 1.1 (JRE11)</name>
-  <url>https://github.com/filip26/titanium-json-ld</url>
-  <scm>
-    <connection>scm:git:git://github.com/filip26/titanium-json-ld.git</connection>
-    <developerConnection>scm:git:git://github.com/filip26/titanium-json-ld.git</developerConnection>
-    <url>https://github.com/filip26/titanium-json-ld/tree/main</url>
-  </scm>
-  <properties>
-    <maven.compiler.target>11</maven.compiler.target>
-    <maven.compiler.source>11</maven.compiler.source>
-    <envSources>src/main/java11</envSources>
-  </properties>
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.apicatalog</groupId>
+        <artifactId>titanium</artifactId>
+        <version>1.4.1</version>
+        <relativePath>pom_parent.xml</relativePath>
+    </parent>
+    <artifactId>titanium-json-ld</artifactId>
+    <packaging>jar</packaging>
+    <name>Titanium JSON-LD 1.1 (JRE11)</name>
+    <url>https://github.com/filip26/titanium-json-ld</url>
+    <scm>
+        <connection>scm:git:git://github.com/filip26/titanium-json-ld.git</connection>
+        <developerConnection>
+            scm:git:git://github.com/filip26/titanium-json-ld.git</developerConnection>
+        <url>https://github.com/filip26/titanium-json-ld/tree/main</url>
+    </scm>
+    <properties>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <envSources>src/main/java11</envSources>
+    </properties>
 </project>
