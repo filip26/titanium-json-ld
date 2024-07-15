@@ -31,8 +31,7 @@ import java.util.Map;
 public enum JsonLdErrorCode {
 
     /**
-     * Two
-     * <a href="https://www.w3.org/TR/rdf11-concepts/#dfn-property">properties</a>
+     * Two <a href="https://www.w3.org/TR/rdf11-concepts/#dfn-property">properties</a>
      * which expand to the same keyword have been detected. This might occur if a
      * keyword and an alias thereof are used at the same time.
      */
@@ -270,9 +269,7 @@ public enum JsonLdErrorCode {
      * The value for <code>@embed</code> is not one recognized for the object embed
      * flag.
      *
-     * @see <a href=
-     *      "https://www.w3.org/TR/json-ld11-framing/#dom-jsonldframingerrorcode-invalid-@embed-value">invalid @embed
-     *      value</a>
+     * @see <a href="https://www.w3.org/TR/json-ld11-framing/#dom-jsonldframingerrorcode-invalid-@embed-value">invalid @embedvalue</a>
      */
     INVALID_KEYWORD_EMBED_VALUE,
 

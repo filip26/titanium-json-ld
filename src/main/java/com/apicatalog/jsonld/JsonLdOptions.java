@@ -551,7 +551,7 @@ public final class JsonLdOptions {
      * Set processing policy on how proceed with an undefined term during expansion.
      * Ignore by default.
      * 
-     * @param the processing policy, never <code>null</code>
+     * @param undefinedTerms the processing policy, never <code>null</code>
      * 
      */
     public void setUndefinedTermsPolicy(ProcessingPolicy undefinedTerms) {

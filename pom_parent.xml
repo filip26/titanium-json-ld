@@ -129,6 +129,7 @@
 				<version>3.7.0</version>
 				<configuration>
 					<doclint>all,-missing</doclint>
+                    <failOnWarnings>false</failOnWarnings>
 				</configuration>
 				<executions>
 					<execution>
