@@ -40,6 +40,7 @@ public class JsonLdTestCaseOptions {
     public Boolean omitGraph;
     public Boolean numericId;
     public Boolean rdfStar;
+    public JsonLdOptions.ProcessingPolicy undefinedTerms;
 
     public static final JsonLdTestCaseOptions of(JsonObject o, String baseUri) {
 
@@ -93,6 +94,10 @@ public class JsonLdTestCaseOptions {
         if (o.containsKey("rdfstar")) {
             options.rdfStar = o.getBoolean("rdfstar");
         }
+        
+        if (o.containsKey("undefinedTermPolicy")) {
+            options.undefinedTerms = JsonLdOptions.ProcessingPolicy.valueOf(o.getString("undefinedTermPolicy"));            
+        }
 
         return options;
     }
@@ -145,6 +150,10 @@ public class JsonLdTestCaseOptions {
 
         if (rdfStar != null) {
             options.setRdfStar(rdfStar);
+        }
+        
+        if (undefinedTerms != null) {
+            options.setUndefinedTermsPolicy(undefinedTerms);
         }
     }
 }

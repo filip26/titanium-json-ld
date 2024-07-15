@@ -73,6 +73,8 @@ public final class JsonLdTestCase {
 
     private final String testsBase;
 
+    public JsonLdOptions.ProcessingPolicy undefinedTermPolicy = JsonLdOptions.ProcessingPolicy.Ignore;
+
     private final DocumentLoader loader;
 
     public JsonLdTestCase(final String testsBase, final DocumentLoader loader) {
@@ -89,43 +91,42 @@ public final class JsonLdTestCase {
         testCase.uri = baseUri + manifestUri.substring(0, manifestUri.length() - ".jsonld".length()) + testCase.id;
 
         testCase.type = o.get(Keywords.TYPE).asJsonArray().stream()
-                            .map(JsonString.class::cast)
-                            .map(JsonString::getString)
-                            .map(Type::of)
-                            .collect(Collectors.toSet());
+                .map(JsonString.class::cast)
+                .map(JsonString::getString)
+                .map(Type::of)
+                .collect(Collectors.toSet());
 
         testCase.name = o.getString("name");
 
         testCase.input = o.containsKey("input")
-                            ? URI.create(baseUri + o.getString("input"))
-                            : null;
+                ? URI.create(baseUri + o.getString("input"))
+                : null;
 
         testCase.context = o.containsKey("context")
-                                ? URI.create(baseUri + o.getString("context"))
-                                : null;
+                ? URI.create(baseUri + o.getString("context"))
+                : null;
 
         testCase.expect = o.containsKey("expect")
-                                ? URI.create(baseUri + o.getString("expect"))
-                                : null;
+                ? URI.create(baseUri + o.getString("expect"))
+                : null;
 
         testCase.frame = o.containsKey("frame")
-                                ? URI.create(baseUri + o.getString("frame"))
-                                : null;
+                ? URI.create(baseUri + o.getString("frame"))
+                : null;
 
         testCase.expectErrorCode = o.containsKey("expectErrorCode")
-                                            ? errorCode((o.getString("expectErrorCode")))
-                                            : null;
+                ? errorCode((o.getString("expectErrorCode")))
+                : null;
 
         testCase.options = o.containsKey("option")
-                                ? JsonLdTestCaseOptions.of(o.getJsonObject("option"), baseUri)
-                                : new JsonLdTestCaseOptions();
+                ? JsonLdTestCaseOptions.of(o.getJsonObject("option"), baseUri)
+                : new JsonLdTestCaseOptions();
 
         testCase.baseUri = baseUri;
 
-
         testCase.contentType = o.containsKey("option") && o.getJsonObject("option").containsKey("contentType")
-                                    ? MediaType.of(o.getJsonObject("option").getString("contentType"))
-                                    : null;
+                ? MediaType.of(o.getJsonObject("option").getString("contentType"))
+                : null;
 
         if (testCase.contentType == null && testCase.input != null) {
 
@@ -141,60 +142,63 @@ public final class JsonLdTestCase {
         }
 
         testCase.redirectTo = o.containsKey("option") && o.getJsonObject("option").containsKey("redirectTo")
-                                ? URI.create(baseUri + o.getJsonObject("option").getString("redirectTo"))
-                                : null;
+                ? URI.create(baseUri + o.getJsonObject("option").getString("redirectTo"))
+                : null;
 
         testCase.httpStatus = o.containsKey("option")
-                                    ? o.getJsonObject("option").getInt("httpStatus", 301)
-                                    : null
-                                    ;
+                ? o.getJsonObject("option").getInt("httpStatus", 301)
+                : null;
 
-        if (o.containsKey("option") &&  o.getJsonObject("option").containsKey("httpLink")) {
+        if (o.containsKey("option") && o.getJsonObject("option").containsKey("httpLink")) {
 
             JsonValue links = o.getJsonObject("option").get("httpLink");
 
             if (JsonUtils.isArray(links)) {
                 testCase.httpLink = links.asJsonArray().stream()
-                                            .map(JsonString.class::cast)
-                                            .map(JsonString::getString)
-                                            .collect(Collectors.toSet());
+                        .map(JsonString.class::cast)
+                        .map(JsonString::getString)
+                        .collect(Collectors.toSet());
             } else {
                 testCase.httpLink = new HashSet<>();
-                testCase.httpLink.add(((JsonString)links).getString());
+                testCase.httpLink.add(((JsonString) links).getString());
             }
         }
+
+        testCase.undefinedTermPolicy = o.containsKey("option")
+                ? JsonLdOptions.ProcessingPolicy.valueOf(o.getJsonObject("option").getString("undefinedTermPolicy", JsonLdOptions.ProcessingPolicy.Fail.name()))
+                : JsonLdOptions.ProcessingPolicy.Ignore;
 
         return testCase;
     }
 
     public JsonLdOptions getOptions() {
 
-        final DocumentLoader rewriter =
-                new UriBaseRewriter(
-                            baseUri,
-                            testsBase,
-                            loader
-                        );
+        final DocumentLoader rewriter = new UriBaseRewriter(
+                baseUri,
+                testsBase,
+                loader);
 
         JsonLdOptions jsonLdOptions = new JsonLdOptions(rewriter);
         jsonLdOptions.setOrdered(true);
 
         options.setup(jsonLdOptions);
+        
 
         return jsonLdOptions;
     }
 
     public static final JsonLdErrorCode errorCode(String errorCode) {
 
-        if (errorCode == null ||  StringUtils.isBlank(errorCode)) {
+        if (errorCode == null || StringUtils.isBlank(errorCode)) {
             return null;
         }
 
         /*
-         * Because scoped contexts can lead to contexts being reloaded,
-         * replace the recursive context inclusion error with a context overflow error.
+         * Because scoped contexts can lead to contexts being reloaded, replace the
+         * recursive context inclusion error with a context overflow error.
          *
-         * @see <a href="https://www.w3.org/TR/json-ld11-api/#changes-from-cg">Changes since JSON-LD Community Group Final Report</a>
+         * @see <a href="https://www.w3.org/TR/json-ld11-api/#changes-from-cg">Changes
+         * since JSON-LD Community Group Final Report</a>
          */
         if ("recursive context inclusion".equalsIgnoreCase(errorCode)) {
             return JsonLdErrorCode.CONTEXT_OVERFLOW;
@@ -206,7 +210,7 @@ public final class JsonLdTestCase {
             return JsonLdErrorCode.UNSPECIFIED;
         }
 
-        return JsonLdErrorCode.valueOf(StringUtils.strip(errorCode).toUpperCase().replace(" ", "_").replace("-", "_").replaceAll("\\_\\@", "_KEYWORD_" ));
+        return JsonLdErrorCode.valueOf(StringUtils.strip(errorCode).toUpperCase().replace(" ", "_").replace("-", "_").replaceAll("\\_\\@", "_KEYWORD_"));
     }
 
     public enum Type {
@@ -220,8 +224,7 @@ public final class JsonLdTestCase {
 
         POSITIVE_EVALUATION_TEST,
         NEGATIVE_EVALUATION_TEST,
-        POSITIVE_SYNTAX_TEST
-        ;
+        POSITIVE_SYNTAX_TEST;
 
         static Type of(String value) {
 
@@ -252,7 +255,7 @@ public final class JsonLdTestCase {
                 return POSITIVE_SYNTAX_TEST;
             }
 
-           throw new IllegalArgumentException("Unknown test @type '" + value + "'");
+            throw new IllegalArgumentException("Unknown test @type '" + value + "'");
         }
     }
 

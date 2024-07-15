@@ -1,0 +1,8 @@
+{
+  "@context": {
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "@base": "https://api.inaturalist.org/v1/observations/",
+    "uri": "@id",
+    "description": "rdfs:comment"
+  }
+}
