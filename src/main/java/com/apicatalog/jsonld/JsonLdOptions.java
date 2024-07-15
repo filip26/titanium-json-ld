@@ -44,11 +44,14 @@ public final class JsonLdOptions {
         I18N_DATATYPE,
         COMPOUND_LITERAL
     }
-    
+
     public enum ProcessingPolicy {
-        Ignore,   // ignore, the current and default behavior
-        Fail,     // stop processing with an error
-        Warn      // print warning to log        
+        /** ignore, the current and default behavior */
+        Ignore,
+        /** stop processing with an error */
+        Fail,
+        /** print warning to log */
+        Warn
     }
 
     /* default values */
@@ -130,9 +133,9 @@ public final class JsonLdOptions {
     private Cache<String, Document> documentCache;
 
     private boolean uriValidation;
-    
+
     private Duration timeout;
-    
+
     // a policy on how proceed with undefined terms during expansion
     private ProcessingPolicy undefinedTerms;
 
@@ -511,7 +514,7 @@ public final class JsonLdOptions {
     /**
      * A processing timeout. An exception is thrown when a processing time exceeds
      * the duration, if set. There is no currency that processing gets terminated
-     * immediately, but eventually.  
+     * immediately, but eventually.
      * 
      * Please note, the timeout does not include time consumed by
      * {@link DocumentLoader}.
@@ -521,22 +524,22 @@ public final class JsonLdOptions {
     public Duration getTimeout() {
         return timeout;
     }
-    
+
     /**
-     * Set a pressing timeout. A processing is eventually terminated after the 
-     * specified duration. Set <code>null</code> for no timeout. 
+     * Set a pressing timeout. A processing is eventually terminated after the
+     * specified duration. Set <code>null</code> for no timeout.
      * 
      * Please note, the timeout does not include time consumed by
      * {@link DocumentLoader}.
-     *  
+     * 
      * @param timeout to limit processing time
      */
     public void setTimeout(Duration timeout) {
         this.timeout = timeout;
     }
-    
+
     /**
-     * A processing policy on how proceed with undefined terms during expansion.
+     * A processing policy on how proceed with an undefined term during expansion.
      * 
      * @return the processing policy, never <code>null</code>
      */
@@ -545,7 +548,8 @@ public final class JsonLdOptions {
     }
 
     /**
-     * Set processing policy on how proceed with undefined terms during expansion. Ignore by default.
+     * Set processing policy on how proceed with an undefined term during expansion.
+     * Ignore by default.
      * 
      * @param the processing policy, never <code>null</code>
      * 
