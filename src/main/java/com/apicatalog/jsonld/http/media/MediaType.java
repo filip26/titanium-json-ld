@@ -15,6 +15,8 @@
  */
 package com.apicatalog.jsonld.http.media;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import com.apicatalog.jsonld.StringUtils;
@@ -60,8 +62,8 @@ public final class MediaType {
     public boolean match(MediaType mediaType) {
         return mediaType != null
                 && (WILDCARD.equals(type) || WILDCARD.equals(mediaType.type) || Objects.equals(type, mediaType.type))
-                && (WILDCARD.equals(subtype) || WILDCARD.equals(mediaType.subtype) || Objects.equals(subtype, mediaType.subtype))
-                ;
+                && (WILDCARD.equals(subtype) || WILDCARD.equals(mediaType.subtype)
+                        || Objects.equals(subtype, mediaType.subtype));
     }
 
     public String type() {
@@ -79,6 +81,14 @@ public final class MediaType {
     @Override
     public String toString() {
         return String.valueOf(type).concat("/").concat(subtype);
+    }
+
+    public static final MediaType of(String type, String subtype, Map<String, List<String>> parameters) {
+        if (type == null || subtype == null || parameters == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return new MediaType(type, subtype, new MediaTypeParameters(parameters));
     }
 
     public static final MediaType of(String type, String subtype) {
