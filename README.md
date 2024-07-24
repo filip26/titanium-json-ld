@@ -1,5 +1,5 @@
 > [!IMPORTANT]
-> The open-source version development and support will be discontinued in the near future because of lack of funding. No further version will be available for free nor security updates. Please consider a donation to keep Titanium JSON-LD available and maintained as an open-source.
+> Please consider a donation to keep the project available and maintained as an open-source.
 > 
 > The common experience with open-source is that no one wants to pay for it, but they will happily use it for free.
 
