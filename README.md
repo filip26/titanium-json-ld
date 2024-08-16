@@ -25,23 +25,25 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 [![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/titanium-json-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:com.apicatalog%20AND%20a:titanium-json-ld)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+### Extensions
+
+- [LD-CLI](https://github.com/filip26/ld-cli) is a native command line utility for Ubuntu, Mac, Windows
+- [JSON-LD-star](https://json-ld.github.io/json-ld-star) expansion and compaction built-in support (experimental)
+- [Universal RDF Dataset Normalization Algorithm - URDNA2015](https://github.com/simon-greatrix/rdf-urdna)
+- [Iridium CBOR-LD](https://github.com/filip26/iridium-cbor-ld) a CBOR-based Processor for Linked Data
+- [LEXREX](https://lexrex.web.app/) semantic vocabularies visual builder and manager
+
+
 ## Table of Contents  
-- [Conformance](#conformance)  
-- [CLI](#cli)
-- [Extensions](#extensions)  
-- [Usage](#usage)
-  * [Installation](#installation)
-  * [Documentation](#documentation)
-  * [Examples](#examples)
+- [Conformance](#conformance)
+- [Examples](#examples)
+- [Installation](#installation)
+- [Documentation](#documentation)
 - [Contributing](#contributing)
 - [Resources](#resources)
 - [Commercial Support](#commercial-support)
 
 ## Conformance
-
-The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api/tree/master/tests) and conform to the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/)  specification.
-
-### Status
 
  | Feature | Tests | Pass | Status | Notes |
  | --- | ---: | ---: | ---: | --- |
@@ -55,70 +57,11 @@ The goal is to pass the [official test suite](https://github.com/w3c/json-ld-api
 
 See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld-api/reports/#subj_Titanium_JSON_LD_Java) for more details.
 
-## CLI
-
-[LD-CLI](https://github.com/filip26/ld-cli) is a native command line utility for Ubuntu, Mac, Windows
-
-## Extensions
-
-- [JSON-LD-star](https://json-ld.github.io/json-ld-star) expansion and compaction built-in support (experimental)
-- [Universal RDF Dataset Normalization Algorithm - URDNA2015](https://github.com/simon-greatrix/rdf-urdna)
-- [Iridium CBOR-LD](https://github.com/filip26/iridium-cbor-ld) - A CBOR-based Processor for Linked Data
-- [LEXREX](https://lexrex.web.app/) - Semantic vocabularies visual builder and manager
-
-## Usage
-
-### Installation
-
-#### Titanium
-
-##### Maven
-Java 11+
-
-```xml
-<dependency>
-    <groupId>com.apicatalog</groupId>
-    <artifactId>titanium-json-ld</artifactId>
-    <version>1.4.1</version>
-</dependency>
-```
-
-##### Gradle 
-Java 8+, Android API Level >=24
-
-```gradle
-implementation("com.apicatalog:titanium-json-ld-jre8:1.4.1")
-```
-
-#### JSON-P Provider
-
-Add JSON-P provider, if it is not on the classpath already.
-
-##### Maven
-
-```xml
-<dependency>
-    <groupId>org.glassfish</groupId>
-    <artifactId>jakarta.json</artifactId>
-    <version>2.0.1</version>
-</dependency>
-```
-
-##### Gradle
-
-```gradle
-implementation("org.glassfish:jakarta.json:2.0.1")
-```
-
-### Documentation
-
-[![javadoc](https://javadoc.io/badge2/com.apicatalog/titanium-json-ld/javadoc.svg)](https://javadoc.io/doc/com.apicatalog/titanium-json-ld)
-
-### Examples
+## Examples
 
 Titanium provides high-level [JsonLd](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/JsonLd.html) API to interact with the processor.
 
-#### Transformations
+### Transformations
 
 ```javascript
 
@@ -150,7 +93,7 @@ JsonLd.frame("https://example/document.jsonld", "https://example/frame.jsonld").
 
 ```
 
-#### Local JSON Document
+### Local JSON Document
 
 ```javascript
 Document document = JsonDocument.of(InputStream) or JsonDocument.of(Reader) ...
@@ -161,7 +104,7 @@ JsonLd.compact(document, contextDocument).get();
 ...
 ```
 
-#### Processing Timeout [experimental]
+### Processing Timeout [experimental]
 A processor gets terminated eventually after a specified time. Please note 
 the duration does not cover `DocumentLoader` processing time. 
 You have to set-up a read timeout separately.
@@ -171,7 +114,7 @@ You have to set-up a read timeout separately.
 JsonLd.expand(...).timeout(duration)...get();
 ```
 
-#### HTTP Document Loader Timeout
+### HTTP Document Loader Timeout
 Configure and set a custom HTTP document loader instance.
 
 ```javascript
@@ -181,7 +124,7 @@ static DocumentLoader LOADER = HttpLoader.defaultInstance().timeount(Duration.of
 JsonLd.expand(...).loader(LOADER).get();
 ```
 
-#### Document caching
+### Document caching
 Configure LRU-based cache for loading documents.
 The argument determines size of the LRU-cache.
 ```javascript
@@ -198,7 +141,7 @@ JsonLd.toRdf("https://example/document.jsonld").loader(cachedLoader).get();
 JsonLd.toRdf("https://example/another-document.jsonld").loader(cachedLoader).get();
 ```
 
-#### Undefined Terms Processing Policy
+### Undefined Terms Processing Policy
 
 Set processing policy on undefined terms. `Ignore` by default.
 
@@ -206,6 +149,53 @@ Set processing policy on undefined terms. `Ignore` by default.
 // since 1.4.1
 JsonLd.expand(...).undefinedTermsPolicy(Fail|Warn|Ignore).get();
 ```
+
+## Installation
+
+### Titanium
+
+#### Maven
+Java 11+
+
+```xml
+<dependency>
+    <groupId>com.apicatalog</groupId>
+    <artifactId>titanium-json-ld</artifactId>
+    <version>1.4.1</version>
+</dependency>
+```
+
+#### Gradle 
+Java 8+, Android API Level >=24
+
+```gradle
+implementation("com.apicatalog:titanium-json-ld-jre8:1.4.1")
+```
+
+### JSON-P Provider
+
+Add JSON-P provider, if it is not on the classpath already.
+
+#### Maven
+
+```xml
+<dependency>
+    <groupId>org.glassfish</groupId>
+    <artifactId>jakarta.json</artifactId>
+    <version>2.0.1</version>
+</dependency>
+```
+
+#### Gradle
+
+```gradle
+implementation("org.glassfish:jakarta.json:2.0.1")
+```
+
+## Documentation
+
+[![javadoc](https://javadoc.io/badge2/com.apicatalog/titanium-json-ld/javadoc.svg)](https://javadoc.io/doc/com.apicatalog/titanium-json-ld)
+
 
 ## Contributing
 
