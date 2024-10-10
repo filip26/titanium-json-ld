@@ -17,7 +17,6 @@ package com.apicatalog.jsonld.context;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -39,11 +38,9 @@ public final class InverseContext {
                 .anyMatch(variable::equals);
     }
 
-    public Map<String, InverseDefinition> definition(final String variable, final String container, final String type) {
+    public Map<String, InverseDefinition> definitions(final String variable, final String container, final String type) {
         return definitions.keySet().stream()
-                .filter(def -> Objects.equals(def.variable(), variable)
-                        && Objects.equals(def.container(), container)
-                        && Objects.equals(def.type(), type))
+                .filter(def -> def.match(variable, container, type))
                 .collect(Collectors.toUnmodifiableMap(
                         InverseDefinition::key,
                         Function.identity()));
@@ -51,10 +48,7 @@ public final class InverseContext {
 
     boolean contains(final String variable, final String container, final String type, final String key) {
         return definitions.keySet().stream()
-                .anyMatch(def -> Objects.equals(def.variable(), variable)
-                        && Objects.equals(def.container(), container)
-                        && Objects.equals(def.type(), type)
-                        && Objects.equals(def.key(), key));
+                .anyMatch(def -> def.match(variable, container, type, key));
     }
 
     public InverseContext setIfAbsent(final String variable, final String container, final String type, final String key, final String value) {
@@ -65,7 +59,7 @@ public final class InverseContext {
         return this;
     }
 
-    public String get(final InverseDefinition def) {
+    public String value(final InverseDefinition def) {
         return definitions.get(def);
     }
 }

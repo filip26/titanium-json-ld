@@ -63,12 +63,12 @@ public final class TermSelector {
         final InverseContext inverseContext = activeContext.getInverseContext();
 
         return containers.stream()
-                .map(container -> inverseContext.definition(variable, container, typeLanguage))
+                .map(container -> inverseContext.definitions(variable, container, typeLanguage))
                 .filter(Predicate.not(Map::isEmpty))
                 .flatMap(defs -> preferredValues.stream()
                         .map(defs::get)
                         .filter(Objects::nonNull)
-                        .map(inverseContext::get))
+                        .map(inverseContext::value))
                 .findFirst();
     }
 }

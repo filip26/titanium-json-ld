@@ -16,6 +16,19 @@ class InverseDefinition {
         this.key = key;
     }
 
+    public boolean match(final String variable, final String container, final String type) {
+        return Objects.equals(this.variable, variable)
+                && Objects.equals(this.container, container)
+                && Objects.equals(this.type, type);
+    }
+
+    public boolean match(final String variable, final String container, final String type, final String key) {
+        return Objects.equals(this.variable, variable)
+                && Objects.equals(this.container, container)
+                && Objects.equals(this.type, type)
+                && Objects.equals(this.key, key);
+    }
+
     public String variable() {
         return variable;
     }

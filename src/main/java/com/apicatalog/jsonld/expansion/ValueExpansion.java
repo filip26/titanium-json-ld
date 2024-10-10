@@ -57,48 +57,51 @@ public final class ValueExpansion {
 
         definition = activeContext.getTerm(activeProperty);
 
-        final Optional<String> typeMapping = definition.map(TermDefinition::getTypeMapping);
+        final String typeMapping = definition.map(TermDefinition::getTypeMapping).orElse(null);
 
-        if (typeMapping.isPresent()) {
-            // 1.
-            if (Keywords.ID.equals(typeMapping.get())) {
+        // 1.
+        if (Keywords.ID.equals(typeMapping)) {
 
-                String idValue = null;
+            String idValue = null;
 
-                if (JsonUtils.isString(value)) {
-                    idValue = ((JsonString) value).getString();
+            if (JsonUtils.isString(value)) {
+                idValue = ((JsonString) value).getString();
 
-                    // custom extension allowing to process numeric ids
-                } else if (activeContext.runtime().isNumericId() && JsonUtils.isNumber(value)) {
-                    idValue = ((JsonNumber) value).toString();
-                }
-
-                if (idValue != null) {
-                    final String expandedValue = activeContext.uriExpansion().documentRelative(true)
-                            .vocab(false).expand(idValue);
-
-                    return JsonProvider.instance().createObjectBuilder().add(Keywords.ID, expandedValue).build();
-                }
-
-                // 2.
-            } else if (Keywords.VOCAB.equals(typeMapping.get()) && JsonUtils.isString(value)) {
-
-                String expandedValue = activeContext.uriExpansion().documentRelative(true)
-                        .vocab(true).expand(((JsonString) value).getString());
-
-                return JsonProvider.instance().createObjectBuilder().add(Keywords.ID, expandedValue).build();
+                // custom extension allowing to process numeric ids
+            } else if (activeContext.runtime().isNumericId() && JsonUtils.isNumber(value)) {
+                idValue = ((JsonNumber) value).toString();
             }
+
+            if (idValue != null) {
+                return JsonProvider.instance().createObjectBuilder()
+                        .add(Keywords.ID,
+                                activeContext.uriExpansion()
+                                        .documentRelative(true)
+                                        .vocab(false)
+                                        .expand(idValue))
+                        .build();
+            }
+
+            // 2.
+        } else if (Keywords.VOCAB.equals(typeMapping) && JsonUtils.isString(value)) {
+            return JsonProvider.instance().createObjectBuilder()
+                    .add(Keywords.ID,
+                            activeContext.uriExpansion()
+                                    .documentRelative(true)
+                                    .vocab(true)
+                                    .expand(((JsonString) value).getString()))
+                    .build();
         }
 
         // 3.
         final JsonObjectBuilder result = JsonProvider.instance().createObjectBuilder().add(Keywords.VALUE, value);
 
         // 4.
-        if (typeMapping
-                .filter(t -> !Keywords.ID.equals(t) && !Keywords.VOCAB.equals(t) && !Keywords.NONE.equals(t))
-                .isPresent()) {
-
-            result.add(Keywords.TYPE, typeMapping.get());
+        if (typeMapping != null
+                && !Keywords.ID.equals(typeMapping)
+                && !Keywords.VOCAB.equals(typeMapping)
+                && !Keywords.NONE.equals(typeMapping)) {
+            result.add(Keywords.TYPE, typeMapping);
 
             // 5.
         } else if (JsonUtils.isString(value)) {
@@ -115,9 +118,8 @@ public final class ValueExpansion {
         final JsonValue language = definition
                 .map(TermDefinition::getLanguageMapping)
                 .orElseGet(() -> activeContext.getDefaultLanguage() != null
-                            ? JsonProvider.instance().createValue(activeContext.getDefaultLanguage())
-                            : null
-                        );
+                        ? JsonProvider.instance().createValue(activeContext.getDefaultLanguage())
+                        : null);
 
         // 5.2.
         final DirectionType direction = definition
