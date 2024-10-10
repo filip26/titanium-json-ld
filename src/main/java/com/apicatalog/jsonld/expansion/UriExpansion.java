@@ -126,7 +126,7 @@ public final class UriExpansion {
         final int splitIndex = result.indexOf(':', 1);
 
         if (splitIndex != -1) {
-            // 6.1. Split value into a prefix and suffix 
+            // 6.1. Split value into a prefix and suffix
             // at the first occurrence of a colon (:).
             // 6.2. If prefix is underscore (_) or suffix begins with double-forward-slash
             // (//), return value as it is already an IRI or a blank node identifier.

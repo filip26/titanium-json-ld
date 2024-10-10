@@ -107,8 +107,12 @@ public final class Compaction {
         // 3.
         if (JsonUtils.isArray(element)) {
 
+            if (element.asJsonArray().isEmpty()) {
+                return JsonArray.EMPTY_JSON_ARRAY;
+            }
+
             // 3.1.
-            final JsonArrayBuilder resultBuilder = JsonProvider.instance().createArrayBuilder();
+            final Collection<JsonValue> result = new ArrayList<>(element.asJsonArray().size());
 
             // 3.2.
             for (final JsonValue item : element.asJsonArray()) {
@@ -121,15 +125,16 @@ public final class Compaction {
                         .compact(activeProperty, item);
                 // 3.2.2.
                 if (JsonUtils.isNotNull(compactedItem)) {
-                    resultBuilder.add(compactedItem);
+                    result.add(compactedItem);
                 }
             }
 
-            final JsonArray result = resultBuilder.build();
+            if (result.isEmpty()) {
+                return JsonArray.EMPTY_JSON_ARRAY;
+            }
 
             // 3.3.
-            if (result.isEmpty()
-                    || result.size() > 1
+            if (result.size() > 1
                     || !compactArrays
                     || Keywords.GRAPH.equals(activeProperty)
                     || Keywords.SET.equals(activeProperty)
@@ -137,11 +142,11 @@ public final class Compaction {
                             .filter(d -> d.hasContainerMapping(Keywords.LIST) || d.hasContainerMapping(Keywords.SET))
                             .isPresent()) {
 
-                return result;
+                return JsonProvider.instance().createArrayBuilder(result).build();
             }
 
             // 3.4.
-            return result.get(0);
+            return result.iterator().next();
         }
 
         // 4.
@@ -665,59 +670,57 @@ public final class Compaction {
                             mapKey = expandedItem.asJsonObject().getString(Keywords.LANGUAGE);
                         }
 
-                        // 12.8.9.5.
-                    } else if (container.contains(Keywords.INDEX)
-                            && Keywords.INDEX.equals(indexKey)) {
+                    } else if (container.contains(Keywords.INDEX)) {
 
-                        if (expandedItem.asJsonObject().containsKey(Keywords.INDEX)) {
+                        if (Keywords.INDEX.equals(indexKey)) {
 
-                            mapKey = expandedItem.asJsonObject().getString(Keywords.INDEX);
-                        }
+                            if (expandedItem.asJsonObject().containsKey(Keywords.INDEX)) {
+                                mapKey = expandedItem.asJsonObject().getString(Keywords.INDEX);
+                            }
 
-                        // 12.8.9.6.
-                    } else if (container.contains(Keywords.INDEX)
-                            && !Keywords.INDEX.equals(indexKey)) {
+                        } else {
 
-                        // 12.8.9.6.1.
-                        containerKey = activeContext
-                                .uriCompaction()
-                                .vocab(true)
-                                .compact(activeContext.uriExpansion().expand(indexKey));
+                            // 12.8.9.6.1.
+                            containerKey = activeContext
+                                    .uriCompaction()
+                                    .vocab(true)
+                                    .compact(activeContext.uriExpansion().expand(indexKey));
 
-                        // 12.8.9.6.2.
-                        if (JsonUtils.containsKey(compactedItem, containerKey)) {
+                            // 12.8.9.6.2.
+                            if (JsonUtils.containsKey(compactedItem, containerKey)) {
 
-                            final JsonValue containerValue = compactedItem.asJsonObject().get(containerKey);
+                                final JsonValue containerValue = compactedItem.asJsonObject().get(containerKey);
 
-                            if (JsonUtils.isString(containerValue)) {
-                                mapKey = ((JsonString) containerValue).getString();
+                                if (JsonUtils.isString(containerValue)) {
+                                    mapKey = ((JsonString) containerValue).getString();
 
-                                // 12.8.9.6.3.
-                                compactedItem = JsonProvider.instance().createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();
+                                    // 12.8.9.6.3.
+                                    compactedItem = JsonProvider.instance().createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();
 
-                            } else if (JsonUtils.isArray(containerValue) && !JsonUtils.isEmptyArray(containerValue)) {
+                                } else if (JsonUtils.isArray(containerValue) && !JsonUtils.isEmptyArray(containerValue)) {
 
-                                mapKey = containerValue.asJsonArray().getString(0);
+                                    mapKey = containerValue.asJsonArray().getString(0);
 
-                                // 12.8.9.6.3.
-                                if (containerValue.asJsonArray().size() > 1) {
+                                    // 12.8.9.6.3.
+                                    if (containerValue.asJsonArray().size() > 1) {
 
-                                    JsonValue containerKeyValue = null;
+                                        JsonValue containerKeyValue = null;
 
-                                    if (containerValue.asJsonArray().size() == 2) {
-                                        containerKeyValue = containerValue.asJsonArray().get(1);
+                                        if (containerValue.asJsonArray().size() == 2) {
+                                            containerKeyValue = containerValue.asJsonArray().get(1);
+
+                                        } else {
+                                            containerKeyValue = JsonProvider.instance().createArrayBuilder(containerValue.asJsonArray()).remove(0).build();
+                                        }
+
+                                        compactedItem = JsonProvider.instance().createObjectBuilder(compactedItem.asJsonObject())
+                                                .remove(containerKey)
+                                                .add(containerKey, containerKeyValue)
+                                                .build();
 
                                     } else {
-                                        containerKeyValue = JsonProvider.instance().createArrayBuilder(containerValue.asJsonArray()).remove(0).build();
+                                        compactedItem = JsonProvider.instance().createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();
                                     }
-
-                                    compactedItem = JsonProvider.instance().createObjectBuilder(compactedItem.asJsonObject())
-                                            .remove(containerKey)
-                                            .add(containerKey, containerKeyValue)
-                                            .build();
-
-                                } else {
-                                    compactedItem = JsonProvider.instance().createObjectBuilder(compactedItem.asJsonObject()).remove(containerKey).build();
                                 }
                             }
                         }

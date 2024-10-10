@@ -16,8 +16,10 @@
 package com.apicatalog.jsonld.context;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.function.Predicate;
 
 /**
  *
@@ -60,14 +62,13 @@ public final class TermSelector {
         // context.
         final InverseContext inverseContext = activeContext.getInverseContext();
 
-        // 4.
-        return containers
-                .stream()
-                .filter(container -> inverseContext.contains(variable, container, typeLanguage))
-                .flatMap(container -> preferredValues
-                        .stream()
-                        .map(item -> inverseContext.get(variable, container, typeLanguage, item)))
-                .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty))
+        return containers.stream()
+                .map(container -> inverseContext.definition(variable, container, typeLanguage))
+                .filter(Predicate.not(Map::isEmpty))
+                .flatMap(defs -> preferredValues.stream()
+                        .map(defs::get)
+                        .filter(Objects::nonNull)
+                        .map(inverseContext::get))
                 .findFirst();
     }
 }

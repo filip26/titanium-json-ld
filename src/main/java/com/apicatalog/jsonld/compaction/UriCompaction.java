@@ -91,13 +91,11 @@ public final class UriCompaction {
             return null;
         }
 
-        // 2.
-        if (activeContext.getInverseContext() == null) {
-            activeContext.createInverseContext();
-        }
-
-        // 3.
         InverseContext inverseContext = activeContext.getInverseContext();
+
+        if (inverseContext == null) {
+            inverseContext = activeContext.createInverseContext();
+        }
 
         // 4.
         if (vocab && inverseContext.contains(variable)) {

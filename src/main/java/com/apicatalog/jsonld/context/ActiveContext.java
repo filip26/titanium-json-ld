@@ -92,8 +92,9 @@ public final class ActiveContext {
         this.runtime = origin.runtime;
     }
 
-    public void createInverseContext() {
+    public InverseContext createInverseContext() {
         this.inverseContext = InverseContextBuilder.with(this).build();
+        return this.inverseContext;
    }
 
     public boolean containsTerm(final String term) {

@@ -88,34 +88,32 @@ public final class ArrayExpansion {
 
         // 5.2.
         for (final JsonValue item : element) {
-            
+
             activeContext.runtime().tick();
 
             // 5.2.1
-            JsonValue expanded = Expansion
+            final JsonValue expanded = Expansion
                     .with(activeContext, item, activeProperty, baseUrl)
                     .frameExpansion(frameExpansion)
                     .ordered(ordered)
                     .fromMap(fromMap)
                     .compute();
 
-            // 5.2.2
-            if (JsonUtils.isArray(expanded)
-                    && activeContext.getTerm(activeProperty)
-                            .map(TermDefinition::getContainerMapping)
-                            .filter(c -> c.contains(Keywords.LIST)).isPresent()) {
-
-                expanded = ListObject.toListObject(expanded);
-            }
-
-            // 5.2.3
             if (JsonUtils.isArray(expanded)) {
-                expanded.asJsonArray()
-                        .stream()
-                        .filter(JsonUtils::isNotNull)
-                        .forEach(result::add);
 
-                // append non-null element
+                if (activeContext.getTerm(activeProperty)
+                        .map(TermDefinition::getContainerMapping)
+                        .filter(c -> c.contains(Keywords.LIST)).isPresent()) {
+
+                    result.add(ListObject.toListObject(expanded.asJsonArray()));
+
+                } else {
+                    expanded.asJsonArray()
+                            .stream()
+                            .filter(JsonUtils::isNotNull)
+                            .forEach(result::add);
+                }
+
             } else if (JsonUtils.isNotNull(expanded)) {
                 result.add(expanded);
             }

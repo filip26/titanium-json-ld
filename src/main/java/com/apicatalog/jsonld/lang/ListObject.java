@@ -18,6 +18,7 @@ package com.apicatalog.jsonld.lang;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
@@ -27,9 +28,9 @@ public final class ListObject {
     }
 
     /**
-     * A list object is a map that has a @list key. It may also have
-     * an @index key, but no other entries. See the Lists and Sets section of
-     * JSON-LD 1.1 for a normative description.
+     * A list object is a map that has a @list key. It may also have an @index key,
+     * but no other entries. See the Lists and Sets section of JSON-LD 1.1 for a
+     * normative description.
      *
      * @see <a href="https://www.w3.org/TR/json-ld11/#dfn-list-object">List
      *      Object</a>
@@ -39,27 +40,28 @@ public final class ListObject {
      */
     public static final boolean isListObject(JsonValue value) {
         return JsonUtils.containsKey(value, Keywords.LIST)
-                    && (value.asJsonObject().size() == 1
-                            || (value.asJsonObject().size() == 2
-                                    && value.asJsonObject().containsKey(Keywords.INDEX)
-                                    )
-                            );
+                && (value.asJsonObject().size() == 1
+                        || (value.asJsonObject().size() == 2
+                                && value.asJsonObject().containsKey(Keywords.INDEX)));
     }
 
     /**
      * Convert expanded value to a list object by first setting it to an array
      * containing only expanded value if it is not already an array, and then by
-     * setting it to a map containing the key-value pair @list-expanded value.
+     * setting it to a map containing the key-value pair <code>@list</code> expanded value.
      *
      * @param value to convert
      * @return list object containing the provided value
      */
-    public static final JsonObject toListObject(JsonValue value) {
+    public static final JsonObject toListObject(final JsonValue value) {
         if (JsonUtils.isArray(value)) {
-            return JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, value).build();
+            return toListObject(value.asJsonArray());
         }
 
-        return JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, JsonProvider.instance().createArrayBuilder().add(value)).build();
-
+        return toListObject(JsonProvider.instance().createArrayBuilder().add(value).build());
+    }
+    
+    public static final JsonObject toListObject(final JsonArray value) {
+        return JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, value).build();
     }
 }

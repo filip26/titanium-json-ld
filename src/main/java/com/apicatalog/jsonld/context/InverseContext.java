@@ -17,58 +17,55 @@ package com.apicatalog.jsonld.context;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public final class InverseContext {
 
-    private final Map<String, Map<String, Map<String, Map<String, String>>>> context;
+    final Map<InverseDefinition, String> definitions;
 
     public InverseContext() {
-        this.context = new LinkedHashMap<>();
+        this.definitions = new LinkedHashMap<>(16);
     }
 
-    private void set(final String variable, final String container, final String type, final String key, final String value) {
-        context.computeIfAbsent(variable, x -> new LinkedHashMap<>())
-                .computeIfAbsent(container, x -> new LinkedHashMap<>())
-                .computeIfAbsent(type, x -> new LinkedHashMap<>())
-                .put(key, value);
-    }
-
-    private boolean doesNotContain(final String variable, final String container, final String type, final String key) {
-        return !context.containsKey(variable)
-                || !context.get(variable).containsKey(container)
-                || !context.get(variable).get(container).containsKey(type)
-                || !context.get(variable).get(container).get(type).containsKey(key);
+    void set(final String variable, final String container, final String type, final String key, final String value) {
+        definitions.put(new InverseDefinition(variable, container, type, key), value);
     }
 
     public boolean contains(final String variable) {
-        return context.containsKey(variable);
+        return definitions.keySet().stream()
+                .map(InverseDefinition::variable)
+                .anyMatch(variable::equals);
     }
 
-    public boolean contains(final String variable, final String container, final String type) {
-        return context.containsKey(variable)
-                && context.get(variable).containsKey(container)
-                && context.get(variable).get(container).containsKey(type);
+    public Map<String, InverseDefinition> definition(final String variable, final String container, final String type) {
+        return definitions.keySet().stream()
+                .filter(def -> Objects.equals(def.variable(), variable)
+                        && Objects.equals(def.container(), container)
+                        && Objects.equals(def.type(), type))
+                .collect(Collectors.toUnmodifiableMap(
+                        InverseDefinition::key,
+                        Function.identity()));
     }
 
-    public boolean contains(final String variable, final String container, final String type, final String key) {
-        return contains(variable)
-                && context.get(variable).containsKey(container)
-                && context.get(variable).get(container).containsKey(type)
-                && context.get(variable).get(container).get(type).containsKey(key);
+    boolean contains(final String variable, final String container, final String type, final String key) {
+        return definitions.keySet().stream()
+                .anyMatch(def -> Objects.equals(def.variable(), variable)
+                        && Objects.equals(def.container(), container)
+                        && Objects.equals(def.type(), type)
+                        && Objects.equals(def.key(), key));
     }
 
     public InverseContext setIfAbsent(final String variable, final String container, final String type, final String key, final String value) {
-        if (doesNotContain(variable, container, type, key)) {
-            set(variable, container, type, key, value);
+        if (contains(variable, container, type, key)) {
+            return this;
         }
+        set(variable, container, type, key, value);
         return this;
     }
 
-    public Optional<String> get(final String variable, final String container, final String type, final String key) {
-        if (doesNotContain(variable, container, type, key)) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(context.get(variable).get(container).get(type).get(key));
+    public String get(final InverseDefinition def) {
+        return definitions.get(def);
     }
 }

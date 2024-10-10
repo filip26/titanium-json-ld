@@ -69,11 +69,10 @@ public final class ScalarExpansion {
          */
         if (propertyContext != null) {
             activeContext = activeContext
-                                .newContext()
-                                .create(
-                                    propertyContext,
-                                    activeContext.getTerm(activeProperty).map(TermDefinition::getBaseUrl).orElse(null)
-                                );
+                    .newContext()
+                    .create(
+                            propertyContext,
+                            activeContext.getTerm(activeProperty).map(TermDefinition::getBaseUrl).orElse(null));
         }
 
         /*
