@@ -94,7 +94,8 @@ public final class ValueExpansion {
         }
 
         // 3.
-        final JsonObjectBuilder result = JsonProvider.instance().createObjectBuilder().add(Keywords.VALUE, value);
+        final JsonObjectBuilder result = JsonProvider.instance().createObjectBuilder()
+                .add(Keywords.VALUE, value);
 
         // 4.
         if (typeMapping != null
