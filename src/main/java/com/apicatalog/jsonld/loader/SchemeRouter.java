@@ -18,7 +18,9 @@ package com.apicatalog.jsonld.loader;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -49,17 +51,13 @@ public final class SchemeRouter implements DocumentLoader {
     @Override
     public CompletableFuture<Document> loadDocument(URI url, DocumentLoaderOptions options) {
 
-        if (url == null) {
-            throw new IllegalArgumentException("The url must not be null.");
-        }
+        Objects.requireNonNull(url);
 
         final DocumentLoader loader = loaders.getOrDefault(url.getScheme().toLowerCase(), null);
 
         if (loader == null) {
-            return CompletableFuture.failedFuture(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "URL scheme [" + url.getScheme() + "] is not supported."));
+            throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "URL scheme [" + url.getScheme() + "] is not supported."));
         }
-
         return loader.loadDocument(url, options);
     }
-
 }

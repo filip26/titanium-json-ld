@@ -69,9 +69,6 @@ public final class ActiveContextBuilder {
 
     private boolean validateScopedContext;
 
-    // runtime
-    private ActiveContext result;
-
     private ActiveContextBuilder(final ActiveContext activeContext) {
 
         this.activeContext = activeContext;
@@ -81,9 +78,6 @@ public final class ActiveContextBuilder {
         this.overrideProtected = false;
         this.propagate = true;
         this.validateScopedContext = true;
-
-        // runtime
-        this.result = null;
     }
 
     public static final ActiveContextBuilder with(final ActiveContext activeContext) {
@@ -114,8 +108,8 @@ public final class ActiveContextBuilder {
 
         // 1. Initialize result to the result of cloning active context, with inverse
         // context set to null.
-        result = new ActiveContext(activeContext);
-        result.setInverseContext(null);
+        final ActiveContext result = new ActiveContext(activeContext)
+                .setInverseContext(null);
 
         // 2. If local context is an object containing the member @propagate,
         // its value MUST be boolean true or false, set propagate to that value.
@@ -140,17 +134,17 @@ public final class ActiveContextBuilder {
             result.setPreviousContext(activeContext);
         }
 
-        CompletableFuture<ActiveContext> next = CompletableFuture.completedFuture(result);
+        CompletableFuture<ActiveContext> next = CompletableFuture.supplyAsync(() -> result);
 
         // 4. If local context is not an array, set local context to an array containing
         // only local context.
         // 5. For each item context in local context:
         for (final JsonValue itemContext : JsonUtils.toCollection(localContext)) {
-            next = next.thenCompose(result -> {
+            next = next.thenComposeAsync(context -> {
                 try {
-                    return context(localContext, baseUrl, result, itemContext);
+                    return context(result, localContext, baseUrl, context, itemContext);
                 } catch (JsonLdError e) {
-                    return CompletableFuture.failedFuture(e);
+                    return CompletableFuture.failedStage(e);
                 }
             });
             if (next.isCompletedExceptionally()) {
@@ -162,7 +156,8 @@ public final class ActiveContextBuilder {
         return next;
     }
 
-    private CompletableFuture<ActiveContext> context(final JsonValue localContext, final URI baseUrl, final ActiveContext activeContext, final JsonValue itemContext) throws JsonLdError {
+    private CompletableFuture<ActiveContext> context(final ActiveContext result, final JsonValue localContext, final URI baseUrl, final ActiveContext activeContext, final JsonValue itemContext)
+            throws JsonLdError {
 
         // 5.1. If context is null:
         if (JsonUtils.isNull(itemContext)) {
@@ -209,7 +204,7 @@ public final class ActiveContextBuilder {
 
             // 5.2.2
             if (validateScopedContext || !remoteContexts.contains(contextKey)) {
-                return fetch(contextUri, contextKey, baseUrl);
+                return fetch(result, contextUri, contextKey, baseUrl);
             }
 
             // 5.2.7
@@ -254,7 +249,7 @@ public final class ActiveContextBuilder {
         // 5.6. If context has an @import
         if (itemContextDefinition.containsKey(Keywords.IMPORT)) {
 
-            CompletableFuture<JsonObject> next = CompletableFuture.completedFuture(itemContextDefinition);
+            CompletableFuture<JsonObject> next = CompletableFuture.supplyAsync(() -> itemContextDefinition);
 
             // 5.6.1.
             if (activeContext.runtime().isV10()) {
@@ -320,9 +315,8 @@ public final class ActiveContextBuilder {
                                         return CompletableFuture.completedFuture(JsonUtils.merge(importedContextObject, contextDefinition));
 
                                     } catch (JsonLdError e) {
-                                        return CompletableFuture.failedFuture(e);
+                                        return CompletableFuture.failedStage(e);
                                     }
-
                                 });
                     });
             return next.thenCompose(contextDefinition -> completedFuture(activeContext, contextDefinition, localContext, baseUrl));
@@ -517,7 +511,7 @@ public final class ActiveContextBuilder {
         return context;
     }
 
-    private CompletableFuture<ActiveContext> fetch(final URI contextUri, final String contextKey, final URI baseUrl) throws JsonLdError {
+    private CompletableFuture<ActiveContext> fetch(ActiveContext result, final URI contextUri, final String contextKey, final URI baseUrl) throws JsonLdError {
 
         // 5.2.3
         if (remoteContexts.size() > MAX_REMOTE_CONTEXTS) {
@@ -601,8 +595,11 @@ public final class ActiveContextBuilder {
                     activeContext.runtime().getDocumentCache().put(contextKey, remoteImport);
                 }
 
+                if (result.runtime().getContextCache() != null && !validateScopedContext) {
+                    result.runtime().getContextCache().put(contextKey, importedContext);
+                }
+
                 // 5.2.6
-//            try {
                 return result
                         .newContext()
                         .remoteContexts(new ArrayList<>(remoteContexts))
@@ -616,13 +613,8 @@ public final class ActiveContextBuilder {
                         });
 
             } catch (JsonLdError e) {
-                return CompletableFuture.failedFuture(e);
+                return CompletableFuture.failedStage(e);
             }
-
-            // FIXME if (result.runtime().getContextCache() != null &&
-            // !validateScopedContext) {
-//                    result.runtime().getContextCache().put(contextKey, importedContext);
-//                }
         });
     }
 }

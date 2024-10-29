@@ -62,9 +62,8 @@ public final class FileLoader implements DocumentLoader {
                     return MediaType.JSON;
                 });
 
-
         try (final InputStream is = new FileInputStream(file)) {
-            
+
             final DocumentReader<InputStream> reader = resolver.getReader(contentType);
 
             final Document document = reader.read(is);

@@ -17,6 +17,7 @@ package com.apicatalog.jsonld.loader;
 
 import java.net.URI;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -51,7 +52,7 @@ public final class UriBaseRewriter implements DocumentLoader {
                 .thenCompose(remoteDocument -> {
 
                     if (remoteDocument == null) {
-                        return CompletableFuture.failedFuture(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED));
+                        throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED));
                     }
 
                     if (remoteDocument.getDocumentUrl() != null && remoteDocument.getDocumentUrl().toString().startsWith(targetBase)) {
@@ -61,7 +62,6 @@ public final class UriBaseRewriter implements DocumentLoader {
 
                     }
                     return CompletableFuture.completedFuture(remoteDocument);
-
                 });
 
     }

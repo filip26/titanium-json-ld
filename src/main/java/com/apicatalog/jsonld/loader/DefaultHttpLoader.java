@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -68,9 +67,8 @@ class DefaultHttpLoader implements DocumentLoader {
     }
 
     protected CompletableFuture<Document> loadDocument(final URI targetUri, final DocumentLoaderOptions options, final int redirections) {
-
         return httpClient.send(targetUri, getAcceptHeader(options.getRequestProfile()))
-                .thenComposeAsync(response -> {
+                .thenCompose(response -> {
                     try {
 
                         MediaType contentType = null;
@@ -88,13 +86,13 @@ class DefaultHttpLoader implements DocumentLoader {
                                 if (redirections < maxRedirections) {
                                     return loadDocument(UriResolver.resolveAsUri(targetUri, location.get()), options, redirections + 1);
                                 }
-                                throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections"));
+                                return CompletableFuture.failedStage(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections"));
                             }
-                            throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Header location is required for code [" + response.statusCode() + "]."));
+                            return CompletableFuture.failedStage(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Header location is required for code [" + response.statusCode() + "]."));
                         }
 
                         if (response.statusCode() != 200) {
-                            throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unexpected response code [" + response.statusCode() + "]"));
+                            return CompletableFuture.failedStage(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unexpected response code [" + response.statusCode() + "]"));
                         }
 
                         final Optional<String> contentTypeValue = response.contentType();
@@ -125,7 +123,7 @@ class DefaultHttpLoader implements DocumentLoader {
                                     if (redirections < maxRedirections) {
                                         return loadDocument(alternate.get().target(), options, redirections + 1);
                                     }
-                                    throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections"));
+                                    return CompletableFuture.failedStage(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections"));
                                 }
                             }
 
@@ -143,7 +141,7 @@ class DefaultHttpLoader implements DocumentLoader {
                                         .collect(Collectors.toList());
 
                                 if (contextUris.size() > 1) {
-                                    throw new CompletionException(new JsonLdError(JsonLdErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS));
+                                    return CompletableFuture.failedStage(new JsonLdError(JsonLdErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS));
 
                                 } else if (contextUris.size() == 1) {
                                     contextUri = contextUris.get(0).target();
@@ -156,19 +154,19 @@ class DefaultHttpLoader implements DocumentLoader {
                             contentType = MediaType.JSON;
                         }
 
-                        return CompletableFuture.completedFuture(resolve(contentType, targetUri, contextUri, response));
+                        return CompletableFuture.completedStage(resolve(contentType, targetUri, contextUri, response));
 
                     } catch (JsonLdError e) {
-                        throw new CompletionException(e);
+                        return CompletableFuture.failedStage(e);
 
                     } catch (IOException e) {
-                        throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e));
+                        return CompletableFuture.failedStage(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e));
 
                     } finally {
                         try {
                             response.close();
                         } catch (IOException e) {
-                            throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e));
+                            return CompletableFuture.failedStage(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e));
                         }
                     }
                 });

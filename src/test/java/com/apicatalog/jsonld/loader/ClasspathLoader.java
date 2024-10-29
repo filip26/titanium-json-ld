@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -39,9 +40,9 @@ public class ClasspathLoader implements DocumentLoader, TestLoader {
             return CompletableFuture.completedFuture(document);
 
         } catch (IOException e) {
-            return CompletableFuture.failedFuture(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED));
+            throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED));
         } catch (JsonLdError e) {
-            return CompletableFuture.failedFuture(e);
+            throw new CompletionException(e);
         }
     }
 

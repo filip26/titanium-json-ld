@@ -60,7 +60,7 @@ public final class ActiveContext {
 
     // an optional default base direction ("ltr" or "rtl")
     private DirectionType defaultBaseDirection;
-    
+
     private final ProcessingRuntime runtime;
 
     public ActiveContext(final ProcessingRuntime runtime) {
@@ -95,7 +95,7 @@ public final class ActiveContext {
     public InverseContext createInverseContext() {
         this.inverseContext = InverseContextBuilder.with(this).build();
         return this.inverseContext;
-   }
+    }
 
     public boolean containsTerm(final String term) {
         return terms.containsKey(term);
@@ -140,8 +140,9 @@ public final class ActiveContext {
         return baseUrl;
     }
 
-    public void setBaseUri(final URI baseUri) {
+    public ActiveContext setBaseUri(final URI baseUri) {
         this.baseUri = baseUri;
+        return this;
     }
 
     public InverseContext getInverseContext() {
@@ -184,39 +185,46 @@ public final class ActiveContext {
         return TermSelector.with(this, variable, containerMapping, typeLanguage);
     }
 
-    protected void setDefaultBaseDirection(final DirectionType defaultBaseDirection) {
+    protected ActiveContext setDefaultBaseDirection(final DirectionType defaultBaseDirection) {
         this.defaultBaseDirection = defaultBaseDirection;
+        return this;
     }
 
-    protected void setDefaultLanguage(final String defaultLanguage) {
+    protected ActiveContext setDefaultLanguage(final String defaultLanguage) {
         this.defaultLanguage = defaultLanguage;
+        return this;
     }
 
-    protected void setVocabularyMapping(final String vocabularyMapping) {
+    protected ActiveContext setVocabularyMapping(final String vocabularyMapping) {
         this.vocabularyMapping = vocabularyMapping;
+        return this;
     }
 
-    protected void setBaseUrl(final URI baseUrl) {
+    protected ActiveContext setBaseUrl(final URI baseUrl) {
         this.baseUrl = baseUrl;
+        return this;
     }
 
-    protected void setPreviousContext(final ActiveContext previousContext) {
+    protected ActiveContext setPreviousContext(final ActiveContext previousContext) {
         this.previousContext = previousContext;
+        return this;
     }
 
-    protected void setInverseContext(final InverseContext inverseContext) {
+    protected ActiveContext setInverseContext(final InverseContext inverseContext) {
         this.inverseContext = inverseContext;
+        return this;
     }
 
-    protected void setTerm(final String term, final TermDefinition definition) {
+    protected ActiveContext setTerm(final String term, final TermDefinition definition) {
         terms.put(term, definition);
+        return this;
     }
 
     @Override
     public String toString() {
         return "ActiveContext[terms=" + terms + ", previousContext=" + previousContext + "]";
     }
-    
+
     public ProcessingRuntime runtime() {
         return runtime;
     }
