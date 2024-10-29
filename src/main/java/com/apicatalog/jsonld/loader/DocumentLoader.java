@@ -17,15 +17,12 @@ package com.apicatalog.jsonld.loader;
 
 import java.net.URI;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
-import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 
 /**
- * The {@link DocumentLoader} defines an interface that custom document
- * loaders have to implement to be used to retrieve remote documents and
- * contexts.
+ * The {@link DocumentLoader} defines an interface that custom document loaders
+ * have to implement to be used to retrieve remote documents and contexts.
  *
  * @see <a href=
  *      "https://www.w3.org/TR/json-ld11-api/#loaddocumentcallback">LoadDocumentCallback
@@ -37,9 +34,10 @@ public interface DocumentLoader {
     /**
      * Retrieve a remote document.
      *
-     * @param url of the remote document to fetch
+     * @param url     of the remote document to fetch
      * @param options to set the behavior of the loader
-     * @return {@link Document} representing a remote document
+     * @return {@link CompletableFuture} representing a remote document processing
+     *         handle
      */
     CompletableFuture<Document> loadDocument(URI url, DocumentLoaderOptions options);
 }
