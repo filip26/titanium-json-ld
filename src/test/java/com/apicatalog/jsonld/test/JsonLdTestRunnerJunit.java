@@ -157,7 +157,7 @@ public class JsonLdTestRunnerJunit {
         assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
 
         try {
-            Document expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new DocumentLoaderOptions());
+            Document expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new DocumentLoaderOptions()).get();
 
             assertNotNull(expectedDocument);
 
@@ -178,7 +178,7 @@ public class JsonLdTestRunnerJunit {
 
             assertTrue(result.getRdfContent().isPresent(), "Expected " + expectedDocument.getContentType() + " document but was " + result.getContentType());
 
-        } catch (JsonLdError e) {
+        } catch (JsonLdError | InterruptedException | ExecutionException e) {
             fail(e.getMessage());
         }
         return false;

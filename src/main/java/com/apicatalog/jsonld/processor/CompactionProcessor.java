@@ -50,7 +50,7 @@ public final class CompactionProcessor {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + context + "].");
         }
 
-        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions());
+        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions()).get();
 
         if (contextDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Context[" + context + "] is null.");
@@ -68,7 +68,7 @@ public final class CompactionProcessor {
         final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
         loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
 
-        final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
+        final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions).get();
 
         if (remoteDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Returned document is null [" + input + "].");
@@ -83,7 +83,7 @@ public final class CompactionProcessor {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + context + "].");
         }
 
-        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions());
+        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions()).get();
 
         if (contextDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Returned context is null [" + context + "] is null.");

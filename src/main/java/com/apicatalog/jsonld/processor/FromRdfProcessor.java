@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.processor;
 
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -44,7 +45,7 @@ public final class FromRdfProcessor {
                     .build();
     }
 
-    public static JsonArray fromRdf(URI documentUri, JsonLdOptions options) throws JsonLdError {
+    public static JsonArray fromRdf(URI documentUri, JsonLdOptions options) throws JsonLdError, InterruptedException, ExecutionException {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + documentUri + "].");
@@ -55,7 +56,7 @@ public final class FromRdfProcessor {
                                     .getDocumentLoader()
                                     .loadDocument(documentUri,
                                             new DocumentLoaderOptions()
-                                                    );
+                                                    ).get();
 
         if (remoteDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);

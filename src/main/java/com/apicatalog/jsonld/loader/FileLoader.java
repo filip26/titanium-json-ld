@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,7 +44,7 @@ public final class FileLoader implements DocumentLoader {
     }
 
     @Override
-    public Document loadDocument(final URI url, final DocumentLoaderOptions options) throws JsonLdError {
+    public CompletableFuture<Document> loadDocument(final URI url, final DocumentLoaderOptions options) throws JsonLdError {
 
         if (!"file".equalsIgnoreCase(url.getScheme())) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unsupported URL scheme [" + url.getScheme() + "]. FileLoader accepts only file scheme.");
@@ -67,7 +68,7 @@ public final class FileLoader implements DocumentLoader {
         try (final InputStream is = new FileInputStream(file)) {
             final Document document = reader.read(is);
             document.setDocumentUrl(url);
-            return document;
+            return CompletableFuture.completedFuture(document);
 
         } catch (FileNotFoundException e) {
 

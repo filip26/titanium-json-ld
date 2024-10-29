@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.concurrent.CompletableFuture;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -39,7 +40,7 @@ public class ZipResourceLoader implements DocumentLoader, TestLoader {
     }
 
     @Override
-    public Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
+    public CompletableFuture<Document> loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
 
         if (!"zip".equals(url.getScheme())) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
@@ -88,7 +89,7 @@ public class ZipResourceLoader implements DocumentLoader, TestLoader {
                 final Document document = reader.read(is);
                 document.setDocumentUrl(url);
 
-                return document;
+                return CompletableFuture.completedFuture(document);
             }
 
         } catch (IOException e) {

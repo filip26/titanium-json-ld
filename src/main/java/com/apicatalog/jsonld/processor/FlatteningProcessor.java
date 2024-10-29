@@ -48,7 +48,7 @@ public final class FlatteningProcessor {
 
         assertDocumentLoader(options, input);
 
-        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions());
+        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions()).get();
 
         if (contextDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Context[" + context + "] is null.");
@@ -65,7 +65,7 @@ public final class FlatteningProcessor {
 
         assertDocumentLoader(options, context);
 
-        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions());
+        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions()).get();
 
         if (contextDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Context[" + context + "] is null.");
@@ -81,7 +81,7 @@ public final class FlatteningProcessor {
         final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
         loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
 
-        final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
+        final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions).get();
 
         if (remoteDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);

@@ -18,6 +18,7 @@ package com.apicatalog.jsonld.loader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.concurrent.CompletableFuture;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -28,14 +29,14 @@ import com.apicatalog.jsonld.document.RdfDocument;
 public class ClasspathLoader implements DocumentLoader, TestLoader {
 
     @Override
-    public Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
+    public CompletableFuture<Document> loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
 
         try (final InputStream is = getClass().getResourceAsStream(url.getPath())) {
 
             final Document document = toDocument(url, is);
             document.setDocumentUrl(url);
 
-            return document;
+            return CompletableFuture.completedFuture(document);
 
         } catch (IOException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);

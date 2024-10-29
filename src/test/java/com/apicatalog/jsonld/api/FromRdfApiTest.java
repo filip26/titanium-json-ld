@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
 
 import org.junit.jupiter.api.Test;
 
@@ -34,28 +35,28 @@ class FromRdfApiTest {
     public static final MockLoader MOCK_LOADER = new MockLoader(Rdf.createDataset());
 
     @Test
-    void test1() throws JsonLdError {
+    void test1() throws JsonLdError, InterruptedException, ExecutionException {
         JsonArray result = JsonLd.fromRdf(RdfDocument.of(Rdf.createDataset())).get();
         assertNotNull(result);
         assertEquals(0, result.size());
     }
 
     @Test
-    void test3() throws JsonLdError {
+    void test3() throws JsonLdError, InterruptedException, ExecutionException {
         JsonArray result = JsonLd.fromRdf("https://example.com").loader(MOCK_LOADER).get();
         assertNotNull(result);
         assertEquals(0, result.size());
     }
 
     @Test
-    void test4() throws JsonLdError {
+    void test4() throws JsonLdError, InterruptedException, ExecutionException {
         JsonArray result = JsonLd.fromRdf(URI.create("https://example.com")).loader(MOCK_LOADER).get();
         assertNotNull(result);
         assertEquals(0, result.size());
     }
 
     @Test
-    void test5() throws JsonLdError {
+    void test5() throws JsonLdError, InterruptedException, ExecutionException {
         JsonArray result = JsonLd.fromRdf("\thttps://example.com  ").loader(MOCK_LOADER).get();
         assertNotNull(result);
         assertEquals(0, result.size());

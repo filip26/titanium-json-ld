@@ -57,7 +57,7 @@ public class JsonLdTestRunnerEarl {
                 return false;
             }
 
-            Document expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new DocumentLoaderOptions());
+            Document expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new DocumentLoaderOptions()).get();
 
             if (expectedDocument == null) {
                 return false;

@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -34,10 +35,10 @@ public class LRUDocumentCacheTest {
         final List<Request> requests = new ArrayList<>();
 
         @Override
-        public Document loadDocument(URI url, DocumentLoaderOptions options) {
+        public CompletableFuture<Document> loadDocument(URI url, DocumentLoaderOptions options) {
             requests.add(new Request(url, options));
             // Return empty document.
-            return JsonDocument.of(JsonValue.EMPTY_JSON_ARRAY);
+            return CompletableFuture.completedFuture(JsonDocument.of(JsonValue.EMPTY_JSON_ARRAY));
         }
 
     }

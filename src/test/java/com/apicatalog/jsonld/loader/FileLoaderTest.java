@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
 
 import org.junit.jupiter.api.Test;
 
@@ -32,39 +33,39 @@ import com.apicatalog.jsonld.http.media.MediaType;
 class FileLoaderTest {
 
     @Test
-    void testLoadNQuads() throws URISyntaxException, JsonLdError {
+    void testLoadNQuads() throws URISyntaxException, JsonLdError, InterruptedException, ExecutionException {
 
         URL fileUrl = getClass().getResource("document.nq");
 
         assertNotNull(fileUrl);
 
-        Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions());
+        Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions()).get();
 
         assertNotNull(document);
         assertTrue(MediaType.N_QUADS.match(document.getContentType()));
     }
 
     @Test
-    void testLoadJson() throws URISyntaxException, JsonLdError {
+    void testLoadJson() throws URISyntaxException, JsonLdError, InterruptedException, ExecutionException {
 
         URL fileUrl = getClass().getResource("document.json");
 
         assertNotNull(fileUrl);
 
-        Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions());
+        Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions()).get();
 
         assertNotNull(document);
         assertTrue(MediaType.JSON.match(document.getContentType()));
     }
 
     @Test
-    void testLoadJsonLd() throws URISyntaxException, JsonLdError {
+    void testLoadJsonLd() throws URISyntaxException, JsonLdError, InterruptedException, ExecutionException {
 
         URL fileUrl = getClass().getResource("document.jsonld");
 
         assertNotNull(fileUrl);
 
-        Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions());
+        Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions()).get();
 
         assertNotNull(document);
         assertTrue(MediaType.JSON_LD.match(document.getContentType()));

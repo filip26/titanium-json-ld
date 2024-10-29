@@ -1,11 +1,12 @@
 package com.apicatalog.jsonld.loader;
 
+import java.net.URI;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.cache.LruCache;
 import com.apicatalog.jsonld.document.Document;
-
-import java.net.URI;
-import java.util.Objects;
 
 public class LRUDocumentCache implements DocumentLoader {
 
@@ -49,17 +50,20 @@ public class LRUDocumentCache implements DocumentLoader {
     }
 
     @Override
-    public Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
+    public CompletableFuture<Document> loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
         Object key = createCacheKey(url, options);
         Document result = cache.get(key);
         if (result == null) {
-            result = documentLoader.loadDocument(url, options);
-            cache.put(key, result);
+            return documentLoader.loadDocument(url, options)
+                    .thenApply(document -> {
+                        cache.put(key, document);
+                        return document;
+                    });
         }
-        return result;
+        return CompletableFuture.completedFuture(result);
     }
 
-    protected Object createCacheKey(URI url, DocumentLoaderOptions options){
+    protected Object createCacheKey(URI url, DocumentLoaderOptions options) {
         return new CacheKey(url, options);
     }
 

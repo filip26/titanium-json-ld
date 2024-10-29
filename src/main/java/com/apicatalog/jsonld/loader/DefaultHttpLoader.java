@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -61,7 +62,7 @@ class DefaultHttpLoader implements DocumentLoader {
     }
 
     @Override
-    public Document loadDocument(final URI uri, final DocumentLoaderOptions options) throws JsonLdError {
+    public CompletableFuture<Document> loadDocument(final URI uri, final DocumentLoaderOptions options) throws JsonLdError {
 
         try {
             URI targetUri = uri;
@@ -185,7 +186,7 @@ class DefaultHttpLoader implements DocumentLoader {
         return builder.toString();
     }
 
-    private final Document resolve(
+    private final CompletableFuture<Document> resolve(
             final MediaType type,
             final URI targetUri,
             final URI contextUrl,
@@ -201,7 +202,7 @@ class DefaultHttpLoader implements DocumentLoader {
 
             remoteDocument.setContextUrl(contextUrl);
 
-            return remoteDocument;
+            return CompletableFuture.completedFuture(remoteDocument);
         }
     }
 

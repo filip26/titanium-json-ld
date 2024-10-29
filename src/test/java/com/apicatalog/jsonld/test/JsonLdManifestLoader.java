@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -60,7 +61,7 @@ public final class JsonLdManifestLoader {
 
         try {
 
-            Document manifest = loader.loadDocument(URI.create(manifestBase + manifestName), new DocumentLoaderOptions());
+            Document manifest = loader.loadDocument(URI.create(manifestBase + manifestName), new DocumentLoaderOptions()).get();
 
             assertNotNull(manifest);
 
@@ -78,7 +79,7 @@ public final class JsonLdManifestLoader {
                             .map(JsonValue::asJsonObject)
                             .map(o -> JsonLdTestCase.of(o, manifestName, manifestBase, baseUri, loader));
 
-        } catch (JsonLdError e) {
+        } catch (JsonLdError | InterruptedException | ExecutionException e) {
             fail(e.getMessage());
         }
 

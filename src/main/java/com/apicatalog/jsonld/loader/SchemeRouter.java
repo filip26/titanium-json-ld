@@ -18,6 +18,7 @@ package com.apicatalog.jsonld.loader;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -47,7 +48,7 @@ public final class SchemeRouter implements DocumentLoader {
     }
 
     @Override
-    public Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
+    public CompletableFuture<Document> loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
 
         if (url == null) {
             throw new IllegalArgumentException("The url must not be null.");

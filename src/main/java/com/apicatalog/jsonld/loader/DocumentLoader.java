@@ -16,6 +16,8 @@
 package com.apicatalog.jsonld.loader;
 
 import java.net.URI;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
@@ -40,5 +42,5 @@ public interface DocumentLoader {
      * @return {@link Document} representing a remote document
      * @throws JsonLdError
      */
-    Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError;
+    CompletableFuture<Document> loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError;
 }

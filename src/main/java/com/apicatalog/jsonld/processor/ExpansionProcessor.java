@@ -54,7 +54,7 @@ public final class ExpansionProcessor {
         final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
         loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
 
-        final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
+        final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions).get();
 
         if (remoteDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);

@@ -70,7 +70,7 @@ public final class FramingProcessor {
         final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
         loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
 
-        final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
+        final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions).get();
 
         if (remoteDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Returned document is null [" + input + "].");
@@ -84,7 +84,7 @@ public final class FramingProcessor {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + frameUri + "].");
         }
 
-        final Document frameDocument = options.getDocumentLoader().loadDocument(frameUri, new DocumentLoaderOptions());
+        final Document frameDocument = options.getDocumentLoader().loadDocument(frameUri, new DocumentLoaderOptions()).get();
 
         if (frameDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Returned frame is null [" + frameUri + "] is null.");
@@ -251,7 +251,7 @@ public final class FramingProcessor {
         return frame(getDocument(input, options), getDocument(frame, options), options);
     }
 
-    private static Document getDocument(final URI document, final JsonLdOptions options) throws JsonLdError {
+    private static Document getDocument(final URI document, final JsonLdOptions options) throws JsonLdError, InterruptedException, ExecutionException {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + document + "].");
@@ -260,7 +260,7 @@ public final class FramingProcessor {
         final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
         loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
 
-        final Document remoteDocument = options.getDocumentLoader().loadDocument(document, loaderOptions);
+        final Document remoteDocument = options.getDocumentLoader().loadDocument(document, loaderOptions).get();
 
         if (remoteDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Cannot load document [" + document + "].");

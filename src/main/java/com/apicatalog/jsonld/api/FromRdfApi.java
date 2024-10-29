@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.api;
 
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
@@ -97,8 +98,10 @@ public final class FromRdfApi implements CommonApi<FromRdfApi>, LoaderApi<FromRd
      *
      * @return {@link JsonArray} representing <code>JSON-LD</code> document
      * @throws JsonLdError
+     * @throws ExecutionException 
+     * @throws InterruptedException 
      */
-    public JsonArray get() throws JsonLdError {
+    public JsonArray get() throws JsonLdError, InterruptedException, ExecutionException {
 
         if (document != null) {
             return FromRdfProcessor.fromRdf(document, options);
