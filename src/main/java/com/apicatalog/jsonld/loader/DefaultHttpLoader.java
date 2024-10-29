@@ -64,17 +64,17 @@ class DefaultHttpLoader implements DocumentLoader {
 
     @Override
     public CompletableFuture<Document> loadDocument(final URI uri, final DocumentLoaderOptions options) {
-        return loadDocument(uri, options, 0);
+        return loadDocument(uri, options, null, 0);
     }
 
-    protected CompletableFuture<Document> loadDocument(final URI targetUri, final DocumentLoaderOptions options, int redirections) {
+    protected CompletableFuture<Document> loadDocument(final URI targetUri, final DocumentLoaderOptions options, final URI context, final int redirections) {
 
         return httpClient.send(targetUri, getAcceptHeader(options.getRequestProfile()))
                 .thenComposeAsync(response -> {
                     try {
-                        MediaType contentType = null;
 
-                        URI contextUri = null;
+                        MediaType contentType = null;
+                        URI contextUri = context;
 
                         // 3.
                         if (response.statusCode() == 301
@@ -86,7 +86,7 @@ class DefaultHttpLoader implements DocumentLoader {
 
                             if (location.isPresent()) {
                                 if (redirections < maxRedirections) {
-                                    return loadDocument(UriResolver.resolveAsUri(targetUri, location.get()), options, redirections + 1);
+                                    return loadDocument(UriResolver.resolveAsUri(targetUri, location.get()), options, contextUri, redirections + 1);
                                 }
                                 throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections"));
                             }
@@ -124,7 +124,7 @@ class DefaultHttpLoader implements DocumentLoader {
 
                                 if (alternate.isPresent()) {
                                     if (redirections < maxRedirections) {
-                                        return loadDocument(alternate.get().target(), options, redirections + 1);
+                                        return loadDocument(alternate.get().target(), options, contextUri, redirections + 1);
                                     }
                                     throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections"));
                                 }
@@ -168,16 +168,10 @@ class DefaultHttpLoader implements DocumentLoader {
                     } finally {
                         try {
                             response.close();
-                        } catch (IOException eio) {
-                            throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, eio));
+                        } catch (IOException e) {
+                            throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e));
                         }
                     }
-
-                }).handleAsync((document, e) -> {
-                    if (e != null) {
-                        throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e.getCause()));
-                    }
-                    return document;
                 });
     }
 
@@ -223,21 +217,6 @@ class DefaultHttpLoader implements DocumentLoader {
     }
 
     /**
-     * @deprecated use {@code DefaultHttpLoader#fallbackContentType(MediaType)}
-     * 
-     *             Set fallback content-type used when received content-type is not
-     *             supported. e.g.
-     *             <code>setFallbackContentType(MediaType.JSON_LD)</code>
-     *
-     * @param fallbackContentType a content type that overrides unsupported received
-     *                            content-type
-     */
-    @Deprecated
-    public void setFallbackContentType(MediaType fallbackContentType) {
-        resolver.setFallbackContentType(fallbackContentType);
-    }
-
-    /**
      * Set fallback content-type used when received content-type is not supported.
      * e.g. <code>setFallbackContentType(MediaType.JSON_LD)</code>
      *
@@ -262,88 +241,4 @@ class DefaultHttpLoader implements DocumentLoader {
         httpClient.timeout(timeount);
         return this;
     }
-
-    /*
-     * try { URI targetUri = uri;
-     * 
-     * MediaType contentType = null;
-     * 
-     * URI contextUri = null;
-     * 
-     * for (int redirection = 0; redirection < maxRedirections; redirection++) {
-     * 
-     * // 2. try (HttpResponse response = httpClient.send(targetUri,
-     * getAcceptHeader(options.getRequestProfile()))) {
-     * 
-     * // 3. if (response.statusCode() == 301 || response.statusCode() == 302 ||
-     * response.statusCode() == 303 || response.statusCode() == 307) {
-     * 
-     * final Optional<String> location = response.location();
-     * 
-     * if (location.isPresent()) { targetUri = UriResolver.resolveAsUri(targetUri,
-     * location.get()); continue; }
-     * 
-     * throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED,
-     * "Header location is required for code [" + response.statusCode() + "]."); }
-     * 
-     * if (response.statusCode() != 200) { throw new
-     * JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED,
-     * "Unexpected response code [" + response.statusCode() + "]"); }
-     * 
-     * final Optional<String> contentTypeValue = response.contentType();
-     * 
-     * if (contentTypeValue.isPresent()) { contentType =
-     * MediaType.of(contentTypeValue.get()); }
-     * 
-     * final Collection<String> linkValues = response.links();
-     * 
-     * if (linkValues != null && !linkValues.isEmpty()) {
-     * 
-     * // 4. if (contentType == null || (!MediaType.JSON.match(contentType) &&
-     * !contentType.subtype().toLowerCase().endsWith(PLUS_JSON))) {
-     * 
-     * final URI baseUri = targetUri;
-     * 
-     * Optional<Link> alternate = linkValues.stream() .flatMap(l -> Link.of(l,
-     * baseUri).stream()) .filter(l -> l.relations().contains("alternate") &&
-     * l.type().isPresent() && MediaType.JSON_LD.match(l.type().get()))
-     * .findFirst();
-     * 
-     * if (alternate.isPresent()) {
-     * 
-     * targetUri = alternate.get().target(); continue; } }
-     * 
-     * // 5. if (contentType != null && !MediaType.JSON_LD.match(contentType) &&
-     * (MediaType.JSON.match(contentType) ||
-     * contentType.subtype().toLowerCase().endsWith(PLUS_JSON))) {
-     * 
-     * final URI baseUri = targetUri;
-     * 
-     * final List<Link> contextUris = linkValues.stream() .flatMap(l -> Link.of(l,
-     * baseUri).stream()) .filter(l ->
-     * l.relations().contains(ProfileConstants.CONTEXT))
-     * .collect(Collectors.toList());
-     * 
-     * if (contextUris.size() > 1) { throw new
-     * JsonLdError(JsonLdErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS);
-     * 
-     * } else if (contextUris.size() == 1) { contextUri =
-     * contextUris.get(0).target(); } } }
-     * 
-     * if (contentType == null) { LOGGER.log(Level.WARNING,
-     * "GET on URL [{0}] does not return content-type header. Trying application/json."
-     * , uri); contentType = MediaType.JSON; }
-     * 
-     * return resolve(contentType, targetUri, contextUri, response); } catch
-     * (JsonLdError e) { return CompletableFuture.failedFuture(e); } }
-     * 
-     * return CompletableFuture.failedFuture(new
-     * JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED,
-     * "Too many redirections"));
-     * 
-     * } catch (IOException e) { return CompletableFuture.failedFuture( new
-     * JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e)); }
-     * 
-     * 
-     */
 }
