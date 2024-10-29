@@ -50,22 +50,45 @@ public final class JsonDocument implements Document {
 
     /**
      * Create a new document from {@link JsonStructure}. Sets {@link MediaType#JSON} as the content type.
-     *
+     * 
      * @param structure representing parsed JSON content
      * @return {@link Document} representing JSON content
      */
     public static JsonDocument of(final JsonStructure structure) {
-        return of(MediaType.JSON, structure);
+        return of(null, MediaType.JSON, structure);
+    }
+    
+    /**
+     * Create a new document from {@link JsonStructure}. Sets {@link MediaType#JSON} as the content type.
+     * 
+     * @param id
+     * @param structure representing parsed JSON content
+     * @return {@link Document} representing JSON content
+     */
+    public static JsonDocument of(final URI id, final JsonStructure structure) {
+        return of(id, MediaType.JSON, structure);
     }
 
     /**
      * Create a new document from {@link JsonStructure}.
-     *
+     * 
      * @param contentType reflecting the provided {@link JsonStructure}, e.g. {@link MediaType#JSON_LD}, any JSON based media type is allowed
      * @param structure representing parsed JSON content
      * @return {@link Document} representing JSON content
      */
     public static JsonDocument of(final MediaType contentType, final JsonStructure structure) {
+        return of(null, contentType, structure);
+    }
+    
+    /**
+     * Create a new document from {@link JsonStructure}.
+     * 
+     * @param id
+     * @param contentType reflecting the provided {@link JsonStructure}, e.g. {@link MediaType#JSON_LD}, any JSON based media type is allowed
+     * @param structure representing parsed JSON content
+     * @return {@link Document} representing JSON content
+     */
+    public static JsonDocument of(final URI id, final MediaType contentType, final JsonStructure structure) {
 
         if (contentType == null) {
             throw new IllegalArgumentException("The provided JSON type is null.");
@@ -116,6 +139,25 @@ public final class JsonDocument implements Document {
         }
     }
 
+    public static final JsonDocument of(URI id, URI context, final MediaType contentType, final InputStream is)  throws JsonLdError {
+
+        assertContentType(contentType);
+
+        if (is == null) {
+            throw new IllegalArgumentException("The input stream parameter cannot be null.");
+        }
+
+        try (final JsonParser parser = JsonProvider.instance().createParser(is)) {
+
+            JsonDocument document = doParse(contentType, parser);
+            document.setDocumentUrl(id);
+            document.setContextUrl(context);
+            return document;
+
+        } catch (JsonException e) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+        }
+    }
     /**
      * Create a new document from content provided by {@link Reader}. Sets {@link MediaType#JSON} as the content type.
      *
@@ -207,7 +249,6 @@ public final class JsonDocument implements Document {
         return contextUrl;
     }
 
-    @Override
     public void setContextUrl(URI contextUrl) {
         this.contextUrl = contextUrl;
     }
@@ -217,7 +258,6 @@ public final class JsonDocument implements Document {
         return documentUrl;
     }
 
-    @Override
     public void setDocumentUrl(URI documentUrl) {
         this.documentUrl = documentUrl;
     }

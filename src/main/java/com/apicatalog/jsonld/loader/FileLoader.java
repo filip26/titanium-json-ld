@@ -36,11 +36,11 @@ public final class FileLoader implements DocumentLoader {
 
     private static final Logger LOGGER = Logger.getLogger(FileLoader.class.getName());
 
-    private final DocumentResolver resolver;
+    private final DocumentReaderResolver resolver;
 
     public FileLoader() {
-        this.resolver = new DocumentResolver();
-        this.resolver.setFallbackContentType(MediaType.JSON);
+        this.resolver = new JsonDocumentResolver();
+//FIXME        this.resolver.setFallbackContentType(MediaType.JSON);
     }
 
     @Override
@@ -66,9 +66,7 @@ public final class FileLoader implements DocumentLoader {
 
             final DocumentReader<InputStream> reader = resolver.getReader(contentType);
 
-            final Document document = reader.read(is);
-            document.setDocumentUrl(url);
-            return CompletableFuture.completedFuture(document);
+            return CompletableFuture.completedFuture(reader.read(url, null, is));
 
         } catch (FileNotFoundException e) {
             return CompletableFuture.failedFuture(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "File not found [" + url + "]."));

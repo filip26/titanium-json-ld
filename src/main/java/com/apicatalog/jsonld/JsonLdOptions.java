@@ -557,4 +557,8 @@ public final class JsonLdOptions {
     public void setUndefinedTermsPolicy(ProcessingPolicy undefinedTerms) {
         this.undefinedTerms = undefinedTerms;
     }
+
+    public static JsonLdOptions withoutLoader() {
+        return new JsonLdOptions((DocumentLoader)null);
+    }
 }

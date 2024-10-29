@@ -425,35 +425,12 @@ public final class JsonLd {
     }
 
     /**
-     * Transforms the referenced N-Quads document into a JSON-LD document in expanded form.
-     *
-     * @param documentLocation {@link URI} referencing N-Quads document to expand
-     * @return {@link FromRdfApi} allowing to set additional parameters
-     */
-    public static final FromRdfApi fromRdf(final String documentLocation) {
-        return new FromRdfApi(assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME));
-    }
-
-    /**
-     * Transforms the referenced N-Quads document into a JSON-LD document in expanded form.
-     *
-     * @param documentUri {@link URI} referencing N-Quads document to expand
-     * @return {@link FromRdfApi} allowing to set additional parameters
-     */
-    public static final FromRdfApi fromRdf(final URI documentUri) {
-
-        assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
-
-        return new FromRdfApi(documentUri);
-    }
-
-    /**
-     * Transforms {@link Document} into a JSON-LD document in expanded form.
+     * Transforms {@link RdfDocument} into a JSON-LD document in expanded form.
      *
      * @param document to transform
      * @return {@link FromRdfApi} allowing to set additional parameters
      */
-    public static final FromRdfApi fromRdf(final Document document) {
+    public static final FromRdfApi fromRdf(final RdfDocument document) {
 
         assertRdfDocument(document, DOCUMENT_PARAM_NAME);
 

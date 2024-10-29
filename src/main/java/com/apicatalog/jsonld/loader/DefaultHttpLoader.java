@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.time.Duration;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -49,7 +50,7 @@ class DefaultHttpLoader implements DocumentLoader {
 
     private final HttpClient httpClient;
 
-    private final DocumentResolver resolver;
+    private final DocumentReaderResolver resolver;
 
     public DefaultHttpLoader(HttpClient httpClient) {
         this(httpClient, MAX_REDIRECTIONS_DEFAULT_VALUE);
@@ -58,16 +59,16 @@ class DefaultHttpLoader implements DocumentLoader {
     public DefaultHttpLoader(HttpClient httpClient, int maxRedirections) {
         this.httpClient = httpClient;
         this.maxRedirections = maxRedirections;
-        this.resolver = new DocumentResolver();
+        this.resolver = new JsonDocumentResolver();
     }
 
     @Override
     public CompletableFuture<Document> loadDocument(final URI uri, final DocumentLoaderOptions options) {
-        return loadDocument(uri, options, 0);
+        return loadDocument(uri, getAcceptHeader(options.getRequestProfile()), 0);
     }
 
-    protected CompletableFuture<Document> loadDocument(final URI targetUri, final DocumentLoaderOptions options, final int redirections) {
-        return httpClient.send(targetUri, getAcceptHeader(options.getRequestProfile()))
+    protected CompletableFuture<Document> loadDocument(final URI targetUri, final String requestProfile, final int redirections) {
+        return httpClient.send(targetUri, requestProfile)
                 .thenCompose(response -> {
                     try {
 
@@ -84,7 +85,7 @@ class DefaultHttpLoader implements DocumentLoader {
 
                             if (location.isPresent()) {
                                 if (redirections < maxRedirections) {
-                                    return loadDocument(UriResolver.resolveAsUri(targetUri, location.get()), options, redirections + 1);
+                                    return loadDocument(UriResolver.resolveAsUri(targetUri, location.get()), requestProfile, redirections + 1);
                                 }
                                 return CompletableFuture.failedStage(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections"));
                             }
@@ -121,7 +122,7 @@ class DefaultHttpLoader implements DocumentLoader {
 
                                 if (alternate.isPresent()) {
                                     if (redirections < maxRedirections) {
-                                        return loadDocument(alternate.get().target(), options, redirections + 1);
+                                        return loadDocument(alternate.get().target(), requestProfile, redirections + 1);
                                     }
                                     return CompletableFuture.failedStage(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections"));
                                 }
@@ -133,10 +134,8 @@ class DefaultHttpLoader implements DocumentLoader {
                                     && (MediaType.JSON.match(contentType)
                                             || contentType.subtype().toLowerCase().endsWith(PLUS_JSON))) {
 
-                                final URI baseUri = targetUri;
-
                                 final List<Link> contextUris = linkValues.stream()
-                                        .flatMap(l -> Link.of(l, baseUri).stream())
+                                        .flatMap(l -> Link.of(l, targetUri).stream())
                                         .filter(l -> l.relations().contains(ProfileConstants.CONTEXT))
                                         .collect(Collectors.toList());
 
@@ -154,7 +153,7 @@ class DefaultHttpLoader implements DocumentLoader {
                             contentType = MediaType.JSON;
                         }
 
-                        return CompletableFuture.completedStage(resolve(contentType, targetUri, contextUri, response));
+                        return resolve(contentType, targetUri, contextUri, response);
 
                     } catch (JsonLdError e) {
                         return CompletableFuture.failedStage(e);
@@ -173,7 +172,7 @@ class DefaultHttpLoader implements DocumentLoader {
     }
 
     public static final String getAcceptHeader() {
-        return getAcceptHeader(null);
+        return getAcceptHeader(Collections.emptyList());
     }
 
     public static final String getAcceptHeader(final Collection<String> profiles) {
@@ -182,18 +181,18 @@ class DefaultHttpLoader implements DocumentLoader {
         builder.append(MediaType.JSON_LD.toString());
 
         if (profiles != null && !profiles.isEmpty()) {
-            builder.append(";profile=\"");
-            builder.append(String.join(" ", profiles));
-            builder.append("\"");
+            builder.append(";profile=\"")
+                    .append(String.join(" ", profiles))
+                    .append('"');
         }
 
-        builder.append(',');
-        builder.append(MediaType.JSON.toString());
-        builder.append(";q=0.9,*/*;q=0.1");
-        return builder.toString();
+        return builder.append(',')
+                .append(MediaType.JSON.toString())
+                .append(";q=0.9,*/*;q=0.1")
+                .toString();
     }
 
-    private final Document resolve(
+    private final CompletableFuture<Document> resolve(
             final MediaType type,
             final URI targetUri,
             final URI contextUrl,
@@ -202,14 +201,7 @@ class DefaultHttpLoader implements DocumentLoader {
         final DocumentReader<InputStream> reader = resolver.getReader(type);
 
         try (final InputStream is = response.body()) {
-
-            final Document remoteDocument = reader.read(is);
-
-            remoteDocument.setDocumentUrl(targetUri);
-
-            remoteDocument.setContextUrl(contextUrl);
-
-            return remoteDocument;
+            return CompletableFuture.completedFuture(reader.read(targetUri, contextUrl, is));
         }
     }
 
@@ -223,7 +215,7 @@ class DefaultHttpLoader implements DocumentLoader {
      * @since 1.4.0
      */
     public DefaultHttpLoader fallbackContentType(MediaType fallbackContentType) {
-        resolver.setFallbackContentType(fallbackContentType);
+//FIXME        resolver.setFallbackContentType(fallbackContentType);
         return this;
     }
 

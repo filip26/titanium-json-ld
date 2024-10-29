@@ -2,6 +2,7 @@ package com.apicatalog.jsonld.loader;
 
 import java.io.InputStream;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -14,13 +15,13 @@ import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.Rdf;
 
-class DocumentResolver {
+class JsonDocumentResolver implements DocumentReaderResolver {
 
-    private static final Logger LOGGER = Logger.getLogger(DocumentResolver.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(JsonDocumentResolver.class.getName());
 
     private MediaType fallbackContentType;
 
-    public DocumentResolver() {
+    public JsonDocumentResolver() {
         this.fallbackContentType = null;
     }
 
@@ -63,11 +64,11 @@ class DocumentResolver {
         }
 
         if (JsonDocument.accepts(type)) {
-            return Optional.of(is ->  JsonDocument.of(type, is));
+            return Optional.of((uri, context, is) -> JsonDocument.of(uri, context, type, is));
         }
 
         if (RdfDocument.accepts(type)) {
-            return Optional.of(is -> RdfDocument.of(type, is));
+            return Optional.of((uri, context, is) -> RdfDocument.of(uri, type, is));
         }
 
         return Optional.empty();

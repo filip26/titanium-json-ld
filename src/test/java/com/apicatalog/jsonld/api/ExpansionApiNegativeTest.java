@@ -22,26 +22,23 @@ import java.net.URI;
 import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.document.RdfDocument;
-import com.apicatalog.rdf.Rdf;
 
 class ExpansionApiNegativeTest {
 
     @Test
     void test1() {
-        assertThrows(IllegalArgumentException.class, () -> JsonLd.expand((JsonDocument)null));
+        assertThrows(IllegalArgumentException.class, () -> JsonLd.expand((JsonDocument) null));
     }
 
     @Test
     void test2() {
-        assertThrows(IllegalArgumentException.class, () -> JsonLd.expand((String)null));
+        assertThrows(IllegalArgumentException.class, () -> JsonLd.expand((String) null));
     }
 
     @Test
     void test3() {
-        assertThrows(IllegalArgumentException.class, () -> JsonLd.expand((URI)null));
+        assertThrows(IllegalArgumentException.class, () -> JsonLd.expand((URI) null));
     }
 
     @Test
@@ -63,12 +60,6 @@ class ExpansionApiNegativeTest {
     void test7() {
         final URI uri = URI.create("relative");
         assertThrows(IllegalArgumentException.class, () -> JsonLd.expand(uri));
-    }
-
-    @Test
-    void test8() {
-        final Document document = RdfDocument.of(Rdf.createDataset());
-        assertThrows(IllegalArgumentException.class, () -> JsonLd.expand(document));
     }
 
     @Test

@@ -15,15 +15,12 @@
  */
 package com.apicatalog.jsonld.processor;
 
-import java.net.URI;
-import java.util.concurrent.ExecutionException;
-
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
+import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.serialization.RdfToJsonld;
+import com.apicatalog.rdf.RdfDataset;
 
 import jakarta.json.JsonArray;
 
@@ -32,36 +29,22 @@ public final class FromRdfProcessor {
     private FromRdfProcessor() {
     }
 
-    public static final JsonArray fromRdf(final Document document, final JsonLdOptions options) throws JsonLdError {
-
-        return RdfToJsonld
-                    .with(document.getRdfContent().orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Expected RDF document but got [mediaType=" + document.getContentType() + ", uri=" + document.getDocumentUrl() + "]")))
-                    .ordered(options.isOrdered())
-                    .rdfDirection(options.getRdfDirection())
-                    .useNativeTypes(options.isUseNativeTypes())
-                    .useRdfType(options.isUseRdfType())
-                    .processingMode(options.getProcessingMode())
-                    .uriValidation(options.isUriValidation())
-                    .build();
+    public static final JsonArray fromRdf(final RdfDocument document, final JsonLdOptions options) throws JsonLdError {
+        return fromRdf(document.getRdfContent()
+                .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED,
+                        "Expected RDF document but got [mediaType=" + document.getContentType() + ", uri=" + document.getDocumentUrl() + "]")),
+                options);
     }
 
-    public static JsonArray fromRdf(URI documentUri, JsonLdOptions options) throws JsonLdError, InterruptedException, ExecutionException {
-
-        if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + documentUri + "].");
-        }
-
-        final Document remoteDocument =
-                                options
-                                    .getDocumentLoader()
-                                    .loadDocument(documentUri,
-                                            new DocumentLoaderOptions()
-                                                    ).get();
-
-        if (remoteDocument == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
-        }
-
-        return fromRdf(remoteDocument, options);
+    public static final JsonArray fromRdf(final RdfDataset dataset, final JsonLdOptions options) throws JsonLdError {
+        return RdfToJsonld
+                .with(dataset)
+                .ordered(options.isOrdered())
+                .rdfDirection(options.getRdfDirection())
+                .useNativeTypes(options.isUseNativeTypes())
+                .useRdfType(options.isUseRdfType())
+                .processingMode(options.getProcessingMode())
+                .uriValidation(options.isUriValidation())
+                .build();
     }
 }

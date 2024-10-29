@@ -49,16 +49,12 @@ public interface Document {
      */
     URI getContextUrl();
 
-    void setContextUrl(URI contextUrl);
-
     /**
      * The final {@link URI} of the loaded document.
      *
      * @return {@link URI} of the loaded document or <code>null</code> if not available
      */
     URI getDocumentUrl();
-
-    void setDocumentUrl(URI documentUrl);
 
     /**
      * The value of any <code>profile</code> parameter retrieved as part of the

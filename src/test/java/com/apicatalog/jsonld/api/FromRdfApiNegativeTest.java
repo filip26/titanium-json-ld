@@ -17,32 +17,15 @@ package com.apicatalog.jsonld.api;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.net.URI;
-
 import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
-
-import jakarta.json.JsonValue;
 
 class FromRdfApiNegativeTest {
 
     @Test
-    void test1() {
-        assertThrows(IllegalArgumentException.class, () -> JsonLd.fromRdf((URI)null));
-    }
-
-    @Test
-    void test2() {
-        final Document document = JsonDocument.of(JsonValue.EMPTY_JSON_ARRAY);
-        assertThrows(IllegalArgumentException.class, () -> JsonLd.fromRdf(document));
-    }
-
-    @Test
     void test3() {
-        assertThrows(IllegalArgumentException.class, () -> JsonLd.fromRdf((RdfDocument)null));
+        assertThrows(IllegalArgumentException.class, () -> JsonLd.fromRdf((RdfDocument) null));
     }
 }

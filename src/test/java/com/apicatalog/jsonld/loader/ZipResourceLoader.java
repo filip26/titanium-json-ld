@@ -33,10 +33,10 @@ import com.apicatalog.jsonld.http.media.MediaType;
 
 public class ZipResourceLoader implements DocumentLoader, TestLoader {
 
-    private final DocumentResolver resolver;
+    private final DocumentReaderResolver resolver;
 
     public ZipResourceLoader() {
-        this.resolver = new DocumentResolver();
+        this.resolver = new JsonDocumentResolver();
     }
 
     @Override
@@ -85,11 +85,7 @@ public class ZipResourceLoader implements DocumentLoader, TestLoader {
             }
 
             try (final InputStream is = zip.getInputStream(zipEntry)) {
-
-                final Document document = reader.read(is);
-                document.setDocumentUrl(url);
-
-                return CompletableFuture.completedFuture(document);
+                return CompletableFuture.completedFuture(reader.read(url, null, is));
             }
 
         } catch (IOException e) {

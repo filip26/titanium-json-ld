@@ -21,32 +21,31 @@ import java.util.concurrent.ExecutionException;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdVersion;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.processor.FromRdfProcessor;
 import com.apicatalog.rdf.RdfDataset;
 
 import jakarta.json.JsonArray;
 
-public final class FromRdfApi implements CommonApi<FromRdfApi>, LoaderApi<FromRdfApi> {
+public final class FromRdfApi implements CommonApi<FromRdfApi> {
 
     // required
-    private final Document document;
-    private final URI documentUri;
+    private final RdfDocument document;
+    private final RdfDataset dataset;
 
     // optional
     private JsonLdOptions options;
 
-    public FromRdfApi(Document document) {
+    public FromRdfApi(RdfDocument document) {
         this.document = document;
-        this.documentUri = null;
-        this.options = new JsonLdOptions();
+        this.dataset = null;
+        this.options = JsonLdOptions.withoutLoader();
     }
 
-    public FromRdfApi(URI documentUri) {
+    public FromRdfApi(RdfDataset dataset) {
         this.document = null;
-        this.documentUri = documentUri;
-        this.options = new JsonLdOptions();
+        this.dataset = dataset;
+        this.options = JsonLdOptions.withoutLoader();
     }
 
     @Override
@@ -78,12 +77,6 @@ public final class FromRdfApi implements CommonApi<FromRdfApi>, LoaderApi<FromRd
         return this;
     }
 
-    @Override
-    public FromRdfApi loader(DocumentLoader loader) {
-        options.setDocumentLoader(loader);
-        return this;
-    }
-
     public FromRdfApi nativeTypes() {
         return nativeTypes(true);
     }
@@ -98,8 +91,8 @@ public final class FromRdfApi implements CommonApi<FromRdfApi>, LoaderApi<FromRd
      *
      * @return {@link JsonArray} representing <code>JSON-LD</code> document
      * @throws JsonLdError
-     * @throws ExecutionException 
-     * @throws InterruptedException 
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     public JsonArray get() throws JsonLdError, InterruptedException, ExecutionException {
 
@@ -107,8 +100,8 @@ public final class FromRdfApi implements CommonApi<FromRdfApi>, LoaderApi<FromRd
             return FromRdfProcessor.fromRdf(document, options);
         }
 
-        if (documentUri != null) {
-            return FromRdfProcessor.fromRdf(documentUri, options);
+        if (dataset != null) {
+            return FromRdfProcessor.fromRdf(dataset, options);
         }
 
         throw new IllegalStateException();

@@ -46,14 +46,14 @@ public class MockLoader implements DocumentLoader {
     public CompletableFuture<Document> loadDocument(URI url, DocumentLoaderOptions options) {
 
         if (structure != null) {
-            final Document remoteDocument = JsonDocument.of(structure);
+            final JsonDocument remoteDocument = JsonDocument.of(structure);
             remoteDocument.setDocumentUrl(url);
 
             return CompletableFuture.completedFuture(remoteDocument);
         }
 
         if (dataset != null) {
-            final Document remoteDocument = RdfDocument.of(dataset);
+            final RdfDocument remoteDocument = RdfDocument.of(dataset);
             remoteDocument.setDocumentUrl(url);
 
             return CompletableFuture.completedFuture(remoteDocument);

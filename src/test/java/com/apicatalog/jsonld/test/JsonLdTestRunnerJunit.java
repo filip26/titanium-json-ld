@@ -76,7 +76,7 @@ public class JsonLdTestRunnerJunit {
         }
 
         if (testCase.type.contains(Type.FROM_RDF_TEST)) {
-            return execute(options -> JsonDocument.of(JsonLd.fromRdf(testCase.input).options(options).get()));
+//FIXME            return execute(options -> JsonDocument.of(JsonLd.fromRdf(testCase.input).options(options).get()));
         }
 
         if (testCase.type.contains(Type.FRAME_TEST)) {

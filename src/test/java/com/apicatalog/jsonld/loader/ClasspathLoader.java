@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -33,16 +32,12 @@ public class ClasspathLoader implements DocumentLoader, TestLoader {
     public CompletableFuture<Document> loadDocument(URI url, DocumentLoaderOptions options) {
 
         try (final InputStream is = getClass().getResourceAsStream(url.getPath())) {
-
-            final Document document = toDocument(url, is);
-            document.setDocumentUrl(url);
-
-            return CompletableFuture.completedFuture(document);
+            return CompletableFuture.completedFuture(toDocument(url, is));
 
         } catch (IOException e) {
-            throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED));
+            return CompletableFuture.failedFuture(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED));
         } catch (JsonLdError e) {
-            throw new CompletionException(e);
+            return CompletableFuture.failedFuture(e);
         }
     }
 
@@ -61,10 +56,13 @@ public class ClasspathLoader implements DocumentLoader, TestLoader {
     private static final Document toDocument(URI url, InputStream is) throws JsonLdError {
 
         if (url.toString().endsWith(".nq")) {
-            return RdfDocument.of(is);
+            RdfDocument rdf = RdfDocument.of(url, is);
+            return rdf;
         }
 
-        return JsonDocument.of(is);
+        JsonDocument json = JsonDocument.of(is);
+        json.setDocumentUrl(url);
+        return json;
     }
 
 }

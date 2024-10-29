@@ -22,6 +22,8 @@ import java.util.concurrent.CompletionException;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.document.RdfDocument;
 
 public final class UriBaseRewriter implements DocumentLoader {
 
@@ -56,13 +58,18 @@ public final class UriBaseRewriter implements DocumentLoader {
                     }
 
                     if (remoteDocument.getDocumentUrl() != null && remoteDocument.getDocumentUrl().toString().startsWith(targetBase)) {
-
                         final String remoteRelativePath = remoteDocument.getDocumentUrl().toString().substring(targetBase.length());
-                        remoteDocument.setDocumentUrl(URI.create(sourceBase + remoteRelativePath));
+                        if (remoteDocument instanceof JsonDocument) {
+                            ((JsonDocument) remoteDocument).setDocumentUrl(URI.create(sourceBase + remoteRelativePath));
 
+                        } else if (remoteDocument instanceof RdfDocument) {
+                            ((RdfDocument) remoteDocument).setDocumentUrl(URI.create(sourceBase + remoteRelativePath));
+
+                        } else {
+                            throw new IllegalArgumentException();
+                        }
                     }
                     return CompletableFuture.completedFuture(remoteDocument);
                 });
-
     }
 }

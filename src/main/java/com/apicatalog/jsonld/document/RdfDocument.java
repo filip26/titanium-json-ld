@@ -34,14 +34,15 @@ import jakarta.json.JsonException;
 
 public final class RdfDocument implements Document {
 
+    private URI id;
     private final MediaType contentType;
     private final RdfDataset dataset;
     private final String profile;
 
-    private URI documentUrl;
     private URI contentUrl;
 
-    private RdfDocument(final MediaType type, final String profile, final RdfDataset dataset) {
+    private RdfDocument(final URI id, final MediaType type, final String profile, final RdfDataset dataset) {
+        this.id = id;
         this.contentType = type;
         this.profile = profile;
         this.dataset = dataset;
@@ -51,10 +52,10 @@ public final class RdfDocument implements Document {
      * Create a new document from {@link RdfDataset}. Sets {@link MediaType#N_QUADS} as the content type.
      *
      * @param dataset representing parsed RDF content
-     * @return {@link Document} representing RDF document
+     * @return {@link RdfDocument} representing RDF document
      */
-    public static final Document of(final RdfDataset dataset) {
-        return of(MediaType.N_QUADS, dataset);
+    public static final RdfDocument of(final RdfDataset dataset) {
+        return of(null, MediaType.N_QUADS, dataset);
     }
 
     /**
@@ -62,9 +63,21 @@ public final class RdfDocument implements Document {
      *
      * @param contentType reflecting the provided {@link RdfDataset}, only {@link MediaType#N_QUADS} is supported
      * @param dataset representing parsed RDF content
-     * @return {@link Document} representing RDF document
+     * @return {@link RdfDocument} representing RDF document
      */
-    public static final Document of(final MediaType contentType, final RdfDataset dataset) {
+    public static final RdfDocument of(final MediaType contentType, final RdfDataset dataset) {
+        return of(null, contentType, dataset);
+    }
+
+    /**
+     * Create a new document from {@link RdfDataset}.
+     *
+     * @param id
+     * @param contentType reflecting the provided {@link RdfDataset}, only {@link MediaType#N_QUADS} is supported
+     * @param dataset representing parsed RDF content
+     * @return {@link RdfDocument} representing RDF document
+     */
+    public static final RdfDocument of(URI id, final MediaType contentType, final RdfDataset dataset) {
 
         assertContentType(contentType);
 
@@ -72,20 +85,31 @@ public final class RdfDocument implements Document {
             throw new IllegalArgumentException("RDF dataset cannot be a null.");
         }
 
-        return new RdfDocument(contentType, null, dataset);
+        return new RdfDocument(id, contentType, null, dataset);
     }
 
     /**
      * Create a new document from content provided by {@link InputStream}. Sets {@link MediaType#N_QUADS} as the content type.
      *
      * @param is representing parsed RDF content
-     * @return {@link Document} representing RDF document
+     * @return {@link RdfDocument} representing RDF document
      */
     public static final RdfDocument of(final InputStream is)  throws JsonLdError {
-        return of(MediaType.N_QUADS, is);
+        return of(null, MediaType.N_QUADS, is);
     }
 
-    public static final RdfDocument of(final MediaType type, final InputStream is)  throws JsonLdError {
+    /**
+     * Create a new document from content provided by {@link InputStream}. Sets {@link MediaType#N_QUADS} as the content type.
+     *
+     * @param id
+     * @param is representing parsed RDF content
+     * @return {@link RdfDocument} representing RDF document
+     */
+    public static final RdfDocument of(final URI id, final InputStream is)  throws JsonLdError {
+        return of(id, MediaType.N_QUADS, is);
+    }
+
+    public static final RdfDocument of(final URI id, final MediaType type, final InputStream is)  throws JsonLdError {
 
         assertContentType(type);
 
@@ -93,7 +117,7 @@ public final class RdfDocument implements Document {
 
             RdfDataset dataset  = Rdf.createReader(type, is).readDataset();
 
-            return new RdfDocument(type, null, dataset);
+            return new RdfDocument(id, type, null, dataset);
 
         } catch (JsonException | IOException | RdfReaderException | UnsupportedContentException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
@@ -102,15 +126,26 @@ public final class RdfDocument implements Document {
 
     /**
      * Create a new document from content provided by {@link Reader}. Sets {@link MediaType#N_QUADS} as the content type.
-     *
+     * 
      * @param reader providing RDF content
      * @return {@link Document} representing RDF document
      */
     public static final Document of(final Reader reader)  throws JsonLdError {
-        return of(MediaType.N_QUADS, reader);
+        return of(null, MediaType.N_QUADS, reader);
     }
 
-    public static final Document of(final MediaType type, final Reader reader)  throws JsonLdError {
+    /**
+     * Create a new document from content provided by {@link Reader}. Sets {@link MediaType#N_QUADS} as the content type.
+     * 
+     * @param id
+     * @param reader providing RDF content
+     * @return {@link Document} representing RDF document
+     */
+    public static final Document of(final URI id, final Reader reader)  throws JsonLdError {
+        return of(id, MediaType.N_QUADS, reader);
+    }
+
+    public static final Document of(final URI id, final MediaType type, final Reader reader)  throws JsonLdError {
 
         assertContentType(type);
 
@@ -118,7 +153,7 @@ public final class RdfDocument implements Document {
 
             RdfDataset dataset  = Rdf.createReader(type, reader).readDataset();
 
-            return new RdfDocument(type, null, dataset);
+            return new RdfDocument(id, type, null, dataset);
 
         } catch (JsonException | IOException | RdfReaderException | UnsupportedContentException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
@@ -149,19 +184,17 @@ public final class RdfDocument implements Document {
         return contentUrl;
     }
 
-    @Override
     public void setContextUrl(URI contextUrl) {
         this.contentUrl = contextUrl;
     }
 
     @Override
     public URI getDocumentUrl() {
-        return documentUrl;
+        return id;
     }
 
-    @Override
     public void setDocumentUrl(URI documentUrl) {
-        this.documentUrl = documentUrl;
+        this.id = documentUrl;
     }
 
     @Override

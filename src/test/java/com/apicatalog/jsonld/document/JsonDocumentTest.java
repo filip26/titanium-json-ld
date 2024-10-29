@@ -112,18 +112,18 @@ class JsonDocumentTest {
     @Test
     void testi4() throws JsonLdError {
         final InputStream is = new ByteArrayInputStream(JsonValue.EMPTY_JSON_ARRAY.toString().getBytes());
-        assertThrows(IllegalArgumentException.class, () -> JsonDocument.of(null, is));
+        assertThrows(IllegalArgumentException.class, () -> JsonDocument.of(is));
     }
 
     @Test
     void testi5() {
-        assertThrows(IllegalArgumentException.class, () -> JsonDocument.of(null, JsonValue.EMPTY_JSON_OBJECT));
+        assertThrows(IllegalArgumentException.class, () -> JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT));
     }
 
     @Test
     void testi6() throws JsonLdError {
         final Reader reader = new InputStreamReader(new ByteArrayInputStream(JsonValue.EMPTY_JSON_ARRAY.toString().getBytes()));
-        assertThrows(IllegalArgumentException.class, () -> JsonDocument.of(null, reader));
+        assertThrows(IllegalArgumentException.class, () -> JsonDocument.of(reader));
     }
 
     @ParameterizedTest
