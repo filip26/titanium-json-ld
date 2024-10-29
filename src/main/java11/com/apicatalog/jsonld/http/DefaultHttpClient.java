@@ -22,6 +22,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -93,7 +94,7 @@ public final class DefaultHttpClient implements HttpClient {
 
         @Override
         public Collection<String> links() {
-            return response.headers().map().get("link");
+            return response.headers().map().getOrDefault("link", Collections.emptyList());
         }
 
         @Override

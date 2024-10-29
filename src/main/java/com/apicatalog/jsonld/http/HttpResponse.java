@@ -11,6 +11,10 @@ public interface HttpResponse extends Closeable {
 
     InputStream body();
 
+    /**
+     * A links attached to the response
+     * @return a collection of links, never <code>null</code>
+     */
     Collection<String> links();
 
     Optional<String> contentType();

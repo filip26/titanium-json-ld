@@ -14,7 +14,7 @@ public class HttpLoader extends DefaultHttpLoader {
      */
     @Deprecated(since = "1.0.3")
     public HttpLoader(java.net.http.HttpClient httpClient) {
-        this(httpClient, MAX_REDIRECTIONS);
+        this(httpClient, MAX_REDIRECTIONS_DEFAULT_VALUE);
     }
 
     /**

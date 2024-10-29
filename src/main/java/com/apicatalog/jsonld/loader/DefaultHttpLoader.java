@@ -42,7 +42,7 @@ class DefaultHttpLoader implements DocumentLoader {
 
     private static final Logger LOGGER = Logger.getLogger(DefaultHttpLoader.class.getName());
 
-    public static final int MAX_REDIRECTIONS = 10;
+    public static final int MAX_REDIRECTIONS_DEFAULT_VALUE = 10;
 
     private static final String PLUS_JSON = "+json";
 
@@ -53,7 +53,7 @@ class DefaultHttpLoader implements DocumentLoader {
     private final DocumentResolver resolver;
 
     public DefaultHttpLoader(HttpClient httpClient) {
-        this(httpClient, MAX_REDIRECTIONS);
+        this(httpClient, MAX_REDIRECTIONS_DEFAULT_VALUE);
     }
 
     public DefaultHttpLoader(HttpClient httpClient, int maxRedirections) {
@@ -64,17 +64,17 @@ class DefaultHttpLoader implements DocumentLoader {
 
     @Override
     public CompletableFuture<Document> loadDocument(final URI uri, final DocumentLoaderOptions options) {
-        return loadDocument(uri, options, null, 0);
+        return loadDocument(uri, options, 0);
     }
 
-    protected CompletableFuture<Document> loadDocument(final URI targetUri, final DocumentLoaderOptions options, final URI context, final int redirections) {
+    protected CompletableFuture<Document> loadDocument(final URI targetUri, final DocumentLoaderOptions options, final int redirections) {
 
         return httpClient.send(targetUri, getAcceptHeader(options.getRequestProfile()))
                 .thenComposeAsync(response -> {
                     try {
 
                         MediaType contentType = null;
-                        URI contextUri = context;
+                        URI contextUri = null;
 
                         // 3.
                         if (response.statusCode() == 301
@@ -86,11 +86,10 @@ class DefaultHttpLoader implements DocumentLoader {
 
                             if (location.isPresent()) {
                                 if (redirections < maxRedirections) {
-                                    return loadDocument(UriResolver.resolveAsUri(targetUri, location.get()), options, contextUri, redirections + 1);
+                                    return loadDocument(UriResolver.resolveAsUri(targetUri, location.get()), options, redirections + 1);
                                 }
                                 throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections"));
                             }
-
                             throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Header location is required for code [" + response.statusCode() + "]."));
                         }
 
@@ -124,7 +123,7 @@ class DefaultHttpLoader implements DocumentLoader {
 
                                 if (alternate.isPresent()) {
                                     if (redirections < maxRedirections) {
-                                        return loadDocument(alternate.get().target(), options, contextUri, redirections + 1);
+                                        return loadDocument(alternate.get().target(), options, redirections + 1);
                                     }
                                     throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections"));
                                 }
