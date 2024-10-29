@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.processor;
 
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -43,7 +44,7 @@ public final class CompactionProcessor {
     private CompactionProcessor() {
     }
 
-    public static final JsonObject compact(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonObject compact(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError, InterruptedException, ExecutionException {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + context + "].");
@@ -58,7 +59,7 @@ public final class CompactionProcessor {
         return compact(input, contextDocument, options);
     }
 
-    public static final JsonObject compact(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonObject compact(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError, InterruptedException, ExecutionException {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
@@ -76,7 +77,7 @@ public final class CompactionProcessor {
         return compact(remoteDocument, context, options);
     }
 
-    public static final JsonObject compact(final Document input, final URI context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonObject compact(final Document input, final URI context, final JsonLdOptions options) throws JsonLdError, InterruptedException, ExecutionException {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + context + "].");
@@ -91,7 +92,7 @@ public final class CompactionProcessor {
         return compact(input, contextDocument, options);
     }
 
-    public static final JsonObject compact(final Document input, final Document context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonObject compact(final Document input, final Document context, final JsonLdOptions options) throws JsonLdError, InterruptedException, ExecutionException {
 
         // 4.
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
@@ -114,7 +115,7 @@ public final class CompactionProcessor {
 
         // 7.
         final ActiveContext activeContext = new ActiveContext(
-                ProcessingRuntime.of(options)).newContext().create(contextValue, contextBase);
+                ProcessingRuntime.of(options)).newContext().create(contextValue, contextBase).get();
 
         // 8.
         if (activeContext.getBaseUri() == null) {

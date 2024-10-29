@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -124,7 +125,7 @@ final class ObjectExpansion1314 {
         return this;
     }
 
-    public void expand() throws JsonLdError {
+    public void expand() throws JsonLdError, InterruptedException, ExecutionException {
 
         // 13.
         for (final String key : Utils.index(element.keySet(), ordered)) {
@@ -801,7 +802,7 @@ final class ObjectExpansion1314 {
                                 .newContext()
                                 .create(
                                         indexTermDefinition.get().getLocalContext(),
-                                        indexTermDefinition.get().getBaseUrl());
+                                        indexTermDefinition.get().getBaseUrl()).get();
                     }
 
                     // 13.8.3.3.
@@ -979,7 +980,7 @@ final class ObjectExpansion1314 {
         }
     }
 
-    private void recurse() throws JsonLdError {
+    private void recurse() throws JsonLdError, InterruptedException, ExecutionException {
 
         activeContext.runtime().tick();
 
@@ -998,14 +999,14 @@ final class ObjectExpansion1314 {
                             activeContext
                                     .getTerm(activeProperty)
                                     .map(TermDefinition::getBaseUrl)
-                                    .orElse(null));
+                                    .orElse(null)).get();
         }
 
         // steps 13-14
         expand();
     }
 
-    private final void processNest() throws JsonLdError {
+    private final void processNest() throws JsonLdError, InterruptedException, ExecutionException {
 
         for (final String nestedKey : Utils.index(nest.keySet(), ordered)) {
 

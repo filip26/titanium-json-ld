@@ -15,7 +15,10 @@
  */
 package com.apicatalog.jsonld.test;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
@@ -84,9 +87,11 @@ public class JsonLdTestRunnerEarl {
             return false;
 
         } catch (JsonLdError e) {
-
             return Objects.equals(e.getCode(), testCase.expectErrorCode);
 
+        } catch (ExecutionException | InterruptedException e) {
+            fail(e);
+            return false;
         }
     }
 }

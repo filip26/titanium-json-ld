@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.api;
 
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
 
 import com.apicatalog.jsonld.JsonLdEmbed;
 import com.apicatalog.jsonld.JsonLdError;
@@ -189,8 +190,10 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
      *
      * @return {@link JsonObject} representing framed document
      * @throws JsonLdError
+     * @throws ExecutionException 
+     * @throws InterruptedException 
      */
-    public JsonObject get() throws JsonLdError {
+    public JsonObject get() throws JsonLdError, InterruptedException, ExecutionException {
         if (document != null) {
             if (frame != null) {
                 return FramingProcessor.frame(document, frame, options);

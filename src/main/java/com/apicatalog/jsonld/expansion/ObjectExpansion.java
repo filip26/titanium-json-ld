@@ -19,6 +19,7 @@ import java.net.URI;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -92,7 +93,7 @@ public final class ObjectExpansion {
         return this;
     }
 
-    public JsonValue expand() throws JsonLdError {
+    public JsonValue expand() throws JsonLdError, InterruptedException, ExecutionException {
 
         initPreviousContext();
 
@@ -138,7 +139,7 @@ public final class ObjectExpansion {
         return normalize(result);
     }
 
-    private void initPropertyContext() throws JsonLdError {
+    private void initPropertyContext() throws JsonLdError, InterruptedException, ExecutionException {
         // 8.
         if (propertyContext != null) {
             activeContext = activeContext
@@ -149,7 +150,7 @@ public final class ObjectExpansion {
                             activeContext
                                     .getTerm(activeProperty)
                                     .map(TermDefinition::getBaseUrl)
-                                    .orElse(null));
+                                    .orElse(null)).get();
         }
     }
 
@@ -189,16 +190,16 @@ public final class ObjectExpansion {
         }
     }
 
-    private void initLocalContext() throws JsonLdError {
+    private void initLocalContext() throws JsonLdError, InterruptedException, ExecutionException {
         // 9.
         if (element.containsKey(Keywords.CONTEXT)) {
             activeContext = activeContext
                     .newContext()
-                    .create(element.get(Keywords.CONTEXT), baseUrl);
+                    .create(element.get(Keywords.CONTEXT), baseUrl).get();
         }
     }
 
-    private String processTypeScoped(final ActiveContext typeContext) throws JsonLdError {
+    private String processTypeScoped(final ActiveContext typeContext) throws JsonLdError, InterruptedException, ExecutionException {
 
         String typeKey = null;
 
@@ -243,7 +244,7 @@ public final class ObjectExpansion {
                             .create(localContext.get(),
                                     activeContext.getTerm(term)
                                             .map(TermDefinition::getBaseUrl)
-                                            .orElse(null));
+                                            .orElse(null)).get();
                 }
             }
         }

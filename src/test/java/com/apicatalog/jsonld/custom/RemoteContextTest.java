@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
+import java.util.concurrent.ExecutionException;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -46,9 +47,11 @@ class RemoteContextTest {
      * @see <a href="https://github.com/filip26/titanium-json-ld/issues/61">Issue #61</a>
      * @throws JsonLdError
      * @throws IOException
+     * @throws ExecutionException 
+     * @throws InterruptedException 
      */
     @Test
-    void testToRdfMissingTriples1() throws JsonLdError, IOException {
+    void testToRdfMissingTriples1() throws JsonLdError, IOException, InterruptedException, ExecutionException {
 
         final Document document = readDocument("/com/apicatalog/jsonld/test/issue61-in.json");
         final Document context = readDocument("/com/apicatalog/jsonld/test/issue61-context.json");
@@ -71,9 +74,11 @@ class RemoteContextTest {
      * @see <a href="https://github.com/filip26/titanium-json-ld/issues/61">Issue #61</a>
      * @throws JsonLdError
      * @throws IOException
+     * @throws ExecutionException 
+     * @throws InterruptedException 
      */
     @Test
-    void testToRdfMissingTriples2() throws JsonLdError, IOException {
+    void testToRdfMissingTriples2() throws JsonLdError, IOException, InterruptedException, ExecutionException {
 
         final Document document = readDocument("/com/apicatalog/jsonld/test/issue61-in.json");
         final Document context = readDocument("/com/apicatalog/jsonld/test/issue61-context.json");
@@ -99,9 +104,11 @@ class RemoteContextTest {
      * @see <a href="https://github.com/filip26/titanium-json-ld/issues/63">Issue #63</a>
      * @throws JsonLdError
      * @throws IOException
+     * @throws ExecutionException 
+     * @throws InterruptedException 
      */
     @Test
-    void testRemoteContext() throws JsonLdError, IOException {
+    void testRemoteContext() throws JsonLdError, IOException, InterruptedException, ExecutionException {
 
         final Document document = readDocument("/com/apicatalog/jsonld/test/issue63-in.json");
 

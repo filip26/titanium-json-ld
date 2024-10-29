@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.api;
 
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
@@ -156,8 +157,10 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
      *
      * @return {@link RdfDataset} representing provided <code>JSON-LD</code> document
      * @throws JsonLdError
+     * @throws ExecutionException 
+     * @throws InterruptedException 
      */
-    public RdfDataset get() throws JsonLdError {
+    public RdfDataset get() throws JsonLdError, InterruptedException, ExecutionException {
         if (documentUri != null) {
             return ToRdfProcessor.toRdf(documentUri, options);
         }

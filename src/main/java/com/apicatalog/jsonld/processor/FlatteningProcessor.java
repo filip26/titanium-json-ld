@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.processor;
 
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -39,7 +40,7 @@ public final class FlatteningProcessor {
     private FlatteningProcessor() {
     }
 
-    public static final JsonStructure flatten(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonStructure flatten(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError, InterruptedException, ExecutionException {
 
         if (context == null) {
             return flatten(input, (Document)null, options);
@@ -56,7 +57,7 @@ public final class FlatteningProcessor {
         return flatten(input, contextDocument, options);
     }
 
-    public static final JsonStructure flatten(final Document input, final URI context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonStructure flatten(final Document input, final URI context, final JsonLdOptions options) throws JsonLdError, InterruptedException, ExecutionException {
 
         if (context == null) {
             return flatten(input, (Document)null, options);
@@ -73,7 +74,7 @@ public final class FlatteningProcessor {
         return flatten(input, contextDocument, options);
     }
 
-    public static final JsonStructure flatten(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonStructure flatten(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError, InterruptedException, ExecutionException {
 
         assertDocumentLoader(options, input);
 
@@ -89,7 +90,7 @@ public final class FlatteningProcessor {
         return flatten(remoteDocument, context, options);
     }
 
-    public static final JsonStructure flatten(final Document input, final Document context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonStructure flatten(final Document input, final Document context, final JsonLdOptions options) throws JsonLdError, InterruptedException, ExecutionException {
 
         // 4.
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);

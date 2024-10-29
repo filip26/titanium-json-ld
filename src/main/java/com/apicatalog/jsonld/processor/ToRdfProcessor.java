@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.processor;
 
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -40,7 +41,7 @@ public final class ToRdfProcessor {
     private ToRdfProcessor() {
     }
 
-    public static final RdfDataset toRdf(final URI input, final JsonLdOptions options) throws JsonLdError {
+    public static final RdfDataset toRdf(final URI input, final JsonLdOptions options) throws JsonLdError, InterruptedException, ExecutionException {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
@@ -58,7 +59,7 @@ public final class ToRdfProcessor {
         return toRdf(remoteDocument, options);
     }
 
-    public static final RdfDataset toRdf(Document input, final JsonLdOptions options) throws JsonLdError {
+    public static final RdfDataset toRdf(Document input, final JsonLdOptions options) throws JsonLdError, InterruptedException, ExecutionException {
 
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
 

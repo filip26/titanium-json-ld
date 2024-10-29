@@ -15,6 +15,8 @@
  */
 package com.apicatalog.jsonld.expansion;
 
+import java.util.concurrent.ExecutionException;
+
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
@@ -51,7 +53,7 @@ public final class ScalarExpansion {
         return new ScalarExpansion(activeContext, propertyContext, element, activeProperty);
     }
 
-    public JsonValue expand() throws JsonLdError {
+    public JsonValue expand() throws JsonLdError, InterruptedException, ExecutionException {
 
         /*
          * 4.1. If active property is null or @graph, drop the free-floating scalar by
@@ -72,7 +74,7 @@ public final class ScalarExpansion {
                     .newContext()
                     .create(
                             propertyContext,
-                            activeContext.getTerm(activeProperty).map(TermDefinition::getBaseUrl).orElse(null));
+                            activeContext.getTerm(activeProperty).map(TermDefinition::getBaseUrl).orElse(null)).get();
         }
 
         /*

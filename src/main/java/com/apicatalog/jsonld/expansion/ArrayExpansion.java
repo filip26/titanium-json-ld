@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.expansion;
 
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
@@ -82,7 +83,7 @@ public final class ArrayExpansion {
         return this;
     }
 
-    public JsonArray expand() throws JsonLdError {
+    public JsonArray expand() throws JsonLdError, InterruptedException, ExecutionException {
 
         final JsonArrayBuilder result = JsonProvider.instance().createArrayBuilder();
 

@@ -18,6 +18,7 @@ package com.apicatalog.jsonld;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,7 +33,7 @@ class FrameTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")
-    void testFrame(JsonLdTestCase testCase) {
+    void testFrame(JsonLdTestCase testCase) throws ExecutionException, InterruptedException {
 
         // @embed: @last - won't fix
         assumeFalse("#t0059".equals(testCase.id));

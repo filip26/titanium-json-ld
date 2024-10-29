@@ -17,6 +17,7 @@ package com.apicatalog.jsonld.processor;
 
 import java.net.URI;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -44,7 +45,7 @@ public final class ExpansionProcessor {
     ExpansionProcessor() {
     }
 
-    public static final JsonArray expand(final URI input, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonArray expand(final URI input, final JsonLdOptions options) throws JsonLdError, InterruptedException, ExecutionException {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
@@ -62,7 +63,7 @@ public final class ExpansionProcessor {
         return expand(remoteDocument, options, false);
     }
 
-    public static final JsonArray expand(Document input, final JsonLdOptions options, boolean frameExpansion) throws JsonLdError {
+    public static final JsonArray expand(Document input, final JsonLdOptions options, boolean frameExpansion) throws JsonLdError, InterruptedException, ExecutionException {
 
         if (input == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "RemoteDocument is null.");
@@ -113,7 +114,7 @@ public final class ExpansionProcessor {
         if (input.getContextUrl() != null) {
             activeContext = activeContext
                                 .newContext()
-                                .create(JsonProvider.instance().createValue(input.getContextUrl().toString()), input.getContextUrl());
+                                .create(JsonProvider.instance().createValue(input.getContextUrl().toString()), input.getContextUrl()).get();
         }
 
         // 8.
@@ -142,7 +143,7 @@ public final class ExpansionProcessor {
         return JsonUtils.toJsonArray(expanded);
     }
 
-    private static final ActiveContext updateContext(final ActiveContext activeContext, final JsonValue expandedContext, final URI baseUrl) throws JsonLdError {
+    private static final ActiveContext updateContext(final ActiveContext activeContext, final JsonValue expandedContext, final URI baseUrl) throws JsonLdError, InterruptedException, ExecutionException {
 
       if (JsonUtils.isArray(expandedContext)) {
 
@@ -156,11 +157,11 @@ public final class ExpansionProcessor {
                           .newContext()
                               .create(
                                   value.asJsonObject().get(Keywords.CONTEXT),
-                                  baseUrl);
+                                  baseUrl).get();
               }
           }
 
-          return activeContext.newContext().create(expandedContext, baseUrl);
+          return activeContext.newContext().create(expandedContext, baseUrl).get();
 
       } else if (JsonUtils.containsKey(expandedContext, Keywords.CONTEXT)) {
 
@@ -168,10 +169,10 @@ public final class ExpansionProcessor {
                   .newContext()
                       .create(
                           expandedContext.asJsonObject().get(Keywords.CONTEXT),
-                          baseUrl);
+                          baseUrl).get();
 
       }
-      return activeContext.newContext().create(JsonProvider.instance().createArrayBuilder().add(expandedContext).build(), baseUrl);
+      return activeContext.newContext().create(JsonProvider.instance().createArrayBuilder().add(expandedContext).build(), baseUrl).get();
     }
 
 }

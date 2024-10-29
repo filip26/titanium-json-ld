@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -546,9 +547,9 @@ public final class TermDefinitionBuilder {
                         .overrideProtected(true)
                         .remoteContexts(new ArrayList<>(remoteContexts))
                         .validateScopedContext(false)
-                        .create(context, baseUrl);
+                        .create(context, baseUrl).get();
 
-            } catch (JsonLdError e) {
+            } catch (/*FIXME JsonLdError |*/ InterruptedException | ExecutionException e) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_SCOPED_CONTEXT, e);
             }
 

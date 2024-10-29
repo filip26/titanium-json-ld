@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.expansion;
 
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
@@ -77,7 +78,7 @@ public final class Expansion {
         return this;
     }
 
-    public JsonValue compute() throws JsonLdError {
+    public JsonValue compute() throws JsonLdError, InterruptedException, ExecutionException {
 
         // 1. If element is null, return null
         if (JsonUtils.isNull(element)) {

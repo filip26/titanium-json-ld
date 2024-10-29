@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
+import java.util.concurrent.ExecutionException;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdError;
@@ -105,12 +106,25 @@ public class JsonLdTestRunnerJunit {
 
         } catch (JsonLdError e) {
 
-            if (Objects.equal(e.getCode(), testCase.expectErrorCode)) {
-                return true;
+            return validate(e);
+            
+        } catch (InterruptedException e) {
+            if (e.getCause() instanceof JsonLdError) {
+                return validate((JsonLdError)e.getCause());
             }
 
-            write(testCase, null, null, e);
-            fail("Unexpected error [" + e.getCode() + "]: " + e.getMessage() + ".");
+            e.printStackTrace();
+            fail(e);
+            return false;
+
+            
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof JsonLdError) {
+                return validate((JsonLdError)e.getCause());
+            }
+
+            e.printStackTrace();
+            fail(e);
             return false;
         }
 
@@ -123,6 +137,16 @@ public class JsonLdTestRunnerJunit {
         return validate(testCase, options, result);
     }
 
+    boolean validate(JsonLdError e) {
+        if (Objects.equal(e.getCode(), testCase.expectErrorCode)) {
+            return true;
+        }
+
+        write(testCase, null, null, e);
+        fail("Unexpected error [" + e.getCode() + "]: " + e.getMessage() + ".");
+        return false;
+    }
+    
     private boolean validate(final JsonLdTestCase testCase, final JsonLdOptions options, final Document result) {
 
         // A PositiveSyntaxTest succeeds when no error is found when processing.
@@ -247,7 +271,7 @@ public class JsonLdTestRunnerJunit {
 
             return match;
 
-        } catch (RdfWriterException | UnsupportedContentException | IOException e ) {
+        } catch (RdfWriterException | UnsupportedContentException | IOException e) {
             fail(e.getMessage());
         }
         return false;

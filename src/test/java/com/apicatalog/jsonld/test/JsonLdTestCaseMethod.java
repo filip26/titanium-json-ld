@@ -15,6 +15,8 @@
  */
 package com.apicatalog.jsonld.test;
 
+import java.util.concurrent.ExecutionException;
+
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
@@ -22,6 +24,6 @@ import com.apicatalog.jsonld.document.Document;
 @FunctionalInterface
 public interface JsonLdTestCaseMethod {
 
-    Document invoke(JsonLdOptions options) throws JsonLdError;
+    Document invoke(JsonLdOptions options) throws JsonLdError, ExecutionException, InterruptedException;
 
 }

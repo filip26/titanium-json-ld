@@ -19,6 +19,7 @@ package com.apicatalog.jsonld;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,7 +34,7 @@ class ExpandTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource({"jsonLdApi", "jsonLdStar"})
-    void testExpand(final JsonLdTestCase testCase) {
+    void testExpand(final JsonLdTestCase testCase) throws ExecutionException, InterruptedException {
 
         // Skip JSON-LD-STAR (Experimental) negative test (an invalid annotation inside @list)
         assumeFalse("#tst26".equals(testCase.id));

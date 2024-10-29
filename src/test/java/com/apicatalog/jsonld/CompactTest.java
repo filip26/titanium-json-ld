@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,7 +34,7 @@ class CompactTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource({"jsonLdApi", "jsonLdStar"})
-    void testCompact(JsonLdTestCase testCase) {
+    void testCompact(JsonLdTestCase testCase) throws ExecutionException, InterruptedException {
 
         // Skip JSON-LD-STAR (Experimental) embedded node tests - unsupported now
         assumeFalse(Arrays.stream(new String[]{

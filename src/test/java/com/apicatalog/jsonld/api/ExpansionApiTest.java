@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
 
 import org.junit.jupiter.api.Test;
 
@@ -38,56 +39,56 @@ class ExpansionApiTest {
     public static final MockLoader MOCK_LOADER = new MockLoader(JsonValue.EMPTY_JSON_ARRAY);
 
     @Test
-    void test1() throws JsonLdError {
+    void test1() throws JsonLdError, InterruptedException, ExecutionException {
         JsonArray expanded = JsonLd.expand(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).get();
         assertNotNull(expanded);
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, expanded);
     }
 
     @Test
-    void test2() throws JsonLdError {
+    void test2() throws JsonLdError, InterruptedException, ExecutionException {
         JsonArray expanded = JsonLd.expand(JsonDocument.of(MediaType.JSON, new ByteArrayInputStream(JsonValue.EMPTY_JSON_OBJECT.toString().getBytes()))).get();
         assertNotNull(expanded);
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, expanded);
     }
 
     @Test
-    void test3() throws JsonLdError {
+    void test3() throws JsonLdError, InterruptedException, ExecutionException {
         JsonArray expanded = JsonLd.expand("https://example.com").loader(MOCK_LOADER).base("").get();
         assertNotNull(expanded);
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, expanded);
     }
 
     @Test
-    void test4() throws JsonLdError {
+    void test4() throws JsonLdError, InterruptedException, ExecutionException {
         JsonArray expanded = JsonLd.expand(URI.create("https://example.com")).loader(MOCK_LOADER).mode(JsonLdVersion.V1_0).get();
         assertNotNull(expanded);
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, expanded);
     }
 
     @Test
-    void test5() throws JsonLdError {
+    void test5() throws JsonLdError, InterruptedException, ExecutionException {
         JsonArray expanded = JsonLd.expand("\thttps://example.com  ").loader(MOCK_LOADER).ordered().get();
         assertNotNull(expanded);
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, expanded);
     }
 
     @Test
-    void test6() throws JsonLdError {
+    void test6() throws JsonLdError, InterruptedException, ExecutionException {
         JsonArray expanded = JsonLd.expand("\thttps://example.com").context(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).loader(MOCK_LOADER).ordered().get();
         assertNotNull(expanded);
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, expanded);
     }
 
     @Test
-    void test7() throws JsonLdError {
+    void test7() throws JsonLdError, InterruptedException, ExecutionException {
         JsonArray expanded = JsonLd.expand("\thttps://example.com").context(JsonDocument.of(MediaType.JSON, new InputStreamReader(new ByteArrayInputStream(JsonValue.EMPTY_JSON_OBJECT.toString().getBytes())))).loader(MOCK_LOADER).ordered().get();
         assertNotNull(expanded);
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, expanded);
     }
 
     @Test
-    void test8() throws JsonLdError {
+    void test8() throws JsonLdError, InterruptedException, ExecutionException {
         JsonArray expanded = JsonLd.expand("\thttps://example.com").context(JsonValue.EMPTY_JSON_OBJECT).loader(MOCK_LOADER).ordered().get();
         assertNotNull(expanded);
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, expanded);

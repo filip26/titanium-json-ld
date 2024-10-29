@@ -18,6 +18,7 @@ package com.apicatalog.jsonld;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,7 +33,7 @@ class FromRdfTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource({"jsonLdApi"})
-    void testFromRdf(final JsonLdTestCase testCase) {
+    void testFromRdf(final JsonLdTestCase testCase) throws ExecutionException, InterruptedException {
         assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
     }
 

@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -87,11 +89,11 @@ public final class Compaction {
         return this;
     }
 
-    public JsonValue compact(final JsonValue element) throws JsonLdError {
+    public JsonValue compact(final JsonValue element) throws JsonLdError, InterruptedException, ExecutionException {
         return compact(null, element);
     }
 
-    public JsonValue compact(final String activeProperty, final JsonValue element) throws JsonLdError {
+    public JsonValue compact(final String activeProperty, final JsonValue element) throws JsonLdError, InterruptedException, ExecutionException {
 
         // 1.
         ActiveContext typeContext = context;
@@ -160,14 +162,16 @@ public final class Compaction {
             activeContext = activeContext.getPreviousContext();
         }
 
+        CompletableFuture<ActiveContext> next = CompletableFuture.completedFuture(activeContext);
+        
         // 6.
         if (activePropertyDefinition.map(TermDefinition::getLocalContext).isPresent()) {
-
-            activeContext = activeContext
-                    .newContext()
+            next = next.thenCompose(ac -> ac.newContext()
                     .overrideProtected(true)
                     .create(activePropertyDefinition.get().getLocalContext(),
-                            activePropertyDefinition.get().getBaseUrl());
+                            activePropertyDefinition.get().getBaseUrl()));
+            
+            activeContext = next.get();
         }
 
         // 7.
@@ -226,7 +230,7 @@ public final class Compaction {
                     activeContext = activeContext
                             .newContext()
                             .propagate(false)
-                            .create(termDefinition.get().getLocalContext(), termDefinition.get().getBaseUrl());
+                            .create(termDefinition.get().getLocalContext(), termDefinition.get().getBaseUrl()).get();
                 }
             }
         }
