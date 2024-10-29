@@ -178,7 +178,7 @@ public class JsonLdTestRunnerJunit {
 
             assertTrue(result.getRdfContent().isPresent(), "Expected " + expectedDocument.getContentType() + " document but was " + result.getContentType());
 
-        } catch (JsonLdError | InterruptedException | ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             fail(e.getMessage());
         }
         return false;

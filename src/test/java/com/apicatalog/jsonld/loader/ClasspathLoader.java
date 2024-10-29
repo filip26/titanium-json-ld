@@ -29,7 +29,7 @@ import com.apicatalog.jsonld.document.RdfDocument;
 public class ClasspathLoader implements DocumentLoader, TestLoader {
 
     @Override
-    public CompletableFuture<Document> loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
+    public CompletableFuture<Document> loadDocument(URI url, DocumentLoaderOptions options) {
 
         try (final InputStream is = getClass().getResourceAsStream(url.getPath())) {
 
@@ -39,7 +39,9 @@ public class ClasspathLoader implements DocumentLoader, TestLoader {
             return CompletableFuture.completedFuture(document);
 
         } catch (IOException e) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            return CompletableFuture.failedFuture(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED));
+        } catch (JsonLdError e) {
+            return CompletableFuture.failedFuture(e);
         }
     }
 

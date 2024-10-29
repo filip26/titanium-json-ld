@@ -62,7 +62,7 @@ class DefaultHttpLoader implements DocumentLoader {
     }
 
     @Override
-    public CompletableFuture<Document> loadDocument(final URI uri, final DocumentLoaderOptions options) throws JsonLdError {
+    public CompletableFuture<Document> loadDocument(final URI uri, final DocumentLoaderOptions options) {
 
         try {
             URI targetUri = uri;
@@ -155,13 +155,15 @@ class DefaultHttpLoader implements DocumentLoader {
                     }
 
                     return resolve(contentType, targetUri, contextUri, response);
+                } catch (JsonLdError e) {
+                    return CompletableFuture.failedFuture(e);
                 }
             }
 
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections");
+            return CompletableFuture.failedFuture(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections"));
 
         } catch (IOException e) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+            return CompletableFuture.failedFuture( new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e));
         }
     }
 

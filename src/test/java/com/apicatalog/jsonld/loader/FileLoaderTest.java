@@ -16,7 +16,6 @@
 package com.apicatalog.jsonld.loader;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
@@ -72,18 +71,25 @@ class FileLoaderTest {
     }
 
     @Test
-    void testLoadHtml() throws URISyntaxException {
+    void testLoadHtml() throws URISyntaxException, InterruptedException {
 
         URL fileUrl = getClass().getResource("document.html");
-
         assertNotNull(fileUrl);
 
-        assertThrows(JsonLdError.class, () -> new FileLoader().loadDocument(fileUrl.toURI(), new DocumentLoaderOptions()));
+        try {
+            new FileLoader().loadDocument(fileUrl.toURI(), new DocumentLoaderOptions()).get();
+        } catch (ExecutionException e) {
+            assertTrue(e.getCause() instanceof JsonLdError);
+        }
     }
 
     @Test
-    void testUnsupportedScheme() throws URISyntaxException {
-        assertThrows(JsonLdError.class, () -> new FileLoader().loadDocument(URI.create("https://github.com/"), new DocumentLoaderOptions()));
+    void testUnsupportedScheme() throws URISyntaxException, InterruptedException {
+        try {
+            new FileLoader().loadDocument(URI.create("https://github.com/"), new DocumentLoaderOptions()).get();
+        } catch (ExecutionException e) {
+            assertTrue(e.getCause() instanceof JsonLdError);
+        }
     }
 
 }

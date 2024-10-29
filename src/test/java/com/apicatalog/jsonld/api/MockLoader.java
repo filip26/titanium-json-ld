@@ -18,7 +18,6 @@ package com.apicatalog.jsonld.api;
 import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 
-import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
@@ -44,7 +43,7 @@ public class MockLoader implements DocumentLoader {
     }
 
     @Override
-    public CompletableFuture<Document> loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
+    public CompletableFuture<Document> loadDocument(URI url, DocumentLoaderOptions options) {
 
         if (structure != null) {
             final Document remoteDocument = JsonDocument.of(structure);

@@ -44,38 +44,41 @@ public final class FileLoader implements DocumentLoader {
     }
 
     @Override
-    public CompletableFuture<Document> loadDocument(final URI url, final DocumentLoaderOptions options) throws JsonLdError {
+    public CompletableFuture<Document> loadDocument(final URI url, final DocumentLoaderOptions options) {
 
         if (!"file".equalsIgnoreCase(url.getScheme())) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unsupported URL scheme [" + url.getScheme() + "]. FileLoader accepts only file scheme.");
+            return CompletableFuture.failedFuture(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unsupported URL scheme [" + url.getScheme() + "]. FileLoader accepts only file scheme."));
         }
 
         final File file = new File(url);
 
         if (!file.canRead()) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "File [" + url + "] is not accessible to read.");
+            return CompletableFuture.failedFuture(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "File [" + url + "] is not accessible to read."));
         }
 
-        final MediaType contentType =
-                                detectedContentType(url.getPath().toLowerCase())
-                                .orElseGet(() -> {
-                                    LOGGER.log(Level.WARNING, "Cannot detect file [{0}] content type. Trying application/json.", url);
-                                    return MediaType.JSON;
-                                });
+        final MediaType contentType = detectedContentType(url.getPath().toLowerCase())
+                .orElseGet(() -> {
+                    LOGGER.log(Level.WARNING, "Cannot detect file [{0}] content type. Trying application/json.", url);
+                    return MediaType.JSON;
+                });
 
-        final DocumentReader<InputStream> reader = resolver.getReader(contentType);
 
         try (final InputStream is = new FileInputStream(file)) {
+            
+            final DocumentReader<InputStream> reader = resolver.getReader(contentType);
+
             final Document document = reader.read(is);
             document.setDocumentUrl(url);
             return CompletableFuture.completedFuture(document);
 
         } catch (FileNotFoundException e) {
-
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "File not found [" + url + "].");
+            return CompletableFuture.failedFuture(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "File not found [" + url + "]."));
 
         } catch (IOException e) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+            return CompletableFuture.failedFuture(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e));
+
+        } catch (JsonLdError e) {
+            return CompletableFuture.failedFuture(e);
         }
     }
 

@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.cache.LruCache;
 import com.apicatalog.jsonld.document.Document;
 
@@ -50,7 +49,7 @@ public class LRUDocumentCache implements DocumentLoader {
     }
 
     @Override
-    public CompletableFuture<Document> loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
+    public CompletableFuture<Document> loadDocument(URI url, DocumentLoaderOptions options) {
         Object key = createCacheKey(url, options);
         Document result = cache.get(key);
         if (result == null) {

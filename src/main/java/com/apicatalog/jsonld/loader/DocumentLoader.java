@@ -40,7 +40,6 @@ public interface DocumentLoader {
      * @param url of the remote document to fetch
      * @param options to set the behavior of the loader
      * @return {@link Document} representing a remote document
-     * @throws JsonLdError
      */
-    CompletableFuture<Document> loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError;
+    CompletableFuture<Document> loadDocument(URI url, DocumentLoaderOptions options);
 }

@@ -40,16 +40,16 @@ public class ZipResourceLoader implements DocumentLoader, TestLoader {
     }
 
     @Override
-    public CompletableFuture<Document> loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
+    public CompletableFuture<Document> loadDocument(URI url, DocumentLoaderOptions options) {
 
         if (!"zip".equals(url.getScheme())) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            return CompletableFuture.failedFuture(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED));
         }
 
         URL zipFileUrl = getClass().getResource("/" + url.getAuthority());
 
         if (zipFileUrl == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            return CompletableFuture.failedFuture(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED));
         }
 
         File zipFile = null;
@@ -58,7 +58,7 @@ public class ZipResourceLoader implements DocumentLoader, TestLoader {
             zipFile = new File(zipFileUrl.toURI());
 
         } catch (URISyntaxException e) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+            return CompletableFuture.failedFuture(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e));
         }
 
         try (ZipFile zip = new ZipFile(zipFile)) {
@@ -93,7 +93,9 @@ public class ZipResourceLoader implements DocumentLoader, TestLoader {
             }
 
         } catch (IOException e) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+            return CompletableFuture.failedFuture(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e));
+        } catch (JsonLdError e) {
+            return CompletableFuture.failedFuture(e);
         }
     }
 
@@ -131,7 +133,6 @@ public class ZipResourceLoader implements DocumentLoader, TestLoader {
 
                 return readAsByteArray(is);
             }
-
 
         } catch (IOException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);

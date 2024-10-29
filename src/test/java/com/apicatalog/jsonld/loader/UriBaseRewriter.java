@@ -37,7 +37,7 @@ public final class UriBaseRewriter implements DocumentLoader {
     }
 
     @Override
-    public CompletableFuture<Document> loadDocument(final URI url, final DocumentLoaderOptions options) throws JsonLdError {
+    public CompletableFuture<Document> loadDocument(final URI url, final DocumentLoaderOptions options) {
 
         final String sourceUrl = url.toString();
 

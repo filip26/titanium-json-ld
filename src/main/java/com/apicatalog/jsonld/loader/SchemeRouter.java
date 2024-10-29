@@ -26,12 +26,11 @@ import com.apicatalog.jsonld.document.Document;
 
 public final class SchemeRouter implements DocumentLoader {
 
-    private static final DocumentLoader INSTANCE =
-                                new SchemeRouter()
-                                        .set("http", HttpLoader.defaultInstance())
-                                        .set("https", HttpLoader.defaultInstance())
-                                        .set("file", new FileLoader());
-    
+    private static final DocumentLoader INSTANCE = new SchemeRouter()
+            .set("http", HttpLoader.defaultInstance())
+            .set("https", HttpLoader.defaultInstance())
+            .set("file", new FileLoader());
+
     private final Map<String, DocumentLoader> loaders;
 
     public SchemeRouter() {
@@ -48,7 +47,7 @@ public final class SchemeRouter implements DocumentLoader {
     }
 
     @Override
-    public CompletableFuture<Document> loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
+    public CompletableFuture<Document> loadDocument(URI url, DocumentLoaderOptions options) {
 
         if (url == null) {
             throw new IllegalArgumentException("The url must not be null.");
@@ -57,7 +56,7 @@ public final class SchemeRouter implements DocumentLoader {
         final DocumentLoader loader = loaders.getOrDefault(url.getScheme().toLowerCase(), null);
 
         if (loader == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "URL scheme [" + url.getScheme() + "] is not supported.");
+            return CompletableFuture.failedFuture(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "URL scheme [" + url.getScheme() + "] is not supported."));
         }
 
         return loader.loadDocument(url, options);
