@@ -73,6 +73,7 @@ public interface Document {
      *
      * @return {@link JsonStructure} or {@link Optional#empty()} if document content is not JSON based
      */
+    @Deprecated
     public default  Optional<JsonStructure> getJsonContent() {
         return Optional.empty();
     }
@@ -82,6 +83,7 @@ public interface Document {
      *
      * @return {@link RdfDataset} or {@link Optional#empty()} if document content is not in <code>application/n-quads</code> representation
      */
+    @Deprecated
     public default Optional<RdfDataset> getRdfContent() {
         return Optional.empty();
     }

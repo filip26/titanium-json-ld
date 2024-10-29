@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -63,108 +64,121 @@ class DefaultHttpLoader implements DocumentLoader {
 
     @Override
     public CompletableFuture<Document> loadDocument(final URI uri, final DocumentLoaderOptions options) {
+        return loadDocument(uri, options, 0);
+    }
 
-        try {
-            URI targetUri = uri;
+    protected CompletableFuture<Document> loadDocument(final URI targetUri, final DocumentLoaderOptions options, int redirections) {
 
-            MediaType contentType = null;
+        return httpClient.send(targetUri, getAcceptHeader(options.getRequestProfile()))
+                .thenComposeAsync(response -> {
+                    try {
+                        MediaType contentType = null;
 
-            URI contextUri = null;
+                        URI contextUri = null;
 
-            for (int redirection = 0; redirection < maxRedirections; redirection++) {
+                        // 3.
+                        if (response.statusCode() == 301
+                                || response.statusCode() == 302
+                                || response.statusCode() == 303
+                                || response.statusCode() == 307) {
 
-                // 2.
-                try (HttpResponse response = httpClient.send(targetUri, getAcceptHeader(options.getRequestProfile()))) {
+                            final Optional<String> location = response.location();
 
-                    // 3.
-                    if (response.statusCode() == 301
-                            || response.statusCode() == 302
-                            || response.statusCode() == 303
-                            || response.statusCode() == 307) {
+                            if (location.isPresent()) {
+                                if (redirections < maxRedirections) {
+                                    return loadDocument(UriResolver.resolveAsUri(targetUri, location.get()), options, redirections + 1);
+                                }
+                                throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections"));
+                            }
 
-                        final Optional<String> location = response.location();
-
-                        if (location.isPresent()) {
-                            targetUri = UriResolver.resolveAsUri(targetUri, location.get());
-                            continue;
+                            throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Header location is required for code [" + response.statusCode() + "]."));
                         }
 
-                        throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Header location is required for code [" + response.statusCode() + "].");
-                    }
+                        if (response.statusCode() != 200) {
+                            throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unexpected response code [" + response.statusCode() + "]"));
+                        }
 
-                    if (response.statusCode() != 200) {
-                        throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unexpected response code [" + response.statusCode() + "]");
-                    }
+                        final Optional<String> contentTypeValue = response.contentType();
 
-                    final Optional<String> contentTypeValue = response.contentType();
+                        if (contentTypeValue.isPresent()) {
+                            contentType = MediaType.of(contentTypeValue.get());
+                        }
 
-                    if (contentTypeValue.isPresent()) {
-                        contentType = MediaType.of(contentTypeValue.get());
-                    }
+                        final Collection<String> linkValues = response.links();
 
-                    final Collection<String> linkValues = response.links();
+                        if (linkValues != null && !linkValues.isEmpty()) {
 
-                    if (linkValues != null && !linkValues.isEmpty()) {
+                            // 4.
+                            if (contentType == null
+                                    || (!MediaType.JSON.match(contentType)
+                                            && !contentType.subtype().toLowerCase().endsWith(PLUS_JSON))) {
 
-                        // 4.
-                        if (contentType == null
-                                || (!MediaType.JSON.match(contentType)
-                                        && !contentType.subtype().toLowerCase().endsWith(PLUS_JSON))) {
+                                final URI baseUri = targetUri;
 
-                            final URI baseUri = targetUri;
+                                Optional<Link> alternate = linkValues.stream()
+                                        .flatMap(l -> Link.of(l, baseUri).stream())
+                                        .filter(l -> l.relations().contains("alternate")
+                                                && l.type().isPresent()
+                                                && MediaType.JSON_LD.match(l.type().get()))
+                                        .findFirst();
 
-                            Optional<Link> alternate = linkValues.stream()
-                                    .flatMap(l -> Link.of(l, baseUri).stream())
-                                    .filter(l -> l.relations().contains("alternate")
-                                            && l.type().isPresent()
-                                            && MediaType.JSON_LD.match(l.type().get()))
-                                    .findFirst();
+                                if (alternate.isPresent()) {
+                                    if (redirections < maxRedirections) {
+                                        return loadDocument(alternate.get().target(), options, redirections + 1);
+                                    }
+                                    throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections"));
+                                }
+                            }
 
-                            if (alternate.isPresent()) {
+                            // 5.
+                            if (contentType != null
+                                    && !MediaType.JSON_LD.match(contentType)
+                                    && (MediaType.JSON.match(contentType)
+                                            || contentType.subtype().toLowerCase().endsWith(PLUS_JSON))) {
 
-                                targetUri = alternate.get().target();
-                                continue;
+                                final URI baseUri = targetUri;
+
+                                final List<Link> contextUris = linkValues.stream()
+                                        .flatMap(l -> Link.of(l, baseUri).stream())
+                                        .filter(l -> l.relations().contains(ProfileConstants.CONTEXT))
+                                        .collect(Collectors.toList());
+
+                                if (contextUris.size() > 1) {
+                                    throw new CompletionException(new JsonLdError(JsonLdErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS));
+
+                                } else if (contextUris.size() == 1) {
+                                    contextUri = contextUris.get(0).target();
+                                }
                             }
                         }
 
-                        // 5.
-                        if (contentType != null
-                                && !MediaType.JSON_LD.match(contentType)
-                                && (MediaType.JSON.match(contentType)
-                                        || contentType.subtype().toLowerCase().endsWith(PLUS_JSON))) {
+                        if (contentType == null) {
+                            LOGGER.log(Level.WARNING, "GET on URL [{0}] does not return content-type header. Trying application/json.", targetUri);
+                            contentType = MediaType.JSON;
+                        }
 
-                            final URI baseUri = targetUri;
+                        return CompletableFuture.completedFuture(resolve(contentType, targetUri, contextUri, response));
 
-                            final List<Link> contextUris = linkValues.stream()
-                                    .flatMap(l -> Link.of(l, baseUri).stream())
-                                    .filter(l -> l.relations().contains(ProfileConstants.CONTEXT))
-                                    .collect(Collectors.toList());
+                    } catch (JsonLdError e) {
+                        throw new CompletionException(e);
 
-                            if (contextUris.size() > 1) {
-                                throw new JsonLdError(JsonLdErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS);
+                    } catch (IOException e) {
+                        throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e));
 
-                            } else if (contextUris.size() == 1) {
-                                contextUri = contextUris.get(0).target();
-                            }
+                    } finally {
+                        try {
+                            response.close();
+                        } catch (IOException eio) {
+                            throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, eio));
                         }
                     }
 
-                    if (contentType == null) {
-                        LOGGER.log(Level.WARNING, "GET on URL [{0}] does not return content-type header. Trying application/json.", uri);
-                        contentType = MediaType.JSON;
+                }).handleAsync((document, e) -> {
+                    if (e != null) {
+                        throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e.getCause()));
                     }
-
-                    return resolve(contentType, targetUri, contextUri, response);
-                } catch (JsonLdError e) {
-                    return CompletableFuture.failedFuture(e);
-                }
-            }
-
-            return CompletableFuture.failedFuture(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections"));
-
-        } catch (IOException e) {
-            return CompletableFuture.failedFuture( new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e));
-        }
+                    return document;
+                });
     }
 
     public static final String getAcceptHeader() {
@@ -188,7 +202,7 @@ class DefaultHttpLoader implements DocumentLoader {
         return builder.toString();
     }
 
-    private final CompletableFuture<Document> resolve(
+    private final Document resolve(
             final MediaType type,
             final URI targetUri,
             final URI contextUrl,
@@ -204,7 +218,7 @@ class DefaultHttpLoader implements DocumentLoader {
 
             remoteDocument.setContextUrl(contextUrl);
 
-            return CompletableFuture.completedFuture(remoteDocument);
+            return remoteDocument;
         }
     }
 
@@ -248,4 +262,88 @@ class DefaultHttpLoader implements DocumentLoader {
         httpClient.timeout(timeount);
         return this;
     }
+
+    /*
+     * try { URI targetUri = uri;
+     * 
+     * MediaType contentType = null;
+     * 
+     * URI contextUri = null;
+     * 
+     * for (int redirection = 0; redirection < maxRedirections; redirection++) {
+     * 
+     * // 2. try (HttpResponse response = httpClient.send(targetUri,
+     * getAcceptHeader(options.getRequestProfile()))) {
+     * 
+     * // 3. if (response.statusCode() == 301 || response.statusCode() == 302 ||
+     * response.statusCode() == 303 || response.statusCode() == 307) {
+     * 
+     * final Optional<String> location = response.location();
+     * 
+     * if (location.isPresent()) { targetUri = UriResolver.resolveAsUri(targetUri,
+     * location.get()); continue; }
+     * 
+     * throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED,
+     * "Header location is required for code [" + response.statusCode() + "]."); }
+     * 
+     * if (response.statusCode() != 200) { throw new
+     * JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED,
+     * "Unexpected response code [" + response.statusCode() + "]"); }
+     * 
+     * final Optional<String> contentTypeValue = response.contentType();
+     * 
+     * if (contentTypeValue.isPresent()) { contentType =
+     * MediaType.of(contentTypeValue.get()); }
+     * 
+     * final Collection<String> linkValues = response.links();
+     * 
+     * if (linkValues != null && !linkValues.isEmpty()) {
+     * 
+     * // 4. if (contentType == null || (!MediaType.JSON.match(contentType) &&
+     * !contentType.subtype().toLowerCase().endsWith(PLUS_JSON))) {
+     * 
+     * final URI baseUri = targetUri;
+     * 
+     * Optional<Link> alternate = linkValues.stream() .flatMap(l -> Link.of(l,
+     * baseUri).stream()) .filter(l -> l.relations().contains("alternate") &&
+     * l.type().isPresent() && MediaType.JSON_LD.match(l.type().get()))
+     * .findFirst();
+     * 
+     * if (alternate.isPresent()) {
+     * 
+     * targetUri = alternate.get().target(); continue; } }
+     * 
+     * // 5. if (contentType != null && !MediaType.JSON_LD.match(contentType) &&
+     * (MediaType.JSON.match(contentType) ||
+     * contentType.subtype().toLowerCase().endsWith(PLUS_JSON))) {
+     * 
+     * final URI baseUri = targetUri;
+     * 
+     * final List<Link> contextUris = linkValues.stream() .flatMap(l -> Link.of(l,
+     * baseUri).stream()) .filter(l ->
+     * l.relations().contains(ProfileConstants.CONTEXT))
+     * .collect(Collectors.toList());
+     * 
+     * if (contextUris.size() > 1) { throw new
+     * JsonLdError(JsonLdErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS);
+     * 
+     * } else if (contextUris.size() == 1) { contextUri =
+     * contextUris.get(0).target(); } } }
+     * 
+     * if (contentType == null) { LOGGER.log(Level.WARNING,
+     * "GET on URL [{0}] does not return content-type header. Trying application/json."
+     * , uri); contentType = MediaType.JSON; }
+     * 
+     * return resolve(contentType, targetUri, contextUri, response); } catch
+     * (JsonLdError e) { return CompletableFuture.failedFuture(e); } }
+     * 
+     * return CompletableFuture.failedFuture(new
+     * JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED,
+     * "Too many redirections"));
+     * 
+     * } catch (IOException e) { return CompletableFuture.failedFuture( new
+     * JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e)); }
+     * 
+     * 
+     */
 }

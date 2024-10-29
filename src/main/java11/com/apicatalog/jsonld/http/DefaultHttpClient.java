@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld.http;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient.Redirect;
@@ -24,6 +23,8 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -42,7 +43,7 @@ public final class DefaultHttpClient implements HttpClient {
         this.timeout = null;
     }
 
-    public HttpResponse send(URI targetUri, String requestProfile) throws JsonLdError {
+    public CompletableFuture<HttpResponse> send(URI targetUri, String requestProfile) {
 
         HttpRequest.Builder request = HttpRequest.newBuilder()
                 .GET()
@@ -53,18 +54,13 @@ public final class DefaultHttpClient implements HttpClient {
             request = request.timeout(timeout);
         }
 
-        try {
-            return new HttpResponseImpl(httpClient.send(request.build(), BodyHandlers.ofInputStream()));
-
-        } catch (InterruptedException e) {
-
-            Thread.currentThread().interrupt();
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
-
-        } catch (IOException e) {
-
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
-        }
+        return httpClient.sendAsync(request.build(), BodyHandlers.ofInputStream())
+                .handleAsync((resp, e) -> {
+                    if (e == null) {
+                        return new HttpResponseImpl(resp);
+                    }
+                    throw new CompletionException(new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e.getCause()));
+                });
     }
 
     public static final HttpClient defaultInstance() {

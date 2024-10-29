@@ -24,6 +24,8 @@ import com.apicatalog.jsonld.api.FramingApi;
 import com.apicatalog.jsonld.api.FromRdfApi;
 import com.apicatalog.jsonld.api.ToRdfApi;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.RdfDataset;
 
@@ -488,7 +490,7 @@ public final class JsonLd {
 
         assertNotNull(document, param);
 
-        if (!document.getJsonContent().isPresent()) {
+        if (!(document instanceof JsonDocument)) {
             throw new IllegalArgumentException("'" + param + "' is not not JSON document but [" + document.getContentType() + "].");
         }
     }
@@ -497,7 +499,7 @@ public final class JsonLd {
 
         assertNotNull(document, param);
 
-        if (!document.getRdfContent().isPresent()) {
+        if (!(document instanceof RdfDocument)) {
             throw new IllegalArgumentException("'" + param + "' is not not RDF document but [" + document.getContentType() + "].");
         }
     }
