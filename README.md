@@ -5,7 +5,9 @@
 >
 > There is a noticeable gap between usage and contributions. This highlights a challenging reality for open-source: heavy reliance on the work of developers and maintainers without adequate support in return. Open-source projects like this depend on the contributions of their users to remain sustainable.
 >
-> If you’ve benefited from this project, it’s time to give back. Open-source thrives on community support, but without contributions, the burden falls entirely on the maintainers. Your donation ensures this library stays alive, up-to-date, and reliable for everyone, including you.
+> **Open-source is not free labor. If your company profits from this library but refuses to contribute back, you’re not supporting the ecosystem—you’re exploiting it**.
+> 
+> This library has been sustained through countless hours of work and resources, provided in good faith to the community. If your business depends on it but doesn’t give back, consider whether you deserve the benefits you’re taking. Support the work, or step aside for those who value collaboration and fairness.
 >
 >Don’t let open-source be taken for granted. Support the work that supports you.
 
