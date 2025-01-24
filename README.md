@@ -3,6 +3,8 @@
 >
 > This library has been provided as a free, open-source resource, benefiting countless users without requiring anything in return. Yet, maintaining it takes significant time, effort, and resources—something often overlooked by those who use it freely.
 >
+> There is a noticeable gap between usage and contributions. This highlights a challenging reality for open-source: heavy reliance on the work of developers and maintainers without adequate support in return. Open-source projects like this depend on the contributions of their users to remain sustainable.
+>
 > If you’ve benefited from this project, it’s time to give back. Open-source thrives on community support, but without contributions, the burden falls entirely on the maintainers. Your donation ensures this library stays alive, up-to-date, and reliable for everyone, including you.
 >
 >Don’t let open-source be taken for granted. Support the work that supports you.
