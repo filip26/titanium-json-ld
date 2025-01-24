@@ -1,8 +1,9 @@
 > [!IMPORTANT]
-> Please consider a donation to keep the project available and maintained as an open-source.
+> This open-source library is maintained with dedication to serve the community and remains free and accessible to all. However, sustaining the project requires time, resources, and infrastructure.
 > 
-> The common experience with open-source is that no one wants to pay for it, but they will happily use it for free.
-
+> Those who benefit from the library are encouraged to contribute through donations. Support from the community helps ensure the project remains alive, well-maintained, and continuously improving for everyone.
+> 
+> Open-source projects like this thrive on collective support. Contributions, big or small, make a significant difference in keeping this valuable resource available to all.
 
 # Titanium JSON-LD 1.1 Processor & API
 
