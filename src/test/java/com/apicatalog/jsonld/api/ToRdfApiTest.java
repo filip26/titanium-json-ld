@@ -21,6 +21,7 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.http.media.MediaType;
+import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfNQuad;
 import jakarta.json.JsonValue;
@@ -121,7 +122,7 @@ class ToRdfApiTest {
 
     @Test
     void test12() throws JsonLdError, IOException {
-        RdfDataset result = readRdfDataset(expandedInvalidSubject, false);
+        RdfDataset result = readRdfDataset(expandedInvalidSubject, UriValidationPolicy.None);
 
         boolean includeInvalidSubject = anyInDataset(result, rdfNQuad -> rdfNQuad.getSubject().getValue().equals(invalidUri));
 
@@ -130,7 +131,7 @@ class ToRdfApiTest {
 
     @Test
     void test13() throws JsonLdError, IOException {
-        RdfDataset result = readRdfDataset(expandedInvalidSubject, true);
+        RdfDataset result = readRdfDataset(expandedInvalidSubject, UriValidationPolicy.Full);
 
         boolean includeInvalidSubject = anyInDataset(result, rdfNQuad -> rdfNQuad.getSubject().getValue().equals(invalidUri));
 
@@ -141,7 +142,7 @@ class ToRdfApiTest {
 
     @Test
     void test14() throws JsonLdError, IOException {
-        RdfDataset result = readRdfDataset(expandedInvalidPredicate, false);
+        RdfDataset result = readRdfDataset(expandedInvalidPredicate, UriValidationPolicy.None);
 
         boolean includeInvalidPredicate = anyInDataset(result, rdfNQuad -> rdfNQuad.getPredicate().getValue().equals(invalidUri));
 
@@ -150,7 +151,7 @@ class ToRdfApiTest {
 
     @Test
     void test15() throws JsonLdError, IOException {
-        RdfDataset result = readRdfDataset(expandedInvalidPredicate, true);
+        RdfDataset result = readRdfDataset(expandedInvalidPredicate, UriValidationPolicy.Full);
 
         boolean includeInvalidPredicate = anyInDataset(result, rdfNQuad -> rdfNQuad.getPredicate().getValue().equals(invalidUri));
 
@@ -161,7 +162,7 @@ class ToRdfApiTest {
 
     @Test
     void test16() throws JsonLdError, IOException {
-        RdfDataset result = readRdfDataset(expandedInvalidObject, false);
+        RdfDataset result = readRdfDataset(expandedInvalidObject, UriValidationPolicy.None);
 
         boolean includeInvalidObject = anyInDataset(result, rdfNQuad -> rdfNQuad.getObject().getValue().equals(invalidUri));
 
@@ -170,7 +171,7 @@ class ToRdfApiTest {
 
     @Test
     void test17() throws JsonLdError, IOException {
-        RdfDataset result = readRdfDataset(expandedInvalidObject, true);
+        RdfDataset result = readRdfDataset(expandedInvalidObject, UriValidationPolicy.Full);
 
         boolean includeInvalidObject = anyInDataset(result, rdfNQuad -> rdfNQuad.getObject().getValue().equals(invalidUri));
 
@@ -181,7 +182,7 @@ class ToRdfApiTest {
         return dataset.toList().stream().anyMatch(predicate);
     }
 
-    private RdfDataset readRdfDataset(final String name, final boolean uriValidation) throws JsonLdError, IOException {
+    private RdfDataset readRdfDataset(final String name, final UriValidationPolicy uriValidation) throws JsonLdError, IOException {
         try (final InputStream is = getClass().getResourceAsStream(name)) {
             JsonLdOptions options = new JsonLdOptions();
             options.setUriValidation(uriValidation);

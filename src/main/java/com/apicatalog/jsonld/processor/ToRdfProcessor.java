@@ -75,7 +75,7 @@ public final class ToRdfProcessor {
                             )
                         .produceGeneralizedRdf(options.isProduceGeneralizedRdf())
                         .rdfDirection(options.getRdfDirection())
-                        .uriValidation(options.isUriValidation())
+                        .uriValidation(options.getUriValidation())
                         .build();
     }
 }

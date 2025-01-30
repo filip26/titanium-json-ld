@@ -8,6 +8,7 @@ import com.apicatalog.jsonld.context.cache.Cache;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
+import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import jakarta.json.JsonValue;
 
 /**
@@ -49,8 +50,16 @@ public class ProcessingRuntime {
      */
     public void resetTicker() {/* NOP does nothing if timeout is not set */}
 
+    /**
+     * @deprecated use <code>ProcessingRuntime#getUriValidation()</code>
+     */
+    @Deprecated
     public boolean isUriValidation() {
         return options.isUriValidation();
+    }
+
+    public UriValidationPolicy getUriValidation() {
+        return options.getUriValidation();
     }
 
     public boolean isV10() {

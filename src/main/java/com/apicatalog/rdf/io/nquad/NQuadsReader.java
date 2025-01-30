@@ -19,6 +19,7 @@ import java.io.Reader;
 import java.util.Arrays;
 
 import com.apicatalog.jsonld.uri.UriUtils;
+import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfLiteral;
@@ -242,7 +243,7 @@ public final class NQuadsReader implements RdfReader {
     }
 
     private static final void assertAbsoluteIri(final String iri, final String what) throws RdfReaderException {
-        if (UriUtils.isNotAbsoluteUri(iri, true)) {
+        if (UriUtils.isNotAbsoluteUri(iri, UriValidationPolicy.Full)) {
             throw new RdfReaderException(what + " must be an absolute IRI [" + iri  +  "]. ");
         }
     }

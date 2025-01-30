@@ -94,15 +94,28 @@ public final class UriUtils {
      */
     @Deprecated
     public static final boolean isNotAbsoluteUri(final String uri) {
-        return isNotAbsoluteUri(uri, true);
-    }
-
-    public static final boolean isNotAbsoluteUri(final String uri, final boolean validate) {
-        return !isAbsoluteUri(uri, validate);
+        return isNotAbsoluteUri(uri, UriValidationPolicy.of(true));
     }
 
     /**
-     * Deprecated in favor of {@link UriUtils#isAbsoluteUri(String, boolean)}
+     * Deprecated in favor of {@link UriUtils#isNotAbsoluteUri(String, UriValidationPolicy)}
+     *
+     * @deprecated since 1.3.0
+     *
+     * @param uri to check
+     * @return <code>true</code> if the given URI is absolute
+     */
+    @Deprecated
+    public static final boolean isNotAbsoluteUri(final String uri, final boolean validate) {
+        return !isAbsoluteUri(uri, UriValidationPolicy.of(validate));
+    }
+
+    public static final boolean isNotAbsoluteUri(final String uri, UriValidationPolicy policy) {
+        return !isAbsoluteUri(uri, policy);
+    }
+
+    /**
+     * Deprecated in favor of {@link UriUtils#isAbsoluteUri(String, UriValidationPolicy)}
      *
      * @deprecated since 1.3.0
      *
@@ -111,28 +124,71 @@ public final class UriUtils {
      */
     @Deprecated
     public static final boolean isAbsoluteUri(final String uri) {
-        return isAbsoluteUri(uri, true);
+        return isAbsoluteUri(uri, UriValidationPolicy.Full);
     }
 
-    public static final boolean isAbsoluteUri(final String uri, final boolean validate) {
+    /**
+     * Deprecated in favor of {@link UriUtils#isAbsoluteUri(String, UriValidationPolicy)}
+     *
+     * @deprecated since 1.4.2
+     *
+     * @param uri to check
+     * @return <code>true</code> if the given URI is absolute
+     */
+    @Deprecated
+    public static final boolean isAbsoluteUri(final String uri, boolean validate) {
+        return isAbsoluteUri(uri, UriValidationPolicy.of(validate));
+    }
 
-        // if URI validation is disabled
-        if (!validate) {
-            // then validate just a scheme
-            return true;
+    public static final boolean isAbsoluteUri(final String uri, final UriValidationPolicy policy) {
+        boolean result = false;
+        switch (policy) {
+            case None:
+                result = true;
+                break;
+            case SchemeOnly:
+                result =  startsWithScheme(uri);
+                break;
+            case Full:
+                if (uri == null
+                        || uri.length() < 3 // minimal form s(1):ssp(1)
+                ) {
+                    result = false;
+                } else{
+                    try {
+                        result = URI.create(uri).isAbsolute();
+                    } catch (IllegalArgumentException e) {
+                        result = false;
+                    }
+                }
+                break;
         }
+        return result ;
+    }
+
+    private static final boolean startsWithScheme(final String uri) {
 
         if (uri == null
-                || uri.length() < 3 // minimal form s(1):ssp(1)
+                || uri.length() < 2 // a scheme must have at least one letter followed by ':'
+                || !Character.isLetter(uri.codePointAt(0)) // a scheme name must start with a letter
                 ) {
             return false;
         }
 
-        try {
-            return URI.create(uri).isAbsolute();
-        } catch (IllegalArgumentException e) {
-            return false;
+        for (int i = 1; i < uri.length(); i++) {
+
+            if (
+                //  a scheme name must start with a letter followed by a letter/digit/+/-/.
+                Character.isLetterOrDigit(uri.codePointAt(i))
+                        || uri.charAt(i) == '-' || uri.charAt(i) == '+' || uri.charAt(i) == '.'
+                ) {
+                continue;
+            }
+
+            // a scheme name must be terminated by ':'
+            return uri.charAt(i) == ':';
         }
+        return false;
     }
 
     protected static final String recompose(final String scheme, final String authority, final String path, final String query, final String fragment) {

@@ -35,6 +35,7 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.uri.UriUtils;
 
+import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
@@ -270,7 +271,7 @@ public final class TermDefinitionBuilder {
                     && activeContext.runtime().isV10())
                     // 12.4.
                     || (Keywords.noneMatch(expandedTypeString, Keywords.ID, Keywords.JSON, Keywords.NONE, Keywords.VOCAB)
-                            && UriUtils.isNotAbsoluteUri(expandedTypeString, true))) {
+                            && UriUtils.isNotAbsoluteUri(expandedTypeString, UriValidationPolicy.Full))) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_MAPPING);
             }
 
