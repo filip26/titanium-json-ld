@@ -31,6 +31,7 @@ import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.jsonld.uri.UriUtils;
 
+import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
@@ -172,9 +173,9 @@ public final class Frame {
                     || idArray
                         .stream()
                         .noneMatch(item -> JsonUtils.isNotString(item)
-                                            || UriUtils.isNotAbsoluteUri(((JsonString)item).getString(), true)));
+                                            || UriUtils.isNotAbsoluteUri(((JsonString)item).getString(), UriValidationPolicy.Full)));
         }
-        return JsonUtils.isString(id) && UriUtils.isAbsoluteUri(((JsonString)id).getString(), true);
+        return JsonUtils.isString(id) && UriUtils.isAbsoluteUri(((JsonString)id).getString(), UriValidationPolicy.Full);
     }
 
     private static final boolean validateFrameType(JsonObject frame) {
@@ -193,12 +194,12 @@ public final class Frame {
                     || typeArray
                         .stream()
                         .noneMatch(item -> JsonUtils.isNotString(item)
-                                            || UriUtils.isNotAbsoluteUri(((JsonString)item).getString(), true)));
+                                            || UriUtils.isNotAbsoluteUri(((JsonString)item).getString(), UriValidationPolicy.Full)));
         }
 
         return JsonUtils.isEmptyArray(type)
                 || JsonUtils.isEmptyObject(type)
-                || JsonUtils.isString(type) && UriUtils.isAbsoluteUri(((JsonString)type).getString(), true);
+                || JsonUtils.isString(type) && UriUtils.isAbsoluteUri(((JsonString)type).getString(), UriValidationPolicy.Full);
     }
 
     public Set<String> keys() {

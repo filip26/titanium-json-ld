@@ -34,6 +34,7 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.uri.UriUtils;
+import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
 import com.apicatalog.rdf.RdfResource;
@@ -57,7 +58,7 @@ public final class RdfToJsonld {
     private RdfDirection rdfDirection;
     private boolean useNativeTypes;
     private boolean useRdfType;
-    private boolean uriValidation;
+    private UriValidationPolicy uriValidation;
 
     private JsonLdVersion processingMode;
 
@@ -434,7 +435,15 @@ public final class RdfToJsonld {
         private JsonObject value;
     }
 
+    /**
+     * @deprecated use <code>RdfToJsonld#uriValidation(com.apicatalog.jsonld.uri.UriValidationPolicy)</code>
+     */
+    @Deprecated
     public RdfToJsonld uriValidation(boolean uriValidation) {
+        return uriValidation(UriValidationPolicy.of(uriValidation));
+    }
+
+    public RdfToJsonld uriValidation(UriValidationPolicy uriValidation) {
         this.uriValidation = uriValidation;
         return this;
     }

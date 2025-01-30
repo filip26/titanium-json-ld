@@ -29,6 +29,7 @@ import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.uri.UriUtils;
+import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfResource;
@@ -50,7 +51,7 @@ public final class JsonLdToRdf {
     // optional
     private boolean produceGeneralizedRdf;
     private RdfDirection rdfDirection;
-    private boolean uriValidation;
+    private UriValidationPolicy uriValidation;
 
     private JsonLdToRdf(NodeMap nodeMap, RdfDataset dataset) {
         this.nodeMap = nodeMap;
@@ -202,7 +203,15 @@ public final class JsonLdToRdf {
         return dataset;
     }
 
+    /**
+     * @deprecated use <code>JsonLdToRdf#uriValidation(com.apicatalog.jsonld.uri.UriValidationPolicy)</code>
+     */
+    @Deprecated
     public JsonLdToRdf uriValidation(boolean uriValidation) {
+        return uriValidation(UriValidationPolicy.of(uriValidation));
+    }
+
+    public JsonLdToRdf uriValidation(UriValidationPolicy uriValidation) {
         this.uriValidation = uriValidation;
         return this;
     }

@@ -27,6 +27,7 @@ import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.uri.UriUtils;
+import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.RdfWriter;
 import com.apicatalog.rdf.io.error.UnsupportedContentException;
@@ -133,7 +134,7 @@ public final class Rdf {
             return RdfProvider.provider().createBlankNode(value);
         }
 
-        if (UriUtils.isAbsoluteUri(value, true)) {
+        if (UriUtils.isAbsoluteUri(value, UriValidationPolicy.Full)) {
             return RdfProvider.provider().createIRI(value);
         }
 
@@ -184,7 +185,7 @@ public final class Rdf {
             return RdfProvider.provider().createBlankNode(resource);
         }
 
-        if (UriUtils.isAbsoluteUri(resource, true)) {
+        if (UriUtils.isAbsoluteUri(resource, UriValidationPolicy.Full)) {
             return RdfProvider.provider().createIRI(resource);
         }
 

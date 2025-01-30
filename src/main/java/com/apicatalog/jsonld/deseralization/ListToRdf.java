@@ -24,6 +24,7 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.RdfValue;
@@ -46,7 +47,7 @@ final class ListToRdf {
 
     // optional
     private RdfDirection rdfDirection;
-    private boolean uriValidation;
+    private UriValidationPolicy uriValidation;
 
     private ListToRdf(final JsonArray list, final List<RdfTriple> triples, NodeMap nodeMap) {
         this.list = list;
@@ -120,7 +121,15 @@ final class ListToRdf {
         return Rdf.createBlankNode(bnodes[0]);
     }
 
+    /**
+     * @deprecated use <code>ListToRdf#uriValidation(com.apicatalog.jsonld.uri.UriValidationPolicy)</code>
+     */
+    @Deprecated
     public ListToRdf uriValidation(boolean uriValidation) {
+        return uriValidation(UriValidationPolicy.of(uriValidation));
+    }
+
+    public ListToRdf uriValidation(UriValidationPolicy uriValidation) {
         this.uriValidation = uriValidation;
         return this;
     }

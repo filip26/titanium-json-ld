@@ -37,6 +37,7 @@ import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.jsonld.uri.UriUtils;
+import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfResource;
@@ -71,7 +72,7 @@ final class ObjectToRdf {
 
     // optional
     private RdfDirection rdfDirection;
-    private boolean uriValidation;
+    private UriValidationPolicy uriValidation;
 
     private ObjectToRdf(JsonObject item, List<RdfTriple> triples, NodeMap nodeMap) {
         this.item = item;
@@ -295,7 +296,15 @@ final class ObjectToRdf {
         return xsdNumberFormat.format(bigDecimal);
     }
 
+    /**
+     * @deprecated use <code>Object#uriValidation(com.apicatalog.jsonld.uri.UriValidationPolicy)</code>
+     */
+    @Deprecated
     public ObjectToRdf uriValidation(boolean uriValidation) {
+        return uriValidation(UriValidationPolicy.of(uriValidation));
+    }
+
+    public ObjectToRdf uriValidation(UriValidationPolicy uriValidation) {
         this.uriValidation = uriValidation;
         return this;
     }

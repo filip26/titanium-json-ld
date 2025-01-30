@@ -94,15 +94,28 @@ public final class UriUtils {
      */
     @Deprecated
     public static final boolean isNotAbsoluteUri(final String uri) {
-        return isNotAbsoluteUri(uri, true);
-    }
-
-    public static final boolean isNotAbsoluteUri(final String uri, final boolean validate) {
-        return !isAbsoluteUri(uri, validate);
+        return isNotAbsoluteUri(uri, UriValidationPolicy.of(true));
     }
 
     /**
-     * Deprecated in favor of {@link UriUtils#isAbsoluteUri(String, boolean)}
+     * Deprecated in favor of {@link UriUtils#isNotAbsoluteUri(String, UriValidationPolicy)}
+     *
+     * @deprecated since 1.3.0
+     *
+     * @param uri to check
+     * @return <code>true</code> if the given URI is absolute
+     */
+    @Deprecated
+    public static final boolean isNotAbsoluteUri(final String uri, final boolean validate) {
+        return !isAbsoluteUri(uri, UriValidationPolicy.of(validate));
+    }
+
+    public static final boolean isNotAbsoluteUri(final String uri, UriValidationPolicy policy) {
+        return !isAbsoluteUri(uri, policy);
+    }
+
+    /**
+     * Deprecated in favor of {@link UriUtils#isAbsoluteUri(String, UriValidationPolicy)}
      *
      * @deprecated since 1.3.0
      *
@@ -111,28 +124,44 @@ public final class UriUtils {
      */
     @Deprecated
     public static final boolean isAbsoluteUri(final String uri) {
-        return isAbsoluteUri(uri, true);
+        return isAbsoluteUri(uri, UriValidationPolicy.Full);
     }
 
-    public static final boolean isAbsoluteUri(final String uri, final boolean validate) {
+    /**
+     * Deprecated in favor of {@link UriUtils#isAbsoluteUri(String, UriValidationPolicy)}
+     *
+     * @deprecated since 1.4.2
+     *
+     * @param uri to check
+     * @return <code>true</code> if the given URI is absolute
+     */
+    @Deprecated
+    public static final boolean isAbsoluteUri(final String uri, boolean validate) {
+        return isAbsoluteUri(uri, UriValidationPolicy.of(validate));
+    }
 
-        // if URI validation is disabled
-        if (!validate) {
-            // then validate just a scheme
-            return startsWithScheme(uri);
-        }
-
-        if (uri == null
-                || uri.length() < 3 // minimal form s(1):ssp(1)
+    public static final boolean isAbsoluteUri(final String uri, final UriValidationPolicy policy) {
+        switch (policy) {
+            case None:
+                return true;
+            case SchemeOnly:
+                return startsWithScheme(uri);
+            case Full:
+                if (uri == null
+                        || uri.length() < 3 // minimal form s(1):ssp(1)
                 ) {
-            return false;
+                    return false;
+                } else{
+                    try {
+                        return URI.create(uri).isAbsolute();
+                    } catch (IllegalArgumentException e) {
+                        return false;
+                    }
+                }
+            default:
+                return false;
         }
 
-        try {
-            return URI.create(uri).isAbsolute();
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
     }
 
     private static final boolean startsWithScheme(final String uri) {

@@ -26,6 +26,7 @@ import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.SchemeRouter;
 
+import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
@@ -57,7 +58,7 @@ public final class JsonLdOptions {
     /* default values */
     public static final boolean DEFAULT_RDF_STAR = false;
     public static final boolean DEFAULT_NUMERIC_ID = false;
-    public static final boolean DEFAULT_URI_VALIDATION = true;
+    public static final UriValidationPolicy DEFAULT_URI_VALIDATION = UriValidationPolicy.Full;
 
     /**
      * The base IRI to use when expanding or compacting the document. If set, this
@@ -132,7 +133,7 @@ public final class JsonLdOptions {
     // document cache
     private Cache<String, Document> documentCache;
 
-    private boolean uriValidation;
+    private UriValidationPolicy uriValidation;
 
     private Duration timeout;
 
@@ -488,9 +489,15 @@ public final class JsonLdOptions {
      * Enabled by default.
      * </p>
      *
-     * @return true if validation is enabled
+     * @deprecated use <code>JsonLdOptions#getUriValidation</code>
+     * @return true if full validation is enabled
      */
+    @Deprecated
     public boolean isUriValidation() {
+        return uriValidation == UriValidationPolicy.Full;
+    }
+
+    public UriValidationPolicy getUriValidation() {
         return uriValidation;
     }
 
@@ -505,10 +512,16 @@ public final class JsonLdOptions {
      * Enabled by default.
      * </p>
      *
+     * @deprecated use <code>JsonLdOptions#setUriValidation(com.apicatalog.jsonld.uri.UriValidationPolicy)</code>
      * @param enabled set <code>true</code> to enable validation
      */
+    @Deprecated
     public void setUriValidation(boolean enabled) {
-        this.uriValidation = enabled;
+        this.uriValidation = UriValidationPolicy.of(enabled);
+    }
+
+    public void setUriValidation(UriValidationPolicy uriValidation) {
+        this.uriValidation = uriValidation;
     }
 
     /**
