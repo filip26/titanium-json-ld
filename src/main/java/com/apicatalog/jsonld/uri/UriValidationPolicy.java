@@ -21,9 +21,6 @@ public enum UriValidationPolicy {
      * Method allowing to convert the legacy boolean to the matching policy
      */
     public static UriValidationPolicy of(boolean value) {
-        if(value)
-            return Full ;
-        else
-            return SchemeOnly ;
+        return value ? Full : SchemeOnly ;
     }
 }

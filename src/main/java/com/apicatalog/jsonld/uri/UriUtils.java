@@ -141,29 +141,27 @@ public final class UriUtils {
     }
 
     public static final boolean isAbsoluteUri(final String uri, final UriValidationPolicy policy) {
-        boolean result = false;
         switch (policy) {
             case None:
-                result = true;
-                break;
+                return true;
             case SchemeOnly:
-                result =  startsWithScheme(uri);
-                break;
+                return startsWithScheme(uri);
             case Full:
                 if (uri == null
                         || uri.length() < 3 // minimal form s(1):ssp(1)
                 ) {
-                    result = false;
+                    return false;
                 } else{
                     try {
-                        result = URI.create(uri).isAbsolute();
+                        return URI.create(uri).isAbsolute();
                     } catch (IllegalArgumentException e) {
-                        result = false;
+                        return false;
                     }
                 }
-                break;
+            default:
+                return false;
         }
-        return result ;
+
     }
 
     private static final boolean startsWithScheme(final String uri) {
