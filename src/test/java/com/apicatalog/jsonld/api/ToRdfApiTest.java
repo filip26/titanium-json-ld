@@ -15,22 +15,25 @@
  */
 package com.apicatalog.jsonld.api;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStreamReader;
-import java.net.URI;
-
-import org.junit.jupiter.api.Test;
-
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.RdfDataset;
-
+import com.apicatalog.rdf.RdfNQuad;
 import jakarta.json.JsonValue;
+import org.junit.jupiter.api.Test;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.util.function.Predicate;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class ToRdfApiTest {
 
@@ -111,5 +114,81 @@ class ToRdfApiTest {
         RdfDataset result = JsonLd.toRdf(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).context(JsonDocument.of(MediaType.JSON, new ByteArrayInputStream(JsonValue.EMPTY_JSON_OBJECT.toString().getBytes()))).loader(MOCK_LOADER).ordered().get();
         assertNotNull(result);
         assertEquals(0, result.size());
+    }
+
+    private final String invalidUri = " http://example.com/invalid";
+    private final String expandedInvalidSubject = "/com/apicatalog/jsonld/test/issue383-expanded-subject.json";
+
+    @Test
+    void test12() throws JsonLdError, IOException {
+        RdfDataset result = readRdfDataset(expandedInvalidSubject, false);
+
+        boolean includeInvalidSubject = anyInDataset(result, rdfNQuad -> rdfNQuad.getSubject().getValue().equals(invalidUri));
+
+        assertTrue(includeInvalidSubject, "The resulting dataset without uri validation should include :" + invalidUri);
+    }
+
+    @Test
+    void test13() throws JsonLdError, IOException {
+        RdfDataset result = readRdfDataset(expandedInvalidSubject, true);
+
+        boolean includeInvalidSubject = anyInDataset(result, rdfNQuad -> rdfNQuad.getSubject().getValue().equals(invalidUri));
+
+        assertFalse(includeInvalidSubject, "The resulting dataset with uri validation should NOT include :" + invalidUri);
+    }
+
+    private final String expandedInvalidPredicate = "/com/apicatalog/jsonld/test/issue383-expanded-predicate.json";
+
+    @Test
+    void test14() throws JsonLdError, IOException {
+        RdfDataset result = readRdfDataset(expandedInvalidPredicate, false);
+
+        boolean includeInvalidPredicate = anyInDataset(result, rdfNQuad -> rdfNQuad.getPredicate().getValue().equals(invalidUri));
+
+        assertTrue(includeInvalidPredicate, "The resulting dataset without uri validation should include :" + invalidUri);
+    }
+
+    @Test
+    void test15() throws JsonLdError, IOException {
+        RdfDataset result = readRdfDataset(expandedInvalidPredicate, true);
+
+        boolean includeInvalidPredicate = anyInDataset(result, rdfNQuad -> rdfNQuad.getPredicate().getValue().equals(invalidUri));
+
+        assertFalse(includeInvalidPredicate, "The resulting dataset with uri validation should NOT include :" + invalidUri);
+    }
+
+    private final String expandedInvalidObject = "/com/apicatalog/jsonld/test/issue383-expanded-object.json";
+
+    @Test
+    void test16() throws JsonLdError, IOException {
+        RdfDataset result = readRdfDataset(expandedInvalidObject, false);
+
+        boolean includeInvalidObject = anyInDataset(result, rdfNQuad -> rdfNQuad.getObject().getValue().equals(invalidUri));
+
+        assertTrue(includeInvalidObject, "The resulting dataset without uri validation should include :" + invalidUri);
+    }
+
+    @Test
+    void test17() throws JsonLdError, IOException {
+        RdfDataset result = readRdfDataset(expandedInvalidObject, true);
+
+        boolean includeInvalidObject = anyInDataset(result, rdfNQuad -> rdfNQuad.getObject().getValue().equals(invalidUri));
+
+        assertFalse(includeInvalidObject, "The resulting dataset with uri validation should NOT include :" + invalidUri);
+    }
+
+    private boolean anyInDataset(final RdfDataset dataset, Predicate<RdfNQuad> predicate) {
+        return dataset.toList().stream().anyMatch(predicate);
+    }
+
+    private RdfDataset readRdfDataset(final String name, final boolean uriValidation) throws JsonLdError, IOException {
+        try (final InputStream is = getClass().getResourceAsStream(name)) {
+            JsonLdOptions options = new JsonLdOptions();
+            options.setUriValidation(uriValidation);
+            Document document = JsonDocument.of(is);
+
+            return JsonLd.toRdf(document)
+                    .options(options).get();
+        }
     }
 }

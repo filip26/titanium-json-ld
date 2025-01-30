@@ -119,7 +119,7 @@ public final class UriUtils {
         // if URI validation is disabled
         if (!validate) {
             // then validate just a scheme
-            return startsWithScheme(uri);
+            return true;
         }
 
         if (uri == null
@@ -133,31 +133,6 @@ public final class UriUtils {
         } catch (IllegalArgumentException e) {
             return false;
         }
-    }
-
-    private static final boolean startsWithScheme(final String uri) {
-
-        if (uri == null
-                || uri.length() < 2 // a scheme must have at least one letter followed by ':'
-                || !Character.isLetter(uri.codePointAt(0)) // a scheme name must start with a letter
-                ) {
-            return false;
-        }
-
-        for (int i = 1; i < uri.length(); i++) {
-
-            if (
-                //  a scheme name must start with a letter followed by a letter/digit/+/-/.
-                Character.isLetterOrDigit(uri.codePointAt(i))
-                        || uri.charAt(i) == '-' || uri.charAt(i) == '+' || uri.charAt(i) == '.'
-                ) {
-                continue;
-            }
-
-            // a scheme name must be terminated by ':'
-            return uri.charAt(i) == ':';
-        }
-        return false;
     }
 
     protected static final String recompose(final String scheme, final String authority, final String path, final String query, final String fragment) {
