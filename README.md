@@ -207,22 +207,22 @@ implementation("org.glassfish:jakarta.json:2.0.1")
 
 All PR's welcome!
 
-- develop
-  - implement a new feature 
-  - fix an existing issue
-  - improve an existing implementation
-- test
-  - report a bug
-  - implement a new test case
-- document
-  - write Javadoc
-  - write a tutorial or guide
-  - proofread existing documentation for clarity and accuracy
-- promote
-  - star, share, the project
-  - write an article or blog post about the project
-- sponsor
-  - sponsorship gives your requests top priority
+- Develop
+  - Implement a new feature 
+  - Fix an existing issue
+  - Improve an existing implementation
+- Test
+  - Report a bug
+  - Implement a new test case
+- Document
+  - Write Javadoc comments
+  - Write a tutorial or guide
+  - Proofread existing documentation for clarity and accuracy
+- Promote
+  - Star, share, the project
+  - Write an article or blog post about the project
+- Sponsor
+  - Sponsorship gives your requests top priority
 
 ### Building
 
