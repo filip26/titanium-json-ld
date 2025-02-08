@@ -34,8 +34,8 @@ import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.uri.UriUtils;
-
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
+
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;

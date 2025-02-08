@@ -28,11 +28,10 @@ public final class UriUtils {
     public static final boolean isURI(final String value) {
 
         return value != null
-                    && StringUtils.isNotBlank(value)
-                    && !Keywords.matchForm(StringUtils.strip(value))
-                    && create(StringUtils.strip(value)) != null;
+                && StringUtils.isNotBlank(value)
+                && !Keywords.matchForm(StringUtils.strip(value))
+                && create(StringUtils.strip(value)) != null;
     }
-
 
     public static final URI create(final String uri) {
 
@@ -80,8 +79,7 @@ public final class UriUtils {
         return uri == null
                 || StringUtils.isBlank(uri)
                 || Keywords.matchForm(StringUtils.strip(uri))
-                || create(StringUtils.strip(uri)) == null
-                ;
+                || create(StringUtils.strip(uri)) == null;
     }
 
     /**
@@ -94,11 +92,12 @@ public final class UriUtils {
      */
     @Deprecated
     public static final boolean isNotAbsoluteUri(final String uri) {
-        return isNotAbsoluteUri(uri, UriValidationPolicy.of(true));
+        return isNotAbsoluteUri(uri, UriValidationPolicy.Full);
     }
 
     /**
-     * Deprecated in favor of {@link UriUtils#isNotAbsoluteUri(String, UriValidationPolicy)}
+     * Deprecated in favor of
+     * {@link UriUtils#isNotAbsoluteUri(String, UriValidationPolicy)}
      *
      * @deprecated since 1.3.0
      *
@@ -107,7 +106,7 @@ public final class UriUtils {
      */
     @Deprecated
     public static final boolean isNotAbsoluteUri(final String uri, final boolean validate) {
-        return !isAbsoluteUri(uri, UriValidationPolicy.of(validate));
+        return !isAbsoluteUri(uri, validate ? UriValidationPolicy.Full : UriValidationPolicy.SchemeOnly);
     }
 
     public static final boolean isNotAbsoluteUri(final String uri, UriValidationPolicy policy) {
@@ -115,7 +114,8 @@ public final class UriUtils {
     }
 
     /**
-     * Deprecated in favor of {@link UriUtils#isAbsoluteUri(String, UriValidationPolicy)}
+     * Deprecated in favor of
+     * {@link UriUtils#isAbsoluteUri(String, UriValidationPolicy)}
      *
      * @deprecated since 1.3.0
      *
@@ -128,7 +128,8 @@ public final class UriUtils {
     }
 
     /**
-     * Deprecated in favor of {@link UriUtils#isAbsoluteUri(String, UriValidationPolicy)}
+     * Deprecated in favor of
+     * {@link UriUtils#isAbsoluteUri(String, UriValidationPolicy)}
      *
      * @deprecated since 1.4.2
      *
@@ -137,29 +138,29 @@ public final class UriUtils {
      */
     @Deprecated
     public static final boolean isAbsoluteUri(final String uri, boolean validate) {
-        return isAbsoluteUri(uri, UriValidationPolicy.of(validate));
+        return isAbsoluteUri(uri, validate ? UriValidationPolicy.Full : UriValidationPolicy.SchemeOnly);
     }
 
     public static final boolean isAbsoluteUri(final String uri, final UriValidationPolicy policy) {
         switch (policy) {
-            case None:
-                return true;
-            case SchemeOnly:
-                return startsWithScheme(uri);
-            case Full:
-                if (uri == null
-                        || uri.length() < 3 // minimal form s(1):ssp(1)
-                ) {
-                    return false;
-                } else{
-                    try {
-                        return URI.create(uri).isAbsolute();
-                    } catch (IllegalArgumentException e) {
-                        return false;
-                    }
-                }
-            default:
+        case None:
+            return true;
+        case SchemeOnly:
+            return startsWithScheme(uri);
+        case Full:
+            if (uri == null
+                    || uri.length() < 3 // minimal form s(1):ssp(1)
+            ) {
                 return false;
+            } else {
+                try {
+                    return URI.create(uri).isAbsolute();
+                } catch (IllegalArgumentException e) {
+                    return false;
+                }
+            }
+        default:
+            return false;
         }
 
     }
@@ -169,17 +170,16 @@ public final class UriUtils {
         if (uri == null
                 || uri.length() < 2 // a scheme must have at least one letter followed by ':'
                 || !Character.isLetter(uri.codePointAt(0)) // a scheme name must start with a letter
-                ) {
+        ) {
             return false;
         }
 
         for (int i = 1; i < uri.length(); i++) {
 
             if (
-                //  a scheme name must start with a letter followed by a letter/digit/+/-/.
-                Character.isLetterOrDigit(uri.codePointAt(i))
-                        || uri.charAt(i) == '-' || uri.charAt(i) == '+' || uri.charAt(i) == '.'
-                ) {
+            // a scheme name must start with a letter followed by a letter/digit/+/-/.
+            Character.isLetterOrDigit(uri.codePointAt(i))
+                    || uri.charAt(i) == '-' || uri.charAt(i) == '+' || uri.charAt(i) == '.') {
                 continue;
             }
 

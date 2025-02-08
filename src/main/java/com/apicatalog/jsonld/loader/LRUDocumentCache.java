@@ -1,11 +1,11 @@
 package com.apicatalog.jsonld.loader;
 
+import java.net.URI;
+import java.util.Objects;
+
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.cache.LruCache;
 import com.apicatalog.jsonld.document.Document;
-
-import java.net.URI;
-import java.util.Objects;
 
 public class LRUDocumentCache implements DocumentLoader {
 
