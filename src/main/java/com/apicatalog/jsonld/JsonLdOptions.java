@@ -25,8 +25,8 @@ import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.SchemeRouter;
-
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
+
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
@@ -512,14 +512,28 @@ public final class JsonLdOptions {
      * Enabled by default.
      * </p>
      *
-     * @deprecated use <code>JsonLdOptions#setUriValidation(com.apicatalog.jsonld.uri.UriValidationPolicy)</code>
+     * @deprecated since 1.5.0, use
+     *             <code>JsonLdOptions#setUriValidation(com.apicatalog.jsonld.uri.UriValidationPolicy)</code>
      * @param enabled set <code>true</code> to enable validation
      */
     @Deprecated
     public void setUriValidation(boolean enabled) {
-        this.uriValidation = UriValidationPolicy.of(enabled);
+        setUriValidation(enabled ? UriValidationPolicy.Full : UriValidationPolicy.SchemeOnly);
     }
 
+    /**
+     * Sets the URI validation policy. By default, the policy is set to
+     * {@code Full}.
+     * 
+     * <p>
+     * Note: Changing this policy may produce unexpected or non-compliant results,
+     * depending on the specified validation rules.
+     * </p>
+     * 
+     * @param uriValidation the desired URI validation policy
+     * 
+     * @since 1.5.0
+     */
     public void setUriValidation(UriValidationPolicy uriValidation) {
         this.uriValidation = uriValidation;
     }

@@ -122,11 +122,11 @@ final class ListToRdf {
     }
 
     /**
-     * @deprecated use <code>ListToRdf#uriValidation(com.apicatalog.jsonld.uri.UriValidationPolicy)</code>
+     * @deprecated since 1.5.0, use <code>ListToRdf#uriValidation(com.apicatalog.jsonld.uri.UriValidationPolicy)</code>
      */
     @Deprecated
-    public ListToRdf uriValidation(boolean uriValidation) {
-        return uriValidation(UriValidationPolicy.of(uriValidation));
+    public ListToRdf uriValidation(boolean enabled) {
+        return uriValidation(enabled ? UriValidationPolicy.Full : UriValidationPolicy.SchemeOnly);
     }
 
     public ListToRdf uriValidation(UriValidationPolicy uriValidation) {

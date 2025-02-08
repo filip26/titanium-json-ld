@@ -16,14 +16,15 @@ jobs:
         with:
           java-version: '8'
           distribution: 'temurin'
+          cache: 'maven'
           server-id: ossrh
-      - name: Import GPG Key
-        uses: crazy-max/ghaction-import-gpg@v6
-        with:
-          gpg_private_key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+          server-username: OSSRH_USERNAME
+          server-password: OSSRH_TOKEN
+          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Publish package
-        run: mvn -f pom_jre8.xml -B -Pmaven-central -Dgpg.passphrase=${{secrets.MAVEN_GPG_PASSPHRASE}} -s maven-central-settings.xml deploy
+        run: mvn -f pom_jre8.xml -B -Pmaven-central deploy
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}

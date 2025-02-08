@@ -1,26 +1,28 @@
 package com.apicatalog.jsonld.uri;
 
+/**
+ * Represents different URI validation policies. These policies determine the
+ * extent to which URIs are validated during processing.
+ */
 public enum UriValidationPolicy {
 
     /**
-     * No validation is performed
+     * Disables URI validation entirely, accepting all input as-is. This option
+     * provides maximum flexibility but may lead to non-compliant or invalid URI
+     * handling.
      */
     None,
 
     /**
-     * The validation only targets the scheme
+     * Validates only the scheme component of the URI, allowing for more lenient
+     * processing while still ensuring a recognizable scheme (e.g., "http:",
+     * "https:").
      */
     SchemeOnly,
 
     /**
-     * The validation is be fully performed
+     * Performs full URI validation, ensuring that the URI conforms to all syntax
+     * and structural requirements defined by relevant standards.
      */
-    Full ;
-
-    /**
-     * Method allowing to convert the legacy boolean to the matching policy
-     */
-    public static UriValidationPolicy of(boolean value) {
-        return value ? Full : SchemeOnly ;
-    }
+    Full;
 }

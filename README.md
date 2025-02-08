@@ -1,26 +1,26 @@
 > [!IMPORTANT]
 >  **This Open-Source Project Needs Your Support**
 >
-> This library has been provided as a free, open-source resource, benefiting countless users without requiring anything in return. Yet, maintaining it takes significant time, effort, and resources—something often overlooked by those who use it freely.
+> This library is offered as a free, open-source resource, benefiting countless users without requiring anything in return. However, maintaining it takes significant time, effort, and resources—something that is often overlooked by those who use it freely.
 >
-> There is a noticeable gap between usage and contributions. This highlights a challenging reality for open-source: heavy reliance on the work of developers and maintainers without adequate support in return. Open-source projects like this depend on the contributions of their users to remain sustainable.
+> There is a noticeable gap between usage and contributions, highlighting a challenging reality for open-source projects: heavy reliance on the work of developers and maintainers without adequate support in return. Open-source projects like this depend on the contributions of their users to remain sustainable.
 >
-> **Open-source is not free labor. If your company profits from this library but refuses to contribute back, you’re not supporting the ecosystem—you’re exploiting it**.
+> **Open-source is not free labor. If your company profits from this library but refuses to contribute back, you are not supporting the ecosystem—you are exploiting it.**
 > 
-> This library has been sustained through countless hours of work and resources, provided in good faith to the community. If your business depends on it but doesn’t give back, consider whether you deserve the benefits you’re taking. Support the work, or step aside for those who value collaboration and fairness.
+> This library has been sustained through countless hours of work and resources, provided in good faith to the community. If your business depends on it but doesn't give back, consider whether you truly deserve the benefits you're taking. Support the work, or step aside for those who value collaboration and fairness.
 >
->Don’t let open-source be taken for granted. Support the work that supports you.
+> Don’t let open-source be taken for granted. Support the work that supports you.
 
 # Titanium JSON-LD 1.1 Processor & API
 
-An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-based Serialization for Linked Data) specification in Java utilizing [Jakarta JSON Processing](https://github.com/eclipse-ee4j/jsonp).
+An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-based Serialization for Linked Data) specification in Java, utilizing [Jakarta JSON Processing](https://github.com/eclipse-ee4j/jsonp).
 
 ### Goals
-- conformance to the specification
-- secure, stable, fast, A+ code (covered by **~1800 tests**)
-- minimal external dependencies
-  - only `jakarta.json-api` is required
-- simple to use
+- Full conformance to the specification
+- Secure, stable, fast, high-quality code (covered by **~1800 tests**)
+- Minimal external dependencies
+  - Only `jakarta.json-api` is required
+- Easy to use
 
 ### Status
 
@@ -34,12 +34,11 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 
 ### Extensions
 
-- [LD-CLI](https://github.com/filip26/ld-cli) is a native command line utility for Ubuntu, Mac, Windows
-- [JSON-LD-star](https://json-ld.github.io/json-ld-star) expansion and compaction built-in support (experimental)
+- [LD-CLI](https://github.com/filip26/ld-cli): A native command line utility for Ubuntu, Mac, and Windows
+- [JSON-LD-star](https://json-ld.github.io/json-ld-star): Expansion and compaction built-in support (experimental)
 - [Universal RDF Dataset Normalization Algorithm - URDNA2015](https://github.com/simon-greatrix/rdf-urdna)
-- [Iridium CBOR-LD](https://github.com/filip26/iridium-cbor-ld) a CBOR-based Processor for Linked Data
-- [LEXREX](https://lexrex.web.app/) semantic vocabularies visual builder and manager
-
+- [Iridium CBOR-LD](https://github.com/filip26/iridium-cbor-ld): A CBOR-based Processor for Linked Data
+- [LEXREX](https://lexrex.web.app/): Semantic vocabularies visual builder and manager
 
 ## Table of Contents  
 - [Conformance](#conformance)
@@ -52,13 +51,13 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 
 ## Conformance
 
- | Feature | Tests | Pass | Status | Notes |
- | --- | ---: | ---: | ---: | --- |
-| [Expansion](https://www.w3.org/TR/json-ld/#expanded-document-form) | 373 |  373 | 100% | |
+| Feature | Tests | Pass | Status | Notes |
+| --- | ---: | ---: | ---: | --- |
+| [Expansion](https://www.w3.org/TR/json-ld/#expanded-document-form) | 373 | 373 | 100% | |
 | [Compaction](https://www.w3.org/TR/json-ld/#compacted-document-form) | 243 | 243 | 100% | |
 | [Flattening](https://www.w3.org/TR/json-ld/#flattened-document-form) | 55 | 55 | 100% | |
 | [JSON-LD to RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 453 | 451 | 99.5% | <ul><li>[te075 - @vocab as blank node identifier](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#te075)</li><li>[tli12 - List with bad @base](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#tli12)</li></ul> |
-| [RDF to JSON-LD](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 51 | 51  | 100% | |
+| [RDF to JSON-LD](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 51 | 51 | 100% | |
 | [Framing](https://www.w3.org/TR/json-ld11-framing/#framing) | 89 | 88 | 98.8% | <ul><li>[t0059 - @embed: @last](https://w3c.github.io/json-ld-framing/tests/frame-manifest#t0059)</li></ul> |
 | [Remote Document and Context Retrieval](https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval) | 18 | 17 | 94.4% | <ul><li>[t0013 - HTML document](https://w3c.github.io/json-ld-api/tests/remote-doc-manifest#t0013)</li></ul> |
 
@@ -66,12 +65,11 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 
 ## Examples
 
-Titanium provides high-level [JsonLd](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/JsonLd.html) API to interact with the processor.
+Titanium provides a high-level [JsonLd](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/JsonLd.html) API to interact with the processor.
 
 ### Transformations
 
 ```javascript
-
 // Expansion
 JsonLd.expand("https://w3c.github.io/json-ld-api/tests/expand/0001-in.jsonld")
       .ordered()
@@ -97,51 +95,54 @@ JsonLd.fromRdf("https://example/document.nq").options(options).get();
 
 // Framing
 JsonLd.frame("https://example/document.jsonld", "https://example/frame.jsonld").get();
-
 ```
 
 ### Local JSON Document
 
 ```javascript
+// Create a JSON document from InputStream or Reader
 Document document = JsonDocument.of(InputStream) or JsonDocument.of(Reader) ...
 
+// Expand the document
 JsonLd.expand(document).get();
 
+// Compact the document with a context document
 JsonLd.compact(document, contextDocument).get();
 ...
 ```
 
-### Processing Timeout [experimental]
-A processor gets terminated eventually after a specified time. Please note 
-the duration does not cover `DocumentLoader` processing time. 
-You have to set-up a read timeout separately.
+### Processing Timeout [Experimental]
+The processor will be terminated after a specified duration. 
+Please note that the duration does not include the time taken by `DocumentLoader` for processing. 
+You must set up a separate read timeout for document loading.
 
 ```javascript
-// since 1.4.0
+// Available since 1.4.0
 JsonLd.expand(...).timeout(duration)...get();
 ```
 
 ### HTTP Document Loader Timeout
-Configure and set a custom HTTP document loader instance.
+You can configure a custom HTTP document loader instance with a set read timeout.
 
 ```javascript
-// since 1.4.0 - set read timeout
-static DocumentLoader LOADER = HttpLoader.defaultInstance().timeount(Duration.ofSeconds(30));
+// Available since 1.4.0 - Set read timeout for HTTP document loader
+static DocumentLoader LOADER = HttpLoader.defaultInstance().timeout(Duration.ofSeconds(30));
 ...
 JsonLd.expand(...).loader(LOADER).get();
 ```
 
-### Document caching
-Configure LRU-based cache for loading documents.
-The argument determines size of the LRU-cache.
+### Document Caching
+Configure an LRU-based cache for loading documents. The `capacity` argument specifies the size of the LRU cache.
+
 ```javascript
-// since 1.4.0
+// Available since 1.4.0 - Load documents with an LRU-based cache
 JsonLd.toRdf("https://example/document.jsonld").loader(new LRUDocumentCache(loader, capacity)).get();
 ```
 
-You can share an instance of `LRUDocumentCache` among multiple calls to reuse cached documents.
+You can reuse an instance of `LRUDocumentCache` across multiple calls to benefit from cached documents.
+
 ```javascript
-// since 1.4.0
+// Available since 1.4.0 - Reuse LRU cache across multiple document loads
 DocumentLoader cachedLoader = new LRUDocumentCache(loader, capacity);
 
 JsonLd.toRdf("https://example/document.jsonld").loader(cachedLoader).get();
@@ -150,10 +151,10 @@ JsonLd.toRdf("https://example/another-document.jsonld").loader(cachedLoader).get
 
 ### Undefined Terms Processing Policy
 
-Set processing policy on undefined terms. `Ignore` by default.
+Set a processing policy for undefined terms. The default policy is `Ignore`.
 
 ```javascript
-// since 1.4.1
+// Available since 1.4.1 - Define processing policy for undefined terms
 JsonLd.expand(...).undefinedTermsPolicy(Fail|Warn|Ignore).get();
 ```
 
@@ -161,27 +162,25 @@ JsonLd.expand(...).undefinedTermsPolicy(Fail|Warn|Ignore).get();
 
 ### Titanium
 
-#### Maven
-Java 11+
+#### Maven (Java 11+)
 
 ```xml
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium-json-ld</artifactId>
-    <version>1.4.1</version>
+    <version>1.5.0</version>
 </dependency>
 ```
 
-#### Gradle 
-Java 8+, Android API Level >=24
+#### Gradle (Java 8+, Android API Level >= 24)
 
 ```gradle
-implementation("com.apicatalog:titanium-json-ld-jre8:1.4.1")
+implementation("com.apicatalog:titanium-json-ld-jre8:1.5.0")
 ```
 
 ### JSON-P Provider
 
-Add JSON-P provider, if it is not on the classpath already.
+Ensure that the JSON-P provider is added to the classpath if it is not already present.
 
 #### Maven
 
@@ -208,23 +207,22 @@ implementation("org.glassfish:jakarta.json:2.0.1")
 
 All PR's welcome!
 
-- develop
-  - implement a new feature 
-  - fix an existing issue
-  - improve an existing implementation
-- test
-  - report a bug
-  - implement a test case
-- document
-  - write javadoc
-  - write a tutorial
-  - proofread an existing documentation
-- promote
-  - star, share, the project
-  - write an article
-- sponsor
-  - your requests get top priority
-  - you will get a badge
+- Develop
+  - Implement a new feature 
+  - Fix an existing issue
+  - Improve an existing implementation
+- Test
+  - Report a bug
+  - Implement a new test case
+- Document
+  - Write Javadoc comments
+  - Write a tutorial or guide
+  - Proofread existing documentation for clarity and accuracy
+- Promote
+  - Star, share, the project
+  - Write an article or blog post about the project
+- Sponsor
+  - Sponsorship gives your requests top priority
 
 ### Building
 

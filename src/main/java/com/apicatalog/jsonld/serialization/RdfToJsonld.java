@@ -65,7 +65,6 @@ public final class RdfToJsonld {
     // runtime
     private GraphMap graphMap;
 
-
     private Map<String, Map<String, Boolean>> compoundLiteralSubjects;
     private Map<String, Reference> referenceOnce;
 
@@ -179,7 +178,7 @@ public final class RdfToJsonld {
 
                             final JsonValue lang = JsonUtils.flatten(clNode.get(RdfConstants.LANGUAGE), Keywords.VALUE);
 
-                            if (JsonUtils.isNotString(lang) || !LanguageTag.isWellFormed(((JsonString)lang).getString())) {
+                            if (JsonUtils.isNotString(lang) || !LanguageTag.isWellFormed(((JsonString) lang).getString())) {
                                 throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
                             }
 
@@ -192,9 +191,8 @@ public final class RdfToJsonld {
                             final JsonValue direction = JsonUtils.flatten(clNode.get(RdfConstants.DIRECTION), Keywords.VALUE);
 
                             if (JsonUtils.isNotString(direction)
-                                    || (!"ltr".equalsIgnoreCase(((JsonString)direction).getString())
-                                        && !"rtl".equalsIgnoreCase(((JsonString)direction).getString()))
-                                    ) {
+                                    || (!"ltr".equalsIgnoreCase(((JsonString) direction).getString())
+                                            && !"rtl".equalsIgnoreCase(((JsonString) direction).getString()))) {
                                 throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
                             }
 
@@ -222,7 +220,7 @@ public final class RdfToJsonld {
                 final JsonArrayBuilder list = JsonProvider.instance().createArrayBuilder();
                 final List<String> listNodes = new ArrayList<>();
 
-                String nodeId = ((JsonString)node.get(Keywords.ID)).getString();
+                String nodeId = ((JsonString) node.get(Keywords.ID)).getString();
 
                 // 6.4.3.
                 while (RdfConstants.REST.equals(usage.property)
@@ -232,12 +230,10 @@ public final class RdfToJsonld {
                         && node.containsKey(RdfConstants.REST)
                         && node.get(RdfConstants.FIRST).asJsonArray().size() == 1
                         && node.get(RdfConstants.REST).asJsonArray().size() == 1
-                        && (node.size() == 3    /* keywords: @id, @first, @last */
+                        && (node.size() == 3 /* keywords: @id, @first, @last */
                                 || (node.size() == 4 && node.containsKey(Keywords.TYPE)
-                                    && node.get(Keywords.TYPE).asJsonArray().size() == 1
-                                    && node.get(Keywords.TYPE).asJsonArray().contains(JsonProvider.instance().createValue(RdfConstants.LIST))
-                                    ))
-                        ) {
+                                        && node.get(Keywords.TYPE).asJsonArray().size() == 1
+                                        && node.get(Keywords.TYPE).asJsonArray().contains(JsonProvider.instance().createValue(RdfConstants.LIST))))) {
 
                     // 6.4.3.1.
                     list.add(0, node.get(RdfConstants.FIRST).asJsonArray().get(0)); // reverse order -> index = 0 see 6.4.5.
@@ -261,7 +257,7 @@ public final class RdfToJsonld {
                         break;
                     }
 
-                    nodeId = ((JsonString)node.get(Keywords.ID)).getString();
+                    nodeId = ((JsonString) node.get(Keywords.ID)).getString();
 
                     // 6.4.3.5.
                     if (UriUtils.isAbsoluteUri(nodeId, uriValidation)) {
@@ -376,11 +372,10 @@ public final class RdfToJsonld {
             }
 
             // 5.7.6.
-            final JsonObject value =
-                        RdfToObject
-                            .with(triple.getObject(), rdfDirection, useNativeTypes)
-                            .processingMode(processingMode)
-                            .build();
+            final JsonObject value = RdfToObject
+                    .with(triple.getObject(), rdfDirection, useNativeTypes)
+                    .processingMode(processingMode)
+                    .build();
 
             final Optional<JsonValue> predicateValue = graphMap.get(graphName, subject, predicate);
 
@@ -393,7 +388,7 @@ public final class RdfToJsonld {
                     graphMap.set(graphName, subject, predicate, JsonProvider.instance().createArrayBuilder(array).add(value).build());
                 }
 
-            // 5.7.8.
+                // 5.7.8.
             } else {
                 graphMap.set(graphName, subject, predicate, JsonProvider.instance().createArrayBuilder().add(value).build());
             }
@@ -409,12 +404,12 @@ public final class RdfToJsonld {
 
                 graphMap.addUsage(graphName, triple.getObject().getValue(), reference);
 
-            // 5.7.10.
+                // 5.7.10.
             } else if (referenceOnce.containsKey(triple.getObject().getValue())) {
 
                 referenceOnce.put(triple.getObject().getValue(), null);
 
-            // 5.7.11.
+                // 5.7.11.
             } else if (triple.getObject().isBlankNode()) {
 
                 Reference reference = new Reference();
@@ -436,11 +431,12 @@ public final class RdfToJsonld {
     }
 
     /**
-     * @deprecated use <code>RdfToJsonld#uriValidation(com.apicatalog.jsonld.uri.UriValidationPolicy)</code>
+     * @deprecated since 1.5.0, use
+     *             <code>RdfToJsonld#uriValidation(com.apicatalog.jsonld.uri.UriValidationPolicy)</code>
      */
     @Deprecated
-    public RdfToJsonld uriValidation(boolean uriValidation) {
-        return uriValidation(UriValidationPolicy.of(uriValidation));
+    public RdfToJsonld uriValidation(boolean enabled) {
+        return uriValidation(enabled ? UriValidationPolicy.Full : UriValidationPolicy.SchemeOnly);
     }
 
     public RdfToJsonld uriValidation(UriValidationPolicy uriValidation) {

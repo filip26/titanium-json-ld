@@ -204,11 +204,11 @@ public final class JsonLdToRdf {
     }
 
     /**
-     * @deprecated use <code>JsonLdToRdf#uriValidation(com.apicatalog.jsonld.uri.UriValidationPolicy)</code>
+     * @deprecated since 1.5.0, use <code>JsonLdToRdf#uriValidation(com.apicatalog.jsonld.uri.UriValidationPolicy)</code>
      */
     @Deprecated
-    public JsonLdToRdf uriValidation(boolean uriValidation) {
-        return uriValidation(UriValidationPolicy.of(uriValidation));
+    public JsonLdToRdf uriValidation(boolean enabled) {
+        return uriValidation(enabled ? UriValidationPolicy.Full : UriValidationPolicy.SchemeOnly);
     }
 
     public JsonLdToRdf uriValidation(UriValidationPolicy uriValidation) {
