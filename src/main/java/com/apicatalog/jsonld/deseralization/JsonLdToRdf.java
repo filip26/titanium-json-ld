@@ -31,7 +31,7 @@ import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfConsumer;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfResource;
+import com.apicatalog.rdf.impl.RdfDatasetConsumer;
 import com.apicatalog.rdf.lang.RdfConstants;
 
 import jakarta.json.JsonString;
@@ -82,52 +82,38 @@ public final class JsonLdToRdf {
 
     public void process(RdfConsumer consumer) throws JsonLdError {
 
-        // 1.
         for (final String graphName : Utils.index(nodeMap.graphs(), true)) {
 
             if (Keywords.DEFAULT.equals(graphName)) {
                 consumer.defaultGraph();
 
+            } else if (BlankNode.isWellFormed(graphName)) {
+                consumer.namedGraph(graphName, true);
+
+            } else if (UriUtils.isAbsoluteUri(graphName, uriValidation)) {
+                consumer.namedGraph(graphName, false);
+
             } else {
-
-                // 1.1.
-                if (BlankNode.isWellFormed(graphName)) {
-                    consumer.namedGraph(graphName, true);
-
-                } else if (UriUtils.isAbsoluteUri(graphName, uriValidation)) {
-                    consumer.namedGraph(graphName, false);
-
-                } else {
-                    continue;
-                }
+                continue;
             }
 
-            // 1.3.
             for (final String subject : Utils.index(nodeMap.subjects(graphName), true)) {
 
-                final String rdfSubject;
-                boolean rdfBlankSubject = false;
+                boolean blankSubject = false;
 
-                // 1.3.1.
                 if (BlankNode.isWellFormed(subject)) {
-                    rdfSubject = subject;
-                    rdfBlankSubject = true;
+                    blankSubject = true;
 
-                } else if (UriUtils.isAbsoluteUri(subject, uriValidation)) {
-                    rdfSubject = subject;
-
-                } else {
+                } else if (UriUtils.isNotAbsoluteUri(subject, uriValidation)) {
                     LOGGER.log(Level.WARNING, "Non well-formed subject [{0}] has been skipped.", subject);
                     continue;
                 }
 
-                // 1.3.2.
                 for (final String property : Utils.index(nodeMap.properties(graphName, subject), true)) {
 
-                    // 1.3.2.1.
                     if (Keywords.TYPE.equals(property)) {
 
-                        for (JsonValue type : nodeMap.get(graphName, subject, property).asJsonArray()) {
+                        for (final JsonValue type : nodeMap.get(graphName, subject, property).asJsonArray()) {
 
                             if (JsonUtils.isNotString(type)) {
                                 continue;
@@ -135,54 +121,46 @@ public final class JsonLdToRdf {
 
                             final String typeString = ((JsonString) type).getString();
 
-                            final String rdfObject;
-                            boolean rdfBlankObject = false;
+                            boolean blankType = false;
 
                             if (BlankNode.isWellFormed(typeString)) {
-                                rdfObject = typeString;
-                                rdfBlankObject = true;
+                                blankType = true;
 
-                            } else if (UriUtils.isAbsoluteUri(typeString, uriValidation)) {
-                                rdfObject = typeString;
-
-                            } else {
+                            } else if (UriUtils.isNotAbsoluteUri(typeString, uriValidation)) {
                                 continue;
                             }
 
                             consumer.accept(
-                                    rdfSubject,
-                                    rdfBlankSubject,
+                                    subject,
+                                    blankSubject,
                                     RdfConstants.TYPE,
                                     false,
-                                    rdfObject,
-                                    rdfBlankObject);
+                                    typeString,
+                                    blankType);
                         }
 
-                        // 1.3.2.2.
                     } else if (!Keywords.contains(property)) {
 
-                        boolean rdfBlankProperty = false;
+                        boolean blankProperty = false;
 
                         if (BlankNode.isWellFormed(property) && !produceGeneralizedRdf) {
-                            rdfBlankProperty = true;
+                            blankProperty = true;
 
-                        } else if (!UriUtils.isAbsoluteUri(property, uriValidation)) {
+                        } else if (UriUtils.isNotAbsoluteUri(property, uriValidation)) {
                             continue;
                         }
 
-                        // 1.3.2.5.
                         for (final JsonValue item : nodeMap.get(graphName, subject, property).asJsonArray()) {
 
-                            // 1.3.2.5.2.
                             ObjectToRdf
                                     .with(item.asJsonObject(), consumer, nodeMap)
                                     .rdfDirection(rdfDirection)
                                     .uriValidation(uriValidation)
                                     .produce(
-                                            rdfSubject,
-                                            rdfBlankSubject,
+                                            subject,
+                                            blankSubject,
                                             property,
-                                            rdfBlankProperty);
+                                            blankProperty);
                         }
                     }
                 }
@@ -190,6 +168,11 @@ public final class JsonLdToRdf {
         }
     }
 
+    /**
+     * @deprecated since 1.6.0, use {@link #process(RdfConsumer)}.
+     * @return
+     * @throws JsonLdError
+     */
     @Deprecated
     public RdfDataset build() throws JsonLdError {
 
@@ -197,54 +180,13 @@ public final class JsonLdToRdf {
             dataset = Rdf.createDataset();
         }
 
-        process(new RdfConsumer() {
-
-            RdfResource graph;
-
-            // TODO make static final
-            RdfResource createResource(String name, boolean blank) {
-                return blank ? Rdf.createBlankNode(name) : Rdf.createIRI(name);
-            }
-
-            @Override
-            public void namedGraph(String graph, boolean blankGraph) {
-                this.graph = createResource(graph, blankGraph);
-            }
-
-            @Override
-            public void defaultGraph() {
-                this.graph = null;
-            }
-
-            @Override
-            public void accept(String subject, boolean blankSubject, String predicate, boolean blankPredicate, String literal, String datatype, String language) {
-                dataset.add(
-                        Rdf.createNQuad(
-                                createResource(subject, blankSubject),
-                                createResource(predicate, blankPredicate),
-                                language != null
-                                        ? Rdf.createLangString(literal, language)
-                                        : Rdf.createTypedString(literal, datatype),
-                                graph));
-            }
-
-            @Override
-            public void accept(String subject, boolean blankSubject, String predicate, boolean blankPredicate, String object, boolean blankObject) {
-                dataset.add(
-                        Rdf.createNQuad(
-                                createResource(subject, blankSubject),
-                                createResource(predicate, blankPredicate),
-                                createResource(object, blankObject),
-                                graph));
-            }
-        });
+        process(new RdfDatasetConsumer(dataset));
 
         return dataset;
     }
 
     /**
-     * @deprecated since 1.5.0, use
-     *             <code>JsonLdToRdf#uriValidation(com.apicatalog.jsonld.uri.UriValidationPolicy)</code>
+     * @deprecated since 1.5.0, use {@link #uriValidation(UriValidationPolicy)}.
      */
     @Deprecated
     public JsonLdToRdf uriValidation(boolean enabled) {
