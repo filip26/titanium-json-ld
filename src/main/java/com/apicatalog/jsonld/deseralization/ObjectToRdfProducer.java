@@ -125,7 +125,7 @@ final class ObjectToRdfProducer {
                     .with(item.get(Keywords.LIST).asJsonArray(), consumer, nodeMap)
                     .rdfDirection(rdfDirection)
                     .uriValidation(uriValidation)
-                    .produce();
+                    .produce(subject, blankSubject, predicate, blankPredicate);
         }
 
         // 4.

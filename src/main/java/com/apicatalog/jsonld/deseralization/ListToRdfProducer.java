@@ -66,11 +66,16 @@ final class ListToRdfProducer {
         return this;
     }
 
-    public RdfValue produce() throws JsonLdError {
+    public void produce(
+            String subject, boolean blankSubject,
+            String predicate, boolean blankPredicate
+            ) throws JsonLdError {
 
         // 1.
         if (JsonUtils.isEmptyArray(list)) {
-            return Rdf.createIRI(RdfConstants.NIL);
+            consumer.accept(subject, blankSubject, predicate, blankPredicate, RdfConstants.NIL, false);
+//            return Rdf.createIRI(RdfConstants.NIL);
+            return;
         }
 
         // 2.
@@ -82,7 +87,7 @@ final class ListToRdfProducer {
         int index = 0;
         for (final JsonValue item : list) {
 
-            final String subject = bnodes[index];
+            final String blankNodeSubject = bnodes[index];
             index++;
 
 //            // 3.1.
@@ -92,7 +97,7 @@ final class ListToRdfProducer {
                 .with(item.asJsonObject(), consumer, nodeMap)
                 .rdfDirection(rdfDirection)
                 .uriValidation(uriValidation)
-                .produce(subject, true, RdfConstants.FIRST, false);
+                .produce(blankNodeSubject, true, RdfConstants.FIRST, false);
             
 //            // 3.2.
 //            ObjectToRdf
@@ -107,11 +112,18 @@ final class ListToRdfProducer {
 //                                                object)));
 
             // 3.4.
-            final RdfValue rest = (index < bnodes.length) ? Rdf.createBlankNode(bnodes[index])
-                                        : Rdf.createIRI(RdfConstants.NIL)
-                                        ;
+            if (index < bnodes.length) {
+                consumer.accept(blankNodeSubject, true, RdfConstants.REST, false, bnodes[index], true);                
+                
+            } else {
+                consumer.accept(blankNodeSubject, true, RdfConstants.REST, false, RdfConstants.NIL, false);
+            }
+            
+//            final RdfValue rest =  ? Rdf.createBlankNode(bnodes[index])
+//                                        : Rdf.createIRI(RdfConstants.NIL)
+//                                        ;
 
-            consumer.accept(subject, true, RdfConstants.REST, false, subject, false);
+
 //            triples.add(Rdf.createTriple(
 //                                    Rdf.createBlankNode(subject),
 //                                    Rdf.createIRI(RdfConstants.REST),
@@ -123,7 +135,8 @@ final class ListToRdfProducer {
         }
 
         // 4.
-        return Rdf.createBlankNode(bnodes[0]);
+        consumer.accept(subject, blankSubject, predicate, blankPredicate, bnodes[0], true);
+//        return Rdf.createBlankNode(bnodes[0]);
     }
 
     /**
