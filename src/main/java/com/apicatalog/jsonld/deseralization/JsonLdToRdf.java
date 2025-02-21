@@ -41,7 +41,7 @@ import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfConsumer;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfDatasetProducer;
+import com.apicatalog.rdf.RdfDatasetSupplier;
 import com.apicatalog.rdf.lang.RdfConstants;
 import com.apicatalog.rdf.lang.XsdConstants;
 
@@ -83,7 +83,7 @@ public final class JsonLdToRdf {
 
     /**
      * @deprecated since 1.6.0, use {@link #with(NodeMap)} and
-     *             {@link #process(RdfConsumer)}.
+     *             {@link #provide(RdfConsumer)}.
      * @param nodeMap
      * @param dataset
      * @return
@@ -107,7 +107,7 @@ public final class JsonLdToRdf {
         return this;
     }
 
-    public void process(RdfConsumer consumer) throws JsonLdError {
+    public void provide(RdfConsumer consumer) throws JsonLdError {
 
         for (final String graphName : Utils.index(nodeMap.graphs(), true)) {
 
@@ -178,7 +178,7 @@ public final class JsonLdToRdf {
                         }
 
                         for (final JsonValue item : nodeMap.get(graphName, subject, property).asJsonArray()) {
-                            processObject(
+                            fromObject(
                                     consumer,
                                     item.asJsonObject(),
                                     subject,
@@ -193,7 +193,7 @@ public final class JsonLdToRdf {
     }
 
     /**
-     * @deprecated since 1.6.0, use {@link #process(RdfConsumer)}.
+     * @deprecated since 1.6.0, use {@link #provide(RdfConsumer)}.
      * @return
      * @throws JsonLdError
      */
@@ -204,7 +204,7 @@ public final class JsonLdToRdf {
             dataset = Rdf.createDataset();
         }
 
-        process(new RdfDatasetProducer(dataset));
+        provide(new RdfDatasetSupplier(dataset));
 
         return dataset;
     }
@@ -227,7 +227,7 @@ public final class JsonLdToRdf {
      * "https://w3c.github.io/json-ld-api/#deserialize-json-ld-to-rdf-algorithm">
      * Object to RDF Conversion</a>
      */
-    private void processObject(
+    private void fromObject(
             final RdfConsumer consumer,
             final JsonObject item,
             final String subject,
@@ -258,7 +258,7 @@ public final class JsonLdToRdf {
 
         // 3.
         if (ListObject.isListObject(item)) {
-            processList(consumer, item.get(Keywords.LIST).asJsonArray(), subject, blankSubject, predicate, blankPredicate);
+            fromList(consumer, item.get(Keywords.LIST).asJsonArray(), subject, blankSubject, predicate, blankPredicate);
         }
 
         // 4.
@@ -437,7 +437,7 @@ public final class JsonLdToRdf {
      * @see <a href="https://w3c.github.io/json-ld-api/#list-to-rdf-conversion">List
      * to RDF Conversion</a>
      */
-    private void processList(
+    private void fromList(
             final RdfConsumer consumer,
             final JsonArray list,
             final String subject,
@@ -465,7 +465,7 @@ public final class JsonLdToRdf {
             final String blankNodeSubject = bnodes[index];
             index++;
 
-            processObject(
+            fromObject(
                     consumer,
                     item.asJsonObject(),
                     blankNodeSubject,

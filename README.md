@@ -90,10 +90,18 @@ JsonLd.flatten("https://example/document.jsonld").get();
 // JSON-LD to RDF 
 JsonLd.toRdf("https://example/document.jsonld").get();
 // or, since 1.6.0
-JsonLd.toRdf("https://example/document.jsonld").process(RdfConsumer); 
+JsonLd.toRdf("https://example/document.jsonld").provide(RdfConsumer); 
+
+// Standard RDF Dataset Canonicalization with Titanium RDFC, since 1.6.0
+var canonicalizer = new RdfCanonicalizer();
+JsonLd.toRdf("https://example/document.jsonld").provide(canonicalizer);
+canonicalizer.canonize(RdfConsumer);
+// or, since 1.7.0
+var rdfWriter = Rdf.createWriter(MediaType.N_QUADS, writer);
+canonicalizer.canonize(rdfWriter);
 
 // RDF to JSON-LD
-JsonLd.fromRdf("https://example/document.nq").options(options).get();
+JsonLd.fromRdf("https://example/document.nq").get();
 
 // Framing
 JsonLd.frame("https://example/document.jsonld", "https://example/frame.jsonld").get();

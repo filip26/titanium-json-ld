@@ -1,24 +1,26 @@
 package com.apicatalog.rdf;
 
-public class RdfDatasetProducer extends RdfNQuadConsumer {
+import java.util.function.Supplier;
+
+public class RdfDatasetSupplier extends RdfNQuadConsumer implements Supplier<RdfDataset> {
 
     protected final RdfDataset dataset;
 
-    public RdfDatasetProducer() {
+    public RdfDatasetSupplier() {
         this(Rdf.createDataset());
     }
 
-    public RdfDatasetProducer(RdfDataset dataset) {
+    public RdfDatasetSupplier(RdfDataset dataset) {
         this.dataset = dataset;
     }
 
-    public RdfDataset dataset() {
+    @Override
+    public RdfDataset get() {
         return dataset;
     }
 
     @Override
     protected void accept(RdfResource subject, RdfResource predicate, RdfValue value, RdfResource graph) {
         dataset.add(Rdf.createNQuad(subject, predicate, value, graph));
-
     }
 }
