@@ -15,8 +15,6 @@
  */
 package com.apicatalog.jsonld.deseralization;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.IntStream;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -26,7 +24,7 @@ import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.Rdf;
-import com.apicatalog.rdf.RdfTriple;
+import com.apicatalog.rdf.RdfConsumer;
 import com.apicatalog.rdf.RdfValue;
 import com.apicatalog.rdf.lang.RdfConstants;
 
@@ -38,21 +36,20 @@ import jakarta.json.JsonValue;
  * @see <a href="https://w3c.github.io/json-ld-api/#list-to-rdf-conversion">List to RDF Conversion</a>
  *
  */
-@Deprecated
-final class ListToRdf {
+final class ListToRdfProducer {
 
     // required
     private JsonArray list;
-    private List<RdfTriple> triples;
+    private RdfConsumer consumer;
     private NodeMap nodeMap;
 
     // optional
     private RdfDirection rdfDirection;
     private UriValidationPolicy uriValidation;
 
-    private ListToRdf(final JsonArray list, final List<RdfTriple> triples, NodeMap nodeMap) {
+    private ListToRdfProducer(final JsonArray list, final RdfConsumer consumer, NodeMap nodeMap) {
         this.list = list;
-        this.triples = triples;
+        this.consumer = consumer;
         this.nodeMap = nodeMap;
 
         // default values
@@ -60,16 +57,16 @@ final class ListToRdf {
         this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
-    public static final ListToRdf with(final JsonArray list, final List<RdfTriple> triples, NodeMap nodeMap) {
-        return new ListToRdf(list, triples, nodeMap);
+    public static final ListToRdfProducer with(final JsonArray list, final RdfConsumer consumer, NodeMap nodeMap) {
+        return new ListToRdfProducer(list, consumer, nodeMap);
     }
 
-    public ListToRdf rdfDirection(RdfDirection rdfDirection) {
+    public ListToRdfProducer rdfDirection(RdfDirection rdfDirection) {
         this.rdfDirection = rdfDirection;
         return this;
     }
 
-    public RdfValue build() throws JsonLdError {
+    public RdfValue produce() throws JsonLdError {
 
         // 1.
         if (JsonUtils.isEmptyArray(list)) {
@@ -88,34 +85,41 @@ final class ListToRdf {
             final String subject = bnodes[index];
             index++;
 
-            // 3.1.
-            final List<RdfTriple> embeddedTriples = new ArrayList<>();
+//            // 3.1.
+//            final List<RdfTriple> embeddedTriples = new ArrayList<>();
 
-            // 3.2.
-            ObjectToRdf
-                .with(item.asJsonObject(), embeddedTriples, nodeMap)
+            ObjectToRdfProducer
+                .with(item.asJsonObject(), consumer, nodeMap)
                 .rdfDirection(rdfDirection)
                 .uriValidation(uriValidation)
-                .build()
-                .ifPresent(object ->
-                                triples.add(Rdf.createTriple(
-                                                Rdf.createBlankNode(subject),
-                                                Rdf.createIRI(RdfConstants.FIRST),
-                                                object)));
+                .produce(subject, true, RdfConstants.FIRST, false);
+            
+//            // 3.2.
+//            ObjectToRdf
+//                .with(item.asJsonObject(), embeddedTriples, nodeMap)
+//                .rdfDirection(rdfDirection)
+//                .uriValidation(uriValidation)
+//                .build()
+//                .ifPresent(object ->
+//                                triples.add(Rdf.createTriple(
+//                                                Rdf.createBlankNode(subject),
+//                                                Rdf.createIRI(RdfConstants.FIRST),
+//                                                object)));
 
             // 3.4.
             final RdfValue rest = (index < bnodes.length) ? Rdf.createBlankNode(bnodes[index])
                                         : Rdf.createIRI(RdfConstants.NIL)
                                         ;
 
-            triples.add(Rdf.createTriple(
-                                    Rdf.createBlankNode(subject),
-                                    Rdf.createIRI(RdfConstants.REST),
-                                    rest
-                                    ));
-
-            // 3.5.
-            triples.addAll(embeddedTriples);
+            consumer.accept(subject, true, RdfConstants.REST, false, subject, false);
+//            triples.add(Rdf.createTriple(
+//                                    Rdf.createBlankNode(subject),
+//                                    Rdf.createIRI(RdfConstants.REST),
+//                                    rest
+//                                    ));
+//
+//            // 3.5.
+//            triples.addAll(embeddedTriples);
         }
 
         // 4.
@@ -126,11 +130,11 @@ final class ListToRdf {
      * @deprecated since 1.5.0, use <code>ListToRdf#uriValidation(com.apicatalog.jsonld.uri.UriValidationPolicy)</code>
      */
     @Deprecated
-    public ListToRdf uriValidation(boolean enabled) {
+    public ListToRdfProducer uriValidation(boolean enabled) {
         return uriValidation(enabled ? UriValidationPolicy.Full : UriValidationPolicy.SchemeOnly);
     }
 
-    public ListToRdf uriValidation(UriValidationPolicy uriValidation) {
+    public ListToRdfProducer uriValidation(UriValidationPolicy uriValidation) {
         this.uriValidation = uriValidation;
         return this;
     }
