@@ -87,8 +87,10 @@ JsonLd.compact("https://example/expanded.jsonld", "https://example/context.jsonl
 // Flattening
 JsonLd.flatten("https://example/document.jsonld").get();
 
-// JSON-LD to RDF
+// JSON-LD to RDF 
 JsonLd.toRdf("https://example/document.jsonld").get();
+// or, since 1.6.0
+JsonLd.toRdf("https://example/document.jsonld").process(RdfConsumer); 
 
 // RDF to JSON-LD
 JsonLd.fromRdf("https://example/document.nq").options(options).get();

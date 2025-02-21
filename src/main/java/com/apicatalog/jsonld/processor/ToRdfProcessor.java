@@ -25,14 +25,16 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
-import com.apicatalog.rdf.Rdf;
+import com.apicatalog.rdf.RdfConsumer;
 import com.apicatalog.rdf.RdfDataset;
+import com.apicatalog.rdf.RdfDatasetConsumer;
 
 import jakarta.json.JsonArray;
 
 /**
  *
- * @see <a href="https://w3c.github.io/json-ld-api/#dom-jsonldprocessor-tordf">JsonLdProcessor.toRdf()</a>
+ * @see <a href=
+ *      "https://w3c.github.io/json-ld-api/#dom-jsonldprocessor-tordf">JsonLdProcessor.toRdf()</a>
  *
  */
 public final class ToRdfProcessor {
@@ -40,8 +42,16 @@ public final class ToRdfProcessor {
     private ToRdfProcessor() {
     }
 
+    @Deprecated
     public static final RdfDataset toRdf(final URI input, final JsonLdOptions options) throws JsonLdError {
 
+        final RdfDatasetConsumer consumer = new RdfDatasetConsumer();
+        toRdf(consumer, input, options);
+        return consumer.dataset();
+
+    }
+
+    public static final void toRdf(final RdfConsumer consumer, final URI input, final JsonLdOptions options) throws JsonLdError {
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
@@ -55,11 +65,17 @@ public final class ToRdfProcessor {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
 
-        return toRdf(remoteDocument, options);
+        toRdf(consumer, remoteDocument, options);
     }
 
+    @Deprecated
     public static final RdfDataset toRdf(Document input, final JsonLdOptions options) throws JsonLdError {
+        final RdfDatasetConsumer consumer = new RdfDatasetConsumer();
+        toRdf(consumer, input, options);
+        return consumer.dataset();
+    }
 
+    public static final void toRdf(RdfConsumer consumer, Document input, final JsonLdOptions options) throws JsonLdError {
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
 
         expansionOptions.setProcessingMode(options.getProcessingMode());
@@ -68,14 +84,11 @@ public final class ToRdfProcessor {
 
         final JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
 
-        return JsonLdToRdf
-                        .with(
-                            NodeMapBuilder.with(expandedInput, new NodeMap()).build(),
-                            Rdf.createDataset()
-                            )
-                        .produceGeneralizedRdf(options.isProduceGeneralizedRdf())
-                        .rdfDirection(options.getRdfDirection())
-                        .uriValidation(options.getUriValidation())
-                        .build();
+        JsonLdToRdf
+                .with(NodeMapBuilder.with(expandedInput, new NodeMap()).build())
+                .produceGeneralizedRdf(options.isProduceGeneralizedRdf())
+                .rdfDirection(options.getRdfDirection())
+                .uriValidation(options.getUriValidation())
+                .process(consumer);
     }
 }

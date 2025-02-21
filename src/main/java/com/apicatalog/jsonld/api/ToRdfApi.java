@@ -26,11 +26,13 @@ import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.ToRdfProcessor;
 import com.apicatalog.jsonld.uri.UriUtils;
+import com.apicatalog.rdf.RdfConsumer;
 import com.apicatalog.rdf.RdfDataset;
+import com.apicatalog.rdf.RdfDatasetConsumer;
 
 import jakarta.json.JsonStructure;
 
-public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>, ContextApi<ToRdfApi>{
+public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>, ContextApi<ToRdfApi> {
 
     // required
     private final Document document;
@@ -98,7 +100,9 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
     }
 
     /**
-     * If set to true, the JSON-LD processor may emit blank nodes for triple predicates, otherwise they will be omitted.
+     * If set to true, the JSON-LD processor may emit blank nodes for triple
+     * predicates, otherwise they will be omitted.
+     * 
      * @param enable
      * @return builder instance
      */
@@ -117,7 +121,8 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
     }
 
     /**
-     * Determines how value objects containing a base direction are transformed to and from RDF.
+     * Determines how value objects containing a base direction are transformed to
+     * and from RDF.
      *
      * @param direction
      * @return builder instance
@@ -154,23 +159,36 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
     /**
      * Transform provided <code>JSON-LD</code> document into {@link RdfDataset}.
      *
-     * @return {@link RdfDataset} representing provided <code>JSON-LD</code> document
+     * @return {@link RdfDataset} representing provided <code>JSON-LD</code>
+     *         document
      * @throws JsonLdError
      */
     public RdfDataset get() throws JsonLdError {
-        if (documentUri != null) {
-            return ToRdfProcessor.toRdf(documentUri, options);
-        }
-
-        if (document != null) {
-            return ToRdfProcessor.toRdf(document, options);
-        }
-
-        throw new IllegalArgumentException();
+        final RdfDatasetConsumer consumer = new RdfDatasetConsumer();
+        process(consumer);
+        return consumer.dataset();
     }
 
     /**
-     * Experimental: Accept numeric @id. Disabled by default.
+     * Emit transformed <code>JSON-LD</code> as RDF statements. 
+     *
+     * @param consumer that accepts emitted RDF statements
+     * @throws JsonLdError
+     */
+    public void process(RdfConsumer consumer) throws JsonLdError {
+        if (documentUri != null) {
+            ToRdfProcessor.toRdf(consumer, documentUri, options);
+
+        } else if (document != null) {
+            ToRdfProcessor.toRdf(consumer, document, options);
+
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    /**
+     * Experimental: Accept numeric <code>@id</code>. Disabled by default.
      *
      * @return builder instance
      */

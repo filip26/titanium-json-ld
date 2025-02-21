@@ -15,8 +15,6 @@
  */
 package com.apicatalog.jsonld.deseralization;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,10 +29,9 @@ import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.Rdf;
+import com.apicatalog.rdf.RdfConsumer;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfResource;
-import com.apicatalog.rdf.RdfTriple;
-import com.apicatalog.rdf.RdfValue;
+import com.apicatalog.rdf.RdfDatasetConsumer;
 import com.apicatalog.rdf.lang.RdfConstants;
 
 import jakarta.json.JsonString;
@@ -46,12 +43,14 @@ public final class JsonLdToRdf {
 
     // required
     private final NodeMap nodeMap;
-    private final RdfDataset dataset;
 
     // optional
     private boolean produceGeneralizedRdf;
     private RdfDirection rdfDirection;
     private UriValidationPolicy uriValidation;
+
+    // deprecated
+    private RdfDataset dataset;
 
     private JsonLdToRdf(NodeMap nodeMap, RdfDataset dataset) {
         this.nodeMap = nodeMap;
@@ -62,8 +61,13 @@ public final class JsonLdToRdf {
         this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
+    @Deprecated
     public static final JsonLdToRdf with(NodeMap nodeMap, RdfDataset dataset) {
         return new JsonLdToRdf(nodeMap, dataset);
+    }
+
+    public static final JsonLdToRdf with(NodeMap nodeMap) {
+        return new JsonLdToRdf(nodeMap, null);
     }
 
     public JsonLdToRdf produceGeneralizedRdf(boolean enable) {
@@ -76,135 +80,113 @@ public final class JsonLdToRdf {
         return this;
     }
 
-    public RdfDataset build() throws JsonLdError {
+    public void process(RdfConsumer consumer) throws JsonLdError {
 
-        // 1.
         for (final String graphName : Utils.index(nodeMap.graphs(), true)) {
 
-            // 1.2.
-            final RdfResource rdfGraphName;
-
             if (Keywords.DEFAULT.equals(graphName)) {
-                rdfGraphName = null;
+                consumer.defaultGraph();
+
+            } else if (BlankNode.isWellFormed(graphName)) {
+                consumer.namedGraph(graphName, true);
+
+            } else if (UriUtils.isAbsoluteUri(graphName, uriValidation)) {
+                consumer.namedGraph(graphName, false);
 
             } else {
-
-                // 1.1.
-                if (BlankNode.isWellFormed(graphName)) {
-
-                    rdfGraphName = Rdf.createBlankNode(graphName);
-
-                } else if (UriUtils.isAbsoluteUri(graphName, uriValidation)) {
-
-                    rdfGraphName = Rdf.createIRI(graphName);
-
-                } else {
-                    continue;
-                }
+                continue;
             }
 
-            // 1.3.
             for (final String subject : Utils.index(nodeMap.subjects(graphName), true)) {
 
-                final RdfResource rdfSubject;
+                boolean blankSubject = false;
 
-                // 1.3.1.
                 if (BlankNode.isWellFormed(subject)) {
-                    rdfSubject = Rdf.createBlankNode(subject);
+                    blankSubject = true;
 
-                } else if (UriUtils.isAbsoluteUri(subject, uriValidation)) {
-                    rdfSubject = Rdf.createIRI(subject);
-
-                } else {
+                } else if (UriUtils.isNotAbsoluteUri(subject, uriValidation)) {
                     LOGGER.log(Level.WARNING, "Non well-formed subject [{0}] has been skipped.", subject);
                     continue;
                 }
 
-                // 1.3.2.
                 for (final String property : Utils.index(nodeMap.properties(graphName, subject), true)) {
 
-                    // 1.3.2.1.
                     if (Keywords.TYPE.equals(property)) {
 
-                        for (JsonValue type : nodeMap.get(graphName, subject, property).asJsonArray()) {
+                        for (final JsonValue type : nodeMap.get(graphName, subject, property).asJsonArray()) {
 
                             if (JsonUtils.isNotString(type)) {
                                 continue;
                             }
 
-                            final String typeString = ((JsonString)type).getString();
+                            final String typeString = ((JsonString) type).getString();
 
-                            final RdfValue rdfObject;
+                            boolean blankType = false;
 
                             if (BlankNode.isWellFormed(typeString)) {
-                                rdfObject = Rdf.createBlankNode(typeString);
+                                blankType = true;
 
-                            } else if (UriUtils.isAbsoluteUri(typeString, uriValidation)) {
-                                rdfObject = Rdf.createIRI(typeString);
-
-                            } else {
+                            } else if (UriUtils.isNotAbsoluteUri(typeString, uriValidation)) {
                                 continue;
                             }
 
-                            dataset.add(Rdf.createNQuad(
-                                                rdfSubject,
-                                                Rdf.createIRI(RdfConstants.TYPE),
-                                                rdfObject,
-                                                rdfGraphName
-                                            ));
+                            consumer.accept(
+                                    subject,
+                                    blankSubject,
+                                    RdfConstants.TYPE,
+                                    false,
+                                    typeString,
+                                    blankType);
                         }
 
-                    // 1.3.2.2.
                     } else if (!Keywords.contains(property)) {
 
-                        final RdfResource rdfProperty;
+                        boolean blankProperty = false;
 
-                        if (BlankNode.isWellFormed(property)) {
-                            rdfProperty = !produceGeneralizedRdf ? Rdf.createBlankNode(property) : null;
+                        if (BlankNode.isWellFormed(property) && !produceGeneralizedRdf) {
+                            blankProperty = true;
 
-                        } else if (UriUtils.isAbsoluteUri(property, uriValidation)) {
-                            rdfProperty = Rdf.createIRI(property);
-
-                        } else {
-                            rdfProperty = null;
+                        } else if (UriUtils.isNotAbsoluteUri(property, uriValidation)) {
+                            continue;
                         }
 
-                        if (rdfProperty != null) {
+                        for (final JsonValue item : nodeMap.get(graphName, subject, property).asJsonArray()) {
 
-                            // 1.3.2.5.
-                            for (JsonValue item : nodeMap.get(graphName, subject, property).asJsonArray()) {
-
-                                // 1.3.2.5.1.
-                                final List<RdfTriple> listTriples = new ArrayList<>();
-
-                                // 1.3.2.5.2.
-                                ObjectToRdf
-                                        .with(item.asJsonObject(), listTriples, nodeMap)
-                                        .rdfDirection(rdfDirection)
-                                        .uriValidation(uriValidation)
-                                        .build()
-                                        .ifPresent(rdfObject ->
-                                                            dataset.add(Rdf.createNQuad(
-                                                                        rdfSubject,
-                                                                        rdfProperty,
-                                                                        rdfObject,
-                                                                        rdfGraphName
-                                                                        )));
-                                // 1.3.2.5.3.
-                                listTriples.stream()
-                                            .map(triple -> Rdf.createNQuad(triple, rdfGraphName))
-                                            .forEach(dataset::add);
-                            }
+                            ObjectToRdf
+                                    .with(item.asJsonObject(), consumer, nodeMap)
+                                    .rdfDirection(rdfDirection)
+                                    .uriValidation(uriValidation)
+                                    .produce(
+                                            subject,
+                                            blankSubject,
+                                            property,
+                                            blankProperty);
                         }
                     }
                 }
             }
         }
+    }
+
+    /**
+     * @deprecated since 1.6.0, use {@link #process(RdfConsumer)}.
+     * @return
+     * @throws JsonLdError
+     */
+    @Deprecated
+    public RdfDataset build() throws JsonLdError {
+
+        if (dataset == null) {
+            dataset = Rdf.createDataset();
+        }
+
+        process(new RdfDatasetConsumer(dataset));
+
         return dataset;
     }
 
     /**
-     * @deprecated since 1.5.0, use <code>JsonLdToRdf#uriValidation(com.apicatalog.jsonld.uri.UriValidationPolicy)</code>
+     * @deprecated since 1.5.0, use {@link #uriValidation(UriValidationPolicy)}.
      */
     @Deprecated
     public JsonLdToRdf uriValidation(boolean enabled) {
