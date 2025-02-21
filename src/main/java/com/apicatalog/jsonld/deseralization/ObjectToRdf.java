@@ -18,9 +18,7 @@ package com.apicatalog.jsonld.deseralization;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,11 +36,7 @@ import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
-import com.apicatalog.rdf.Rdf;
-import com.apicatalog.rdf.RdfLiteral;
-import com.apicatalog.rdf.RdfResource;
-import com.apicatalog.rdf.RdfTriple;
-import com.apicatalog.rdf.RdfValue;
+import com.apicatalog.rdf.RdfConsumer;
 import com.apicatalog.rdf.lang.RdfConstants;
 import com.apicatalog.rdf.lang.XsdConstants;
 
@@ -70,16 +64,16 @@ final class ObjectToRdf {
 
     // required
     private JsonObject item;
-    private List<RdfTriple> triples;
+    private RdfConsumer consumer;
     private NodeMap nodeMap;
 
     // optional
     private RdfDirection rdfDirection;
     private UriValidationPolicy uriValidation;
 
-    private ObjectToRdf(JsonObject item, List<RdfTriple> triples, NodeMap nodeMap) {
+    private ObjectToRdf(JsonObject item, RdfConsumer consumer, NodeMap nodeMap) {
         this.item = item;
-        this.triples = triples;
+        this.consumer = consumer;
         this.nodeMap = nodeMap;
 
         // default values
@@ -87,8 +81,8 @@ final class ObjectToRdf {
         this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
-    public static final ObjectToRdf with(JsonObject item, List<RdfTriple> triples, NodeMap nodeMap) {
-        return new ObjectToRdf(item, triples, nodeMap);
+    public static final ObjectToRdf with(JsonObject item, RdfConsumer consumer, NodeMap nodeMap) {
+        return new ObjectToRdf(item, consumer, nodeMap);
     }
 
     public ObjectToRdf rdfDirection(RdfDirection rdfDirection) {
@@ -96,13 +90,11 @@ final class ObjectToRdf {
         return this;
     }
 
-    /**
-     * @deprecated use {@code ObjectToRdf#produce(String, boolean, String, boolean, RdfConsumer)}
-     * @return
-     * @throws JsonLdError
-     */
-    @Deprecated
-    public Optional<RdfValue> build() throws JsonLdError {
+    public void produce(
+            final String subject,
+            final boolean blankSubject,
+            final String predicate,
+            final boolean blankPredicate) throws JsonLdError {
 
         // 1. - 2.
         if (NodeObject.isNodeObject(item)) {
@@ -110,33 +102,33 @@ final class ObjectToRdf {
             JsonValue id = item.get(Keywords.ID);
 
             if (JsonUtils.isNotString(id) || JsonUtils.isNull(id)) {
-                return Optional.empty();
+                return;
             }
 
             String idString = ((JsonString) id).getString();
 
             if (BlankNode.isWellFormed(idString)) {
-                return Optional.of(Rdf.createBlankNode(idString));
+                consumer.accept(subject, blankSubject, predicate, blankPredicate, idString, true);
 
             } else if (UriUtils.isAbsoluteUri(idString, uriValidation)) {
-                return Optional.of(Rdf.createIRI(idString));
+                consumer.accept(subject, blankSubject, predicate, blankPredicate, idString, false);
             }
 
-            return Optional.empty();
+            return;
         }
 
         // 3.
         if (ListObject.isListObject(item)) {
-            return Optional.of(ListToRdf
-                    .with(item.get(Keywords.LIST).asJsonArray(), triples, nodeMap)
+            ListToRdf
+                    .with(item.get(Keywords.LIST).asJsonArray(), consumer, nodeMap)
                     .rdfDirection(rdfDirection)
                     .uriValidation(uriValidation)
-                    .build());
+                    .process(subject, blankSubject, predicate, blankPredicate);
         }
 
         // 4.
         if (!ValueObject.isValueObject(item)) {
-            return Optional.empty();
+            return;
         }
 
         final JsonValue value = item.get(Keywords.VALUE);
@@ -149,7 +141,7 @@ final class ObjectToRdf {
         // 6.
         if (datatype != null && !Keywords.JSON.equals(datatype) && !UriUtils.isAbsoluteUri(datatype, uriValidation)) {
             LOGGER.log(Level.WARNING, "Datatype [{0}] is not an absolute IRI nor @json and value is skipped.", datatype);
-            return Optional.empty();
+            return;
         }
 
         // 7.
@@ -157,7 +149,7 @@ final class ObjectToRdf {
                 && (JsonUtils.isNotString(item.get(Keywords.LANGUAGE))
                         || !LanguageTag.isWellFormed(item.getString(Keywords.LANGUAGE)))) {
             LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed string and value is skipped.", item.get(Keywords.LANGUAGE));
-            return Optional.empty();
+            return;
         }
 
         String valueString = null;
@@ -223,13 +215,11 @@ final class ObjectToRdf {
         if (valueString == null) {
 
             if (JsonUtils.isNotString(value)) {
-                return Optional.empty();
+                return;
             }
 
             valueString = ((JsonString) value).getString();
         }
-
-        RdfLiteral rdfLiteral = null;
 
         // 13.
         if (item.containsKey(Keywords.DIRECTION) && rdfDirection != null) {
@@ -245,65 +235,71 @@ final class ObjectToRdf {
                         .concat("_")
                         .concat(item.getString(Keywords.DIRECTION));
 
-                rdfLiteral = Rdf.createTypedString(valueString, datatype);
+                consumer.accept(
+                        subject, blankSubject,
+                        predicate, blankPredicate,
+                        valueString, datatype, null);
 
                 // 13.3.
             } else if (RdfDirection.COMPOUND_LITERAL == rdfDirection) {
 
                 final String blankNodeId = nodeMap.createIdentifier();
 
-                // 13.3.1.
-                final RdfResource subject = Rdf.createBlankNode(blankNodeId);
-
                 // 13.3.2.
-                triples.add(Rdf.createTriple(
-                        subject,
-                        Rdf.createIRI(RdfConstants.VALUE),
-                        Rdf.createString(valueString)));
+                consumer.accept(
+                        blankNodeId,
+                        true,
+                        RdfConstants.VALUE,
+                        false,
+                        valueString,
+                        XsdConstants.STRING,
+                        null);
 
                 // 13.3.3.
                 if (item.containsKey(Keywords.LANGUAGE) && JsonUtils.isString(item.get(Keywords.LANGUAGE))) {
-                    triples.add(Rdf.createTriple(
-                            subject,
-                            Rdf.createIRI(RdfConstants.LANGUAGE),
-                            Rdf.createString(item.getString(Keywords.LANGUAGE).toLowerCase())));
+                    consumer.accept(
+                            blankNodeId,
+                            true,
+                            RdfConstants.LANGUAGE,
+                            false,
+                            item.getString(Keywords.LANGUAGE).toLowerCase(),
+                            XsdConstants.STRING,
+                            null);
                 }
 
                 // 13.3.4.
-                triples.add(Rdf.createTriple(
-                        subject,
-                        Rdf.createIRI(RdfConstants.DIRECTION),
-                        Rdf.createString(item.getString(Keywords.DIRECTION))));
+                consumer.accept(
+                        blankNodeId,
+                        true,
+                        RdfConstants.DIRECTION,
+                        false,
+                        item.getString(Keywords.DIRECTION),
+                        XsdConstants.STRING,
+                        null);
 
-                return Optional.of(Rdf.createBlankNode(blankNodeId));
+                consumer.accept(subject, blankSubject, predicate, blankPredicate, blankNodeId, true);
+                return;
             }
 
             // 14.
         } else {
             if (item.containsKey(Keywords.LANGUAGE) && JsonUtils.isString(item.get(Keywords.LANGUAGE))) {
-
-                rdfLiteral = Rdf.createLangString(valueString, item.getString(Keywords.LANGUAGE));
+                consumer.accept(
+                        subject, blankSubject,
+                        predicate, blankPredicate,
+                        valueString, RdfConstants.LANG_STRING, item.getString(Keywords.LANGUAGE));
 
             } else {
-                rdfLiteral = Rdf.createTypedString(valueString, datatype);
+                consumer.accept(
+                        subject, blankSubject,
+                        predicate, blankPredicate,
+                        valueString, datatype, null);
             }
         }
-
-        // 15.
-        return Optional.ofNullable(rdfLiteral);
     }
-    
+
     private static final String toXsdDouble(BigDecimal bigDecimal) {
         return xsdNumberFormat.format(bigDecimal);
-    }
-
-    /**
-     * @deprecated since 1.5.0, use
-     *             <code>Object#uriValidation(com.apicatalog.jsonld.uri.UriValidationPolicy)</code>
-     */
-    @Deprecated
-    public ObjectToRdf uriValidation(boolean enabled) {
-        return uriValidation(enabled ? UriValidationPolicy.Full : UriValidationPolicy.SchemeOnly);
     }
 
     public ObjectToRdf uriValidation(UriValidationPolicy uriValidation) {
