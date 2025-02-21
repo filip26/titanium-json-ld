@@ -28,7 +28,7 @@ import com.apicatalog.jsonld.processor.ToRdfProcessor;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.RdfConsumer;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfDatasetConsumer;
+import com.apicatalog.rdf.RdfDatasetProducer;
 
 import jakarta.json.JsonStructure;
 
@@ -164,7 +164,7 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
      * @throws JsonLdError
      */
     public RdfDataset get() throws JsonLdError {
-        final RdfDatasetConsumer consumer = new RdfDatasetConsumer();
+        final RdfDatasetProducer consumer = new RdfDatasetProducer();
         process(consumer);
         return consumer.dataset();
     }

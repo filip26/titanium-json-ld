@@ -27,7 +27,7 @@ import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.rdf.RdfConsumer;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfDatasetConsumer;
+import com.apicatalog.rdf.RdfDatasetProducer;
 
 import jakarta.json.JsonArray;
 
@@ -45,7 +45,7 @@ public final class ToRdfProcessor {
     @Deprecated
     public static final RdfDataset toRdf(final URI input, final JsonLdOptions options) throws JsonLdError {
 
-        final RdfDatasetConsumer consumer = new RdfDatasetConsumer();
+        final RdfDatasetProducer consumer = new RdfDatasetProducer();
         toRdf(consumer, input, options);
         return consumer.dataset();
 
@@ -70,7 +70,7 @@ public final class ToRdfProcessor {
 
     @Deprecated
     public static final RdfDataset toRdf(Document input, final JsonLdOptions options) throws JsonLdError {
-        final RdfDatasetConsumer consumer = new RdfDatasetConsumer();
+        final RdfDatasetProducer consumer = new RdfDatasetProducer();
         toRdf(consumer, input, options);
         return consumer.dataset();
     }

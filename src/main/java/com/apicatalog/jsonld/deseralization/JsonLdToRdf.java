@@ -41,7 +41,7 @@ import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfConsumer;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfDatasetConsumer;
+import com.apicatalog.rdf.RdfDatasetProducer;
 import com.apicatalog.rdf.lang.RdfConstants;
 import com.apicatalog.rdf.lang.XsdConstants;
 
@@ -204,7 +204,7 @@ public final class JsonLdToRdf {
             dataset = Rdf.createDataset();
         }
 
-        process(new RdfDatasetConsumer(dataset));
+        process(new RdfDatasetProducer(dataset));
 
         return dataset;
     }
