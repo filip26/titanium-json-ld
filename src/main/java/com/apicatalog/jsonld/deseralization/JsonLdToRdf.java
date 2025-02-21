@@ -81,6 +81,13 @@ public final class JsonLdToRdf {
         this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
+    /**
+     * @deprecated since 1.6.0, use {@link #with(NodeMap)} and
+     *             {@link #process(RdfConsumer)}.
+     * @param nodeMap
+     * @param dataset
+     * @return
+     */
     @Deprecated
     public static final JsonLdToRdf with(NodeMap nodeMap, RdfDataset dataset) {
         return new JsonLdToRdf(nodeMap, dataset);
@@ -213,10 +220,6 @@ public final class JsonLdToRdf {
     public JsonLdToRdf uriValidation(UriValidationPolicy uriValidation) {
         this.uriValidation = uriValidation;
         return this;
-    }
-
-    private static final String toXsdDouble(BigDecimal bigDecimal) {
-        return xsdNumberFormat.format(bigDecimal);
     }
 
     /*
@@ -434,11 +437,13 @@ public final class JsonLdToRdf {
      * @see <a href="https://w3c.github.io/json-ld-api/#list-to-rdf-conversion">List
      * to RDF Conversion</a>
      */
-    void processList(
+    private void processList(
             final RdfConsumer consumer,
             final JsonArray list,
-            String subject, boolean blankSubject,
-            String predicate, boolean blankPredicate) throws JsonLdError {
+            final String subject,
+            final boolean blankSubject,
+            final String predicate,
+            final boolean blankPredicate) throws JsonLdError {
 
         // 1.
         if (JsonUtils.isEmptyArray(list)) {
@@ -462,10 +467,10 @@ public final class JsonLdToRdf {
 
             processObject(
                     consumer,
-                    item.asJsonObject(), 
-                    blankNodeSubject, 
+                    item.asJsonObject(),
+                    blankNodeSubject,
                     true,
-                    RdfConstants.FIRST, 
+                    RdfConstants.FIRST,
                     false);
 
             // 3.4.
@@ -476,5 +481,9 @@ public final class JsonLdToRdf {
                 consumer.accept(blankNodeSubject, true, RdfConstants.REST, false, RdfConstants.NIL, false);
             }
         }
+    }
+
+    private static final String toXsdDouble(BigDecimal bigDecimal) {
+        return xsdNumberFormat.format(bigDecimal);
     }
 }
