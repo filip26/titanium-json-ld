@@ -27,7 +27,7 @@ import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.rdf.RdfConsumer;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.impl.RdfDatasetConsumer;
+import com.apicatalog.rdf.RdfDatasetConsumer;
 
 import jakarta.json.JsonArray;
 

@@ -1,9 +1,4 @@
-package com.apicatalog.rdf.impl;
-
-import com.apicatalog.rdf.Rdf;
-import com.apicatalog.rdf.RdfConsumer;
-import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfResource;
+package com.apicatalog.rdf;
 
 public class RdfDatasetConsumer implements RdfConsumer {
 
@@ -17,6 +12,7 @@ public class RdfDatasetConsumer implements RdfConsumer {
 
     public RdfDatasetConsumer(RdfDataset dataset) {
         this.dataset = dataset;
+        this.graphName = null;
     }
 
     public RdfDataset dataset() {

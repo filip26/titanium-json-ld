@@ -31,7 +31,7 @@ import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfConsumer;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.impl.RdfDatasetConsumer;
+import com.apicatalog.rdf.RdfDatasetConsumer;
 import com.apicatalog.rdf.lang.RdfConstants;
 
 import jakarta.json.JsonString;

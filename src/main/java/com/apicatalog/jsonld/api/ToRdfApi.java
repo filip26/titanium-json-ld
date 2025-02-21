@@ -28,7 +28,7 @@ import com.apicatalog.jsonld.processor.ToRdfProcessor;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.RdfConsumer;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.impl.RdfDatasetConsumer;
+import com.apicatalog.rdf.RdfDatasetConsumer;
 
 import jakarta.json.JsonStructure;
 
