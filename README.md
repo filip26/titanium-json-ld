@@ -34,11 +34,11 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 
 ### Extensions
 
-- [LD-CLI](https://github.com/filip26/ld-cli): A native command line utility for Ubuntu, Mac, and Windows
-- [JSON-LD-star](https://json-ld.github.io/json-ld-star): Expansion and compaction built-in support (experimental)
-- [Universal RDF Dataset Normalization Algorithm - URDNA2015](https://github.com/simon-greatrix/rdf-urdna)
-- [Iridium CBOR-LD](https://github.com/filip26/iridium-cbor-ld): A CBOR-based Processor for Linked Data
-- [LEXREX](https://lexrex.web.app/): Semantic vocabularies visual builder and manager
+- [LD-CLI](https://github.com/filip26/ld-cli) - A native command line utility for Ubuntu, Mac, and Windows
+- [JSON-LD-star](https://json-ld.github.io/json-ld-star) - Expansion and compaction built-in support (experimental)
+- [RDF-URDNA](https://github.com/simon-greatrix/rdf-urdna) - Universal RDF Dataset Normalization Algorithm 2015
+- [Titanium RDFC](https://github.com/filip26/titanium-rdfc) - W3C Standard RDF Dataset Canonicalization
+- [Iridium CBOR-LD](https://github.com/filip26/iridium-cbor-ld) - A CBOR-based Processor for Linked Data
 
 ## Table of Contents  
 - [Conformance](#conformance)
