@@ -22,11 +22,11 @@ import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfValue;
 
-final class ImmutableRdfNQuadImpl extends ImmutableRdfTriple implements RdfNQuad {
+final class ImmutableRdfNQuad extends ImmutableRdfTriple implements RdfNQuad {
 
     private final RdfResource graphName;
 
-    protected ImmutableRdfNQuadImpl(RdfResource subject, RdfResource predicate, RdfValue object, RdfResource graphName) {
+    protected ImmutableRdfNQuad(RdfResource subject, RdfResource predicate, RdfValue object, RdfResource graphName) {
         super(subject, predicate, object);
         this.graphName = graphName;
     }
@@ -70,9 +70,8 @@ final class ImmutableRdfNQuadImpl extends ImmutableRdfTriple implements RdfNQuad
             return false;
         }
         if (getClass() == obj.getClass()) {
-            ImmutableRdfNQuadImpl other = (ImmutableRdfNQuadImpl) obj;
+            ImmutableRdfNQuad other = (ImmutableRdfNQuad) obj;
             return Objects.equals(graphName, other.graphName);
-
         }
         if (!(obj instanceof RdfNQuad)) {
             return false;

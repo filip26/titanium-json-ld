@@ -96,7 +96,7 @@ public final class DefaultRdfProvider extends RdfProvider {
             throw new IllegalArgumentException();
         }
 
-        return new ImmutableRdfNQuadImpl(subject, predicate, object, graphName);
+        return new ImmutableRdfNQuad(subject, predicate, object, graphName);
     }
 
     @Override
@@ -106,10 +106,10 @@ public final class DefaultRdfProvider extends RdfProvider {
         }
 
         if (!value.startsWith("_:")) {
-            return new ImmutableRdfResourceImpl("_:" +value, true);
+            return new ImmutableRdfResource("_:" +value, true);
         }
 
-        return new ImmutableRdfResourceImpl(value, true);
+        return new ImmutableRdfResource(value, true);
     }
 
     @Override
@@ -118,7 +118,7 @@ public final class DefaultRdfProvider extends RdfProvider {
             throw new IllegalArgumentException();
         }
 
-        return new ImmutableRdfResourceImpl(value, false);
+        return new ImmutableRdfResource(value, false);
     }
 
     @Override

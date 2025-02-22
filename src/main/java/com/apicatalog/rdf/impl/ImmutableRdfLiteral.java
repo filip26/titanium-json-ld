@@ -31,10 +31,6 @@ final class ImmutableRdfLiteral implements RdfLiteral {
 
     private final String dataType;
 
-    protected ImmutableRdfLiteral(String value) {
-        this(value, null, null);
-    }
-
     protected ImmutableRdfLiteral(String value, String langTag, String datatype) {
         this.value = value;
         this.langTag = langTag;

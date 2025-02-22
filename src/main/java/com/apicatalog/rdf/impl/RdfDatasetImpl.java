@@ -106,7 +106,7 @@ final class RdfDatasetImpl implements RdfDataset {
     @Override
     public RdfDataset add(RdfTriple triple) {
 
-        RdfNQuad nquad = new ImmutableRdfNQuadImpl(triple.getSubject(), triple.getPredicate(), triple.getObject(), null);
+        RdfNQuad nquad = new ImmutableRdfNQuad(triple.getSubject(), triple.getPredicate(), triple.getObject(), null);
 
         if (!defaultGraph.contains(nquad)) {
             defaultGraph.add(nquad);
