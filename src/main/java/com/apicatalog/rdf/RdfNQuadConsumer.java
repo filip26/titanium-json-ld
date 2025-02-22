@@ -10,7 +10,11 @@ public abstract class RdfNQuadConsumer implements RdfConsumer {
     protected RdfResource graphName;
 
     public RdfNQuadConsumer() {
-        this.resources = new HashMap<>();
+        this(new HashMap<>());
+    }
+
+    public RdfNQuadConsumer(Map<String, RdfResource> resources) {
+        this.resources = resources;
         this.graphName = null;
     }
 

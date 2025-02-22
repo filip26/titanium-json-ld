@@ -65,7 +65,6 @@ public interface RdfValue {
      */
     String getValue();
 
-
     @Override
     boolean equals(Object o);
 

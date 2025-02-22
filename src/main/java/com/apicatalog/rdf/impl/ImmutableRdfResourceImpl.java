@@ -19,12 +19,12 @@ import java.util.Objects;
 
 import com.apicatalog.rdf.RdfResource;
 
-final class RdfResourceImpl implements RdfResource {
+final class ImmutableRdfResourceImpl implements RdfResource {
 
     private final String value;
     private final boolean blankNode;
 
-    protected RdfResourceImpl(final String value, boolean isBlankNode) {
+    protected ImmutableRdfResourceImpl(final String value, boolean isBlankNode) {
         this.value = value;
         this.blankNode = isBlankNode;
     }
@@ -57,11 +57,15 @@ final class RdfResourceImpl implements RdfResource {
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (getClass() == obj.getClass()) {
+            ImmutableRdfResourceImpl other = (ImmutableRdfResourceImpl) obj;
+            return Objects.equals(value, other.value);
+        }        
+        if (!(obj instanceof RdfResource)) {
             return false;
         }
-        RdfResourceImpl other = (RdfResourceImpl) obj;
-        return Objects.equals(value, other.value);
+        RdfResource other = (RdfResource) obj;
+        return Objects.equals(value, other.getValue());
     }
 
     @Override

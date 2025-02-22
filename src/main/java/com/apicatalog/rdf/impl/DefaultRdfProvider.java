@@ -86,7 +86,7 @@ public final class DefaultRdfProvider extends RdfProvider {
             throw new IllegalArgumentException();
         }
 
-        return new RdfTripleImpl(subject, predicate, object);
+        return new ImmutableRdfTriple(subject, predicate, object);
     }
 
     @Override
@@ -96,7 +96,7 @@ public final class DefaultRdfProvider extends RdfProvider {
             throw new IllegalArgumentException();
         }
 
-        return new RdfNQuadImpl(subject, predicate, object, graphName);
+        return new ImmutableRdfNQuadImpl(subject, predicate, object, graphName);
     }
 
     @Override
@@ -106,10 +106,10 @@ public final class DefaultRdfProvider extends RdfProvider {
         }
 
         if (!value.startsWith("_:")) {
-            return new RdfResourceImpl("_:" +value, true);
+            return new ImmutableRdfResourceImpl("_:" +value, true);
         }
 
-        return new RdfResourceImpl(value, true);
+        return new ImmutableRdfResourceImpl(value, true);
     }
 
     @Override
@@ -118,7 +118,7 @@ public final class DefaultRdfProvider extends RdfProvider {
             throw new IllegalArgumentException();
         }
 
-        return new RdfResourceImpl(value, false);
+        return new ImmutableRdfResourceImpl(value, false);
     }
 
     @Override
@@ -127,7 +127,7 @@ public final class DefaultRdfProvider extends RdfProvider {
             throw new IllegalArgumentException();
         }
 
-        return new RdfLiteralImpl(lexicalForm, langTag, null);
+        return new ImmutableRdfLiteral(lexicalForm, langTag, null);
     }
 
     @Override
@@ -136,7 +136,7 @@ public final class DefaultRdfProvider extends RdfProvider {
             throw new IllegalArgumentException();
         }
 
-        return new RdfLiteralImpl(lexicalForm, null, datatype);
+        return new ImmutableRdfLiteral(lexicalForm, null, datatype);
     }
 
     @Override
