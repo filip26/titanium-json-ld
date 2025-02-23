@@ -1,4 +1,4 @@
-package com.apicatalog.rdf;
+package com.apicatalog.rdf.api;
 
 /**
  * An optimized RDF quad consumer interface designed for high-speed processing
@@ -57,7 +57,7 @@ public interface RdfQuadConsumer {
      *                  prefixed with "_:"); never {@code null}.
      * @param predicate The predicate of the quad (IRI); never {@code null}.
      * @param literal   The literal value of the object; never {@code null}.
-     * @param language  The language code of the literal; never {@code null}.
+     * @param language  The language tag of the literal; never {@code null}.
      * @param direction The text direction of the literal (optional, may be
      *                  {@code null}).
      * @param graph     The graph (IRI or blank node identifier prefixed with "_:"),

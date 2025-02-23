@@ -1,41 +1,45 @@
-package com.apicatalog.rdf;
+package com.apicatalog.rdf.api;
 
 public class RdfQuadEmitter implements RdfTripleConsumer {
 
     protected final RdfQuadConsumer consumer;
     protected String graph;
 
-    public RdfQuadEmitter(RdfQuadConsumer consumer) {
+    protected RdfQuadEmitter(RdfQuadConsumer consumer) {
         this.consumer = consumer;
         this.graph = null;
     }
 
+    public static RdfTripleConsumer newInstance(RdfQuadConsumer consumer) {
+        return new RdfQuadEmitter(consumer);
+    }
+
     @Override
-    public RdfQuadEmitter defaultGraph() {
+    public RdfTripleConsumer defaultGraph() {
         this.graph = null;
         return this;
     }
 
     @Override
-    public RdfQuadEmitter namedGraph(String graph) {
+    public RdfTripleConsumer namedGraph(String graph) {
         this.graph = graph;
         return this;
     }
 
     @Override
-    public RdfQuadEmitter triple(String subject, String predicate, String object) {
+    public RdfTripleConsumer triple(String subject, String predicate, String object) {
         consumer.quad(subject, predicate, object, graph);
         return this;
     }
 
     @Override
-    public RdfQuadEmitter triple(String subject, String predicate, String literal, String datatype) {
+    public RdfTripleConsumer triple(String subject, String predicate, String literal, String datatype) {
         consumer.quad(subject, predicate, literal, datatype, graph);
         return this;
     }
 
     @Override
-    public RdfQuadEmitter triple(String subject, String predicate, String literal, String language, String direction) {
+    public RdfTripleConsumer triple(String subject, String predicate, String literal, String language, String direction) {
         consumer.quad(subject, predicate, subject, language, direction, graph);
         return this;
     }

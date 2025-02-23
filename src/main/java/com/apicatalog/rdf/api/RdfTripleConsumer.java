@@ -1,4 +1,4 @@
-package com.apicatalog.rdf;
+package com.apicatalog.rdf.api;
 
 /**
  * An RDF triple consumer interface designed for high-speed processing and

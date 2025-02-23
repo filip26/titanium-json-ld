@@ -26,11 +26,11 @@ import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.ToRdfProcessor;
 import com.apicatalog.jsonld.uri.UriUtils;
-import com.apicatalog.rdf.RdfTripleConsumer;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfDatasetSupplier;
-import com.apicatalog.rdf.RdfQuadConsumer;
-import com.apicatalog.rdf.RdfQuadEmitter;
+import com.apicatalog.rdf.api.RdfQuadConsumer;
+import com.apicatalog.rdf.api.RdfQuadEmitter;
+import com.apicatalog.rdf.api.RdfTripleConsumer;
 
 import jakarta.json.JsonStructure;
 
@@ -196,7 +196,7 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
      * @throws JsonLdError
      */
     public void provide(RdfQuadConsumer consumer) throws JsonLdError {
-        provide(new RdfQuadEmitter(consumer));
+        provide(RdfQuadEmitter.newInstance(consumer));
     }
 
     /**

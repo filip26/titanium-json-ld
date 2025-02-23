@@ -30,6 +30,8 @@ public final class RdfConstants {
     public static final String JSON = "http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON";
 
     public static final String LANG_STRING = "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
+    
+    public static final String DIR_LANG_STRING = "http://www.w3.org/1999/02/22-rdf-syntax-ns#dirLangString";
 
     public static final String LIST = "http://www.w3.org/1999/02/22-rdf-syntax-ns#List";
 
