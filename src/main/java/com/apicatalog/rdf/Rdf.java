@@ -31,6 +31,7 @@ import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.RdfWriter;
 import com.apicatalog.rdf.io.error.UnsupportedContentException;
+import com.apicatalog.rdf.lang.RdfConstants;
 import com.apicatalog.rdf.lang.XsdConstants;
 import com.apicatalog.rdf.spi.RdfProvider;
 
@@ -170,10 +171,11 @@ public final class Rdf {
 
     public static RdfLiteral createLangString(String lexicalForm, String language, String direction) {
         return direction != null
-                ? createTypedString(lexicalForm, "https://www.w3.org/ns/i18n#"
-                        .concat(language)
-                        .concat("_")
-                        .concat(direction))
+                ? createTypedString(lexicalForm,
+                        RdfConstants.I18N_BASE
+                                .concat(language)
+                                .concat("_")
+                                .concat(direction))
                 : createLangString(lexicalForm, language);
     }
 
