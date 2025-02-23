@@ -31,17 +31,23 @@ public abstract class RdfNQuadConsumer implements RdfConsumer {
     }
 
     @Override
-    public void accept(String subject, boolean blankSubject, String predicate, boolean blankPredicate, String literal, String datatype, String language) {
+    public void triple(String subject, boolean blankSubject, String predicate, boolean blankPredicate, String literal, String language, String direction) {
         accept(getResource(subject, blankSubject),
                 getResource(predicate, blankPredicate),
-                language != null
-                        ? Rdf.createLangString(literal, language)
-                        : Rdf.createTypedString(literal, datatype),
+                Rdf.createLangString(literal, language, direction),
                 graphName);
     }
 
     @Override
-    public void accept(String subject, boolean blankSubject, String predicate, boolean blankPredicate, String object, boolean blankObject) {
+    public void triple(String subject, boolean blankSubject, String predicate, boolean blankPredicate, String literal, String datatype) {
+        accept(getResource(subject, blankSubject),
+                getResource(predicate, blankPredicate),
+                Rdf.createTypedString(literal, datatype),
+                graphName);
+    }
+
+    @Override
+    public void triple(String subject, boolean blankSubject, String predicate, boolean blankPredicate, String object, boolean blankObject) {
         accept(getResource(subject, blankSubject),
                 getResource(predicate, blankPredicate),
                 getResource(object, blankObject),

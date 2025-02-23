@@ -157,7 +157,7 @@ public final class JsonLdToRdf {
                                 continue;
                             }
 
-                            consumer.accept(
+                            consumer.triple(
                                     subject,
                                     blankSubject,
                                     RdfConstants.TYPE,
@@ -247,10 +247,10 @@ public final class JsonLdToRdf {
             String idString = ((JsonString) id).getString();
 
             if (BlankNode.isWellFormed(idString)) {
-                consumer.accept(subject, blankSubject, predicate, blankPredicate, idString, true);
+                consumer.triple(subject, blankSubject, predicate, blankPredicate, idString, true);
 
             } else if (UriUtils.isAbsoluteUri(idString, uriValidation)) {
-                consumer.accept(subject, blankSubject, predicate, blankPredicate, idString, false);
+                consumer.triple(subject, blankSubject, predicate, blankPredicate, idString, false);
             }
 
             return;
@@ -365,15 +365,10 @@ public final class JsonLdToRdf {
                     : "";
             // 13.2.
             if (RdfDirection.I18N_DATATYPE == rdfDirection) {
-                datatype = "https://www.w3.org/ns/i18n#"
-                        .concat(language)
-                        .concat("_")
-                        .concat(item.getString(Keywords.DIRECTION));
-
-                consumer.accept(
+                consumer.triple(
                         subject, blankSubject,
                         predicate, blankPredicate,
-                        valueString, datatype, null);
+                        valueString, language, item.getString(Keywords.DIRECTION));
 
                 // 13.3.
             } else if (RdfDirection.COMPOUND_LITERAL == rdfDirection) {
@@ -381,54 +376,51 @@ public final class JsonLdToRdf {
                 final String blankNodeId = nodeMap.createIdentifier();
 
                 // 13.3.2.
-                consumer.accept(
+                consumer.triple(
                         blankNodeId,
                         true,
                         RdfConstants.VALUE,
                         false,
                         valueString,
-                        XsdConstants.STRING,
-                        null);
+                        XsdConstants.STRING);
 
                 // 13.3.3.
                 if (item.containsKey(Keywords.LANGUAGE) && JsonUtils.isString(item.get(Keywords.LANGUAGE))) {
-                    consumer.accept(
+                    consumer.triple(
                             blankNodeId,
                             true,
                             RdfConstants.LANGUAGE,
                             false,
                             item.getString(Keywords.LANGUAGE).toLowerCase(),
-                            XsdConstants.STRING,
-                            null);
+                            XsdConstants.STRING);
                 }
 
                 // 13.3.4.
-                consumer.accept(
+                consumer.triple(
                         blankNodeId,
                         true,
                         RdfConstants.DIRECTION,
                         false,
                         item.getString(Keywords.DIRECTION),
-                        XsdConstants.STRING,
-                        null);
+                        XsdConstants.STRING);
 
-                consumer.accept(subject, blankSubject, predicate, blankPredicate, blankNodeId, true);
+                consumer.triple(subject, blankSubject, predicate, blankPredicate, blankNodeId, true);
                 return;
             }
 
             // 14.
         } else {
             if (item.containsKey(Keywords.LANGUAGE) && JsonUtils.isString(item.get(Keywords.LANGUAGE))) {
-                consumer.accept(
+                consumer.triple(
                         subject, blankSubject,
                         predicate, blankPredicate,
-                        valueString, RdfConstants.LANG_STRING, item.getString(Keywords.LANGUAGE));
+                        valueString, item.getString(Keywords.LANGUAGE), null);
 
             } else {
-                consumer.accept(
+                consumer.triple(
                         subject, blankSubject,
                         predicate, blankPredicate,
-                        valueString, datatype, null);
+                        valueString, datatype);
             }
         }
     }
@@ -447,7 +439,7 @@ public final class JsonLdToRdf {
 
         // 1.
         if (JsonUtils.isEmptyArray(list)) {
-            consumer.accept(subject, blankSubject, predicate, blankPredicate, RdfConstants.NIL, false);
+            consumer.triple(subject, blankSubject, predicate, blankPredicate, RdfConstants.NIL, false);
             return;
         }
 
@@ -456,7 +448,7 @@ public final class JsonLdToRdf {
 
         IntStream.range(0, bnodes.length).forEach(i -> bnodes[i] = nodeMap.createIdentifier());
 
-        consumer.accept(subject, blankSubject, predicate, blankPredicate, bnodes[0], true);
+        consumer.triple(subject, blankSubject, predicate, blankPredicate, bnodes[0], true);
 
         // 3.
         int index = 0;
@@ -475,10 +467,10 @@ public final class JsonLdToRdf {
 
             // 3.4.
             if (index < bnodes.length) {
-                consumer.accept(blankNodeSubject, true, RdfConstants.REST, false, bnodes[index], true);
+                consumer.triple(blankNodeSubject, true, RdfConstants.REST, false, bnodes[index], true);
 
             } else {
-                consumer.accept(blankNodeSubject, true, RdfConstants.REST, false, RdfConstants.NIL, false);
+                consumer.triple(blankNodeSubject, true, RdfConstants.REST, false, RdfConstants.NIL, false);
             }
         }
     }
