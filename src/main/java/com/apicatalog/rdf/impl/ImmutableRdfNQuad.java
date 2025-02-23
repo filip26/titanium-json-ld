@@ -22,11 +22,11 @@ import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfValue;
 
-final class RdfNQuadImpl extends RdfTripleImpl implements RdfNQuad {
+final class ImmutableRdfNQuad extends ImmutableRdfTriple implements RdfNQuad {
 
     private final RdfResource graphName;
 
-    protected RdfNQuadImpl(RdfResource subject, RdfResource predicate, RdfValue object, RdfResource graphName) {
+    protected ImmutableRdfNQuad(RdfResource subject, RdfResource predicate, RdfValue object, RdfResource graphName) {
         super(subject, predicate, object);
         this.graphName = graphName;
     }
@@ -63,14 +63,21 @@ final class RdfNQuadImpl extends RdfTripleImpl implements RdfNQuad {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (!super.equals(obj))
+        }
+        if (!super.equals(obj)) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() == obj.getClass()) {
+            ImmutableRdfNQuad other = (ImmutableRdfNQuad) obj;
+            return Objects.equals(graphName, other.graphName);
+        }
+        if (!(obj instanceof RdfNQuad)) {
             return false;
-        RdfNQuadImpl other = (RdfNQuadImpl) obj;
-        return Objects.equals(graphName, other.graphName);
+        }
+        RdfNQuad other = (RdfNQuad) obj;
+        return Objects.equals(graphName, other.getGraphName().orElse(null));
     }
 
 }

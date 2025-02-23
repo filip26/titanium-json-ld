@@ -21,7 +21,7 @@ import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.RdfValue;
 
-class RdfTripleImpl implements RdfTriple {
+class ImmutableRdfTriple implements RdfTriple {
 
     private final RdfResource subject;
 
@@ -29,7 +29,7 @@ class RdfTripleImpl implements RdfTriple {
 
     private final RdfValue object;
 
-    protected RdfTripleImpl(final RdfResource subject, final RdfResource predicate, final RdfValue object) {
+    protected ImmutableRdfTriple(final RdfResource subject, final RdfResource predicate, final RdfValue object) {
         this.subject = subject;
         this.predicate = predicate;
         this.object = object;
@@ -62,14 +62,23 @@ class RdfTripleImpl implements RdfTriple {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() == obj.getClass()) {
+            ImmutableRdfTriple other = (ImmutableRdfTriple) obj;
+            return Objects.equals(object, other.object) && Objects.equals(predicate, other.predicate) && Objects.equals(subject, other.subject);
+        }
+        if (!(obj instanceof RdfTriple)) {
             return false;
-        RdfTripleImpl other = (RdfTripleImpl) obj;
-        return Objects.equals(object, other.object) && Objects.equals(predicate, other.predicate) && Objects.equals(subject, other.subject);
+        }
+        RdfTriple other = (RdfTriple) obj;
+        return Objects.equals(predicate, other.getPredicate())
+                && Objects.equals(object, other.getObject())
+                && Objects.equals(subject, other.getSubject());
     }
-    
+
 }

@@ -168,12 +168,22 @@ public final class Rdf {
         return RdfProvider.provider().createLangString(lexicalForm, langTag);
     }
 
+    public static RdfLiteral createLangString(String lexicalForm, String language, String direction) {
+        return direction != null
+                ? createTypedString(lexicalForm, "https://www.w3.org/ns/i18n#"
+                        .concat(language)
+                        .concat("_")
+                        .concat(direction))
+                : createLangString(lexicalForm, language);
+    }
+
     /**
      * Create a new {@link RdfResource}.
      *
      * @param resource is an absolute IRI or blank node identifier
      * @return RDF resource
-     * @throws IllegalArgumentException if the resource is not an absolute IRI or blank node identifier
+     * @throws IllegalArgumentException if the resource is not an absolute IRI or
+     *                                  blank node identifier
      */
     public static RdfResource createResource(String resource) {
 

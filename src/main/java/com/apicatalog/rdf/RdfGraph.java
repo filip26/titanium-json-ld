@@ -36,6 +36,7 @@ public interface RdfGraph {
 
     boolean contains(RdfTriple triple);
 
+    @Deprecated
     List<RdfTriple> toList();
 
 }

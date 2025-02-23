@@ -23,7 +23,7 @@ import com.apicatalog.rdf.io.nquad.NQuadsWriter;
 import com.apicatalog.rdf.lang.RdfConstants;
 import com.apicatalog.rdf.lang.XsdConstants;
 
-final class RdfLiteralImpl implements RdfLiteral {
+final class ImmutableRdfLiteral implements RdfLiteral {
 
     private final String value;
 
@@ -31,11 +31,7 @@ final class RdfLiteralImpl implements RdfLiteral {
 
     private final String dataType;
 
-    protected RdfLiteralImpl(String value) {
-        this(value, null, null);
-    }
-
-    protected RdfLiteralImpl(String value, String langTag, String datatype) {
+    protected ImmutableRdfLiteral(String value, String langTag, String datatype) {
         this.value = value;
         this.langTag = langTag;
         this.dataType = datatype(langTag, datatype);
@@ -74,12 +70,17 @@ final class RdfLiteralImpl implements RdfLiteral {
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (getClass() == obj.getClass()) {
+            ImmutableRdfLiteral other = (ImmutableRdfLiteral) obj;
+            return Objects.equals(dataType, other.dataType) && Objects.equals(langTag, other.langTag)
+                    && Objects.equals(value, other.value);            
+        }
+        if (!(obj instanceof RdfLiteral)) {
             return false;
         }
-        RdfLiteralImpl other = (RdfLiteralImpl) obj;
-        return Objects.equals(dataType, other.dataType) && Objects.equals(langTag, other.langTag)
-                && Objects.equals(value, other.value);
+        RdfLiteral other = (RdfLiteral) obj;
+        return Objects.equals(dataType, other.getDatatype()) && Objects.equals(langTag, other.getLanguage().orElse(null))
+                && Objects.equals(value, other.getValue());            
     }
 
     @Override

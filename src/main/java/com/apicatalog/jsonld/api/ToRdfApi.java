@@ -26,9 +26,11 @@ import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.ToRdfProcessor;
 import com.apicatalog.jsonld.uri.UriUtils;
-import com.apicatalog.rdf.RdfConsumer;
+import com.apicatalog.rdf.RdfTripleConsumer;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfDatasetProducer;
+import com.apicatalog.rdf.RdfDatasetSupplier;
+import com.apicatalog.rdf.RdfQuadConsumer;
+import com.apicatalog.rdf.RdfQuadEmitter;
 
 import jakarta.json.JsonStructure;
 
@@ -164,18 +166,18 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
      * @throws JsonLdError
      */
     public RdfDataset get() throws JsonLdError {
-        final RdfDatasetProducer consumer = new RdfDatasetProducer();
-        process(consumer);
-        return consumer.dataset();
+        final RdfDatasetSupplier consumer = new RdfDatasetSupplier();
+        provide(consumer);
+        return consumer.get();
     }
 
     /**
-     * Emit transformed <code>JSON-LD</code> as RDF statements. 
+     * Emit transformed <code>JSON-LD</code> as RDF graph scoped triples. 
      *
      * @param consumer that accepts emitted RDF statements
      * @throws JsonLdError
      */
-    public void process(RdfConsumer consumer) throws JsonLdError {
+    public void provide(RdfTripleConsumer consumer) throws JsonLdError {
         if (documentUri != null) {
             ToRdfProcessor.toRdf(consumer, documentUri, options);
 
@@ -185,6 +187,16 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
         } else {
             throw new IllegalArgumentException();
         }
+    }
+
+    /**
+     * Emit transformed <code>JSON-LD</code> as RDF quads. 
+     *
+     * @param consumer that accepts emitted RDF statements
+     * @throws JsonLdError
+     */
+    public void provide(RdfQuadConsumer consumer) throws JsonLdError {
+        provide(new RdfQuadEmitter(consumer));
     }
 
     /**

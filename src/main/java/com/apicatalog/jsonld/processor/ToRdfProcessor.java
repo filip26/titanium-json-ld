@@ -25,9 +25,9 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
-import com.apicatalog.rdf.RdfConsumer;
+import com.apicatalog.rdf.RdfTripleConsumer;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfDatasetProducer;
+import com.apicatalog.rdf.RdfDatasetSupplier;
 
 import jakarta.json.JsonArray;
 
@@ -45,13 +45,13 @@ public final class ToRdfProcessor {
     @Deprecated
     public static final RdfDataset toRdf(final URI input, final JsonLdOptions options) throws JsonLdError {
 
-        final RdfDatasetProducer consumer = new RdfDatasetProducer();
+        final RdfDatasetSupplier consumer = new RdfDatasetSupplier();
         toRdf(consumer, input, options);
-        return consumer.dataset();
+        return consumer.get();
 
     }
 
-    public static final void toRdf(final RdfConsumer consumer, final URI input, final JsonLdOptions options) throws JsonLdError {
+    public static final void toRdf(final RdfTripleConsumer consumer, final URI input, final JsonLdOptions options) throws JsonLdError {
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
@@ -70,12 +70,12 @@ public final class ToRdfProcessor {
 
     @Deprecated
     public static final RdfDataset toRdf(Document input, final JsonLdOptions options) throws JsonLdError {
-        final RdfDatasetProducer consumer = new RdfDatasetProducer();
+        final RdfDatasetSupplier consumer = new RdfDatasetSupplier();
         toRdf(consumer, input, options);
-        return consumer.dataset();
+        return consumer.get();
     }
 
-    public static final void toRdf(RdfConsumer consumer, Document input, final JsonLdOptions options) throws JsonLdError {
+    public static final void toRdf(RdfTripleConsumer consumer, Document input, final JsonLdOptions options) throws JsonLdError {
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
 
         expansionOptions.setProcessingMode(options.getProcessingMode());
@@ -89,6 +89,6 @@ public final class ToRdfProcessor {
                 .produceGeneralizedRdf(options.isProduceGeneralizedRdf())
                 .rdfDirection(options.getRdfDirection())
                 .uriValidation(options.getUriValidation())
-                .process(consumer);
+                .provide(consumer);
     }
 }
