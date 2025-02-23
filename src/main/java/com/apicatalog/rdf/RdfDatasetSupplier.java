@@ -2,7 +2,7 @@ package com.apicatalog.rdf;
 
 import java.util.function.Supplier;
 
-public class RdfDatasetSupplier extends RdfNQuadConsumer implements Supplier<RdfDataset> {
+public class RdfDatasetSupplier extends RdfQuadAdapter implements Supplier<RdfDataset> {
 
     protected final RdfDataset dataset;
 
@@ -20,7 +20,7 @@ public class RdfDatasetSupplier extends RdfNQuadConsumer implements Supplier<Rdf
     }
 
     @Override
-    protected void accept(RdfResource subject, RdfResource predicate, RdfValue value, RdfResource graph) {
+    protected void quad(RdfResource subject, RdfResource predicate, RdfValue value, RdfResource graph) {
         dataset.add(Rdf.createNQuad(subject, predicate, value, graph));
     }
 }

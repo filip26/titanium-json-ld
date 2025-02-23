@@ -25,7 +25,7 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
-import com.apicatalog.rdf.RdfConsumer;
+import com.apicatalog.rdf.RdfTripleConsumer;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfDatasetSupplier;
 
@@ -51,7 +51,7 @@ public final class ToRdfProcessor {
 
     }
 
-    public static final void toRdf(final RdfConsumer consumer, final URI input, final JsonLdOptions options) throws JsonLdError {
+    public static final void toRdf(final RdfTripleConsumer consumer, final URI input, final JsonLdOptions options) throws JsonLdError {
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
@@ -75,7 +75,7 @@ public final class ToRdfProcessor {
         return consumer.get();
     }
 
-    public static final void toRdf(RdfConsumer consumer, Document input, final JsonLdOptions options) throws JsonLdError {
+    public static final void toRdf(RdfTripleConsumer consumer, Document input, final JsonLdOptions options) throws JsonLdError {
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
 
         expansionOptions.setProcessingMode(options.getProcessingMode());
