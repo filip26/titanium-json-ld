@@ -3,6 +3,8 @@ package com.apicatalog.rdf;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.apicatalog.rdf.api.RdfTripleConsumer;
+
 public abstract class RdfQuadAdapter implements RdfTripleConsumer {
 
     protected final Map<String, RdfResource> resources;
@@ -60,6 +62,6 @@ public abstract class RdfQuadAdapter implements RdfTripleConsumer {
     }
 
     protected final RdfResource getResource(final String name) {
-        return resources.computeIfAbsent(name, arg0 -> name.charAt(0) == '_' ? Rdf.createBlankNode(name) : Rdf.createIRI(name));
+        return resources.computeIfAbsent(name, arg0 -> name.startsWith("_:") ? Rdf.createBlankNode(name) : Rdf.createIRI(name));
     }
 }

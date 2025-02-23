@@ -1,4 +1,4 @@
-package com.apicatalog.rdf;
+package com.apicatalog.rdf.api;
 
 /**
  * An optimized RDF quad consumer interface designed for high-speed processing
