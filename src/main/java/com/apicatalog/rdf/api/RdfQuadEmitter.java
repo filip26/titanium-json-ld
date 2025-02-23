@@ -9,7 +9,7 @@ public class RdfQuadEmitter implements RdfTripleConsumer {
         this.consumer = consumer;
         this.graph = null;
     }
-    
+
     public static RdfTripleConsumer newInstance(RdfQuadConsumer consumer) {
         return new RdfQuadEmitter(consumer);
     }
