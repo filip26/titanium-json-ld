@@ -63,6 +63,11 @@
       <version>${jakarta.json.version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>com.apicatalog</groupId>
+      <artifactId>titanium-jcs</artifactId>
+      <version>1.0.0</version>    
+    </dependency>
     <!-- Tests -->
     <dependency>
       <groupId>org.glassfish</groupId>

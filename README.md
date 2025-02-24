@@ -19,7 +19,6 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 - Full conformance to the specification
 - Secure, stable, fast, high-quality code (covered by **~1800 tests**)
 - Minimal external dependencies
-  - Only `jakarta.json-api` is required
 - Easy to use
 
 ### Status

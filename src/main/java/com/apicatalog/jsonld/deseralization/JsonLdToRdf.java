@@ -23,11 +23,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
+import com.apicatalog.jcs.JsonCanonicalizer;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
-import com.apicatalog.jsonld.json.JsonCanonicalizer;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -266,7 +266,7 @@ public final class JsonLdToRdf {
 
         // 8.
         if (Keywords.JSON.equals(datatype)) {
-            valueString = JsonCanonicalizer.canonicalize(value);
+            valueString = JsonCanonicalizer.canonize(value);
             datatype = RdfConstants.JSON;
 
             // 9.
