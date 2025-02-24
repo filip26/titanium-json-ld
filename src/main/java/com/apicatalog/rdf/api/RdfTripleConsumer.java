@@ -4,6 +4,10 @@ package com.apicatalog.rdf.api;
  * An RDF triple consumer interface designed for high-speed processing and
  * seamless integration with third-party libraries.
  * 
+ * Intended to be used in cases where triples are emitted in bulk as a list
+ * belonging to the same graph, or where a producer keeps triples associated
+ * with graphs.
+ * 
  * This interface minimizes unnecessary object instantiation, enhancing
  * efficiency in RDF data processing.
  */
