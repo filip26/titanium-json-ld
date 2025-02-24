@@ -19,7 +19,6 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 - Full conformance to the specification
 - Secure, stable, fast, high-quality code (covered by **~1800 tests**)
 - Minimal external dependencies
-  - Only `jakarta.json-api` is required
 - Easy to use
 
 ### Status
@@ -38,6 +37,7 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 - [JSON-LD-star](https://json-ld.github.io/json-ld-star) - Expansion and compaction built-in support (experimental)
 - [RDF-URDNA](https://github.com/simon-greatrix/rdf-urdna) - Universal RDF Dataset Normalization Algorithm 2015
 - [Titanium RDFC](https://github.com/filip26/titanium-rdfc) - W3C Standard RDF Dataset Canonicalization
+- [Titanium JCS](https://github.com/filip26/titanium-jcs) - RFC 8785 JSON Canonicalization Scheme (JCS)
 - [Iridium CBOR-LD](https://github.com/filip26/iridium-cbor-ld) - A CBOR-based Processor for Linked Data
 
 ## Table of Contents  
