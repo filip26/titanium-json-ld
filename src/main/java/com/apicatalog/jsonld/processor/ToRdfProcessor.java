@@ -51,6 +51,13 @@ public final class ToRdfProcessor {
 
     }
 
+    @Deprecated
+    public static final RdfDataset toRdf(Document input, final JsonLdOptions options) throws JsonLdError {
+        final RdfDatasetSupplier consumer = new RdfDatasetSupplier();
+        toRdf(consumer, input, options);
+        return consumer.get();
+    }
+
     public static final void toRdf(final RdfTripleConsumer consumer, final URI input, final JsonLdOptions options) throws JsonLdError {
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
@@ -68,14 +75,7 @@ public final class ToRdfProcessor {
         toRdf(consumer, remoteDocument, options);
     }
 
-    @Deprecated
-    public static final RdfDataset toRdf(Document input, final JsonLdOptions options) throws JsonLdError {
-        final RdfDatasetSupplier consumer = new RdfDatasetSupplier();
-        toRdf(consumer, input, options);
-        return consumer.get();
-    }
-
-    public static final void toRdf(RdfTripleConsumer consumer, Document input, final JsonLdOptions options) throws JsonLdError {
+    public static final void toRdf(final RdfTripleConsumer consumer, final Document input, final JsonLdOptions options) throws JsonLdError {
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
 
         expansionOptions.setProcessingMode(options.getProcessingMode());
@@ -84,6 +84,10 @@ public final class ToRdfProcessor {
 
         final JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
 
+        toRdf(consumer, expandedInput, options);
+    }
+
+    public static final void toRdf(final RdfTripleConsumer consumer, final JsonArray expandedInput, final JsonLdOptions options) throws JsonLdError {
         JsonLdToRdf
                 .with(NodeMapBuilder.with(expandedInput, new NodeMap()).build())
                 .produceGeneralizedRdf(options.isProduceGeneralizedRdf())
