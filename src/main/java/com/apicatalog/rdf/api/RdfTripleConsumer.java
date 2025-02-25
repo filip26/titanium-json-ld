@@ -43,11 +43,12 @@ public interface RdfTripleConsumer {
      *                  prefixed with "_:"); never {@code null}.
      * 
      * @return An instance enabling fluent programming; never {@code null}.
+     * @throws RdfConsumerException 
      */
     RdfTripleConsumer triple(
             String subject,
             String predicate,
-            String object);
+            String object) throws RdfConsumerException;
 
     /**
      * Accepts an RDF triple where the object is a literal with a datatype.
@@ -61,12 +62,13 @@ public interface RdfTripleConsumer {
      * @param datatype  The datatype IRI of the literal; never {@code null}.
      * 
      * @return An instance enabling fluent programming; never {@code null}.
+     * @throws RdfConsumerException 
      */
     RdfTripleConsumer triple(
             String subject,
             String predicate,
             String literal,
-            String datatype);
+            String datatype) throws RdfConsumerException;
 
     /**
      * Accepts an RDF triple where the object is a localized string value. Optimized
@@ -82,11 +84,12 @@ public interface RdfTripleConsumer {
      *                  {@code null}).
      * 
      * @return An instance enabling fluent programming; never {@code null}.
+     * @throws RdfConsumerException 
      */
     RdfTripleConsumer triple(
             String subject,
             String predicate,
             String literal,
             String language,
-            String direction);
+            String direction) throws RdfConsumerException;
 }

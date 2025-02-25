@@ -167,7 +167,7 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
      */
     public RdfDataset get() throws JsonLdError {
         final RdfDatasetSupplier consumer = new RdfDatasetSupplier();
-        provide(consumer);
+        provide((RdfTripleConsumer)consumer);
         return consumer.get();
     }
 

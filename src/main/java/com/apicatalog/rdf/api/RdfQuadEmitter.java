@@ -27,19 +27,19 @@ public class RdfQuadEmitter implements RdfTripleConsumer {
     }
 
     @Override
-    public RdfTripleConsumer triple(String subject, String predicate, String object) {
+    public RdfTripleConsumer triple(String subject, String predicate, String object) throws RdfConsumerException {
         consumer.quad(subject, predicate, object, graph);
         return this;
     }
 
     @Override
-    public RdfTripleConsumer triple(String subject, String predicate, String literal, String datatype) {
+    public RdfTripleConsumer triple(String subject, String predicate, String literal, String datatype) throws RdfConsumerException {
         consumer.quad(subject, predicate, literal, datatype, graph);
         return this;
     }
 
     @Override
-    public RdfTripleConsumer triple(String subject, String predicate, String literal, String language, String direction) {
+    public RdfTripleConsumer triple(String subject, String predicate, String literal, String language, String direction) throws RdfConsumerException {
         consumer.quad(subject, predicate, subject, language, direction, graph);
         return this;
     }

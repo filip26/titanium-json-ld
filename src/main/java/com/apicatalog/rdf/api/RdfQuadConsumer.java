@@ -21,12 +21,13 @@ public interface RdfQuadConsumer {
      *                  or {@code null} for the default graph.
      * 
      * @return An instance enabling fluent programming; never {@code null}.
+     * @throws RdfConsumerException
      */
     RdfQuadConsumer quad(
             String subject,
             String predicate,
             String object,
-            String graph);
+            String graph) throws RdfConsumerException;
 
     /**
      * Accepts an RDF quad where the object is a literal with a datatype. Optimized
@@ -41,13 +42,14 @@ public interface RdfQuadConsumer {
      *                  or {@code null} for the default graph.
      * 
      * @return An instance enabling fluent programming; never {@code null}.
+     * @throws RdfConsumerException
      */
     RdfQuadConsumer quad(
             String subject,
             String predicate,
             String literal,
             String datatype,
-            String graph);
+            String graph) throws RdfConsumerException;
 
     /**
      * Accepts an RDF quad where the object is a localized string value. Optimized
@@ -64,6 +66,7 @@ public interface RdfQuadConsumer {
      *                  or {@code null} for the default graph.
      * 
      * @return An instance enabling fluent programming; never {@code null}.
+     * @throws RdfConsumerException
      */
     RdfQuadConsumer quad(
             String subject,
@@ -71,5 +74,5 @@ public interface RdfQuadConsumer {
             String literal,
             String language,
             String direction,
-            String graph);
+            String graph) throws RdfConsumerException;
 }

@@ -23,6 +23,7 @@ import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfDatasetSupplier;
+import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.error.RdfReaderException;
@@ -36,6 +37,7 @@ import com.apicatalog.rdf.lang.XsdConstants;
  * @see <a href="https://www.w3.org/TR/n-quads/">RDF 1.1. N-Quads</a>
  *
  */
+@Deprecated
 public class NQuadsReader implements RdfReader {
 
     protected final Tokenizer tokenizer;
@@ -51,7 +53,6 @@ public class NQuadsReader implements RdfReader {
     }
 
     @Override
-    @Deprecated
     public RdfDataset readDataset() throws RdfReaderException {
 
         RdfDataset dataset = Rdf.createDataset();
@@ -59,26 +60,33 @@ public class NQuadsReader implements RdfReader {
         RdfQuadConsumer consumer = new RdfDatasetSupplier(dataset);
 
         read(consumer);
-        
+
         return dataset;
     }
-    
+
     public void read(RdfQuadConsumer consumer) throws RdfReaderException {
-        while (tokenizer.hasNext()) {
+        try {
+            while (tokenizer.hasNext()) {
 
-            // skip EOL and whitespace
-            if (tokenizer.accept(Tokenizer.TokenType.END_OF_LINE)
-                    || tokenizer.accept(Tokenizer.TokenType.WHITE_SPACE)
-                    || tokenizer.accept(Tokenizer.TokenType.COMMENT)) {
+                // skip EOL and whitespace
+                if (tokenizer.accept(Tokenizer.TokenType.END_OF_LINE)
+                        || tokenizer.accept(Tokenizer.TokenType.WHITE_SPACE)
+                        || tokenizer.accept(Tokenizer.TokenType.COMMENT)) {
 
-                continue;
+                    continue;
+                }
+
+                reaStatement(consumer);
             }
-
-            reaStatement(consumer);
-        }        
+        } catch (RdfConsumerException e) {
+            if (e.getCause() instanceof RdfReaderException) {
+                throw (RdfReaderException) e.getCause();
+            }
+            throw new RdfReaderException(e);
+        }
     }
 
-    private void reaStatement(RdfQuadConsumer consumer) throws RdfReaderException {
+    private void reaStatement(RdfQuadConsumer consumer) throws RdfReaderException, RdfConsumerException {
 
         String subject = readResource("Subject");
 
@@ -235,7 +243,7 @@ public class NQuadsReader implements RdfReader {
 
                 assertAbsoluteIri(iri, "DataType");
 
-                if (RdfConstants.I18N_BASE.equals(iri)) {
+                if (iri.startsWith(RdfConstants.I18N_BASE)) {
                     this.object = value.getValue();
 
                     String[] langDir = iri.substring(RdfConstants.I18N_BASE.length()).split("_");

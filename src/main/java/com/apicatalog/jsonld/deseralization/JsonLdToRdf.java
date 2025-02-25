@@ -25,6 +25,7 @@ import java.util.stream.IntStream;
 
 import com.apicatalog.jcs.JsonCanonicalizer;
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
@@ -41,6 +42,7 @@ import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfDatasetSupplier;
+import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfTripleConsumer;
 import com.apicatalog.rdf.lang.RdfConstants;
 import com.apicatalog.rdf.lang.XsdConstants;
@@ -106,8 +108,19 @@ public final class JsonLdToRdf {
         this.rdfDirection = rdfDirection;
         return this;
     }
-
+    
     public void provide(RdfTripleConsumer consumer) throws JsonLdError {
+        try {
+            from(consumer);
+        } catch (RdfConsumerException e) {
+            if (e.getCause() instanceof JsonLdError) {
+                throw (JsonLdError)e.getCause();
+            }
+            throw new JsonLdError(JsonLdErrorCode.UNSPECIFIED, e);
+        }
+    }
+    
+    public void from(RdfTripleConsumer consumer) throws JsonLdError, RdfConsumerException {
 
         for (final String graphName : Utils.index(nodeMap.graphs(), true)) {
 
@@ -211,7 +224,7 @@ public final class JsonLdToRdf {
             final RdfTripleConsumer consumer,
             final JsonObject item,
             final String subject,
-            final String predicate) throws JsonLdError {
+            final String predicate) throws JsonLdError, RdfConsumerException {
 
         // 1. - 2.
         if (NodeObject.isNodeObject(item)) {
@@ -402,7 +415,7 @@ public final class JsonLdToRdf {
             final RdfTripleConsumer consumer,
             final JsonArray list,
             final String subject,
-            final String predicate) throws JsonLdError {
+            final String predicate) throws JsonLdError, RdfConsumerException {
 
         // 1.
         if (JsonUtils.isEmptyArray(list)) {
