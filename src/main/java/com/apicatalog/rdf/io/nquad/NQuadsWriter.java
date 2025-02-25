@@ -17,10 +17,8 @@ package com.apicatalog.rdf.io.nquad;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Optional;
 
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfValue;
@@ -103,7 +101,7 @@ public class NQuadsWriter implements RdfWriter, RdfQuadConsumer {
         }
 
         if (value.isLiteral()) {
-            write(value.asLiteral());
+//            write(value.asLiteral().);
             return;
         }
 
@@ -128,31 +126,31 @@ public class NQuadsWriter implements RdfWriter, RdfQuadConsumer {
         writeIri(value);
     }
 
-    private void write(RdfLiteral literal) throws IOException {
+    private void writeLiteral(String literal, String datatype, String langTag, String direction) throws IOException {
 
         if (literal == null) {
             throw new IllegalArgumentException();
         }
 
         writer.write('"');
-        writer.write(escape(literal.getValue()));
+        writer.write(escape(literal));
         writer.write('"');
 
-        final Optional<String> language = literal.getLanguage();
-
-        if (language.isPresent()) {
+        if (direction != null) {
+            
+        } else if (langTag != null) {
 
             writer.write("@");
-            writer.write(language.get());
+            writer.write(langTag);
 
-        } else if (literal.getDatatype() != null) {
+        } else if (datatype != null) {
 
-            if (XsdConstants.STRING.equals(literal.getDatatype())) {
+            if (XsdConstants.STRING.equals(datatype)) {
                 return;
             }
 
             writer.write("^^");
-            writeIri(literal.getDatatype());
+            writeIri(datatype);
         }
     }
 
@@ -239,7 +237,7 @@ public class NQuadsWriter implements RdfWriter, RdfQuadConsumer {
             writeIriOrBlank(predicate);
             writer.write(' ');
 
-            
+            writeLiteral(literal, datatype, null, null);
             writer.write(' ');
 
             if (graph != null) {
@@ -255,8 +253,26 @@ public class NQuadsWriter implements RdfWriter, RdfQuadConsumer {
     }
 
     @Override
-    public RdfQuadConsumer quad(String subject, String predicate, String literal, String language, String direction, String graph) {
-        // TODO Auto-generated method stub
-        return null;
+    public RdfQuadConsumer quad(String subject, String predicate, String literal, String langTag, String direction, String graph) throws RdfConsumerException {
+        try {
+            writeIriOrBlank(subject);
+            writer.write(' ');
+
+            writeIriOrBlank(predicate);
+            writer.write(' ');
+
+            writeLiteral(literal, null, langTag, direction);
+            writer.write(' ');
+
+            if (graph != null) {
+                writeIriOrBlank(graph);
+                writer.write(' ');
+            }
+
+            writer.write(".\n");
+        } catch (IOException e) {
+            throw new RdfConsumerException(e, subject, predicate, literal, langTag, direction, graph);
+        }
+        return this;
     }
 }
