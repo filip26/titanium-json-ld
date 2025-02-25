@@ -22,70 +22,75 @@ import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfLiteral;
-import com.apicatalog.rdf.RdfNQuad;
-import com.apicatalog.rdf.RdfResource;
-import com.apicatalog.rdf.RdfValue;
+import com.apicatalog.rdf.RdfDatasetSupplier;
+import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.error.RdfReaderException;
 import com.apicatalog.rdf.io.nquad.Tokenizer.Token;
 import com.apicatalog.rdf.io.nquad.Tokenizer.TokenType;
+import com.apicatalog.rdf.lang.RdfConstants;
+import com.apicatalog.rdf.lang.XsdConstants;
 
 /**
  *
  * @see <a href="https://www.w3.org/TR/n-quads/">RDF 1.1. N-Quads</a>
  *
  */
-public final class NQuadsReader implements RdfReader {
+public class NQuadsReader implements RdfReader {
 
-    private final Tokenizer tokenizer;
+    protected final Tokenizer tokenizer;
 
-    private RdfDataset dataset;
+    // runtime
+    private String object;
+    private String datatype;
+    private String langTag;
+    private String direction;
 
     public NQuadsReader(final Reader reader) {
         this.tokenizer = new Tokenizer(reader);
-        this.dataset = null;
     }
 
     @Override
+    @Deprecated
     public RdfDataset readDataset() throws RdfReaderException {
 
-        if (dataset != null) {
-            return dataset;
-        }
+        RdfDataset dataset = Rdf.createDataset();
 
-        dataset = Rdf.createDataset();
+        RdfQuadConsumer consumer = new RdfDatasetSupplier(dataset);
 
+        read(consumer);
+        
+        return dataset;
+    }
+    
+    public void read(RdfQuadConsumer consumer) throws RdfReaderException {
         while (tokenizer.hasNext()) {
 
             // skip EOL and whitespace
             if (tokenizer.accept(Tokenizer.TokenType.END_OF_LINE)
                     || tokenizer.accept(Tokenizer.TokenType.WHITE_SPACE)
-                    || tokenizer.accept(Tokenizer.TokenType.COMMENT)
-                    ) {
+                    || tokenizer.accept(Tokenizer.TokenType.COMMENT)) {
 
                 continue;
             }
 
-            dataset.add(reaStatement());
-        }
-
-        return dataset;
+            reaStatement(consumer);
+        }        
     }
 
-    private RdfNQuad reaStatement() throws RdfReaderException {
+    private void reaStatement(RdfQuadConsumer consumer) throws RdfReaderException {
 
-        RdfResource subject = readResource("Subject");
-
-        skipWhitespace(0);
-
-        RdfResource predicate = readResource("Predicate");
+        String subject = readResource("Subject");
 
         skipWhitespace(0);
 
-        RdfValue object = readObject();
+        String predicate = readResource("Predicate");
 
-        RdfResource graphName = null;
+        skipWhitespace(0);
+
+        readObject();
+
+        String graphName = null;
 
         skipWhitespace(0);
 
@@ -95,14 +100,14 @@ public final class NQuadsReader implements RdfReader {
 
             assertAbsoluteIri(graphNameIri, "Graph name");
 
-            graphName = Rdf.createIRI(graphNameIri);
+            graphName = graphNameIri;
             tokenizer.next();
             skipWhitespace(0);
         }
 
         if (TokenType.BLANK_NODE_LABEL == tokenizer.token().getType()) {
 
-            graphName = Rdf.createBlankNode("_:".concat(tokenizer.token().getValue()));
+            graphName = "_:".concat(tokenizer.token().getValue());
             tokenizer.next();
             skipWhitespace(0);
         }
@@ -119,16 +124,24 @@ public final class NQuadsReader implements RdfReader {
         if (TokenType.COMMENT == tokenizer.token().getType()) {
             tokenizer.next();
 
-        // skip end of line
+            // skip end of line
         } else if (TokenType.END_OF_LINE != tokenizer.token().getType() && TokenType.END_OF_INPUT != tokenizer.token().getType()) {
             unexpected(tokenizer.token(), TokenType.END_OF_LINE, TokenType.END_OF_INPUT);
             tokenizer.next();
         }
 
-        return Rdf.createNQuad(subject, predicate, object, graphName);
+        if (direction != null || langTag != null) {
+            consumer.quad(subject, predicate, object, langTag, direction, graphName);
+
+        } else if (datatype != null) {
+            consumer.quad(subject, predicate, object, datatype, graphName);
+
+        } else {
+            consumer.quad(subject, predicate, object, graphName);
+        }
     }
 
-    private RdfResource readResource(String name)  throws RdfReaderException {
+    private String readResource(String name) throws RdfReaderException {
 
         final Token token = tokenizer.token();
 
@@ -140,20 +153,25 @@ public final class NQuadsReader implements RdfReader {
 
             assertAbsoluteIri(iri, name);
 
-            return Rdf.createIRI(iri);
+            return iri;
         }
 
         if (TokenType.BLANK_NODE_LABEL == token.getType()) {
 
             tokenizer.next();
 
-            return Rdf.createBlankNode("_:".concat(token.getValue()));
+            return "_:".concat(token.getValue());
         }
 
         return unexpected(token);
     }
 
-    private RdfValue readObject()  throws RdfReaderException {
+    private void readObject() throws RdfReaderException {
+
+        object = null;
+        datatype = null;
+        langTag = null;
+        direction = null;
 
         Token token = tokenizer.token();
 
@@ -164,20 +182,22 @@ public final class NQuadsReader implements RdfReader {
 
             assertAbsoluteIri(iri, "Object");
 
-            return Rdf.createIRI(iri);
+            object = iri;
+            return;
         }
 
         if (TokenType.BLANK_NODE_LABEL == token.getType()) {
 
             tokenizer.next();
 
-            return Rdf.createBlankNode("_:".concat(token.getValue()));
+            object = "_:".concat(token.getValue());
+            return;
         }
 
-        return readLiteral();
+        readLiteral();
     }
 
-    private RdfLiteral readLiteral()  throws RdfReaderException {
+    private void readLiteral() throws RdfReaderException {
 
         Token value = tokenizer.token();
 
@@ -195,7 +215,10 @@ public final class NQuadsReader implements RdfReader {
 
             tokenizer.next();
 
-            return Rdf.createLangString(value.getValue(), langTag);
+            this.object = value.getValue();
+            this.langTag = langTag;
+
+            return;
 
         } else if (TokenType.LITERAL_DATA_TYPE == tokenizer.token().getType()) {
 
@@ -212,21 +235,37 @@ public final class NQuadsReader implements RdfReader {
 
                 assertAbsoluteIri(iri, "DataType");
 
-                return Rdf.createTypedString(value.getValue(), iri);
+                if (RdfConstants.I18N_BASE.equals(iri)) {
+                    this.object = value.getValue();
+
+                    String[] langDir = iri.substring(RdfConstants.I18N_BASE.length()).split("_");
+
+                    // TODO assert
+
+                    this.datatype = iri;
+                    this.langTag = langDir[0];
+                    this.direction = langDir[1];
+
+                    return;
+                }
+
+                this.object = value.getValue();
+                this.datatype = iri;
+//                Rdf.createTypedString(value.getValue(), iri);
+                return;
             }
 
             unexpected(attr);
         }
 
-        return Rdf.createString(value.getValue());
+        this.object = value.getValue();
+        this.datatype = XsdConstants.STRING;
     }
 
-
-    private static final <T> T unexpected(Token token, TokenType ...types) throws RdfReaderException {
+    private static final <T> T unexpected(Token token, TokenType... types) throws RdfReaderException {
         throw new RdfReaderException(
-                    "Unexpected token " + token.getType() + (token.getValue() != null ? "[" + token.getValue() + "]" : "" ) +  ". "
-                    + "Expected one of " + Arrays.toString(types) + "."
-                    );
+                "Unexpected token " + token.getType() + (token.getValue() != null ? "[" + token.getValue() + "]" : "") + ". "
+                        + "Expected one of " + Arrays.toString(types) + ".");
     }
 
     private void skipWhitespace(int min) throws RdfReaderException {
@@ -244,7 +283,7 @@ public final class NQuadsReader implements RdfReader {
 
     private static final void assertAbsoluteIri(final String iri, final String what) throws RdfReaderException {
         if (UriUtils.isNotAbsoluteUri(iri, UriValidationPolicy.Full)) {
-            throw new RdfReaderException(what + " must be an absolute IRI [" + iri  +  "]. ");
+            throw new RdfReaderException(what + " must be an absolute IRI [" + iri + "]. ");
         }
     }
 }
