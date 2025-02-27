@@ -17,6 +17,7 @@ package com.apicatalog.rdf.lang;
 
 import java.util.function.IntPredicate;
 
+@Deprecated
 public final class RdfAlphabet {
 
     public static final IntPredicate ASCII_ALPHA =

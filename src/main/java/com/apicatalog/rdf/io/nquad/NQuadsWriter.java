@@ -35,9 +35,11 @@ import com.apicatalog.rdf.nquads.NQuadsAlphabet;
 public class NQuadsWriter implements RdfWriter {
 
     private final com.apicatalog.rdf.nquads.NQuadsWriter writer;
+    private final Writer output;
 
     public NQuadsWriter(Writer writer) {
         this.writer = new com.apicatalog.rdf.nquads.NQuadsWriter(writer);
+        this.output = writer;
     }
 
     @Override
@@ -45,6 +47,7 @@ public class NQuadsWriter implements RdfWriter {
         for (RdfNQuad nquad : dataset.toList()) {
             write(nquad);
         }
+        output.flush();
     }
 
     public void write(final RdfNQuad nquad) throws IOException {
