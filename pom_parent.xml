@@ -44,6 +44,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+    <titanium.rdf.api.version>1.0.0-SNAPSHOT</titanium.rdf.api.version>
+    <titanium.rdf.nquads.version>1.0.0-SNAPSHOT</titanium.rdf.nquads.version>
     <jakarta.json.version>2.0.1</jakarta.json.version>
 
     <argLine>-Dfile.encoding=UTF-8</argLine>
@@ -66,7 +68,17 @@
     <dependency>
       <groupId>com.apicatalog</groupId>
       <artifactId>titanium-jcs</artifactId>
-      <version>1.0.0</version>    
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.apicatalog</groupId>
+      <artifactId>titanium-rdf-api</artifactId>
+      <version>${titanium.rdf.api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.apicatalog</groupId>
+      <artifactId>titanium-rdf-n-quads</artifactId>
+      <version>${titanium.rdf.nquads.version}</version>
     </dependency>
     <!-- Tests -->
     <dependency>
