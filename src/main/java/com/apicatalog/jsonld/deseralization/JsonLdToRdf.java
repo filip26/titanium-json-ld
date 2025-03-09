@@ -43,7 +43,7 @@ import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfDatasetSupplier;
 import com.apicatalog.rdf.api.RdfConsumerException;
-import com.apicatalog.rdf.api.RdfTripleConsumer;
+import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.rdf.lang.RdfConstants;
 import com.apicatalog.rdf.lang.XsdConstants;
 
@@ -109,9 +109,9 @@ public final class JsonLdToRdf {
         return this;
     }
     
-    public void provide(RdfTripleConsumer consumer) throws JsonLdError {
+    public void provide(RdfQuadConsumer consumer) throws JsonLdError {
         try {
-            from(consumer);
+            from(RdfQuadEmitter.newInstance(consumer));
         } catch (RdfConsumerException e) {
             if (e.getCause() instanceof JsonLdError) {
                 throw (JsonLdError)e.getCause();
@@ -120,7 +120,7 @@ public final class JsonLdToRdf {
         }
     }
     
-    public void from(RdfTripleConsumer consumer) throws JsonLdError, RdfConsumerException {
+    protected void from(RdfTripleConsumer consumer) throws JsonLdError, RdfConsumerException {
 
         for (final String graphName : Utils.index(nodeMap.graphs(), true)) {
 

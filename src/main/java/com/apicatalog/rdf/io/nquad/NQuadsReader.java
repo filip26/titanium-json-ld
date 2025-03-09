@@ -50,11 +50,9 @@ public class NQuadsReader implements RdfReader {
         try {
             reader.provide(consumer);
             return dataset;
-            
+
         } catch (NQuadsReaderException | RdfConsumerException e) {
             throw new RdfReaderException(e);
         }
-
     }
-
 }

@@ -57,6 +57,7 @@ public class NQuadsWriter implements RdfWriter {
                     writer.quad(nquad.getSubject().getValue(),
                             nquad.getPredicate().getValue(),
                             nquad.getObject().getValue(),
+                            nquad.getObject().asLiteral().getDatatype(),
                             nquad.getObject().asLiteral().getLanguage().orElseThrow(),
                             null,
                             nquad.getGraphName().map(RdfResource::getValue).orElse(null));
@@ -65,10 +66,11 @@ public class NQuadsWriter implements RdfWriter {
                 String datatype = nquad.getObject().asLiteral().getDatatype();
                 if (datatype.startsWith(RdfConstants.I18N_BASE)) {
                     String[] langDir = datatype.substring(RdfConstants.I18N_BASE.length()).split("_");
-                    
+
                     writer.quad(nquad.getSubject().getValue(),
                             nquad.getPredicate().getValue(),
                             nquad.getObject().getValue(),
+                            RdfConstants.I18N_BASE,
                             langDir[0],
                             langDir.length > 0 ? langDir[1] : null,
                             nquad.getGraphName().map(RdfResource::getValue).orElse(null));
@@ -79,6 +81,8 @@ public class NQuadsWriter implements RdfWriter {
                         nquad.getPredicate().getValue(),
                         nquad.getObject().getValue(),
                         datatype,
+                        null,
+                        null,
                         nquad.getGraphName().map(RdfResource::getValue).orElse(null));
                 return;
             }
@@ -86,6 +90,7 @@ public class NQuadsWriter implements RdfWriter {
             writer.quad(nquad.getSubject().getValue(),
                     nquad.getPredicate().getValue(),
                     nquad.getObject().getValue(),
+                    null, null, null,
                     nquad.getGraphName().map(RdfResource::getValue).orElse(null));
         } catch (RdfConsumerException e) {
             if (e.getCause() instanceof IOException) {

@@ -1,12 +1,15 @@
-package com.apicatalog.rdf;
+package com.apicatalog.jsonld.deseralization;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import com.apicatalog.rdf.Rdf;
+import com.apicatalog.rdf.RdfResource;
+import com.apicatalog.rdf.RdfValue;
+import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
-import com.apicatalog.rdf.api.RdfTripleConsumer;
 
-public abstract class RdfQuadAdapter implements RdfTripleConsumer, RdfQuadConsumer {
+public abstract class RdfQuadAdapter implements RdfQuadConsumer, RdfTripleConsumer {
 
     protected final Map<String, RdfResource> resources;
 
@@ -63,35 +66,36 @@ public abstract class RdfQuadAdapter implements RdfTripleConsumer, RdfQuadConsum
     }
 
     @Override
-    public RdfQuadConsumer quad(String subject, String predicate, String object, String graph) {
+    public RdfQuadConsumer quad(
+            String subject,
+            String predicate,
+            String object,
+            String datatype,
+            String language,
+            String direction,
+            String graph) throws RdfConsumerException {
+
+        final RdfValue objectValue;
+        if (language != null) {
+            objectValue = Rdf.createLangString(object, language, direction);
+
+        } else if (datatype != null) {
+            objectValue = Rdf.createTypedString(object, datatype);
+
+        } else {
+            objectValue = getResource(object);
+        }
+
         quad(getResource(subject),
                 getResource(predicate),
-                getResource(object),
+                objectValue,
                 getResource(graph));
-        return this;
 
-    }
-
-    @Override
-    public RdfQuadConsumer quad(String subject, String predicate, String literal, String datatype, String graph) {
-        quad(getResource(subject),
-                getResource(predicate),
-                Rdf.createTypedString(literal, datatype),
-                getResource(graph));
-        return this;
-    }
-
-    @Override
-    public RdfQuadConsumer quad(String subject, String predicate, String literal, String language, String direction, String graph) {
-        quad(getResource(subject),
-                getResource(predicate),
-                Rdf.createLangString(literal, language, direction),
-                getResource(graph));
         return this;
     }
 
     protected final RdfResource getResource(final String name) {
-        return name != null 
+        return name != null
                 ? resources.computeIfAbsent(name, arg0 -> name.startsWith("_:") ? Rdf.createBlankNode(name) : Rdf.createIRI(name))
                 : null;
     }

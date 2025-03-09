@@ -29,8 +29,6 @@ import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfDatasetSupplier;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
-import com.apicatalog.rdf.api.RdfQuadEmitter;
-import com.apicatalog.rdf.api.RdfTripleConsumer;
 
 import jakarta.json.JsonStructure;
 
@@ -167,17 +165,17 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
      */
     public RdfDataset get() throws JsonLdError {
         final RdfDatasetSupplier consumer = new RdfDatasetSupplier();
-        provide((RdfTripleConsumer)consumer);
+        provide(consumer);
         return consumer.get();
     }
 
     /**
-     * Emit transformed <code>JSON-LD</code> as RDF graph scoped triples. 
+     * Emit transformed <code>JSON-LD</code> as RDF quads.
      *
      * @param consumer that accepts emitted RDF statements
      * @throws JsonLdError
      */
-    public void provide(RdfTripleConsumer consumer) throws JsonLdError {
+    public void provide(RdfQuadConsumer consumer) throws JsonLdError {
         if (documentUri != null) {
             ToRdfProcessor.toRdf(consumer, documentUri, options);
 
@@ -187,16 +185,6 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
         } else {
             throw new IllegalArgumentException();
         }
-    }
-
-    /**
-     * Emit transformed <code>JSON-LD</code> as RDF quads. 
-     *
-     * @param consumer that accepts emitted RDF statements
-     * @throws JsonLdError
-     */
-    public void provide(RdfQuadConsumer consumer) throws JsonLdError {
-        provide(RdfQuadEmitter.newInstance(consumer));
     }
 
     /**

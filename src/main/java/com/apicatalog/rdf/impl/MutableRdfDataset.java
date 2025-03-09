@@ -28,18 +28,18 @@ import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfTriple;
 
-final class RdfDatasetImpl implements RdfDataset {
+final class MutableRdfDataset implements RdfDataset {
 
-    private final Map<RdfResource, RdfGraphImpl> graphs;
+    private final Map<RdfResource, MutableRdfGraph> graphs;
 
     private final List<RdfNQuad> nquads;
 
-    private final RdfGraphImpl defaultGraph;
+    private final MutableRdfGraph defaultGraph;
 
-    protected RdfDatasetImpl() {
+    protected MutableRdfDataset() {
         this.graphs = new HashMap<>();
         this.nquads = new ArrayList<>();
-        this.defaultGraph = new RdfGraphImpl();
+        this.defaultGraph = new MutableRdfGraph();
     }
 
     @Override
@@ -62,11 +62,11 @@ final class RdfDatasetImpl implements RdfDataset {
 
         if (graphName.isPresent()) {
 
-            RdfGraphImpl graph = graphs.get(graphName.get());
+            MutableRdfGraph graph = graphs.get(graphName.get());
 
             if (graph == null) {
 
-                graph = new RdfGraphImpl();
+                graph = new MutableRdfGraph();
                 graphs.put(graphName.get(), graph);
                 graph.add(nquad);
                 nquads.add(nquad);
