@@ -22,8 +22,8 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.source>1.8</maven.compiler.source>
     <envSources>src/main/android</envSources>
-    <titanium.rdf.api.version>1.0.0-SNAPSHOT</titanium.rdf.api.version>
-    <titanium.rdf.nquads.version>1.0.0-SNAPSHOT</titanium.rdf.nquads.version>
+    <titanium.rdf.api.version>1.0.0</titanium.rdf.api.version>
+    <titanium.rdf.nquads.version>1.0.0</titanium.rdf.nquads.version>
   </properties>
   <dependencies>
     <dependency>
