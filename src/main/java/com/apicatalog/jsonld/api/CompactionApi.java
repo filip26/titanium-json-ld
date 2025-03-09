@@ -97,7 +97,7 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
      * element  If set to false, all arrays will remain arrays even if they have just one
      * element. <code>true</code> by default.
      *
-     * @param enable
+     * @param enable {@code true} to enable arrays compaction.
      * @return builder instance
      */
     public CompactionApi compactArrays(boolean enable) {
@@ -118,7 +118,7 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
      * Determines if IRIs are compacted relative to the {@link #base(URI)} or document location .
      * <code>true</code> by default.
      *
-     * @param enable
+     * @param enable {@code true} to compact IRIs to the {@link #base(URI)}
      * @return builder instance
      */
     public CompactionApi compactToRelative(boolean enable) {
@@ -163,7 +163,7 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
      * Get the result of compaction.
      *
      * @return {@link JsonObject} representing compacted document
-     * @throws JsonLdError
+     * @throws JsonLdError if the document compaction fails
      */
     public JsonObject get() throws JsonLdError {
 

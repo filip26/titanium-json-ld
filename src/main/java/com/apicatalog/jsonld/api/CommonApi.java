@@ -43,7 +43,7 @@ public interface CommonApi<R> {
     /**
      * Set the base <code>IRI</code>. If set, this overrides the input document's IRI.
      *
-     * @param baseUri
+     * @param baseUri the base IRI, or {@code null}.
      * @return builder instance
      */
     R base(URI baseUri);
@@ -51,7 +51,7 @@ public interface CommonApi<R> {
     /**
      * Set the base {@link URI}. If set, this overrides the input document's IRI.
      *
-     * @param baseLocation
+     * @param baseLocation the base location, or {@code null}.
      * @return builder instance
      */
     default R base(String baseLocation) {
@@ -73,7 +73,7 @@ public interface CommonApi<R> {
      * are ordered lexicographically. If <code>false</code>, order is not
      * considered in processing.
      *
-     * @param enable
+     * @param enable {@code true} to enable ordered result
      * @return builder instance
      */
     R ordered(boolean enable);

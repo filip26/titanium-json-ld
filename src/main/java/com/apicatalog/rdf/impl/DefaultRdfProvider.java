@@ -44,7 +44,7 @@ public final class DefaultRdfProvider extends RdfProvider {
 
     @Override
     public RdfDataset createDataset() {
-        return new RdfDatasetImpl();
+        return new MutableRdfDataset();
     }
 
     @Override
@@ -76,7 +76,7 @@ public final class DefaultRdfProvider extends RdfProvider {
 
     @Override
     public RdfGraph createGraph() {
-        return new RdfGraphImpl();
+        return new MutableRdfGraph();
     }
 
     @Override

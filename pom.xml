@@ -23,5 +23,24 @@
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
         <envSources>src/main/java11</envSources>
+        <titanium.rdf.api.version>1.0.0</titanium.rdf.api.version>
+        <titanium.rdf.nquads.version>1.0.0</titanium.rdf.nquads.version>        
     </properties>
+    <dependencies>
+        <dependency>
+          <groupId>com.apicatalog</groupId>
+          <artifactId>titanium-jcs</artifactId>
+          <version>1.0.0</version>
+        </dependency>
+        <dependency>
+          <groupId>com.apicatalog</groupId>
+          <artifactId>titanium-rdf-api</artifactId>
+          <version>${titanium.rdf.api.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>com.apicatalog</groupId>
+          <artifactId>titanium-rdf-n-quads</artifactId>
+          <version>${titanium.rdf.nquads.version}</version>
+        </dependency>
+    </dependencies>
 </project>

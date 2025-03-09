@@ -84,7 +84,10 @@ class NQuadsWriterTest {
 
             Rdf.createWriter(MediaType.N_QUADS, os).write(dataset);
 
+            os.close();
+            
             result = StringUtils.stripTrailing(os.toString());
+            
         }
 
         try (final BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(testCase.getExpected())))) {

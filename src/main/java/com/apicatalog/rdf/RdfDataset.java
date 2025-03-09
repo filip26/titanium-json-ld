@@ -29,7 +29,6 @@ public interface RdfDataset {
      * @param nquad to add
      * @return the same {@link RdfDataset} instance
      */
-    @Deprecated
     RdfDataset add(RdfNQuad nquad);
 
     /**
@@ -38,10 +37,8 @@ public interface RdfDataset {
      * @param triple to add
      * @return the same {@link RdfDataset} instance
      */
-    @Deprecated
     RdfDataset add(RdfTriple triple);
 
-    @Deprecated
     List<RdfNQuad> toList();
 
     Set<RdfResource> getGraphNames();

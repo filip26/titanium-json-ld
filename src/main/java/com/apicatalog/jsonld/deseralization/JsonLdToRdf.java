@@ -25,6 +25,7 @@ import java.util.stream.IntStream;
 
 import com.apicatalog.jcs.JsonCanonicalizer;
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
@@ -41,7 +42,8 @@ import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfDatasetSupplier;
-import com.apicatalog.rdf.api.RdfTripleConsumer;
+import com.apicatalog.rdf.api.RdfConsumerException;
+import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.rdf.lang.RdfConstants;
 import com.apicatalog.rdf.lang.XsdConstants;
 
@@ -83,10 +85,10 @@ public final class JsonLdToRdf {
 
     /**
      * @deprecated since 1.6.0, use {@link #with(NodeMap)} and
-     *             {@link #provide(RdfTripleConsumer)}.
-     * @param nodeMap
-     * @param dataset
-     * @return
+     *             {@link #provide(RdfQuadConsumer)}.
+     * @param nodeMap a node map instance, never {@code null}
+     * @param dataset a dataset instance, never {@code null}
+     * @return the {@link JsonLdToRdf} instance enabling fluent programming 
      */
     @Deprecated
     public static final JsonLdToRdf with(NodeMap nodeMap, RdfDataset dataset) {
@@ -106,8 +108,19 @@ public final class JsonLdToRdf {
         this.rdfDirection = rdfDirection;
         return this;
     }
-
-    public void provide(RdfTripleConsumer consumer) throws JsonLdError {
+    
+    public void provide(RdfQuadConsumer consumer) throws JsonLdError {
+        try {
+            from(RdfQuadEmitter.newInstance(consumer));
+        } catch (RdfConsumerException e) {
+            if (e.getCause() instanceof JsonLdError) {
+                throw (JsonLdError)e.getCause();
+            }
+            throw new JsonLdError(JsonLdErrorCode.UNSPECIFIED, e);
+        }
+    }
+    
+    protected void from(RdfTripleConsumer consumer) throws JsonLdError, RdfConsumerException {
 
         for (final String graphName : Utils.index(nodeMap.graphs(), true)) {
 
@@ -173,9 +186,9 @@ public final class JsonLdToRdf {
     }
 
     /**
-     * @deprecated since 1.6.0, use {@link #provide(RdfTripleConsumer)}.
-     * @return
-     * @throws JsonLdError
+     * @deprecated since 1.6.0, use {@link #provide(RdfQuadConsumer)}.
+     * @return a dataset
+     * @throws JsonLdError if the transformation fails
      */
     @Deprecated
     public RdfDataset build() throws JsonLdError {
@@ -211,7 +224,7 @@ public final class JsonLdToRdf {
             final RdfTripleConsumer consumer,
             final JsonObject item,
             final String subject,
-            final String predicate) throws JsonLdError {
+            final String predicate) throws JsonLdError, RdfConsumerException {
 
         // 1. - 2.
         if (NodeObject.isNodeObject(item)) {
@@ -402,7 +415,7 @@ public final class JsonLdToRdf {
             final RdfTripleConsumer consumer,
             final JsonArray list,
             final String subject,
-            final String predicate) throws JsonLdError {
+            final String predicate) throws JsonLdError, RdfConsumerException {
 
         // 1.
         if (JsonUtils.isEmptyArray(list)) {

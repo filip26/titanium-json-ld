@@ -188,7 +188,7 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
      * Get the result of framing.
      *
      * @return {@link JsonObject} representing framed document
-     * @throws JsonLdError
+     * @throws JsonLdError if the document framing fails
      */
     public JsonObject get() throws JsonLdError {
         if (document != null) {

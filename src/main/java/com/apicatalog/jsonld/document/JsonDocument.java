@@ -97,7 +97,7 @@ public final class JsonDocument implements Document {
      * @param is providing JSON content
      * @return {@link Document} representing JSON document
      *
-     * @throws JsonLdError
+     * @throws JsonLdError if the document creation fails
      */
     public static final JsonDocument of(final MediaType contentType, final InputStream is)  throws JsonLdError {
 
@@ -133,7 +133,7 @@ public final class JsonDocument implements Document {
      * @param reader providing JSON content
      * @return {@link Document} representing JSON document
      *
-     * @throws JsonLdError
+     * @throws JsonLdError if the document creation fails
      */
     public static final JsonDocument of(final MediaType contentType, final Reader reader)  throws JsonLdError {
 

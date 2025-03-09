@@ -27,13 +27,13 @@ import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.RdfValue;
 
-final class RdfGraphImpl implements RdfGraph {
+final class MutableRdfGraph implements RdfGraph {
 
     private final Map<RdfResource, Map<RdfResource, Set<RdfValue>>> index;
 
     private final List<RdfTriple> triples;
 
-    protected RdfGraphImpl() {
+    protected MutableRdfGraph() {
         this.index = new HashMap<>();
         this.triples = new ArrayList<>();
     }

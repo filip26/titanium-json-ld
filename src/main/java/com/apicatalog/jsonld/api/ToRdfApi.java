@@ -29,8 +29,6 @@ import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfDatasetSupplier;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
-import com.apicatalog.rdf.api.RdfQuadEmitter;
-import com.apicatalog.rdf.api.RdfTripleConsumer;
 
 import jakarta.json.JsonStructure;
 
@@ -105,7 +103,7 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
      * If set to true, the JSON-LD processor may emit blank nodes for triple
      * predicates, otherwise they will be omitted.
      * 
-     * @param enable
+     * @param enable {@code true} to produce generalized RDF
      * @return builder instance
      */
     public ToRdfApi produceGeneralizedRdf(boolean enable) {
@@ -126,7 +124,7 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
      * Determines how value objects containing a base direction are transformed to
      * and from RDF.
      *
-     * @param direction
+     * @param direction determines how to process directed language-tagged literals
      * @return builder instance
      */
     public ToRdfApi rdfDirection(RdfDirection direction) {
@@ -163,7 +161,7 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
      *
      * @return {@link RdfDataset} representing provided <code>JSON-LD</code>
      *         document
-     * @throws JsonLdError
+     * @throws JsonLdError if the document transformation fails
      */
     public RdfDataset get() throws JsonLdError {
         final RdfDatasetSupplier consumer = new RdfDatasetSupplier();
@@ -172,12 +170,12 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
     }
 
     /**
-     * Emit transformed <code>JSON-LD</code> as RDF graph scoped triples. 
+     * Emit transformed <code>JSON-LD</code> as RDF quads.
      *
      * @param consumer that accepts emitted RDF statements
-     * @throws JsonLdError
+     * @throws JsonLdError if the document transformation fails
      */
-    public void provide(RdfTripleConsumer consumer) throws JsonLdError {
+    public void provide(RdfQuadConsumer consumer) throws JsonLdError {
         if (documentUri != null) {
             ToRdfProcessor.toRdf(consumer, documentUri, options);
 
@@ -187,16 +185,6 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
         } else {
             throw new IllegalArgumentException();
         }
-    }
-
-    /**
-     * Emit transformed <code>JSON-LD</code> as RDF quads. 
-     *
-     * @param consumer that accepts emitted RDF statements
-     * @throws JsonLdError
-     */
-    public void provide(RdfQuadConsumer consumer) throws JsonLdError {
-        provide(RdfQuadEmitter.newInstance(consumer));
     }
 
     /**

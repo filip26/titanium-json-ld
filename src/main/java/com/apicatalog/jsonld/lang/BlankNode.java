@@ -17,7 +17,7 @@ package com.apicatalog.jsonld.lang;
 
 import java.util.Arrays;
 
-import com.apicatalog.rdf.lang.RdfAlphabet;
+import com.apicatalog.rdf.nquads.NQuadsAlphabet;
 
 /**
  *
@@ -63,8 +63,8 @@ public final class BlankNode {
 
         if (chars[0] != '_'
                 || chars[1] != ':'
-                || (RdfAlphabet.PN_CHARS_U.negate().test(chars[2])
-                        && RdfAlphabet.ASCII_DIGIT.negate().test(chars[2]))
+                || (NQuadsAlphabet.PN_CHARS_U.negate().test(chars[2])
+                        && NQuadsAlphabet.ASCII_DIGIT.negate().test(chars[2]))
                 || chars[chars.length - 1] == '.'
                         )  {
             return false;
@@ -74,6 +74,6 @@ public final class BlankNode {
             return true;
         }
 
-        return Arrays.stream(chars, 3, chars.length - 1).allMatch(RdfAlphabet.PN_CHARS.or(ch -> ch == '.'));
+        return Arrays.stream(chars, 3, chars.length - 1).allMatch(NQuadsAlphabet.PN_CHARS.or(ch -> ch == '.'));
     }
 }
