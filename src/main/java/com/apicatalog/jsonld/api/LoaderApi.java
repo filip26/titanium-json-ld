@@ -25,7 +25,7 @@ public interface LoaderApi<R> {
      * used to retrieve remote documents and contexts; otherwise, if not specified,
      * the processor's built-in loader is used.
      *
-     * @param loader
+     * @param loader the {@link DocumentLoader} instance, never {@code null}.
      * @return builder instance
      */
     R loader(DocumentLoader loader);

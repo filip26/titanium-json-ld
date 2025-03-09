@@ -85,10 +85,10 @@ public final class JsonLdToRdf {
 
     /**
      * @deprecated since 1.6.0, use {@link #with(NodeMap)} and
-     *             {@link #provide(RdfTripleConsumer)}.
-     * @param nodeMap
-     * @param dataset
-     * @return
+     *             {@link #provide(RdfQuadConsumer)}.
+     * @param nodeMap a node map instance, never {@code null}
+     * @param dataset a dataset instance, never {@code null}
+     * @return the {@link JsonLdToRdf} instance enabling fluent programming 
      */
     @Deprecated
     public static final JsonLdToRdf with(NodeMap nodeMap, RdfDataset dataset) {
@@ -186,9 +186,9 @@ public final class JsonLdToRdf {
     }
 
     /**
-     * @deprecated since 1.6.0, use {@link #provide(RdfTripleConsumer)}.
-     * @return
-     * @throws JsonLdError
+     * @deprecated since 1.6.0, use {@link #provide(RdfQuadConsumer)}.
+     * @return a dataset
+     * @throws JsonLdError if the transformation fails
      */
     @Deprecated
     public RdfDataset build() throws JsonLdError {

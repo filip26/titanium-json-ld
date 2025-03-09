@@ -138,7 +138,7 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
      * Get the result of flattening.
      *
      * @return {@link JsonStructure} representing flattened document
-     * @throws JsonLdError
+     * @throws JsonLdError if the document flattening fails
      */
     public JsonStructure get() throws JsonLdError {
 

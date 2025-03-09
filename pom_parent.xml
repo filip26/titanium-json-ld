@@ -130,6 +130,7 @@
         <configuration>
           <doclint>all,-missing</doclint>
           <failOnWarnings>false</failOnWarnings>
+          <failOnError>false</failOnError>          
         </configuration>
         <executions>
           <execution>

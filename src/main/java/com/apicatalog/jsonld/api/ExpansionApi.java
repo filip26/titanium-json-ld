@@ -125,7 +125,7 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
      * Get the result of the document expansion.
      *
      * @return {@link JsonArray} representing expanded document
-     * @throws JsonLdError
+     * @throws JsonLdError if the document expansion fails
      */
     public JsonArray get() throws JsonLdError {
         if (document != null) {

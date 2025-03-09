@@ -96,7 +96,7 @@ public final class FromRdfApi implements CommonApi<FromRdfApi>, LoaderApi<FromRd
      * Get <code>JSON-LD</code> representation of the provided {@link RdfDataset}.
      *
      * @return {@link JsonArray} representing <code>JSON-LD</code> document
-     * @throws JsonLdError
+     * @throws JsonLdError if the document transformation fails
      */
     public JsonArray get() throws JsonLdError {
 
