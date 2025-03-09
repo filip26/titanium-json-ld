@@ -15,7 +15,6 @@
  */
 package com.apicatalog.rdf.io.error;
 
-@Deprecated
 public class RdfReaderException extends Exception {
 
     private static final long serialVersionUID = -5357042008536435090L;

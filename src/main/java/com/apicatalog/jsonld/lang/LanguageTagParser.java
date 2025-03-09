@@ -21,7 +21,7 @@ import java.util.function.IntPredicate;
 import java.util.regex.Pattern;
 
 import com.apicatalog.jsonld.lang.LanguageTag.Extension;
-import com.apicatalog.rdf.lang.RdfAlphabet;
+import com.apicatalog.rdf.nquads.NQuadsAlphabet;
 
 /**
  * Language tags are used to help identify languages and are defined by
@@ -77,8 +77,8 @@ final class LanguageTagParser {
 
         // must start with ALPHA and ends with ALPHANUM
         if (stripped.length() == 0
-                || RdfAlphabet.ASCII_ALPHA.negate().test(stripped.codePointAt(0))
-                || RdfAlphabet.ASCII_ALPHA_NUM.negate().test(stripped.codePointAt(stripped.length() - 1))) {
+                || NQuadsAlphabet.ASCII_ALPHA.negate().test(stripped.codePointAt(0))
+                || NQuadsAlphabet.ASCII_ALPHA_NUM.negate().test(stripped.codePointAt(stripped.length() - 1))) {
             return new LanguageTagParser(languageTag, null, verifierMode);
         }
 
@@ -200,7 +200,7 @@ final class LanguageTagParser {
     }
 
     boolean acceptAlpha(int min, int max, Consumer<String> consumer) {
-        return accept(min, max, RdfAlphabet.ASCII_ALPHA, consumer);
+        return accept(min, max, NQuadsAlphabet.ASCII_ALPHA, consumer);
     }
 
     boolean acceptDigit(int length) {
@@ -212,11 +212,11 @@ final class LanguageTagParser {
     }
 
     boolean acceptDigit(int min, int max, Consumer<String> consumer) {
-        return accept(min, max, RdfAlphabet.ASCII_DIGIT, consumer);
+        return accept(min, max, NQuadsAlphabet.ASCII_DIGIT, consumer);
     }
 
     boolean acceptAlphaNun(int min, int max, Consumer<String> consumer) {
-        return accept(min, max, RdfAlphabet.ASCII_ALPHA_NUM, consumer);
+        return accept(min, max, NQuadsAlphabet.ASCII_ALPHA_NUM, consumer);
     }
 
     boolean accept(int min, int max, IntPredicate predicate, Consumer<String> consumer) {
@@ -253,15 +253,15 @@ final class LanguageTagParser {
     }
 
     boolean alphaRange(int index, int length) {
-        return range(index, length, RdfAlphabet.ASCII_ALPHA);
+        return range(index, length, NQuadsAlphabet.ASCII_ALPHA);
     }
 
     boolean alphaNumRange(int index, int length) {
-        return range(index, length, RdfAlphabet.ASCII_ALPHA_NUM);
+        return range(index, length, NQuadsAlphabet.ASCII_ALPHA_NUM);
     }
 
     boolean digitRange(int index, int length) {
-        return range(index, length, RdfAlphabet.ASCII_DIGIT);
+        return range(index, length, NQuadsAlphabet.ASCII_DIGIT);
     }
 
     boolean range(int index, int length, IntPredicate predicate) {

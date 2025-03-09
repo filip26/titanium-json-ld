@@ -27,7 +27,7 @@ import com.apicatalog.rdf.io.error.RdfReaderException;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
 
 /**
- *
+ * @deprecated since 1.6.0, use {@link com.apicatalog.rdf.nquads.NQuadsReader}.
  * @see <a href="https://www.w3.org/TR/n-quads/">RDF 1.1. N-Quads</a>
  *
  */

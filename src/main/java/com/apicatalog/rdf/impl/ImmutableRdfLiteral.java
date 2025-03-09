@@ -19,9 +19,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.apicatalog.rdf.RdfLiteral;
-import com.apicatalog.rdf.io.nquad.NQuadsWriter;
 import com.apicatalog.rdf.lang.RdfConstants;
 import com.apicatalog.rdf.lang.XsdConstants;
+import com.apicatalog.rdf.nquads.NQuadsAlphabet;
 
 final class ImmutableRdfLiteral implements RdfLiteral {
 
@@ -88,7 +88,7 @@ final class ImmutableRdfLiteral implements RdfLiteral {
         StringBuilder builder = new StringBuilder();
 
         builder.append('"');
-        builder.append(NQuadsWriter.escape(value));
+        builder.append(NQuadsAlphabet.escape(value));
         builder.append('"');
 
         if (langTag != null) {

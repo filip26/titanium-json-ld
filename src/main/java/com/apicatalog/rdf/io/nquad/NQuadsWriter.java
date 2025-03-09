@@ -27,7 +27,7 @@ import com.apicatalog.rdf.lang.RdfConstants;
 import com.apicatalog.rdf.nquads.NQuadsAlphabet;
 
 /**
- *
+ * @deprecated since 1.6.0, use {@link com.apicatalog.rdf.nquads.NQuadsWriter}.
  * @see <a href="https://www.w3.org/TR/n-quads/">RDF 1.1. N-Quads</a>
  *
  */
