@@ -58,7 +58,7 @@ public class NQuadsWriter implements RdfWriter {
                             nquad.getPredicate().getValue(),
                             nquad.getObject().getValue(),
                             nquad.getObject().asLiteral().getDatatype(),
-                            nquad.getObject().asLiteral().getLanguage().orElseThrow(),
+                            nquad.getObject().asLiteral().getLanguage().get(),
                             null,
                             nquad.getGraphName().map(RdfResource::getValue).orElse(null));
                     return;
