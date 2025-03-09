@@ -1,16 +1,3 @@
-> [!IMPORTANT]
->  **This Open-Source Project Needs Your Support**
->
-> This library is offered as a free, open-source resource, benefiting countless users without requiring anything in return. However, maintaining it takes significant time, effort, and resources—something that is often overlooked by those who use it freely.
->
-> There is a noticeable gap between usage and contributions, highlighting a challenging reality for open-source projects: heavy reliance on the work of developers and maintainers without adequate support in return. Open-source projects like this depend on the contributions of their users to remain sustainable.
->
-> **Open-source is not free labor. If your company profits from this library but refuses to contribute back, you are not supporting the ecosystem—you are exploiting it.**
-> 
-> This library has been sustained through countless hours of work and resources, provided in good faith to the community. If your business depends on it but doesn't give back, consider whether you truly deserve the benefits you're taking. Support the work, or step aside for those who value collaboration and fairness.
->
-> Don’t let open-source be taken for granted. Support the work that supports you.
-
 # Titanium JSON-LD 1.1 Processor & API
 
 An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-based Serialization for Linked Data) specification in Java, utilizing [Jakarta JSON Processing](https://github.com/eclipse-ee4j/jsonp).
@@ -35,10 +22,11 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 
 - [LD-CLI](https://github.com/filip26/ld-cli) - A native command line utility for Ubuntu, Mac, and Windows
 - [JSON-LD-star](https://json-ld.github.io/json-ld-star) - Expansion and compaction built-in support (experimental)
-- [RDF-URDNA](https://github.com/simon-greatrix/rdf-urdna) - Universal RDF Dataset Normalization Algorithm 2015
 - [Titanium RDFC](https://github.com/filip26/titanium-rdfc) - W3C Standard RDF Dataset Canonicalization
+- [Titanium N-QUADS](https://github.com/filip26/titanium-rdf-n-quads) - W3C RDF 1.1 N-Quads
 - [Titanium JCS](https://github.com/filip26/titanium-jcs) - RFC 8785 JSON Canonicalization Scheme (JCS)
 - [Iridium CBOR-LD](https://github.com/filip26/iridium-cbor-ld) - A CBOR-based Processor for Linked Data
+- [RDF-URDNA](https://github.com/simon-greatrix/rdf-urdna) - Universal RDF Dataset Normalization Algorithm 2015
 
 ## Table of Contents  
 - [Conformance](#conformance)
@@ -177,14 +165,14 @@ JsonLd.expand(...).undefinedTermsPolicy(Fail|Warn|Ignore).get();
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium-json-ld</artifactId>
-    <version>1.5.0</version>
+    <version>1.6.0</version>
 </dependency>
 ```
 
 #### Gradle (Java 8+, Android API Level >= 24)
 
 ```gradle
-implementation("com.apicatalog:titanium-json-ld-jre8:1.5.0")
+implementation("com.apicatalog:titanium-json-ld-jre8:1.6.0")
 ```
 
 ### JSON-P Provider
