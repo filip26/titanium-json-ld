@@ -220,13 +220,13 @@ public class EarlGenerator {
         writer.println("[ a earl:Assertion;");
         writer.println("  earl:assertedBy <https://github.com/filip26>;");
         writer.println("  earl:subject <https://github.com/filip26/titanium-json-ld>;");
-        writer.println("  earl:test <" + testUri + ">;");
+        writer.println("  earl:test <" + testUri + "> ;");
         writer.println("  earl:result [");
         writer.println("    a earl:TestResult;");
-        writer.println("    earl:outcome " + (passed ? "earl:passed" : "earl:failed") + ";");
+        writer.println("    earl:outcome " + (passed ? "earl:passed" : "earl:failed") + " ;");
         writer.println("    dc:date \"" + DateTimeFormatter.ISO_INSTANT.format(Instant.now().truncatedTo(ChronoUnit.SECONDS)) + "\"^^xsd:dateTime");
-        writer.println("  ];");
-        writer.println("  earl:mode earl:automatic;");
+        writer.println("  ] ;");
+        writer.println("  earl:mode earl:automatic ;");
         writer.println("] .");
     }
 
@@ -239,9 +239,9 @@ public class EarlGenerator {
         writer.println("@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .");
         writer.println("@prefix earl: <http://www.w3.org/ns/earl#> .");
         writer.println();
-        writer.println("<> foaf:primaryTopic <https://github.com/filip26/titanium-json-ld>;");
-        writer.println("  dc:issued \"" + DateTimeFormatter.ISO_INSTANT.format(Instant.now().truncatedTo(ChronoUnit.SECONDS)) + "\"^^xsd:dateTime;");
-        writer.println("  foaf:maker <https://github.com/filip26>.");
+        writer.println("<> foaf:primaryTopic <https://github.com/filip26/titanium-json-ld> ;");
+        writer.println("  dc:issued \"" + DateTimeFormatter.ISO_INSTANT.format(Instant.now().truncatedTo(ChronoUnit.SECONDS)) + "\"^^xsd:dateTime ;");
+        writer.println("  foaf:maker <https://apicatalog.com> .");
         writer.println();
         writer.println("<https://github.com/filip26/titanium-json-ld> a earl:TestSubject,");
         writer.println("    doap:Project,");
