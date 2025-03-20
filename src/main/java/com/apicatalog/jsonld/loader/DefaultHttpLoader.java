@@ -237,12 +237,26 @@ class DefaultHttpLoader implements DocumentLoader {
     /**
      * Set read timeout
      * 
+     * @deprecated use {@link #timeout()} instead
      * @param timeount to set or <code>null</code> for no timeout
      * @return {@link DefaultHttpLoader} instance
      * @since 1.4.0
      */
+    @Deprecated
     public DefaultHttpLoader timeount(Duration timeount) {
         httpClient.timeout(timeount);
+        return this;
+    }
+
+    /**
+     * Set read timeout
+     *
+     * @param timeout to set or <code>null</code> for no timeout
+     * @return {@link DefaultHttpLoader} instance
+     * @since 1.6.1
+     */
+    public DefaultHttpLoader timeout(Duration timeout) {
+        httpClient.timeout(timeout);
         return this;
     }
 }
