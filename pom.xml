@@ -24,7 +24,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <envSources>src/main/java11</envSources>
         <titanium.rdf.api.version>1.0.0</titanium.rdf.api.version>
-        <titanium.rdf.nquads.version>1.0.0</titanium.rdf.nquads.version>        
+        <titanium.rdf.nquads.version>1.0.1</titanium.rdf.nquads.version>        
     </properties>
     <dependencies>
         <dependency>
