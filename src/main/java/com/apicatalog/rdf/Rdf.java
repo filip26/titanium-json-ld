@@ -35,6 +35,7 @@ import com.apicatalog.rdf.lang.RdfConstants;
 import com.apicatalog.rdf.lang.XsdConstants;
 import com.apicatalog.rdf.spi.RdfProvider;
 
+@Deprecated
 public final class Rdf {
 
     private Rdf() {

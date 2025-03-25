@@ -32,6 +32,7 @@ import com.apicatalog.rdf.io.error.UnsupportedContentException;
 
 import jakarta.json.JsonException;
 
+@Deprecated
 public final class RdfDocument implements Document {
 
     private final MediaType contentType;

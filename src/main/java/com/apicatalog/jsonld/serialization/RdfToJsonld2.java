@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld.serialization;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -39,23 +38,21 @@ import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
-import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfResource;
-import com.apicatalog.rdf.api.RdfConsumerException;
-import com.apicatalog.rdf.api.RdfQuadConsumer;
+import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.lang.RdfConstants;
-import com.apicatalog.rdf.lang.XsdConstants;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
-import jakarta.json.stream.JsonParser;
 
-public final class RdfToJsonld implements RdfQuadConsumer {
+public final class RdfToJsonld2 {
+
+    // required
+    private RdfDataset dataset;
 
     // optional
     private boolean ordered;
@@ -72,12 +69,9 @@ public final class RdfToJsonld implements RdfQuadConsumer {
     private Map<String, Map<String, Boolean>> compoundLiteralSubjects;
     private Map<String, Reference> referenceOnce;
 
-    private RdfToJsonld() {
-        this.graphMap = new GraphMap();
-        this.referenceOnce = new LinkedHashMap<>();
-        this.compoundLiteralSubjects = new LinkedHashMap<>();
+    private RdfToJsonld2(final RdfDataset dataset) {
+        this.dataset = dataset;
 
-        
         // default values
         this.ordered = false;
         this.rdfDirection = null;
@@ -86,81 +80,52 @@ public final class RdfToJsonld implements RdfQuadConsumer {
         this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
-    @Deprecated
-    public static final RdfToJsonld with(final RdfDataset dataset) throws RdfConsumerException {
-        final RdfToJsonld toJsonLd = new RdfToJsonld();
-        
-        for (final RdfNQuad quad : dataset.toList()) {
-            if (quad.getObject().isLiteral()) {
-                toJsonLd.quad(
-                        quad.getSubject().getValue(),
-                        quad.getPredicate().getValue(),
-                        quad.getObject().getValue(),
-                        quad.getObject().asLiteral().getDatatype(),
-                        quad.getObject().asLiteral().getLanguage().orElse(null),
-                        null, 
-                        quad.getGraphName()
-                            .map(RdfResource::getValue)
-                            .orElse(null)
-                        );
-                
-                continue;
-            }
-            toJsonLd.quad(
-                    quad.getSubject().getValue(),
-                    quad.getPredicate().getValue(),
-                    quad.getObject().getValue(),
-                    null, null, null, 
-                    quad.getGraphName()
-                        .map(RdfResource::getValue)
-                        .orElse(null)
-                    );
-        }
-        
-        return toJsonLd;
+    public static final RdfToJsonld2 with(final RdfDataset dataset) {
+        return new RdfToJsonld2(dataset);
     }
 
-    public RdfToJsonld ordered(boolean ordered) {
+    public RdfToJsonld2 ordered(boolean ordered) {
         this.ordered = ordered;
         return this;
     }
 
-    public RdfToJsonld rdfDirection(RdfDirection rdfDirection) {
+    public RdfToJsonld2 rdfDirection(RdfDirection rdfDirection) {
         this.rdfDirection = rdfDirection;
         return this;
     }
 
-    public RdfToJsonld useNativeTypes(boolean useNativeTypes) {
+    public RdfToJsonld2 useNativeTypes(boolean useNativeTypes) {
         this.useNativeTypes = useNativeTypes;
         return this;
     }
 
-    public RdfToJsonld useRdfType(boolean useRdfType) {
+    public RdfToJsonld2 useRdfType(boolean useRdfType) {
         this.useRdfType = useRdfType;
         return this;
     }
 
-    public RdfToJsonld processingMode(JsonLdVersion processingMode) {
+    public RdfToJsonld2 processingMode(JsonLdVersion processingMode) {
         this.processingMode = processingMode;
         return this;
     }
 
-    /**
-     * @deprecated since 1.5.0, use
-     *             <code>RdfToJsonld#uriValidation(com.apicatalog.jsonld.uri.UriValidationPolicy)</code>
-     */
-    @Deprecated
-    public RdfToJsonld uriValidation(boolean enabled) {
-        return uriValidation(enabled ? UriValidationPolicy.Full : UriValidationPolicy.SchemeOnly);
-    }
-
-    public RdfToJsonld uriValidation(UriValidationPolicy uriValidation) {
-        this.uriValidation = uriValidation;
-        return this;
-    }
-
     public JsonArray build() throws JsonLdError {
-        
+
+        graphMap = new GraphMap();
+
+        // 3.
+        referenceOnce = new LinkedHashMap<>();
+
+        // 4.
+        compoundLiteralSubjects = new LinkedHashMap<>();
+
+        // 5.
+        step5(Keywords.DEFAULT, dataset.getDefaultGraph());
+
+        for (RdfResource graphName : dataset.getGraphNames()) {
+            step5(graphName.getValue(), dataset.getGraph(graphName).orElse(null));
+        }
+
         // 6.
         for (String graphName : graphMap.keys()) {
 
@@ -348,10 +313,7 @@ public final class RdfToJsonld implements RdfQuadConsumer {
         return result.build();
     }
 
-    @Override
-    public RdfQuadConsumer quad(String subject, String predicate, String object, String datatype, String language, String direction, String graph) throws RdfConsumerException {
-
-        final String graphName = graph == null ? Keywords.DEFAULT : graph;
+    private void step5(final String graphName, final RdfGraph graph) throws JsonLdError {
 
         // 5.3.
         if (!compoundLiteralSubjects.containsKey(graphName)) {
@@ -366,212 +328,113 @@ public final class RdfToJsonld implements RdfQuadConsumer {
         // 5.6.
         final Map<String, Boolean> compoundMap = compoundLiteralSubjects.get(graphName);
 
-        // 5.7.1.
-        if (!graphMap.contains(graphName, subject)) {
-            graphMap.set(graphName, subject, Keywords.ID, JsonProvider.instance().createValue(subject));
-        }
+        // 5.7.
+        for (final RdfTriple triple : graph.toList()) {
 
-        // 5.7.3.
-        if (RdfDirection.COMPOUND_LITERAL == rdfDirection
-                && RdfConstants.DIRECTION.equals(predicate)) {
+            final String subject = triple.getSubject().getValue();
+            final String predicate = triple.getPredicate().getValue();
 
-            compoundMap.put(subject, Boolean.TRUE);
-        }
+            // 5.7.1.
+            if (!graphMap.contains(graphName, subject)) {
+                graphMap.set(graphName, subject, Keywords.ID, JsonProvider.instance().createValue(subject));
+            }
 
-        // 5.7.4.
-        if (!RdfQuadConsumer.isLiteral(datatype, language, direction)
-                && !graphMap.contains(graphName, object)) {
+            // 5.7.3.
+            if (RdfDirection.COMPOUND_LITERAL == rdfDirection
+                    && RdfConstants.DIRECTION.equals(predicate)) {
 
-            graphMap.set(graphName, object, Keywords.ID, JsonProvider.instance().createValue(object));
-        }
+                compoundMap.put(subject, Boolean.TRUE);
+            }
 
-        // 5.7.5.
-        if (!useRdfType && RdfConstants.TYPE.equals(predicate) && !RdfQuadConsumer.isLiteral(datatype, language, direction)) {
+            // 5.7.4.
+            if ((triple.getObject().isBlankNode() || triple.getObject().isIRI())
+                    && !graphMap.contains(graphName, triple.getObject().getValue())) {
 
-            final Optional<JsonValue> type = graphMap.get(graphName, subject, Keywords.TYPE);
+                graphMap.set(graphName, triple.getObject().getValue(), Keywords.ID, JsonProvider.instance().createValue(triple.getObject().getValue()));
+            }
 
-            if (type.isPresent()) {
+            // 5.7.5.
+            if (!useRdfType && RdfConstants.TYPE.equals(predicate) && !triple.getObject().isLiteral()) {
 
-                JsonArray types = type.get().asJsonArray();
+                final Optional<JsonValue> type = graphMap.get(graphName, subject, Keywords.TYPE);
 
-                graphMap.set(graphName, subject, Keywords.TYPE, JsonProvider.instance().createArrayBuilder(types).add(object).build());
+                if (type.isPresent()) {
 
+                    JsonArray types = type.get().asJsonArray();
+
+                    graphMap.set(graphName, subject, Keywords.TYPE, JsonProvider.instance().createArrayBuilder(types).add(triple.getObject().getValue()).build());
+
+                } else {
+
+                    graphMap.set(graphName, subject, Keywords.TYPE, JsonProvider.instance().createArrayBuilder().add(triple.getObject().getValue()).build());
+                }
+
+                continue;
+            }
+
+            // 5.7.6.
+            final JsonObject value = RdfToObject
+                    .with(triple.getObject(), rdfDirection, useNativeTypes)
+                    .processingMode(processingMode)
+                    .build();
+
+            final Optional<JsonValue> predicateValue = graphMap.get(graphName, subject, predicate);
+
+            // 5.7.7.
+            if (predicateValue.isPresent()) {
+
+                JsonArray array = predicateValue.get().asJsonArray();
+
+                if (!array.contains(value)) {
+                    graphMap.set(graphName, subject, predicate, JsonProvider.instance().createArrayBuilder(array).add(value).build());
+                }
+
+                // 5.7.8.
             } else {
-
-                graphMap.set(graphName, subject, Keywords.TYPE, JsonProvider.instance().createArrayBuilder().add(object).build());
+                graphMap.set(graphName, subject, predicate, JsonProvider.instance().createArrayBuilder().add(value).build());
             }
 
-            return this;
-        }
+            // 5.7.9.
+            if (triple.getObject().isIRI() && RdfConstants.NIL.equals(triple.getObject().getValue())) {
 
-        // 5.7.6.
-        final JsonObject value = toObject(object, datatype, language, direction);
+                Reference reference = new Reference();
+                reference.graphName = graphName;
+                reference.subject = subject;
+                reference.property = predicate;
+                reference.value = value;
 
-        final Optional<JsonValue> predicateValue = graphMap.get(graphName, subject, predicate);
+                graphMap.addUsage(graphName, triple.getObject().getValue(), reference);
 
-        // 5.7.7.
-        if (predicateValue.isPresent()) {
+                // 5.7.10.
+            } else if (referenceOnce.containsKey(triple.getObject().getValue())) {
 
-            JsonArray array = predicateValue.get().asJsonArray();
+                referenceOnce.put(triple.getObject().getValue(), null);
 
-            if (!array.contains(value)) {
-                graphMap.set(graphName, subject, predicate, JsonProvider.instance().createArrayBuilder(array).add(value).build());
+                // 5.7.11.
+            } else if (triple.getObject().isBlankNode()) {
+
+                Reference reference = new Reference();
+                reference.graphName = graphName;
+                reference.subject = subject;
+                reference.property = predicate;
+                reference.value = value;
+
+                referenceOnce.put(triple.getObject().getValue(), reference);
             }
-
-            // 5.7.8.
-        } else {
-            graphMap.set(graphName, subject, predicate, JsonProvider.instance().createArrayBuilder().add(value).build());
         }
-
-        // 5.7.9.
-        if (RdfConstants.NIL.equals(object)) {
-
-            Reference reference = new Reference();
-            reference.graphName = graphName;
-            reference.subject = subject;
-            reference.property = predicate;
-            reference.value = value;
-
-            graphMap.addUsage(graphName, object, reference);
-
-            // 5.7.10.
-        } else if (referenceOnce.containsKey(object)) {
-
-            referenceOnce.put(object, null);
-
-            // 5.7.11.
-        } else if (RdfQuadConsumer.isBlank(object)) {
-
-            Reference reference = new Reference();
-            reference.graphName = graphName;
-            reference.subject = subject;
-            reference.property = predicate;
-            reference.value = value;
-
-            referenceOnce.put(object, reference);
-        }
-
-        return this;
     }
 
-    JsonObject toObject(String object, String datatype, String langTag, String direction) throws RdfConsumerException {
+    /**
+     * @deprecated since 1.5.0, use
+     *             <code>RdfToJsonld#uriValidation(com.apicatalog.jsonld.uri.UriValidationPolicy)</code>
+     */
+    @Deprecated
+    public RdfToJsonld2 uriValidation(boolean enabled) {
+        return uriValidation(enabled ? UriValidationPolicy.Full : UriValidationPolicy.SchemeOnly);
+    }
 
-        // 1.
-        if (!RdfQuadConsumer.isLiteral(datatype, langTag, direction)) {
-            return new RefJsonObject(JsonProvider.instance().createObjectBuilder().add(Keywords.ID, object).build());
-        }
-
-        final JsonObjectBuilder result = JsonProvider.instance().createObjectBuilder();
-
-        // 2.2.
-        JsonValue convertedValue = null;
-
-        // 2.3.
-        String type = null;
-
-        // 2.4.
-        if (useNativeTypes) {
-
-            if (datatype != null) {
-
-                // 2.4.1.
-                if (XsdConstants.STRING.equals(datatype)) {
-                    convertedValue = JsonProvider.instance().createValue(object);
-
-                    // 2.4.2.
-                } else if (XsdConstants.BOOLEAN.equals(datatype)) {
-
-                    if ("true".equalsIgnoreCase(object)) {
-
-                        convertedValue = JsonValue.TRUE;
-
-                    } else if ("false".equalsIgnoreCase(object)) {
-
-                        convertedValue = JsonValue.FALSE;
-
-                    } else {
-
-                        type = XsdConstants.BOOLEAN;
-                    }
-
-                    // 2.4.3.
-                } else if (XsdConstants.INTEGER.equals(datatype) || XsdConstants.INT.equals(datatype) || XsdConstants.LONG.equals(datatype)) {
-
-                    convertedValue = JsonProvider.instance().createValue(Long.parseLong(object));
-
-                } else if (XsdConstants.DOUBLE.equals(datatype) || XsdConstants.FLOAT.equals(datatype)) {
-
-                    convertedValue = JsonProvider.instance().createValue(Double.parseDouble(object));
-
-                } else if (datatype != null) {
-
-                    type = datatype;
-                }
-            }
-
-            // 2.5.
-        } else if (processingMode != JsonLdVersion.V1_0
-                && RdfConstants.JSON.equals(datatype)) {
-
-            try (JsonParser parser = JsonProvider.instance().createParser(new StringReader(object))) {
-
-                parser.next();
-
-                convertedValue = parser.getValue();
-                type = Keywords.JSON;
-
-            } catch (Exception e) {
-                throw new RdfConsumerException(new JsonLdError(JsonLdErrorCode.INVALID_JSON_LITERAL, e));
-            }
-
-            // 2.6.
-        } else if (RdfDirection.I18N_DATATYPE == rdfDirection
-                && datatype != null
-                && datatype.startsWith(RdfConstants.I18N_BASE)) {
-
-            convertedValue = JsonProvider.instance().createValue(object);
-
-            String langId = datatype.substring(RdfConstants.I18N_BASE.length());
-
-            int directionIndex = langId.indexOf('_');
-
-            if (directionIndex > 1) {
-
-                result.add(Keywords.LANGUAGE, JsonProvider.instance().createValue(langId.substring(0, directionIndex)));
-                result.add(Keywords.DIRECTION, JsonProvider.instance().createValue(langId.substring(directionIndex + 1)));
-
-            } else if (directionIndex == 0) {
-
-                result.add(Keywords.DIRECTION, JsonProvider.instance().createValue(langId.substring(1)));
-
-            } else if (directionIndex == -1) {
-
-                result.add(Keywords.LANGUAGE, JsonProvider.instance().createValue(langId));
-            }
-
-            // 2.7.
-        } else if (langTag != null) {
-
-            result.add(Keywords.LANGUAGE, Json.createValue(langTag));
-
-            // 2.8.
-        } else if (datatype != null
-                && !XsdConstants.STRING.equals(datatype)) {
-
-            type = datatype;
-        }
-
-        // 2.9.
-        result.add(Keywords.VALUE, (convertedValue != null)
-                ? convertedValue
-                : JsonProvider.instance().createValue(object));
-
-        // 2.10.
-        if (type != null) {
-            result.add(Keywords.TYPE, JsonProvider.instance().createValue(type));
-        }
-
-        // 2.11.
-        return result.build();
+    public RdfToJsonld2 uriValidation(UriValidationPolicy uriValidation) {
+        this.uriValidation = uriValidation;
+        return this;
     }
 }

@@ -20,6 +20,7 @@ package com.apicatalog.rdf;
  *
  * @since 0.8.4
  */
+@Deprecated
 public interface RdfValue {
 
     /**

@@ -20,6 +20,7 @@ import java.util.Optional;
 /**
  * The {@link RdfLiteral} interface describes an immutable <code>RDF Literal</code>.
  */
+@Deprecated
 public interface RdfLiteral extends RdfValue {
 
     /**

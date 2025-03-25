@@ -32,6 +32,7 @@ import com.apicatalog.rdf.io.RdfReader;
 import com.apicatalog.rdf.io.RdfWriter;
 import com.apicatalog.rdf.io.error.UnsupportedContentException;
 
+@Deprecated
 public abstract class RdfProvider {
 
     private static RdfProvider provider = null;

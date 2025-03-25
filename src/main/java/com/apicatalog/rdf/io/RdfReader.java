@@ -20,6 +20,7 @@ import java.io.IOException;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.io.error.RdfReaderException;
 
+@Deprecated
 public interface RdfReader {
 
     RdfDataset readDataset() throws IOException, RdfReaderException;

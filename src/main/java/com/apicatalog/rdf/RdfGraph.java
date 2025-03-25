@@ -30,6 +30,7 @@ import com.apicatalog.jsonld.JsonLd;
  *      IDL</a>
  *
  */
+@Deprecated
 public interface RdfGraph {
 
     boolean contains(RdfTriple triple);

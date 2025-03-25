@@ -18,6 +18,7 @@ package com.apicatalog.rdf;
 /**
  * An immutable RDF statement's value. Represents an absolute IRI or blank node identifier.
  */
+@Deprecated
 public interface RdfResource extends RdfValue {
 
     @Override

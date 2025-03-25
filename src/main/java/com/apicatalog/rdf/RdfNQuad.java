@@ -20,6 +20,7 @@ import java.util.Optional;
 /**
  * Represents an immutable N-Quad statement.
  */
+@Deprecated
 public interface RdfNQuad extends RdfTriple {
 
     Optional<RdfResource> getGraphName();

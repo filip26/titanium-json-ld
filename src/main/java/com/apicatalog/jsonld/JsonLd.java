@@ -22,6 +22,7 @@ import com.apicatalog.jsonld.api.ExpansionApi;
 import com.apicatalog.jsonld.api.FlatteningApi;
 import com.apicatalog.jsonld.api.FramingApi;
 import com.apicatalog.jsonld.api.FromRdfApi;
+import com.apicatalog.jsonld.api.FromRdfConsumerApi;
 import com.apicatalog.jsonld.api.ToRdfApi;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.uri.UriUtils;
@@ -451,11 +452,22 @@ public final class JsonLd {
      * @param document to transform
      * @return {@link FromRdfApi} allowing to set additional parameters
      */
+    @Deprecated
     public static final FromRdfApi fromRdf(final Document document) {
 
         assertRdfDocument(document, DOCUMENT_PARAM_NAME);
 
         return new FromRdfApi(document);
+    }
+
+    /**
+     * Transforms {@link Document} into a JSON-LD document in expanded form.
+     *
+     * @param document to transform
+     * @return {@link FromRdfApi} allowing to set additional parameters
+     */
+    public static final FromRdfConsumerApi fromRdf() {
+        return new FromRdfConsumerApi();
     }
 
     private static final URI assertLocation(final String location, final String param) {

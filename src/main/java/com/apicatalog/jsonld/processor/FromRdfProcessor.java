@@ -23,6 +23,7 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.jsonld.serialization.RdfToJsonld;
+import com.apicatalog.rdf.api.RdfConsumerException;
 
 import jakarta.json.JsonArray;
 
@@ -33,15 +34,19 @@ public final class FromRdfProcessor {
 
     public static final JsonArray fromRdf(final Document document, final JsonLdOptions options) throws JsonLdError {
 
-        return RdfToJsonld
-                    .with(document.getRdfContent().orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Expected RDF document but got [mediaType=" + document.getContentType() + ", uri=" + document.getDocumentUrl() + "]")))
-                    .ordered(options.isOrdered())
-                    .rdfDirection(options.getRdfDirection())
-                    .useNativeTypes(options.isUseNativeTypes())
-                    .useRdfType(options.isUseRdfType())
-                    .processingMode(options.getProcessingMode())
-                    .uriValidation(options.getUriValidation())
-                    .build();
+        try {
+            return RdfToJsonld
+                        .with(document.getRdfContent().orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Expected RDF document but got [mediaType=" + document.getContentType() + ", uri=" + document.getDocumentUrl() + "]")))
+                        .ordered(options.isOrdered())
+                        .rdfDirection(options.getRdfDirection())
+                        .useNativeTypes(options.isUseNativeTypes())
+                        .useRdfType(options.isUseRdfType())
+                        .processingMode(options.getProcessingMode())
+                        .uriValidation(options.getUriValidation())
+                        .build();
+        } catch (RdfConsumerException e) {
+            throw (JsonLdError)e.getCause();
+        }
     }
 
     public static JsonArray fromRdf(URI documentUri, JsonLdOptions options) throws JsonLdError {

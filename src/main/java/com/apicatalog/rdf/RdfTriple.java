@@ -18,6 +18,7 @@ package com.apicatalog.rdf;
 /**
  * The {@link RdfTriple} interface describes an immutable RDF triple.
  */
+@Deprecated
 public interface RdfTriple {
 
     /**
