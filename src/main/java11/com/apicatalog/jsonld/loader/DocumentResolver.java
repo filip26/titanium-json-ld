@@ -25,7 +25,8 @@ class DocumentResolver {
     }
 
     /**
-     * Return a reader or throw {@link JsonLdError} if there is no reader nor fallbackContentType.
+     * Return a reader or throw {@link JsonLdError} if there is no reader nor
+     * fallbackContentType.
      *
      * @param contentType content type of the requested reader
      * @return a reader allowing to transform an input into {@link Document}
@@ -36,20 +37,19 @@ class DocumentResolver {
                 .or(() -> {
 
                     if (fallbackContentType != null) {
-                        LOGGER.log(Level.WARNING, "Content type [{0}] is not acceptable, trying again with [{1}].", new Object[] { contentType, fallbackContentType});
+                        LOGGER.log(Level.WARNING, "Content type [{0}] is not acceptable, trying again with [{1}].", new Object[] { contentType, fallbackContentType });
                         return findReader(fallbackContentType);
                     }
 
                     return Optional.empty();
                 })
                 .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED,
-                    "Unsupported media type '" + contentType
-                    + "'. Supported content types are ["
-                    + MediaType.JSON_LD + ", "
-                    + MediaType.JSON  + ", +json, "
-                    + (Rdf.canRead().stream().map(MediaType::toString).collect(Collectors.joining(", ")))
-                    + "]"
-                    ));
+                        "Unsupported media type '" + contentType
+                                + "'. Supported content types are ["
+                                + MediaType.JSON_LD + ", "
+                                + MediaType.JSON + ", +json, "
+                                + (Rdf.canRead().stream().map(MediaType::toString).collect(Collectors.joining(", ")))
+                                + "]"));
     }
 
     public void setFallbackContentType(MediaType fallbackContentType) {
@@ -57,19 +57,15 @@ class DocumentResolver {
     }
 
     private static final Optional<DocumentReader<InputStream>> findReader(final MediaType type) {
+        if (type != null) {
+            if (JsonDocument.accepts(type)) {
+                return Optional.of(is -> JsonDocument.of(type, is));
+            }
 
-        if (type == null) {
-            return Optional.empty();
+            if (RdfDocument.accepts(type)) {
+                return Optional.of(is -> RdfDocument.of(type, is));
+            }
         }
-
-        if (JsonDocument.accepts(type)) {
-            return Optional.of(is ->  JsonDocument.of(type, is));
-        }
-
-        if (RdfDocument.accepts(type)) {
-            return Optional.of(is -> RdfDocument.of(type, is));
-        }
-
         return Optional.empty();
     }
 }

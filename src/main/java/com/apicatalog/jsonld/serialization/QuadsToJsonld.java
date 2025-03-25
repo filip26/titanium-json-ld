@@ -51,20 +51,20 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 
-public final class QuadsToJsonld implements RdfQuadConsumer {
+public class QuadsToJsonld implements RdfQuadConsumer {
 
     // optional
-    private boolean ordered;
-    private RdfDirection rdfDirection;
-    private boolean useNativeTypes;
-    private boolean useRdfType;
-    private UriValidationPolicy uriValidation;
-    private JsonLdVersion processingMode;
+    protected boolean ordered;
+    protected RdfDirection rdfDirection;
+    protected boolean useNativeTypes;
+    protected boolean useRdfType;
+    protected UriValidationPolicy uriValidation;
+    protected JsonLdVersion processingMode;
 
     // runtime
-    private GraphMap graphMap;
-    private Map<String, Map<String, Boolean>> compoundLiteralSubjects;
-    private Map<String, Reference> referenceOnce;
+    protected GraphMap graphMap;
+    protected Map<String, Map<String, Boolean>> compoundLiteralSubjects;
+    protected Map<String, Reference> referenceOnce;
 
     public QuadsToJsonld() {
         this.graphMap = new GraphMap();
@@ -131,7 +131,7 @@ public final class QuadsToJsonld implements RdfQuadConsumer {
     public JsonArray toJsonLd() throws JsonLdError {
 
         // 6.
-        for (String graphName : graphMap.keys()) {
+        for (final String graphName : graphMap.keys()) {
 
             // 6.1.
             if (compoundLiteralSubjects.containsKey(graphName)) {
