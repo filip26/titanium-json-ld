@@ -134,11 +134,11 @@ public final class RdfToJsonld {
             }
         } catch (RdfConsumerException e) {
             if (e.getCause() instanceof JsonLdError) {
-                throw (JsonLdError)e.getCause();
+                throw (JsonLdError) e.getCause();
             }
             throw new JsonLdError(JsonLdErrorCode.UNSPECIFIED, e);
         }
 
-        return toLd.build();
+        return toLd.toJsonLd();
     }
 }

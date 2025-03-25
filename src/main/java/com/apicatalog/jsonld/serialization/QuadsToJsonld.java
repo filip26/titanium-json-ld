@@ -59,12 +59,10 @@ public final class QuadsToJsonld implements RdfQuadConsumer {
     private boolean useNativeTypes;
     private boolean useRdfType;
     private UriValidationPolicy uriValidation;
-
     private JsonLdVersion processingMode;
 
     // runtime
     private GraphMap graphMap;
-
     private Map<String, Map<String, Boolean>> compoundLiteralSubjects;
     private Map<String, Reference> referenceOnce;
 
@@ -73,7 +71,6 @@ public final class QuadsToJsonld implements RdfQuadConsumer {
         this.referenceOnce = new LinkedHashMap<>();
         this.compoundLiteralSubjects = new LinkedHashMap<>();
 
-        
         // default values
         this.ordered = false;
         this.rdfDirection = null;
@@ -107,22 +104,32 @@ public final class QuadsToJsonld implements RdfQuadConsumer {
         return this;
     }
 
-    /**
-     * @deprecated since 1.5.0, use
-     *             <code>RdfToJsonld#uriValidation(com.apicatalog.jsonld.uri.UriValidationPolicy)</code>
-     */
-    @Deprecated
-    public QuadsToJsonld uriValidation(boolean enabled) {
-        return uriValidation(enabled ? UriValidationPolicy.Full : UriValidationPolicy.SchemeOnly);
-    }
-
     public QuadsToJsonld uriValidation(UriValidationPolicy uriValidation) {
         this.uriValidation = uriValidation;
         return this;
     }
 
-    public JsonArray build() throws JsonLdError {
-        
+    /**
+     * Resets the consumer to an empty state, allowing the same instance to process
+     * different datasets.
+     * 
+     * @return the current {@link QuadsToJsonld} instance after resetting
+     */
+    public QuadsToJsonld reset() {
+        this.graphMap = new GraphMap();
+        this.referenceOnce = new LinkedHashMap<>();
+        this.compoundLiteralSubjects = new LinkedHashMap<>();
+        return this;
+    }
+
+    /**
+     * Generates a new JSON-LD representation based on the received quads.
+     * 
+     * @return a {@link JsonArray} containing the generated JSON-LD data
+     * @throws JsonLdError if an error occurs during JSON-LD generation
+     */
+    public JsonArray toJsonLd() throws JsonLdError {
+
         // 6.
         for (String graphName : graphMap.keys()) {
 

@@ -32,6 +32,7 @@ public final class FromRdfProcessor {
     private FromRdfProcessor() {
     }
 
+    @Deprecated
     public static final JsonArray fromRdf(final Document document, final JsonLdOptions options) throws JsonLdError {
         return RdfToJsonld
                 .with(document.getRdfContent()
