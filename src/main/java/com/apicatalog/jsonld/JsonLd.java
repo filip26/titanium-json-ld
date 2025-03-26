@@ -545,6 +545,7 @@ public final class JsonLd {
         }
     }
 
+    @Deprecated
     private static final void assertRdfDocument(final Document document, final String param) {
 
         assertNotNull(document, param);

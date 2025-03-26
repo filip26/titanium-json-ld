@@ -32,6 +32,21 @@ import com.apicatalog.rdf.io.error.UnsupportedContentException;
 
 import jakarta.json.JsonException;
 
+/**
+ * This class is deprecated as of version 1.7.0.
+ * <p>
+ * Please use
+ * <a href="https://github.com/filip26/titanium-rdf-primitives">Titanium RDF
+ * Primitives</a> or any other third-party library to materialize RDF
+ * primitives.
+ * </p>
+ *
+ * @see <a href="https://github.com/filip26/titanium-rdf-primitives">Titanium
+ *      RDF Primitives</a>
+ * @see <a href="https://github.com/filip26/titanium-rdf-n-quads">Titanium RDF
+ *      N-QUADS</a>
+ * @deprecated since 1.7.0 - use an alternative RDF primitives library.
+ */
 @Deprecated
 public final class RdfDocument implements Document {
 
@@ -49,7 +64,8 @@ public final class RdfDocument implements Document {
     }
 
     /**
-     * Create a new document from {@link RdfDataset}. Sets {@link MediaType#N_QUADS} as the content type.
+     * Create a new document from {@link RdfDataset}. Sets {@link MediaType#N_QUADS}
+     * as the content type.
      *
      * @param dataset representing parsed RDF content
      * @return {@link Document} representing RDF document
@@ -61,8 +77,9 @@ public final class RdfDocument implements Document {
     /**
      * Create a new document from {@link RdfDataset}.
      *
-     * @param contentType reflecting the provided {@link RdfDataset}, only {@link MediaType#N_QUADS} is supported
-     * @param dataset representing parsed RDF content
+     * @param contentType reflecting the provided {@link RdfDataset}, only
+     *                    {@link MediaType#N_QUADS} is supported
+     * @param dataset     representing parsed RDF content
      * @return {@link Document} representing RDF document
      */
     public static final Document of(final MediaType contentType, final RdfDataset dataset) {
@@ -77,22 +94,23 @@ public final class RdfDocument implements Document {
     }
 
     /**
-     * Create a new document from content provided by {@link InputStream}. Sets {@link MediaType#N_QUADS} as the content type.
+     * Create a new document from content provided by {@link InputStream}. Sets
+     * {@link MediaType#N_QUADS} as the content type.
      *
      * @param is representing parsed RDF content
      * @return {@link Document} representing RDF document
      */
-    public static final RdfDocument of(final InputStream is)  throws JsonLdError {
+    public static final RdfDocument of(final InputStream is) throws JsonLdError {
         return of(MediaType.N_QUADS, is);
     }
 
-    public static final RdfDocument of(final MediaType type, final InputStream is)  throws JsonLdError {
+    public static final RdfDocument of(final MediaType type, final InputStream is) throws JsonLdError {
 
         assertContentType(type);
 
         try {
 
-            RdfDataset dataset  = Rdf.createReader(type, is).readDataset();
+            RdfDataset dataset = Rdf.createReader(type, is).readDataset();
 
             return new RdfDocument(type, null, dataset);
 
@@ -102,22 +120,23 @@ public final class RdfDocument implements Document {
     }
 
     /**
-     * Create a new document from content provided by {@link Reader}. Sets {@link MediaType#N_QUADS} as the content type.
+     * Create a new document from content provided by {@link Reader}. Sets
+     * {@link MediaType#N_QUADS} as the content type.
      *
      * @param reader providing RDF content
      * @return {@link Document} representing RDF document
      */
-    public static final Document of(final Reader reader)  throws JsonLdError {
+    public static final Document of(final Reader reader) throws JsonLdError {
         return of(MediaType.N_QUADS, reader);
     }
 
-    public static final Document of(final MediaType type, final Reader reader)  throws JsonLdError {
+    public static final Document of(final MediaType type, final Reader reader) throws JsonLdError {
 
         assertContentType(type);
 
         try {
 
-            RdfDataset dataset  = Rdf.createReader(type, reader).readDataset();
+            RdfDataset dataset = Rdf.createReader(type, reader).readDataset();
 
             return new RdfDocument(type, null, dataset);
 
@@ -134,9 +153,9 @@ public final class RdfDocument implements Document {
         if (!accepts(contentType)) {
             throw new IllegalArgumentException(
                     "Unsupported media type '" + contentType
-                    + "'. Supported content types are ["
-                    + (Rdf.canRead().stream().map(MediaType::toString).collect(Collectors.joining(", ")))
-                    + "]");
+                            + "'. Supported content types are ["
+                            + (Rdf.canRead().stream().map(MediaType::toString).collect(Collectors.joining(", ")))
+                            + "]");
         }
     }
 

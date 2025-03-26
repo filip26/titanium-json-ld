@@ -27,9 +27,19 @@ import com.apicatalog.rdf.io.error.RdfReaderException;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
 
 /**
- * @deprecated since 1.6.0, use {@link com.apicatalog.rdf.nquads.NQuadsReader}.
- * @see <a href="https://www.w3.org/TR/n-quads/">RDF 1.1. N-Quads</a>
+ * This class is deprecated as of version 1.7.0.
+ * <p>
+ * Please use
+ * <a href="https://github.com/filip26/titanium-rdf-primitives">Titanium RDF
+ * Primitives</a> or any other third-party library to materialize RDF
+ * primitives.
+ * </p>
  *
+ * @see <a href="https://github.com/filip26/titanium-rdf-primitives">Titanium
+ *      RDF Primitives</a>
+ * @see <a href="https://github.com/filip26/titanium-rdf-n-quads">Titanium RDF
+ *      N-QUADS</a>
+ * @deprecated since 1.7.0 - use an alternative RDF primitives library.
  */
 @Deprecated
 public class NQuadsReader implements RdfReader {

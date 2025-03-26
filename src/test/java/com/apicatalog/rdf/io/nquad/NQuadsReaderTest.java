@@ -37,6 +37,7 @@ import com.apicatalog.rdf.io.nquad.reader.NQuadsReaderTestCase;
 import com.apicatalog.rdf.io.nquad.reader.NQuadsReaderTestCase.Type;
 import com.apicatalog.rdf.io.nquad.reader.NQuadsReaderTestSuite;
 
+@Deprecated
 class NQuadsReaderTest {
 
     private final static String TEST_SUITE_NAME = "/n-quads-test-suite-20200629.zip";

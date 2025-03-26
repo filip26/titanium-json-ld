@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
@@ -29,16 +28,18 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.document.RdfDocument;
-import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
+import com.apicatalog.jsonld.loader.QuadSetDocument;
+import com.apicatalog.jsonld.serialization.QuadsToJsonld;
 import com.apicatalog.jsonld.test.JsonLdTestCase.Type;
-import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfComparison;
-import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.io.error.RdfWriterException;
-import com.apicatalog.rdf.io.error.UnsupportedContentException;
+import com.apicatalog.rdf.api.RdfConsumerException;
+import com.apicatalog.rdf.model.RdfQuadSet;
+import com.apicatalog.rdf.nquads.NQuadsWriter;
+import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
+import com.apicatalog.rdf.primitive.flow.QuadEmitter;
+import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
 import com.google.common.base.Objects;
 
 import jakarta.json.Json;
@@ -71,11 +72,27 @@ public class JsonLdTestRunnerJunit {
         }
 
         if (testCase.type.contains(Type.TO_RDF_TEST)) {
-            return execute(options -> RdfDocument.of(JsonLd.toRdf(testCase.input).options(options).get()));
+            return execute(options -> {
+
+                final OrderedQuadSet set = new OrderedQuadSet();
+
+                JsonLd.toRdf(testCase.input).options(options).provide(new QuadAcceptor(set));
+
+                return set;
+            });
         }
 
         if (testCase.type.contains(Type.FROM_RDF_TEST)) {
-            return execute(options -> JsonDocument.of(JsonLd.fromRdf(testCase.input).options(options).get()));
+            return execute(options -> {
+                
+                Document input = options.getDocumentLoader().loadDocument(testCase.input, null);
+
+                QuadsToJsonld toLd = JsonLd.fromRdf().options(options);
+                
+                QuadEmitter.create(toLd).emit(((QuadSetDocument)input).getContent());
+                
+                return JsonDocument.of(toLd.toJsonLd());   
+            });
         }
 
         if (testCase.type.contains(Type.FRAME_TEST)) {
@@ -95,7 +112,7 @@ public class JsonLdTestRunnerJunit {
         assertNotNull(options);
         assertNotNull(options.getDocumentLoader());
 
-        Document result = null;
+        Object result = null;
 
         try {
 
@@ -112,23 +129,37 @@ public class JsonLdTestRunnerJunit {
             write(testCase, null, null, e);
             fail("Unexpected error [" + e.getCode() + "]: " + e.getMessage() + ".");
             return false;
+
+        } catch (RdfConsumerException e) {
+            if (e.getCause() instanceof JsonLdError) {
+                if (Objects.equal(((JsonLdError)e.getCause()).getCode(), testCase.expectErrorCode)) {
+                    return true;
+                }
+
+                write(testCase, null, null, ((JsonLdError)e.getCause()));
+                fail("Unexpected error [" + ((JsonLdError)e.getCause()).getCode() + "]: " + e.getMessage() + ".");
+
+            }
+            return false;            
         }
 
         if (testCase.expectErrorCode != null) {
-            write(testCase, result.getJsonContent().orElse(null), null, null);
-            fail("Expected error [" + testCase.expectErrorCode + "] but got " + result.getContentType() + "].");
+            write(testCase, ((Document) result).getJsonContent().orElse(null), null, null);
+            fail("Expected error [" + testCase.expectErrorCode + "] but got " + ((Document) result).getContentType() + "].");
             return false;
         }
 
-        return validate(testCase, options, result);
+        if (result instanceof RdfQuadSet) {
+            return validateQuads(testCase, options, (RdfQuadSet)result);
+        }
+        if (result instanceof Document) {
+            return validateJsonLd(testCase, options, (Document)result);
+        }
+        
+        return false;
     }
 
-    private boolean validate(final JsonLdTestCase testCase, final JsonLdOptions options, final Document result) {
-
-        // A PositiveSyntaxTest succeeds when no error is found when processing.
-        if (result.getRdfContent().isPresent() && testCase.expect == null && testCase.type.contains(Type.POSITIVE_SYNTAX_TEST)) {
-            return true;
-        }
+    private boolean validateJsonLd(final JsonLdTestCase testCase, final JsonLdOptions options, final Document result) {
 
         assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
 
@@ -144,15 +175,36 @@ public class JsonLdTestRunnerJunit {
                 assertTrue(result.getJsonContent().isPresent(), "Expected JSON document but was " + result.getContentType());
 
                 return compareJson(testCase, result.getJsonContent().get(), expectedDocument.getJsonContent().get());
-
-            } else if (expectedDocument.getRdfContent().isPresent()) {
-
-                assertTrue(result.getRdfContent().isPresent(), "Expected RDF document but was " + result.getContentType());
-
-                return compareRdf(testCase, result.getRdfContent().get(), expectedDocument.getRdfContent().get());
             }
 
-            assertTrue(result.getRdfContent().isPresent(), "Expected " + expectedDocument.getContentType() + " document but was " + result.getContentType());
+            assertTrue(result.getJsonContent().isPresent(), "Expected " + expectedDocument.getContentType() + " document but was " + result.getContentType());
+
+        } catch (JsonLdError e) {
+            fail(e.getMessage());
+        }
+        return false;
+    }
+
+    private boolean validateQuads(final JsonLdTestCase testCase, final JsonLdOptions options, final RdfQuadSet result) {
+
+        // A PositiveSyntaxTest succeeds when no error is found when processing.
+        if (testCase.expect == null && testCase.type.contains(Type.POSITIVE_SYNTAX_TEST)) {
+            return true;
+        }
+
+        assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
+        
+        try {
+            Document expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new DocumentLoaderOptions());
+
+            assertNotNull(expectedDocument);
+
+            // compare expected with the result
+
+            return compareRdf(testCase, 
+                    result, 
+                    ((QuadSetDocument)expectedDocument).getContent()
+                    );
 
         } catch (JsonLdError e) {
             fail(e.getMessage());
@@ -215,10 +267,9 @@ public class JsonLdTestRunnerJunit {
         writer.println();
     }
 
-    public static final boolean compareRdf(final JsonLdTestCase testCase, final RdfDataset result, final RdfDataset expected) {
+    public static final boolean compareRdf(final JsonLdTestCase testCase, final RdfQuadSet result, final RdfQuadSet expected) {
 
         try {
-
             boolean match = RdfComparison.equals(expected, result);
 
             if (!match) {
@@ -226,20 +277,18 @@ public class JsonLdTestRunnerJunit {
                 final StringWriter stringWriter = new StringWriter();
 
                 try (final PrintWriter writer = new PrintWriter(stringWriter)) {
+                    final QuadEmitter emitter = QuadEmitter.create(new NQuadsWriter(writer));
+
                     writer.println("Test " + testCase.id + ": " + testCase.name);
                     writer.println("Expected:");
-
-                    Rdf.createWriter(MediaType.N_QUADS, writer).write(expected);
+                    emitter.emit(expected);
 
                     writer.println();
                     writer.println("Actual:");
-
-                    Rdf.createWriter(MediaType.N_QUADS, writer).write(result);
+                    emitter.emit(result);
 
                     writer.println();
-
                 }
-
                 System.out.print(stringWriter.toString());
             }
 
@@ -247,7 +296,7 @@ public class JsonLdTestRunnerJunit {
 
             return match;
 
-        } catch (RdfWriterException | UnsupportedContentException | IOException e ) {
+        } catch (RdfConsumerException e) {
             fail(e.getMessage());
         }
         return false;

@@ -108,12 +108,17 @@ final class GraphMap {
     public void remove(String graphName, String subject) {
         index.get(graphName).remove(subject);
     }
-    
+
+    public void clear() {
+        this.index.clear();
+        this.index.put(Keywords.DEFAULT, new LinkedHashMap<>());
+        this.usages.clear();
+    }
+
     static class Reference {
         String graphName;
         String subject;
         String property;
         JsonObject value;
     }
-
 }

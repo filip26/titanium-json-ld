@@ -51,6 +51,34 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 
+/**
+ * QuadsToJsonld implements {@link RdfQuadConsumer} and provides functionality
+ * to transform an RDF quad set into a JSON-LD document in expanded form.
+ * <p>
+ * The transformation process involves processing compound literal subjects,
+ * lists, blank nodes, and constructing JSON-LD representations for both default
+ * and named graphs.
+ * </p>
+ * <p>
+ * This class can be configured using methods such as {@link #ordered(boolean)},
+ * {@link #rdfDirection(RdfDirection)}, {@link #useNativeTypes(boolean)},
+ * {@link #useRdfType(boolean)}, {@link #processingMode(JsonLdVersion)}, and
+ * {@link #uriValidation(UriValidationPolicy)}.
+ * </p>
+ * <p>
+ * Key methods include:
+ * <ul>
+ * <li>{@link #reset()} to clear the internal state for reuse.</li>
+ * <li>{@link #toJsonLd()} to generate the JSON-LD output from the processed
+ * quads.</li>
+ * <li>{@link #quad(String, String, String, String, String, String, String)} to
+ * ingest a single RDF quad.</li>
+ * </ul>
+ * </p>
+ * 
+ * @see RdfQuadConsumer
+ * @since 1.7.0
+ */
 public class QuadsToJsonld implements RdfQuadConsumer {
 
     // optional
@@ -77,18 +105,37 @@ public class QuadsToJsonld implements RdfQuadConsumer {
         this.useNativeTypes = false;
         this.useRdfType = false;
         this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
+        this.processingMode = JsonLdVersion.V1_1;
     }
 
+    /**
+     * Configures whether the output should be ordered.
+     * 
+     * @param ordered true if ordering is required; false otherwise
+     * @return this instance for chaining
+     */
     public QuadsToJsonld ordered(boolean ordered) {
         this.ordered = ordered;
         return this;
     }
 
+    /**
+     * Sets the RDF direction configuration.
+     * 
+     * @param rdfDirection the RDF direction (e.g., COMPOUND_LITERAL)
+     * @return this instance for chaining
+     */
     public QuadsToJsonld rdfDirection(RdfDirection rdfDirection) {
         this.rdfDirection = rdfDirection;
         return this;
     }
 
+    /**
+     * Configures whether to use native types for literal conversion.
+     * 
+     * @param useNativeTypes true to use native types; false otherwise
+     * @return this instance for chaining
+     */
     public QuadsToJsonld useNativeTypes(boolean useNativeTypes) {
         this.useNativeTypes = useNativeTypes;
         return this;
@@ -99,13 +146,35 @@ public class QuadsToJsonld implements RdfQuadConsumer {
         return this;
     }
 
+    /**
+     * Sets the JSON-LD processing mode.
+     * 
+     * @param processingMode the processing mode (e.g., V1_0, V1_1)
+     * @return this instance for chaining
+     */
     public QuadsToJsonld processingMode(JsonLdVersion processingMode) {
         this.processingMode = processingMode;
         return this;
     }
 
+    /**
+     * Sets the URI validation policy.
+     * 
+     * @param uriValidation the URI validation policy
+     * @return this instance for chaining
+     */
     public QuadsToJsonld uriValidation(UriValidationPolicy uriValidation) {
         this.uriValidation = uriValidation;
+        return this;
+    }
+
+    public QuadsToJsonld options(JsonLdOptions options) {
+        this.ordered = options.isOrdered();
+        this.rdfDirection = options.getRdfDirection();
+        this.useNativeTypes = options.isUseNativeTypes();
+        this.useRdfType = options.isUseRdfType();
+        this.uriValidation = options.getUriValidation();
+        this.processingMode = options.getProcessingMode();
         return this;
     }
 
@@ -116,14 +185,18 @@ public class QuadsToJsonld implements RdfQuadConsumer {
      * @return the current {@link QuadsToJsonld} instance after resetting
      */
     public QuadsToJsonld reset() {
-        this.graphMap = new GraphMap();
-        this.referenceOnce = new LinkedHashMap<>();
-        this.compoundLiteralSubjects = new LinkedHashMap<>();
+        this.graphMap.clear();
+        this.referenceOnce.clear();
+        this.compoundLiteralSubjects.clear();
         return this;
     }
 
     /**
      * Generates a new JSON-LD representation based on the received quads.
+     * <p>
+     * This method processes all the quads stored in the internal graph map and
+     * transforms them into a JSON-LD document in expanded form.
+     * </p>
      * 
      * @return a {@link JsonArray} containing the generated JSON-LD data
      * @throws JsonLdError if an error occurs during JSON-LD generation
@@ -224,6 +297,12 @@ public class QuadsToJsonld implements RdfQuadConsumer {
                 // 6.4.2.
                 final JsonArrayBuilder list = JsonProvider.instance().createArrayBuilder();
                 final List<String> listNodes = new ArrayList<>();
+                System.out.println("x> " + node + ", " + usage.graphName + ", " + usage.subject + ", " + usage.property);
+                System.out.println("y> " + graphMap);
+
+                if (!node.containsKey(Keywords.ID)) {
+                    continue;
+                }
 
                 String nodeId = ((JsonString) node.get(Keywords.ID)).getString();
 
@@ -319,8 +398,24 @@ public class QuadsToJsonld implements RdfQuadConsumer {
 
     @Override
     public RdfQuadConsumer quad(String subject, String predicate, String object, String datatype, String language, String direction, String graph) throws RdfConsumerException {
-
+        System.out.println("1: " + subject + ", " + predicate + "," + object + " ^^ " + datatype + ", " + language + ", " + direction);
         final String graphName = graph == null ? Keywords.DEFAULT : graph;
+
+        if (direction != null || datatype != null && datatype.startsWith(RdfConstants.I18N_BASE)) {
+
+            datatype = RdfConstants.I18N_BASE;
+
+            if (language != null) {
+                datatype = datatype + language;
+                language = null;
+            }
+            if (direction != null) {
+                datatype = datatype + '_' + direction;
+                direction = null;
+            }
+
+        }
+        System.out.println("2: " + object + ", " + datatype + ", " + language + ", " + direction);
 
         // 5.3.
         if (!compoundLiteralSubjects.containsKey(graphName)) {
@@ -500,22 +595,22 @@ public class QuadsToJsonld implements RdfQuadConsumer {
 
             convertedValue = JsonProvider.instance().createValue(object);
 
-            String langId = datatype.substring(RdfConstants.I18N_BASE.length());
+            String dirLang = datatype.substring(RdfConstants.I18N_BASE.length());
 
-            int directionIndex = langId.indexOf('_');
+            int directionIndex = dirLang.indexOf('_');
 
             if (directionIndex > 1) {
 
-                result.add(Keywords.LANGUAGE, JsonProvider.instance().createValue(langId.substring(0, directionIndex)));
-                result.add(Keywords.DIRECTION, JsonProvider.instance().createValue(langId.substring(directionIndex + 1)));
+                result.add(Keywords.LANGUAGE, JsonProvider.instance().createValue(dirLang.substring(0, directionIndex)));
+                result.add(Keywords.DIRECTION, JsonProvider.instance().createValue(dirLang.substring(directionIndex + 1)));
 
             } else if (directionIndex == 0) {
 
-                result.add(Keywords.DIRECTION, JsonProvider.instance().createValue(langId.substring(1)));
+                result.add(Keywords.DIRECTION, JsonProvider.instance().createValue(dirLang.substring(1)));
 
             } else if (directionIndex == -1) {
 
-                result.add(Keywords.LANGUAGE, JsonProvider.instance().createValue(langId));
+                result.add(Keywords.LANGUAGE, JsonProvider.instance().createValue(dirLang));
             }
 
             // 2.7.

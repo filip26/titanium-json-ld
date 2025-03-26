@@ -16,12 +16,27 @@
 package com.apicatalog.rdf.impl;
 
 import java.util.Objects;
+
 import java.util.Optional;
 
 import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfValue;
 
+/**
+ * This class is deprecated as of version 1.7.0.
+ * <p>
+ * Please use
+ * <a href="https://github.com/filip26/titanium-rdf-primitives">Titanium RDF
+ * Primitives</a> or any other third-party library to materialize RDF
+ * primitives.
+ * </p>
+ *
+ * @see <a href="https://github.com/filip26/titanium-rdf-primitives">Titanium
+ *      RDF Primitives</a>
+ * @deprecated since 1.7.0 - use an alternative RDF primitives library.
+ */
+@Deprecated
 final class ImmutableRdfNQuad extends ImmutableRdfTriple implements RdfNQuad {
 
     private final RdfResource graphName;

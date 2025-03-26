@@ -186,7 +186,7 @@ public final class JsonLdToRdf {
     }
 
     /**
-     * @deprecated since 1.6.0, use {@link #provide(RdfQuadConsumer)}.
+     * @deprecated since 1.6.0, use {@link JsonLdToRdf#provide(RdfQuadConsumer)}.
      * @return a dataset
      * @throws JsonLdError if the transformation fails
      */

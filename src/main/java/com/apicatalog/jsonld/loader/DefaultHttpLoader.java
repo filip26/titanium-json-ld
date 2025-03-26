@@ -48,7 +48,7 @@ class DefaultHttpLoader implements DocumentLoader {
 
     private final HttpClient httpClient;
 
-    private DocumentResolver resolver;
+    private final DocumentResolver resolver;
 
     public DefaultHttpLoader(HttpClient httpClient) {
         this(httpClient, MAX_REDIRECTIONS);
@@ -258,9 +258,5 @@ class DefaultHttpLoader implements DocumentLoader {
     public DefaultHttpLoader timeout(Duration timeout) {
         httpClient.timeout(timeout);
         return this;
-    }
-    
-    void resolver(DocumentResolver resolver) {
-        this.resolver = resolver;
     }
 }

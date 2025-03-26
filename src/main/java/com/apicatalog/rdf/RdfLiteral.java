@@ -18,7 +18,17 @@ package com.apicatalog.rdf;
 import java.util.Optional;
 
 /**
- * The {@link RdfLiteral} interface describes an immutable <code>RDF Literal</code>.
+ * This class is deprecated as of version 1.7.0.
+ * <p>
+ * Please use
+ * <a href="https://github.com/filip26/titanium-rdf-primitives">Titanium RDF
+ * Primitives</a> or any other third-party library to materialize RDF
+ * primitives.
+ * </p>
+ *
+ * @see <a href="https://github.com/filip26/titanium-rdf-primitives">Titanium
+ *      RDF Primitives</a>
+ * @deprecated since 1.7.0 - use an alternative RDF primitives library.
  */
 @Deprecated
 public interface RdfLiteral extends RdfValue {
@@ -40,7 +50,8 @@ public interface RdfLiteral extends RdfValue {
     String getDatatype();
 
     /**
-     * An optional language tag. If this value is specified, {@link #getDatatype()} returns rdf:langString.
+     * An optional language tag. If this value is specified, {@link #getDatatype()}
+     * returns rdf:langString.
      *
      * @return language tag or {@link Optional#empty()} if not set
      */

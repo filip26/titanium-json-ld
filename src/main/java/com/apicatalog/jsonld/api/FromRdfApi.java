@@ -27,6 +27,7 @@ import com.apicatalog.rdf.RdfDataset;
 
 import jakarta.json.JsonArray;
 
+@Deprecated
 public final class FromRdfApi implements CommonApi<FromRdfApi>, LoaderApi<FromRdfApi> {
 
     // required

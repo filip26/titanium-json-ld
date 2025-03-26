@@ -17,11 +17,11 @@ package com.apicatalog.jsonld.test;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.rdf.api.RdfConsumerException;
 
 @FunctionalInterface
 public interface JsonLdTestCaseMethod {
 
-    Document invoke(JsonLdOptions options) throws JsonLdError;
+    Object invoke(JsonLdOptions options) throws JsonLdError, RdfConsumerException;
 
 }

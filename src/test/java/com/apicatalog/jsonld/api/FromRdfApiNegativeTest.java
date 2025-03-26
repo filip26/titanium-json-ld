@@ -28,6 +28,7 @@ import com.apicatalog.jsonld.document.RdfDocument;
 
 import jakarta.json.JsonValue;
 
+@Deprecated
 class FromRdfApiNegativeTest {
 
     @Test

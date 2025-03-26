@@ -9,6 +9,20 @@ import com.apicatalog.rdf.RdfValue;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 
+/**
+ * This class is deprecated as of version 1.7.0.
+ * <p>
+ * Please use
+ * <a href="https://github.com/filip26/titanium-rdf-primitives">Titanium RDF
+ * Primitives</a> or any other third-party library to materialize RDF
+ * primitives.
+ * </p>
+ *
+ * @see <a href="https://github.com/filip26/titanium-rdf-primitives">Titanium
+ *      RDF Primitives</a>
+ * @deprecated since 1.7.0 - use an alternative RDF primitives library.
+ */
+@Deprecated
 public abstract class RdfQuadAdapter implements RdfQuadConsumer, RdfTripleConsumer {
 
     protected final Map<String, RdfResource> resources;
@@ -76,7 +90,7 @@ public abstract class RdfQuadAdapter implements RdfQuadConsumer, RdfTripleConsum
             String graph) throws RdfConsumerException {
 
         final RdfValue objectValue;
-        if (language != null) {
+        if (language != null || direction != null) {
             objectValue = Rdf.createLangString(object, language, direction);
 
         } else if (datatype != null) {

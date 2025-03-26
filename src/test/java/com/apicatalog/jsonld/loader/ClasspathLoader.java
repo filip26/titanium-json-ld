@@ -17,13 +17,15 @@ package com.apicatalog.jsonld.loader;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.document.RdfDocument;
+import com.apicatalog.rdf.api.RdfConsumerException;
+import com.apicatalog.rdf.nquads.NQuadsReaderException;
 
 public class ClasspathLoader implements DocumentLoader, TestLoader {
 
@@ -37,7 +39,7 @@ public class ClasspathLoader implements DocumentLoader, TestLoader {
 
             return document;
 
-        } catch (IOException e) {
+        } catch (IOException | NQuadsReaderException | RdfConsumerException e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
     }
@@ -54,10 +56,10 @@ public class ClasspathLoader implements DocumentLoader, TestLoader {
         }
     }
 
-    private static final Document toDocument(URI url, InputStream is) throws JsonLdError {
+    private static final Document toDocument(URI url, InputStream is) throws JsonLdError, NQuadsReaderException, RdfConsumerException {
 
         if (url.toString().endsWith(".nq")) {
-            return RdfDocument.of(is);
+            return QuadSetDocument.readNQuads(new InputStreamReader(is));
         }
 
         return JsonDocument.of(is);

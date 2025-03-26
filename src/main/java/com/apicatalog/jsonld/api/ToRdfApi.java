@@ -157,12 +157,20 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
     }
 
     /**
-     * Transform provided <code>JSON-LD</code> document into {@link RdfDataset}.
+     * Transforms the provided <code>JSON-LD</code> document into an
+     * {@link RdfDataset}.
+     * <p>
+     * This method converts a JSON-LD document into an RDF dataset representation.
+     * It has been deprecated in favor of {@link ToRdfApi#provide(RdfQuadConsumer)}.
+     * </p>
      *
-     * @return {@link RdfDataset} representing provided <code>JSON-LD</code>
+     * @return an {@link RdfDataset} representing the provided <code>JSON-LD</code>
      *         document
-     * @throws JsonLdError if the document transformation fails
+     * @throws JsonLdError if the transformation fails
+     * @deprecated since 1.7.0 - Use {@link ToRdfApi#provide(RdfQuadConsumer)}
+     *             instead.
      */
+    @Deprecated
     public RdfDataset get() throws JsonLdError {
         final RdfDatasetSupplier consumer = new RdfDatasetSupplier();
         provide(consumer);

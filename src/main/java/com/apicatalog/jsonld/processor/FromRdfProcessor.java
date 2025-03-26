@@ -23,16 +23,15 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.jsonld.serialization.RdfToJsonld;
-import com.apicatalog.rdf.api.RdfConsumerException;
 
 import jakarta.json.JsonArray;
 
+@Deprecated
 public final class FromRdfProcessor {
 
     private FromRdfProcessor() {
     }
 
-    @Deprecated
     public static final JsonArray fromRdf(final Document document, final JsonLdOptions options) throws JsonLdError {
         return RdfToJsonld
                 .with(document.getRdfContent()
