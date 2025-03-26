@@ -51,6 +51,12 @@
       <artifactId>titanium-rdf-primitives</artifactId>
       <version>1.0.2</version>
       <scope>test</scope>
-    </dependency>            
+    </dependency>
+    <dependency>
+      <groupId>com.apicatalog</groupId>
+      <artifactId>titanium-rdfc</artifactId>
+      <version>2.0.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
