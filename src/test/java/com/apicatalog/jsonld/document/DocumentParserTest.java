@@ -32,6 +32,7 @@ import com.apicatalog.jsonld.http.media.MediaType;
 
 import jakarta.json.Json;
 
+@Deprecated
 class DocumentParserTest {
 
     @Test

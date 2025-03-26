@@ -52,6 +52,7 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 
+@Deprecated
 class NQuadsWriterTest {
 
     @ParameterizedTest(name = "{0}")

@@ -36,6 +36,20 @@ import com.apicatalog.rdf.io.nquad.NQuadsReader;
 import com.apicatalog.rdf.io.nquad.NQuadsWriter;
 import com.apicatalog.rdf.spi.RdfProvider;
 
+/**
+ * This class is deprecated as of version 1.7.0.
+ * <p>
+ * Please use
+ * <a href="https://github.com/filip26/titanium-rdf-primitives">Titanium RDF
+ * Primitives</a> or any other third-party library to materialize RDF
+ * primitives.
+ * </p>
+ *
+ * @see <a href="https://github.com/filip26/titanium-rdf-primitives">Titanium
+ *      RDF Primitives</a>
+ * @deprecated since 1.7.0 - use an alternative RDF primitives library.
+ */
+@Deprecated
 public final class DefaultRdfProvider extends RdfProvider {
 
     public static final RdfProvider INSTANCE = new DefaultRdfProvider();
@@ -106,7 +120,7 @@ public final class DefaultRdfProvider extends RdfProvider {
         }
 
         if (!value.startsWith("_:")) {
-            return new ImmutableRdfResource("_:" +value, true);
+            return new ImmutableRdfResource("_:" + value, true);
         }
 
         return new ImmutableRdfResource(value, true);

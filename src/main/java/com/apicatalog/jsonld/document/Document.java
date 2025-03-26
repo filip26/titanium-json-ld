@@ -26,10 +26,11 @@ import jakarta.json.JsonStructure;
 /**
  * A document that can be processed by the processor.
  *
- * This can either be {@link JsonStructure}, representing JSON-LD or JSON document,
- * or {@link RdfDataset}
+ * This can either be {@link JsonStructure}, representing JSON-LD or JSON
+ * document, or {@link RdfDataset}
  *
- * Implemented by {@link JsonDocument}, {@link RdfDocument}, and provided by {@link DocumentParser}.
+ * Implemented by {@link JsonDocument}, {@link RdfDocument}, and provided by
+ * {@link DocumentParser}.
  *
  */
 public interface Document {
@@ -38,14 +39,17 @@ public interface Document {
      * The <a href="https://tools.ietf.org/html/rfc2045#section-5">Content-Type</a>
      * of the loaded document, exclusive of any optional parameters.
      *
-     * @return <code>Content-Type</code> of the loaded document, never <code>null</code>
+     * @return <code>Content-Type</code> of the loaded document, never
+     *         <code>null</code>
      */
     MediaType getContentType();
 
     /**
-     * The value of the HTTP Link header when profile attribute matches <code>http://www.w3.org/ns/json-ld#context</code>.
+     * The value of the HTTP Link header when profile attribute matches
+     * <code>http://www.w3.org/ns/json-ld#context</code>.
      *
-     * @return attached {@link URI} referencing document context or <code>null</code> if not available
+     * @return attached {@link URI} referencing document context or
+     *         <code>null</code> if not available
      */
     URI getContextUrl();
 
@@ -54,7 +58,8 @@ public interface Document {
     /**
      * The final {@link URI} of the loaded document.
      *
-     * @return {@link URI} of the loaded document or <code>null</code> if not available
+     * @return {@link URI} of the loaded document or <code>null</code> if not
+     *         available
      */
     URI getDocumentUrl();
 
@@ -71,17 +76,27 @@ public interface Document {
     /**
      * Get the document content as parsed {@link JsonStructure}.
      *
-     * @return {@link JsonStructure} or {@link Optional#empty()} if document content is not JSON based
+     * @return {@link JsonStructure} or {@link Optional#empty()} if document content
+     *         is not JSON based
      */
-    public default  Optional<JsonStructure> getJsonContent() {
+    public default Optional<JsonStructure> getJsonContent() {
         return Optional.empty();
     }
 
     /**
-     * Get the document content as parsed {@link RdfDataset}.
+     * Retrieves the document content as a parsed {@link RdfDataset}.
+     * <p>
+     * If the document content is not in the <code>application/n-quads</code>
+     * representation, {@link Optional#empty()} is returned.
+     * </p>
      *
-     * @return {@link RdfDataset} or {@link Optional#empty()} if document content is not in <code>application/n-quads</code> representation
+     * @return an {@link Optional} containing the {@link RdfDataset} if the content
+     *         is valid, or {@link Optional#empty()} if the document content is not
+     *         in <code>application/n-quads</code> format
+     * @deprecated since 1.7.0 - Please use Titanium RDF Primitives or any other
+     *             third-party library to materialize RDF primitives
      */
+    @Deprecated
     public default Optional<RdfDataset> getRdfContent() {
         return Optional.empty();
     }

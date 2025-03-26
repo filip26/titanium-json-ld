@@ -29,6 +29,7 @@ import com.apicatalog.rdf.Rdf;
 
 import jakarta.json.JsonArray;
 
+@Deprecated
 class FromRdfApiTest {
 
     public static final MockLoader MOCK_LOADER = new MockLoader(Rdf.createDataset());

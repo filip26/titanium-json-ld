@@ -36,6 +36,7 @@ import com.apicatalog.jsonld.http.media.MediaType;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 
+@Deprecated
 class JsonDocumentTest {
 
     @Test

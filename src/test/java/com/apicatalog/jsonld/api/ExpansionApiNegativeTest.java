@@ -66,6 +66,7 @@ class ExpansionApiNegativeTest {
     }
 
     @Test
+    @Deprecated
     void test8() {
         final Document document = RdfDocument.of(Rdf.createDataset());
         assertThrows(IllegalArgumentException.class, () -> JsonLd.expand(document));

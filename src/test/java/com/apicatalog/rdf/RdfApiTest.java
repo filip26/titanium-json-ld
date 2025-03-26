@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLdError;
 
+@Deprecated
 class RdfApiTest {
 
     /**

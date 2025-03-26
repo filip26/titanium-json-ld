@@ -24,13 +24,13 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.serialization.RdfToJsonld.Reference;
 
+import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
 final class GraphMap {
 
-    //                 graph,     subject,  predicate,  object
+    // graph, subject, predicate, object
     private final Map<String, Map<String, Map<String, JsonValue>>> index;
 
     private final Map<String, Map<String, List<Reference>>> usages;
@@ -48,9 +48,9 @@ final class GraphMap {
 
     public void set(final String graphName, final String subject, final String property, final JsonValue value) {
         index
-            .computeIfAbsent(graphName, e -> new LinkedHashMap<>())
-            .computeIfAbsent(subject, e -> new LinkedHashMap<>())
-            .put(property, value);
+                .computeIfAbsent(graphName, e -> new LinkedHashMap<>())
+                .computeIfAbsent(subject, e -> new LinkedHashMap<>())
+                .put(property, value);
     }
 
     public Optional<Map<String, JsonValue>> get(final String graphName, final String subject) {
@@ -95,18 +95,30 @@ final class GraphMap {
 
     public List<Reference> getUsages(String graphName, String subject) {
         return usages.containsKey(graphName) && usages.get(graphName).containsKey(subject)
-                    ? usages.get(graphName).get(subject)
-                    : Collections.emptyList();
+                ? usages.get(graphName).get(subject)
+                : Collections.emptyList();
     }
 
     public void addUsage(String graphName, String subject, Reference reference) {
         usages.computeIfAbsent(graphName, e -> new LinkedHashMap<>())
-            .computeIfAbsent(subject, e -> new ArrayList<>())
-            .add(reference)
-            ;
+                .computeIfAbsent(subject, e -> new ArrayList<>())
+                .add(reference);
     }
 
     public void remove(String graphName, String subject) {
         index.get(graphName).remove(subject);
+    }
+
+    public void clear() {
+        this.index.clear();
+        this.index.put(Keywords.DEFAULT, new LinkedHashMap<>());
+        this.usages.clear();
+    }
+
+    static class Reference {
+        String graphName;
+        String subject;
+        String property;
+        JsonObject value;
     }
 }

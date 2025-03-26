@@ -26,22 +26,24 @@ import com.apicatalog.jsonld.serialization.RdfToJsonld;
 
 import jakarta.json.JsonArray;
 
+@Deprecated
 public final class FromRdfProcessor {
 
     private FromRdfProcessor() {
     }
 
     public static final JsonArray fromRdf(final Document document, final JsonLdOptions options) throws JsonLdError {
-
         return RdfToJsonld
-                    .with(document.getRdfContent().orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Expected RDF document but got [mediaType=" + document.getContentType() + ", uri=" + document.getDocumentUrl() + "]")))
-                    .ordered(options.isOrdered())
-                    .rdfDirection(options.getRdfDirection())
-                    .useNativeTypes(options.isUseNativeTypes())
-                    .useRdfType(options.isUseRdfType())
-                    .processingMode(options.getProcessingMode())
-                    .uriValidation(options.getUriValidation())
-                    .build();
+                .with(document.getRdfContent()
+                        .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED,
+                                "Expected RDF document but got [mediaType=" + document.getContentType() + ", uri=" + document.getDocumentUrl() + "]")))
+                .ordered(options.isOrdered())
+                .rdfDirection(options.getRdfDirection())
+                .useNativeTypes(options.isUseNativeTypes())
+                .useRdfType(options.isUseRdfType())
+                .processingMode(options.getProcessingMode())
+                .uriValidation(options.getUriValidation())
+                .build();
     }
 
     public static JsonArray fromRdf(URI documentUri, JsonLdOptions options) throws JsonLdError {
@@ -50,12 +52,10 @@ public final class FromRdfProcessor {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + documentUri + "].");
         }
 
-        final Document remoteDocument =
-                                options
-                                    .getDocumentLoader()
-                                    .loadDocument(documentUri,
-                                            new DocumentLoaderOptions()
-                                                    );
+        final Document remoteDocument = options
+                .getDocumentLoader()
+                .loadDocument(documentUri,
+                        new DocumentLoaderOptions());
 
         if (remoteDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);

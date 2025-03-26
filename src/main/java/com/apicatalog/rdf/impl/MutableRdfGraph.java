@@ -27,6 +27,20 @@ import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.RdfValue;
 
+/**
+ * This class is deprecated as of version 1.7.0.
+ * <p>
+ * Please use
+ * <a href="https://github.com/filip26/titanium-rdf-primitives">Titanium RDF
+ * Primitives</a> or any other third-party library to materialize RDF
+ * primitives.
+ * </p>
+ *
+ * @see <a href="https://github.com/filip26/titanium-rdf-primitives">Titanium
+ *      RDF Primitives</a>
+ * @deprecated since 1.7.0 - use an alternative RDF primitives library.
+ */
+@Deprecated
 final class MutableRdfGraph implements RdfGraph {
 
     private final Map<RdfResource, Map<RdfResource, Set<RdfValue>>> index;
@@ -45,9 +59,9 @@ final class MutableRdfGraph implements RdfGraph {
         }
 
         index
-            .computeIfAbsent(triple.getSubject(), x -> new HashMap<>())
-            .computeIfAbsent(triple.getPredicate(), x -> new HashSet<>())
-            .add(triple.getObject());
+                .computeIfAbsent(triple.getSubject(), x -> new HashMap<>())
+                .computeIfAbsent(triple.getPredicate(), x -> new HashSet<>())
+                .add(triple.getObject());
 
         triples.add(triple);
     }
@@ -60,9 +74,8 @@ final class MutableRdfGraph implements RdfGraph {
         }
 
         return index.containsKey(triple.getSubject())
-                    && index.get(triple.getSubject()).containsKey(triple.getPredicate())
-                    && index.get(triple.getSubject()).get(triple.getPredicate()).contains(triple.getObject())
-                    ;
+                && index.get(triple.getSubject()).containsKey(triple.getPredicate())
+                && index.get(triple.getSubject()).get(triple.getPredicate()).contains(triple.getObject());
     }
 
     @Override

@@ -16,16 +16,26 @@
 package com.apicatalog.rdf;
 
 /**
- * An immutable RDF statement's value. Represents an absolute IRI or blank node identifier or RDF literal.
+ * This class is deprecated as of version 1.7.0.
+ * <p>
+ * Please use
+ * <a href="https://github.com/filip26/titanium-rdf-primitives">Titanium RDF
+ * Primitives</a> or any other third-party library to materialize RDF
+ * primitives.
+ * </p>
  *
- * @since 0.8.4
+ * @see <a href="https://github.com/filip26/titanium-rdf-primitives">Titanium
+ *      RDF Primitives</a>
+ * @deprecated since 1.7.0 - use an alternative RDF primitives library.
  */
+@Deprecated
 public interface RdfValue {
 
     /**
      * Indicates if the value type is RDF literal.
      *
-     * @return <code>true</code> if the value type is literal, <code>false</code> otherwise.
+     * @return <code>true</code> if the value type is literal, <code>false</code>
+     *         otherwise.
      */
     default boolean isLiteral() {
         return false;
@@ -34,7 +44,8 @@ public interface RdfValue {
     /**
      * Indicates if the value type is an absolute IRI.
      *
-     * @return <code>true</code> if the value type is IRI, <code>false</code> otherwise.
+     * @return <code>true</code> if the value type is IRI, <code>false</code>
+     *         otherwise.
      */
     default boolean isIRI() {
         return false;
@@ -43,7 +54,8 @@ public interface RdfValue {
     /**
      * Indicates if the value type is blank node identifier.
      *
-     * @return <code>true</code> if the value type is blank node, <code>false</code> otherwise.
+     * @return <code>true</code> if the value type is blank node, <code>false</code>
+     *         otherwise.
      */
     default boolean isBlankNode() {
         return false;
@@ -61,7 +73,7 @@ public interface RdfValue {
     /**
      * Returns raw {@link String} representation of the value.
      *
-     * @return  text representing the value.
+     * @return text representing the value.
      */
     String getValue();
 

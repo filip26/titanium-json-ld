@@ -61,7 +61,4 @@ public class MockLoader implements DocumentLoader {
 
         throw new IllegalStateException();
     }
-
-
-
 }

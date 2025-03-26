@@ -35,6 +35,7 @@ import com.apicatalog.rdf.RdfDataset;
 
 import jakarta.json.JsonValue;
 
+@Deprecated
 class RdfDocumentTest {
 
     private static final String NQ_STATEMENT = "<http://example/s> <http://example/p> <http://example/o> <http://example/g> .";

@@ -22,8 +22,11 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
+import com.apicatalog.jsonld.loader.QuadSetDocument;
 import com.apicatalog.jsonld.test.JsonLdTestCase.Type;
 import com.apicatalog.rdf.RdfComparison;
+import com.apicatalog.rdf.api.RdfConsumerException;
+import com.apicatalog.rdf.model.RdfQuadSet;
 
 public class JsonLdTestRunnerEarl {
 
@@ -37,7 +40,7 @@ public class JsonLdTestRunnerEarl {
 
         JsonLdOptions options = testCase.getOptions();
 
-        Document result = null;
+        Object result = null;
 
         try {
 
@@ -47,7 +50,7 @@ public class JsonLdTestRunnerEarl {
                 return false;
             }
 
-            if (result.getRdfContent().isPresent() && testCase.expect == null && testCase.type.contains(Type.POSITIVE_SYNTAX_TEST)) {
+            if ((result instanceof RdfQuadSet) && testCase.expect == null && testCase.type.contains(Type.POSITIVE_SYNTAX_TEST)) {
                 return true;
 
             } else if (testCase.expect == null) {
@@ -60,33 +63,31 @@ public class JsonLdTestRunnerEarl {
                 return false;
             }
 
-
             // compare expected with the result
             if (expectedDocument.getJsonContent().isPresent()) {
 
-                return result.getJsonContent().isPresent()
-                       && JsonLdComparison.equals(
-                                   expectedDocument.getJsonContent().get(),
-                                   result.getJsonContent().get()
-                                   );
+                return (result instanceof Document)
+                        && ((Document) result).getJsonContent().isPresent()
+                        && JsonLdComparison.equals(
+                                expectedDocument.getJsonContent().get(),
+                                ((Document) result).getJsonContent().get());
 
-            } else if (expectedDocument.getRdfContent().isPresent()) {
+            } else if (expectedDocument instanceof QuadSetDocument) {
 
-                return result.getRdfContent().isPresent()
+                return (result instanceof RdfQuadSet)
                         && RdfComparison.equals(
-                                    expectedDocument.getRdfContent().get(),
-                                    result.getRdfContent().get()
-                                    );
-
-
+                                ((QuadSetDocument) expectedDocument).getContent(),
+                                (RdfQuadSet) result);
             }
 
-            return false;
-
         } catch (JsonLdError e) {
-
             return Objects.equals(e.getCode(), testCase.expectErrorCode);
 
+        } catch (RdfConsumerException e) {
+            if (e.getCause() instanceof JsonLdError) {
+                return Objects.equals(((JsonLdError) e.getCause()).getCode(), testCase.expectErrorCode);
+            }
         }
+        return false;
     }
 }

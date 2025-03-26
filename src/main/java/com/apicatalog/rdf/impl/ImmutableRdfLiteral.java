@@ -23,6 +23,20 @@ import com.apicatalog.rdf.lang.RdfConstants;
 import com.apicatalog.rdf.lang.XsdConstants;
 import com.apicatalog.rdf.nquads.NQuadsAlphabet;
 
+/**
+ * This class is deprecated as of version 1.7.0.
+ * <p>
+ * Please use
+ * <a href="https://github.com/filip26/titanium-rdf-primitives">Titanium RDF
+ * Primitives</a> or any other third-party library to materialize RDF
+ * primitives.
+ * </p>
+ *
+ * @see <a href="https://github.com/filip26/titanium-rdf-primitives">Titanium
+ *      RDF Primitives</a>
+ * @deprecated since 1.7.0 - use an alternative RDF primitives library.
+ */
+@Deprecated
 final class ImmutableRdfLiteral implements RdfLiteral {
 
     private final String value;
@@ -73,14 +87,14 @@ final class ImmutableRdfLiteral implements RdfLiteral {
         if (getClass() == obj.getClass()) {
             ImmutableRdfLiteral other = (ImmutableRdfLiteral) obj;
             return Objects.equals(dataType, other.dataType) && Objects.equals(langTag, other.langTag)
-                    && Objects.equals(value, other.value);            
+                    && Objects.equals(value, other.value);
         }
         if (!(obj instanceof RdfLiteral)) {
             return false;
         }
         RdfLiteral other = (RdfLiteral) obj;
         return Objects.equals(dataType, other.getDatatype()) && Objects.equals(langTag, other.getLanguage().orElse(null))
-                && Objects.equals(value, other.getValue());            
+                && Objects.equals(value, other.getValue());
     }
 
     @Override
