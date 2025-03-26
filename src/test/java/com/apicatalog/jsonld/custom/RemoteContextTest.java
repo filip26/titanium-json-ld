@@ -37,7 +37,6 @@ import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.api.RdfConsumerException;
-import com.apicatalog.rdf.model.RdfDataset;
 import com.apicatalog.rdf.nquads.NQuadsReader;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
