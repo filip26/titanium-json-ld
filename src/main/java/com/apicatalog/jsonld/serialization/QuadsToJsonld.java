@@ -297,12 +297,6 @@ public class QuadsToJsonld implements RdfQuadConsumer {
                 // 6.4.2.
                 final JsonArrayBuilder list = JsonProvider.instance().createArrayBuilder();
                 final List<String> listNodes = new ArrayList<>();
-                System.out.println("x> " + node + ", " + usage.graphName + ", " + usage.subject + ", " + usage.property);
-                System.out.println("y> " + graphMap);
-
-                if (!node.containsKey(Keywords.ID)) {
-                    continue;
-                }
 
                 String nodeId = ((JsonString) node.get(Keywords.ID)).getString();
 
@@ -398,7 +392,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
 
     @Override
     public RdfQuadConsumer quad(String subject, String predicate, String object, String datatype, String language, String direction, String graph) throws RdfConsumerException {
-        System.out.println("1: " + subject + ", " + predicate + "," + object + " ^^ " + datatype + ", " + language + ", " + direction);
+
         final String graphName = graph == null ? Keywords.DEFAULT : graph;
 
         if (direction != null || datatype != null && datatype.startsWith(RdfConstants.I18N_BASE)) {
@@ -415,7 +409,6 @@ public class QuadsToJsonld implements RdfQuadConsumer {
             }
 
         }
-        System.out.println("2: " + object + ", " + datatype + ", " + language + ", " + direction);
 
         // 5.3.
         if (!compoundLiteralSubjects.containsKey(graphName)) {
