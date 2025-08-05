@@ -6,7 +6,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.apicatalog</groupId>
   <artifactId>titanium</artifactId>
-  <version>1.7.0-SNAPSHOT</version>
+  <version>test-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Titanium JSON-LD 1.1</name>
@@ -123,24 +123,24 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.11.2</version>
-        <configuration>
-          <doclint>all,-missing</doclint>
-          <failOnWarnings>false</failOnWarnings>
-          <failOnError>false</failOnError>          
-        </configuration>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+<!--      <plugin>-->
+<!--        <groupId>org.apache.maven.plugins</groupId>-->
+<!--        <artifactId>maven-javadoc-plugin</artifactId>-->
+<!--        <version>3.11.2</version>-->
+<!--        <configuration>-->
+<!--          <doclint>all,-missing</doclint>-->
+<!--          <failOnWarnings>false</failOnWarnings>-->
+<!--          <failOnError>false</failOnError>          -->
+<!--        </configuration>-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <id>attach-javadocs</id>-->
+<!--            <goals>-->
+<!--              <goal>jar</goal>-->
+<!--            </goals>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--      </plugin>-->
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
