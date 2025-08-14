@@ -21,9 +21,9 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 ### Extensions
 
 - [LD-CLI](https://github.com/filip26/ld-cli) - A native command line utility for Ubuntu, Mac, and Windows
-- [JSON-LD-star](https://json-ld.github.io/json-ld-star) - Expansion and compaction built-in support (experimental)
-- [Titanium RDFC](https://github.com/filip26/titanium-rdfc) - W3C Standard RDF Dataset Canonicalization
-- [Titanium N-QUADS](https://github.com/filip26/titanium-rdf-n-quads) - W3C RDF 1.1 N-Quads
+- [Titanium RDF Canon](https://github.com/filip26/titanium-rdf-canon) - W3C Standard RDF Dataset Canonicalization
+- [Titanium RDF N-QUADS](https://github.com/filip26/titanium-rdf-n-quads) - W3C RDF 1.1 N-Quads
+- [Titanium RDF Primitives](https://github.com/filip26/titanium-rdf-primitives) - W3C RDF 1.1, 1.2 Primitives
 - [Titanium JCS](https://github.com/filip26/titanium-jcs) - RFC 8785 JSON Canonicalization Scheme (JCS)
 - [Iridium CBOR-LD](https://github.com/filip26/iridium-cbor-ld) - A CBOR-based Processor for Linked Data
 - [RDF-URDNA](https://github.com/simon-greatrix/rdf-urdna) - Universal RDF Dataset Normalization Algorithm 2015
@@ -50,6 +50,8 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 | [Remote Document and Context Retrieval](https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval) | 18 | 17 | 94.4% | <ul><li>[t0013 - HTML document](https://w3c.github.io/json-ld-api/tests/remote-doc-manifest#t0013)</li></ul> |
 
 See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld-api/reports/#subj_Titanium_JSON_LD_Java) for more details.
+
+[JSON-LD-star](https://json-ld.github.io/json-ld-star) - Expansion and compaction built-in support (experimental)
 
 ## Examples
 
