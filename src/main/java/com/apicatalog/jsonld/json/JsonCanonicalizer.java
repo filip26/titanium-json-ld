@@ -19,7 +19,7 @@ import jakarta.json.JsonValue;
 
 /**
  * @deprecated since 1.6.0, use titanium-jcs and
- *             {@link com.apicatalog.jcs.JsonCanonicalizer#canonize(JsonValue)}.
+ *             {@link com.apicatalog.jcs.Jcs#canonize(JsonValue)}.
  * 
  * @see <a href=
  *      "https://tools.ietf.org/html/draft-rundgren-json-canonicalization-scheme-17">JSON
@@ -28,6 +28,6 @@ import jakarta.json.JsonValue;
  */
 public final class JsonCanonicalizer {
     public static final String canonicalize(final JsonValue value) {
-        return com.apicatalog.jcs.JsonCanonicalizer.canonize(value);
+        return com.apicatalog.jcs.Jcs.canonize(value);
     }
 }
