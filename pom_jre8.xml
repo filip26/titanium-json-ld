@@ -34,7 +34,7 @@
     <dependency>
       <groupId>com.apicatalog</groupId>
       <artifactId>titanium-jcs</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.0</version>
     </dependency>
     <dependency>
       <groupId>com.apicatalog</groupId>
@@ -49,7 +49,7 @@
     <dependency>
       <groupId>com.apicatalog</groupId>
       <artifactId>titanium-rdf-primitives</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
