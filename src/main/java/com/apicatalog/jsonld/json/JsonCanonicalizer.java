@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.json;
 
+import com.apicatalog.jcs.Jcs;
 import jakarta.json.JsonValue;
 
 /**
@@ -28,6 +29,6 @@ import jakarta.json.JsonValue;
  */
 public final class JsonCanonicalizer {
     public static final String canonicalize(final JsonValue value) {
-        return com.apicatalog.jcs.Jcs.canonize(value);
+        return Jcs.canonize(value);
     }
 }
