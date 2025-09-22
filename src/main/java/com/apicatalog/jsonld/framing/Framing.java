@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdEmbed;
 import com.apicatalog.jsonld.JsonLdError;
@@ -355,42 +356,31 @@ public final class Framing {
 
                 if (JsonUtils.isObject(reverseObject)) {
 
-                    for (final String reverseProperty :  reverseObject.asJsonObject().keySet()) {
+                    for (final String reverseProperty : reverseObject.asJsonObject().keySet()) {
 
-                        final Frame subframe = Frame.of((JsonStructure)reverseObject.asJsonObject().get(reverseProperty));
+                        final Frame subframe = Frame.of((JsonStructure) reverseObject.asJsonObject().get(reverseProperty));
 
-                        for (final String subjectProperty : state.getGraphMap().get(state.getGraphName()).map(Map::keySet).orElseGet(() -> Collections.emptySet())) {
+                        final Set<String> subjectProperties = state.getReversePropertySubjects(state.getGraphName(), reverseProperty, id);
 
-                            final JsonValue nodeValues = state.getGraphMap().get(state.getGraphName(), subjectProperty, reverseProperty);
+                        if (!subjectProperties.isEmpty()) {
 
-                            if (nodeValues != null
-                                    && JsonUtils.toStream(nodeValues)
-                                                .filter(JsonUtils::isObject)
-                                                .map(JsonObject.class::cast)
-                                                .filter(v -> v.containsKey(Keywords.ID))
-                                                .map(v -> v.getString(Keywords.ID))
-                                                .anyMatch(vid -> Objects.equals(vid, id))
-                                    ) {
+                            final JsonMapBuilder reverseResult = JsonMapBuilder.create();
 
-                                final JsonMapBuilder reverseResult = JsonMapBuilder.create();
+                            final FramingState reverseState = new FramingState(state);
+                            reverseState.setEmbedded(true);
 
-                                final FramingState reverseState = new FramingState(state);
-                                reverseState.setEmbedded(true);
-
-                                Framing.with(
+                            Framing.with(
                                             reverseState,
-                                            Arrays.asList(subjectProperty),
+                                            new ArrayList<>(subjectProperties),
                                             subframe,
                                             reverseResult,
                                             null)
-                                        .ordered(ordered)
-                                        .frame();
+                                    .ordered(ordered)
+                                    .frame();
 
-                                output
+                            output
                                     .getMapBuilder(Keywords.REVERSE)
                                     .add(reverseProperty, reverseResult.valuesToArray());
-
-                            }
                         }
                     }
                 }

@@ -16,9 +16,12 @@
 package com.apicatalog.jsonld.framing;
 
 import java.util.ArrayDeque;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdEmbed;
 import com.apicatalog.jsonld.flattening.NodeMap;
@@ -39,6 +42,8 @@ public final class FramingState {
 
     private Deque<String> parents;
 
+    private Map<String, Map<String, Map<String, Set<String>>>> reversePropertyIndex;
+
     public FramingState() {
         this.done = new HashMap<>();
         this.parents = new ArrayDeque<>();
@@ -54,6 +59,7 @@ public final class FramingState {
         this.graphName = state.graphName;
         this.done = state.done;
         this.parents =  state.parents;
+        this.reversePropertyIndex = state.reversePropertyIndex;
     }
 
     public JsonLdEmbed getEmbed() {
@@ -134,5 +140,28 @@ public final class FramingState {
 
     public void clearDone() {
         done.clear();
+    }
+
+    public Set<String> getReversePropertySubjects(String graphName, String property, String value) {
+        if (reversePropertyIndex == null) {
+            return Collections.emptySet();
+        }
+
+        final Map<String, Map<String, Set<String>>> graphIndex = reversePropertyIndex.get(graphName);
+        if (graphIndex == null) {
+            return Collections.emptySet();
+        }
+
+        final Map<String, Set<String>> propertyIndex = graphIndex.get(property);
+        if (propertyIndex == null) {
+            return Collections.emptySet();
+        }
+
+        final Set<String> subjects = propertyIndex.get(value);
+        return subjects != null ? subjects : Collections.emptySet();
+    }
+
+    public void setReversePropertyIndex(Map<String, Map<String, Map<String, Set<String>>>> index) {
+        this.reversePropertyIndex = index;
     }
 }
