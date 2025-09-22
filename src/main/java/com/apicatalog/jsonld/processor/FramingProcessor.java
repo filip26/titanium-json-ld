@@ -18,9 +18,11 @@ package com.apicatalog.jsonld.processor;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -162,6 +164,9 @@ public final class FramingProcessor {
             state.setGraphName(Keywords.MERGED);
             state.getGraphMap().merge();
         }
+
+        // Build reverse property index for efficient lookups
+        state.setReversePropertyIndex(buildReversePropertyIndex(state.getGraphMap()));
 
         // 15.
         final JsonMapBuilder resultMap = JsonMapBuilder.create();
@@ -390,5 +395,62 @@ public final class FramingProcessor {
         for (Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
             findBlankNodes(entry.getValue(), blankNodes);
         }
+    }
+
+    private static Map<String, Map<String, Map<String, Set<String>>>> buildReversePropertyIndex(final NodeMap graphMap) {
+
+        final Map<String, Map<String, Map<String, Set<String>>>> index = new HashMap<>();
+
+        for (final String graphName : graphMap.graphs()) {
+
+            final Map<String, Map<String, Set<String>>> graphIndex = index.computeIfAbsent(graphName, k -> new HashMap<>());
+
+            for (final String subject : graphMap.subjects(graphName)) {
+
+                final Map<String, JsonValue> node = graphMap.get(graphName, subject);
+
+                if (node == null) {
+                    continue;
+                }
+
+                for (final Entry<String, JsonValue> propEntry : node.entrySet()) {
+
+                    final String property = propEntry.getKey();
+
+                    if (Keywords.contains(property)) {
+                        continue;
+                    }
+
+                    final JsonValue value = propEntry.getValue();
+
+                    if (JsonUtils.isArray(value)) {
+
+                        for (final JsonValue item : value.asJsonArray()) {
+
+                            if (JsonUtils.isObject(item) && item.asJsonObject().containsKey(Keywords.ID)) {
+
+                                final String targetId = item.asJsonObject().getString(Keywords.ID);
+
+                                graphIndex
+                                        .computeIfAbsent(property, k -> new HashMap<>())
+                                        .computeIfAbsent(targetId, k -> new HashSet<>())
+                                        .add(subject);
+                            }
+                        }
+
+                    } else if (JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.ID)) {
+
+                        final String targetId = value.asJsonObject().getString(Keywords.ID);
+
+                        graphIndex
+                                .computeIfAbsent(property, k -> new HashMap<>())
+                                .computeIfAbsent(targetId, k -> new HashSet<>())
+                                .add(subject);
+                    }
+                }
+            }
+        }
+
+        return index;
     }
 }
