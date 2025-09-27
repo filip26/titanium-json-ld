@@ -46,6 +46,7 @@
           <groupId>com.apicatalog</groupId>
           <artifactId>titanium-rdf-n-quads</artifactId>
           <version>${titanium.rdf.nquads.version}</version>
+          <scope>test</scope>
         </dependency>
         <dependency>
           <groupId>com.apicatalog</groupId>

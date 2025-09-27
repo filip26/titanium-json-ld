@@ -478,47 +478,8 @@ public final class JsonLdOptions {
         this.rdfStar = rdfStar;
     }
 
-    /**
-     * if disabled only URIs required for processing are parsed and validated.
-     * Disabling URI validation might improve performance depending on the number of
-     * processed URIs.
-     * <p>
-     * <b>Warning:</b> Disabled validation could cause an invalid output.
-     * </p>
-     * <p>
-     * Enabled by default.
-     * </p>
-     *
-     * @deprecated use <code>JsonLdOptions#getUriValidation</code>
-     * @return true if full validation is enabled
-     */
-    @Deprecated
-    public boolean isUriValidation() {
-        return uriValidation == UriValidationPolicy.Full;
-    }
-
     public UriValidationPolicy getUriValidation() {
         return uriValidation;
-    }
-
-    /**
-     * if disabled only URIs required for processing are parsed and validated.
-     * Disabling URI validation might improve performance depending on the number of
-     * processed URIs.
-     * <p>
-     * <b>Warning:</b> Disabled validation could cause an invalid output.
-     * </p>
-     * <p>
-     * Enabled by default.
-     * </p>
-     *
-     * @deprecated since 1.5.0, use
-     *             <code>JsonLdOptions#setUriValidation(com.apicatalog.jsonld.uri.UriValidationPolicy)</code>
-     * @param enabled set <code>true</code> to enable validation
-     */
-    @Deprecated
-    public void setUriValidation(boolean enabled) {
-        setUriValidation(enabled ? UriValidationPolicy.Full : UriValidationPolicy.SchemeOnly);
     }
 
     /**

@@ -50,14 +50,6 @@ public class ProcessingRuntime {
      */
     public void resetTicker() {/* NOP does nothing if timeout is not set */}
 
-    /**
-     * @deprecated use <code>ProcessingRuntime#getUriValidation()</code>
-     */
-    @Deprecated
-    public boolean isUriValidation() {
-        return options.isUriValidation();
-    }
-
     public UriValidationPolicy getUriValidation() {
         return options.getUriValidation();
     }

@@ -21,12 +21,11 @@ import com.apicatalog.jsonld.api.CompactionApi;
 import com.apicatalog.jsonld.api.ExpansionApi;
 import com.apicatalog.jsonld.api.FlatteningApi;
 import com.apicatalog.jsonld.api.FramingApi;
-import com.apicatalog.jsonld.api.FromRdfApi;
 import com.apicatalog.jsonld.api.ToRdfApi;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.serialization.QuadsToJsonld;
 import com.apicatalog.jsonld.uri.UriUtils;
-import com.apicatalog.rdf.RdfDataset;
+import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.rdf.nquads.NQuadsReader;
 
 import jakarta.json.JsonArray;
@@ -434,61 +433,6 @@ public final class JsonLd {
     }
 
     /**
-     * Transforms the referenced N-Quads document into a JSON-LD document in
-     * expanded form.
-     * <p>
-     * <strong>Deprecated since 1.7.0:</strong> Please use {@link JsonLd#fromRdf()}
-     * instead.
-     * </p>
-     *
-     * @param documentLocation {@link URI} referencing N-Quads document to expand
-     * @return {@link FromRdfApi} allowing to set additional parameters
-     * @deprecated since 1.7.0 - use {@link JsonLd#fromRdf()} instead
-     */
-    public static final FromRdfApi fromRdf(final String documentLocation) {
-        return new FromRdfApi(assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME));
-    }
-
-    /**
-     * Transforms the referenced N-Quads document into a JSON-LD document in
-     * expanded form.
-     * <p>
-     * <strong>Deprecated since 1.7.0:</strong> Please use {@link JsonLd#fromRdf()}
-     * instead.
-     * </p>
-     *
-     * @param documentUri {@link URI} referencing N-Quads document to expand
-     * @return {@link FromRdfApi} allowing to set additional parameters
-     * @deprecated since 1.7.0 - use {@link JsonLd#fromRdf()} instead
-     */
-    public static final FromRdfApi fromRdf(final URI documentUri) {
-
-        assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
-
-        return new FromRdfApi(documentUri);
-    }
-
-    /**
-     * Transforms a {@link Document} into a JSON-LD document in expanded form.
-     * <p>
-     * <strong>Deprecated since 1.7.0:</strong> Please use {@link JsonLd#fromRdf()}
-     * instead.
-     * </p>
-     *
-     * @param document the {@link Document} to transform
-     * @return a {@link FromRdfApi} instance, allowing additional parameter
-     *         configuration
-     * @deprecated since 1.7.0 - use {@link JsonLd#fromRdf()} instead
-     */
-    @Deprecated
-    public static final FromRdfApi fromRdf(final Document document) {
-
-        assertRdfDocument(document, DOCUMENT_PARAM_NAME);
-
-        return new FromRdfApi(document);
-    }
-
-    /**
      * Transforms an RDF quad set into a JSON-LD document in expanded form.
      * <p>
      * Use {@link NQuadsReader} to read quads, or manually add them to
@@ -542,16 +486,6 @@ public final class JsonLd {
 
         if (!document.getJsonContent().isPresent()) {
             throw new IllegalArgumentException("'" + param + "' is not not JSON document but [" + document.getContentType() + "].");
-        }
-    }
-
-    @Deprecated
-    private static final void assertRdfDocument(final Document document, final String param) {
-
-        assertNotNull(document, param);
-
-        if (!document.getRdfContent().isPresent()) {
-            throw new IllegalArgumentException("'" + param + "' is not not RDF document but [" + document.getContentType() + "].");
         }
     }
 

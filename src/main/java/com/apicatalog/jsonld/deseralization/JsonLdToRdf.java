@@ -39,9 +39,6 @@ import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
-import com.apicatalog.rdf.Rdf;
-import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfDatasetSupplier;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.rdf.lang.RdfConstants;
@@ -72,32 +69,16 @@ public final class JsonLdToRdf {
     private RdfDirection rdfDirection;
     private UriValidationPolicy uriValidation;
 
-    // deprecated
-    private RdfDataset dataset;
-
-    private JsonLdToRdf(NodeMap nodeMap, RdfDataset dataset) {
+    private JsonLdToRdf(NodeMap nodeMap) {
         this.nodeMap = nodeMap;
-        this.dataset = dataset;
 
         this.produceGeneralizedRdf = false;
         this.rdfDirection = null;
         this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
-    /**
-     * @deprecated since 1.6.0, use {@link #with(NodeMap)} and
-     *             {@link #provide(RdfQuadConsumer)}.
-     * @param nodeMap a node map instance, never {@code null}
-     * @param dataset a dataset instance, never {@code null}
-     * @return the {@link JsonLdToRdf} instance enabling fluent programming 
-     */
-    @Deprecated
-    public static final JsonLdToRdf with(NodeMap nodeMap, RdfDataset dataset) {
-        return new JsonLdToRdf(nodeMap, dataset);
-    }
-
     public static final JsonLdToRdf with(NodeMap nodeMap) {
-        return new JsonLdToRdf(nodeMap, null);
+        return new JsonLdToRdf(nodeMap);
     }
 
     public JsonLdToRdf produceGeneralizedRdf(boolean enable) {
@@ -184,31 +165,6 @@ public final class JsonLdToRdf {
                 }
             }
         }
-    }
-
-    /**
-     * @deprecated since 1.6.0, use {@link JsonLdToRdf#provide(RdfQuadConsumer)}.
-     * @return a dataset
-     * @throws JsonLdError if the transformation fails
-     */
-    @Deprecated
-    public RdfDataset build() throws JsonLdError {
-
-        if (dataset == null) {
-            dataset = Rdf.createDataset();
-        }
-
-        provide(new RdfDatasetSupplier(dataset));
-
-        return dataset;
-    }
-
-    /**
-     * @deprecated since 1.5.0, use {@link #uriValidation(UriValidationPolicy)}.
-     */
-    @Deprecated
-    public JsonLdToRdf uriValidation(boolean enabled) {
-        return uriValidation(enabled ? UriValidationPolicy.Full : UriValidationPolicy.SchemeOnly);
     }
 
     public JsonLdToRdf uriValidation(UriValidationPolicy uriValidation) {

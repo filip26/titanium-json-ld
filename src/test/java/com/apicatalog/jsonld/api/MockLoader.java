@@ -23,7 +23,7 @@ import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
-import com.apicatalog.rdf.RdfDataset;
+import com.apicatalog.rdf.model.RdfDataset;
 
 import jakarta.json.JsonStructure;
 

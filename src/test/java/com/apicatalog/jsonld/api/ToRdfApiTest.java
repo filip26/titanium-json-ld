@@ -15,17 +15,10 @@
  */
 package com.apicatalog.jsonld.api;
 
-import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.http.media.MediaType;
-import com.apicatalog.jsonld.uri.UriValidationPolicy;
-import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfNQuad;
-import jakarta.json.JsonValue;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -34,7 +27,19 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.function.Predicate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+import com.apicatalog.jsonld.JsonLd;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.http.media.MediaType;
+import com.apicatalog.jsonld.uri.UriValidationPolicy;
+import com.apicatalog.rdf.RdfNQuad;
+import com.apicatalog.rdf.model.RdfDataset;
+
+import jakarta.json.JsonValue;
 
 @Deprecated
 class ToRdfApiTest {

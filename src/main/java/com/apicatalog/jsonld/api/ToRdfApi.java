@@ -26,8 +26,6 @@ import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.ToRdfProcessor;
 import com.apicatalog.jsonld.uri.UriUtils;
-import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfDatasetSupplier;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 
 import jakarta.json.JsonStructure;
@@ -154,27 +152,6 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
     public ToRdfApi ordered(boolean enable) {
         options.setOrdered(enable);
         return this;
-    }
-
-    /**
-     * Transforms the provided <code>JSON-LD</code> document into an
-     * {@link RdfDataset}.
-     * <p>
-     * This method converts a JSON-LD document into an RDF dataset representation.
-     * It has been deprecated in favor of {@link ToRdfApi#provide(RdfQuadConsumer)}.
-     * </p>
-     *
-     * @return an {@link RdfDataset} representing the provided <code>JSON-LD</code>
-     *         document
-     * @throws JsonLdError if the transformation fails
-     * @deprecated since 1.7.0 - Use {@link ToRdfApi#provide(RdfQuadConsumer)}
-     *             instead.
-     */
-    @Deprecated
-    public RdfDataset get() throws JsonLdError {
-        final RdfDatasetSupplier consumer = new RdfDatasetSupplier();
-        provide(consumer);
-        return consumer.get();
     }
 
     /**

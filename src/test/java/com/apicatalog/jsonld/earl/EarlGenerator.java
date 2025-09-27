@@ -143,7 +143,7 @@ public class EarlGenerator {
                     printResult(writer, testCase.uri,
                             (new JsonLdTestRunnerEarl(testCase)).execute(options ->
 
-                                JsonDocument.of(JsonLd.fromRdf(testCase.input).options(options).get())
+                                JsonDocument.of(JsonLd.fromRdf().(testCase.input).options(options).get())
 
                             )
                      )

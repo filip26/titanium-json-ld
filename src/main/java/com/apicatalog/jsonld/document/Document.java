@@ -19,8 +19,6 @@ import java.net.URI;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.http.media.MediaType;
-import com.apicatalog.rdf.RdfDataset;
-
 import jakarta.json.JsonStructure;
 
 /**
@@ -33,6 +31,7 @@ import jakarta.json.JsonStructure;
  * {@link DocumentParser}.
  *
  */
+@Deprecated
 public interface Document {
 
     /**
@@ -80,24 +79,6 @@ public interface Document {
      *         is not JSON based
      */
     public default Optional<JsonStructure> getJsonContent() {
-        return Optional.empty();
-    }
-
-    /**
-     * Retrieves the document content as a parsed {@link RdfDataset}.
-     * <p>
-     * If the document content is not in the <code>application/n-quads</code>
-     * representation, {@link Optional#empty()} is returned.
-     * </p>
-     *
-     * @return an {@link Optional} containing the {@link RdfDataset} if the content
-     *         is valid, or {@link Optional#empty()} if the document content is not
-     *         in <code>application/n-quads</code> format
-     * @deprecated since 1.7.0 - Please use Titanium RDF Primitives or any other
-     *             third-party library to materialize RDF primitives
-     */
-    @Deprecated
-    public default Optional<RdfDataset> getRdfContent() {
         return Optional.empty();
     }
 }

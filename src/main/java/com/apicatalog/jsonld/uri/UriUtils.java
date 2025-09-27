@@ -82,63 +82,8 @@ public final class UriUtils {
                 || create(StringUtils.strip(uri)) == null;
     }
 
-    /**
-     * Deprecated in favor of {@link UriUtils#isNotAbsoluteUri(String, boolean)}
-     *
-     * @deprecated since 1.3.0
-     *
-     * @param uri to check
-     * @return <code>true</code> if the given URI is not absolute
-     */
-    @Deprecated
-    public static final boolean isNotAbsoluteUri(final String uri) {
-        return isNotAbsoluteUri(uri, UriValidationPolicy.Full);
-    }
-
-    /**
-     * Deprecated in favor of
-     * {@link UriUtils#isNotAbsoluteUri(String, UriValidationPolicy)}
-     *
-     * @deprecated since 1.3.0
-     *
-     * @param uri to check
-     * @return <code>true</code> if the given URI is absolute
-     */
-    @Deprecated
-    public static final boolean isNotAbsoluteUri(final String uri, final boolean validate) {
-        return !isAbsoluteUri(uri, validate ? UriValidationPolicy.Full : UriValidationPolicy.SchemeOnly);
-    }
-
     public static final boolean isNotAbsoluteUri(final String uri, UriValidationPolicy policy) {
         return !isAbsoluteUri(uri, policy);
-    }
-
-    /**
-     * Deprecated in favor of
-     * {@link UriUtils#isAbsoluteUri(String, UriValidationPolicy)}
-     *
-     * @deprecated since 1.3.0
-     *
-     * @param uri to check
-     * @return <code>true</code> if the given URI is absolute
-     */
-    @Deprecated
-    public static final boolean isAbsoluteUri(final String uri) {
-        return isAbsoluteUri(uri, UriValidationPolicy.Full);
-    }
-
-    /**
-     * Deprecated in favor of
-     * {@link UriUtils#isAbsoluteUri(String, UriValidationPolicy)}
-     *
-     * @deprecated since 1.4.2
-     *
-     * @param uri to check
-     * @return <code>true</code> if the given URI is absolute
-     */
-    @Deprecated
-    public static final boolean isAbsoluteUri(final String uri, boolean validate) {
-        return isAbsoluteUri(uri, validate ? UriValidationPolicy.Full : UriValidationPolicy.SchemeOnly);
     }
 
     public static final boolean isAbsoluteUri(final String uri, final UriValidationPolicy policy) {

@@ -207,15 +207,6 @@ public final class UriExpansion {
         return result;
     }
 
-    /**
-     * @deprecated since 1.5.0, use
-     *             <code>UriExpansion#uriValidation(com.apicatalog.jsonld.uri.UriValidationPolicy)</code>
-     */
-    @Deprecated
-    public UriExpansion uriValidation(boolean enabled) {
-        return uriValidation(enabled ? UriValidationPolicy.Full : UriValidationPolicy.SchemeOnly);
-    }
-
     public UriExpansion uriValidation(UriValidationPolicy uriValidation) {
         this.uriValidation = uriValidation;
         return this;

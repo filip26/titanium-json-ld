@@ -25,8 +25,6 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
-import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfDatasetSupplier;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 
 import jakarta.json.JsonArray;
@@ -40,22 +38,6 @@ import jakarta.json.JsonArray;
 public final class ToRdfProcessor {
 
     private ToRdfProcessor() {
-    }
-
-    @Deprecated
-    public static final RdfDataset toRdf(final URI input, final JsonLdOptions options) throws JsonLdError {
-
-        final RdfDatasetSupplier consumer = new RdfDatasetSupplier();
-        toRdf(consumer, input, options);
-        return consumer.get();
-
-    }
-
-    @Deprecated
-    public static final RdfDataset toRdf(Document input, final JsonLdOptions options) throws JsonLdError {
-        final RdfDatasetSupplier consumer = new RdfDatasetSupplier();
-        toRdf(consumer, input, options);
-        return consumer.get();
     }
 
     public static final void toRdf(final RdfQuadConsumer consumer, final URI input, final JsonLdOptions options) throws JsonLdError {
