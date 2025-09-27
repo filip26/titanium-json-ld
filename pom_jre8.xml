@@ -37,6 +37,11 @@
       <version>${jcs.version}</version>
     </dependency>
     <dependency>
+        <groupId>com.apicatalog</groupId>
+        <artifactId>tree-io-jakarta</artifactId>
+        <version>${tree-io.version}</version>
+    </dependency>            
+    <dependency>
       <groupId>com.apicatalog</groupId>
       <artifactId>titanium-rdf-api</artifactId>
       <version>${titanium.rdf.api.version}</version>
