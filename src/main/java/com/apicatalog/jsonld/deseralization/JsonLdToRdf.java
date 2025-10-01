@@ -46,6 +46,7 @@ import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.rdf.lang.RdfConstants;
 import com.apicatalog.rdf.lang.XsdConstants;
+import com.apicatalog.tree.io.JakartaAdapter;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonNumber;
@@ -279,7 +280,7 @@ public final class JsonLdToRdf {
 
         // 8.
         if (Keywords.JSON.equals(datatype)) {
-            valueString = Jcs.canonize(value);
+            valueString = Jcs.canonize(value, JakartaAdapter.instance());
             datatype = RdfConstants.JSON;
 
             // 9.
