@@ -196,7 +196,7 @@ implementation("org.glassfish:jakarta.json:2.0.1")
 
 ## Contributing
 
-All PR's welcome!
+Contributions are welcome! Please submit a pull request.
 
 - Develop
   - Implement a new feature 
@@ -223,14 +223,14 @@ Fork and clone the project repository.
 
 ```bash
 > cd titanium-json-ld
-> mvn clean package
+> mvn package
 ```
 
 #### Java 8
 
 ```bash
 > cd titanium-json-ld
-> mvn -f pom_jre8.xml clean package
+> mvn -f pom_jre8.xml package
 ```
 
 ## Resources
