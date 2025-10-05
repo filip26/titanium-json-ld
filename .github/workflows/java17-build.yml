@@ -1,7 +1,7 @@
 # This workflow will build a Java project with Maven
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Java 8 CI
+name: Java 17 CI
 
 permissions:
   contents: read
@@ -17,10 +17,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up JDK 8
+    - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
-        java-version: 8
+        java-version: 17
         distribution: 'temurin'        
     - name: Build
-      run: mvn -f pom_jre8.xml -B package
+      run: mvn -B package 

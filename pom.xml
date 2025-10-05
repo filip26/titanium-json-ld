@@ -3,15 +3,11 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.apicatalog</groupId>
-        <artifactId>titanium</artifactId>
-        <version>2.0.0-SNAPSHOT</version>
-        <relativePath>pom_parent.xml</relativePath>
-    </parent>
+    <groupId>com.apicatalog</groupId>
+    <version>2.0.0-SNAPSHOT</version>
     <artifactId>titanium-json-ld</artifactId>
     <packaging>jar</packaging>
-    <name>Titanium JSON-LD 1.1 (JRE11)</name>
+    <name>Titanium JSON-LD 1.1</name>
     <url>https://github.com/filip26/titanium-json-ld</url>
     <scm>
         <connection>scm:git:git://github.com/filip26/titanium-json-ld.git</connection>
@@ -20,11 +16,28 @@
         <url>https://github.com/filip26/titanium-json-ld/tree/main</url>
     </scm>
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <argLine>-Dfile.encoding=UTF-8</argLine>
+        
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
+        
         <envSources>src/main/java11</envSources>
         <titanium.rdf.api.version>1.0.0</titanium.rdf.api.version>
         <titanium.rdf.nquads.version>1.0.2</titanium.rdf.nquads.version>        
+
+        <jcs.version>2.0.0</jcs.version>
+        <tree-io.version>0.8.0</tree-io.version>
+        <jakarta.json.version>2.0.1</jakarta.json.version>
+
+        <!-- test resources -->
+        <junit.version>5.14.0</junit.version>
+        <wiremock.version>2.35.2</wiremock.version>
+
+        <sonar.projectKey>filip26_titanium-json-ld</sonar.projectKey>
+        <sonar.organization>apicatalog</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>        
     </properties>
     <dependencies>
         <dependency>
@@ -32,6 +45,11 @@
           <artifactId>titanium-jcs</artifactId>
           <version>${jcs.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.apicatalog</groupId>
+            <artifactId>tree-io-api</artifactId>
+            <version>${tree-io.version}</version>
+        </dependency>                
         <dependency>
             <groupId>com.apicatalog</groupId>
             <artifactId>tree-io-jakarta</artifactId>
@@ -42,6 +60,13 @@
           <artifactId>titanium-rdf-api</artifactId>
           <version>${titanium.rdf.api.version}</version>
         </dependency>
+        <dependency>
+          <groupId>jakarta.json</groupId>
+          <artifactId>jakarta.json-api</artifactId>
+          <version>${jakarta.json.version}</version>
+          <scope>provided</scope>
+        </dependency>        
+        <!-- Tests-->
         <dependency>
           <groupId>com.apicatalog</groupId>
           <artifactId>titanium-rdf-n-quads</artifactId>
@@ -60,5 +85,173 @@
           <version>2.0.0</version>
           <scope>test</scope>       
         </dependency>
+        <dependency>
+          <groupId>org.glassfish</groupId>
+          <artifactId>jakarta.json</artifactId>
+          <version>${jakarta.json.version}</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.junit.jupiter</groupId>
+          <artifactId>junit-jupiter</artifactId>
+          <version>${junit.version}</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>com.github.tomakehurst</groupId>
+          <artifactId>wiremock-jre8</artifactId>
+          <version>${wiremock.version}</version>
+          <scope>test</scope>
+        </dependency>        
     </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.4.2</version>
+        <configuration>
+          <classifier>${envClassifier}</classifier>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.6.1</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${envSources}</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.3.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.12.0</version>
+        <configuration>
+          <doclint>all,-missing</doclint>
+          <failOnWarnings>false</failOnWarnings>
+          <failOnError>false</failOnError>          
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.13</version>
+        <executions>
+          <execution>
+            <id>default-prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>flatten-maven-plugin</artifactId>
+        <version>1.3.0</version>
+        <configuration>
+          <flattenMode>ossrh</flattenMode>
+        </configuration>
+        <executions>
+                    <!-- enable flattening -->
+          <execution>
+            <id>flatten</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>flatten</goal>
+            </goals>
+          </execution>
+                    <!-- ensure proper cleanup -->
+          <execution>
+            <id>flatten.clean</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.4</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>3.5.4</version>
+      </plugin>
+    </plugins>
+  </build>
+  <profiles>
+    <profile>
+      <id>maven-central</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.2.8</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>0.9.0</version>
+            <extensions>true</extensions>
+            <configuration>
+              <publishingServerId>central</publishingServerId>
+              <autoPublish>true</autoPublish>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>    
 </project>

@@ -1,4 +1,4 @@
-name: Publish JRE8 to the Maven Central
+name: Publish JRE17 to the Maven Central
 
 on:
   release:
@@ -12,10 +12,10 @@ jobs:
     environment: maven-central
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK 8
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: 8
+          java-version: 17
           distribution: 'temurin'
           cache: 'maven'
           server-id: central
@@ -24,10 +24,11 @@ jobs:
           gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Build and Deploy
-        run: mvn -f pom_jre8.xml -B -Pmaven-central deploy
+        run: mvn -B -Pmaven-central deploy
         env:
           CENTRAL_TOKEN_ID: ${{ secrets.CENTRAL_TOKEN_ID }}
           CENTRAL_TOKEN_SECRET: ${{ secrets.CENTRAL_TOKEN_SECRET }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
           MAVEN_GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           GNUPGHOME: ${{ env.GNUPGHOME }}
+
