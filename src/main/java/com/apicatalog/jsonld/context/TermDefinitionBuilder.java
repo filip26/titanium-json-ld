@@ -26,7 +26,6 @@ import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.api.StringUtils;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.CompactUri;
@@ -128,7 +127,7 @@ public final class TermDefinitionBuilder {
 
     public void create(final String term) throws JsonLdError {
 
-        if (StringUtils.isBlank(term)) {
+        if (term == null || term.isBlank()) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
         }
 

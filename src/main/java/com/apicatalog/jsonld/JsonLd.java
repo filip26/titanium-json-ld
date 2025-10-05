@@ -418,11 +418,11 @@ public final class JsonLd {
 
         assertNotNull(location, param);
 
-        if (StringUtils.isBlank(location)) {
+        if (location == null || location.isBlank()) {
             throw new IllegalArgumentException("'" + param + "' is blank string.");
         }
 
-        final URI uri = UriUtils.create(StringUtils.strip(location));
+        final URI uri = UriUtils.create(location.strip());
 
         if (uri == null || !uri.isAbsolute()) {
             throw new IllegalArgumentException("'" + param + "' is not an absolute URI [" + location + "].");

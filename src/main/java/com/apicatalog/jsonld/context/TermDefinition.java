@@ -165,15 +165,17 @@ public final class TermDefinition {
     }
 
     public boolean isNotSameExcept(TermDefinition ref) {
-        return !Objects.equals(uriMapping, ref.uriMapping) || prefixFlag != ref.prefixFlag
+        return !Objects.equals(uriMapping, ref.uriMapping)
+                || prefixFlag != ref.prefixFlag
                 || !Objects.equals(reversePropertyFlag, ref.reversePropertyFlag)
-                || !Objects.equals(baseUrl, ref.baseUrl) || !Objects.equals(containerMapping, ref.containerMapping)
+                || !Objects.equals(baseUrl, ref.baseUrl)
+                || !Objects.equals(containerMapping, ref.containerMapping)
                 || !Objects.equals(directionMapping, ref.directionMapping)
-                || !Objects.equals(indexMapping, ref.indexMapping) || !Objects.equals(nestValue, ref.nestValue)
+                || !Objects.equals(indexMapping, ref.indexMapping)
+                || !Objects.equals(nestValue, ref.nestValue)
                 || !Objects.equals(typeMapping, ref.typeMapping)
                 || !Objects.equals(languageMapping, ref.languageMapping)
-                || !Objects.equals(localContext, ref.localContext)
-                ;
+                || !Objects.equals(localContext, ref.localContext);
     }
 
     public boolean hasContainerMapping(String value) {
@@ -183,10 +185,10 @@ public final class TermDefinition {
     @Override
     public String toString() {
         return "TermDefinition[uriMapping=" + uriMapping + ", "
-                    + "localContext=" + localContext + ", "
-                    + "indexMapping=" + indexMapping + ", "
-                    + "typeMapping=" + typeMapping + ", "
-                    + "containerMapping=" + containerMapping 
-                    + "]";
+                + "localContext=" + localContext + ", "
+                + "indexMapping=" + indexMapping + ", "
+                + "typeMapping=" + typeMapping + ", "
+                + "containerMapping=" + containerMapping
+                + "]";
     }
 }
