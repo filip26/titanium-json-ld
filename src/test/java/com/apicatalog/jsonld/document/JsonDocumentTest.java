@@ -44,7 +44,7 @@ class JsonDocumentTest {
         Document document = JsonDocument.of(JsonValue.EMPTY_JSON_ARRAY);
         assertNotNull(document);
         assertTrue(MediaType.JSON.match(document.getContentType()));
-        assertFalse(document.getRdfContent().isPresent());
+    
         assertTrue(document.getJsonContent().isPresent());
         assertFalse(document.getProfile().isPresent());
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, document.getJsonContent().get());
@@ -55,7 +55,6 @@ class JsonDocumentTest {
         Document document = JsonDocument.of(MediaType.JSON_LD, JsonValue.EMPTY_JSON_OBJECT);
         assertNotNull(document);
         assertTrue(MediaType.JSON_LD.match(document.getContentType()));
-        assertFalse(document.getRdfContent().isPresent());
         assertTrue(document.getJsonContent().isPresent());
         assertFalse(document.getProfile().isPresent());
         assertEquals(JsonValue.EMPTY_JSON_OBJECT, document.getJsonContent().get());
@@ -66,7 +65,6 @@ class JsonDocumentTest {
         Document document = JsonDocument.of(new ByteArrayInputStream(JsonValue.EMPTY_JSON_ARRAY.toString().getBytes()));
         assertNotNull(document);
         assertTrue(MediaType.JSON.match(document.getContentType()));
-        assertFalse(document.getRdfContent().isPresent());
         assertTrue(document.getJsonContent().isPresent());
         assertFalse(document.getProfile().isPresent());
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, document.getJsonContent().get());
@@ -77,7 +75,6 @@ class JsonDocumentTest {
         Document document = JsonDocument.of(new InputStreamReader(new ByteArrayInputStream(JsonValue.EMPTY_JSON_ARRAY.toString().getBytes())));
         assertNotNull(document);
         assertTrue(MediaType.JSON.match(document.getContentType()));
-        assertFalse(document.getRdfContent().isPresent());
         assertTrue(document.getJsonContent().isPresent());
         assertFalse(document.getProfile().isPresent());
         assertEquals(JsonValue.EMPTY_JSON_ARRAY, document.getJsonContent().get());
@@ -88,7 +85,6 @@ class JsonDocumentTest {
         Document document = JsonDocument.of(MediaType.of("application/custom+json;profile=https://example.org/profile"), JsonValue.EMPTY_JSON_OBJECT);
         assertNotNull(document);
         assertTrue(MediaType.of("application", "custom+json").match(document.getContentType()));
-        assertFalse(document.getRdfContent().isPresent());
         assertTrue(document.getJsonContent().isPresent());
         assertTrue(document.getProfile().isPresent());
         assertEquals("https://example.org/profile", document.getProfile().get());

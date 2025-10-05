@@ -58,3 +58,4 @@ local.properties
 **/nbactions.xml
 META-INF
 .flattened-pom.xml
+/titanium-json-ld-earl.ttl

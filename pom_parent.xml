@@ -13,7 +13,7 @@
 
   <description>
         A JSON-LD 1.1 Processor &amp; API
-    </description>
+  </description>
 
   <licenses>
     <license>
@@ -32,8 +32,10 @@
       <id>filip26</id>
       <name>Filip Kolarik</name>
       <email>filip26@gmail.com</email>
+      <url>https://www.linkedin.com/in/filipkolarik/</url>      
       <roles>
         <role>author</role>
+        <role>maintainer</role>
       </roles>
     </developer>
   </developers>
@@ -50,8 +52,8 @@
 
     <argLine>-Dfile.encoding=UTF-8</argLine>
 
-    <!-- test resources -->
-    <junit.version>5.13.4</junit.version>
+        <!-- test resources -->
+    <junit.version>5.14.0</junit.version>
     <wiremock.version>2.35.2</wiremock.version>
 
     <sonar.projectKey>filip26_titanium-json-ld</sonar.projectKey>
@@ -65,7 +67,7 @@
       <version>${jakarta.json.version}</version>
       <scope>provided</scope>
     </dependency>
-    <!-- Tests -->
+        <!-- Tests -->
     <dependency>
       <groupId>org.glassfish</groupId>
       <artifactId>jakarta.json</artifactId>
@@ -171,7 +173,7 @@
           <flattenMode>ossrh</flattenMode>
         </configuration>
         <executions>
-          <!-- enable flattening -->
+                    <!-- enable flattening -->
           <execution>
             <id>flatten</id>
             <phase>process-resources</phase>
@@ -179,7 +181,7 @@
               <goal>flatten</goal>
             </goals>
           </execution>
-          <!-- ensure proper cleanup -->
+                    <!-- ensure proper cleanup -->
           <execution>
             <id>flatten.clean</id>
             <phase>clean</phase>
@@ -218,31 +220,21 @@
                 <goals>
                   <goal>sign</goal>
                 </goals>
-                <configuration>
-                  <signer>bc</signer>
-                </configuration>
               </execution>
             </executions>
           </plugin>
           <plugin>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>nexus-staging-maven-plugin</artifactId>
-            <version>1.7.0</version>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>0.9.0</version>
             <extensions>true</extensions>
             <configuration>
-              <serverId>ossrh</serverId>
-              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-              <autoReleaseAfterClose>true</autoReleaseAfterClose>
+              <publishingServerId>central</publishingServerId>
+              <autoPublish>true</autoPublish>
             </configuration>
           </plugin>
         </plugins>
       </build>
-      <distributionManagement>
-        <snapshotRepository>
-          <id>ossrh</id>
-          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-      </distributionManagement>
     </profile>
   </profiles>
 </project>

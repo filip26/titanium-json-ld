@@ -20,7 +20,6 @@ import java.net.URI;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.rdf.model.RdfDataset;
@@ -52,12 +51,6 @@ public class MockLoader implements DocumentLoader {
             return remoteDocument;
         }
 
-        if (dataset != null) {
-            final Document remoteDocument = RdfDocument.of(dataset);
-            remoteDocument.setDocumentUrl(url);
-
-            return remoteDocument;
-        }
 
         throw new IllegalStateException();
     }

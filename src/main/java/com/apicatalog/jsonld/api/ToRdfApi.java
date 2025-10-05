@@ -156,7 +156,14 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
 
     /**
      * Emit transformed <code>JSON-LD</code> as RDF quads.
-     *
+     * <p>
+     * <strong>Note:</strong> toRdf() method adopts the {@link RdfQuadConsumer}
+     * interface, allowing integration with Jena, Jelly, RDF4J, and other RDF
+     * libraries.
+     * </p>
+     * 
+     * @since 1.6.0
+     * 
      * @param consumer that accepts emitted RDF statements
      * @throws JsonLdError if the document transformation fails
      */

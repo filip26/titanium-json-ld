@@ -26,22 +26,24 @@ import java.time.temporal.ChronoUnit;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.document.RdfDocument;
+import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.loader.QuadSetDocument;
 import com.apicatalog.jsonld.loader.SchemeRouter;
 import com.apicatalog.jsonld.loader.UriBaseRewriter;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
+import com.apicatalog.jsonld.serialization.QuadsToJsonld;
 import com.apicatalog.jsonld.test.JsonLdManifestLoader;
 import com.apicatalog.jsonld.test.JsonLdMockServer;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerEarl;
+import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
+import com.apicatalog.rdf.primitive.flow.QuadEmitter;
+import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
 import com.github.tomakehurst.wiremock.WireMockServer;
-
-import jakarta.json.JsonArray;
 
 public class EarlGenerator {
 
-    public static final String FILE_NAME = "java-jsonp-ld-earl.ttl";
+    public static final String FILE_NAME = "titanium-json-ld-earl.ttl";
     public static final String VERSION = "0.7";
     public static final String RELEASE_DATE = "2020-06-17";
 
@@ -67,147 +69,121 @@ public class EarlGenerator {
     public void testExpand(PrintWriter writer) throws JsonLdError {
 
         JsonLdManifestLoader
-            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "expand-manifest.jsonld", new ZipResourceLoader())
-            .stream()
-            .forEach(testCase ->
-                        printResult(writer, testCase.uri,
-                                (new JsonLdTestRunnerEarl(testCase)).execute(options ->
-
-                                    JsonDocument.of(JsonLd.expand(testCase.input).options(options).get())
-                                )
-                         )
-                    );
+                .load(JsonLdManifestLoader.JSON_LD_API_BASE, "expand-manifest.jsonld", new ZipResourceLoader())
+                .stream()
+                .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
+                .forEach(testCase -> printResult(writer, testCase.uri,
+                        (new JsonLdTestRunnerEarl(testCase)).execute(options -> JsonLd.expand(testCase.input).options(options).get())));
     }
 
     public void testCompact(final PrintWriter writer) throws JsonLdError {
 
         JsonLdManifestLoader
-            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld", new ZipResourceLoader())
-            .stream()
-            .forEach(testCase ->
-                        printResult(writer, testCase.uri,
-                             new JsonLdTestRunnerEarl(testCase).execute(options ->
-
-                                    JsonDocument.of(JsonLd.compact(
-                                                        testCase.input,
-                                                        testCase.context
-                                                        )
-                                                    .options(options)
-                                                    .get())
-                                 )
-                         )
-                    );
+                .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld", new ZipResourceLoader())
+                .stream()
+                .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
+                .forEach(testCase -> printResult(writer, testCase.uri,
+                        new JsonLdTestRunnerEarl(testCase).execute(options -> JsonLd.compact(
+                                testCase.input,
+                                testCase.context)
+                                .options(options)
+                                .get())));
     }
 
     public void testFlatten(final PrintWriter writer) throws JsonLdError {
 
         JsonLdManifestLoader
-            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "flatten-manifest.jsonld", new ZipResourceLoader())
-            .stream()
-            .forEach(testCase ->
-                        printResult(writer, testCase.uri,
-                             new JsonLdTestRunnerEarl(testCase).execute(options ->
-
-                                 JsonDocument.of(JsonLd
-                                             .flatten(testCase.input)
-                                             .context(testCase.context)
-                                             .options(options)
-                                             .get())
-                                 )
-                         )
-                    );
+                .load(JsonLdManifestLoader.JSON_LD_API_BASE, "flatten-manifest.jsonld", new ZipResourceLoader())
+                .stream()
+                .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
+                .forEach(testCase -> printResult(writer, testCase.uri,
+                        new JsonLdTestRunnerEarl(testCase).execute(options -> JsonLd
+                                .flatten(testCase.input)
+                                .context(testCase.context)
+                                .options(options)
+                                .get())));
     }
 
     public void testToRdf(final PrintWriter writer) throws JsonLdError {
 
         JsonLdManifestLoader
-        .load(JsonLdManifestLoader.JSON_LD_API_BASE, "toRdf-manifest.jsonld", new ZipResourceLoader())
-        .stream()
-        .forEach(testCase ->
-                printResult(writer, testCase.uri,
-                        (new JsonLdTestRunnerEarl(testCase)).execute(options ->
-
-                            RdfDocument.of(JsonLd.toRdf(testCase.input).options(options).get())
-
-                        )
-                 )
-            );
+                .load(JsonLdManifestLoader.JSON_LD_API_BASE, "toRdf-manifest.jsonld", new ZipResourceLoader())
+                .stream()
+                .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
+                .forEach(testCase -> printResult(writer, testCase.uri,
+                        (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
+                            final OrderedQuadSet set = new OrderedQuadSet();
+                            JsonLd.toRdf(testCase.input).options(options).provide(new QuadAcceptor(set));
+                            return set;
+                        })));
     }
 
     public void testFromRdf(PrintWriter writer) throws JsonLdError {
 
         JsonLdManifestLoader
-            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "fromRdf-manifest.jsonld", new ZipResourceLoader())
-            .stream()
-            .forEach(testCase ->
-                    printResult(writer, testCase.uri,
-                            (new JsonLdTestRunnerEarl(testCase)).execute(options ->
+                .load(JsonLdManifestLoader.JSON_LD_API_BASE, "fromRdf-manifest.jsonld", new ZipResourceLoader())
+                .stream()
+                .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
+                .forEach(testCase -> printResult(writer, testCase.uri,
+                        (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
+                            Document input = options.getDocumentLoader().loadDocument(testCase.input, null);
 
-                                JsonDocument.of(JsonLd.fromRdf().(testCase.input).options(options).get())
+                            QuadsToJsonld toLd = JsonLd.fromRdf().options(options);
 
-                            )
-                     )
-                );
+                            QuadEmitter.create(toLd).emit(((QuadSetDocument) input).getContent());
+
+                            return toLd.toJsonLd();
+                        })));
     }
 
     public void testFrame(PrintWriter writer) throws JsonLdError {
-
         JsonLdManifestLoader
-            .load(JsonLdManifestLoader.JSON_LD_FRAMING_BASE, "frame-manifest.jsonld", new ZipResourceLoader())
-            .stream()
-            .forEach(testCase ->
-                        printResult(writer, testCase.uri,
-                                (new JsonLdTestRunnerEarl(testCase)).execute(options ->
-
-                                    JsonDocument.of(JsonLd.frame(testCase.input, testCase.frame).options(options).get())
-                                )
-                         )
-                    );
+                .load(JsonLdManifestLoader.JSON_LD_FRAMING_BASE, "frame-manifest.jsonld", new ZipResourceLoader())
+                .stream()
+                .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
+                .forEach(testCase -> printResult(writer, testCase.uri,
+                        (new JsonLdTestRunnerEarl(testCase)).execute(options -> JsonLd.frame(testCase.input, testCase.frame).options(options).get())));
     }
 
-
     public void testRemote(PrintWriter writer) throws JsonLdError {
-
         JsonLdManifestLoader
-            .load(JsonLdManifestLoader.JSON_LD_API_BASE, "remote-doc-manifest.jsonld", new ZipResourceLoader())
-            .stream()
-            .forEach(testCase -> {
+                .load(JsonLdManifestLoader.JSON_LD_API_BASE, "remote-doc-manifest.jsonld", new ZipResourceLoader())
+                .stream()
+                .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
+                .forEach(testCase -> {
 
-                boolean result = false;
+                    boolean result = false;
 
-                try {
-                    WireMockServer wireMockServer = new WireMockServer();
-                    wireMockServer.start();
+                    try {
+                        WireMockServer wireMockServer = new WireMockServer();
+                        wireMockServer.start();
 
-                    JsonLdMockServer server = new JsonLdMockServer(testCase, JsonLdTestCase.TESTS_BASE, JsonLdManifestLoader.JSON_LD_API_BASE, new ZipResourceLoader());
-                    server.start();
+                        JsonLdMockServer server = new JsonLdMockServer(testCase, JsonLdTestCase.TESTS_BASE, JsonLdManifestLoader.JSON_LD_API_BASE, new ZipResourceLoader());
+                        server.start();
 
-
-                    result = (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
-
+                        result = (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
 
                             JsonLdOptions expandOptions = new JsonLdOptions(options);
 
                             expandOptions.setDocumentLoader(
-                                                new UriBaseRewriter(
-                                                            JsonLdTestCase.TESTS_BASE,
-                                                            wireMockServer.baseUrl(),
-                                                            SchemeRouter.defaultInstance()));
+                                    new UriBaseRewriter(
+                                            JsonLdTestCase.TESTS_BASE,
+                                            wireMockServer.baseUrl(),
+                                            SchemeRouter.defaultInstance()));
 
-                            JsonArray r = JsonLd.expand(testCase.input).options(expandOptions).get();
+                            return JsonLd.expand(testCase.input).options(expandOptions).get();
+                        });
 
-                            return JsonDocument.of(r);
-                    });
+                        server.stop();
+                        wireMockServer.stop();
 
-                    server.stop();
-                    wireMockServer.stop();
+                    } catch (JsonLdError e) {
+                        e.printStackTrace();
+                        result = false;
+                    }
 
-                } catch (JsonLdError e) {
-                    result = false;
-                }
-
-                printResult(writer, testCase.uri, result);
-            });
+                    printResult(writer, testCase.uri, result);
+                });
     }
 
     void printResult(PrintWriter writer, String testUri, boolean passed) {

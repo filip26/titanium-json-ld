@@ -4,15 +4,12 @@ import java.io.InputStream;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.http.media.MediaType;
-import com.apicatalog.rdf.Rdf;
 
 class DocumentResolver {
 
@@ -48,7 +45,6 @@ class DocumentResolver {
                                 + "'. Supported content types are ["
                                 + MediaType.JSON_LD + ", "
                                 + MediaType.JSON + ", +json, "
-                                + (Rdf.canRead().stream().map(MediaType::toString).collect(Collectors.joining(", ")))
                                 + "]"));
     }
 
@@ -62,9 +58,6 @@ class DocumentResolver {
                 return Optional.of(is -> JsonDocument.of(type, is));
             }
 
-            if (RdfDocument.accepts(type)) {
-                return Optional.of(is -> RdfDocument.of(type, is));
-            }
         }
         return Optional.empty();
     }

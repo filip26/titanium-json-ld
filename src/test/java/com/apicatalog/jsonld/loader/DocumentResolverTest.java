@@ -28,12 +28,6 @@ import com.apicatalog.jsonld.http.media.MediaType;
 class DocumentResolverTest {
 
     @Test
-    void test1() throws JsonLdError {
-        DocumentReader<InputStream> reader = (new DocumentResolver()).getReader(MediaType.N_QUADS);
-        assertNotNull(reader);
-    }
-
-    @Test
     void test2() throws JsonLdError {
         DocumentReader<InputStream> reader = (new DocumentResolver()).getReader(MediaType.JSON_LD);
         assertNotNull(reader);

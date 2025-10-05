@@ -15,6 +15,8 @@
  */
 package com.apicatalog.jsonld.test;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.Objects;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -28,6 +30,8 @@ import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.model.RdfQuadSet;
 
+import jakarta.json.JsonStructure;
+
 public class JsonLdTestRunnerEarl {
 
     private final JsonLdTestCase testCase;
@@ -38,7 +42,13 @@ public class JsonLdTestRunnerEarl {
 
     public boolean execute(JsonLdTestCaseMethod method) {
 
-        JsonLdOptions options = testCase.getOptions();
+        assertNotNull(testCase.baseUri);
+        assertNotNull(testCase.input);
+
+        final JsonLdOptions options = testCase.getOptions();
+
+        assertNotNull(options);
+        assertNotNull(options.getDocumentLoader());
 
         Object result = null;
 
@@ -66,14 +76,12 @@ public class JsonLdTestRunnerEarl {
             // compare expected with the result
             if (expectedDocument.getJsonContent().isPresent()) {
 
-                return (result instanceof Document)
-                        && ((Document) result).getJsonContent().isPresent()
+                return (result instanceof JsonStructure)
                         && JsonLdComparison.equals(
                                 expectedDocument.getJsonContent().get(),
-                                ((Document) result).getJsonContent().get());
+                                (JsonStructure) result);
 
             } else if (expectedDocument instanceof QuadSetDocument) {
-
                 return (result instanceof RdfQuadSet)
                         && RdfComparison.equals(
                                 ((QuadSetDocument) expectedDocument).getContent(),

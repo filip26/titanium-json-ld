@@ -32,19 +32,6 @@ import com.apicatalog.jsonld.http.media.MediaType;
 class FileLoaderTest {
 
     @Test
-    void testLoadNQuads() throws URISyntaxException, JsonLdError {
-
-        URL fileUrl = getClass().getResource("document.nq");
-
-        assertNotNull(fileUrl);
-
-        Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions());
-
-        assertNotNull(document);
-        assertTrue(MediaType.N_QUADS.match(document.getContentType()));
-    }
-
-    @Test
     void testLoadJson() throws URISyntaxException, JsonLdError {
 
         URL fileUrl = getClass().getResource("document.json");

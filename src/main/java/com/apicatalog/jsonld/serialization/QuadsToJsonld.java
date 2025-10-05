@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 the original author or authors.
+ * Copyright 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ import jakarta.json.stream.JsonParser;
  * <p>
  * This class can be configured using methods such as {@link #ordered(boolean)},
  * {@link #rdfDirection(RdfDirection)}, {@link #useNativeTypes(boolean)},
- * {@link #useRdfType(boolean)}, {@link #processingMode(JsonLdVersion)}, and
+ * {@link #useRdfType(boolean)}, {@link #mode(JsonLdVersion)}, and
  * {@link #uriValidation(UriValidationPolicy)}.
  * </p>
  * <p>
@@ -152,7 +152,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
      * @param processingMode the processing mode (e.g., V1_0, V1_1)
      * @return this instance for chaining
      */
-    public QuadsToJsonld processingMode(JsonLdVersion processingMode) {
+    public QuadsToJsonld mode(JsonLdVersion processingMode) {
         this.processingMode = processingMode;
         return this;
     }
