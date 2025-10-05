@@ -174,14 +174,14 @@ JsonLd.expand(document)
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium-json-ld</artifactId>
-    <version>1.6.0</version>
+    <version>1.7.0</version>
 </dependency>
 ```
 
 #### Gradle (Java 8+, Android API Level >= 24)
 
 ```gradle
-implementation("com.apicatalog:titanium-json-ld-jre8:1.6.0")
+implementation("com.apicatalog:titanium-json-ld-jre8:1.7.0")
 ```
 
 ### JSON-P Provider
