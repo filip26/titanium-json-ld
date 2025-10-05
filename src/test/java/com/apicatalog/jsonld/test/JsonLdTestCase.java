@@ -28,7 +28,7 @@ import com.apicatalog.jsonld.api.StringUtils;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.JsonLdLoader;
 import com.apicatalog.jsonld.loader.UriBaseRewriter;
 
 import jakarta.json.JsonObject;
@@ -75,14 +75,14 @@ public final class JsonLdTestCase {
 
     public JsonLdOptions.ProcessingPolicy undefinedTermPolicy = JsonLdOptions.ProcessingPolicy.Ignore;
 
-    private final DocumentLoader loader;
+    private final JsonLdLoader loader;
 
-    public JsonLdTestCase(final String testsBase, final DocumentLoader loader) {
+    public JsonLdTestCase(final String testsBase, final JsonLdLoader loader) {
         this.testsBase = testsBase;
         this.loader = loader;
     }
 
-    public static final JsonLdTestCase of(JsonObject o, String manifestUri, String manifestBase, String baseUri, final DocumentLoader loader) {
+    public static final JsonLdTestCase of(JsonObject o, String manifestUri, String manifestBase, String baseUri, final JsonLdLoader loader) {
 
         final JsonLdTestCase testCase = new JsonLdTestCase(manifestBase, loader);
 
@@ -173,7 +173,7 @@ public final class JsonLdTestCase {
 
     public JsonLdOptions getOptions() {
 
-        final DocumentLoader rewriter = new UriBaseRewriter(
+        final JsonLdLoader rewriter = new UriBaseRewriter(
                 baseUri,
                 testsBase,
                 loader);

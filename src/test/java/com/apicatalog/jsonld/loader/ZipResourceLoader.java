@@ -33,7 +33,7 @@ import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
 
-public class ZipResourceLoader implements DocumentLoader, TestLoader {
+public class ZipResourceLoader implements JsonLdLoader, TestLoader {
 
     private final DocumentResolver resolver;
 
@@ -42,7 +42,7 @@ public class ZipResourceLoader implements DocumentLoader, TestLoader {
     }
 
     @Override
-    public Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
+    public Document loadDocument(URI url, LoaderOptions options) throws JsonLdError {
 
         if (!"zip".equals(url.getScheme())) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);

@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
@@ -47,7 +47,7 @@ public final class UriExpansion {
     private static final Logger LOGGER = Logger.getLogger(UriExpansion.class.getName());
 
     // mandatory
-    private final ActiveContext activeContext;
+    private final Context activeContext;
 
     // optional
     private boolean documentRelative;
@@ -57,7 +57,7 @@ public final class UriExpansion {
     private JsonObject localContext;
     private Map<String, Boolean> defined;
 
-    private UriExpansion(final ActiveContext activeContext) {
+    private UriExpansion(final Context activeContext) {
         this.activeContext = activeContext;
 
         // default values
@@ -68,7 +68,7 @@ public final class UriExpansion {
         this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
-    public static final UriExpansion with(final ActiveContext activeContext) {
+    public static final UriExpansion with(final Context activeContext) {
         return new UriExpansion(activeContext);
     }
 

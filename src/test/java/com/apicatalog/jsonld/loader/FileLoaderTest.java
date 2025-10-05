@@ -38,7 +38,7 @@ class FileLoaderTest {
 
         assertNotNull(fileUrl);
 
-        Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions());
+        Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new LoaderOptions());
 
         assertNotNull(document);
         assertTrue(MediaType.JSON.match(document.getContentType()));
@@ -51,7 +51,7 @@ class FileLoaderTest {
 
         assertNotNull(fileUrl);
 
-        Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new DocumentLoaderOptions());
+        Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new LoaderOptions());
 
         assertNotNull(document);
         assertTrue(MediaType.JSON_LD.match(document.getContentType()));
@@ -64,12 +64,12 @@ class FileLoaderTest {
 
         assertNotNull(fileUrl);
 
-        assertThrows(JsonLdError.class, () -> new FileLoader().loadDocument(fileUrl.toURI(), new DocumentLoaderOptions()));
+        assertThrows(JsonLdError.class, () -> new FileLoader().loadDocument(fileUrl.toURI(), new LoaderOptions()));
     }
 
     @Test
     void testUnsupportedScheme() throws URISyntaxException {
-        assertThrows(JsonLdError.class, () -> new FileLoader().loadDocument(URI.create("https://github.com/"), new DocumentLoaderOptions()));
+        assertThrows(JsonLdError.class, () -> new FileLoader().loadDocument(URI.create("https://github.com/"), new LoaderOptions()));
     }
 
 }

@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonProvider;
@@ -62,13 +62,13 @@ final class ObjectExpansion1314 {
     private static final Logger LOGGER = Logger.getLogger(ObjectExpansion1314.class.getName());
 
     // mandatory
-    private ActiveContext activeContext;
+    private Context activeContext;
 
     private final JsonObject element;
     private final String activeProperty;
     private final URI baseUrl;
 
-    private ActiveContext typeContext;
+    private Context typeContext;
     private JsonMapBuilder result;
     private String inputType;
     private Map<String, JsonValue> nest;
@@ -77,7 +77,7 @@ final class ObjectExpansion1314 {
     private boolean frameExpansion;
     private boolean ordered;
 
-    private ObjectExpansion1314(final ActiveContext activeContext, final JsonObject element,
+    private ObjectExpansion1314(final Context activeContext, final JsonObject element,
             final String activeProperty, final URI baseUrl) {
         this.activeContext = activeContext;
         this.element = element;
@@ -89,7 +89,7 @@ final class ObjectExpansion1314 {
         this.ordered = false;
     }
 
-    public static final ObjectExpansion1314 with(final ActiveContext activeContext, final JsonObject element,
+    public static final ObjectExpansion1314 with(final Context activeContext, final JsonObject element,
             final String activeProperty, final URI baseUrl) {
         return new ObjectExpansion1314(activeContext, element, activeProperty, baseUrl);
     }
@@ -109,7 +109,7 @@ final class ObjectExpansion1314 {
         return this;
     }
 
-    public ObjectExpansion1314 typeContext(ActiveContext typeContext) {
+    public ObjectExpansion1314 typeContext(Context typeContext) {
         this.typeContext = typeContext;
         return this;
     }
@@ -784,7 +784,7 @@ final class ObjectExpansion1314 {
                     JsonValue indexValue = value.asJsonObject().get(index);
 
                     // 13.8.3.1.
-                    ActiveContext mapContext = activeContext;
+                    Context mapContext = activeContext;
 
                     if (activeContext.getPreviousContext() != null
                             && ((containerMapping.contains(Keywords.ID) && !containerMapping.contains(Keywords.SET)) || containerMapping.contains(Keywords.TYPE))) {

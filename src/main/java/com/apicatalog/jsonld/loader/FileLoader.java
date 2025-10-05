@@ -31,7 +31,7 @@ import com.apicatalog.jsonld.api.StringUtils;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.http.media.MediaType;
 
-public final class FileLoader implements DocumentLoader {
+public final class FileLoader implements JsonLdLoader {
 
     private static final Logger LOGGER = Logger.getLogger(FileLoader.class.getName());
 
@@ -43,7 +43,7 @@ public final class FileLoader implements DocumentLoader {
     }
 
     @Override
-    public Document loadDocument(final URI url, final DocumentLoaderOptions options) throws JsonLdError {
+    public Document loadDocument(final URI url, final LoaderOptions options) throws JsonLdError {
 
         if (!"file".equalsIgnoreCase(url.getScheme())) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unsupported URL scheme [" + url.getScheme() + "]. FileLoader accepts only file scheme.");

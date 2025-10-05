@@ -7,9 +7,9 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.cache.LruCache;
 import com.apicatalog.jsonld.document.Document;
 
-public class LRUDocumentCache implements DocumentLoader {
+public class LRUDocumentCache implements JsonLdLoader {
 
-    private final DocumentLoader documentLoader;
+    private final JsonLdLoader documentLoader;
 
     private final LruCache<Object, Document> cache;
 
@@ -17,9 +17,9 @@ public class LRUDocumentCache implements DocumentLoader {
 
         private final URI url;
 
-        private final DocumentLoaderOptions options;
+        private final LoaderOptions options;
 
-        public CacheKey(URI url, DocumentLoaderOptions options) {
+        public CacheKey(URI url, LoaderOptions options) {
             this.url = url;
             this.options = options;
         }
@@ -43,13 +43,13 @@ public class LRUDocumentCache implements DocumentLoader {
         }
     }
 
-    public LRUDocumentCache(DocumentLoader documentLoader, int cacheSize) {
+    public LRUDocumentCache(JsonLdLoader documentLoader, int cacheSize) {
         this.documentLoader = documentLoader;
         this.cache = new LruCache<>(cacheSize);
     }
 
     @Override
-    public Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
+    public Document loadDocument(URI url, LoaderOptions options) throws JsonLdError {
         Object key = createCacheKey(url, options);
         Document result = cache.get(key);
         if (result == null) {
@@ -59,7 +59,7 @@ public class LRUDocumentCache implements DocumentLoader {
         return result;
     }
 
-    protected Object createCacheKey(URI url, DocumentLoaderOptions options){
+    protected Object createCacheKey(URI url, LoaderOptions options){
         return new CacheKey(url, options);
     }
 

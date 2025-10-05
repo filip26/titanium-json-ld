@@ -24,7 +24,7 @@ import com.apicatalog.jsonld.deseralization.JsonLdToRdf;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
-import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
+import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 
 import jakarta.json.JsonArray;
@@ -45,7 +45,7 @@ public final class ToRdfProcessor {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
 
-        final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
+        final LoaderOptions loaderOptions = new LoaderOptions();
         loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
 
         final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);

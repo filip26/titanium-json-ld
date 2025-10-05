@@ -20,15 +20,15 @@ import java.util.Iterator;
 import java.util.Objects;
 
 /**
- * The {@link DocumentLoaderOptions} is used to pass various options to the
- * {@link DocumentLoader}.
+ * The {@link LoaderOptions} is used to pass various options to the
+ * {@link JsonLdLoader}.
  *
  * @see <a href=
  *      "https://www.w3.org/TR/json-ld11-api/#loaddocumentoptions">LoadDocumentOptions
  *      Specification</a>
  *
  */
-public class DocumentLoaderOptions {
+public class LoaderOptions {
 
     private boolean extractAllScripts;
 
@@ -36,7 +36,7 @@ public class DocumentLoaderOptions {
 
     private Collection<String> requestProfile;
 
-    public DocumentLoaderOptions() {
+    public LoaderOptions() {
         this.extractAllScripts = false;
         this.profile = null;
         this.requestProfile = null;
@@ -74,7 +74,7 @@ public class DocumentLoaderOptions {
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        DocumentLoaderOptions options = (DocumentLoaderOptions) other;
+        LoaderOptions options = (LoaderOptions) other;
         if (extractAllScripts != options.extractAllScripts ||
                 !Objects.equals(profile, options.profile)) {
             return false;

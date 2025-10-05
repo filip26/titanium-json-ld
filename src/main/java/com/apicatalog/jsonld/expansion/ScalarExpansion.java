@@ -16,7 +16,7 @@
 package com.apicatalog.jsonld.expansion;
 
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
 
@@ -33,12 +33,12 @@ import jakarta.json.JsonValue;
 public final class ScalarExpansion {
 
     // mandatory
-    private ActiveContext activeContext;
+    private Context activeContext;
     private JsonValue propertyContext;
     private JsonValue element;
     private String activeProperty;
 
-    private ScalarExpansion(final ActiveContext activeContext, final JsonValue propertyContext,
+    private ScalarExpansion(final Context activeContext, final JsonValue propertyContext,
             final JsonValue element, final String activeProperty) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
@@ -46,7 +46,7 @@ public final class ScalarExpansion {
         this.activeProperty = activeProperty;
     }
 
-    public static final ScalarExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
+    public static final ScalarExpansion with(final Context activeContext, final JsonValue propertyContext,
             final JsonValue element, final String activeProperty) {
         return new ScalarExpansion(activeContext, propertyContext, element, activeProperty);
     }

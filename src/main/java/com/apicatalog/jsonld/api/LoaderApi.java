@@ -15,19 +15,19 @@
  */
 package com.apicatalog.jsonld.api;
 
-import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.JsonLdLoader;
 
 public interface LoaderApi<R> {
 
     /**
      * Set the loader to be used to retrieve remote documents and
-     * contexts, implementing the {@link DocumentLoader}. If specified, it is
+     * contexts, implementing the {@link JsonLdLoader}. If specified, it is
      * used to retrieve remote documents and contexts; otherwise, if not specified,
      * the processor's built-in loader is used.
      *
-     * @param loader the {@link DocumentLoader} instance, never {@code null}.
+     * @param loader the {@link JsonLdLoader} instance, never {@code null}.
      * @return builder instance
      */
-    R loader(DocumentLoader loader);
+    R loader(JsonLdLoader loader);
 
 }

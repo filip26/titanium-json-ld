@@ -23,37 +23,37 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 
-public final class SchemeRouter implements DocumentLoader {
+public final class SchemeRouter implements JsonLdLoader {
 
-    private static final DocumentLoader INSTANCE =
+    private static final JsonLdLoader INSTANCE =
                                 new SchemeRouter()
                                         .set("http", HttpLoader.defaultInstance())
                                         .set("https", HttpLoader.defaultInstance())
                                         .set("file", new FileLoader());
     
-    private final Map<String, DocumentLoader> loaders;
+    private final Map<String, JsonLdLoader> loaders;
 
     public SchemeRouter() {
         this.loaders = new LinkedHashMap<>();
     }
 
-    public static final DocumentLoader defaultInstance() {
+    public static final JsonLdLoader defaultInstance() {
         return INSTANCE;
     }
 
-    public SchemeRouter set(final String scheme, final DocumentLoader loader) {
+    public SchemeRouter set(final String scheme, final JsonLdLoader loader) {
         loaders.put(scheme, loader);
         return this;
     }
 
     @Override
-    public Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
+    public Document loadDocument(URI url, LoaderOptions options) throws JsonLdError {
 
         if (url == null) {
             throw new IllegalArgumentException("The url must not be null.");
         }
 
-        final DocumentLoader loader = loaders.getOrDefault(url.getScheme().toLowerCase(), null);
+        final JsonLdLoader loader = loaders.getOrDefault(url.getScheme().toLowerCase(), null);
 
         if (loader == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "URL scheme [" + url.getScheme() + "] is not supported.");

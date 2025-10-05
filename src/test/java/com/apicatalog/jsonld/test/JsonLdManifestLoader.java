@@ -25,8 +25,8 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
+import com.apicatalog.jsonld.loader.JsonLdLoader;
+import com.apicatalog.jsonld.loader.LoaderOptions;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
@@ -43,16 +43,16 @@ public final class JsonLdManifestLoader {
     private final String manifestName;
     private final String manifestBase;
 
-    private final DocumentLoader loader;
+    private final JsonLdLoader loader;
 
-    private JsonLdManifestLoader(final String manifestBase, final String manifestName, final DocumentLoader loader) {
+    private JsonLdManifestLoader(final String manifestBase, final String manifestName, final JsonLdLoader loader) {
         this.manifestBase = manifestBase;
         this.manifestName = manifestName;
 
         this.loader = loader;
     }
 
-    public static JsonLdManifestLoader load(final String manifestBase, final String manifestName, final DocumentLoader loader) {
+    public static JsonLdManifestLoader load(final String manifestBase, final String manifestName, final JsonLdLoader loader) {
         return new JsonLdManifestLoader(manifestBase, manifestName, loader);
     }
 
@@ -60,7 +60,7 @@ public final class JsonLdManifestLoader {
 
         try {
 
-            Document manifest = loader.loadDocument(URI.create(manifestBase + manifestName), new DocumentLoaderOptions());
+            Document manifest = loader.loadDocument(URI.create(manifestBase + manifestName), new LoaderOptions());
 
             assertNotNull(manifest);
 

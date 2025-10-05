@@ -35,7 +35,7 @@ import jakarta.json.JsonObject;
  * running.
  *
  */
-public final class ActiveContext {
+public final class ActiveContext implements Context {
 
     // the active term definitions which specify how keys and values have to be
     // interpreted
@@ -60,7 +60,7 @@ public final class ActiveContext {
 
     // an optional default base direction ("ltr" or "rtl")
     private DirectionType defaultBaseDirection;
-    
+
     private final ProcessingRuntime runtime;
 
     public ActiveContext(final ProcessingRuntime runtime) {
@@ -94,7 +94,7 @@ public final class ActiveContext {
 
     public void createInverseContext() {
         this.inverseContext = InverseContextBuilder.with(this).build();
-   }
+    }
 
     public boolean containsTerm(final String term) {
         return terms.containsKey(term);
@@ -215,7 +215,7 @@ public final class ActiveContext {
     public String toString() {
         return "ActiveContext[terms=" + terms + ", previousContext=" + previousContext + "]";
     }
-    
+
     public ProcessingRuntime runtime() {
         return runtime;
     }

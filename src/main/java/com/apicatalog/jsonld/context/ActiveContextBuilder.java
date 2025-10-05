@@ -34,7 +34,7 @@ import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
-import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
+import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.jsonld.uri.UriResolver;
 import com.apicatalog.jsonld.uri.UriUtils;
 
@@ -233,7 +233,7 @@ public final class ActiveContextBuilder {
                     throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED);
                 }
 
-                final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
+                final LoaderOptions loaderOptions = new LoaderOptions();
                 loaderOptions.setProfile(ProfileConstants.CONTEXT);
                 loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
 
@@ -520,7 +520,7 @@ public final class ActiveContextBuilder {
 
         if (remoteImport == null) {
 
-            DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
+            LoaderOptions loaderOptions = new LoaderOptions();
             loaderOptions.setProfile(ProfileConstants.CONTEXT);
             loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
 

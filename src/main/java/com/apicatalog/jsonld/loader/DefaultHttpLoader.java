@@ -36,7 +36,7 @@ import com.apicatalog.jsonld.http.link.Link;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.uri.UriResolver;
 
-class DefaultHttpLoader implements DocumentLoader {
+class DefaultHttpLoader implements JsonLdLoader {
 
     private static final Logger LOGGER = Logger.getLogger(DefaultHttpLoader.class.getName());
 
@@ -61,7 +61,7 @@ class DefaultHttpLoader implements DocumentLoader {
     }
 
     @Override
-    public Document loadDocument(final URI uri, final DocumentLoaderOptions options) throws JsonLdError {
+    public Document loadDocument(final URI uri, final LoaderOptions options) throws JsonLdError {
 
         try {
             URI targetUri = uri;

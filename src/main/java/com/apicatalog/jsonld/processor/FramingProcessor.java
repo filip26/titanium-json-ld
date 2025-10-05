@@ -42,7 +42,7 @@ import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
+import com.apicatalog.jsonld.loader.LoaderOptions;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
@@ -68,7 +68,7 @@ public final class FramingProcessor {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
 
-        final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
+        final LoaderOptions loaderOptions = new LoaderOptions();
         loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
 
         final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
@@ -85,7 +85,7 @@ public final class FramingProcessor {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + frameUri + "].");
         }
 
-        final Document frameDocument = options.getDocumentLoader().loadDocument(frameUri, new DocumentLoaderOptions());
+        final Document frameDocument = options.getDocumentLoader().loadDocument(frameUri, new LoaderOptions());
 
         if (frameDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Returned frame is null [" + frameUri + "] is null.");
@@ -261,7 +261,7 @@ public final class FramingProcessor {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + document + "].");
         }
 
-        final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
+        final LoaderOptions loaderOptions = new LoaderOptions();
         loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
 
         final Document remoteDocument = options.getDocumentLoader().loadDocument(document, loaderOptions);

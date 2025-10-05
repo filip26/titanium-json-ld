@@ -19,6 +19,7 @@ import java.net.URI;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -39,7 +40,7 @@ import jakarta.json.JsonValue;
 public final class ArrayExpansion {
 
     // mandatory
-    private ActiveContext activeContext;
+    private Context activeContext;
     private JsonArray element;
     private String activeProperty;
     private URI baseUrl;
@@ -49,7 +50,7 @@ public final class ArrayExpansion {
     private boolean ordered;
     private boolean fromMap;
 
-    private ArrayExpansion(final ActiveContext activeContext, final JsonArray element, final String activeProperty,
+    private ArrayExpansion(final Context activeContext, final JsonArray element, final String activeProperty,
             final URI baseUrl) {
         this.activeContext = activeContext;
         this.element = element;
@@ -62,7 +63,7 @@ public final class ArrayExpansion {
         this.fromMap = false;
     }
 
-    public static final ArrayExpansion with(final ActiveContext activeContext, final JsonArray element,
+    public static final ArrayExpansion with(final Context activeContext, final JsonArray element,
             final String activeProperty, final URI baseUrl) {
         return new ArrayExpansion(activeContext, element, activeProperty, baseUrl);
     }

@@ -20,21 +20,21 @@ public class LRUDocumentCacheTest {
 
         final URI url;
 
-        final DocumentLoaderOptions options;
+        final LoaderOptions options;
 
-        public Request(URI url, DocumentLoaderOptions options) {
+        public Request(URI url, LoaderOptions options) {
             this.url = url;
             this.options = options;
         }
 
     }
 
-    static class RecordRequestLoader implements DocumentLoader {
+    static class RecordRequestLoader implements JsonLdLoader {
 
         final List<Request> requests = new ArrayList<>();
 
         @Override
-        public Document loadDocument(URI url, DocumentLoaderOptions options) {
+        public Document loadDocument(URI url, LoaderOptions options) {
             requests.add(new Request(url, options));
             // Return empty document.
             return JsonDocument.of(JsonValue.EMPTY_JSON_ARRAY);
@@ -47,7 +47,7 @@ public class LRUDocumentCacheTest {
         RecordRequestLoader loader = new RecordRequestLoader();
         LRUDocumentCache cachedLoader = new LRUDocumentCache(loader, 2);
 
-        DocumentLoaderOptions options = new DocumentLoaderOptions();
+        LoaderOptions options = new LoaderOptions();
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
@@ -66,7 +66,7 @@ public class LRUDocumentCacheTest {
         RecordRequestLoader loader = new RecordRequestLoader();
         LRUDocumentCache cachedLoader = new LRUDocumentCache(loader, 2);
 
-        DocumentLoaderOptions options = new DocumentLoaderOptions();
+        LoaderOptions options = new LoaderOptions();
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
 
@@ -91,14 +91,14 @@ public class LRUDocumentCacheTest {
         LRUDocumentCache cachedLoader = new LRUDocumentCache(loader, 2);
 
         // Using options with same inside should lead to cache hit.
-        DocumentLoaderOptions options = new DocumentLoaderOptions();
+        LoaderOptions options = new LoaderOptions();
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
-        DocumentLoaderOptions sameOptions = new DocumentLoaderOptions();
+        LoaderOptions sameOptions = new LoaderOptions();
         cachedLoader.loadDocument(URI.create("http://localhost/1"), sameOptions);
         Assertions.assertEquals(1, loader.requests.size());
 
         // Use of different options should cause cache miss.
-        DocumentLoaderOptions differentOptions = new DocumentLoaderOptions();
+        LoaderOptions differentOptions = new LoaderOptions();
         differentOptions.setProfile("profile");
         cachedLoader.loadDocument(URI.create("http://localhost/1"), differentOptions);
         Assertions.assertEquals(2, loader.requests.size());
@@ -108,9 +108,9 @@ public class LRUDocumentCacheTest {
     void testCachingEqualOptions() throws JsonLdError {
         RecordRequestLoader loader = new RecordRequestLoader();
         LRUDocumentCache cachedLoader = new LRUDocumentCache(loader, 2);
-        DocumentLoaderOptions options = null;
+        LoaderOptions options = null;
 
-        options = new DocumentLoaderOptions();
+        options = new LoaderOptions();
         options.setProfile("profile");
         options.setExtractAllScripts(true);
         List<String> firstList = new ArrayList<>();
@@ -119,7 +119,7 @@ public class LRUDocumentCacheTest {
         options.setRequestProfile(firstList);
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
 
-        options = new DocumentLoaderOptions();
+        options = new LoaderOptions();
         options.setProfile("profile");
         options.setExtractAllScripts(true);
         List<String> secondList = new ArrayList<>();
@@ -128,7 +128,7 @@ public class LRUDocumentCacheTest {
         options.setRequestProfile(secondList);
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
 
-        options = new DocumentLoaderOptions();
+        options = new LoaderOptions();
         options.setProfile("profile");
         options.setExtractAllScripts(true);
         List<String> thirdList = new LinkedList<>();
@@ -144,9 +144,9 @@ public class LRUDocumentCacheTest {
     void testCachingProfilesOrderMatter() throws JsonLdError {
         RecordRequestLoader loader = new RecordRequestLoader();
         LRUDocumentCache cachedLoader = new LRUDocumentCache(loader, 2);
-        DocumentLoaderOptions options = null;
+        LoaderOptions options = null;
 
-        options = new DocumentLoaderOptions();
+        options = new LoaderOptions();
         options.setProfile("profile");
         options.setExtractAllScripts(true);
         List<String> firstList = new ArrayList<>();
@@ -155,7 +155,7 @@ public class LRUDocumentCacheTest {
         options.setRequestProfile(firstList);
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
 
-        options = new DocumentLoaderOptions();
+        options = new LoaderOptions();
         options.setProfile("profile");
         options.setExtractAllScripts(true);
         List<String> secondList = new ArrayList<>();

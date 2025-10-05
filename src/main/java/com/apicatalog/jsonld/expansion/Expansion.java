@@ -18,7 +18,7 @@ package com.apicatalog.jsonld.expansion;
 import java.net.URI;
 
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -35,7 +35,7 @@ import jakarta.json.JsonValue;
 public final class Expansion {
 
     // mandatory
-    private ActiveContext activeContext;
+    private Context activeContext;
     private JsonValue element;
     private String activeProperty;
     private URI baseUrl;
@@ -45,7 +45,7 @@ public final class Expansion {
     private boolean ordered;
     private boolean fromMap;
 
-    private Expansion(final ActiveContext activeContext, final JsonValue element, final String activeProperty,
+    private Expansion(final Context activeContext, final JsonValue element, final String activeProperty,
             final URI baseUrl) {
         this.activeContext = activeContext;
         this.element = element;
@@ -58,7 +58,7 @@ public final class Expansion {
         this.fromMap = false;
     }
 
-    public static final Expansion with(final ActiveContext activeContext, final JsonValue element, final String activeProperty, final URI baseUrl) {
+    public static final Expansion with(final Context activeContext, final JsonValue element, final String activeProperty, final URI baseUrl) {
         return new Expansion(activeContext, element, activeProperty, baseUrl);
     }
 

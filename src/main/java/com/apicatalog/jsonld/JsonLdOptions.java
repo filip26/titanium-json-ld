@@ -23,7 +23,7 @@ import com.apicatalog.jsonld.context.cache.LruCache;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.json.JsonProvider;
-import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.JsonLdLoader;
 import com.apicatalog.jsonld.loader.SchemeRouter;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 
@@ -85,7 +85,7 @@ public final class JsonLdOptions {
      * retrieve remote documents and contexts; otherwise, if not specified, the
      * processor's built-in loader is used.
      */
-    private DocumentLoader documentLoader;
+    private JsonLdLoader documentLoader;
 
     /**
      * A context that is used to initialize the active context when expanding a
@@ -144,7 +144,7 @@ public final class JsonLdOptions {
         this(SchemeRouter.defaultInstance());
     }
 
-    public JsonLdOptions(DocumentLoader loader) {
+    public JsonLdOptions(JsonLdLoader loader) {
 
         // default values
         this.base = null;
@@ -249,13 +249,13 @@ public final class JsonLdOptions {
 
     /**
      * The callback of the loader to be used to retrieve remote documents and
-     * contexts, implementing the {@link DocumentLoader}. If specified, it is used
+     * contexts, implementing the {@link JsonLdLoader}. If specified, it is used
      * to retrieve remote documents and contexts; otherwise, if not specified, the
      * processor's built-in loader is used.
      *
      * @return the loader or <code>null</code> is is not set
      */
-    public DocumentLoader getDocumentLoader() {
+    public JsonLdLoader getDocumentLoader() {
         return documentLoader;
     }
 
@@ -321,7 +321,7 @@ public final class JsonLdOptions {
         this.compactToRelative = compactToRelative;
     }
 
-    public void setDocumentLoader(DocumentLoader documentLoader) {
+    public void setDocumentLoader(JsonLdLoader documentLoader) {
         this.documentLoader = documentLoader;
     }
 
@@ -505,7 +505,7 @@ public final class JsonLdOptions {
      * immediately, but eventually.
      * 
      * Please note, the timeout does not include time consumed by
-     * {@link DocumentLoader}.
+     * {@link JsonLdLoader}.
      * 
      * @return a duration after which a processing is prematurely terminated.
      */
@@ -518,7 +518,7 @@ public final class JsonLdOptions {
      * specified duration. Set <code>null</code> for no timeout.
      * 
      * Please note, the timeout does not include time consumed by
-     * {@link DocumentLoader}.
+     * {@link JsonLdLoader}.
      * 
      * @param timeout to limit processing time
      */

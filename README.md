@@ -4,14 +4,13 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 
 ### 🎯 Goals
 - Full conformance to the specification
-- Secure, stable, fast, high-quality code (**~1800 tests**)
+- Secure, stable, fast, high-quality code (**~1600 tests**)
 - Minimal external dependencies
 - Simple and easy-to-use
 
 ### 🚦 Status
 
-[![Java 11 CI](https://github.com/filip26/titanium-json-ld/actions/workflows/java11-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java11-build.yml)
-[![Android (Java 8) CI](https://github.com/filip26/titanium-json-ld/actions/workflows/java8-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java8-build.yml)
+[![Java 17 CI](https://github.com/filip26/titanium-json-ld/actions/workflows/java17-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java17-build.yml)
 [![CodeQL](https://github.com/filip26/titanium-json-ld/actions/workflows/codeql.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/codeql.yml)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/c530c6b43b0243c08ce81521c5b4cf6a)](https://app.codacy.com/gh/filip26/titanium-json-ld/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/c530c6b43b0243c08ce81521c5b4cf6a)](https://app.codacy.com/gh/filip26/titanium-json-ld/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
@@ -168,7 +167,7 @@ JsonLd.expand(document)
 
 ### Titanium
 
-#### Maven (Java 11+)
+#### Maven (Java 17+)
 
 ```xml
 <dependency>
@@ -176,12 +175,6 @@ JsonLd.expand(document)
     <artifactId>titanium-json-ld</artifactId>
     <version>1.7.0</version>
 </dependency>
-```
-
-#### Gradle (Java 8+, Android API Level >= 24)
-
-```gradle
-implementation("com.apicatalog:titanium-json-ld-jre8:1.7.0")
 ```
 
 ### JSON-P Provider
@@ -196,12 +189,6 @@ Ensure that the JSON-P provider is added to the classpath if it is not already p
     <artifactId>jakarta.json</artifactId>
     <version>2.0.1</version>
 </dependency>
-```
-
-#### Gradle
-
-```gradle
-implementation("org.glassfish:jakarta.json:2.0.1")
 ```
 
 ## Contributing

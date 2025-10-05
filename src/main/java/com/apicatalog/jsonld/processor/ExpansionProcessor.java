@@ -22,12 +22,13 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.context.ActiveContextBuilder;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.expansion.Expansion;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
+import com.apicatalog.jsonld.loader.LoaderOptions;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
@@ -50,7 +51,7 @@ public final class ExpansionProcessor {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
 
-        final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
+        final LoaderOptions loaderOptions = new LoaderOptions();
         loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
 
         final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);

@@ -20,13 +20,13 @@ import java.net.URI;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
+import com.apicatalog.jsonld.loader.JsonLdLoader;
+import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.rdf.model.RdfDataset;
 
 import jakarta.json.JsonStructure;
 
-public class MockLoader implements DocumentLoader {
+public class MockLoader implements JsonLdLoader {
 
     private final JsonStructure structure;
     private final RdfDataset dataset;
@@ -42,7 +42,7 @@ public class MockLoader implements DocumentLoader {
     }
 
     @Override
-    public Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
+    public Document loadDocument(URI url, LoaderOptions options) throws JsonLdError {
 
         if (structure != null) {
             final Document remoteDocument = JsonDocument.of(structure);

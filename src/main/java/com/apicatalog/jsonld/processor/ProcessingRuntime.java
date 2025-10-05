@@ -6,7 +6,7 @@ import com.apicatalog.jsonld.JsonLdOptions.ProcessingPolicy;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.context.cache.Cache;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.JsonLdLoader;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 
 import jakarta.json.JsonValue;
@@ -62,7 +62,7 @@ public class ProcessingRuntime {
         return options.getProcessingMode() != null && options.getProcessingMode().equals(JsonLdVersion.V1_1);
     }
 
-    public DocumentLoader getDocumentLoader() {
+    public JsonLdLoader getDocumentLoader() {
         return options.getDocumentLoader();
     }
 

@@ -27,10 +27,10 @@ import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
 
-public class ClasspathLoader implements DocumentLoader, TestLoader {
+public class ClasspathLoader implements JsonLdLoader, TestLoader {
 
     @Override
-    public Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
+    public Document loadDocument(URI url, LoaderOptions options) throws JsonLdError {
 
         try (final InputStream is = getClass().getResourceAsStream(url.getPath())) {
 

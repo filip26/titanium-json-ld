@@ -26,7 +26,7 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
+import com.apicatalog.jsonld.loader.LoaderOptions;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
@@ -49,7 +49,7 @@ public final class CompactionProcessor {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + context + "].");
         }
 
-        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions());
+        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new LoaderOptions());
 
         if (contextDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Context[" + context + "] is null.");
@@ -64,7 +64,7 @@ public final class CompactionProcessor {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
 
-        final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
+        final LoaderOptions loaderOptions = new LoaderOptions();
         loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
 
         final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
@@ -82,7 +82,7 @@ public final class CompactionProcessor {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + context + "].");
         }
 
-        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new DocumentLoaderOptions());
+        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new LoaderOptions());
 
         if (contextDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Returned context is null [" + context + "] is null.");

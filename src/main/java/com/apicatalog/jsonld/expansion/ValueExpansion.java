@@ -18,7 +18,7 @@ package com.apicatalog.jsonld.expansion;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -40,16 +40,16 @@ import jakarta.json.JsonValue;
 public final class ValueExpansion {
 
     // required
-    private final ActiveContext activeContext;
+    private final Context activeContext;
 
     // runtime
     private Optional<TermDefinition> definition;
 
-    private ValueExpansion(final ActiveContext activeContext) {
+    private ValueExpansion(final Context activeContext) {
         this.activeContext = activeContext;
     }
 
-    public static final ValueExpansion with(final ActiveContext activeContext) {
+    public static final ValueExpansion with(final Context activeContext) {
         return new ValueExpansion(activeContext);
     }
 

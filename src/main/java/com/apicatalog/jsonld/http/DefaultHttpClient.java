@@ -30,8 +30,10 @@ import com.apicatalog.jsonld.JsonLdErrorCode;
 
 public final class DefaultHttpClient implements HttpClient {
 
+    @Deprecated
     private static final java.net.http.HttpClient CLIENT = java.net.http.HttpClient.newBuilder().followRedirects(Redirect.NEVER).build();
 
+    @Deprecated
     private static final DefaultHttpClient INSTANCE = new DefaultHttpClient(CLIENT);
 
     private final java.net.http.HttpClient httpClient;
@@ -67,6 +69,7 @@ public final class DefaultHttpClient implements HttpClient {
         }
     }
 
+    @Deprecated
     public static final HttpClient defaultInstance() {
         return INSTANCE;
     }

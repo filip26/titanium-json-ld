@@ -24,6 +24,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.StringUtils;
 import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonProvider;
@@ -47,7 +48,7 @@ import jakarta.json.JsonValue;
 public final class ObjectExpansion {
 
     // mandatory
-    private ActiveContext activeContext;
+    private Context activeContext;
     private JsonValue propertyContext;
     private JsonObject element;
     private String activeProperty;
@@ -58,7 +59,7 @@ public final class ObjectExpansion {
     private boolean ordered;
     private boolean fromMap;
 
-    private ObjectExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final JsonObject element,
+    private ObjectExpansion(final Context activeContext, final JsonValue propertyContext, final JsonObject element,
             final String activeProperty, final URI baseUrl) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
@@ -72,7 +73,7 @@ public final class ObjectExpansion {
         this.fromMap = false;
     }
 
-    public static final ObjectExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
+    public static final ObjectExpansion with(final Context activeContext, final JsonValue propertyContext,
             final JsonObject element, final String activeProperty, final URI baseUrl) {
         return new ObjectExpansion(activeContext, propertyContext, element, activeProperty, baseUrl);
     }
@@ -101,7 +102,7 @@ public final class ObjectExpansion {
         initLocalContext();
 
         // 10.
-        final ActiveContext typeContext = activeContext;
+        final Context typeContext = activeContext;
 
         final String typeKey = processTypeScoped(typeContext);
 
@@ -198,7 +199,7 @@ public final class ObjectExpansion {
         }
     }
 
-    private String processTypeScoped(final ActiveContext typeContext) throws JsonLdError {
+    private String processTypeScoped(final Context typeContext) throws JsonLdError {
 
         String typeKey = null;
 
