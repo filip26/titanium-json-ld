@@ -1,4 +1,5 @@
 name: Publish JRE8 to the Maven Central
+
 on:
   release:
     types: [created]
@@ -14,18 +15,19 @@ jobs:
       - name: Set up JDK 8
         uses: actions/setup-java@v4
         with:
-          java-version: '8'
+          java-version: 8
           distribution: 'temurin'
           cache: 'maven'
-          server-id: ossrh
-          server-username: OSSRH_USERNAME
-          server-password: OSSRH_TOKEN
+          server-id: central
+          server-username: CENTRAL_TOKEN_ID
+          server-password: CENTRAL_TOKEN_SECRET
           gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
-      - name: Publish package
+      - name: Build and Deploy
         run: mvn -f pom_jre8.xml -B -Pmaven-central deploy
         env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+          CENTRAL_TOKEN_ID: ${{ secrets.CENTRAL_TOKEN_ID }}
+          CENTRAL_TOKEN_SECRET: ${{ secrets.CENTRAL_TOKEN_SECRET }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
-          MAVEN_GPG_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          MAVEN_GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          GNUPGHOME: ${{ env.GNUPGHOME }}

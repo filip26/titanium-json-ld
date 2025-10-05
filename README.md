@@ -2,26 +2,26 @@
 
 An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-based Serialization for Linked Data) specification in Java, utilizing [Jakarta JSON Processing](https://github.com/eclipse-ee4j/jsonp).
 
-### Goals
+### 🎯 Goals
 - Full conformance to the specification
-- Secure, stable, fast, high-quality code (covered by **~1800 tests**)
+- Secure, stable, fast, high-quality code (**~1800 tests**)
 - Minimal external dependencies
-- Easy to use
+- Simple and easy-to-use
 
-### Status
+### 🚦 Status
 
 [![Java 11 CI](https://github.com/filip26/titanium-json-ld/actions/workflows/java11-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java11-build.yml)
 [![Android (Java 8) CI](https://github.com/filip26/titanium-json-ld/actions/workflows/java8-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java8-build.yml)
 [![CodeQL](https://github.com/filip26/titanium-json-ld/actions/workflows/codeql.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/codeql.yml)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/c530c6b43b0243c08ce81521c5b4cf6a)](https://app.codacy.com/gh/filip26/titanium-json-ld/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/c530c6b43b0243c08ce81521c5b4cf6a)](https://app.codacy.com/gh/filip26/titanium-json-ld/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
+[![Javadoc](https://javadoc.io/badge2/com.apicatalog/titanium-json-ld/javadoc.svg)](https://javadoc.io/doc/com.apicatalog/titanium-json-ld)
 [![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/titanium-json-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:com.apicatalog%20AND%20a:titanium-json-ld)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-### Extensions
+### 🧩 Libraries & Tools
 
 - [LD-CLI](https://github.com/filip26/ld-cli) - A native command line utility for Ubuntu, Mac, and Windows
-- [JSON-LD-star](https://json-ld.github.io/json-ld-star) - Expansion and compaction built-in support (experimental)
 - [Titanium RDFC](https://github.com/filip26/titanium-rdfc) - W3C Standard RDF Dataset Canonicalization
 - [Titanium N-QUADS](https://github.com/filip26/titanium-rdf-n-quads) - W3C RDF 1.1 N-Quads
 - [Titanium JCS](https://github.com/filip26/titanium-jcs) - RFC 8785 JSON Canonicalization Scheme (JCS)
@@ -32,7 +32,6 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 - [Conformance](#conformance)
 - [Examples](#examples)
 - [Installation](#installation)
-- [Documentation](#documentation)
 - [Contributing](#contributing)
 - [Resources](#resources)
 - [Commercial Support](#commercial-support)
@@ -195,14 +194,9 @@ Ensure that the JSON-P provider is added to the classpath if it is not already p
 implementation("org.glassfish:jakarta.json:2.0.1")
 ```
 
-## Documentation
-
-[![javadoc](https://javadoc.io/badge2/com.apicatalog/titanium-json-ld/javadoc.svg)](https://javadoc.io/doc/com.apicatalog/titanium-json-ld)
-
-
 ## Contributing
 
-All PR's welcome!
+Contributions are welcome! Please submit a pull request.
 
 - Develop
   - Implement a new feature 
@@ -229,14 +223,14 @@ Fork and clone the project repository.
 
 ```bash
 > cd titanium-json-ld
-> mvn clean package
+> mvn package
 ```
 
 #### Java 8
 
 ```bash
 > cd titanium-json-ld
-> mvn -f pom_jre8.xml clean package
+> mvn -f pom_jre8.xml package
 ```
 
 ## Resources
@@ -248,5 +242,6 @@ Fork and clone the project repository.
 - [JSON-LD Playground](https://json-ld.org/playground/)
 
 ## Commercial Support
-Commercial support is available at filip26@gmail.com
 
+Commercial support and consulting are available.
+For inquiries, please contact: filip26@gmail.com
