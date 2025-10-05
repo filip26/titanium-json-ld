@@ -27,6 +27,12 @@ import com.apicatalog.rdf.RdfDataset;
 
 import jakarta.json.JsonArray;
 
+/**
+ * This class is deprecated as of version 1.7.0. Please use
+ * {@code com.apicatalog.jsonld.serialization.QuadsToJsonld} instead.
+ * 
+ * @deprecated since 1.7.0 - use an alternative RDF primitives library.
+ */
 @Deprecated
 public final class FromRdfApi implements CommonApi<FromRdfApi>, LoaderApi<FromRdfApi> {
 

@@ -27,7 +27,6 @@ import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.jsonld.loader.QuadSetDocument;
@@ -60,15 +59,15 @@ public class JsonLdTestRunnerJunit {
     public boolean execute() {
 
         if (testCase.type.contains(Type.COMPACT_TEST)) {
-            return execute(options -> JsonDocument.of(JsonLd.compact(testCase.input, testCase.context).options(options).get()));
+            return execute(options -> JsonLd.compact(testCase.input, testCase.context).options(options).get());
         }
 
         if (testCase.type.contains(Type.EXPAND_TEST)) {
-            return execute(options -> JsonDocument.of(JsonLd.expand(testCase.input).options(options).get()));
+            return execute(options -> JsonLd.expand(testCase.input).options(options).get());
         }
 
         if (testCase.type.contains(Type.FLATTEN_TEST)) {
-            return execute(options -> JsonDocument.of(JsonLd.flatten(testCase.input).context(testCase.context).options(options).get()));
+            return execute(options -> JsonLd.flatten(testCase.input).context(testCase.context).options(options).get());
         }
 
         if (testCase.type.contains(Type.TO_RDF_TEST)) {
@@ -84,19 +83,18 @@ public class JsonLdTestRunnerJunit {
 
         if (testCase.type.contains(Type.FROM_RDF_TEST)) {
             return execute(options -> {
-                
                 Document input = options.getDocumentLoader().loadDocument(testCase.input, null);
 
                 QuadsToJsonld toLd = JsonLd.fromRdf().options(options);
-                
-                QuadEmitter.create(toLd).emit(((QuadSetDocument)input).getContent());
-                
-                return JsonDocument.of(toLd.toJsonLd());   
+
+                QuadEmitter.create(toLd).emit(((QuadSetDocument) input).getContent());
+
+                return toLd.toJsonLd();
             });
         }
 
         if (testCase.type.contains(Type.FRAME_TEST)) {
-            return execute(options -> JsonDocument.of(JsonLd.frame(testCase.input, testCase.frame).options(options).get()));
+            return execute(options -> JsonLd.frame(testCase.input, testCase.frame).options(options).get());
         }
 
         throw new IllegalStateException();
@@ -132,34 +130,36 @@ public class JsonLdTestRunnerJunit {
 
         } catch (RdfConsumerException e) {
             if (e.getCause() instanceof JsonLdError) {
-                if (Objects.equal(((JsonLdError)e.getCause()).getCode(), testCase.expectErrorCode)) {
+                if (Objects.equal(((JsonLdError) e.getCause()).getCode(), testCase.expectErrorCode)) {
                     return true;
                 }
 
-                write(testCase, null, null, ((JsonLdError)e.getCause()));
-                fail("Unexpected error [" + ((JsonLdError)e.getCause()).getCode() + "]: " + e.getMessage() + ".");
+                write(testCase, null, null, ((JsonLdError) e.getCause()));
+                fail("Unexpected error [" + ((JsonLdError) e.getCause()).getCode() + "]: " + e.getMessage() + ".");
 
             }
-            return false;            
+            return false;
         }
 
         if (testCase.expectErrorCode != null) {
-            write(testCase, ((Document) result).getJsonContent().orElse(null), null, null);
-            fail("Expected error [" + testCase.expectErrorCode + "] but got " + ((Document) result).getContentType() + "].");
+            if (result instanceof JsonStructure) {
+                write(testCase, (JsonStructure) result, null, null);
+            }
+            fail("Expected error [" + testCase.expectErrorCode + "] but got " + result + "");
             return false;
         }
 
         if (result instanceof RdfQuadSet) {
-            return validateQuads(testCase, options, (RdfQuadSet)result);
+            return validateQuads(testCase, options, (RdfQuadSet) result);
         }
-        if (result instanceof Document) {
-            return validateJsonLd(testCase, options, (Document)result);
+        if (result instanceof JsonStructure) {
+            return validateJsonLd(testCase, options, (JsonStructure) result);
         }
-        
+
         return false;
     }
 
-    private boolean validateJsonLd(final JsonLdTestCase testCase, final JsonLdOptions options, final Document result) {
+    private boolean validateJsonLd(final JsonLdTestCase testCase, final JsonLdOptions options, final JsonStructure result) {
 
         assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
 
@@ -169,15 +169,7 @@ public class JsonLdTestRunnerJunit {
             assertNotNull(expectedDocument);
 
             // compare expected with the result
-
-            if (expectedDocument.getJsonContent().isPresent()) {
-
-                assertTrue(result.getJsonContent().isPresent(), "Expected JSON document but was " + result.getContentType());
-
-                return compareJson(testCase, result.getJsonContent().get(), expectedDocument.getJsonContent().get());
-            }
-
-            assertTrue(result.getJsonContent().isPresent(), "Expected " + expectedDocument.getContentType() + " document but was " + result.getContentType());
+            return compareJson(testCase, result, expectedDocument.getJsonContent().get());
 
         } catch (JsonLdError e) {
             fail(e.getMessage());
@@ -193,7 +185,7 @@ public class JsonLdTestRunnerJunit {
         }
 
         assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
-        
+
         try {
             Document expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new DocumentLoaderOptions());
 
@@ -201,10 +193,9 @@ public class JsonLdTestRunnerJunit {
 
             // compare expected with the result
 
-            return compareRdf(testCase, 
-                    result, 
-                    ((QuadSetDocument)expectedDocument).getContent()
-                    );
+            return compareRdf(testCase,
+                    result,
+                    ((QuadSetDocument) expectedDocument).getContent());
 
         } catch (JsonLdError e) {
             fail(e.getMessage());

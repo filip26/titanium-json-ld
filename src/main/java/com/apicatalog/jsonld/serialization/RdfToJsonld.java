@@ -100,7 +100,7 @@ public final class RdfToJsonld {
 
         final QuadsToJsonld toLd = new QuadsToJsonld();
         toLd.ordered(ordered);
-        toLd.processingMode(processingMode);
+        toLd.mode(processingMode);
         toLd.rdfDirection(rdfDirection);
         toLd.uriValidation(uriValidation);
         toLd.useNativeTypes(useNativeTypes);

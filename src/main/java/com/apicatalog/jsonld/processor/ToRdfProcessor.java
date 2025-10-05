@@ -42,15 +42,20 @@ public final class ToRdfProcessor {
     private ToRdfProcessor() {
     }
 
+    /**
+     * @deprecated since 1.7.0 - Use {@code #toRdf(RdfQuadConsumer, URI, JsonLdOptions)} instead. 
+     */
     @Deprecated
     public static final RdfDataset toRdf(final URI input, final JsonLdOptions options) throws JsonLdError {
-
         final RdfDatasetSupplier consumer = new RdfDatasetSupplier();
         toRdf(consumer, input, options);
         return consumer.get();
 
     }
 
+    /**
+     * @deprecated since 1.7.0 - Use {@code #toRdf(RdfQuadConsumer, Document, JsonLdOptions)} instead. 
+     */
     @Deprecated
     public static final RdfDataset toRdf(Document input, final JsonLdOptions options) throws JsonLdError {
         final RdfDatasetSupplier consumer = new RdfDatasetSupplier();
