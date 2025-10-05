@@ -46,6 +46,8 @@ public final class JsonLd {
     private static final String DOCUMENT_URI_PARAM_NAME = "documentUri";
     private static final String DOCUMENT_PARAM_NAME = "document";
     private static final String CONTEXT_PARAM_NAME = "context";
+    private static final String CONTEXT_LOCATION_PARAM_NAME = "contextLocation";
+    private static final String CONTEXT_URI_PARAM_NAME = "contextUri";
     private static final String FRAME_LOCATION_PARAM_NAME = "frameLocation";
     private static final String FRAME_URI_PARAM_NAME = "frameUri";
     private static final String FRAME_PARAM_NAME = "frame";
@@ -70,10 +72,7 @@ public final class JsonLd {
      * @return {@link ExpansionApi} allowing to set additional parameters
      */
     public static final ExpansionApi expand(final URI documentUri) {
-
-        assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
-
-        return new ExpansionApi(documentUri);
+        return new ExpansionApi(assertUri(documentUri, DOCUMENT_URI_PARAM_NAME));
     }
 
     /**
@@ -83,10 +82,7 @@ public final class JsonLd {
      * @return {@link ExpansionApi} allowing to set additional parameters
      */
     public static final ExpansionApi expand(final Document document) {
-
-        assertJsonDocument(document, DOCUMENT_PARAM_NAME);
-
-        return new ExpansionApi(document);
+        return new ExpansionApi(assertJsonDocument(document, DOCUMENT_PARAM_NAME));
     }
 
     /**
@@ -100,7 +96,7 @@ public final class JsonLd {
     public static final CompactionApi compact(final String documentLocation, final String contextLocation) {
         return compact(
                 assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME),
-                assertLocation(contextLocation, "contextLocation"));
+                assertLocation(contextLocation, CONTEXT_LOCATION_PARAM_NAME));
     }
 
     /**
@@ -112,11 +108,9 @@ public final class JsonLd {
      * @return {@link CompactionApi} allowing to set additional parameters
      */
     public static final CompactionApi compact(final URI documentUri, final URI contextUri) {
-
-        assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
-        assertUri(contextUri, "contextUri");
-
-        return new CompactionApi(documentUri, contextUri);
+        return new CompactionApi(
+                assertUri(documentUri, DOCUMENT_URI_PARAM_NAME),
+                assertUri(contextUri, CONTEXT_URI_PARAM_NAME));
     }
 
     /**
@@ -130,12 +124,9 @@ public final class JsonLd {
      * @return {@link CompactionApi} allowing to set additional parameters
      */
     public static final CompactionApi compact(final String documentLocation, final Document context) {
-
-        assertJsonDocument(context, CONTEXT_PARAM_NAME);
-
         return new CompactionApi(
                 assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME),
-                context);
+                assertJsonDocument(context, CONTEXT_PARAM_NAME));
     }
 
     /**
@@ -149,11 +140,9 @@ public final class JsonLd {
      * @return {@link CompactionApi} allowing to set additional parameters
      */
     public static final CompactionApi compact(final URI documentUri, final Document context) {
-
-        assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
-        assertJsonDocument(context, CONTEXT_PARAM_NAME);
-
-        return new CompactionApi(documentUri, context);
+        return new CompactionApi(
+                assertUri(documentUri, DOCUMENT_URI_PARAM_NAME),
+                assertJsonDocument(context, CONTEXT_PARAM_NAME));
     }
 
     /**
@@ -164,11 +153,9 @@ public final class JsonLd {
      * @return {@link CompactionApi} allowing to set additional parameters
      */
     public static final CompactionApi compact(final Document document, final Document context) {
-
-        assertJsonDocument(document, DOCUMENT_PARAM_NAME);
-        assertJsonDocument(context, CONTEXT_PARAM_NAME);
-
-        return new CompactionApi(document, context);
+        return new CompactionApi(
+                assertJsonDocument(document, DOCUMENT_PARAM_NAME),
+                assertJsonDocument(context, CONTEXT_PARAM_NAME));
     }
 
     /**
@@ -180,10 +167,9 @@ public final class JsonLd {
      * @return {@link CompactionApi} allowing to set additional parameters
      */
     public static final CompactionApi compact(final Document document, final String contextLocation) {
-
-        assertJsonDocument(document, DOCUMENT_PARAM_NAME);
-
-        return compact(document, assertLocation(contextLocation, "contextLocation"));
+        return compact(
+                assertJsonDocument(document, DOCUMENT_PARAM_NAME),
+                assertLocation(contextLocation, CONTEXT_LOCATION_PARAM_NAME));
     }
 
     /**
@@ -195,11 +181,9 @@ public final class JsonLd {
      * @return {@link CompactionApi} allowing to set additional parameters
      */
     public static final CompactionApi compact(final Document document, final URI contextUri) {
-
-        assertJsonDocument(document, DOCUMENT_PARAM_NAME);
-        assertUri(contextUri, "contextUri");
-
-        return new CompactionApi(document, contextUri);
+        return new CompactionApi(
+                assertJsonDocument(document, DOCUMENT_PARAM_NAME),
+                assertUri(contextUri, CONTEXT_URI_PARAM_NAME));
     }
 
     /**
@@ -211,10 +195,9 @@ public final class JsonLd {
      * @return {@link CompactionApi} allowing to set additional parameters
      */
     public static final CompactionApi compact(final String documentLocation, final URI contextUri) {
-
-        assertUri(contextUri, "contextUri");
-
-        return new CompactionApi(assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME), contextUri);
+        return new CompactionApi(
+                assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME),
+                assertUri(contextUri, CONTEXT_URI_PARAM_NAME));
     }
 
     /**
@@ -226,10 +209,9 @@ public final class JsonLd {
      * @return {@link CompactionApi} allowing to set additional parameters
      */
     public static final CompactionApi compact(final URI documentUri, final String contextLocation) {
-
-        assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
-
-        return new CompactionApi(documentUri, assertLocation(contextLocation, "contextLocation"));
+        return new CompactionApi(
+                assertUri(documentUri, DOCUMENT_URI_PARAM_NAME),
+                assertLocation(contextLocation, CONTEXT_LOCATION_PARAM_NAME));
     }
 
     /**
@@ -249,10 +231,7 @@ public final class JsonLd {
      * @return {@link FlatteningApi} allowing to set additional parameters
      */
     public static final FlatteningApi flatten(final URI documentUri) {
-
-        assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
-
-        return new FlatteningApi(documentUri);
+        return new FlatteningApi(assertUri(documentUri, DOCUMENT_URI_PARAM_NAME));
     }
 
     /**
@@ -262,10 +241,7 @@ public final class JsonLd {
      * @return {@link FlatteningApi} allowing to set additional parameters
      */
     public static final FlatteningApi flatten(final Document document) {
-
-        assertJsonDocument(document, DOCUMENT_PARAM_NAME);
-
-        return new FlatteningApi(document);
+        return new FlatteningApi(assertJsonDocument(document, DOCUMENT_PARAM_NAME));
     }
 
     /**
@@ -276,11 +252,9 @@ public final class JsonLd {
      * @return {@link FramingApi} allowing to set additional parameters
      */
     public static final FramingApi frame(final URI documentUri, final URI frameUri) {
-
-        assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
-        assertUri(frameUri, FRAME_URI_PARAM_NAME);
-
-        return new FramingApi(documentUri, frameUri);
+        return new FramingApi(
+                assertUri(documentUri, DOCUMENT_URI_PARAM_NAME),
+                assertUri(frameUri, FRAME_URI_PARAM_NAME));
     }
 
     /**
@@ -304,11 +278,9 @@ public final class JsonLd {
      * @return {@link FramingApi} allowing to set additional parameters
      */
     public static final FramingApi frame(final Document document, final Document frame) {
-
-        assertJsonDocument(document, DOCUMENT_PARAM_NAME);
-        assertJsonDocument(frame, FRAME_PARAM_NAME);
-
-        return new FramingApi(document, frame);
+        return new FramingApi(
+                assertJsonDocument(document, DOCUMENT_PARAM_NAME),
+                assertJsonDocument(frame, FRAME_PARAM_NAME));
     }
 
     /**
@@ -319,10 +291,9 @@ public final class JsonLd {
      * @return {@link FramingApi} allowing to set additional parameters
      */
     public static final FramingApi frame(final Document document, final String frameLocation) {
-
-        assertJsonDocument(document, DOCUMENT_PARAM_NAME);
-
-        return new FramingApi(document, assertLocation(frameLocation, FRAME_LOCATION_PARAM_NAME));
+        return new FramingApi(
+                assertJsonDocument(document, DOCUMENT_PARAM_NAME),
+                assertLocation(frameLocation, FRAME_LOCATION_PARAM_NAME));
     }
 
     /**
@@ -333,11 +304,9 @@ public final class JsonLd {
      * @return {@link FramingApi} allowing to set additional parameters
      */
     public static final FramingApi frame(final Document document, final URI frameUri) {
-
-        assertJsonDocument(document, DOCUMENT_PARAM_NAME);
-        assertUri(frameUri, FRAME_URI_PARAM_NAME);
-
-        return new FramingApi(document, frameUri);
+        return new FramingApi(
+                assertJsonDocument(document, DOCUMENT_PARAM_NAME),
+                assertUri(frameUri, FRAME_URI_PARAM_NAME));
     }
 
     /**
@@ -348,10 +317,9 @@ public final class JsonLd {
      * @return {@link FramingApi} allowing to set additional parameters
      */
     public static final FramingApi frame(final String documentLocation, final Document frame) {
-
-        assertJsonDocument(frame, FRAME_PARAM_NAME);
-
-        return new FramingApi(assertLocation(documentLocation, DOCUMENT_URI_PARAM_NAME), frame);
+        return new FramingApi(
+                assertLocation(documentLocation, DOCUMENT_URI_PARAM_NAME),
+                assertJsonDocument(frame, FRAME_PARAM_NAME));
     }
 
     /**
@@ -362,10 +330,9 @@ public final class JsonLd {
      * @return {@link FramingApi} allowing to set additional parameters
      */
     public static final FramingApi frame(final String documentLocation, final URI frameUri) {
-
-        assertUri(frameUri, FRAME_URI_PARAM_NAME);
-
-        return new FramingApi(assertLocation(documentLocation, DOCUMENT_URI_PARAM_NAME), frameUri);
+        return new FramingApi(
+                assertLocation(documentLocation, DOCUMENT_URI_PARAM_NAME),
+                assertUri(frameUri, FRAME_URI_PARAM_NAME));
     }
 
     /**
@@ -376,11 +343,9 @@ public final class JsonLd {
      * @return {@link FramingApi} allowing to set additional parameters
      */
     public static final FramingApi frame(final URI documentUri, final Document frame) {
-
-        assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
-        assertJsonDocument(frame, FRAME_PARAM_NAME);
-
-        return new FramingApi(documentUri, frame);
+        return new FramingApi(
+                assertUri(documentUri, DOCUMENT_URI_PARAM_NAME),
+                assertJsonDocument(frame, FRAME_PARAM_NAME));
     }
 
     /**
@@ -391,10 +356,9 @@ public final class JsonLd {
      * @return {@link FramingApi} allowing to set additional parameters
      */
     public static final FramingApi frame(final URI documentUri, final String frameLocation) {
-
-        assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
-
-        return new FramingApi(documentUri, assertLocation(frameLocation, FRAME_LOCATION_PARAM_NAME));
+        return new FramingApi(
+                assertUri(documentUri, DOCUMENT_URI_PARAM_NAME),
+                assertLocation(frameLocation, FRAME_LOCATION_PARAM_NAME));
     }
 
     /**
@@ -414,23 +378,17 @@ public final class JsonLd {
      * @return {@link ToRdfApi} allowing to set additional parameters
      */
     public static final ToRdfApi toRdf(final URI documentUri) {
-
-        assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
-
-        return new ToRdfApi(documentUri);
+        return new ToRdfApi(assertUri(documentUri, DOCUMENT_URI_PARAM_NAME));
     }
 
     /**
      * Transforms {@link Document} into {@link RdfDataset}.
-     *
+     * 
      * @param document to transform
      * @return {@link ToRdfApi} allowing to set additional parameters
      */
     public static final ToRdfApi toRdf(final Document document) {
-
-        assertJsonDocument(document, DOCUMENT_PARAM_NAME);
-
-        return new ToRdfApi(document);
+        return new ToRdfApi(assertJsonDocument(document, DOCUMENT_PARAM_NAME));
     }
 
     /**
@@ -462,10 +420,7 @@ public final class JsonLd {
      * @deprecated since 1.7.0 - use {@link JsonLd#fromRdf()} instead
      */
     public static final FromRdfApi fromRdf(final URI documentUri) {
-
-        assertUri(documentUri, DOCUMENT_URI_PARAM_NAME);
-
-        return new FromRdfApi(documentUri);
+        return new FromRdfApi(assertUri(documentUri, DOCUMENT_URI_PARAM_NAME));
     }
 
     /**
@@ -482,10 +437,7 @@ public final class JsonLd {
      */
     @Deprecated
     public static final FromRdfApi fromRdf(final Document document) {
-
-        assertRdfDocument(document, DOCUMENT_PARAM_NAME);
-
-        return new FromRdfApi(document);
+        return new FromRdfApi(assertRdfDocument(document, DOCUMENT_PARAM_NAME));
     }
 
     /**
@@ -499,9 +451,11 @@ public final class JsonLd {
      * </p>
      * <p>
      * <strong>Note:</strong> {@link QuadsToJsonld} adopts the
-     * {@link RdfQuadConsumer} interface, allowing integration with Jena, RDF4J, and
-     * other RDF libraries.
+     * {@link RdfQuadConsumer} interface, allowing integration with Jena, Jelly,
+     * RDF4J, and other RDF libraries.
      * </p>
+     * 
+     * @since 1.7.0
      * 
      * @return a {@link QuadsToJsonld} instance, allowing additional parameter
      *         configuration
@@ -527,32 +481,37 @@ public final class JsonLd {
         return uri;
     }
 
-    private static final void assertUri(final URI uri, final String param) {
+    private static final URI assertUri(final URI uri, final String param) {
 
         assertNotNull(uri, param);
 
         if (!uri.isAbsolute()) {
             throw new IllegalArgumentException("'" + param + "' is not an absolute URI [" + uri + "].");
         }
+
+        return uri;
     }
 
-    private static final void assertJsonDocument(final Document document, final String param) {
+    private static final Document assertJsonDocument(final Document document, final String param) {
 
         assertNotNull(document, param);
 
         if (!document.getJsonContent().isPresent()) {
             throw new IllegalArgumentException("'" + param + "' is not not JSON document but [" + document.getContentType() + "].");
         }
+        return document;
     }
 
     @Deprecated
-    private static final void assertRdfDocument(final Document document, final String param) {
+    private static final Document assertRdfDocument(final Document document, final String param) {
 
         assertNotNull(document, param);
 
         if (!document.getRdfContent().isPresent()) {
             throw new IllegalArgumentException("'" + param + "' is not not RDF document but [" + document.getContentType() + "].");
         }
+
+        return document;
     }
 
     private static final void assertNotNull(Object value, final String param) {

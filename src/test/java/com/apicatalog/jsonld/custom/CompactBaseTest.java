@@ -22,7 +22,6 @@ import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.jsonld.test.JsonLdManifestLoader;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
@@ -39,9 +38,6 @@ class CompactBaseTest {
                 .filter(o -> "#t0047".equals(o.id))
                 .findFirst().orElseThrow(() -> new NoSuchElementException());
 
-        assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options ->
-                        JsonDocument.of(
-                                JsonLd.compact(testCase.input, testCase.context).options(options).base("http://fake.com").get()
-        )));
+        assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options -> JsonLd.compact(testCase.input, testCase.context).options(options).base("http://fake.com").get()));
     }
 }

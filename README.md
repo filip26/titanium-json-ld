@@ -25,8 +25,7 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 - [Titanium RDFC](https://github.com/filip26/titanium-rdfc) - W3C Standard RDF Dataset Canonicalization
 - [Titanium N-QUADS](https://github.com/filip26/titanium-rdf-n-quads) - W3C RDF 1.1 N-Quads
 - [Titanium JCS](https://github.com/filip26/titanium-jcs) - RFC 8785 JSON Canonicalization Scheme (JCS)
-- [Iridium CBOR-LD](https://github.com/filip26/iridium-cbor-ld) - A CBOR-based Processor for Linked Data
-- [RDF-URDNA](https://github.com/simon-greatrix/rdf-urdna) - Universal RDF Dataset Normalization Algorithm 2015
+- [Iridium CBOR-LD](https://github.com/filip26/iridium-cbor-ld) - CBOR-based Processor for Linked Data
 
 ## Table of Contents  
 - [Conformance](#conformance)
@@ -52,106 +51,117 @@ See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld
 
 ## Examples
 
-Titanium provides a high-level [JsonLd](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/JsonLd.html) API to interact with the processor.
+Titanium provides a high-level [JsonLd](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/JsonLd.html) API for interacting with JSON-LD documents.
 
 ### Transformations
 
+Perform standard JSON-LD operations such as expansion, compaction, flattening, framing, and conversion from/to RDF. The JSON-LD document to process can be remote or local, while context documents may also be local or remote.
+
 ```javascript
-// Expansion
+// Expansion from a remote JSON-LD document
 JsonLd.expand("https://w3c.github.io/json-ld-api/tests/expand/0001-in.jsonld")
       .ordered()
       .get();
 
+// Expansion from a local file with an external context
 JsonLd.expand("file:/home/filip/document.json")    // HTTP(S) and File schemes supported
       .context("file:/home/filip/context.jsonld")  // external context
       .get();
 
-// Compaction
+// Compaction with a remote context
 JsonLd.compact("https://example/expanded.jsonld", "https://example/context.jsonld")
-      .compactToRelative(false)
+      .compactToRelative(false)  // use absolute IRIs
       .get();
 
-// Flattening
+// Flattening a JSON-LD document
 JsonLd.flatten("https://example/document.jsonld").get();
 
-// JSON-LD to RDF 
-JsonLd.toRdf("https://example/document.jsonld").get();
-// or, since 1.6.0
+// Convert JSON-LD to RDF
 JsonLd.toRdf("https://example/document.jsonld").provide(RdfConsumer); 
 
-// Standard RDF Dataset Canonicalization with Titanium RDFC, since 1.6.0
+// RDF Dataset Canonicalization with Titanium RDFC
 var canonicalizer = new RdfCanon.create(...);
 JsonLd.toRdf("https://example/document.jsonld").provide(canonicalizer);
 canonicalizer.provide(RdfConsumer);
-// or, with NQuadsWriter
+// or with N-Quads output
 canonicalizer.provide(new NQuadsWriter(...));
 
-// RDF to JSON-LD
-JsonLd.fromRdf("https://example/document.nq").get();
+// Convert RDF to JSON-LD
+var consumer = JsonLd.fromRdf();
+consumer.quad(...);  // feed manually or via a reader
+(new NquadsReader(...)).provide(consumer);
 
-// Framing
+// Get the final JSON-LD result
+consumer.toJsonLd();
+
+// Framing a document
 JsonLd.frame("https://example/document.jsonld", "https://example/frame.jsonld").get();
 ```
 
 ### Local JSON Document
 
-```javascript
-// Create a JSON document from InputStream or Reader
-Document document = JsonDocument.of(InputStream) or JsonDocument.of(Reader) ...
+Load and process JSON-LD documents directly from an `InputStream` or `Reader`. You can perform expansion or compaction using local documents and contexts.
 
-// Expand the document
+```javascript
+// Load JSON from InputStream or Reader
+Document document = JsonDocument.of(inputStream);
+Document context = JsonDocument.of(reader);
+
+// Expand the local document
 JsonLd.expand(document).get();
 
-// Compact the document with a context document
-JsonLd.compact(document, contextDocument).get();
-...
+// Compact using a local context
+JsonLd.compact(document, context).get();
 ```
 
 ### Processing Timeout [Experimental]
-The processor will be terminated after a specified duration. 
-Please note that the duration does not include the time taken by `DocumentLoader` for processing. 
-You must set up a separate read timeout for document loading.
+
+Set a maximum processing duration for JSON-LD operations. The timeout does not include time spent loading external documents.
 
 ```javascript
-// Available since 1.4.0
-JsonLd.expand(...).timeout(duration)...get();
+// Terminates processing after the specified duration (excluding DocumentLoader time)
+JsonLd.expand(document)
+      .timeout(Duration.ofSeconds(5))
+      .get();
 ```
 
 ### HTTP Document Loader Timeout
-You can configure a custom HTTP document loader instance with a set read timeout.
+
+Customize the HTTP loader to apply a read timeout when fetching remote JSON-LD or context documents.
 
 ```javascript
-// Available since 1.4.0 - Set read timeout for HTTP document loader
+// Configure a custom HTTP loader with a 30-second read timeout
 static DocumentLoader LOADER = HttpLoader.defaultInstance().timeout(Duration.ofSeconds(30));
 ...
 JsonLd.expand(...).loader(LOADER).get();
 ```
 
 ### Document Caching
-Configure an LRU-based cache for loading documents. The `capacity` argument specifies the size of the LRU cache.
+
+Use an LRU-based cache to reuse previously loaded documents and reduce network calls. A cache instance can be shared across multiple operations.
 
 ```javascript
-// Available since 1.4.0 - Load documents with an LRU-based cache
-JsonLd.toRdf("https://example/document.jsonld").loader(new LRUDocumentCache(loader, capacity)).get();
-```
+// LRU cache for remote documents (capacity = 100)
+JsonLd.expand("https://example.com/document.jsonld")
+      .loader(new LRUDocumentCache(loader, 100))
+      .get();
 
-You can reuse an instance of `LRUDocumentCache` across multiple calls to benefit from cached documents.
+// Reuse cache across multiple documents
+DocumentLoader cachedLoader = new LRUDocumentCache(loader, 100);
 
-```javascript
-// Available since 1.4.0 - Reuse LRU cache across multiple document loads
-DocumentLoader cachedLoader = new LRUDocumentCache(loader, capacity);
-
-JsonLd.toRdf("https://example/document.jsonld").loader(cachedLoader).get();
-JsonLd.toRdf("https://example/another-document.jsonld").loader(cachedLoader).get();
+JsonLd.expand("https://example.com/document.jsonld").loader(cachedLoader).get();
+JsonLd.expand("https://example.com/another-document.jsonld").loader(cachedLoader).get();
 ```
 
 ### Undefined Terms Processing Policy
 
-Set a processing policy for undefined terms. The default policy is `Ignore`.
+Define how the processor handles terms not defined in the context. Options include Fail, Warn, or `Ignore` (default).
 
 ```javascript
-// Available since 1.4.1 - Define processing policy for undefined terms
-JsonLd.expand(...).undefinedTermsPolicy(Fail|Warn|Ignore).get();
+// Define behavior for undefined terms: Fail, Warn, or Ignore (default)
+JsonLd.expand(document)
+      .undefinedTermsPolicy(Fail)  // or Warn | Ignore
+      .get();
 ```
 
 ## Installation
@@ -164,14 +174,14 @@ JsonLd.expand(...).undefinedTermsPolicy(Fail|Warn|Ignore).get();
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>titanium-json-ld</artifactId>
-    <version>1.6.0</version>
+    <version>1.7.0</version>
 </dependency>
 ```
 
 #### Gradle (Java 8+, Android API Level >= 24)
 
 ```gradle
-implementation("com.apicatalog:titanium-json-ld-jre8:1.6.0")
+implementation("com.apicatalog:titanium-json-ld-jre8:1.7.0")
 ```
 
 ### JSON-P Provider
