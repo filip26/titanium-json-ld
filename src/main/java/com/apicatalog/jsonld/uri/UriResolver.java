@@ -20,7 +20,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.apicatalog.jsonld.StringUtils;
+import com.apicatalog.jsonld.api.StringUtils;
 
 /**
  *

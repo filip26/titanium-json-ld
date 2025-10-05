@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.IntPredicate;
 
-import com.apicatalog.jsonld.StringUtils;
+import com.apicatalog.jsonld.api.StringUtils;
 import com.apicatalog.jsonld.http.HttpAlphabet;
 
 /**

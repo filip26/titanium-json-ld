@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.apicatalog.jsonld.StringUtils;
+import com.apicatalog.jsonld.api.StringUtils;
 import com.apicatalog.jsonld.http.HttpAlphabet;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.uri.UriResolver;

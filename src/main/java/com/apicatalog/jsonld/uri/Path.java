@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import com.apicatalog.jsonld.StringUtils;
+import com.apicatalog.jsonld.api.StringUtils;
 
 public final class Path {
 

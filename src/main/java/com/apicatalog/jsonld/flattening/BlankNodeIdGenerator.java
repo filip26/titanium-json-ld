@@ -18,7 +18,7 @@ package com.apicatalog.jsonld.flattening;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.apicatalog.jsonld.StringUtils;
+import com.apicatalog.jsonld.api.StringUtils;
 
 /**
  *

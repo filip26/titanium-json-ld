@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.StringUtils;
+import com.apicatalog.jsonld.api.StringUtils;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.http.media.MediaType;
 

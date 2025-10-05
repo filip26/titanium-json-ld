@@ -1,5 +1,6 @@
-package com.apicatalog.jsonld;
+package com.apicatalog.jsonld.api;
 
+@Deprecated
 public final class StringUtils {
 
     private StringUtils() {

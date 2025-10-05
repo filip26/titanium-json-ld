@@ -19,7 +19,6 @@ import java.net.URI;
 
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdVersion;
-import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.jsonld.uri.UriUtils;
 
 public interface CommonApi<R> {
