@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld.context;
 
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -27,11 +26,10 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
 /**
+ * Inverse Context Creation (simplified / Java 17)
  *
- * @see <a href=
- *      "https://www.w3.org/TR/json-ld11-api/#inverse-context-creation">Inverse
- *      Context Creation</a>
- *
+ * @see <a href="https://www.w3.org/TR/json-ld11-api/#inverse-context-creation">
+ *      Inverse Context Creation</a>
  */
 public final class InverseContextBuilder {
 
@@ -41,159 +39,119 @@ public final class InverseContextBuilder {
         this.activeContext = activeContext;
     }
 
-    public static final InverseContextBuilder with(final ActiveContext activeContext) {
+    public static InverseContextBuilder with(final ActiveContext activeContext) {
         return new InverseContextBuilder(activeContext);
     }
 
     public InverseContext build() {
 
-        // 1.
         final InverseContext result = new InverseContext();
 
-        // 2.
-        final String defaultLanguage = activeContext.getDefaultLanguage() != null
-                ? activeContext.getDefaultLanguage().toLowerCase()
-                : Keywords.NONE;
-        // 3
-        activeContext.getTerms()
-                .stream()
-                .filter(termName -> activeContext
-                        .getTerm(termName)
-                        .map(TermDefinition::getUriMapping)
-                        .isPresent())
-                .sorted()
-                .forEach(termName -> processTerm(
-                        termName,
-                        result,
-                        activeContext
-                                .getTerm(termName)
-                                .map(TermDefinition::getUriMapping)
-                                .get(),
-                        defaultLanguage));
+        final String defaultLanguage = Optional.ofNullable(activeContext.getDefaultLanguage())
+                .map(String::toLowerCase)
+                .orElse(Keywords.NONE);
 
-        // 4.
+        activeContext.getTerms().stream()
+                .filter(termName -> activeContext.getTerm(termName).map(TermDefinition::getUriMapping).isPresent())
+                .sorted()
+                .forEach(termName -> {
+                    final var termOpt = activeContext.getTerm(termName);
+                    final var variableValue = termOpt.map(TermDefinition::getUriMapping).orElseThrow();
+                    processTerm(termName, termOpt, result, variableValue, defaultLanguage);
+                });
+
         return result;
     }
 
-    private void processTerm(final String termName, InverseContext result, final String variableValue, final String defaultLanguage) {
+    private void processTerm(
+            final String termName,
+            final Optional<TermDefinition> termOpt,
+            final InverseContext result,
+            final String variableValue,
+            final String defaultLanguage) {
 
-        // 3.2.
-        final String container = activeContext
-                .getTerm(termName)
+        // container: sorted concatenation or Keywords.NONE
+        final String container = termOpt
                 .map(TermDefinition::getContainerMapping)
-                .filter(collection -> !collection.isEmpty())
-                .orElseGet(() -> Arrays.asList(Keywords.NONE))
-                .stream()
-                .sorted()
-                .collect(Collectors.joining());
+                .filter(c -> !c.isEmpty())
+                .map(c -> c.stream().sorted().collect(Collectors.joining()))
+                .orElse(Keywords.NONE);
 
         result.setIfAbsent(variableValue, container, Keywords.ANY, Keywords.NONE, termName);
 
-        // 3.10.
-        if (activeContext.getTerm(termName).filter(TermDefinition::isReverseProperty).isPresent()) {
-
-            // 3.10.1
+        // reverse property
+        if (termOpt.filter(TermDefinition::isReverseProperty).isPresent()) {
             result.setIfAbsent(variableValue, container, Keywords.TYPE, Keywords.REVERSE, termName);
             return;
         }
 
-        final Optional<String> typeMapping = activeContext.getTerm(termName).map(TermDefinition::getTypeMapping);
+        final Optional<String> typeMapping = termOpt.map(TermDefinition::getTypeMapping);
 
-        // 3.11.
         if (typeMapping.filter(Keywords.NONE::equals).isPresent()) {
-
             result.setIfAbsent(variableValue, container, Keywords.LANGUAGE, Keywords.ANY, termName)
                     .setIfAbsent(variableValue, container, Keywords.TYPE, Keywords.ANY, termName);
             return;
         }
 
-        // 3.12.
         if (typeMapping.isPresent()) {
-
-            // 3.12.1
             result.setIfAbsent(variableValue, container, Keywords.TYPE, typeMapping.get(), termName);
             return;
         }
 
-        final Optional<JsonValue> languageMapping = activeContext
-                .getTerm(termName)
-                .map(TermDefinition::getLanguageMapping);
-
-        final Optional<DirectionType> directionMapping = activeContext
-                .getTerm(termName)
-                .map(TermDefinition::getDirectionMapping);
+        final Optional<JsonValue> languageMapping = termOpt.map(TermDefinition::getLanguageMapping);
+        final Optional<DirectionType> directionMapping = termOpt.map(TermDefinition::getDirectionMapping);
 
         if (languageMapping.isPresent()) {
 
-            // 3.13.1.
-            final String langDir;
-
-            final JsonValue language = languageMapping.get();
-
-            // 3.13.
-            if (directionMapping.isPresent()) {
-
-                final DirectionType direction = directionMapping.get();
-
-                // 3.13.2.
-                if (JsonUtils.isString(language)) {
-
-                    if (direction != DirectionType.NULL) {
-
-                        langDir = ((JsonString) language).getString()
-                                .concat("_")
-                                .concat(direction.name())
-                                .toLowerCase();
-                        // 3.13.3.
-                    } else {
-                        langDir = ((JsonString) language).getString().toLowerCase();
-                    }
-
-                    // 3.13.4.
-                } else if (direction != DirectionType.NULL) {
-
-                    langDir = "_".concat(direction.name().toLowerCase());
-
-                } else {
-                    langDir = Keywords.NULL;
-                }
-
-            } else {
-                langDir = JsonUtils.isString(language)
-                        ? ((JsonString) language).getString().toLowerCase()
-                        : Keywords.NULL;
-            }
-
-            // 3.13.5.
+            final String langDir = langDirOf(languageMapping.get(), directionMapping);
             result.setIfAbsent(variableValue, container, Keywords.LANGUAGE, langDir, termName);
 
-            // 3.15.
         } else if (directionMapping.isPresent()) {
 
-            // 3.15.1.
             final String direction = directionMapping
                     .filter(d -> d != DirectionType.NULL)
                     .map(d -> "_".concat(d.name().toLowerCase()))
                     .orElse(Keywords.NONE);
 
-            // 3.15.2.
             result.setIfAbsent(variableValue, container, Keywords.LANGUAGE, direction, termName);
 
-            // 3.16.
         } else {
-            final String langDir = activeContext.getDefaultBaseDirection() != null
-                    ? (activeContext.getDefaultLanguage() != null
-                            ? activeContext.getDefaultLanguage()
-                            : "")
+            final String langDir = Optional.ofNullable(activeContext.getDefaultBaseDirection())
+                    .map(d -> (Optional.ofNullable(activeContext.getDefaultLanguage()).orElse(""))
                             .concat("_")
-                            .concat(activeContext.getDefaultBaseDirection().name())
-                            .toLowerCase()
-
-                    : defaultLanguage;
+                            .concat(d.name()))
+                    .map(String::toLowerCase)
+                    .orElse(defaultLanguage);
 
             result.setIfAbsent(variableValue, container, Keywords.LANGUAGE, langDir, termName)
                     .setIfAbsent(variableValue, container, Keywords.LANGUAGE, Keywords.NONE, termName)
                     .setIfAbsent(variableValue, container, Keywords.TYPE, Keywords.NONE, termName);
         }
+    }
+
+    /**
+     * Build language + direction token according to spec rules: - if language is a
+     * string: - if direction present and not NULL -> "lang_dir" - else -> "lang" -
+     * if language is not a string: - if direction present and not NULL -> "_dir" -
+     * else -> Keywords.NULL
+     */
+    private static String langDirOf(final JsonValue language, final Optional<DirectionType> directionOpt) {
+
+        final boolean hasDirection = directionOpt.filter(d -> d != DirectionType.NULL).isPresent();
+        final DirectionType direction = directionOpt.orElse(DirectionType.NULL);
+
+        if (JsonUtils.isString(language)) {
+            final String lang = ((JsonString) language).getString();
+            if (hasDirection) {
+                return (lang + "_" + direction.name()).toLowerCase();
+            }
+            return lang.toLowerCase();
+        }
+
+        if (hasDirection) {
+            return ("_" + direction.name()).toLowerCase();
+        }
+
+        return Keywords.NULL;
     }
 }

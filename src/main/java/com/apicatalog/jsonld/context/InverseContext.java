@@ -18,25 +18,24 @@ package com.apicatalog.jsonld.context;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * InverseContext stores mapping keyed by (variable, container, type) -> (key ->
+ * value)
+ */
 public final class InverseContext {
 
     private final Set<String> variables;
-    private final Map<Integer, Map<String, String>> mapping;
+    private final Map<Key, Map<String, String>> mapping;
 
     public InverseContext() {
         this.variables = new HashSet<>();
         this.mapping = new LinkedHashMap<>();
     }
 
-    private void set(final String variable, final String container, final String type, final String key, final String value) {
-        variables.add(variable);
-        mapping.computeIfAbsent(
-                Objects.hash(variable, container, type),
-                c -> new LinkedHashMap<>()).put(key, value);
+    private record Key(String variable, String container, String type) {
     }
 
     public boolean contains(final String variable) {
@@ -44,24 +43,22 @@ public final class InverseContext {
     }
 
     public boolean contains(final String variable, final String container, final String type) {
-        return mapping.containsKey(Objects.hash(variable, container, type));
-    }
-
-    private boolean doesNotContain(final String variable, final String container, final String type, final String key) {
-        return Optional.ofNullable(mapping.get(Objects.hash(variable, container, type)))
-                .filter(m -> m.containsKey(key))
-                .isEmpty();
+        return mapping.containsKey(new Key(variable, container, type));
     }
 
     public InverseContext setIfAbsent(final String variable, final String container, final String type, final String key, final String value) {
-        if (doesNotContain(variable, container, type, key)) {
-            set(variable, container, type, key, value);
-        }
+        variables.add(variable);
+        final Key mapKey = new Key(variable, container, type);
+        // create inner map if absent, then put only if key absent
+        mapping.computeIfAbsent(mapKey, k -> new LinkedHashMap<>()).putIfAbsent(key, value);
         return this;
     }
 
     public Optional<String> get(final String variable, final String container, final String type, final String key) {
-        return Optional.ofNullable(mapping.get(Objects.hash(variable, container, type)))
-                .map(c -> c.get(key));
+        final Map<String, String> inner = mapping.get(new Key(variable, container, type));
+        if (inner == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(inner.get(key));
     }
 }
