@@ -31,7 +31,6 @@ import jakarta.json.JsonStructure;
  * {@link DocumentParser}.
  *
  */
-@Deprecated
 public interface Document {
 
     /**
