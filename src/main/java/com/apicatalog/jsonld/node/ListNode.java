@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.lang;
+package com.apicatalog.jsonld.node;
 
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.Keywords;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
-public final class ListObject {
+public final class ListNode {
 
-    private ListObject() {
+    private ListNode() {
     }
 
     /**
@@ -37,7 +38,7 @@ public final class ListObject {
      * @param value to check
      * @return <code>true</code> if the provided value is valid list object
      */
-    public static final boolean isListObject(JsonValue value) {
+    public static final boolean isListNode(JsonValue value) {
         return JsonUtils.containsKey(value, Keywords.LIST)
                     && (value.asJsonObject().size() == 1
                             || (value.asJsonObject().size() == 2
@@ -54,7 +55,7 @@ public final class ListObject {
      * @param value to convert
      * @return list object containing the provided value
      */
-    public static final JsonObject toListObject(JsonValue value) {
+    public static final JsonObject toListNode(JsonValue value) {
         if (JsonUtils.isArray(value)) {
             return JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, value).build();
         }

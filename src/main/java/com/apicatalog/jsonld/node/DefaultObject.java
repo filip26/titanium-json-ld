@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.lang;
+package com.apicatalog.jsonld.node;
 
 import java.util.Optional;
 
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.Keywords;
 
 import jakarta.json.JsonValue;
 

@@ -16,21 +16,19 @@
 package com.apicatalog.jsonld.expansion;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.api.StringUtils;
-import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.json.JsonMapBuilder;
-import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.uri.UriUtils;
 
@@ -93,7 +91,7 @@ public final class ObjectExpansion {
         return this;
     }
 
-    public JsonValue expand() throws JsonLdError {
+    public Object expand() throws JsonLdError {
 
         initPreviousContext();
 
@@ -108,7 +106,8 @@ public final class ObjectExpansion {
 
         final String inputType = findInputType(typeKey);
 
-        final JsonMapBuilder result = JsonMapBuilder.create();
+//        final JsonMapBuilder result = JsonMapBuilder.create();
+        final Map<String, Object> result = new LinkedHashMap<>();
 
         ObjectExpansion1314
                 .with(activeContext, element, activeProperty, baseUrl)
@@ -122,17 +121,14 @@ public final class ObjectExpansion {
 
         // 15.
         if (result.containsKey(Keywords.VALUE)) {
-
             return normalizeValue(result);
 
             // 16.
         } else if (result.containsKey(Keywords.TYPE)) {
-
             return normalizeType(result);
 
             // 17.
         } else if (result.containsKey(Keywords.LIST) || result.containsKey(Keywords.SET)) {
-
             return normalizeContainer(result);
         }
 
@@ -172,7 +168,7 @@ public final class ObjectExpansion {
             for (final String key : Utils.index(element.keySet(), true)) {
 
                 activeContext.runtime().tick();
-                
+
                 final String expandedKey = activeContext
                         .uriExpansion()
                         .vocab(true)
@@ -207,7 +203,7 @@ public final class ObjectExpansion {
         for (final String key : Utils.index(element.keySet(), true)) {
 
             activeContext.runtime().tick();
-            
+
             final String expandedKey = activeContext
                     .uriExpansion()
                     .vocab(true)
@@ -232,7 +228,7 @@ public final class ObjectExpansion {
             while (terms.hasNext()) {
 
                 activeContext.runtime().tick();
-                
+
                 final String term = terms.next();
 
                 final Optional<JsonValue> localContext = typeContext.getTerm(term).map(TermDefinition::getLocalContext);
@@ -286,12 +282,13 @@ public final class ObjectExpansion {
         return null;
     }
 
-    private JsonValue normalizeValue(final JsonMapBuilder result) throws JsonLdError {
+    private Map<String, ?> normalizeValue(final Map<String, ?> result) throws JsonLdError {
 
         // 15.1.
-        if (result.isNotValueObject()) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
-        }
+////        if (result.isNotValueObject()) {
+//        if (result instanceof )
+//            throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
+////        }
 
         if ((result.containsKey(Keywords.DIRECTION) || result.containsKey(Keywords.LANGUAGE))
                 && result.containsKey(Keywords.TYPE)) {
@@ -300,77 +297,88 @@ public final class ObjectExpansion {
         }
 
         // 15.2.
-        final Optional<JsonValue> type = result.get(Keywords.TYPE);
+        final Optional<?> type = Optional.ofNullable(result.get(Keywords.TYPE));
 
-        if (type.map(t -> !JsonUtils.contains(Keywords.JSON, t)).orElse(true)) {
+        if (type.map(t -> t instanceof Collection<?> c && !c.contains(Keywords.JSON)
+                || t instanceof String s && !s.equals(t)
+//        !JsonUtils.contains(Keywords.JSON, t)
+        ).orElse(true)) {
 
-            final Optional<JsonValue> value = result.get(Keywords.VALUE);
+            final Optional<?> value = Optional.ofNullable(result.get(Keywords.VALUE));
 
             // 15.3.
-            if (value.map(v -> JsonUtils.isNull(v) || (JsonUtils.isArray(v) && v.asJsonArray().isEmpty())).orElse(true)) {
-                return JsonValue.NULL;
+//            if (value.map(v -> JsonUtils.isNull(v) || (JsonUtils.isArray(v) && v.asJsonArray().isEmpty())).orElse(true)) {
+            if (value.map(v -> v instanceof Collection<?> c && c.isEmpty()).orElse(true)) {
+                return null;
+//                return JsonValue.NULL;
 
                 // 15.4
-            } else if (!frameExpansion && JsonUtils.isNotString(value.get()) && result.containsKey(Keywords.LANGUAGE)) {
+//            } else if (!frameExpansion && JsonUtils.isNotString(value.get()) && result.containsKey(Keywords.LANGUAGE)) {
+            } else if (!frameExpansion && !(value.get() instanceof String) && result.containsKey(Keywords.LANGUAGE)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
 
                 // 15.5
             } else if (!frameExpansion
-                    && type.filter(t -> JsonUtils.isNotString(t)
-                            || UriUtils.isNotURI(((JsonString) t).getString()))
+                    && type.filter(t -> !(t instanceof String uri)
+                            || UriUtils.isNotURI(uri))
                             .isPresent()) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE);
             }
         }
 
+//        return normalize(result);
+        return result;
+    }
+
+    private Map<String, ?> normalizeType(final Map<String, Object> result) throws JsonLdError {
+
+        Object type = result.get(Keywords.TYPE);
+
+        if (!(type instanceof Collection)) {
+            result.put(Keywords.TYPE, Set.of(type));
+        }
+//        return result;
+
+//                .ifPresent(value -> result.put(Keywords.TYPE, JsonProvider.instance().createArrayBuilder().add(value).build()));
+
         return normalize(result);
     }
 
-    private JsonValue normalizeType(final JsonMapBuilder result) throws JsonLdError {
-
-        result.get(Keywords.TYPE)
-                .filter(JsonUtils::isNotArray)
-                .filter(JsonUtils::isNotNull)
-                .ifPresent(value -> result.put(Keywords.TYPE, JsonProvider.instance().createArrayBuilder().add(value).build()));
-
-        return normalize(result);
-    }
-
-    private JsonValue normalizeContainer(final JsonMapBuilder result) throws JsonLdError {
+    private Object normalizeContainer(final Map<String, ?> result) throws JsonLdError {
 
         // 17.1.
         if (result.size() > 2 || result.size() == 2 && !result.containsKey(Keywords.INDEX)) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_SET_OR_LIST_OBJECT);
         }
-
+        System.out.println("HIT");
         // 17.2.
-        final Optional<JsonValue> set = result.get(Keywords.SET);
-
-        if (set.filter(JsonUtils::isObject).isPresent()) {
-            // deepcode ignore checkIsPresent~Optional: false positive
-            return normalize(JsonMapBuilder.create(set.map(JsonValue::asJsonObject).get()));
-
-        } else if (set.isPresent()) {
-            return set.get();
-        }
+//        final Optional<JsonValue> set = result.get(Keywords.SET);
+//
+//        if (set.filter(JsonUtils::isObject).isPresent()) {
+//            // deepcode ignore checkIsPresent~Optional: false positive
+//            return normalize(JsonMapBuilder.create(set.map(JsonValue::asJsonObject).get()));
+//
+//        } else if (set.isPresent()) {
+//            return set.get();
+//        }
 
         return normalize(result);
     }
 
-    private JsonValue normalize(final JsonMapBuilder result) throws JsonLdError {
+    private Map<String, ?> normalize(final Map<String, ?> result) throws JsonLdError {
 
         // Extension: JSON-LD-STAR (Experimental)
-        if (result.containsKey(Keywords.ANNOTATION)
-                && (StringUtils.isBlank(activeProperty)
-                        || Keywords.GRAPH.equals(activeProperty)
-                        || Keywords.INCLUDED.equals(activeProperty)
-                        || result.get(Keywords.ANNOTATION).filter(NodeObject::isNotAnnotationObject).isPresent())) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_ANNOTATION);
-        }
+//        if (result.containsKey(Keywords.ANNOTATION)
+//                && (StringUtils.isBlank(activeProperty)
+//                        || Keywords.GRAPH.equals(activeProperty)
+//                        || Keywords.INCLUDED.equals(activeProperty)
+//                        || result.get(Keywords.ANNOTATION).filter(NodeObject::isNotAnnotationObject).isPresent())) {
+//            throw new JsonLdError(JsonLdErrorCode.INVALID_ANNOTATION);
+//        }
 
         // 18.
         if (result.size() == 1 && result.containsKey(Keywords.LANGUAGE)) {
-            return JsonValue.NULL;
+            return null;
         }
 
         // 19.
@@ -381,18 +389,18 @@ public final class ObjectExpansion {
             if (!frameExpansion && result.isEmpty()
                     || result.containsKey(Keywords.VALUE)
                     || result.containsKey(Keywords.LIST)) {
-                return JsonValue.NULL;
+                return null;
             }
 
             // 19.2. if result is a map whose only entry is @id, set result to null. When
             // the frameExpansion flag is set, a map containing only the @id entry is
             // retained.
             if (!frameExpansion && result.size() == 1 && result.containsKey(Keywords.ID)) {
-                return JsonValue.NULL;
+                return null;
             }
 
         }
 
-        return result.build();
+        return result;
     }
 }

@@ -19,11 +19,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import com.apicatalog.jsonld.api.StringUtils;
 
 import jakarta.json.JsonArray;
+import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonString;
@@ -186,6 +188,13 @@ public final class JsonUtils {
                     : JsonProvider.instance().createArrayBuilder().add(value).build()
                     ;
     }
+    
+    public static Collection<?> toSet(Object value) {
+        if (value instanceof Collection<?> collection) {
+            return Set.copyOf(collection);
+        }
+        return Set.of(value);
+    }
 
     public static boolean isBlankString(JsonValue value) {
         return isString(value) && StringUtils.isBlank(((JsonString) value).getString());
@@ -218,4 +227,27 @@ public final class JsonUtils {
 
         return value;
     }
+    
+    public static Object getScalar(JsonValue value) {
+        if (value == null) {
+            return null;
+        }
+        
+        switch (value.getValueType()) {
+        case NULL:
+            return null;
+        case FALSE:
+            return false;
+        case TRUE:
+            return true;
+        case NUMBER:
+            return ((JsonNumber)value).numberValue();
+        case STRING:
+            return ((JsonString)value).getString();
+        default:
+            throw new IllegalStateException();
+        }
+        
+    }
+    
 }

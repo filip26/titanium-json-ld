@@ -1,9 +1,9 @@
 package com.apicatalog.jsonld.deseralization;
 
+import com.apicatalog.jsonld.lang.RdfConstants;
+import com.apicatalog.jsonld.lang.XsdConstants;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
-import com.apicatalog.rdf.lang.RdfConstants;
-import com.apicatalog.rdf.lang.XsdConstants;
 
 class RdfQuadEmitter implements RdfTripleConsumer {
 

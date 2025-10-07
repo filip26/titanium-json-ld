@@ -19,14 +19,17 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
+import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.expansion.JsonLdAdapter;
 import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.jsonld.loader.QuadSetDocument;
@@ -39,6 +42,7 @@ import com.apicatalog.rdf.nquads.NQuadsWriter;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.flow.QuadEmitter;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
+import com.apicatalog.tree.io.JakartaMaterializer;
 import com.google.common.base.Objects;
 
 import jakarta.json.Json;
@@ -149,12 +153,27 @@ public class JsonLdTestRunnerJunit {
             return false;
         }
 
-        if (result instanceof RdfQuadSet) {
-            return validateQuads(testCase, options, (RdfQuadSet) result);
+        if (result instanceof Set<?> set) {
+System.out.println(set);
+            try {
+                return validateJsonLd(
+                        testCase,
+                        options,
+                        (JsonStructure) new JakartaMaterializer().node(set, new JsonLdAdapter()));
+
+            } catch (IOException e) {
+                fail(e);
+            }
         }
-        if (result instanceof JsonStructure) {
-            return validateJsonLd(testCase, options, (JsonStructure) result);
+
+        if (result instanceof RdfQuadSet quads) {
+            return validateQuads(testCase, options, quads);
         }
+        if (result instanceof JsonStructure json) {
+            return validateJsonLd(testCase, options, json);
+        }
+
+        System.out.println("Unexpected result type [" + result.getClass() + "]");
 
         return false;
     }

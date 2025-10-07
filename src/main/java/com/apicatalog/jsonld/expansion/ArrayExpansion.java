@@ -16,18 +16,18 @@
 package com.apicatalog.jsonld.expansion;
 
 import java.net.URI;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.json.JsonProvider;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.ListObject;
 
 import jakarta.json.JsonArray;
-import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonValue;
 
 /**
@@ -83,17 +83,19 @@ public final class ArrayExpansion {
         return this;
     }
 
-    public JsonArray expand() throws JsonLdError {
+    public Collection<?> expand() throws JsonLdError {
 
-        final JsonArrayBuilder result = JsonProvider.instance().createArrayBuilder();
+//        final JsonArrayBuilder result = JsonProvider.instance().createArrayBuilder();
+
+        final Set<Object> result = new LinkedHashSet<>(element.size());
 
         // 5.2.
         for (final JsonValue item : element) {
-            
+
             activeContext.runtime().tick();
 
             // 5.2.1
-            JsonValue expanded = Expansion
+            Object expanded = Expansion
                     .with(activeContext, item, activeProperty, baseUrl)
                     .frameExpansion(frameExpansion)
                     .ordered(ordered)
@@ -101,29 +103,33 @@ public final class ArrayExpansion {
                     .compute();
 
             // 5.2.2
-            if (JsonUtils.isArray(expanded)
+            if (expanded instanceof Collection<?> list
                     && activeContext.getTerm(activeProperty)
                             .map(TermDefinition::getContainerMapping)
                             .filter(c -> c.contains(Keywords.LIST)).isPresent()) {
 
-                expanded = ListObject.toListObject(expanded);
+//                expanded = ListNode.toListNode(expanded);
+                expanded = List.of(list);
             }
 
             // 5.2.3
-            if (JsonUtils.isArray(expanded)) {
-                expanded.asJsonArray()
-                        .stream()
-                        .filter(JsonUtils::isNotNull)
+//            if (JsonUtils.isArray(expanded)) {
+            if (expanded instanceof Set<?> set) {
+
+                set.stream()
+                        .filter(Objects::nonNull)
                         .forEach(result::add);
 
+//                expanded.asJsonArray()
+
                 // append non-null element
-            } else if (JsonUtils.isNotNull(expanded)) {
+            } else if (expanded != null) {
                 result.add(expanded);
             }
 
         }
 
         // 5.3
-        return result.build();
+        return result;
     }
 }

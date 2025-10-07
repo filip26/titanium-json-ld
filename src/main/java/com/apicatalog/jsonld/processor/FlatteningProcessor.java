@@ -28,6 +28,7 @@ import com.apicatalog.jsonld.loader.LoaderOptions;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonStructure;
+import jakarta.json.JsonValue;
 
 /**
  *
@@ -95,7 +96,8 @@ public final class FlatteningProcessor {
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
         expansionOptions.setOrdered(false);
 
-        final JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
+//FIXME        final JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
+        JsonArray expandedInput = JsonValue.EMPTY_JSON_ARRAY;
 
         // 5.
         // 6.

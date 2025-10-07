@@ -28,10 +28,10 @@ import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.ListObject;
-import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.Utils;
-import com.apicatalog.jsonld.lang.ValueObject;
+import com.apicatalog.jsonld.node.ListNode;
+import com.apicatalog.jsonld.node.NodeObject;
+import com.apicatalog.jsonld.node.ValueNode;
 
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
@@ -230,7 +230,7 @@ public final class Framing {
                     }
 
                     // 4.7.3.1.
-                    if (ListObject.isListObject(item)) {
+                    if (ListNode.isListNode(item)) {
 
                             JsonValue listFrameValue = null;
 
@@ -299,7 +299,7 @@ public final class Framing {
                                 .ordered(ordered)
                                 .frame();
 
-                    } else if (ValueObject.isValueObject(item)) {
+                    } else if (ValueNode.isValueObject(item)) {
                         if (Frame.of((JsonStructure)subframe).matchValue(item)) {
                             output.add(property, item);
                         }

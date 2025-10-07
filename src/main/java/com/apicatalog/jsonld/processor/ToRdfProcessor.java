@@ -28,6 +28,7 @@ import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 
 import jakarta.json.JsonArray;
+import jakarta.json.JsonValue;
 
 /**
  *
@@ -64,7 +65,8 @@ public final class ToRdfProcessor {
         expansionOptions.setBase(options.getBase());
         expansionOptions.setExpandContext(options.getExpandContext());
 
-        final JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
+//FIXME        final JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
+        JsonArray expandedInput = JsonValue.EMPTY_JSON_ARRAY;
 
         toRdf(consumer, expandedInput, options);
     }

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+@Deprecated
 public final class Utils {
 
     private Utils() {}

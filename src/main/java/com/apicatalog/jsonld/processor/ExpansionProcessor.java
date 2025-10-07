@@ -16,13 +16,16 @@
 package com.apicatalog.jsonld.processor;
 
 import java.net.URI;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.ActiveContext;
-import com.apicatalog.jsonld.context.ActiveContextBuilder;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.expansion.Expansion;
 import com.apicatalog.jsonld.json.JsonProvider;
@@ -30,14 +33,13 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 
-import jakarta.json.JsonArray;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 
 /**
  *
- * @see <a href="https://www.w3.org/TR/json-ld11-api/#dom-jsonldprocessor-expand">JsonLdProcessor.expand()</a>
+ * @see <a href=
+ *      "https://www.w3.org/TR/json-ld11-api/#dom-jsonldprocessor-expand">JsonLdProcessor.expand()</a>
  *
  */
 public final class ExpansionProcessor {
@@ -45,7 +47,7 @@ public final class ExpansionProcessor {
     ExpansionProcessor() {
     }
 
-    public static final JsonArray expand(final URI input, final JsonLdOptions options) throws JsonLdError {
+    public static final Collection<?> expand(final URI input, final JsonLdOptions options) throws JsonLdError {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
@@ -63,15 +65,15 @@ public final class ExpansionProcessor {
         return expand(remoteDocument, options, false);
     }
 
-    public static final JsonArray expand(Document input, final JsonLdOptions options, boolean frameExpansion) throws JsonLdError {
+    public static final Collection<?> expand(Document input, final JsonLdOptions options, boolean frameExpansion) throws JsonLdError {
 
         if (input == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "RemoteDocument is null.");
         }
 
         final JsonStructure jsonStructure = input
-                                                .getJsonContent()
-                                                .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document is not pased JSON."));
+                .getJsonContent()
+                .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document is not pased JSON."));
 
         // 5. Initialize a new empty active context. The base IRI and
         // original base URL of the active context is set to the documentUrl
@@ -113,66 +115,67 @@ public final class ExpansionProcessor {
         // 7.
         if (input.getContextUrl() != null) {
             activeContext = activeContext
-                                .newContext()
-                                .create(JsonProvider.instance().createValue(input.getContextUrl().toString()), input.getContextUrl());
+                    .newContext()
+                    .create(JsonProvider.instance().createValue(input.getContextUrl().toString()), input.getContextUrl());
         }
 
         // 8.
-        JsonValue expanded = Expansion
-                                .with(activeContext, jsonStructure, null, baseUrl)
-                                .frameExpansion(frameExpansion)
-                                .ordered(options.isOrdered())
-                                .compute();
+        Object expanded = Expansion
+                .with(activeContext, jsonStructure, null, baseUrl)
+                .frameExpansion(frameExpansion)
+                .ordered(options.isOrdered())
+                .compute();
 
         // 8.1
-        if (JsonUtils.isObject(expanded)) {
-
-            final JsonObject object = expanded.asJsonObject();
-
-            if (object.size() == 1 && object.containsKey(Keywords.GRAPH)) {
-                expanded = object.get(Keywords.GRAPH);
-            }
+        if (expanded instanceof Map object
+                && object.size() == 1
+                && object.containsKey(Keywords.GRAPH)) {
+            expanded = object.get(Keywords.GRAPH);
         }
 
         // 8.2
-        if (JsonUtils.isNull(expanded)) {
-            return JsonValue.EMPTY_JSON_ARRAY;
+        if (expanded == null) {
+            return Collections.emptySet();
+        }
+        
+        if (expanded instanceof Set<?> set) {
+            return set;
         }
 
         // 8.3
-        return JsonUtils.toJsonArray(expanded);
+        return Set.of(expanded);
     }
 
     private static final ActiveContext updateContext(final ActiveContext activeContext, final JsonValue expandedContext, final URI baseUrl) throws JsonLdError {
 
-      if (JsonUtils.isArray(expandedContext)) {
+        if (JsonUtils.isArray(expandedContext)) {
 
-          if (expandedContext.asJsonArray().size() == 1) {
+            if (expandedContext.asJsonArray().size() == 1) {
 
-              final JsonValue value = expandedContext.asJsonArray().iterator().next();
+                final JsonValue value = expandedContext.asJsonArray().iterator().next();
 
-              if (JsonUtils.containsKey(value, Keywords.CONTEXT)) {
+                if (JsonUtils.containsKey(value, Keywords.CONTEXT)) {
 
-                  return activeContext
-                          .newContext()
-                              .create(
-                                  value.asJsonObject().get(Keywords.CONTEXT),
-                                  baseUrl);
-              }
-          }
+                    return activeContext
+                            .newContext()
+                            .create(
+                                    value.asJsonObject().get(Keywords.CONTEXT),
+                                    baseUrl);
+                }
+            }
 
-          return activeContext.newContext().create(expandedContext, baseUrl);
+            return activeContext.newContext().create(expandedContext, baseUrl);
 
-      } else if (JsonUtils.containsKey(expandedContext, Keywords.CONTEXT)) {
+        } else if (JsonUtils.containsKey(expandedContext, Keywords.CONTEXT)) {
 
-          return activeContext
-                  .newContext()
-                      .create(
-                          expandedContext.asJsonObject().get(Keywords.CONTEXT),
-                          baseUrl);
+            return activeContext
+                    .newContext()
+                    .create(
+                            expandedContext.asJsonObject().get(Keywords.CONTEXT),
+                            baseUrl);
 
-      }
-      return activeContext.newContext().create(JsonProvider.instance().createArrayBuilder().add(expandedContext).build(), baseUrl);
+        }
+        return activeContext.newContext().create(JsonProvider.instance().createArrayBuilder().add(expandedContext).build(), baseUrl);
     }
 
 }

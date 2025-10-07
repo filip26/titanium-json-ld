@@ -22,6 +22,7 @@ import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.node.Node;
 
 import jakarta.json.JsonValue;
 
@@ -77,11 +78,11 @@ public final class Expansion {
         return this;
     }
 
-    public JsonValue compute() throws JsonLdError {
+    public Object compute() throws JsonLdError {
 
         // 1. If element is null, return null
         if (JsonUtils.isNull(element)) {
-            return JsonValue.NULL;
+            return null;
         }
 
         // 5. If element is an array,

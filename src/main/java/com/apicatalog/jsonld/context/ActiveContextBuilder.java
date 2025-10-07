@@ -30,11 +30,11 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.http.ProfileConstants;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.loader.LoaderOptions;
+import com.apicatalog.jsonld.node.BlankNode;
 import com.apicatalog.jsonld.uri.UriResolver;
 import com.apicatalog.jsonld.uri.UriUtils;
 

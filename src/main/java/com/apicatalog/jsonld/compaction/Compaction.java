@@ -30,11 +30,11 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.lang.GraphObject;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.ListObject;
-import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.Utils;
+import com.apicatalog.jsonld.node.GraphNode;
+import com.apicatalog.jsonld.node.ListNode;
+import com.apicatalog.jsonld.node.NodeObject;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
@@ -184,7 +184,7 @@ public final class Compaction {
         }
 
         // 8.
-        if (ListObject.isListObject(element)
+        if (ListNode.isListNode(element)
                 && activePropertyDefinition.filter(d -> d.hasContainerMapping(Keywords.LIST)).isPresent()) {
 
             return Compaction
@@ -477,10 +477,10 @@ public final class Compaction {
                 // 12.8.6.
                 JsonValue expandedItemValue = expandedItem;
 
-                if (ListObject.isListObject(expandedItem)) {
+                if (ListNode.isListNode(expandedItem)) {
                     expandedItemValue = expandedItem.asJsonObject().get(Keywords.LIST);
 
-                } else if (GraphObject.isGraphObject(expandedItem)) {
+                } else if (GraphNode.isGraphNode(expandedItem)) {
                     expandedItemValue = expandedItem.asJsonObject().get(Keywords.GRAPH);
                 }
 
@@ -491,7 +491,7 @@ public final class Compaction {
                         .compact(itemActiveProperty, expandedItemValue);
 
                 // 12.8.7.
-                if (ListObject.isListObject(expandedItem)) {
+                if (ListNode.isListNode(expandedItem)) {
 
                     // 12.8.7.1.
                     compactedItem = JsonUtils.toJsonArray(compactedItem);
@@ -523,7 +523,7 @@ public final class Compaction {
                     }
 
                     // 12.8.8.
-                } else if (GraphObject.isGraphObject(expandedItem)) {
+                } else if (GraphNode.isGraphNode(expandedItem)) {
 
                     boolean followup = false;
 
@@ -547,7 +547,7 @@ public final class Compaction {
                         // 12.8.8.2.
                     } else if (container.contains(Keywords.GRAPH)
                             && container.contains(Keywords.INDEX)
-                            && GraphObject.isSimpleGraphObject(expandedItem)) {
+                            && GraphNode.isSimpleGraphNode(expandedItem)) {
 
                         // 12.8.8.2.2.
                         final String mapKey = expandedItem.asJsonObject().containsKey(Keywords.INDEX)
@@ -559,7 +559,7 @@ public final class Compaction {
 
                         // 12.8.8.3.
                     } else if (container.contains(Keywords.GRAPH)
-                            && GraphObject.isSimpleGraphObject(expandedItem)) {
+                            && GraphNode.isSimpleGraphNode(expandedItem)) {
 
                         // 12.8.8.3.1.
                         if (JsonUtils.isArray(compactedItem) && compactedItem.asJsonArray().size() > 1) {

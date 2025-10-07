@@ -51,14 +51,12 @@
         <argLine>-Dfile.encoding=UTF-8</argLine>
         
         <maven.compiler.release>17</maven.compiler.release>
-        <maven.compiler.target>17</maven.compiler.target>
-        <maven.compiler.source>17</maven.compiler.source>
         
         <titanium.rdf.api.version>1.0.0</titanium.rdf.api.version>
         <titanium.rdf.nquads.version>1.0.2</titanium.rdf.nquads.version>        
 
         <jcs.version>2.0.0</jcs.version>
-        <tree-io.version>0.8.0</tree-io.version>
+        <tree-io.version>0.10.0-SNAPSHOT</tree-io.version>
         <jakarta.json.version>2.0.1</jakarta.json.version>
 
         <!-- test resources -->

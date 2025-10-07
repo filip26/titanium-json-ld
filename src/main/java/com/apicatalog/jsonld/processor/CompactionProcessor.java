@@ -98,8 +98,9 @@ public final class CompactionProcessor {
         expansionOptions.setOrdered(false);
         expansionOptions.setExtractAllScripts(false);
 
-        JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
-
+        //FIXME JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
+        JsonArray expandedInput = JsonValue.EMPTY_JSON_ARRAY;
+        
         // 5.
         URI contextBase = input.getDocumentUrl();
 

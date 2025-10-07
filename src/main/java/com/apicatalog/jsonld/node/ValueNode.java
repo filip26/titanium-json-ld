@@ -13,18 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.lang;
+package com.apicatalog.jsonld.node;
 
 import java.util.Optional;
 
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.DirectionType;
+import com.apicatalog.jsonld.lang.Keywords;
 
 import jakarta.json.JsonValue;
 
-public final class ValueObject {
-
-    private ValueObject() {
-    }
+public record ValueNode(
+        String type, 
+        Object value, 
+        String language, 
+        DirectionType direction) implements SimpleNode {
 
     public static final boolean isValueObject(JsonValue value) {
         return JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.VALUE);
@@ -32,8 +35,8 @@ public final class ValueObject {
 
     public static Optional<JsonValue> getValue(JsonValue value) {
         return isValueObject(value)
-                    ? Optional.ofNullable(value.asJsonObject().get(Keywords.VALUE))
-                    : Optional.empty();
+                ? Optional.ofNullable(value.asJsonObject().get(Keywords.VALUE))
+                : Optional.empty();
     }
 
 }

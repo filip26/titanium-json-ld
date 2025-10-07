@@ -40,9 +40,9 @@ import com.apicatalog.jsonld.framing.FramingState;
 import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoaderOptions;
+import com.apicatalog.jsonld.node.BlankNode;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
@@ -114,10 +114,13 @@ public final class FramingProcessor {
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
         expansionOptions.setOrdered(false);
 
-        JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
+//FIXME        JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
+        JsonArray expandedInput = JsonValue.EMPTY_JSON_ARRAY;
 
         // 7.
-        JsonArray expandedFrame = ExpansionProcessor.expand(frame, expansionOptions, true);
+//FIXME        JsonArray expandedFrame = ExpansionProcessor.expand(frame, expansionOptions, true);
+        JsonArray expandedFrame = JsonValue.EMPTY_JSON_ARRAY;
+
 
         JsonValue context = JsonValue.EMPTY_JSON_OBJECT;
 

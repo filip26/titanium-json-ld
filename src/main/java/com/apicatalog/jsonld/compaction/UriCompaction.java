@@ -28,12 +28,12 @@ import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.InverseContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.lang.BlankNode;
-import com.apicatalog.jsonld.lang.GraphObject;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.ListObject;
-import com.apicatalog.jsonld.lang.NodeObject;
-import com.apicatalog.jsonld.lang.ValueObject;
+import com.apicatalog.jsonld.node.BlankNode;
+import com.apicatalog.jsonld.node.GraphNode;
+import com.apicatalog.jsonld.node.ListNode;
+import com.apicatalog.jsonld.node.NodeObject;
+import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriRelativizer;
 
 import jakarta.json.JsonArray;
@@ -135,7 +135,7 @@ public final class UriCompaction {
             String typeLanguageValue = Keywords.NULL;
 
             // 4.5.
-            if (JsonUtils.containsKey(value, Keywords.INDEX) && !GraphObject.isGraphObject(value)) {
+            if (JsonUtils.containsKey(value, Keywords.INDEX) && !GraphNode.isGraphNode(value)) {
 
                 containers.add(Keywords.INDEX);
                 containers.add(Keywords.INDEX.concat(Keywords.SET));
@@ -150,7 +150,7 @@ public final class UriCompaction {
                 containers.add(Keywords.SET);
 
                 // 4.7.
-            } else if (ListObject.isListObject(value)) {
+            } else if (ListNode.isListNode(value)) {
 
                 // 4.7.1.
                 if (!value.asJsonObject().containsKey(Keywords.INDEX)) {
@@ -252,7 +252,7 @@ public final class UriCompaction {
                 }
 
                 // 4.8.
-            } else if (GraphObject.isGraphObject(value)) {
+            } else if (GraphNode.isGraphNode(value)) {
 
                 // 4.8.1.
                 if (value.asJsonObject().containsKey(Keywords.INDEX)) {
@@ -295,7 +295,7 @@ public final class UriCompaction {
             } else {
 
                 // 4.9.1.
-                if (ValueObject.isValueObject(value)) {
+                if (ValueNode.isValueObject(value)) {
 
                     // 4.9.1.1.
                     if (JsonUtils.contains(Keywords.DIRECTION, value)
@@ -437,7 +437,7 @@ public final class UriCompaction {
                 preferredValues.add(typeLanguageValue);
                 preferredValues.add(Keywords.NONE);
 
-                if (ListObject.isListObject(value)
+                if (ListNode.isListNode(value)
                         && JsonUtils.isEmptyArray(value.asJsonObject().get(Keywords.LIST))) {
 
                     typeLanguage = Keywords.ANY;

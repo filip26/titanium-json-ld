@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.lang;
+package com.apicatalog.jsonld.node;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -21,6 +21,7 @@ import java.util.Set;
 
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.Keywords;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
@@ -30,12 +31,12 @@ import jakarta.json.JsonValue;
  * @see <a href="https://www.w3.org/TR/json-ld11/#graph-objects">Graph Objects</a>
  *
  */
-public final class GraphObject {
+public final class GraphNode {
 
-    private GraphObject() {
+    private GraphNode() {
     }
 
-    public static final boolean isGraphObject(JsonValue value) {
+    public static final boolean isGraphNode(JsonValue value) {
         if (!JsonUtils.isObject(value) || !value.asJsonObject().containsKey(Keywords.GRAPH)) {
             return false;
         }
@@ -44,9 +45,9 @@ public final class GraphObject {
         return allowed.containsAll(value.asJsonObject().keySet());
     }
 
-    public static final boolean isSimpleGraphObject(JsonValue value) {
+    public static final boolean isSimpleGraphNode(JsonValue value) {
 
-        return isGraphObject(value) && !value.asJsonObject().containsKey(Keywords.ID);
+        return isGraphNode(value) && !value.asJsonObject().containsKey(Keywords.ID);
     }
 
     public static final JsonObject toGraphObject(JsonValue value) {

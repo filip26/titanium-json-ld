@@ -26,10 +26,10 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.Utils;
+import com.apicatalog.jsonld.node.BlankNode;
+import com.apicatalog.jsonld.node.NodeObject;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;

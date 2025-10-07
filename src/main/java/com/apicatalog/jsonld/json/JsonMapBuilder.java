@@ -29,6 +29,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
 
+@Deprecated
 public final class JsonMapBuilder {
 
     private static final Collection<String> VALUE_KEYWORDS = Arrays.asList(

@@ -24,11 +24,11 @@ import com.apicatalog.jsonld.JsonLdEmbed;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.lang.DefaultObject;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.ListObject;
-import com.apicatalog.jsonld.lang.NodeObject;
-import com.apicatalog.jsonld.lang.ValueObject;
+import com.apicatalog.jsonld.node.DefaultObject;
+import com.apicatalog.jsonld.node.ListNode;
+import com.apicatalog.jsonld.node.NodeObject;
+import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 
@@ -94,8 +94,8 @@ public final class Frame {
                 return defaultValue;
             }
 
-            if (ValueObject.isValueObject(embed)) {
-                embed = ValueObject.getValue(embed).orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE));
+            if (ValueNode.isValueObject(embed)) {
+                embed = ValueNode.getValue(embed).orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE));
             }
 
             if (JsonUtils.isString(embed)) {
@@ -139,8 +139,8 @@ public final class Frame {
                 return defaultValue;
             }
 
-            if (ValueObject.isValueObject(value)) {
-                value = ValueObject.getValue(value).orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_FRAME));
+            if (ValueNode.isValueObject(value)) {
+                value = ValueNode.getValue(value).orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_FRAME));
             }
 
             if (JsonUtils.isString(value)) {
@@ -244,7 +244,7 @@ public final class Frame {
     }
 
     public boolean isValuePattern() {
-        return ValueObject.isValueObject(frameObject);
+        return ValueNode.isValueObject(frameObject);
     }
 
     public boolean matchValue(JsonValue value) {
@@ -283,6 +283,6 @@ public final class Frame {
     }
 
     public boolean isListObject() {
-        return ListObject.isListObject(frameObject);
+        return ListNode.isListNode(frameObject);
     }
 }

@@ -15,6 +15,8 @@
  */
 package com.apicatalog.jsonld.expansion;
 
+import java.util.Map;
+
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
@@ -51,14 +53,15 @@ public final class ScalarExpansion {
         return new ScalarExpansion(activeContext, propertyContext, element, activeProperty);
     }
 
-    public JsonValue expand() throws JsonLdError {
+    public Map<String, ?> expand() throws JsonLdError {
 
         /*
          * 4.1. If active property is null or @graph, drop the free-floating scalar by
          * returning null.
          */
         if (activeProperty == null || Keywords.GRAPH.equals(activeProperty)) {
-            return JsonValue.NULL;
+            return null;
+//            return JsonValue.NULL;
         }
 
         /*

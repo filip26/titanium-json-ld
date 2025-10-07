@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.lang;
+package com.apicatalog.jsonld.node;
 
 import java.util.Arrays;
 import java.util.Map.Entry;
 
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.uri.UriUtils;
 
 import jakarta.json.JsonObject;
@@ -94,8 +95,8 @@ public final class NodeObject {
                     propertyValue = propertyValue.asJsonArray().get(0);
                 }
 
-                if (ValueObject.isValueObject(propertyValue)) {
-                    propertyValue = ValueObject.getValue(propertyValue).orElse(null);
+                if (ValueNode.isValueObject(propertyValue)) {
+                    propertyValue = ValueNode.getValue(propertyValue).orElse(null);
                 }
 
                 if (JsonUtils.isString(propertyValue)
