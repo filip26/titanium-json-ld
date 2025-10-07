@@ -7,14 +7,44 @@
     <version>2.0.0-SNAPSHOT</version>
     <artifactId>titanium-json-ld</artifactId>
     <packaging>jar</packaging>
+
     <name>Titanium JSON-LD 1.1</name>
+    <description>A JSON-LD 1.1 Processor &amp; API</description>
     <url>https://github.com/filip26/titanium-json-ld</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
     <scm>
         <connection>scm:git:git://github.com/filip26/titanium-json-ld.git</connection>
-        <developerConnection>
-            scm:git:git://github.com/filip26/titanium-json-ld.git</developerConnection>
+        <developerConnection>scm:git:git://github.com/filip26/titanium-json-ld.git</developerConnection>
         <url>https://github.com/filip26/titanium-json-ld/tree/main</url>
     </scm>
+
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/filip26/titanium-json-ld/issues</url>
+    </issueManagement>
+
+    <developers>
+        <developer>
+            <id>filip26</id>
+            <name>Filip Kolarik</name>
+            <email>filip26@gmail.com</email>
+            <url>https://www.linkedin.com/in/filipkolarik/</url>      
+            <roles>
+                <role>author</role>
+                <role>maintainer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <inceptionYear>2020</inceptionYear>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -39,6 +69,7 @@
         <sonar.organization>apicatalog</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>        
     </properties>
+
     <dependencies>
         <dependency>
           <groupId>com.apicatalog</groupId>
@@ -104,95 +135,96 @@
           <scope>test</scope>
         </dependency>        
     </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>3.3.1</version>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.12.0</version>
-        <configuration>
-          <doclint>all,-missing</doclint>
-          <failOnWarnings>false</failOnWarnings>
-          <failOnError>false</failOnError>          
-        </configuration>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.13</version>
-        <executions>
-          <execution>
-            <id>default-prepare-agent</id>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>report</id>
-            <phase>test</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
-  <profiles>
-    <profile>
-      <id>maven-central</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <build>
+    <build>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
-            <version>3.2.8</version>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.3.1</version>
             <executions>
               <execution>
-                <id>sign-artifacts</id>
-                <phase>verify</phase>
+                <id>attach-sources</id>
                 <goals>
-                  <goal>sign</goal>
+                  <goal>jar-no-fork</goal>
                 </goals>
               </execution>
             </executions>
           </plugin>
           <plugin>
-            <groupId>org.sonatype.central</groupId>
-            <artifactId>central-publishing-maven-plugin</artifactId>
-            <version>0.9.0</version>
-            <extensions>true</extensions>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.12.0</version>
             <configuration>
-              <publishingServerId>central</publishingServerId>
-              <autoPublish>true</autoPublish>
+              <doclint>all,-missing</doclint>
+              <failOnWarnings>false</failOnWarnings>
+              <failOnError>false</failOnError>          
             </configuration>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.8.13</version>
+            <executions>
+              <execution>
+                <id>default-prepare-agent</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>report</id>
+                <phase>test</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
-      </build>
-    </profile>
-  </profiles>    
+    </build>
+    
+    <profiles>
+        <profile>
+          <id>maven-central</id>
+          <activation>
+            <activeByDefault>false</activeByDefault>
+          </activation>
+          <build>
+            <plugins>
+              <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.2.8</version>
+                <executions>
+                  <execution>
+                    <id>sign-artifacts</id>
+                    <phase>verify</phase>
+                    <goals>
+                      <goal>sign</goal>
+                    </goals>
+                  </execution>
+                </executions>
+              </plugin>
+              <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.9.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                  <publishingServerId>central</publishingServerId>
+                  <autoPublish>true</autoPublish>
+                </configuration>
+              </plugin>
+            </plugins>
+          </build>
+        </profile>
+    </profiles>    
 </project>
