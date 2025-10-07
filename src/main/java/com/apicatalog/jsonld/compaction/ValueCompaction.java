@@ -63,7 +63,7 @@ public final class ValueCompaction {
         final Optional<TermDefinition> activePropertyDefinition = activeContext.getTerm(activeProperty);
 
         // 4. - 5.
-        JsonValue language = null;
+        String language = null;
         DirectionType direction = null;
 
         if (activePropertyDefinition.isPresent()) {
@@ -73,7 +73,7 @@ public final class ValueCompaction {
 
         if (language == null) {
             language = activeContext.getDefaultLanguage() != null
-                            ? JsonProvider.instance().createValue(activeContext.getDefaultLanguage())
+                            ? activeContext.getDefaultLanguage()
                             : null;
         }
 
@@ -163,10 +163,10 @@ public final class ValueCompaction {
         // 10.
         } else if ((((value.containsKey(Keywords.LANGUAGE)
                                 && JsonUtils.isString(value.get(Keywords.LANGUAGE))
-                                && JsonUtils.isString(language)
-                                && (((JsonString)language).getString().equalsIgnoreCase(value.getString(Keywords.LANGUAGE)))
+                                && language != null
+                                && (language.equalsIgnoreCase(value.getString(Keywords.LANGUAGE)))
                                 )
-                        || (JsonUtils.isNull(language)
+                        || (language == null
                                 && (!value.containsKey(Keywords.LANGUAGE) || JsonUtils.isNull(value.get(Keywords.LANGUAGE))))
                         )
                         && ((direction != null && direction != DirectionType.NULL

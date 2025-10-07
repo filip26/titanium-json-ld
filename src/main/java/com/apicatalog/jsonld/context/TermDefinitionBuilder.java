@@ -563,17 +563,31 @@ public final class TermDefinitionBuilder {
             // 22.1. - 2.
             final JsonValue language = valueObject.get(Keywords.LANGUAGE);
 
-            if (JsonUtils.isNull(language) || JsonUtils.isString(language)) {
-
-                if (JsonUtils.isString(language) && !LanguageTag.isWellFormed(((JsonString) language).getString())) {
-                    LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", ((JsonString) language).getString());
+            if (JsonUtils.isNull(language)) {
+                definition.setLanguageMapping(null);
+                
+            } else if (language instanceof JsonString jsonString) {
+                if (!LanguageTag.isWellFormed(jsonString.getString())) {
+                    LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", jsonString.getString());
                 }
 
-                definition.setLanguageMapping(language);
+                definition.setLanguageMapping(jsonString.getString());
 
             } else {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_MAPPING);
             }
+
+//            if (JsonUtils.isNull(language) || JsonUtils.isString(language)) {
+//
+//                if (JsonUtils.isString(language) && !LanguageTag.isWellFormed(((JsonString) language).getString())) {
+//                    LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", ((JsonString) language).getString());
+//                }
+//
+//                definition.setLanguageMapping(language);
+//
+//            } else {
+//                throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_MAPPING);
+//            }
         }
 
         // 23.

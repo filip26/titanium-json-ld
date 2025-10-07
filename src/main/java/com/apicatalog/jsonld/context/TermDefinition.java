@@ -51,7 +51,7 @@ public final class TermDefinition {
 
     private DirectionType directionMapping;
 
-    private JsonValue languageMapping;
+    private String languageMapping;
 
     public TermDefinition(boolean prefixFlag, boolean protectedFlag, boolean reversePropertyFlag) {
         this.prefixFlag = prefixFlag;
@@ -76,7 +76,7 @@ public final class TermDefinition {
         this.uriMapping = uriMapping;
     }
 
-    public JsonValue getLanguageMapping() {
+    public String getLanguageMapping() {
         return languageMapping;
     }
 
@@ -96,7 +96,7 @@ public final class TermDefinition {
         return !prefixFlag;
     }
 
-    protected void setLanguageMapping(JsonValue languageMapping) {
+    protected void setLanguageMapping(String languageMapping) {
         this.languageMapping = languageMapping;
     }
 

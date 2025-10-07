@@ -15,6 +15,10 @@
  */
 package com.apicatalog.jsonld.node;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -28,9 +32,9 @@ public final class ListNode {
     }
 
     /**
-     * A list object is a map that has a @list key. It may also have
-     * an @index key, but no other entries. See the Lists and Sets section of
-     * JSON-LD 1.1 for a normative description.
+     * A list object is a map that has a @list key. It may also have an @index key,
+     * but no other entries. See the Lists and Sets section of JSON-LD 1.1 for a
+     * normative description.
      *
      * @see <a href="https://www.w3.org/TR/json-ld11/#dfn-list-object">List
      *      Object</a>
@@ -40,11 +44,19 @@ public final class ListNode {
      */
     public static final boolean isListNode(JsonValue value) {
         return JsonUtils.containsKey(value, Keywords.LIST)
-                    && (value.asJsonObject().size() == 1
-                            || (value.asJsonObject().size() == 2
-                                    && value.asJsonObject().containsKey(Keywords.INDEX)
-                                    )
-                            );
+                && (value.asJsonObject().size() == 1
+                        || (value.asJsonObject().size() == 2
+                                && value.asJsonObject().containsKey(Keywords.INDEX)));
+    }
+
+    public static final boolean isList(Object value) {
+        if (value instanceof Map map) {
+            return map.containsKey(Keywords.LIST)
+                    && (map.size() == 1
+                            || map.size() == 2
+                                    && map.containsKey(Keywords.INDEX));
+        }
+        return false;
     }
 
     /**
@@ -61,6 +73,12 @@ public final class ListNode {
         }
 
         return JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, JsonProvider.instance().createArrayBuilder().add(value)).build();
-
+    }
+    
+    public static final Map<String, ?> toList(Object value) {
+        if (value instanceof Collection) {
+            return Map.of(Keywords.LIST, value);
+        }
+        return Map.of(Keywords.LIST, Set.of(value));
     }
 }

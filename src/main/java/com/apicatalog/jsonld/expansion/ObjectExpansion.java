@@ -27,6 +27,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Utils;
@@ -300,7 +301,7 @@ public final class ObjectExpansion {
         final Optional<?> type = Optional.ofNullable(result.get(Keywords.TYPE));
 
         if (type.map(t -> t instanceof Collection<?> c && !c.contains(Keywords.JSON)
-                || t instanceof String s && !s.equals(t)
+                || t instanceof String s && !s.equals(Keywords.JSON)
 //        !JsonUtils.contains(Keywords.JSON, t)
         ).orElse(true)) {
 
@@ -350,8 +351,19 @@ public final class ObjectExpansion {
         if (result.size() > 2 || result.size() == 2 && !result.containsKey(Keywords.INDEX)) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_SET_OR_LIST_OBJECT);
         }
-        System.out.println("HIT");
+
         // 17.2.
+        var set = result.get(Keywords.SET);
+        
+        if (set instanceof Map map) {
+          // deepcode ignore checkIsPresent~Optional: false positive
+            return normalize(map);
+//            return normalize(JsonMapBuilder.create(set.map(JsonValue::asJsonObject).get()));
+            
+        } else if (set != null) {
+            return set;
+        }
+        
 //        final Optional<JsonValue> set = result.get(Keywords.SET);
 //
 //        if (set.filter(JsonUtils::isObject).isPresent()) {

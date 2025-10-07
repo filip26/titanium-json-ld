@@ -19,12 +19,8 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
-
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
 
 /**
  *
@@ -115,7 +111,7 @@ public final class InverseContextBuilder {
             return;
         }
 
-        final Optional<JsonValue> languageMapping = activeContext
+        final Optional<String> languageMapping = activeContext
                 .getTerm(termName)
                 .map(TermDefinition::getLanguageMapping);
 
@@ -128,7 +124,7 @@ public final class InverseContextBuilder {
             // 3.13.1.
             final String langDir;
 
-            final JsonValue language = languageMapping.get();
+            final String language = languageMapping.get();
 
             // 3.13.
             if (directionMapping.isPresent()) {
@@ -136,17 +132,17 @@ public final class InverseContextBuilder {
                 final DirectionType direction = directionMapping.get();
 
                 // 3.13.2.
-                if (JsonUtils.isString(language)) {
+                if (language != null) {
 
                     if (direction != DirectionType.NULL) {
 
-                        langDir = ((JsonString) language).getString()
+                        langDir = language
                                 .concat("_")
                                 .concat(direction.name())
                                 .toLowerCase();
                         // 3.13.3.
                     } else {
-                        langDir = ((JsonString) language).getString().toLowerCase();
+                        langDir = language.toLowerCase();
                     }
 
                     // 3.13.4.
@@ -159,8 +155,8 @@ public final class InverseContextBuilder {
                 }
 
             } else {
-                langDir = JsonUtils.isString(language)
-                        ? ((JsonString) language).getString().toLowerCase()
+                langDir = language != null
+                        ? language.toLowerCase()
                         : Keywords.NULL;
             }
 

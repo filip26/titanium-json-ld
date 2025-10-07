@@ -18,11 +18,12 @@ package com.apicatalog.jsonld.expansion;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
@@ -260,15 +261,19 @@ final class ObjectExpansion1314 {
 
                     } else if (JsonUtils.isObject(value)) {
 
-                        expandedValue = JsonProvider.instance().createArrayBuilder().add(JsonValue.EMPTY_JSON_OBJECT).build();
+                        expandedValue = Set.of(Collections.emptyMap());
+//                        expandedValue = JsonProvider.instance().createArrayBuilder().add(JsonValue.EMPTY_JSON_OBJECT).build();
 
                     } else if (JsonUtils.isEmptyArray(value)) {
 
-                        expandedValue = JsonValue.EMPTY_JSON_ARRAY;
+                        expandedValue = Collections.emptySet();
+//                        expandedValue = JsonValue.EMPTY_JSON_ARRAY;
 
                     } else if (JsonUtils.isArray(value)) {
 
-                        final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
+//                        final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
+
+                        var array = new HashSet<>(value.asJsonArray().size());
 
                         for (final JsonValue item : JsonUtils.toCollection(value)) {
 
@@ -283,7 +288,7 @@ final class ObjectExpansion1314 {
                             }
                         }
 
-                        expandedValue = array.build();
+                        expandedValue = array;
                     }
                 }
 
@@ -349,24 +354,27 @@ final class ObjectExpansion1314 {
 
                         } else if (JsonUtils.isArray(value)) {
 
-                            final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
+//                            final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
+
+                            var array = new HashSet<>(value.asJsonArray().size());
 
                             for (final JsonValue item : value.asJsonArray()) {
 
-                                if (JsonUtils.isString(item)) {
+                                if (item instanceof JsonString jsonString) {
 
                                     final String expandedStringValue = typeContext
                                             .uriExpansion()
                                             .vocab(true)
                                             .documentRelative(true)
-                                            .expand(((JsonString) item).getString());
+                                            .expand(jsonString.getString());
 
                                     if (expandedStringValue != null) {
-                                        array.add(JsonProvider.instance().createValue(expandedStringValue));
+                                        array.add(expandedStringValue);
+//                                        array.add(JsonProvider.instance().createValue(expandedStringValue));
                                     }
                                 }
                             }
-                            expandedValue = array.build();
+                            expandedValue = array;
                         }
                     }
 
@@ -508,7 +516,8 @@ final class ObjectExpansion1314 {
 
                     // 13.4.7.4
                     if (expandedValue == null) {
-                        result.put(Keywords.VALUE, JsonValue.NULL);
+                        result.put(Keywords.VALUE, null);
+//                        result.put(Keywords.VALUE, JsonValue.NULL);
                         continue;
                     }
                 }
@@ -530,11 +539,11 @@ final class ObjectExpansion1314 {
 
                         if (value instanceof JsonString jsonString) {
                             expandedValue = jsonString.getString().toLowerCase();
-                            
+
                         } else {
                             expandedValue = JsonUtils.getScalar(value);
                         }
-                        
+
                         // 13.4.8.2
 //                        expandedValue = JsonUtils.isString(value) 
 //                                ? JsonProvider.instance().createValue(((JsonString) value).getString().toLowerCase())
@@ -604,8 +613,8 @@ final class ObjectExpansion1314 {
                             .ordered(ordered)
                             .compute();
 
-                    if (!(expandedValue instanceof Set)) {
-                        expandedValue = Set.of(expandedValue);
+                    if (!(expandedValue instanceof Collection<?>)) {
+                        expandedValue = List.of(expandedValue);
                     }
 
 //                    if (JsonUtils.isNotArray(expandedValue)) {
@@ -785,6 +794,7 @@ final class ObjectExpansion1314 {
                     // 13.7.4.1.
                     if (JsonUtils.isNotArray(langValue)) {
                         langValue = JsonProvider.instance().createArrayBuilder().add(langValue).build();
+//                        langValue =langValue).build();
                     }
 
                     // 13.7.4.2.
@@ -801,7 +811,12 @@ final class ObjectExpansion1314 {
                         }
 
                         // 13.7.4.2.3.
-                        final JsonObjectBuilder langMap = JsonProvider.instance().createObjectBuilder().add(Keywords.VALUE, item);
+//                        final JsonObjectBuilder langMap = JsonProvider.instance()
+//                                .createObjectBuilder()
+//                                .add(Keywords.VALUE, item);
+
+                        final Map<String, Object> langMap = new HashMap<>();
+                        langMap.put(Keywords.VALUE, ((JsonString)item).getString());
 
                         // 13.7.4.2.4.
                         if (!Keywords.NONE.equals(langCode)) {
@@ -817,13 +832,13 @@ final class ObjectExpansion1314 {
                                     LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", langCode);
                                 }
 
-                                langMap.add(Keywords.LANGUAGE, JsonProvider.instance().createValue(langCode.toLowerCase()));
+                                langMap.put(Keywords.LANGUAGE, langCode.toLowerCase());
                             }
                         }
 
                         // 13.7.4.2.5.
                         if (direction != null && !DirectionType.NULL.equals(direction)) {
-                            langMap.add(Keywords.DIRECTION, JsonProvider.instance().createValue(direction.name().toLowerCase()));
+                            langMap.put(Keywords.DIRECTION, direction.name().toLowerCase());
                         }
 
                         // 13.7.4.2.6.
@@ -1007,10 +1022,10 @@ final class ObjectExpansion1314 {
 
             // 13.11.
             // FIXME
-//            if (containerMapping.contains(Keywords.LIST) && !ListNode.isListNode(expandedValue)) {
-////                expandedValue = ListNode.toListNode(expandedValue);
+            if (containerMapping.contains(Keywords.LIST) && !ListNode.isList(expandedValue)) {
+                expandedValue = ListNode.toList(expandedValue);
 //                expandedValue = List.copyOf((Set<?>)expandedValue);
-//            }
+            }
 
             // 13.12.
             if (containerMapping.contains(Keywords.GRAPH)
@@ -1050,7 +1065,7 @@ final class ObjectExpansion1314 {
                 System.out.println("2 > " + expandedProperty.getClass().getSimpleName() + " -> " + expandedValue.getClass().getSimpleName());
                 System.out.println("2 > " + expandedProperty + " -> " + expandedValue);
 
-                result.put(expandedProperty, expandedValue);
+                JsonMapBuilder.merge(result, expandedProperty, expandedValue);
 //                result.add(expandedProperty, expandedValue);
             }
         }

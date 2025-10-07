@@ -53,7 +53,7 @@ public final class ValueExpansion {
     }
 
     public Map<String, ?> expand(final JsonValue value, final String activeProperty) throws JsonLdError {
-
+        System.out.println(">>>>>>>>>>>>>>>> " + value + ", " + activeProperty);
         definition = activeContext.getTerm(activeProperty);
 
         final Optional<String> typeMapping = definition.map(TermDefinition::getTypeMapping);
@@ -68,7 +68,7 @@ public final class ValueExpansion {
                     idValue = jsonString.getString();
 
                     // custom extension allowing to process numeric ids
-                } else if (activeContext.runtime().isNumericId() 
+                } else if (activeContext.runtime().isNumericId()
                         && value instanceof JsonNumber jsonNumber) {
                     idValue = jsonNumber.toString();
                 }
@@ -78,7 +78,8 @@ public final class ValueExpansion {
                             .vocab(false).expand(idValue);
 
                     return Map.of(Keywords.ID, expandedValue);
-                    //return JsonProvider.instance().createObjectBuilder().add(Keywords.ID, expandedValue).build();
+                    // return JsonProvider.instance().createObjectBuilder().add(Keywords.ID,
+                    // expandedValue).build();
                 }
 
                 // 2.
@@ -95,30 +96,31 @@ public final class ValueExpansion {
         // 3.
 //        final JsonObjectBuilder result = JsonProvider.instance().createObjectBuilder().add(Keywords.VALUE, value);
 
-        
         // 4.
         if (typeMapping
                 .filter(t -> !Keywords.ID.equals(t) && !Keywords.VOCAB.equals(t) && !Keywords.NONE.equals(t))
                 .isPresent()) {
 
 //            result.add(Keywords.TYPE, typeMapping.get());
-            return Map.of(Keywords.TYPE, typeMapping.get());
+            return Map.of(Keywords.TYPE, typeMapping.get(),
+                    Keywords.VALUE, JsonUtils.getScalar(value));
 //            return new ValueNode(typeMapping.get(), value, null, null);
 
             // 5.
         }
 
         if (value instanceof JsonString jsonString) {
-            
+
             // 5.1.
             final String language = definition
                     .map(TermDefinition::getLanguageMapping)
-                    .map(JsonString.class::cast)
-                    .map(JsonString::getString)
+//                    .filter(JsonUtils::isString)
+//?                    .filter(JsonUtils::isNotNull)
+//                    .map(JsonString.class::cast)
+//                    .map(JsonString::getString)
                     .orElseGet(() -> activeContext.getDefaultLanguage() != null
-                                ? activeContext.getDefaultLanguage()
-                                : null
-                            );
+                            ? activeContext.getDefaultLanguage()
+                            : null);
 
             // 5.2.
             final DirectionType direction = definition
@@ -127,13 +129,12 @@ public final class ValueExpansion {
 
             var map = new HashMap<String, Object>(3);
             map.put(Keywords.VALUE, jsonString.getString());
-            
-//            if (direction != null && DirectionType.NULL == direction) {
-//                direction = null;
-//            }
-            
+
             // 5.3.
             if (language != null) {
+                System.out.println("X XXXXXXXXXXXXX   " + language + " > " + activeContext.getDefaultLanguage());
+                System.out.println(definition
+                    .map(TermDefinition::getLanguageMapping).orElse(null));
                 map.put(Keywords.LANGUAGE, language);
             }
 
@@ -142,13 +143,10 @@ public final class ValueExpansion {
                 map.put(Keywords.DIRECTION, direction.name().toLowerCase());
             }
             return map;
-//            return Map.of(Keywords.VALUE, value, Keywords.LANGUAGE, language, Keywords.DIRECTION, null);
-//            return new ValueNode(null, value, language, direction);
         }
-//System.out.println(">>>>>>>>>>>> " + value + ", " + value.getClass().getSimpleName());
+
         // 6.
         return Map.of(Keywords.VALUE, JsonUtils.getScalar(value));
-//        return new ValueNode(null, value, null, null);
     }
 
 }
