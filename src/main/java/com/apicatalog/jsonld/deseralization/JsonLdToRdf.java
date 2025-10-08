@@ -202,7 +202,7 @@ public final class JsonLdToRdf {
         }
 
         // 3.
-        if (ListNode.isListNode(item)) {
+        if (ListNode.isListObject(item)) {
             fromList(consumer, item.get(Keywords.LIST).asJsonArray(), subject, predicate);
         }
 

@@ -283,6 +283,6 @@ public final class Frame {
     }
 
     public boolean isListObject() {
-        return ListNode.isListNode(frameObject);
+        return ListNode.isListObject(frameObject);
     }
 }

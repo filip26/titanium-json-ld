@@ -15,19 +15,15 @@
  */
 package com.apicatalog.jsonld.node;
 
+import java.util.Map;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
 
 import jakarta.json.JsonValue;
 
-public record ValueNode(
-        String type, 
-        Object value, 
-        String language, 
-        DirectionType direction) implements SimpleNode {
+public final class ValueNode {
 
     public static final boolean isValueObject(JsonValue value) {
         return JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.VALUE);
@@ -37,6 +33,11 @@ public record ValueNode(
         return isValueObject(value)
                 ? Optional.ofNullable(value.asJsonObject().get(Keywords.VALUE))
                 : Optional.empty();
+    }
+
+    public static final boolean isValueNode(Object value) {
+        return value instanceof Map map 
+                && map.containsKey(Keywords.VALUE);
     }
 
 }

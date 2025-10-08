@@ -45,13 +45,13 @@ import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.node.DefaultObject;
 import com.apicatalog.jsonld.node.GraphNode;
 import com.apicatalog.jsonld.node.ListNode;
+import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriUtils;
 
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
-import jakarta.json.JsonValue.ValueType;
 
 /**
  *
@@ -667,9 +667,9 @@ final class ObjectExpansion1314 {
                                     for (var item : collection) {
 
                                         // 13.4.13.4.2.1.1
-//                                        if (ListNode.isListNode(item) || ValueNode.isValueObject(item)) {
-//                                            throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
-//                                        }
+                                        if (ListNode.isListNode(item) || ValueNode.isValueNode(item)) {
+                                            throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
+                                        }
 
                                         // 13.4.13.4.2.1.1
                                         JsonMapBuilder.merge(reverseMap, entry.getKey(), item);
@@ -1037,8 +1037,8 @@ final class ObjectExpansion1314 {
 
             // 13.11.
             // FIXME
-            if (containerMapping.contains(Keywords.LIST) && !ListNode.isList(expandedValue)) {
-                expandedValue = ListNode.toList(expandedValue);
+            if (containerMapping.contains(Keywords.LIST) && !ListNode.isListNode(expandedValue)) {
+                expandedValue = ListNode.asListNode(expandedValue);
 
             }
 
@@ -1071,9 +1071,9 @@ final class ObjectExpansion1314 {
                 for (Object item : (Collection<?>) expandedValue) {
 
                     // 13.13.4.1.
-//FIXME                    if (ListNode.isListNode(item) || ValueNode.isValueObject(item)) {
-//                        throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
-//                    }
+                    if (ListNode.isListNode(item) || ValueNode.isValueNode(item)) {
+                        throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
+                    }
 
                     // 13.13.4.3.
                     Map<String, Object> map = (Map<String, Object>) result.get(Keywords.REVERSE);

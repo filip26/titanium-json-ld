@@ -42,14 +42,14 @@ public final class ListNode {
      * @param value to check
      * @return <code>true</code> if the provided value is valid list object
      */
-    public static final boolean isListNode(JsonValue value) {
+    public static final boolean isListObject(JsonValue value) {
         return JsonUtils.containsKey(value, Keywords.LIST)
                 && (value.asJsonObject().size() == 1
                         || (value.asJsonObject().size() == 2
                                 && value.asJsonObject().containsKey(Keywords.INDEX)));
     }
 
-    public static final boolean isList(Object value) {
+    public static final boolean isListNode(Object value) {
         if (value instanceof Map map) {
             return map.containsKey(Keywords.LIST)
                     && (map.size() == 1
@@ -67,7 +67,7 @@ public final class ListNode {
      * @param value to convert
      * @return list object containing the provided value
      */
-    public static final JsonObject toListNode(JsonValue value) {
+    public static final JsonObject toListObject(JsonValue value) {
         if (JsonUtils.isArray(value)) {
             return JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, value).build();
         }
@@ -75,7 +75,7 @@ public final class ListNode {
         return JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, JsonProvider.instance().createArrayBuilder().add(value)).build();
     }
     
-    public static final Map<String, ?> toList(Object value) {
+    public static final Map<String, ?> asListNode(Object value) {
         if (value instanceof Collection) {
             return Map.of(Keywords.LIST, value);
         }

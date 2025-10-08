@@ -137,7 +137,7 @@ public final class ArrayExpansion {
                             .map(TermDefinition::getContainerMapping)
                             .filter(c -> c.contains(Keywords.LIST)).isPresent()) {
 
-                expanded = ListNode.toList(list);
+                expanded = ListNode.asListNode(list);
             }
 
             // 5.2.3

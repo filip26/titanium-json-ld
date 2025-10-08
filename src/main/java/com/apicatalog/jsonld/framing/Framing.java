@@ -230,7 +230,7 @@ public final class Framing {
                     }
 
                     // 4.7.3.1.
-                    if (ListNode.isListNode(item)) {
+                    if (ListNode.isListObject(item)) {
 
                             JsonValue listFrameValue = null;
 

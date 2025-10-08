@@ -184,7 +184,7 @@ public final class Compaction {
         }
 
         // 8.
-        if (ListNode.isListNode(element)
+        if (ListNode.isListObject(element)
                 && activePropertyDefinition.filter(d -> d.hasContainerMapping(Keywords.LIST)).isPresent()) {
 
             return Compaction
@@ -477,7 +477,7 @@ public final class Compaction {
                 // 12.8.6.
                 JsonValue expandedItemValue = expandedItem;
 
-                if (ListNode.isListNode(expandedItem)) {
+                if (ListNode.isListObject(expandedItem)) {
                     expandedItemValue = expandedItem.asJsonObject().get(Keywords.LIST);
 
                 } else if (GraphNode.isGraphNode(expandedItem)) {
@@ -491,7 +491,7 @@ public final class Compaction {
                         .compact(itemActiveProperty, expandedItemValue);
 
                 // 12.8.7.
-                if (ListNode.isListNode(expandedItem)) {
+                if (ListNode.isListObject(expandedItem)) {
 
                     // 12.8.7.1.
                     compactedItem = JsonUtils.toJsonArray(compactedItem);

@@ -178,7 +178,7 @@ public final class FrameMatcher {
 
                     JsonValue listValue = propertyFrame.get(Keywords.LIST);
 
-                    if (!nodeValues.isEmpty() && ListNode.isListNode(nodeValues.get(0))) {
+                    if (!nodeValues.isEmpty() && ListNode.isListObject(nodeValues.get(0))) {
 
                         JsonValue nodeListValue = nodeValues.get(0).asJsonObject().get(Keywords.LIST);
 

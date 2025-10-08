@@ -150,7 +150,7 @@ public final class UriCompaction {
                 containers.add(Keywords.SET);
 
                 // 4.7.
-            } else if (ListNode.isListNode(value)) {
+            } else if (ListNode.isListObject(value)) {
 
                 // 4.7.1.
                 if (!value.asJsonObject().containsKey(Keywords.INDEX)) {
@@ -437,7 +437,7 @@ public final class UriCompaction {
                 preferredValues.add(typeLanguageValue);
                 preferredValues.add(Keywords.NONE);
 
-                if (ListNode.isListNode(value)
+                if (ListNode.isListObject(value)
                         && JsonUtils.isEmptyArray(value.asJsonObject().get(Keywords.LIST))) {
 
                     typeLanguage = Keywords.ANY;
