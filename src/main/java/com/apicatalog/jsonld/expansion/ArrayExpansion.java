@@ -31,18 +31,28 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonValue;
 
 /**
+ * Implements Step 5 of the JSON-LD
+ * <a href="https://www.w3.org/TR/json-ld11-api/#expansion-algorithm">Expansion
+ * Algorithm</a>.
+ *
+ * <p>
+ * This class handles the expansion of a {@link JsonArray}. It encapsulates the
+ * state and logic for this specific operation. It is used by creating an
+ * instance with an active context and the array to be expanded, setting
+ * optional flags through its fluent API, and then calling the {@link #expand()}
+ * method.
+ * </p>
  *
  * @see <a href=
  *      "https://www.w3.org/TR/json-ld11-api/#expansion-algorithm">Expansion
  *      Algorithm</a>
- *
  */
 public final class ArrayExpansion {
 
     // mandatory
-    private Context activeContext;
+    private Context context;
     private JsonArray element;
-    private String activeProperty;
+    private String property;
     private URI baseUrl;
 
     // optional
@@ -50,11 +60,14 @@ public final class ArrayExpansion {
     private boolean ordered;
     private boolean fromMap;
 
-    private ArrayExpansion(final Context activeContext, final JsonArray element, final String activeProperty,
+    private ArrayExpansion(
+            final Context context,
+            final JsonArray element,
+            final String property,
             final URI baseUrl) {
-        this.activeContext = activeContext;
+        this.context = context;
         this.element = element;
-        this.activeProperty = activeProperty;
+        this.property = property;
         this.baseUrl = baseUrl;
 
         // default values
@@ -63,40 +76,56 @@ public final class ArrayExpansion {
         this.fromMap = false;
     }
 
-    public static final ArrayExpansion with(final Context activeContext, final JsonArray element,
-            final String activeProperty, final URI baseUrl) {
-        return new ArrayExpansion(activeContext, element, activeProperty, baseUrl);
+    /**
+     * Creates a new, configurable instance to expand a {@link JsonArray}.
+     *
+     * @param context  the active context
+     * @param element  the {@link JsonArray} to expand
+     * @param property the active property that the array is associated with
+     * @param baseUrl  the base URL for resolving relative IRIs
+     * @return a new {@code ArrayExpansion} instance ready for configuration and
+     *         execution
+     */
+    public static final ArrayExpansion with(final Context context, final JsonArray element,
+            final String property, final URI baseUrl) {
+        return new ArrayExpansion(context, element, property, baseUrl);
     }
 
-    public ArrayExpansion frameExpansion(boolean value) {
-        this.frameExpansion = value;
-        return this;
-    }
-
-    public ArrayExpansion ordered(boolean value) {
-        this.ordered = value;
-        return this;
-    }
-
-    public ArrayExpansion fromMap(boolean value) {
-        this.fromMap = value;
-        return this;
-    }
-
+    /**
+     * Executes the array expansion logic.
+     * <p>
+     * This method implements the following steps from the Expansion Algorithm:
+     * </p>
+     * <ul>
+     * <li><b>5.2.</b> Iterates through each item in the input array.</li>
+     * <li><b>5.2.1.</b> Recursively expands each item by invoking the main
+     * Expansion algorithm.</li>
+     * <li><b>5.2.2.</b> If the active property has a {@code @list} container
+     * mapping and the expanded item is an array, it is converted into a list
+     * object.</li>
+     * <li><b>5.2.3.</b> Appends the expanded item(s) to the result list, filtering
+     * out any {@code null} values and flattening nested arrays.</li>
+     * <li><b>5.3.</b> Returns the resulting collection.</li>
+     * </ul>
+     *
+     * @return a {@link Collection} containing the expanded values, which may
+     *         include {@link java.util.Map}s, {@link String}s, or other JSON-LD
+     *         node representations.
+     * @throws JsonLdError if an error occurs during the recursive expansion of an
+     *                     item
+     */
     public Collection<?> expand() throws JsonLdError {
-
-//        final JsonArrayBuilder result = JsonProvider.instance().createArrayBuilder();
 
         final List<Object> result = new ArrayList<>(element.size());
 
         // 5.2.
         for (final JsonValue item : element) {
 
-            activeContext.runtime().tick();
+            context.runtime().tick();
 
             // 5.2.1
             Object expanded = Expansion
-                    .with(activeContext, item, activeProperty, baseUrl)
+                    .with(context, item, property, baseUrl)
                     .frameExpansion(frameExpansion)
                     .ordered(ordered)
                     .fromMap(fromMap)
@@ -104,22 +133,18 @@ public final class ArrayExpansion {
 
             // 5.2.2
             if (expanded instanceof Collection<?> list
-                    && activeContext.getTerm(activeProperty)
+                    && context.getTerm(property)
                             .map(TermDefinition::getContainerMapping)
                             .filter(c -> c.contains(Keywords.LIST)).isPresent()) {
 
                 expanded = ListNode.toList(list);
-//                expanded = List.of(list);
             }
 
             // 5.2.3
-//            if (JsonUtils.isArray(expanded)) {
             if (expanded instanceof Collection<?> collection) {
                 collection.stream()
                         .filter(Objects::nonNull)
                         .forEach(result::add);
-
-//                expanded.asJsonArray()
 
                 // append non-null element
             } else if (expanded != null) {
@@ -130,5 +155,41 @@ public final class ArrayExpansion {
 
         // 5.3
         return result;
+    }
+
+    /**
+     * Sets the {@code frameExpansion} flag.
+     *
+     * @param value if {@code true}, indicates that expansion is being performed as
+     *              part of the JSON-LD Framing algorithm.
+     * @return this instance, for method chaining.
+     */
+    public ArrayExpansion frameExpansion(boolean value) {
+        this.frameExpansion = value;
+        return this;
+    }
+
+    /**
+     * Sets the {@code ordered} flag.
+     *
+     * @param value if {@code true}, properties and values are processed in lexical
+     *              order.
+     * @return this instance, for method chaining.
+     */
+    public ArrayExpansion ordered(boolean value) {
+        this.ordered = value;
+        return this;
+    }
+
+    /**
+     * Sets the {@code fromMap} flag.
+     *
+     * @param value if {@code true}, indicates that the expanded element originates
+     *              from a map (JSON object).
+     * @return this instance, for method chaining.
+     */
+    public ArrayExpansion fromMap(boolean value) {
+        this.fromMap = value;
+        return this;
     }
 }

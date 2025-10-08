@@ -62,21 +62,6 @@ public final class Expansion {
         return new Expansion(activeContext, element, activeProperty, baseUrl);
     }
 
-    public Expansion frameExpansion(boolean value) {
-        this.frameExpansion = value;
-        return this;
-    }
-
-    public Expansion ordered(boolean value) {
-        this.ordered = value;
-        return this;
-    }
-
-    public Expansion fromMap(boolean value) {
-        this.fromMap = value;
-        return this;
-    }
-
     public Object compute() throws JsonLdError {
 
         // 1. If element is null, return null
@@ -115,5 +100,20 @@ public final class Expansion {
                 .ordered(ordered)
                 .fromMap(fromMap)
                 .expand();
+    }
+
+    public Expansion frameExpansion(boolean value) {
+        this.frameExpansion = value;
+        return this;
+    }
+
+    public Expansion ordered(boolean value) {
+        this.ordered = value;
+        return this;
+    }
+
+    public Expansion fromMap(boolean value) {
+        this.fromMap = value;
+        return this;
     }
 }

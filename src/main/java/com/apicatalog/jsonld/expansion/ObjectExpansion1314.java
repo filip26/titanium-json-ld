@@ -533,11 +533,12 @@ final class ObjectExpansion1314 {
                                             || JsonUtils.isArray(value)
                                                     && value.asJsonArray().stream().allMatch(JsonUtils::isString))) {
 
-                        if (JsonUtils.isString(value) && !LanguageTag.isWellFormed(((JsonString) value).getString())) {
-                            LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", ((JsonString) value).getString());
-                        }
-
                         if (value instanceof JsonString jsonString) {
+                            
+                            if (!LanguageTag.isWellFormed(jsonString.getString())) {
+                                LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", jsonString.getString());
+                            }
+                            
                             expandedValue = jsonString.getString().toLowerCase();
 
                         } else {

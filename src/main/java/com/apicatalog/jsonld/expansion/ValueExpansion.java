@@ -116,7 +116,7 @@ public final class ValueExpansion {
                     .orElseGet(context::getDefaultLanguage);
 
             // 5.3.
-            if (language != null) {
+            if (language != null && !Keywords.NULL.equals(language)) {
                 map.put(Keywords.LANGUAGE, language);
             }
 

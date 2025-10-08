@@ -39,6 +39,7 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
+import jakarta.json.JsonValue.ValueType;
 
 /**
  *
@@ -563,8 +564,10 @@ public final class TermDefinitionBuilder {
             // 22.1. - 2.
             final JsonValue language = valueObject.get(Keywords.LANGUAGE);
 
-            if (JsonUtils.isNull(language)) {
-                definition.setLanguageMapping(null);
+            if (language == null) {
+            
+            } else if (ValueType.NULL == language.getValueType()) {
+                definition.setLanguageMapping(Keywords.NULL);
                 
             } else if (language instanceof JsonString jsonString) {
                 if (!LanguageTag.isWellFormed(jsonString.getString())) {
