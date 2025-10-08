@@ -652,7 +652,7 @@ final class ObjectExpansion1314 {
                         // 13.4.13.3.
                         if (expandedValueObject.containsKey(Keywords.REVERSE)) {
 
-                            for (final Entry<String, Object> entry : ((Map<String, Object>)expandedValueObject.get(Keywords.REVERSE)).entrySet()) {
+                            for (final Entry<String, Object> entry : ((Map<String, Object>) expandedValueObject.get(Keywords.REVERSE)).entrySet()) {
                                 // 13.4.13.3.1.
                                 result.put(entry.getKey(), entry.getValue());
                             }
@@ -663,11 +663,11 @@ final class ObjectExpansion1314 {
                                 || !expandedValueObject.containsKey(Keywords.REVERSE)) {
 
                             final Map<String, Object> reverseMap = new HashMap<>();
-                                                        
+
 //                            final JsonMapBuilder reverseMap = result.getMapBuilder(Keywords.REVERSE);
 //
 //                            // 13.4.13.4.2
-                            for (final Entry<String, Object> entry : ((Map<String, Object>)expandedValueObject).entrySet()) {
+                            for (final Entry<String, Object> entry : ((Map<String, Object>) expandedValueObject).entrySet()) {
 
                                 if (Keywords.REVERSE.equals(entry.getKey())) {
                                     continue;
@@ -691,7 +691,7 @@ final class ObjectExpansion1314 {
                             }
 
                             if (!reverseMap.isEmpty()) {
-                                result.put(Keywords.REVERSE,  reverseMap);
+                                result.put(Keywords.REVERSE, reverseMap);
 //                                result.remove(Keywords.REVERSE);
                             }
                         }
@@ -925,7 +925,7 @@ final class ObjectExpansion1314 {
                     // 13.8.3.7.
                     for (final Object item : indexValues) {
 
-                        var result = new HashMap<String, Object>((Map)item);
+                        var result = new HashMap<String, Object>((Map) item);
 
                         System.out.println("IX: " + item);
                         System.out.println("    " + result);
@@ -946,10 +946,10 @@ final class ObjectExpansion1314 {
 //                            JsonValue reExpandedIndex = activeContext.valueExpansion()
 //                                    .expand(JsonProvider.instance().createValue(index), indexKey);
 
-                            JsonValue reExpandedIndex = JsonValue.NULL;
+                            var reExpandedIndex = activeContext.expandValue(indexKey, JsonProvider.instance().createValue(index));
 
                             // 13.8.3.7.2.2.
-                            final String expandedIndexKey = activeContext
+                            var expandedIndexKey = activeContext
                                     .uriExpansion()
                                     .vocab(true)
                                     .expand(indexKey);
@@ -1074,12 +1074,23 @@ final class ObjectExpansion1314 {
                 for (Object item : (Collection<?>) expandedValue) {
 
                     // 13.13.4.1.
-//                    if (ListNode.isListNode(item) || ValueNode.isValueObject(item)) {
+//FIXME                    if (ListNode.isListNode(item) || ValueNode.isValueObject(item)) {
 //                        throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
 //                    }
 
                     // 13.13.4.3.
-//FIXKE                    result.getMapBuilder(Keywords.REVERSE).add(expandedProperty, item);
+                    Map<String, Object> map = (Map<String, Object>) result.get(Keywords.REVERSE);
+                    if (map == null) {
+                        result.put(Keywords.REVERSE, Map.of(expandedProperty, Set.of(item)));
+                        
+                    } else if (map instanceof HashMap) {
+                        JsonMapBuilder.merge(map, expandedProperty, item);
+                        
+                    } else {
+                        map = new HashMap<>(map);
+                        JsonMapBuilder.merge(map, expandedProperty, item);
+                        result.put(Keywords.REVERSE, map);
+                    }
                 }
 
                 // 13.14

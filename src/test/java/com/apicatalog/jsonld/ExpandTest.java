@@ -21,6 +21,8 @@ import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -29,6 +31,7 @@ import com.apicatalog.jsonld.test.JsonLdManifestLoader;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 
+@DisplayName(value = "XY")
 class ExpandTest {
 
     @ParameterizedTest(name = "{0}")

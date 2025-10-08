@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -29,6 +30,7 @@ import com.apicatalog.jsonld.test.JsonLdManifestLoader;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 
+@Tag("X")
 class CompactTest {
 
     @ParameterizedTest(name = "{0}")

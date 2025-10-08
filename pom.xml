@@ -127,6 +127,12 @@
           <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+          <version>${junit.version}</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
           <groupId>com.github.tomakehurst</groupId>
           <artifactId>wiremock-jre8</artifactId>
           <version>${wiremock.version}</version>
@@ -186,6 +192,18 @@
               </execution>
             </executions>
           </plugin>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.5.4</version>
+            <configuration>
+                <excludes>
+                    <exclude>**Test.java</exclude>
+                </excludes>
+                <includes>
+                    <include>**Suite.java</include>
+                </includes>
+            </configuration>
+          </plugin>          
         </plugins>
     </build>
     
