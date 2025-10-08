@@ -97,36 +97,6 @@ final class ObjectExpansion1314 {
         return new ObjectExpansion1314(activeContext, element, activeProperty, baseUrl);
     }
 
-    public ObjectExpansion1314 frameExpansion(boolean value) {
-        this.frameExpansion = value;
-        return this;
-    }
-
-    public ObjectExpansion1314 ordered(boolean value) {
-        this.ordered = value;
-        return this;
-    }
-
-    public ObjectExpansion1314 nest(Map<String, JsonValue> nest) {
-        this.nest = nest;
-        return this;
-    }
-
-    public ObjectExpansion1314 typeContext(Context typeContext) {
-        this.typeContext = typeContext;
-        return this;
-    }
-
-    public ObjectExpansion1314 result(Map<String, Object> result) {
-        this.result = result;
-        return this;
-    }
-
-    public ObjectExpansion1314 inputType(String inputType) {
-        this.inputType = inputType;
-        return this;
-    }
-
     public void expand() throws JsonLdError {
 
         // 13.
@@ -211,14 +181,14 @@ final class ObjectExpansion1314 {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE, "An @id entry was encountered whose value [" + value + "] was not a string.");
 
                         // 13.4.3.2
-                    } else if (JsonUtils.isString(value)) {
+                    } else if (value instanceof JsonString jsonString) {
 
 //                        final String expandedStringValue = activeContext
                         expandedValue = activeContext
                                 .uriExpansion()
                                 .documentRelative(true)
                                 .vocab(false)
-                                .expand(((JsonString) value).getString());
+                                .expand(jsonString.getString());
 
                         if (frameExpansion && expandedValue != null) {
                             expandedValue = Set.of(expandedValue);
@@ -235,14 +205,14 @@ final class ObjectExpansion1314 {
 //                            expandedValue = JsonValue.NULL;
 //                        }
 
-                    } else if (JsonUtils.isNumber(value)) {
+                    } else if (value instanceof JsonNumber jsonNumber) {
 
 //                        final String expandedStringValue = activeContext
                         expandedValue = activeContext
                                 .uriExpansion()
                                 .documentRelative(true)
                                 .vocab(false)
-                                .expand(((JsonNumber) value).toString());
+                                .expand(jsonNumber.toString());
 
                         if (frameExpansion && expandedValue != null) {
                             expandedValue = Set.of(expandedValue);
@@ -326,15 +296,17 @@ final class ObjectExpansion1314 {
 
                         if (defaultValue.filter(JsonUtils::isString).isPresent()) {
 
-                            expandedValue = JsonProvider.instance().createObjectBuilder()
-                                    .add(Keywords.DEFAULT,
-                                            typeContext
-                                                    .uriExpansion()
-                                                    .vocab(true)
-                                                    .documentRelative(true)
-                                                    // deepcode ignore checkIsPresent~Optional: false positive
-                                                    .expand(defaultValue.map(JsonString.class::cast).map(JsonString::getString).get()))
-                                    .build();
+                            expandedValue = Map.of(
+                                    Keywords.DEFAULT,
+                                    typeContext
+                                            .uriExpansion()
+                                            .vocab(true)
+                                            .documentRelative(true)
+                                            // deepcode ignore checkIsPresent~Optional: false positive
+                                            .expand(defaultValue
+                                                    .map(JsonString.class::cast)
+                                                    .map(JsonString::getString)
+                                                    .get()));
                         }
 
                         // 13.4.4.4
@@ -663,7 +635,12 @@ final class ObjectExpansion1314 {
                         if (expandedValueObject.size() > 1
                                 || !expandedValueObject.containsKey(Keywords.REVERSE)) {
 
-                            final Map<String, Object> reverseMap = new HashMap<>();
+                            Map<String, Object> reverseMap = (Map<String, Object>) result.get(Keywords.REVERSE);
+
+                            if (reverseMap == null) {
+                                reverseMap = new HashMap<>();
+                                result.put(Keywords.REVERSE, reverseMap);
+                            }
 
 //                            final JsonMapBuilder reverseMap = result.getMapBuilder(Keywords.REVERSE);
 //
@@ -677,7 +654,7 @@ final class ObjectExpansion1314 {
                                 // 13.4.13.4.2.1
                                 if (entry.getValue() instanceof Collection<?> collection) {
 
-                                    for (final Object item : collection) {
+                                    for (var item : collection) {
 
                                         // 13.4.13.4.2.1.1
 //                                        if (ListNode.isListNode(item) || ValueNode.isValueObject(item)) {
@@ -691,9 +668,9 @@ final class ObjectExpansion1314 {
                                 }
                             }
 
-                            if (!reverseMap.isEmpty()) {
-                                result.put(Keywords.REVERSE, reverseMap);
-//                                result.remove(Keywords.REVERSE);
+                            if (reverseMap.isEmpty()) {
+
+                                result.remove(Keywords.REVERSE);
                             }
                         }
                     }
@@ -746,9 +723,10 @@ final class ObjectExpansion1314 {
 
                 // 13.4.16
                 if (expandedValue != null
-                        || (Keywords.VALUE.equals(expandedProperty) && Keywords.JSON.equals(inputType))) {
-                    System.out.println("> " + expandedProperty.getClass().getSimpleName() + " -> " + expandedValue.getClass().getSimpleName());
-                    System.out.println("> " + expandedProperty + " -> " + expandedValue);
+                        || (Keywords.VALUE.equals(expandedProperty)
+                                && Keywords.JSON.equals(inputType))) {
+//                    System.out.println("> " + expandedProperty.getClass().getSimpleName() + " -> " + expandedValue.getClass().getSimpleName());
+//                    System.out.println("> " + expandedProperty + " -> " + expandedValue);
 
 //                    JsonMapBuilder.merge(result, expandedProperty, expandedValue);
                     result.put(expandedProperty, expandedValue);
@@ -769,9 +747,14 @@ final class ObjectExpansion1314 {
             Object expandedValue = null;
 
             // 13.6.
-            if (keyTermDefinition.map(TermDefinition::getTypeMapping).filter(Keywords.JSON::equals).isPresent()) {
+            if (keyTermDefinition
+                    .map(TermDefinition::getTypeMapping)
+                    .filter(Keywords.JSON::equals)
+                    .isPresent()) {
 
-                expandedValue = new ValueNode(Keywords.JSON, value, null, null);
+                expandedValue = Map.of(
+                        Keywords.TYPE, Keywords.JSON,
+                        Keywords.VALUE, value);
 
 //                expandedValue = JsonProvider.instance().createObjectBuilder().add(Keywords.VALUE, value)
 //                        .add(Keywords.TYPE, Keywords.JSON).build();
@@ -859,7 +842,7 @@ final class ObjectExpansion1314 {
 
                 // 13.8.1.
 //                expandedValue = JsonValue.EMPTY_JSON_ARRAY;
-                Set<Object> indices = new LinkedHashSet<>();
+                var indices = new ArrayList<>();
 
                 // 13.8.2.
                 final String indexKey = keyTermDefinition
@@ -926,15 +909,15 @@ final class ObjectExpansion1314 {
                     // 13.8.3.7.
                     for (final Object item : indexValues) {
 
-                        var result = new HashMap<String, Object>((Map) item);
+                        var result = new HashMap<String, Object>();
 
-                        System.out.println("IX: " + item);
-                        System.out.println("    " + result);
                         // 13.8.3.7.1.
                         if (containerMapping.contains(Keywords.GRAPH)
                                 && !GraphNode.isGraph(item)) {
 ////                            item = GraphNode.toGraphObject(item);
                             result.put(Keywords.GRAPH, Set.of(item));
+                        } else {
+                            result.putAll((Map) item);
                         }
 
                         // 13.8.3.7.2.
@@ -957,23 +940,21 @@ final class ObjectExpansion1314 {
 
                             // 13.8.3.7.2.3.
 //                            final List<?> indexPropertyValues = JsonProvider.instance().createArrayBuilder().add(reExpandedIndex);
-                            final List<Object> indexPropertyValues = new ArrayList<>();
+                            var indexPropertyValues = new ArrayList<>();
                             indexPropertyValues.add(reExpandedIndex);
 
 //                            final JsonValue existingValues = item.asJsonObject().get(expandedIndexKey);
-                            final Object existingValues = result.get(expandedIndexKey);
+                            var existingValues = result.get(expandedIndexKey);
 
-                            if (existingValues != null) {
-                                if (existingValues instanceof Collection<?> values) {
-                                    indexPropertyValues.addAll(values);
+                            if (existingValues instanceof Collection<?> values) {
+                                indexPropertyValues.addAll(values);
 //                                    existingValues
 //                                            .stream()
 //                                            .map(JsonUtils::asScalar)
 //                                            .forEach(indexPropertyValues::add);
 
-                                } else {
-                                    indexPropertyValues.add(existingValues);
-                                }
+                            } else if (existingValues != null) {
+                                indexPropertyValues.add(existingValues);
                             }
 
                             // 13.8.3.7.2.4.
@@ -1006,7 +987,8 @@ final class ObjectExpansion1314 {
                                     .expand(index));
 
                             // 13.8.3.7.5.
-                        } else if (containerMapping.contains(Keywords.TYPE) && !Keywords.NONE.equals(expandedIndex)) {
+                        } else if (containerMapping.contains(Keywords.TYPE)
+                                && !Keywords.NONE.equals(expandedIndex)) {
 
                             final List<Object> types = new ArrayList<>();
                             types.add(expandedIndex);
@@ -1028,8 +1010,8 @@ final class ObjectExpansion1314 {
                         indices.add(result);
                     }
                 }
+                expandedValue = indices;
 
-                expandedValue = Set.copyOf(indices);
                 // 13.9.
             } else {
                 expandedValue = Expansion
@@ -1056,11 +1038,11 @@ final class ObjectExpansion1314 {
                     && !containerMapping.contains(Keywords.ID)
                     && !containerMapping.contains(Keywords.INDEX)) {
 
-                if (expandedValue instanceof Collection<?> items) {
+                if (expandedValue instanceof Collection<?> expandedValues) {
 
-                    var list = new ArrayList<Object>(items.size());
+                    var list = new ArrayList<Object>(expandedValues.size());
 
-                    for (final Object item : items) {
+                    for (var item : expandedValues) {
                         list.add(Map.of(Keywords.GRAPH, Set.of(item)));
                     }
 
@@ -1115,6 +1097,36 @@ final class ObjectExpansion1314 {
         }
     }
 
+    public ObjectExpansion1314 frameExpansion(boolean value) {
+        this.frameExpansion = value;
+        return this;
+    }
+
+    public ObjectExpansion1314 ordered(boolean value) {
+        this.ordered = value;
+        return this;
+    }
+
+    public ObjectExpansion1314 nest(Map<String, JsonValue> nest) {
+        this.nest = nest;
+        return this;
+    }
+
+    public ObjectExpansion1314 typeContext(Context typeContext) {
+        this.typeContext = typeContext;
+        return this;
+    }
+
+    public ObjectExpansion1314 result(Map<String, Object> result) {
+        this.result = result;
+        return this;
+    }
+
+    public ObjectExpansion1314 inputType(String inputType) {
+        this.inputType = inputType;
+        return this;
+    }
+
     private void recurse() throws JsonLdError {
 
         activeContext.runtime().tick();
@@ -1159,7 +1171,6 @@ final class ObjectExpansion1314 {
                             .uriExpansion()
                             .vocab(true)
                             .expand(nestedValueKey))) {
-
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
                 }

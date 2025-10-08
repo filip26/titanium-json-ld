@@ -34,7 +34,7 @@ import jakarta.json.JsonValue;
  *      "https://www.w3.org/TR/json-ld11-api/#expansion-algorithm">Expansion
  *      Algorithm</a>
  */
-public final class ScalarExpansion {
+final class ScalarExpansion {
 
     /**
      * Expands a scalar value based on the active context and property.
