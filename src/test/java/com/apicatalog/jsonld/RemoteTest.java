@@ -18,6 +18,7 @@ package com.apicatalog.jsonld;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
+import java.io.IOException;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterEach;

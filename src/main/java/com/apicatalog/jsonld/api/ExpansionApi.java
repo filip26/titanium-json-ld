@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.api;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 
@@ -127,8 +128,9 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
      *
      * @return {@link JsonArray} representing expanded document
      * @throws JsonLdError if the document expansion fails
+     * @throws IOException 
      */
-    public Collection<?> get() throws JsonLdError {
+    public Collection<?> get() throws JsonLdError, IOException {
         if (document != null) {
             return ExpansionProcessor.expand(document, options, false);
 

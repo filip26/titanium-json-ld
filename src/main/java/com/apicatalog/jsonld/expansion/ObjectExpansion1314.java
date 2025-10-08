@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.expansion;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,6 +48,8 @@ import com.apicatalog.jsonld.node.GraphNode;
 import com.apicatalog.jsonld.node.ListNode;
 import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriUtils;
+import com.apicatalog.tree.io.JakartaAdapter;
+import com.apicatalog.tree.io.NativeMaterializer;
 
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
@@ -97,7 +100,7 @@ final class ObjectExpansion1314 {
         return new ObjectExpansion1314(activeContext, element, activeProperty, baseUrl);
     }
 
-    public void expand() throws JsonLdError {
+    public void expand() throws JsonLdError, IOException {
 
         // 13.
         for (final String key : Utils.index(element.keySet(), ordered)) {
@@ -475,7 +478,7 @@ final class ObjectExpansion1314 {
                             throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
                         }
 
-                        expandedValue = JsonUtils.asScalar(value);
+                        expandedValue = new NativeMaterializer().node(value, JakartaAdapter.instance());
 
                         // 13.4.7.2
                     } else if (JsonUtils.isNull(value)
@@ -486,7 +489,7 @@ final class ObjectExpansion1314 {
                                             || JsonUtils.isArray(value)
                                                     && value.asJsonArray().stream().allMatch(JsonUtils::isScalar))) {
 
-                        expandedValue = JsonUtils.asScalar(value);
+                        expandedValue = new NativeMaterializer().node(value, JakartaAdapter.instance());
 
                         if (frameExpansion) {
                             expandedValue = JsonUtils.toList(expandedValue);
@@ -499,7 +502,6 @@ final class ObjectExpansion1314 {
                     // 13.4.7.4
                     if (expandedValue == null) {
                         result.put(Keywords.VALUE, null);
-//                        result.put(Keywords.VALUE, JsonValue.NULL);
                         continue;
                     }
                 }
@@ -735,8 +737,6 @@ final class ObjectExpansion1314 {
                 if (expandedValue != null
                         || (Keywords.VALUE.equals(expandedProperty)
                                 && Keywords.JSON.equals(inputType))) {
-//                    System.out.println("> " + expandedProperty.getClass().getSimpleName() + " -> " + expandedValue.getClass().getSimpleName());
-//                    System.out.println("> " + expandedProperty + " -> " + expandedValue);
 
 //                    JsonMapBuilder.merge(result, expandedProperty, expandedValue);
                     result.put(expandedProperty, expandedValue);
@@ -762,9 +762,21 @@ final class ObjectExpansion1314 {
                     .filter(Keywords.JSON::equals)
                     .isPresent()) {
 
-                expandedValue = Map.of(
-                        Keywords.TYPE, Keywords.JSON,
-                        Keywords.VALUE, value);
+//                (JsonStructure) new JakartaMaterializer().node(collection, new JsonLdAdapter())
+
+                expandedValue = new NativeMaterializer().node(value, JakartaAdapter.instance());
+
+                if (expandedValue != null) {
+                    expandedValue = Map.of(
+                            Keywords.TYPE, Keywords.JSON,
+                            Keywords.VALUE, expandedValue);
+
+                } else {
+                    var map = new HashMap<>(2);
+                    map.put(Keywords.TYPE, Keywords.JSON);
+                    map.put(Keywords.VALUE, null);
+                    expandedValue = map;
+                }
 
 //                expandedValue = JsonProvider.instance().createObjectBuilder().add(Keywords.VALUE, value)
 //                        .add(Keywords.TYPE, Keywords.JSON).build();
@@ -858,7 +870,6 @@ final class ObjectExpansion1314 {
                 final String indexKey = keyTermDefinition
                         .map(TermDefinition::getIndexMapping)
                         .orElse(Keywords.INDEX);
-                System.out.println("I1: " + expandedValue);
 
                 // 13.8.3.
                 for (final String index : Utils.index(value.asJsonObject().keySet(), ordered)) {
@@ -1092,8 +1103,6 @@ final class ObjectExpansion1314 {
 
                 // 13.14
             } else {
-                System.out.println("2 > " + expandedProperty.getClass().getSimpleName() + " -> " + expandedValue.getClass().getSimpleName());
-                System.out.println("2 > " + expandedProperty + " -> " + expandedValue);
 
                 JsonMapBuilder.merge(result, expandedProperty, expandedValue);
 //                result.add(expandedProperty, expandedValue);
@@ -1136,7 +1145,7 @@ final class ObjectExpansion1314 {
         return this;
     }
 
-    private void recurse() throws JsonLdError {
+    private void recurse() throws JsonLdError, IOException {
 
         activeContext.runtime().tick();
 
@@ -1162,7 +1171,7 @@ final class ObjectExpansion1314 {
         expand();
     }
 
-    private final void processNest() throws JsonLdError {
+    private final void processNest() throws JsonLdError, IOException {
 
         for (final String nestedKey : Utils.index(nest.keySet(), ordered)) {
 

@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.expansion;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Iterator;
@@ -78,7 +79,7 @@ public final class ObjectExpansion {
         return new ObjectExpansion(activeContext, propertyContext, element, activeProperty, baseUrl);
     }
 
-    public Object expand() throws JsonLdError {
+    public Object expand() throws JsonLdError, IOException {
 
         initPreviousContext();
 

@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.expansion;
 
+import java.io.IOException;
 import java.net.URI;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -62,7 +63,7 @@ public final class Expansion {
         return new Expansion(activeContext, element, activeProperty, baseUrl);
     }
 
-    public Object compute() throws JsonLdError {
+    public Object compute() throws JsonLdError, IOException {
 
         // 1. If element is null, return null
         if (JsonUtils.isNull(element)) {

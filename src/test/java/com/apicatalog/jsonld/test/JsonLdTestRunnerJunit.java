@@ -24,7 +24,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdError;
@@ -123,6 +122,10 @@ public class JsonLdTestRunnerJunit {
 
             assertNotNull(result, "A result is expected but got null");
 
+        } catch (IOException e) {
+            fail(e);
+            return false;
+            
         } catch (JsonLdError e) {
 
             if (Objects.equal(e.getCode(), testCase.expectErrorCode)) {
@@ -155,7 +158,6 @@ public class JsonLdTestRunnerJunit {
         }
 
         if (result instanceof Collection<?> collection) {
-System.out.println(collection);
             try {
                 return validateJsonLd(
                         testCase,

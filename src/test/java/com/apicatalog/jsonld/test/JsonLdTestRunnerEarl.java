@@ -17,6 +17,7 @@ package com.apicatalog.jsonld.test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.io.IOException;
 import java.util.Objects;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -88,6 +89,9 @@ public class JsonLdTestRunnerEarl {
                                 (RdfQuadSet) result);
             }
 
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+            
         } catch (JsonLdError e) {
             return Objects.equals(e.getCode(), testCase.expectErrorCode);
 

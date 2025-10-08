@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.processor;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,7 +48,7 @@ public final class ExpansionProcessor {
     ExpansionProcessor() {
     }
 
-    public static final Collection<?> expand(final URI input, final JsonLdOptions options) throws JsonLdError {
+    public static final Collection<?> expand(final URI input, final JsonLdOptions options) throws JsonLdError, IOException {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
@@ -65,7 +66,7 @@ public final class ExpansionProcessor {
         return expand(remoteDocument, options, false);
     }
 
-    public static final Collection<?> expand(Document input, final JsonLdOptions options, boolean frameExpansion) throws JsonLdError {
+    public static final Collection<?> expand(Document input, final JsonLdOptions options, boolean frameExpansion) throws JsonLdError, IOException {
 
         if (input == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "RemoteDocument is null.");

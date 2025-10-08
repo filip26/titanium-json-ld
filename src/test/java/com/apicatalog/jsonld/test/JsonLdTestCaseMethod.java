@@ -15,6 +15,8 @@
  */
 package com.apicatalog.jsonld.test;
 
+import java.io.IOException;
+
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.rdf.api.RdfConsumerException;
@@ -22,6 +24,6 @@ import com.apicatalog.rdf.api.RdfConsumerException;
 @FunctionalInterface
 public interface JsonLdTestCaseMethod {
 
-    Object invoke(JsonLdOptions options) throws JsonLdError, RdfConsumerException;
+    Object invoke(JsonLdOptions options) throws JsonLdError, RdfConsumerException, IOException;
 
 }

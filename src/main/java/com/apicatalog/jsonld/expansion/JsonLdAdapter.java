@@ -7,13 +7,15 @@ import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.tree.io.NativeAdapter;
 import com.apicatalog.tree.io.NodeType;
 
+import jakarta.json.JsonValue;
+
 public class JsonLdAdapter extends NativeAdapter {
-//
+
 //    @Override
 //    public NodeType type(Object node) {
-////        System.out.println(">>> " + node);
-//        if (node instanceof ValueNode) {
-//            return NodeType.MAP;
+//
+//        if (node instanceof JsonValue json) {
+//            return Jakarta;
 //        }
 //        return super.type(node);
 //    }

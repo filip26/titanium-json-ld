@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.expansion;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -113,8 +114,9 @@ public final class ArrayExpansion {
      *         node representations.
      * @throws JsonLdError if an error occurs during the recursive expansion of an
      *                     item
+     * @throws IOException 
      */
-    public Collection<?> expand() throws JsonLdError {
+    public Collection<?> expand() throws JsonLdError, IOException {
 
         final List<Object> result = new ArrayList<>(element.size());
 
