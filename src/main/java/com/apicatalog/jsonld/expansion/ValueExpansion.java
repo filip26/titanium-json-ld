@@ -53,44 +53,44 @@ public final class ValueExpansion {
 
         final Optional<String> typeMapping = definition.map(TermDefinition::getTypeMapping);
 
-        if (typeMapping.isPresent()) {
-            // 1.
-            if (Keywords.ID.equals(typeMapping.get())) {
+        // 1.
+        if (typeMapping.filter(Keywords.ID::equals).isPresent()) {
 
-                String idValue = null;
+            String idValue = null;
 
-                if (value instanceof JsonString jsonString) {
-                    idValue = jsonString.getString();
+            if (value instanceof JsonString jsonString) {
+                idValue = jsonString.getString();
 
-                    // custom extension allowing to process numeric ids
-                } else if (activeContext.runtime().isNumericId()
-                        && value instanceof JsonNumber jsonNumber) {
-                    idValue = jsonNumber.toString();
-                }
-
-                if (idValue != null) {
-                    final String expandedValue = activeContext.uriExpansion()
-                            .documentRelative(true)
-                            .vocab(false)
-                            .expand(idValue);
-
-                    return Map.of(Keywords.ID, expandedValue);
-                }
-
-                // 2.
-            } else if (Keywords.VOCAB.equals(typeMapping.get())
-                    && value instanceof JsonString jsonString) {
-
-                return Map.of(Keywords.ID, activeContext.uriExpansion()
-                        .documentRelative(true)
-                        .vocab(true)
-                        .expand(jsonString.getString()));
+                // custom extension allowing to process numeric ids
+            } else if (activeContext.runtime().isNumericId()
+                    && value instanceof JsonNumber jsonNumber) {
+                idValue = jsonNumber.toString();
             }
+
+            if (idValue != null) {
+                final String expandedValue = activeContext.uriExpansion()
+                        .documentRelative(true)
+                        .vocab(false)
+                        .expand(idValue);
+
+                return Map.of(Keywords.ID, expandedValue);
+            }
+
+            // 2.
+        } else if (typeMapping.filter(Keywords.VOCAB::equals).isPresent()
+                && value instanceof JsonString jsonString) {
+
+            return Map.of(Keywords.ID, activeContext.uriExpansion()
+                    .documentRelative(true)
+                    .vocab(true)
+                    .expand(jsonString.getString()));
         }
 
         // 4.
         if (typeMapping
-                .filter(t -> !Keywords.ID.equals(t) && !Keywords.VOCAB.equals(t) && !Keywords.NONE.equals(t))
+                .filter(t -> !Keywords.ID.equals(t)
+                        && !Keywords.VOCAB.equals(t)
+                        && !Keywords.NONE.equals(t))
                 .isPresent()) {
 
             return Map.of(
