@@ -15,10 +15,11 @@
  */
 package com.apicatalog.jsonld.json;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -159,19 +160,18 @@ public final class JsonMapBuilder {
         }
 
         if (previous instanceof Collection<?> c1) {
-
-            Set<Object> set = new HashSet<>(c1);
+            var result = new ArrayList<Object>(c1);
             if (value instanceof Collection<?> c2) {
-                set.addAll(c2);
+                result.addAll(c2);
 
             } else {
-                set.add(value);
+                result.add(value);
             }
-            map.put(key, set);
+            map.put(key, result);
             return;
         }
 
-        map.put(key, Set.of(previous, value));
+        map.put(key, List.of(previous, value));
     }
 
     public void add(String key, JsonValue value) {

@@ -8,23 +8,23 @@ import com.apicatalog.tree.io.NativeAdapter;
 import com.apicatalog.tree.io.NodeType;
 
 public class JsonLdAdapter extends NativeAdapter {
-
-    @Override
-    public NodeType type(Object node) {
-//        System.out.println(">>> " + node);
-        if (node instanceof ValueNode) {
-            return NodeType.MAP;
-        }
-        return super.type(node);
-    }
-    
-    @Override
-    public Stream<Entry<?, ?>> entryStream(Object node) {
-        if (node instanceof ValueNode valueNode) {
-            
-        }
-        
-        // TODO Auto-generated method stub
-        return super.entryStream(node);
-    }
+//
+//    @Override
+//    public NodeType type(Object node) {
+////        System.out.println(">>> " + node);
+//        if (node instanceof ValueNode) {
+//            return NodeType.MAP;
+//        }
+//        return super.type(node);
+//    }
+//    
+//    @Override
+//    public Stream<Entry<?, ?>> entryStream(Object node) {
+//        if (node instanceof ValueNode valueNode) {
+//            
+//        }
+//        
+//        // TODO Auto-generated method stub
+//        return super.entryStream(node);
+//    }
 }

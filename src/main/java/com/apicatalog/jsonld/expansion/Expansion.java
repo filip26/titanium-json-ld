@@ -22,7 +22,6 @@ import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.node.Node;
 
 import jakarta.json.JsonValue;
 
@@ -89,34 +88,33 @@ public final class Expansion {
         if (JsonUtils.isArray(element)) {
 
             return ArrayExpansion
-                        .with(activeContext, element.asJsonArray(), activeProperty, baseUrl)
-                        .frameExpansion(frameExpansion)
-                        .ordered(ordered)
-                        .fromMap(fromMap)
-                        .expand();
+                    .with(activeContext, element.asJsonArray(), activeProperty, baseUrl)
+                    .frameExpansion(frameExpansion)
+                    .ordered(ordered)
+                    .fromMap(fromMap)
+                    .expand();
         }
 
         // 3. If active property has a term definition in active context with a local
         // context, initialize property-scoped context to that local context.
         final JsonValue propertyContext = activeContext
-                                            .getTerm(activeProperty)
-                                            .map(TermDefinition::getLocalContext)
-                                            .orElse(null);
+                .getTerm(activeProperty)
+                .map(TermDefinition::getLocalContext)
+                .orElse(null);
 
         // 4. If element is a scalar
         if (JsonUtils.isScalar(element)) {
-
             return ScalarExpansion
-                        .with(activeContext, propertyContext, element, activeProperty)
-                        .expand();
+                    .with(activeContext, propertyContext, element, activeProperty)
+                    .expand();
         }
 
         // 6. Otherwise element is a map
         return ObjectExpansion
-                    .with(activeContext, propertyContext, element.asJsonObject(), activeProperty, baseUrl)
-                    .frameExpansion(frameExpansion && !Keywords.DEFAULT.equals(activeProperty))
-                    .ordered(ordered)
-                    .fromMap(fromMap)
-                    .expand();
+                .with(activeContext, propertyContext, element.asJsonObject(), activeProperty, baseUrl)
+                .frameExpansion(frameExpansion && !Keywords.DEFAULT.equals(activeProperty))
+                .ordered(ordered)
+                .fromMap(fromMap)
+                .expand();
     }
 }

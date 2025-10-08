@@ -385,7 +385,7 @@ final class ObjectExpansion1314 {
 
 //                        final JsonValue typeValue = result.get(Keywords.TYPE).orElse(null);
 
-                        if (typeValue instanceof Set<?> set) {
+                        if (typeValue instanceof Collection<?> set) {
 
                             var newSet = (new LinkedHashSet<Object>(set));
                             newSet.add(expandedValue);
@@ -405,7 +405,7 @@ final class ObjectExpansion1314 {
 
                 // 13.4.5
                 else if (Keywords.GRAPH.equals(expandedProperty)) {
-                    expandedValue = JsonUtils.toSet(Expansion
+                    expandedValue = JsonUtils.toList(Expansion
 //                    expandedValue = JsonUtils.toJsonArray(Expansion
                             .with(typeContext, value, Keywords.GRAPH, baseUrl)
                             .frameExpansion(frameExpansion)
@@ -456,7 +456,7 @@ final class ObjectExpansion1314 {
 
                             final Set<Object> included;
 
-                            if (includedValue instanceof Set<?> set) {
+                            if (includedValue instanceof Collection<?> set) {
                                 included = new LinkedHashSet<>(set);
                                 included.addAll((Collection<?>) expandedValue);
 
@@ -507,7 +507,7 @@ final class ObjectExpansion1314 {
                         expandedValue = JsonUtils.getScalar(value);
 
                         if (frameExpansion) {
-                            expandedValue = JsonUtils.toSet(expandedValue);
+                            expandedValue = JsonUtils.toList(expandedValue);
                         }
 
                     } else {
@@ -550,7 +550,7 @@ final class ObjectExpansion1314 {
 //                                : value;
 
                         if (frameExpansion) {
-                            expandedValue = JsonUtils.toSet(expandedValue);
+                            expandedValue = JsonUtils.toList(expandedValue);
                         }
 
                     } else {
@@ -578,7 +578,7 @@ final class ObjectExpansion1314 {
                         expandedValue = value;
 
                         if (frameExpansion) {
-                            expandedValue = JsonUtils.toSet(expandedValue);
+                            expandedValue = JsonUtils.toList(expandedValue);
                         }
 
                     } else {
@@ -721,7 +721,7 @@ final class ObjectExpansion1314 {
                         continue;
                     }
 
-                    expandedValue = JsonUtils.toSet(Expansion
+                    expandedValue = JsonUtils.toList(Expansion
                             .with(activeContext, value, Keywords.ANNOTATION, baseUrl)
                             .frameExpansion(frameExpansion)
                             .ordered(ordered)
@@ -747,6 +747,8 @@ final class ObjectExpansion1314 {
                         || (Keywords.VALUE.equals(expandedProperty) && Keywords.JSON.equals(inputType))) {
                     System.out.println("> " + expandedProperty.getClass().getSimpleName() + " -> " + expandedValue.getClass().getSimpleName());
                     System.out.println("> " + expandedProperty + " -> " + expandedValue);
+                    
+//                    JsonMapBuilder.merge(result, expandedProperty, expandedValue);
                     result.put(expandedProperty, expandedValue);
                 }
 

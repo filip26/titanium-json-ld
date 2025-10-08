@@ -105,7 +105,7 @@ public final class JsonLdComparison {
         return arraysEqualsUnordered(array1, array2);
     }
 
-    // JSON arrays are generally compared without regard to order
+    // JSON arrays are generally compared with no regard to order
     private static final boolean arraysEqualsUnordered(final JsonArray array1, final JsonArray array2) {
 
         if (array1.size() != array2.size()) {

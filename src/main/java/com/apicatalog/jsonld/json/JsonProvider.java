@@ -6,6 +6,7 @@ package com.apicatalog.jsonld.json;
  * avoids the overhead of doing a service lookup on each call.  This improves
  * performance dramatically (about 200 to 300% for most calls).
  */
+@Deprecated
 public class JsonProvider {
 
 	private static jakarta.json.spi.JsonProvider provider;

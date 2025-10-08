@@ -138,8 +138,8 @@ public final class ExpansionProcessor {
             return Collections.emptySet();
         }
         
-        if (expanded instanceof Set<?> set) {
-            return set;
+        if (expanded instanceof Collection<?> collection) {
+            return collection;
         }
 
         // 8.3

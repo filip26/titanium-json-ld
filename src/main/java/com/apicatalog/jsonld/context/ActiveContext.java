@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.compaction.UriCompaction;
 import com.apicatalog.jsonld.compaction.ValueCompaction;
 import com.apicatalog.jsonld.expansion.UriExpansion;
@@ -29,6 +30,7 @@ import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.processor.ProcessingRuntime;
 
 import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 
 /**
  * A context that is used to resolve terms while the processing algorithm is
@@ -163,8 +165,8 @@ public final class ActiveContext implements Context {
         return UriExpansion.with(this).uriValidation(runtime.getUriValidation());
     }
 
-    public ValueExpansion valueExpansion() {
-        return ValueExpansion.with(this);
+    public Map<String, ?> expandValue(final String activeProperty, final JsonValue value) throws JsonLdError {
+        return ValueExpansion.expand(this, activeProperty, value);
     }
 
     public UriCompaction uriCompaction() {

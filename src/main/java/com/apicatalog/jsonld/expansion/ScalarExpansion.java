@@ -83,6 +83,6 @@ public final class ScalarExpansion {
          * 4.3. Return the result of the Value Expansion algorithm, passing the active
          * context, active property, and element as value.
          */
-        return activeContext.valueExpansion().expand(element, activeProperty);
+        return activeContext.expandValue(activeProperty, element);
     }
 }

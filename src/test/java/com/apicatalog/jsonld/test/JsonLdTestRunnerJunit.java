@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
@@ -153,13 +154,13 @@ public class JsonLdTestRunnerJunit {
             return false;
         }
 
-        if (result instanceof Set<?> set) {
-System.out.println(set);
+        if (result instanceof Collection<?> collection) {
+System.out.println(collection);
             try {
                 return validateJsonLd(
                         testCase,
                         options,
-                        (JsonStructure) new JakartaMaterializer().node(set, new JsonLdAdapter()));
+                        (JsonStructure) new JakartaMaterializer().node(collection, new JsonLdAdapter()));
 
             } catch (IOException e) {
                 fail(e);

@@ -18,6 +18,7 @@ package com.apicatalog.jsonld.json;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -189,9 +190,9 @@ public final class JsonUtils {
                     ;
     }
     
-    public static Collection<?> toSet(Object value) {
+    public static Collection<?> toList(Object value) {
         if (value instanceof Collection<?> collection) {
-            return Set.copyOf(collection);
+            return List.copyOf(collection);
         }
         return Set.of(value);
     }

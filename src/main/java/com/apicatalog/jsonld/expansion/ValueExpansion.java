@@ -38,23 +38,18 @@ import jakarta.json.JsonValue;
  */
 public final class ValueExpansion {
 
-    // required
-    private final Context activeContext;
+    /**
+     * Expand a JSON value according to the active context and active property.
+     *
+     * @param activeProperty the active property name
+     * @param value          the input JSON value
+     * @return expanded value as a map (keys are JSON-LD keywords)
+     * @throws JsonLdError when expansion fails (passed through from context
+     *                     helpers)
+     */
+    public static Map<String, ?> expand(final Context activeContext, final String activeProperty, final JsonValue value) throws JsonLdError {
 
-    // runtime
-    private Optional<TermDefinition> definition;
-
-    private ValueExpansion(final Context activeContext) {
-        this.activeContext = activeContext;
-    }
-
-    public static final ValueExpansion with(final Context activeContext) {
-        return new ValueExpansion(activeContext);
-    }
-
-    public Map<String, ?> expand(final JsonValue value, final String activeProperty) throws JsonLdError {
-        System.out.println(">>>>>>>>>>>>>>>> " + value + ", " + activeProperty);
-        definition = activeContext.getTerm(activeProperty);
+        final Optional<TermDefinition> definition = activeContext.getTerm(activeProperty);
 
         final Optional<String> typeMapping = definition.map(TermDefinition::getTypeMapping);
 
@@ -74,79 +69,64 @@ public final class ValueExpansion {
                 }
 
                 if (idValue != null) {
-                    final String expandedValue = activeContext.uriExpansion().documentRelative(true)
-                            .vocab(false).expand(idValue);
+                    final String expandedValue = activeContext.uriExpansion()
+                            .documentRelative(true)
+                            .vocab(false)
+                            .expand(idValue);
 
                     return Map.of(Keywords.ID, expandedValue);
-                    // return JsonProvider.instance().createObjectBuilder().add(Keywords.ID,
-                    // expandedValue).build();
                 }
 
                 // 2.
-            } else if (Keywords.VOCAB.equals(typeMapping.get()) && JsonUtils.isString(value)) {
+            } else if (Keywords.VOCAB.equals(typeMapping.get())
+                    && value instanceof JsonString jsonString) {
 
-                String expandedValue = activeContext.uriExpansion().documentRelative(true)
-                        .vocab(true).expand(((JsonString) value).getString());
-
-                return Map.of(Keywords.ID, expandedValue);
-//                return JsonProvider.instance().createObjectBuilder().add(Keywords.ID, expandedValue).build();
+                return Map.of(Keywords.ID, activeContext.uriExpansion()
+                        .documentRelative(true)
+                        .vocab(true)
+                        .expand(jsonString.getString()));
             }
         }
-
-        // 3.
-//        final JsonObjectBuilder result = JsonProvider.instance().createObjectBuilder().add(Keywords.VALUE, value);
 
         // 4.
         if (typeMapping
                 .filter(t -> !Keywords.ID.equals(t) && !Keywords.VOCAB.equals(t) && !Keywords.NONE.equals(t))
                 .isPresent()) {
 
-//            result.add(Keywords.TYPE, typeMapping.get());
-            return Map.of(Keywords.TYPE, typeMapping.get(),
+            return Map.of(
+                    Keywords.TYPE, typeMapping.get(),
                     Keywords.VALUE, JsonUtils.getScalar(value));
-//            return new ValueNode(typeMapping.get(), value, null, null);
-
-            // 5.
         }
 
         if (value instanceof JsonString jsonString) {
 
-            // 5.1.
-            final String language = definition
-                    .map(TermDefinition::getLanguageMapping)
-//                    .filter(JsonUtils::isString)
-//?                    .filter(JsonUtils::isNotNull)
-//                    .map(JsonString.class::cast)
-//                    .map(JsonString::getString)
-                    .orElseGet(() -> activeContext.getDefaultLanguage() != null
-                            ? activeContext.getDefaultLanguage()
-                            : null);
-
-            // 5.2.
-            final DirectionType direction = definition
-                    .map(TermDefinition::getDirectionMapping)
-                    .orElseGet(() -> activeContext.getDefaultBaseDirection());
-
             var map = new HashMap<String, Object>(3);
             map.put(Keywords.VALUE, jsonString.getString());
 
+            // 5.1.
+            var language = definition
+                    .map(TermDefinition::getLanguageMapping)
+                    .orElseGet(activeContext::getDefaultLanguage);
+
             // 5.3.
             if (language != null) {
-                System.out.println("X XXXXXXXXXXXXX   " + language + " > " + activeContext.getDefaultLanguage());
-                System.out.println(definition
-                    .map(TermDefinition::getLanguageMapping).orElse(null));
                 map.put(Keywords.LANGUAGE, language);
             }
+
+            // 5.2.
+            var direction = definition
+                    .map(TermDefinition::getDirectionMapping)
+                    .orElseGet(activeContext::getDefaultBaseDirection);
 
             // 5.4.
             if (direction != null && !DirectionType.NULL.equals(direction)) {
                 map.put(Keywords.DIRECTION, direction.name().toLowerCase());
             }
+
             return map;
         }
 
         // 6.
         return Map.of(Keywords.VALUE, JsonUtils.getScalar(value));
     }
-
 }

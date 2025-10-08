@@ -16,16 +16,16 @@
 package com.apicatalog.jsonld.expansion;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.node.ListNode;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonValue;
@@ -87,7 +87,7 @@ public final class ArrayExpansion {
 
 //        final JsonArrayBuilder result = JsonProvider.instance().createArrayBuilder();
 
-        final Set<Object> result = new LinkedHashSet<>(element.size());
+        final List<Object> result = new ArrayList<>(element.size());
 
         // 5.2.
         for (final JsonValue item : element) {
@@ -108,15 +108,14 @@ public final class ArrayExpansion {
                             .map(TermDefinition::getContainerMapping)
                             .filter(c -> c.contains(Keywords.LIST)).isPresent()) {
 
-//                expanded = ListNode.toListNode(expanded);
-                expanded = List.of(list);
+                expanded = ListNode.toList(list);
+//                expanded = List.of(list);
             }
 
             // 5.2.3
 //            if (JsonUtils.isArray(expanded)) {
-            if (expanded instanceof Set<?> set) {
-
-                set.stream()
+            if (expanded instanceof Collection<?> collection) {
+                collection.stream()
                         .filter(Objects::nonNull)
                         .forEach(result::add);
 
