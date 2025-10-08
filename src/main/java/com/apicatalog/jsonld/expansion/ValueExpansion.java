@@ -31,82 +31,91 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
 /**
+ * Implements the JSON-LD Value Expansion algorithm.
+ *
+ * <p>
+ * This is a utility class that provides a single static method to expand a JSON
+ * value.
  *
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#value-expansion">Value
  *      Expansion Algorithm</a>
- *
  */
 public final class ValueExpansion {
 
     /**
-     * Expand a JSON value according to the active context and active property.
+     * Expands a JSON value based on the rules of the Value Expansion algorithm.
      *
-     * @param activeProperty the active property name
-     * @param value          the input JSON value
-     * @return expanded value as a map (keys are JSON-LD keywords)
-     * @throws JsonLdError when expansion fails (passed through from context
-     *                     helpers)
+     * @param context  The active context to use for expansion.
+     * @param property The active property being expanded, which determines which
+     *                 term definition to apply.
+     * @param value    The JSON value to expand.
+     * @return A {@code Map} representing the expanded value object, typically
+     *         containing keys like {@code @id}, {@code @value}, {@code @type},
+     *         {@code @language}, or {@code @direction}.
+     * @throws JsonLdError If an error occurs during IRI expansion.
+     * @see <a href="https://www.w3.org/TR/json-ld11-api/#value-expansion">Value
+     *      Expansion Algorithm</a>
      */
-    public static Map<String, ?> expand(final Context activeContext, final String activeProperty, final JsonValue value) throws JsonLdError {
+    public static Map<String, ?> expand(final Context context, final String property, final JsonValue value) throws JsonLdError {
 
-        final Optional<TermDefinition> definition = activeContext.getTerm(activeProperty);
+        final Optional<TermDefinition> definition = context.getTerm(property);
 
-        final Optional<String> typeMapping = definition.map(TermDefinition::getTypeMapping);
+        final String typeMapping = definition
+                .map(TermDefinition::getTypeMapping)
+                .orElse(Keywords.NONE);
 
-        // 1.
-        if (typeMapping.filter(Keywords.ID::equals).isPresent()) {
-
+        switch (typeMapping) {
+        case Keywords.ID:
             String idValue = null;
 
             if (value instanceof JsonString jsonString) {
                 idValue = jsonString.getString();
 
                 // custom extension allowing to process numeric ids
-            } else if (activeContext.runtime().isNumericId()
+            } else if (context.runtime().isNumericId()
                     && value instanceof JsonNumber jsonNumber) {
                 idValue = jsonNumber.toString();
             }
 
             if (idValue != null) {
-                final String expandedValue = activeContext.uriExpansion()
+                final String expandedValue = context.uriExpansion()
                         .documentRelative(true)
                         .vocab(false)
                         .expand(idValue);
 
                 return Map.of(Keywords.ID, expandedValue);
             }
+            break;
 
-            // 2.
-        } else if (typeMapping.filter(Keywords.VOCAB::equals).isPresent()
-                && value instanceof JsonString jsonString) {
+        case Keywords.VOCAB:
+            if (value instanceof JsonString jsonString) {
+                return Map.of(Keywords.ID, context.uriExpansion()
+                        .documentRelative(true)
+                        .vocab(true)
+                        .expand(jsonString.getString()));
+            }
+            break;
 
-            return Map.of(Keywords.ID, activeContext.uriExpansion()
-                    .documentRelative(true)
-                    .vocab(true)
-                    .expand(jsonString.getString()));
-        }
+        case Keywords.NONE:
+            break;
 
-        // 4.
-        if (typeMapping
-                .filter(t -> !Keywords.ID.equals(t)
-                        && !Keywords.VOCAB.equals(t)
-                        && !Keywords.NONE.equals(t))
-                .isPresent()) {
-
+        // type mapping is not ID, VOCAB, NONE
+        default:
             return Map.of(
-                    Keywords.TYPE, typeMapping.get(),
+                    Keywords.TYPE, typeMapping,
                     Keywords.VALUE, JsonUtils.getScalar(value));
+
         }
 
         if (value instanceof JsonString jsonString) {
 
-            var map = new HashMap<String, Object>(3);
+            var map = new HashMap<String, String>(3);
             map.put(Keywords.VALUE, jsonString.getString());
 
             // 5.1.
             var language = definition
                     .map(TermDefinition::getLanguageMapping)
-                    .orElseGet(activeContext::getDefaultLanguage);
+                    .orElseGet(context::getDefaultLanguage);
 
             // 5.3.
             if (language != null) {
@@ -116,7 +125,7 @@ public final class ValueExpansion {
             // 5.2.
             var direction = definition
                     .map(TermDefinition::getDirectionMapping)
-                    .orElseGet(activeContext::getDefaultBaseDirection);
+                    .orElseGet(context::getDefaultBaseDirection);
 
             // 5.4.
             if (direction != null && !DirectionType.NULL.equals(direction)) {
