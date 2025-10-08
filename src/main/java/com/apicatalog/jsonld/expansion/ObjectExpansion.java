@@ -31,6 +31,7 @@ import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Utils;
+import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriUtils;
 
 import jakarta.json.JsonObject;
@@ -281,10 +282,9 @@ public final class ObjectExpansion {
     private Map<String, ?> normalizeValue(final Map<String, ?> result) throws JsonLdError {
 
         // 15.1.
-////        if (result.isNotValueObject()) {
-//        if (result instanceof )
-//            throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
-////        }
+        if (ValueNode.isNotValueNode(result)) {
+            throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
+        }
 
         if ((result.containsKey(Keywords.DIRECTION) || result.containsKey(Keywords.LANGUAGE))
                 && result.containsKey(Keywords.TYPE)) {

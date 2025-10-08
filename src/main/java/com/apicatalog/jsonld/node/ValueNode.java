@@ -15,6 +15,8 @@
  */
 package com.apicatalog.jsonld.node;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -25,6 +27,15 @@ import jakarta.json.JsonValue;
 
 public final class ValueNode {
 
+    private static final Collection<String> VALUE_KEYWORDS = Arrays.asList(
+            Keywords.TYPE,
+            Keywords.VALUE,
+            Keywords.DIRECTION,
+            Keywords.LANGUAGE,
+            Keywords.INDEX,
+            Keywords.ANNOTATION);
+
+    
     public static final boolean isValueObject(JsonValue value) {
         return JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.VALUE);
     }
@@ -39,5 +50,10 @@ public final class ValueNode {
         return value instanceof Map map 
                 && map.containsKey(Keywords.VALUE);
     }
+    
+    public static final boolean isNotValueNode(Object value) {
+        return !(value instanceof Map map && VALUE_KEYWORDS.containsAll(map.keySet()));
+    }
+
 
 }

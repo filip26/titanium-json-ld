@@ -973,9 +973,9 @@ final class ObjectExpansion1314 {
                             result.put(expandedIndexKey, indexPropertyValues);
 
                             // 13.8.3.7.2.5.
-//                            if (ValueNode.isValueObject(item) && result.size() > 1) {
-//                                throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
-//                            }
+                            if (ValueNode.isValueNode(item) && result.size() > 1) {
+                                throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
+                            }
 
                             // 13.8.3.7.3.
                         } else if (containerMapping.contains(Keywords.INDEX)
