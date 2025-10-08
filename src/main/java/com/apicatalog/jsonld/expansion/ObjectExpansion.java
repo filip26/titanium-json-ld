@@ -77,21 +77,6 @@ public final class ObjectExpansion {
         return new ObjectExpansion(activeContext, propertyContext, element, activeProperty, baseUrl);
     }
 
-    public ObjectExpansion frameExpansion(boolean value) {
-        this.frameExpansion = value;
-        return this;
-    }
-
-    public ObjectExpansion ordered(boolean value) {
-        this.ordered = value;
-        return this;
-    }
-
-    public ObjectExpansion fromMap(boolean value) {
-        this.fromMap = value;
-        return this;
-    }
-
     public Object expand() throws JsonLdError {
 
         initPreviousContext();
@@ -134,6 +119,21 @@ public final class ObjectExpansion {
         }
 
         return normalize(result);
+    }
+
+    public ObjectExpansion frameExpansion(boolean value) {
+        this.frameExpansion = value;
+        return this;
+    }
+
+    public ObjectExpansion ordered(boolean value) {
+        this.ordered = value;
+        return this;
+    }
+
+    public ObjectExpansion fromMap(boolean value) {
+        this.fromMap = value;
+        return this;
     }
 
     private void initPropertyContext() throws JsonLdError {
@@ -354,16 +354,16 @@ public final class ObjectExpansion {
 
         // 17.2.
         var set = result.get(Keywords.SET);
-        
+
         if (set instanceof Map map) {
-          // deepcode ignore checkIsPresent~Optional: false positive
+            // deepcode ignore checkIsPresent~Optional: false positive
             return normalize(map);
 //            return normalize(JsonMapBuilder.create(set.map(JsonValue::asJsonObject).get()));
-            
+
         } else if (set != null) {
             return set;
         }
-        
+
 //        final Optional<JsonValue> set = result.get(Keywords.SET);
 //
 //        if (set.filter(JsonUtils::isObject).isPresent()) {

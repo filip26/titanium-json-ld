@@ -229,7 +229,7 @@ public final class JsonUtils {
         return value;
     }
     
-    public static Object getScalar(JsonValue value) {
+    public static Object asScalar(JsonValue value) {
         if (value == null) {
             return null;
         }
@@ -250,5 +250,13 @@ public final class JsonUtils {
         }
         
     }
+    
+    public static Collection<?> asCollection(Object value) {
+        if (value instanceof Collection<?> collection) {
+            return collection;
+        }
+        return Set.of(value);
+    }
+    
     
 }

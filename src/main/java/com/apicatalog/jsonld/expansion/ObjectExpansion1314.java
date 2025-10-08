@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.expansion;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,10 +47,8 @@ import com.apicatalog.jsonld.node.ListNode;
 import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriUtils;
 
-import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
@@ -493,7 +492,7 @@ final class ObjectExpansion1314 {
                             throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
                         }
 
-                        expandedValue = JsonUtils.getScalar(value);
+                        expandedValue = JsonUtils.asScalar(value);
 
                         // 13.4.7.2
                     } else if (JsonUtils.isNull(value)
@@ -504,7 +503,7 @@ final class ObjectExpansion1314 {
                                             || JsonUtils.isArray(value)
                                                     && value.asJsonArray().stream().allMatch(JsonUtils::isScalar))) {
 
-                        expandedValue = JsonUtils.getScalar(value);
+                        expandedValue = JsonUtils.asScalar(value);
 
                         if (frameExpansion) {
                             expandedValue = JsonUtils.toList(expandedValue);
@@ -534,21 +533,17 @@ final class ObjectExpansion1314 {
                                                     && value.asJsonArray().stream().allMatch(JsonUtils::isString))) {
 
                         if (value instanceof JsonString jsonString) {
-                            
+
                             if (!LanguageTag.isWellFormed(jsonString.getString())) {
                                 LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", jsonString.getString());
                             }
-                            
+
+                            // 13.4.8.2
                             expandedValue = jsonString.getString().toLowerCase();
 
                         } else {
-                            expandedValue = JsonUtils.getScalar(value);
+                            expandedValue = JsonUtils.asScalar(value);
                         }
-
-                        // 13.4.8.2
-//                        expandedValue = JsonUtils.isString(value) 
-//                                ? JsonProvider.instance().createValue(((JsonString) value).getString().toLowerCase())
-//                                : value;
 
                         if (frameExpansion) {
                             expandedValue = JsonUtils.toList(expandedValue);
@@ -591,12 +586,13 @@ final class ObjectExpansion1314 {
                 if (Keywords.INDEX.equals(expandedProperty)) {
 
                     // 13.4.10.1.
-                    if (JsonUtils.isNotString(value)) {
+                    if (value instanceof JsonString jsonString) {
+                        // 13.4.10.2
+                        expandedValue = jsonString.getString();
+
+                    } else {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_INDEX_VALUE);
                     }
-
-                    // 13.4.10.2
-                    expandedValue = value;
                 }
 
                 // 13.4.11
@@ -615,7 +611,7 @@ final class ObjectExpansion1314 {
                             .compute();
 
                     if (!(expandedValue instanceof Collection<?>)) {
-                        expandedValue = List.of(expandedValue);
+                        expandedValue = Set.of(expandedValue);
                     }
 
 //                    if (JsonUtils.isNotArray(expandedValue)) {
@@ -748,7 +744,7 @@ final class ObjectExpansion1314 {
                         || (Keywords.VALUE.equals(expandedProperty) && Keywords.JSON.equals(inputType))) {
                     System.out.println("> " + expandedProperty.getClass().getSimpleName() + " -> " + expandedValue.getClass().getSimpleName());
                     System.out.println("> " + expandedProperty + " -> " + expandedValue);
-                    
+
 //                    JsonMapBuilder.merge(result, expandedProperty, expandedValue);
                     result.put(expandedProperty, expandedValue);
                 }
@@ -819,7 +815,7 @@ final class ObjectExpansion1314 {
 //                                .add(Keywords.VALUE, item);
 
                         final Map<String, Object> langMap = new HashMap<>();
-                        langMap.put(Keywords.VALUE, ((JsonString)item).getString());
+                        langMap.put(Keywords.VALUE, ((JsonString) item).getString());
 
                         // 13.7.4.2.4.
                         if (!Keywords.NONE.equals(langCode)) {
@@ -864,6 +860,7 @@ final class ObjectExpansion1314 {
                 final String indexKey = keyTermDefinition
                         .map(TermDefinition::getIndexMapping)
                         .orElse(Keywords.INDEX);
+                System.out.println("I1: " + expandedValue);
 
                 // 13.8.3.
                 for (final String index : Utils.index(value.asJsonObject().keySet(), ordered)) {
@@ -909,19 +906,35 @@ final class ObjectExpansion1314 {
 
                     // 13.8.3.6.
                     // FIXME
-//                    indexValue = Expansion.with(mapContext, indexValue, key, baseUrl).fromMap(true)
-//                            .frameExpansion(frameExpansion).ordered(ordered).compute();
+                    Collection<?> indexValues = ArrayExpansion
+                            .with(mapContext, indexValue.asJsonArray(), key, baseUrl)
+                            .frameExpansion(frameExpansion)
+                            .ordered(ordered)
+                            .expand();
+
+                    
+//                    Collection<Object> indexValues = (Collection)Expansion.with(mapContext, indexValue, key, baseUrl)
+//                            .fromMap(true)
+//                            .frameExpansion(frameExpansion)
+//                            .ordered(ordered).compute();
 
                     // 13.8.3.7.
-                    for (JsonValue item : indexValue.asJsonArray()) {
+                    for (final Object item : indexValues) {
 
+                        Map<String, Object> result = new HashMap<>((Map)item);
+
+                        System.out.println("IX: " + item);
+                        System.out.println("    " + result);
                         // 13.8.3.7.1.
-                        if (containerMapping.contains(Keywords.GRAPH) && !GraphNode.isGraphNode(item)) {
-                            item = GraphNode.toGraphObject(item);
-                        }
+//                        if (containerMapping.contains(Keywords.GRAPH)
+//                                && !GraphNode.isGraphNode(item)) {
+////                            item = GraphNode.toGraphObject(item);
+//                            result.put(Keywords.GRAPH, Set.of(JsonUtils.asScalar(item)));
+//                        }
 
                         // 13.8.3.7.2.
-                        if (containerMapping.contains(Keywords.INDEX) && !Keywords.INDEX.equals(indexKey)
+                        if (containerMapping.contains(Keywords.INDEX)
+                                && !Keywords.INDEX.equals(indexKey)
                                 && !Keywords.NONE.equals(expandedIndex)) {
 
                             // 13.8.3.7.2.1.
@@ -938,13 +951,20 @@ final class ObjectExpansion1314 {
                                     .expand(indexKey);
 
                             // 13.8.3.7.2.3.
-                            final JsonArrayBuilder indexPropertyValues = JsonProvider.instance().createArrayBuilder().add(reExpandedIndex);
+//                            final List<?> indexPropertyValues = JsonProvider.instance().createArrayBuilder().add(reExpandedIndex);
+                            final List<Object> indexPropertyValues = new ArrayList<>();
+                            indexPropertyValues.add(reExpandedIndex);
 
-                            final JsonValue existingValues = item.asJsonObject().get(expandedIndexKey);
+//                            final JsonValue existingValues = item.asJsonObject().get(expandedIndexKey);
+                            final Object existingValues = result.get(expandedIndexKey);
 
-                            if (JsonUtils.isNotNull(existingValues)) {
-                                if (JsonUtils.isArray(existingValues)) {
-                                    existingValues.asJsonArray().forEach(indexPropertyValues::add);
+                            if (existingValues != null) {
+                                if (existingValues instanceof Collection<?> values) {
+                                    indexPropertyValues.addAll(values);
+//                                    existingValues
+//                                            .stream()
+//                                            .map(JsonUtils::asScalar)
+//                                            .forEach(indexPropertyValues::add);
 
                                 } else {
                                     indexPropertyValues.add(existingValues);
@@ -952,24 +972,28 @@ final class ObjectExpansion1314 {
                             }
 
                             // 13.8.3.7.2.4.
-                            item = JsonProvider.instance().createObjectBuilder(item.asJsonObject())
-                                    .add(expandedIndexKey, indexPropertyValues).build();
+//                            item = JsonProvider.instance().createObjectBuilder(item.asJsonObject())
+//                                    .add(expandedIndexKey, indexPropertyValues).build();
+
+                            result.put(expandedIndexKey, indexPropertyValues);
 
                             // 13.8.3.7.2.5.
-                            if (ValueNode.isValueObject(item) && item.asJsonObject().size() > 1) {
-                                throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
-                            }
+//                            if (ValueNode.isValueObject(item) && result.size() > 1) {
+//                                throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
+//                            }
 
                             // 13.8.3.7.3.
                         } else if (containerMapping.contains(Keywords.INDEX)
-                                && !item.asJsonObject().containsKey(Keywords.INDEX)
+                                && !result.containsKey(Keywords.INDEX)
                                 && !Keywords.NONE.equals(expandedIndex)) {
 
-                            item = JsonProvider.instance().createObjectBuilder(item.asJsonObject()).add(Keywords.INDEX, index).build();
+//                            item = JsonProvider.instance().createObjectBuilder(item.asJsonObject())
+//                            .add(Keywords.INDEX, index).build();
+                            result.put(Keywords.INDEX, index);
 
                             // 13.8.3.7.4.
                         } else if (containerMapping.contains(Keywords.ID)
-                                && !item.asJsonObject().containsKey(Keywords.ID)
+                                && !result.containsKey(Keywords.ID)
                                 && !Keywords.NONE.equals(expandedIndex)) {
 
                             expandedIndex = activeContext
@@ -978,37 +1002,48 @@ final class ObjectExpansion1314 {
                                     .documentRelative(true)
                                     .expand(index);
 
-                            item = JsonProvider.instance().createObjectBuilder(item.asJsonObject()).add(Keywords.ID, expandedIndex)
-                                    .build();
+//                            item = JsonProvider.instance().createObjectBuilder(item.asJsonObject())
+//                                    .add(Keywords.ID, expandedIndex)
+//                                    .build();
+
+                            result.put(Keywords.ID, expandedIndex);
 
                             // 13.8.3.7.5.
                         } else if (containerMapping.contains(Keywords.TYPE) && !Keywords.NONE.equals(expandedIndex)) {
 
-                            final JsonArrayBuilder types = JsonProvider.instance().createArrayBuilder().add(expandedIndex);
+//                            final JsonArrayBuilder types = JsonProvider.instance().createArrayBuilder().add(expandedIndex);
+                            final List<Object> types = new ArrayList<>();
+                            types.add(expandedIndex);
 
-                            final JsonValue existingType = item.asJsonObject().get(Keywords.TYPE);
+                            final Object existingType = result.get(Keywords.TYPE);
 
-                            if (JsonUtils.isNotNull(existingType)) {
+                            if (existingType != null) {
 
-                                if (JsonUtils.isArray(existingType)) {
-                                    existingType.asJsonArray().forEach(types::add);
+                                if (existingType instanceof Collection<?> existingTypes) {
+                                    types.addAll(existingTypes);
+//                                    existingType
+//                                            .asJsonArray()
+//                                            .stream()
+//                                            .map(JsonUtils::asScalar)
+//                                            .forEach(types::add);
 
                                 } else {
                                     types.add(existingType);
                                 }
                             }
 
-                            item = JsonProvider.instance().createObjectBuilder(item.asJsonObject()).add(Keywords.TYPE, types).build();
+                            result.put(Keywords.TYPE, types);
+//                            item = JsonProvider.instance().createObjectBuilder(item.asJsonObject()).add(Keywords.TYPE, types).build();
                         }
 
                         // 13.8.3.7.6.
-                        indices.add(item);
+                        indices.add(result);
 //                        expandedValue = JsonProvider.instance().createArrayBuilder(expandedValue.asJsonArray()).add(item).build();
                     }
                 }
 
                 expandedValue = Set.copyOf(indices);
-
+                System.out.println(">>> " + expandedValue);
                 // 13.9.
             } else {
                 expandedValue = Expansion
@@ -1027,7 +1062,7 @@ final class ObjectExpansion1314 {
             // FIXME
             if (containerMapping.contains(Keywords.LIST) && !ListNode.isList(expandedValue)) {
                 expandedValue = ListNode.toList(expandedValue);
-//                expandedValue = List.copyOf((Set<?>)expandedValue);
+
             }
 
             // 13.12.
@@ -1047,21 +1082,20 @@ final class ObjectExpansion1314 {
 
             // 13.13.
             if (keyTermDefinition.filter(TermDefinition::isReverseProperty).isPresent()) {
-//FIXME
-//                // 13.13.3.
-//                expandedValue = JsonUtils.toJsonArray(expandedValue);
-//
-//                // 13.13.4.
-//                for (JsonValue item : expandedValue.asJsonArray()) {
-//
-//                    // 13.13.4.1.
+
+                expandedValue = JsonUtils.asCollection(expandedValue);
+
+                // 13.13.4.
+                for (Object item : (Collection<?>) expandedValue) {
+
+                    // 13.13.4.1.
 //                    if (ListNode.isListNode(item) || ValueNode.isValueObject(item)) {
 //                        throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
 //                    }
-//
-//                    // 13.13.4.3.
-//                    result.getMapBuilder(Keywords.REVERSE).add(expandedProperty, item);
-//                }
+
+                    // 13.13.4.3.
+//FIXKE                    result.getMapBuilder(Keywords.REVERSE).add(expandedProperty, item);
+                }
 
                 // 13.14
             } else {

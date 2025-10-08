@@ -101,7 +101,7 @@ public final class ValueExpansion {
         default:
             return Map.of(
                     Keywords.TYPE, typeMapping,
-                    Keywords.VALUE, JsonUtils.getScalar(value));
+                    Keywords.VALUE, JsonUtils.asScalar(value));
 
         }
 
@@ -134,6 +134,6 @@ public final class ValueExpansion {
         }
 
         // 6.
-        return Map.of(Keywords.VALUE, JsonUtils.getScalar(value));
+        return Map.of(Keywords.VALUE, JsonUtils.asScalar(value));
     }
 }
