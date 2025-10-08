@@ -45,13 +45,13 @@ import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.node.DefaultObject;
 import com.apicatalog.jsonld.node.GraphNode;
 import com.apicatalog.jsonld.node.ListNode;
-import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriUtils;
 
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
+import jakarta.json.JsonValue.ValueType;
 
 /**
  *
@@ -192,6 +192,10 @@ final class ObjectExpansion1314 {
 
                         if (frameExpansion && expandedValue != null) {
                             expandedValue = Set.of(expandedValue);
+
+                        } else if (expandedValue == null) {
+                            result.put(Keywords.ID, null);
+                            continue;
                         }
 
 //                        if (expandedStringValue != null) {
@@ -216,6 +220,10 @@ final class ObjectExpansion1314 {
 
                         if (frameExpansion && expandedValue != null) {
                             expandedValue = Set.of(expandedValue);
+
+                        } else if (expandedValue == null) {
+                            result.put(Keywords.ID, null);
+                            continue;
                         }
 
 //                        if (expandedStringValue != null) {
@@ -260,6 +268,7 @@ final class ObjectExpansion1314 {
 
                         expandedValue = array;
                     }
+
                 }
 
                 // 13.4.4
@@ -314,14 +323,15 @@ final class ObjectExpansion1314 {
 
                         if (value instanceof JsonString jsonString) {
 
-                            String expandedStringValue = typeContext
+                            expandedValue = typeContext
                                     .uriExpansion()
                                     .vocab(true)
                                     .documentRelative(true)
                                     .expand(jsonString.getString());
 
-                            if (expandedStringValue != null) {
-                                expandedValue = expandedStringValue;
+                            if (expandedValue == null) {
+                                result.put(Keywords.VALUE, null);
+                                continue;
                             }
 
                         } else if (JsonUtils.isArray(value)) {
@@ -907,15 +917,14 @@ final class ObjectExpansion1314 {
 //                            .ordered(ordered).compute();
 
                     // 13.8.3.7.
-                    for (final Object item : indexValues) {
+                    for (var item : indexValues) {
 
                         var result = new HashMap<String, Object>();
 
                         // 13.8.3.7.1.
-                        if (containerMapping.contains(Keywords.GRAPH)
-                                && !GraphNode.isGraph(item)) {
-////                            item = GraphNode.toGraphObject(item);
+                        if (containerMapping.contains(Keywords.GRAPH) && !GraphNode.isGraph(item)) {
                             result.put(Keywords.GRAPH, Set.of(item));
+
                         } else {
                             result.putAll((Map) item);
                         }

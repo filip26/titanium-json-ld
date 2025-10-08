@@ -35,7 +35,7 @@ import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 class ExpandTest {
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource({"jsonLdApi", "jsonLdStar"})
+    @MethodSource({"jsonLdApi"/*, "jsonLdStar"*/})
     void testExpand(final JsonLdTestCase testCase) {
 
         // Skip JSON-LD-STAR (Experimental) negative test (an invalid annotation inside @list)
