@@ -81,7 +81,18 @@ public final class ObjectExpansion {
 
         initPreviousContext();
 
-        initPropertyContext();
+        // 8. init property context
+        if (propertyContext != null) {
+            activeContext = activeContext
+                    .newContext()
+                    .overrideProtected(true)
+                    .create(
+                            propertyContext,
+                            activeContext
+                                    .getTerm(activeProperty)
+                                    .map(TermDefinition::getBaseUrl)
+                                    .orElse(null));
+        }
 
         initLocalContext();
 
@@ -92,7 +103,6 @@ public final class ObjectExpansion {
 
         final String inputType = findInputType(typeKey);
 
-//        final JsonMapBuilder result = JsonMapBuilder.create();
         final Map<String, Object> result = new LinkedHashMap<>();
 
         ObjectExpansion1314
@@ -134,21 +144,6 @@ public final class ObjectExpansion {
     public ObjectExpansion fromMap(boolean value) {
         this.fromMap = value;
         return this;
-    }
-
-    private void initPropertyContext() throws JsonLdError {
-        // 8.
-        if (propertyContext != null) {
-            activeContext = activeContext
-                    .newContext()
-                    .overrideProtected(true)
-                    .create(
-                            propertyContext,
-                            activeContext
-                                    .getTerm(activeProperty)
-                                    .map(TermDefinition::getBaseUrl)
-                                    .orElse(null));
-        }
     }
 
     private void initPreviousContext() throws JsonLdError {
@@ -327,8 +322,7 @@ public final class ObjectExpansion {
             }
         }
 
-//        return normalize(result);
-        return result;
+        return normalize(result);
     }
 
     private Map<String, ?> normalizeType(final Map<String, Object> result) throws JsonLdError {

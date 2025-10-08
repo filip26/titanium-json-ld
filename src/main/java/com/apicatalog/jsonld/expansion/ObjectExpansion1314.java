@@ -43,6 +43,7 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.node.DefaultObject;
+import com.apicatalog.jsonld.node.GraphNode;
 import com.apicatalog.jsonld.node.ListNode;
 import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriUtils;
@@ -930,11 +931,11 @@ final class ObjectExpansion1314 {
                         System.out.println("IX: " + item);
                         System.out.println("    " + result);
                         // 13.8.3.7.1.
-//                        if (containerMapping.contains(Keywords.GRAPH)
-//                                && !GraphNode.isGraphNode(item)) {
+                        if (containerMapping.contains(Keywords.GRAPH)
+                                && !GraphNode.isGraph(item)) {
 ////                            item = GraphNode.toGraphObject(item);
-//                            result.put(Keywords.GRAPH, Set.of(JsonUtils.asScalar(item)));
-//                        }
+                            result.put(Keywords.GRAPH, Set.of(item));
+                        }
 
                         // 13.8.3.7.2.
                         if (containerMapping.contains(Keywords.INDEX)
@@ -1054,15 +1055,20 @@ final class ObjectExpansion1314 {
             if (containerMapping.contains(Keywords.GRAPH)
                     && !containerMapping.contains(Keywords.ID)
                     && !containerMapping.contains(Keywords.INDEX)) {
-//FIXME
-//                final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
-//
-//                JsonUtils
-//                        .toStream(expandedValue)
-//                        .map(GraphNode::toGraphObject)
-//                        .forEach(array::add);
-//
-//                expandedValue = array.build();
+
+                if (expandedValue instanceof Collection<?> items) {
+
+                    var list = new ArrayList<Object>(items.size());
+
+                    for (final Object item : items) {
+                        list.add(Map.of(Keywords.GRAPH, Set.of(item)));
+                    }
+
+                    expandedValue = list;
+
+                } else {
+                    expandedValue = Set.of(Map.of(Keywords.GRAPH, Set.of(expandedValue)));
+                }
             }
 
             // 13.13.
@@ -1082,10 +1088,10 @@ final class ObjectExpansion1314 {
                     Map<String, Object> map = (Map<String, Object>) result.get(Keywords.REVERSE);
                     if (map == null) {
                         result.put(Keywords.REVERSE, Map.of(expandedProperty, Set.of(item)));
-                        
+
                     } else if (map instanceof HashMap) {
                         JsonMapBuilder.merge(map, expandedProperty, item);
-                        
+
                     } else {
                         map = new HashMap<>(map);
                         JsonMapBuilder.merge(map, expandedProperty, item);

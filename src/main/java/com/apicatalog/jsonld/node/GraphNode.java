@@ -15,8 +15,7 @@
  */
 package com.apicatalog.jsonld.node;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import com.apicatalog.jsonld.json.JsonProvider;
@@ -28,10 +27,17 @@ import jakarta.json.JsonValue;
 
 /**
  *
- * @see <a href="https://www.w3.org/TR/json-ld11/#graph-objects">Graph Objects</a>
+ * @see <a href="https://www.w3.org/TR/json-ld11/#graph-objects">Graph
+ *      Objects</a>
  *
  */
 public final class GraphNode {
+
+    static final Set<String> ALLOWED = Set.of(
+            Keywords.GRAPH,
+            Keywords.ID,
+            Keywords.INDEX,
+            Keywords.CONTEXT);
 
     private GraphNode() {
     }
@@ -40,9 +46,14 @@ public final class GraphNode {
         if (!JsonUtils.isObject(value) || !value.asJsonObject().containsKey(Keywords.GRAPH)) {
             return false;
         }
-        Set<String> allowed = new HashSet<>(Arrays.asList(Keywords.GRAPH, Keywords.ID, Keywords.INDEX, Keywords.CONTEXT));
+        return ALLOWED.containsAll(value.asJsonObject().keySet());
+    }
 
-        return allowed.containsAll(value.asJsonObject().keySet());
+    public static final boolean isGraph(Object value) {
+        return value != null
+                && value instanceof Map map
+                && map.containsKey(Keywords.GRAPH)
+                && ALLOWED.containsAll(map.keySet());
     }
 
     public static final boolean isSimpleGraphNode(JsonValue value) {
@@ -53,5 +64,4 @@ public final class GraphNode {
     public static final JsonObject toGraphObject(JsonValue value) {
         return JsonProvider.instance().createObjectBuilder().add(Keywords.GRAPH, JsonUtils.toJsonArray(value)).build();
     }
-
 }
