@@ -21,7 +21,6 @@ import com.apicatalog.jsonld.api.CompactionApi;
 import com.apicatalog.jsonld.api.ExpansionApi;
 import com.apicatalog.jsonld.api.FlatteningApi;
 import com.apicatalog.jsonld.api.FramingApi;
-import com.apicatalog.jsonld.api.StringUtils;
 import com.apicatalog.jsonld.api.ToRdfApi;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.serialization.QuadsToJsonld;

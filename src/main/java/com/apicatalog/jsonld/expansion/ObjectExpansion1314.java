@@ -50,6 +50,7 @@ import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.tree.io.JakartaAdapter;
 import com.apicatalog.tree.io.NativeMaterializer;
+import com.apicatalog.tree.io.PolyMorph;
 
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
@@ -478,7 +479,9 @@ final class ObjectExpansion1314 {
                             throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
                         }
 
-                        expandedValue = new NativeMaterializer().node(value, JakartaAdapter.instance());
+                        expandedValue = new PolyMorph(value, JakartaAdapter.instance());
+                                
+//                                new NativeMaterializer().node(value, JakartaAdapter.instance());
 
                         // 13.4.7.2
                     } else if (JsonUtils.isNull(value)
@@ -647,17 +650,13 @@ final class ObjectExpansion1314 {
                         if (expandedValueObject.size() > 1
                                 || !expandedValueObject.containsKey(Keywords.REVERSE)) {
 
-                            Map<String, Object> reverseMap = (Map<String, Object>) result.get(Keywords.REVERSE);
+                            var reverseMap = new HashMap<String, Object>();
 
-                            if (reverseMap == null) {
-                                reverseMap = new HashMap<>();
-                                result.put(Keywords.REVERSE, reverseMap);
-                            }
 
 //                            final JsonMapBuilder reverseMap = result.getMapBuilder(Keywords.REVERSE);
 //
 //                            // 13.4.13.4.2
-                            for (final Entry<String, Object> entry : ((Map<String, Object>) expandedValueObject).entrySet()) {
+                            for (var entry : ((Map<String, Object>) expandedValueObject).entrySet()) {
 
                                 if (Keywords.REVERSE.equals(entry.getKey())) {
                                     continue;
@@ -675,14 +674,14 @@ final class ObjectExpansion1314 {
 
                                         // 13.4.13.4.2.1.1
                                         JsonMapBuilder.merge(reverseMap, entry.getKey(), item);
-//                                        reverseMap.add(entry.getKey(), item);
                                     }
                                 }
                             }
 
-                            if (reverseMap.isEmpty()) {
+                            if (!reverseMap.isEmpty()) {
+                                result.put(Keywords.REVERSE, reverseMap);
 
-                                result.remove(Keywords.REVERSE);
+//                                result.remove(Keywords.REVERSE);
                             }
                         }
                     }
@@ -764,19 +763,20 @@ final class ObjectExpansion1314 {
 
 //                (JsonStructure) new JakartaMaterializer().node(collection, new JsonLdAdapter())
 
-                expandedValue = new NativeMaterializer().node(value, JakartaAdapter.instance());
+//                expandedValue = new NativeMaterializer().node(value, JakartaAdapter.instance());
+                expandedValue = new PolyMorph(value, JakartaAdapter.instance());
 
-                if (expandedValue != null) {
+//                if (expandedValue != null) {
                     expandedValue = Map.of(
                             Keywords.TYPE, Keywords.JSON,
                             Keywords.VALUE, expandedValue);
 
-                } else {
-                    var map = new HashMap<>(2);
-                    map.put(Keywords.TYPE, Keywords.JSON);
-                    map.put(Keywords.VALUE, null);
-                    expandedValue = map;
-                }
+//                } else {
+//                    var map = new HashMap<>(2);
+//                    map.put(Keywords.TYPE, Keywords.JSON);
+//                    map.put(Keywords.VALUE, null);
+//                    expandedValue = map;
+//                }
 
 //                expandedValue = JsonProvider.instance().createObjectBuilder().add(Keywords.VALUE, value)
 //                        .add(Keywords.TYPE, Keywords.JSON).build();
@@ -1047,7 +1047,6 @@ final class ObjectExpansion1314 {
             }
 
             // 13.11.
-            // FIXME
             if (containerMapping.contains(Keywords.LIST) && !ListNode.isListNode(expandedValue)) {
                 expandedValue = ListNode.asListNode(expandedValue);
 

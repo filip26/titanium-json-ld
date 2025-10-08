@@ -31,7 +31,7 @@ import com.apicatalog.jsonld.test.JsonLdManifestLoader;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 
-@DisplayName(value = "XY")
+@DisplayName(value = "Expand")
 class ExpandTest {
 
     @ParameterizedTest(name = "{0}")

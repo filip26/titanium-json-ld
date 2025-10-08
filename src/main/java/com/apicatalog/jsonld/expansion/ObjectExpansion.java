@@ -328,14 +328,11 @@ public final class ObjectExpansion {
 
     private Map<String, ?> normalizeType(final Map<String, Object> result) throws JsonLdError {
 
-        Object type = result.get(Keywords.TYPE);
+        var type = result.get(Keywords.TYPE);
 
         if (!(type instanceof Collection)) {
             result.put(Keywords.TYPE, Set.of(type));
         }
-//        return result;
-
-//                .ifPresent(value -> result.put(Keywords.TYPE, JsonProvider.instance().createArrayBuilder().add(value).build()));
 
         return normalize(result);
     }
