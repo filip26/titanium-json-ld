@@ -78,12 +78,10 @@ public final class ValueExpansion {
             }
 
             if (idValue != null) {
-                final String expandedValue = context.uriExpansion()
+                return Map.of(Keywords.ID, context.uriExpansion()
                         .documentRelative(true)
                         .vocab(false)
-                        .expand(idValue);
-
-                return Map.of(Keywords.ID, expandedValue);
+                        .expand(idValue));
             }
             break;
 

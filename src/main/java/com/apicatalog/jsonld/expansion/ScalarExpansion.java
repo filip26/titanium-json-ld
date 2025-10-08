@@ -25,43 +25,55 @@ import com.apicatalog.jsonld.lang.Keywords;
 import jakarta.json.JsonValue;
 
 /**
- * Steps 4.1 - 4.3
+ * Implements the JSON-LD Expansion algorithm steps for scalar values.
+ * <p>
+ * This class handles steps 4.1 through 4.3 of the algorithm.
+ * </p>
  *
  * @see <a href=
  *      "https://www.w3.org/TR/json-ld11-api/#expansion-algorithm">Expansion
  *      Algorithm</a>
- *
  */
 public final class ScalarExpansion {
 
-    // mandatory
-    private Context activeContext;
-    private JsonValue propertyContext;
-    private JsonValue element;
-    private String activeProperty;
-
-    private ScalarExpansion(final Context activeContext, final JsonValue propertyContext,
-            final JsonValue element, final String activeProperty) {
-        this.activeContext = activeContext;
-        this.propertyContext = propertyContext;
-        this.element = element;
-        this.activeProperty = activeProperty;
-    }
-
-    public static final ScalarExpansion with(final Context activeContext, final JsonValue propertyContext,
-            final JsonValue element, final String activeProperty) {
-        return new ScalarExpansion(activeContext, propertyContext, element, activeProperty);
-    }
-
-    public Map<String, ?> expand() throws JsonLdError {
+    /**
+     * Expands a scalar value based on the active context and property.
+     * <p>
+     * This method implements the following steps from the Expansion Algorithm:
+     * </p>
+     * <ul>
+     * <li><b>4.1.</b> If the {@code property} is {@code null} or {@code "@graph"},
+     * the free-floating scalar is dropped by returning {@code null}.</li>
+     * <li><b>4.2.</b> If a {@code propertyContext} is defined, a new active context
+     * is created by processing it. The value is then expanded against this new
+     * context.</li>
+     * <li><b>4.3.</b> The scalar {@code element} is expanded by invoking the
+     * <a href="https://www.w3.org/TR/json-ld11-api/#value-expansion">Value
+     * Expansion</a> algorithm.</li>
+     * </ul>
+     *
+     * @param context         the active context
+     * @param property        the active property, which is the key associated with
+     *                        the {@code element}
+     * @param propertyContext a property-scoped context to apply, or {@code null} if
+     *                        none
+     * @param element         the scalar {@link JsonValue} to expand
+     * @return a {@link Map} representing the expanded value object, or {@code null}
+     *         if the scalar is dropped
+     * @throws JsonLdError if an error occurs during expansion
+     */
+    public static Map<String, ?> expand(
+            final Context context,
+            final String property,
+            final JsonValue propertyContext,
+            final JsonValue element) throws JsonLdError {
 
         /*
          * 4.1. If active property is null or @graph, drop the free-floating scalar by
          * returning null.
          */
-        if (activeProperty == null || Keywords.GRAPH.equals(activeProperty)) {
+        if (property == null || Keywords.GRAPH.equals(property)) {
             return null;
-//            return JsonValue.NULL;
         }
 
         /*
@@ -71,18 +83,19 @@ public final class ScalarExpansion {
          * property in active context.
          */
         if (propertyContext != null) {
-            activeContext = activeContext
-                                .newContext()
-                                .create(
-                                    propertyContext,
-                                    activeContext.getTerm(activeProperty).map(TermDefinition::getBaseUrl).orElse(null)
-                                );
+            return context
+                    .newContext()
+                    .create(propertyContext,
+                            context.getTerm(property)
+                                    .map(TermDefinition::getBaseUrl)
+                                    .orElse(null))
+                    .expandValue(property, element);
         }
 
         /*
          * 4.3. Return the result of the Value Expansion algorithm, passing the active
          * context, active property, and element as value.
          */
-        return activeContext.expandValue(activeProperty, element);
+        return context.expandValue(property, element);
     }
 }

@@ -105,8 +105,7 @@ public final class Expansion {
         // 4. If element is a scalar
         if (JsonUtils.isScalar(element)) {
             return ScalarExpansion
-                    .with(activeContext, propertyContext, element, activeProperty)
-                    .expand();
+                    .expand(activeContext, activeProperty, propertyContext, element);
         }
 
         // 6. Otherwise element is a map
