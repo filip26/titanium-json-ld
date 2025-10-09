@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -294,32 +295,36 @@ public final class ObjectExpansion {
         }
 
         // 15.2.
-        final Optional<?> type = Optional.ofNullable(result.get(Keywords.TYPE));
+        var type = result.get(Keywords.TYPE);
 
-        if (type.map(t -> t instanceof Collection<?> c && !c.contains(Keywords.JSON)
-                || t instanceof String s && !s.equals(Keywords.JSON)
+        if (type == null
+                || type instanceof Collection<?> c && !c.contains(Keywords.JSON)
+                || type instanceof String s && !s.equals(Keywords.JSON)) {
+
+//                type.map(t -> t instanceof Collection<?> c && !c.contains(Keywords.JSON)
+//                || t instanceof String s && !s.equals(Keywords.JSON)
 //        !JsonUtils.contains(Keywords.JSON, t)
-        ).orElse(true)) {
+//        ).orElse(true)) {
 
-            final Optional<?> value = Optional.ofNullable(result.get(Keywords.VALUE));
+            var value = result.get(Keywords.VALUE);
 
             // 15.3.
 //            if (value.map(v -> JsonUtils.isNull(v) || (JsonUtils.isArray(v) && v.asJsonArray().isEmpty())).orElse(true)) {
-            if (value.map(v -> v instanceof Collection<?> c && c.isEmpty()).orElse(true)) {
+            if (value == null 
+                    || value instanceof Collection<?> c && c.isEmpty()) {
                 return null;
 //                return JsonValue.NULL;
 
                 // 15.4
 //            } else if (!frameExpansion && JsonUtils.isNotString(value.get()) && result.containsKey(Keywords.LANGUAGE)) {
-            } else if (!frameExpansion && !(value.get() instanceof String) && result.containsKey(Keywords.LANGUAGE)) {
+            } else if (!frameExpansion && !(value instanceof String) && result.containsKey(Keywords.LANGUAGE)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
 
                 // 15.5
             } else if (!frameExpansion
-                    && type.filter(t -> !(t instanceof String uri)
-                            || UriUtils.isNotURI(uri))
-                            .isPresent()) {
-                throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE);
+                    && type != null
+                    && (!(type instanceof String uri) || UriUtils.isNotURI(uri))) {
+                throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE, "Invalid @type [" + Objects.toString(type) + "].");
             }
         }
 

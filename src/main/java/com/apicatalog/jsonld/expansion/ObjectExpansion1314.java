@@ -481,8 +481,6 @@ final class ObjectExpansion1314 {
 
                         expandedValue = new PolyMorph(value, JakartaAdapter.instance());
                                 
-//                                new NativeMaterializer().node(value, JakartaAdapter.instance());
-
                         // 13.4.7.2
                     } else if (JsonUtils.isNull(value)
                             || JsonUtils.isScalar(value)
