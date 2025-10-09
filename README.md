@@ -38,7 +38,7 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 
 | Feature | Tests | Pass | Status | Notes |
 | --- | ---: | ---: | ---: | --- |
-| [Expansion](https://www.w3.org/TR/json-ld/#expanded-document-form) | 373 | 373 | 100% | |
+| [Expansion](https://www.w3.org/TR/json-ld/#expanded-document-form) | 376 | 376 | 100% | |
 | [Compaction](https://www.w3.org/TR/json-ld/#compacted-document-form) | 243 | 243 | 100% | |
 | [Flattening](https://www.w3.org/TR/json-ld/#flattened-document-form) | 55 | 55 | 100% | |
 | [JSON-LD to RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 453 | 451 | 99.5% | <ul><li>[te075 - @vocab as blank node identifier](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#te075)</li><li>[tli12 - List with bad @base](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#tli12)</li></ul> |

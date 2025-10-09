@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -198,11 +197,11 @@ public final class ObjectExpansion {
         String typeKey = null;
 
         // 11.
-        for (final String key : Utils.index(element.keySet(), true)) {
+        for (var key : Utils.index(element.keySet(), true)) {
 
             activeContext.runtime().tick();
 
-            final String expandedKey = activeContext
+            var expandedKey = activeContext
                     .uriExpansion()
                     .vocab(true)
                     .expand(key);
@@ -259,21 +258,20 @@ public final class ObjectExpansion {
 
             if (JsonUtils.isArray(type)) {
 
-                final String lastValue = type.asJsonArray()
+                var lastValue = type.asJsonArray()
                         .stream()
                         .filter(JsonUtils::isString)
                         .map(JsonString.class::cast)
                         .map(JsonString::getString)
                         .sorted()
-                        .reduce((first, second) -> second)
-                        .orElse(null);
+                        .reduce((first, second) -> second);
 
-                if (lastValue != null) {
-                    return activeContext.uriExpansion().vocab(true).expand(lastValue);
+                if (lastValue.isPresent()) {
+                    return activeContext.uriExpansion().vocab(true).expand(lastValue.get());
                 }
 
-            } else if (JsonUtils.isString(type)) {
-                return activeContext.uriExpansion().vocab(true).expand(((JsonString) type).getString());
+            } else if (type instanceof JsonString jsonString) {
+                return activeContext.uriExpansion().vocab(true).expand(jsonString.getString());
             }
         }
 
@@ -299,23 +297,15 @@ public final class ObjectExpansion {
                 || type instanceof Collection<?> c && !c.contains(Keywords.JSON)
                 || type instanceof String s && !s.equals(Keywords.JSON)) {
 
-//                type.map(t -> t instanceof Collection<?> c && !c.contains(Keywords.JSON)
-//                || t instanceof String s && !s.equals(Keywords.JSON)
-//        !JsonUtils.contains(Keywords.JSON, t)
-//        ).orElse(true)) {
-
             var value = result.get(Keywords.VALUE);
 
             // 15.3.
-//            if (value.map(v -> JsonUtils.isNull(v) || (JsonUtils.isArray(v) && v.asJsonArray().isEmpty())).orElse(true)) {
-            if (value == null
-                    || value instanceof Collection<?> c && c.isEmpty()) {
+            if (value == null || value instanceof Collection<?> c && c.isEmpty()) {
                 return null;
-//                return JsonValue.NULL;
 
                 // 15.4
-//            } else if (!frameExpansion && JsonUtils.isNotString(value.get()) && result.containsKey(Keywords.LANGUAGE)) {
-            } else if (!frameExpansion && !(value instanceof String) && result.containsKey(Keywords.LANGUAGE)) {
+            } else if (!frameExpansion
+                    && !(value instanceof String) && result.containsKey(Keywords.LANGUAGE)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
 
                 // 15.5
@@ -325,7 +315,6 @@ public final class ObjectExpansion {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE, "Invalid @type [" + type + "].");
             }
         }
-
         return normalize(result);
     }
 

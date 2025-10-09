@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.processor;
 
+import java.io.IOException;
 import java.net.URI;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -27,6 +28,8 @@ import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoaderOptions;
+import com.apicatalog.tree.io.JakartaMaterializer;
+import com.apicatalog.tree.io.NativeAdapter;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
@@ -43,7 +46,7 @@ public final class CompactionProcessor {
     private CompactionProcessor() {
     }
 
-    public static final JsonObject compact(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonObject compact(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError, IOException {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + context + "].");
@@ -58,7 +61,7 @@ public final class CompactionProcessor {
         return compact(input, contextDocument, options);
     }
 
-    public static final JsonObject compact(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonObject compact(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError, IOException {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
@@ -76,7 +79,7 @@ public final class CompactionProcessor {
         return compact(remoteDocument, context, options);
     }
 
-    public static final JsonObject compact(final Document input, final URI context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonObject compact(final Document input, final URI context, final JsonLdOptions options) throws JsonLdError, IOException {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + context + "].");
@@ -91,15 +94,16 @@ public final class CompactionProcessor {
         return compact(input, contextDocument, options);
     }
 
-    public static final JsonObject compact(final Document input, final Document context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonObject compact(final Document input, final Document context, final JsonLdOptions options) throws JsonLdError, IOException {
 
         // 4.
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
         expansionOptions.setOrdered(false);
         expansionOptions.setExtractAllScripts(false);
 
-        //FIXME JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
-        JsonArray expandedInput = JsonValue.EMPTY_JSON_ARRAY;
+        var expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
+        var m = new JakartaMaterializer().node(expandedInput, NativeAdapter.instance());
+
         
         // 5.
         URI contextBase = input.getDocumentUrl();
@@ -133,7 +137,7 @@ public final class CompactionProcessor {
                 .with(activeContext)
                 .compactArrays(options.isCompactArrays())
                 .ordered(options.isOrdered())
-                .compact(expandedInput);
+                .compact(m);
 
         // 9.1.
         if (JsonUtils.isEmptyArray(compactedOutput)) {

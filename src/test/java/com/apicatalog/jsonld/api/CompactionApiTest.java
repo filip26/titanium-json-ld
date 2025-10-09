@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.URI;
 
 import org.junit.jupiter.api.Test;
@@ -37,14 +38,14 @@ class CompactionApiTest {
     public static final MockLoader MOCK_LOADER = new MockLoader(JsonValue.EMPTY_JSON_ARRAY);
 
     @Test
-    void test1() throws JsonLdError {
+    void test1() throws JsonLdError, IOException {
         JsonObject compacted = JsonLd.compact(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT), JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).get();
         assertNotNull(compacted);
         assertEquals(JsonValue.EMPTY_JSON_OBJECT, compacted);
     }
 
     @Test
-    void test2() throws JsonLdError {
+    void test2() throws JsonLdError, IOException {
         JsonObject compacted = JsonLd.compact(
                 JsonDocument.of(MediaType.JSON, new ByteArrayInputStream(JsonValue.EMPTY_JSON_OBJECT.toString().getBytes())),
                 JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)
@@ -54,21 +55,21 @@ class CompactionApiTest {
     }
 
     @Test
-    void test3() throws JsonLdError {
+    void test3() throws JsonLdError, IOException {
         JsonObject compacted = JsonLd.compact("https://example.com", JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).loader(MOCK_LOADER).base("").get();
         assertNotNull(compacted);
         assertEquals(JsonValue.EMPTY_JSON_OBJECT, compacted);
     }
 
     @Test
-    void test4() throws JsonLdError {
+    void test4() throws JsonLdError, IOException {
         JsonObject compacted = JsonLd.compact(URI.create("https://example.com"), JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).loader(MOCK_LOADER).mode(JsonLdVersion.V1_0).get();
         assertNotNull(compacted);
         assertEquals(JsonValue.EMPTY_JSON_OBJECT, compacted);
     }
 
     @Test
-    void test5() throws JsonLdError {
+    void test5() throws JsonLdError, IOException {
         JsonObject compacted = JsonLd.compact("\thttps://example.com  ", "https://ahoj.fk").loader(MOCK_LOADER).ordered().get();
         assertNotNull(compacted);
         assertEquals(JsonValue.EMPTY_JSON_OBJECT, compacted);

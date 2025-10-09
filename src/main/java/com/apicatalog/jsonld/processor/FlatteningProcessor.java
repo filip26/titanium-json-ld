@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.processor;
 
+import java.io.IOException;
 import java.net.URI;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -25,10 +26,10 @@ import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.flattening.Flattening;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.LoaderOptions;
+import com.apicatalog.tree.io.JakartaMaterializer;
+import com.apicatalog.tree.io.NativeAdapter;
 
-import jakarta.json.JsonArray;
 import jakarta.json.JsonStructure;
-import jakarta.json.JsonValue;
 
 /**
  *
@@ -40,7 +41,7 @@ public final class FlatteningProcessor {
     private FlatteningProcessor() {
     }
 
-    public static final JsonStructure flatten(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonStructure flatten(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError, IOException {
 
         if (context == null) {
             return flatten(input, (Document)null, options);
@@ -57,7 +58,7 @@ public final class FlatteningProcessor {
         return flatten(input, contextDocument, options);
     }
 
-    public static final JsonStructure flatten(final Document input, final URI context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonStructure flatten(final Document input, final URI context, final JsonLdOptions options) throws JsonLdError, IOException {
 
         if (context == null) {
             return flatten(input, (Document)null, options);
@@ -74,7 +75,7 @@ public final class FlatteningProcessor {
         return flatten(input, contextDocument, options);
     }
 
-    public static final JsonStructure flatten(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonStructure flatten(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError, IOException {
 
         assertDocumentLoader(options, input);
 
@@ -90,18 +91,20 @@ public final class FlatteningProcessor {
         return flatten(remoteDocument, context, options);
     }
 
-    public static final JsonStructure flatten(final Document input, final Document context, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonStructure flatten(final Document input, final Document context, final JsonLdOptions options) throws JsonLdError, IOException {
 
         // 4.
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
         expansionOptions.setOrdered(false);
 
-//FIXME        final JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
-        JsonArray expandedInput = JsonValue.EMPTY_JSON_ARRAY;
+        var expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
+        //JsonArray expandedInput = JsonValue.EMPTY_JSON_ARRAY;
+        var m = new JakartaMaterializer().node(expandedInput, NativeAdapter.instance());
 
+        
         // 5.
         // 6.
-        JsonStructure flattenedOutput = Flattening.with(expandedInput).ordered(options.isOrdered()).flatten();
+        JsonStructure flattenedOutput = Flattening.with((JsonStructure)m).ordered(options.isOrdered()).flatten();
 
         // 6.1.
         if (context != null) {

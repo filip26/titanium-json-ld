@@ -157,6 +157,13 @@ public class JsonLdTestRunnerJunit {
             return false;
         }
 
+        if (result instanceof RdfQuadSet quads) {
+            return validateQuads(testCase, options, quads);
+        }
+        if (result instanceof JsonStructure json) {
+            return validateJsonLd(testCase, options, json);
+        }
+
         if (result instanceof Collection<?> collection) {
             try {
                 return validateJsonLd(
@@ -167,13 +174,6 @@ public class JsonLdTestRunnerJunit {
             } catch (IOException e) {
                 fail(e);
             }
-        }
-
-        if (result instanceof RdfQuadSet quads) {
-            return validateQuads(testCase, options, quads);
-        }
-        if (result instanceof JsonStructure json) {
-            return validateJsonLd(testCase, options, json);
         }
 
         System.out.println("Unexpected result type [" + result.getClass() + "]");
