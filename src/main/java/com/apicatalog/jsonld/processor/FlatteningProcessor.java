@@ -101,7 +101,6 @@ public final class FlatteningProcessor {
         //JsonArray expandedInput = JsonValue.EMPTY_JSON_ARRAY;
         var m = new JakartaMaterializer().node(expandedInput, NativeAdapter.instance());
 
-        
         // 5.
         // 6.
         JsonStructure flattenedOutput = Flattening.with((JsonStructure)m).ordered(options.isOrdered()).flatten();

@@ -20,10 +20,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -255,7 +253,7 @@ final class ObjectExpansion1314 {
 
 //                        final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
 
-                        var array = new HashSet<>(value.asJsonArray().size());
+                        var array = new ArrayList<>(value.asJsonArray().size());
 
                         for (final JsonValue item : JsonUtils.toCollection(value)) {
 
@@ -342,7 +340,7 @@ final class ObjectExpansion1314 {
 
 //                            final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
 
-                            var array = new HashSet<>(value.asJsonArray().size());
+                            var array = new ArrayList<>(value.asJsonArray().size());
 
                             for (final JsonValue item : value.asJsonArray()) {
 
@@ -371,9 +369,13 @@ final class ObjectExpansion1314 {
 
 //                        final JsonValue typeValue = result.get(Keywords.TYPE).orElse(null);
 
-                        if (typeValue instanceof Collection<?> set) {
+                        if (typeValue instanceof HashSet set) {
+                            set.add(expandedValue);
+                            expandedValue = set;
 
-                            var newSet = (new LinkedHashSet<Object>(set));
+                        } else if (typeValue instanceof Collection<?> set) {
+
+                            var newSet = (new HashSet<Object>(set));
                             newSet.add(expandedValue);
                             expandedValue = newSet;
 
@@ -440,18 +442,18 @@ final class ObjectExpansion1314 {
 //                            final JsonValue includedValue = result.get(Keywords.INCLUDED).orElse(null);
                             final Object includedValue = result.get(Keywords.INCLUDED);
 
-                            final Set<Object> included;
+                            final List<Object> included;
 
                             if (includedValue instanceof Collection<?> set) {
-                                included = new LinkedHashSet<>(set);
+                                included = new ArrayList<>(set);
                                 included.addAll((Collection<?>) expandedValue);
 
                             } else {
-                                included = new LinkedHashSet<>((Collection<?>) expandedValue);
+                                included = new ArrayList<>((Collection<?>) expandedValue);
                                 included.add(includedValue);
                             }
 
-                            expandedValue = Set.copyOf(included);
+                            expandedValue = included;
 
 //                            if (JsonUtils.isArray(includedValue)) {
 //                                included = JsonProvider.instance().createArrayBuilder(includedValue.asJsonArray());
@@ -480,7 +482,7 @@ final class ObjectExpansion1314 {
                         }
 
                         expandedValue = new PolyMorph(value, JakartaAdapter.instance());
-                                
+
                         // 13.4.7.2
                     } else if (JsonUtils.isNull(value)
                             || JsonUtils.isScalar(value)
@@ -648,8 +650,7 @@ final class ObjectExpansion1314 {
                         if (expandedValueObject.size() > 1
                                 || !expandedValueObject.containsKey(Keywords.REVERSE)) {
 
-                            var reverseMap = new HashMap<String, Object>();
-
+                            var reverseMap = new LinkedHashMap<String, Object>();
 
 //                            final JsonMapBuilder reverseMap = result.getMapBuilder(Keywords.REVERSE);
 //
@@ -765,9 +766,9 @@ final class ObjectExpansion1314 {
                 expandedValue = new PolyMorph(value, JakartaAdapter.instance());
 
 //                if (expandedValue != null) {
-                    expandedValue = Map.of(
-                            Keywords.TYPE, Keywords.JSON,
-                            Keywords.VALUE, expandedValue);
+                expandedValue = Map.of(
+                        Keywords.TYPE, Keywords.JSON,
+                        Keywords.VALUE, expandedValue);
 
 //                } else {
 //                    var map = new HashMap<>(2);
@@ -784,17 +785,17 @@ final class ObjectExpansion1314 {
 
                 // 13.7.1.
 //                expandedValue = JsonValue.EMPTY_JSON_ARRAY;
-                Set<Object> langMaps = new LinkedHashSet<>();
+                var langMaps = new ArrayList<>();
 
                 // 13.7.2.
-                final DirectionType direction = keyTermDefinition
+                var direction = keyTermDefinition
                         .map(TermDefinition::getDirectionMapping)
                         .orElseGet(() -> activeContext.getDefaultBaseDirection());
 
                 final JsonObject valueObject = value.asJsonObject();
 
                 // 13.7.4.
-                for (final String langCode : Utils.index(valueObject.keySet(), ordered)) {
+                for (var langCode : Utils.index(valueObject.keySet(), ordered)) {
 
                     JsonValue langValue = valueObject.get(langCode);
 
@@ -822,7 +823,7 @@ final class ObjectExpansion1314 {
 //                                .createObjectBuilder()
 //                                .add(Keywords.VALUE, item);
 
-                        final Map<String, Object> langMap = new HashMap<>();
+                        final Map<String, Object> langMap = new LinkedHashMap<>();
                         langMap.put(Keywords.VALUE, ((JsonString) item).getString());
 
                         // 13.7.4.2.4.
@@ -928,14 +929,14 @@ final class ObjectExpansion1314 {
                     // 13.8.3.7.
                     for (var item : indexValues) {
 
-                        var result = new HashMap<String, Object>();
+                        var result = new LinkedHashMap<String, Object>();
 
                         // 13.8.3.7.1.
                         if (containerMapping.contains(Keywords.GRAPH) && !GraphNode.isGraph(item)) {
                             result.put(Keywords.GRAPH, Set.of(item));
 
                         } else {
-                            result.putAll((Map) item);
+                            result.putAll((Map<String, Object>) item);
                         }
 
                         // 13.8.3.7.2.
@@ -1084,15 +1085,15 @@ final class ObjectExpansion1314 {
                     }
 
                     // 13.13.4.3.
-                    Map<String, Object> map = (Map<String, Object>) result.get(Keywords.REVERSE);
+                    var map = (Map<String, Object>) result.get(Keywords.REVERSE);
                     if (map == null) {
                         result.put(Keywords.REVERSE, Map.of(expandedProperty, Set.of(item)));
 
-                    } else if (map instanceof HashMap) {
-                        JsonMapBuilder.merge(map, expandedProperty, item);
+                    } else if (map instanceof LinkedHashMap<String, Object> hashMap) {
+                        JsonMapBuilder.merge(hashMap, expandedProperty, item);
 
                     } else {
-                        map = new HashMap<>(map);
+                        map = new LinkedHashMap<>(map);
                         JsonMapBuilder.merge(map, expandedProperty, item);
                         result.put(Keywords.REVERSE, map);
                     }
