@@ -29,7 +29,6 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Utils;
@@ -290,8 +289,7 @@ public final class ObjectExpansion {
 
         if ((result.containsKey(Keywords.DIRECTION) || result.containsKey(Keywords.LANGUAGE))
                 && result.containsKey(Keywords.TYPE)) {
-
-            throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
+            throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT, "Invalid @value [" + result + "]");
         }
 
         // 15.2.
@@ -310,7 +308,7 @@ public final class ObjectExpansion {
 
             // 15.3.
 //            if (value.map(v -> JsonUtils.isNull(v) || (JsonUtils.isArray(v) && v.asJsonArray().isEmpty())).orElse(true)) {
-            if (value == null 
+            if (value == null
                     || value instanceof Collection<?> c && c.isEmpty()) {
                 return null;
 //                return JsonValue.NULL;
@@ -324,7 +322,7 @@ public final class ObjectExpansion {
             } else if (!frameExpansion
                     && type != null
                     && (!(type instanceof String uri) || UriUtils.isNotURI(uri))) {
-                throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE, "Invalid @type [" + Objects.toString(type) + "].");
+                throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE, "Invalid @type [" + type + "].");
             }
         }
 
@@ -346,30 +344,20 @@ public final class ObjectExpansion {
 
         // 17.1.
         if (result.size() > 2 || result.size() == 2 && !result.containsKey(Keywords.INDEX)) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_SET_OR_LIST_OBJECT);
+            throw new JsonLdError(JsonLdErrorCode.INVALID_SET_OR_LIST_OBJECT, "Invalid object [" + result + "].");
         }
 
         // 17.2.
         var set = result.get(Keywords.SET);
 
-        if (set instanceof Map map) {
-            // deepcode ignore checkIsPresent~Optional: false positive
+        if (set instanceof Map<?, ?> rawMap) {
+            @SuppressWarnings("unchecked")
+            var map = (Map<String, Object>) rawMap;
             return normalize(map);
-//            return normalize(JsonMapBuilder.create(set.map(JsonValue::asJsonObject).get()));
 
         } else if (set != null) {
             return set;
         }
-
-//        final Optional<JsonValue> set = result.get(Keywords.SET);
-//
-//        if (set.filter(JsonUtils::isObject).isPresent()) {
-//            // deepcode ignore checkIsPresent~Optional: false positive
-//            return normalize(JsonMapBuilder.create(set.map(JsonValue::asJsonObject).get()));
-//
-//        } else if (set.isPresent()) {
-//            return set.get();
-//        }
 
         return normalize(result);
     }
