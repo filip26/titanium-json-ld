@@ -130,11 +130,12 @@ public final class Expansion {
 
         // 5. If element is an array,
         if (JsonUtils.isArray(element)) {
-            runtime.push(ArrayExpansion
+            ArrayExpansion
                     .with(activeContext, element.asJsonArray(), activeProperty, baseUrl)
                     .frameExpansion(frameExpansion)
                     .ordered(ordered)
-                    .fromMap(fromMap)::expand);
+                    .fromMap(fromMap)
+                    .expand(runtime);
             return;
         }
 
@@ -156,10 +157,11 @@ public final class Expansion {
         }
 
         // 6. Otherwise element is a map
-        runtime.push(ObjectExpansion
+        ObjectExpansion
                 .with(activeContext, propertyContext, element.asJsonObject(), activeProperty, baseUrl)
                 .frameExpansion(frameExpansion && !Keywords.DEFAULT.equals(activeProperty))
                 .ordered(ordered)
-                .fromMap(fromMap)::expand);
+                .fromMap(fromMap)
+                .expand(runtime);
     }
 }

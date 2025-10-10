@@ -212,14 +212,16 @@ final class ArrayExpansion {
         context.runtime().tick();
 
         runtime.push(this::expanded);
-        runtime.push(Expansion
+
+        Expansion
                 .with(context, item, property, baseUrl)
                 .frameExpansion(frameExpansion)
                 .ordered(ordered)
-                .fromMap(fromMap)::expand);
+                .fromMap(fromMap)
+                .expand(runtime);
     }
 
-    protected void expanded(Runtime runtime) {
+    protected void expanded(Runtime runtime) throws JsonLdError, IOException {
 
         var expanded = runtime.input();
 
@@ -243,12 +245,6 @@ final class ArrayExpansion {
             output.add(expanded);
         }
 
-        if (!input.hasNext()) {
-            runtime.complete(output);
-            return;
-        }
-
-        runtime.push(this::expand);
+        expand(runtime);
     }
-
 }
