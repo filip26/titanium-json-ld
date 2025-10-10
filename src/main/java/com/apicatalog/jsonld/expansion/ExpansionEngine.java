@@ -15,23 +15,13 @@
  */
 package com.apicatalog.jsonld.expansion;
 
-import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.function.Consumer;
 
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.context.Context;
-import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.engine.Action;
 import com.apicatalog.jsonld.engine.DocumentConsumer;
+import com.apicatalog.jsonld.engine.Engine.State;
 import com.apicatalog.jsonld.engine.Runtime;
-import com.apicatalog.jsonld.engine.State;
-import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.lang.Keywords;
-
-import jakarta.json.JsonValue;
 
 /**
  *
@@ -44,33 +34,9 @@ public class ExpansionEngine implements Runtime {
 
     final Deque<Action> stack = new ArrayDeque<>();
 
-    // mandatory
-    private Context activeContext;
-    private JsonValue element;
-    private String activeProperty;
-    private URI baseUrl;
+    public ExpansionEngine(Action initial) {
 
-    // optional
-    private boolean frameExpansion;
-    private boolean ordered;
-    private boolean fromMap;
-
-    public ExpansionEngine(
-            final Context activeContext,
-            final JsonValue element,
-            final String activeProperty,
-            final URI baseUrl) {
-        this.activeContext = activeContext;
-        this.element = element;
-        this.activeProperty = activeProperty;
-        this.baseUrl = baseUrl;
-
-        // default values
-        this.frameExpansion = false;
-        this.ordered = false;
-        this.fromMap = false;
-
-        this.stack.push(this::expand);
+        this.stack.push(initial);
     }
 
     public State execute() {
@@ -80,87 +46,27 @@ public class ExpansionEngine implements Runtime {
         return null;
     }
 
-    public ExpansionEngine frameExpansion(boolean value) {
-        this.frameExpansion = value;
-        return this;
-    }
-
-    public ExpansionEngine ordered(boolean value) {
-        this.ordered = value;
-        return this;
-    }
-
-    public ExpansionEngine fromMap(boolean value) {
-        this.fromMap = value;
-        return this;
-    }
-
     @Override
-    public void execute(Consumer<Runtime> fnc) {
+    public void push(Action action) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void fetch(String uri, DocumentConsumer consumer) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public <O> void complete(O output) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public <I> I input() {
         // TODO Auto-generated method stub
         return null;
-    }
-    
-    protected void expand(Runtime runtime) throws JsonLdError, IOException {
-
-        // 1. If element is null, return null
-        if (JsonUtils.isNull(element)) {
-            runtime.complete(null);
-            return;
-        }
-
-        // 5. If element is an array,
-        if (JsonUtils.isArray(element)) {
-
-//            return ArrayExpansion
-//                    .with(activeContext, element.asJsonArray(), activeProperty, baseUrl)
-//                    .frameExpansion(frameExpansion)
-//                    .ordered(ordered)
-//                    .fromMap(fromMap)
-//                    .expand();
-        }
-
-        // 3. If active property has a term definition in active context with a local
-        // context, initialize property-scoped context to that local context.
-        final JsonValue propertyContext = activeContext
-                .getTerm(activeProperty)
-                .map(TermDefinition::getLocalContext)
-                .orElse(null);
-
-        // 4. If element is a scalar
-        if (JsonUtils.isScalar(element)) {
-            runtime.complete(ScalarExpansion.expand(
-                    activeContext,
-                    activeProperty,
-                    propertyContext,
-                    element));
-            return;
-        }
-
-        // 6. Otherwise element is a map
-//        return ObjectExpansion
-//                .with(activeContext, propertyContext, element.asJsonObject(), activeProperty, baseUrl)
-//                .frameExpansion(frameExpansion && !Keywords.DEFAULT.equals(activeProperty))
-//                .ordered(ordered)
-//                .fromMap(fromMap)
-//                .expand();
     }
 }

@@ -19,12 +19,14 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.engine.Runtime;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.node.ListNode;
 
@@ -48,7 +50,7 @@ import jakarta.json.JsonValue;
  *      "https://www.w3.org/TR/json-ld11-api/#expansion-algorithm">Expansion
  *      Algorithm</a>
  */
-public final class ArrayExpansion {
+final class ArrayExpansion {
 
     // mandatory
     private Context context;
@@ -114,7 +116,7 @@ public final class ArrayExpansion {
      *         node representations.
      * @throws JsonLdError if an error occurs during the recursive expansion of an
      *                     item
-     * @throws IOException 
+     * @throws IOException
      */
     public Collection<?> expand() throws JsonLdError, IOException {
 
@@ -194,4 +196,59 @@ public final class ArrayExpansion {
         this.fromMap = value;
         return this;
     }
+
+    protected Iterator<JsonValue> input;
+    protected List<Object> output;
+
+    protected void expand(Runtime runtime) throws JsonLdError, IOException {
+
+        if (!input.hasNext()) {
+            runtime.complete(output);
+            return;
+        }
+
+        var item = input.next();
+
+        context.runtime().tick();
+
+        runtime.push(this::expanded);
+        runtime.push(Expansion
+                .with(context, item, property, baseUrl)
+                .frameExpansion(frameExpansion)
+                .ordered(ordered)
+                .fromMap(fromMap)::expand);
+    }
+
+    protected void expanded(Runtime runtime) {
+
+        var expanded = runtime.input();
+
+        // 5.2.2
+        if (expanded instanceof Collection<?> list
+                && context.getTerm(property)
+                        .map(TermDefinition::getContainerMapping)
+                        .filter(c -> c.contains(Keywords.LIST)).isPresent()) {
+
+            expanded = ListNode.asListNode(list);
+        }
+
+        // 5.2.3
+        if (expanded instanceof Collection<?> collection) {
+            collection.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(output::add);
+
+            // append non-null element
+        } else if (expanded != null) {
+            output.add(expanded);
+        }
+
+        if (!input.hasNext()) {
+            runtime.complete(output);
+            return;
+        }
+
+        runtime.push(this::expand);
+    }
+
 }

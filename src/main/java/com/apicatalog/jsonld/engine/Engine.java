@@ -4,8 +4,20 @@ import java.util.Set;
 
 import com.apicatalog.jsonld.document.Document;
 
-public interface DocumentEngine<R> {
+/**
+ * document processing engine
+ * @param <R>
+ */
+public interface Engine<R> {
 
+    public enum State {
+        IDLE,
+        PROCESSING,
+        PENDING,
+        SUCCEEDED,
+        FAILED,
+    }
+    
     State state();
     
     void accept(String uri, Document document);

@@ -28,6 +28,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.engine.Runtime;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Utils;
@@ -388,5 +389,62 @@ public final class ObjectExpansion {
         }
 
         return result;
+    }
+
+    final Map<String, Object> output = new LinkedHashMap<>();
+
+    protected void expand(Runtime runtime) throws JsonLdError {
+
+        initPreviousContext();
+
+        // 8. init property context
+        if (propertyContext != null) {
+            activeContext = activeContext
+                    .newContext()
+                    .overrideProtected(true)
+                    .create(
+                            propertyContext,
+                            activeContext
+                                    .getTerm(activeProperty)
+                                    .map(TermDefinition::getBaseUrl)
+                                    .orElse(null));
+        }
+
+        initLocalContext();
+
+        // 10.
+        final Context typeContext = activeContext;
+
+        final String typeKey = processTypeScoped(typeContext);
+
+        var inputType = findInputType(typeKey);
+
+        runtime.push(this::normalize);
+        runtime.push(
+                ObjectExpansionSteps
+                        .with(activeContext, element, activeProperty, baseUrl)
+                        .inputType(inputType)
+                        .result(output)
+                        .typeContext(typeContext)
+                        .nest(new LinkedHashMap<>())
+                        .frameExpansion(frameExpansion)
+                        .ordered(ordered)::expand);
+    }
+
+    protected void normalize(Runtime runtime) throws JsonLdError {
+        // 15.
+        if (output.containsKey(Keywords.VALUE)) {
+            runtime.complete(normalizeValue(output));
+
+            // 16.
+        } else if (output.containsKey(Keywords.TYPE)) {
+            runtime.complete(normalizeType(output));
+
+            // 17.
+        } else if (output.containsKey(Keywords.LIST) || output.containsKey(Keywords.SET)) {
+            runtime.complete(normalizeContainer(output));
+        } else {
+            runtime.complete(normalize(output));
+        }
     }
 }

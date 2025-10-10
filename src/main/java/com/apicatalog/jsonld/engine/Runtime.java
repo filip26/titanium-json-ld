@@ -1,10 +1,8 @@
 package com.apicatalog.jsonld.engine;
 
-import java.util.function.Consumer;
-
 public interface Runtime {
 
-    void execute(Consumer<Runtime> fnc);
+    void push(Action action);
 
     void fetch(String uri, DocumentConsumer consumer);
 
