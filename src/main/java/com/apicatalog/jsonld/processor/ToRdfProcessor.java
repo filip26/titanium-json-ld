@@ -20,11 +20,11 @@ import java.net.URI;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.deseralization.JsonLdToRdf;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.loader.LoaderOptions;
+import com.apicatalog.jsonld.rdf.out.JsonLdToRdf;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 
 import jakarta.json.JsonArray;

@@ -43,7 +43,6 @@ import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonObject;
-import jakarta.json.JsonString;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 
@@ -319,7 +318,7 @@ public final class ActiveContextBuilder {
 
             // 5.8.
             var vocabValue = adapter.property(Keywords.VOCAB, contextDefinition);
-
+            System.out.println(">>> " + contextDefinition );
             if (vocabValue != null) {
 
                 // 5.8.2.
@@ -338,7 +337,8 @@ public final class ActiveContextBuilder {
                                 .vocab(true)
                                 .documentRelative(true)
                                 .expand(valueString);
-
+                        System.out.println(">> " + contextDefinition);
+                        System.out.println(">> " + valueString + " - > " + vocabularyMapping);
                         if (BlankNode.hasPrefix(valueString) || UriUtils.isURI(vocabularyMapping)) {
                             result.setVocabularyMapping(vocabularyMapping);
 

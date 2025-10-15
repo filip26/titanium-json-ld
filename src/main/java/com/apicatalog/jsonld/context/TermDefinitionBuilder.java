@@ -178,9 +178,9 @@ public final class TermDefinitionBuilder {
                         && adapter.keys(value).size() == 2) {
 
                     //FIXME
-//                    if (!JsonUtils.contains(Keywords.SET, container)) {
-//                        throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
-//                    }
+                    if (!JsonUtils.contains(Keywords.SET, (JsonValue) container)) {
+                        throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
+                    }
 
                 } else if (protect == null || adapter.keys(value).size() != 1) {
                     throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
@@ -211,7 +211,7 @@ public final class TermDefinitionBuilder {
         if (adapter.isNull(value)) {
 
             valueObject = JsonValue.EMPTY_JSON_OBJECT; //FIXME
-            idValue = null;
+            idValue = JsonValue.NULL;
             simpleTerm = false;
 
 

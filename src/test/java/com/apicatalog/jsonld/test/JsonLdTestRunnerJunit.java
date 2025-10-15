@@ -33,7 +33,7 @@ import com.apicatalog.jsonld.expansion.JsonLdAdapter;
 import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.jsonld.loader.QuadSetDocument;
-import com.apicatalog.jsonld.serialization.QuadsToJsonld;
+import com.apicatalog.jsonld.rdf.in.QuadsToJsonld;
 import com.apicatalog.jsonld.test.JsonLdTestCase.Type;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.api.RdfConsumerException;
@@ -131,9 +131,15 @@ public class JsonLdTestRunnerJunit {
             if (Objects.equal(e.getCode(), testCase.expectErrorCode)) {
                 return true;
             }
-
+            
             write(testCase, null, null, e);
-            fail("Unexpected error [" + e.getCode() + "]: " + e.getMessage() + ".");
+
+            if (testCase.expectErrorCode != null) {
+                fail("Unexpected error " + e.getCode() + ", exptected " + testCase.expectErrorCode  + ".");                
+            } else {
+                fail("Unexpected error " + e.getCode() + ": " + e.getMessage() + ".");
+            }
+
             return false;
 
         } catch (RdfConsumerException e) {

@@ -31,7 +31,7 @@ import com.apicatalog.jsonld.loader.QuadSetDocument;
 import com.apicatalog.jsonld.loader.SchemeRouter;
 import com.apicatalog.jsonld.loader.UriBaseRewriter;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
-import com.apicatalog.jsonld.serialization.QuadsToJsonld;
+import com.apicatalog.jsonld.rdf.in.QuadsToJsonld;
 import com.apicatalog.jsonld.test.JsonLdManifestLoader;
 import com.apicatalog.jsonld.test.JsonLdMockServer;
 import com.apicatalog.jsonld.test.JsonLdTestCase;

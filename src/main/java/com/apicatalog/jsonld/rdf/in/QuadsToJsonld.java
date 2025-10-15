@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.serialization;
+package com.apicatalog.jsonld.rdf.in;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ import com.apicatalog.jsonld.lang.RdfConstants;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.lang.XsdConstants;
 import com.apicatalog.jsonld.node.BlankNode;
-import com.apicatalog.jsonld.serialization.GraphMap.Reference;
+import com.apicatalog.jsonld.rdf.in.GraphMap.Reference;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.api.RdfConsumerException;

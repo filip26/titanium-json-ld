@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.deseralization;
+package com.apicatalog.jsonld.rdf.out;
 
 import com.apicatalog.jsonld.lang.RdfConstants;
 import com.apicatalog.jsonld.lang.XsdConstants;

@@ -31,7 +31,6 @@ import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.processor.ProcessingRuntime;
 import com.apicatalog.tree.io.NodeAdapter;
 
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
 /**

@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.deseralization;
+package com.apicatalog.jsonld.rdf.out;
 
 import com.apicatalog.rdf.api.RdfConsumerException;
 
