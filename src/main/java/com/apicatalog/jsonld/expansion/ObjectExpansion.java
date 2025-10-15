@@ -16,7 +16,6 @@
 package com.apicatalog.jsonld.expansion;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -52,29 +51,32 @@ public final class ObjectExpansion {
     private Object element;
     private NodeAdapter adapter;
     private String activeProperty;
-    private final URI baseUrl;
+//    private final URI baseUrl;
 
     // optional
-    private boolean frameExpansion;
-    private boolean ordered;
-    private boolean fromMap;
+//    private boolean frameExpansion;
+//    private boolean ordered;
+//    private boolean fromMap;
+    
+    private Params params;
 
     private ObjectExpansion(final Context activeContext,
             final PolyNode propertyContext,
             final Object element, final NodeAdapter adapter,
             final String activeProperty,
-            final URI baseUri) {
+            Params params) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
         this.element = element;
         this.adapter = adapter;
         this.activeProperty = activeProperty;
+        this.params = params;
 
-        // default values
-        this.frameExpansion = false;
-        this.ordered = false;
-        this.fromMap = false;
-        this.baseUrl = baseUri;
+//        // default values
+//        this.frameExpansion = false;
+//        this.ordered = false;
+//        this.fromMap = false;
+//        this.baseUrl = baseUri;
     }
 
     public static final ObjectExpansion with(final Context activeContext,
@@ -82,10 +84,10 @@ public final class ObjectExpansion {
             final Object node,
             final NodeAdapter nodeAdapter,
             final String activeProperty,
-            final URI baseUrl) {
+            final Params params) {
         return new ObjectExpansion(activeContext,
                 propertyContext,
-                node, nodeAdapter, activeProperty, baseUrl);
+                node, nodeAdapter, activeProperty, params);
     }
 
     public Object expand() throws JsonLdError, IOException {
@@ -118,7 +120,7 @@ public final class ObjectExpansion {
         final Map<String, Object> result = new LinkedHashMap<>();
 
         ObjectExpansion1314
-                .with(new Params(frameExpansion, ordered, false, baseUrl))
+                .with(params)
                 .inputType(inputType)
                 .result(result)
                 .typeContext(typeContext)
@@ -143,20 +145,20 @@ public final class ObjectExpansion {
         return normalize(result);
     }
 
-    public ObjectExpansion frameExpansion(boolean value) {
-        this.frameExpansion = value;
-        return this;
-    }
-
-    public ObjectExpansion ordered(boolean value) {
-        this.ordered = value;
-        return this;
-    }
-
-    public ObjectExpansion fromMap(boolean value) {
-        this.fromMap = value;
-        return this;
-    }
+//    public ObjectExpansion frameExpansion(boolean value) {
+//        this.frameExpansion = value;
+//        return this;
+//    }
+//
+//    public ObjectExpansion ordered(boolean value) {
+//        this.ordered = value;
+//        return this;
+//    }
+//
+//    public ObjectExpansion fromMap(boolean value) {
+//        this.fromMap = value;
+//        return this;
+//    }
 
     private void initPreviousContext() throws JsonLdError, IOException {
 
@@ -169,7 +171,7 @@ public final class ObjectExpansion {
         // set active context to previous context from active context,
         // as the scope of a term-scoped context does not apply when processing new node
         // objects.
-        if (activeContext.getPreviousContext() != null && !fromMap) {
+        if (activeContext.getPreviousContext() != null && !params.fromMap()) {
 
             boolean revert = true;
 
@@ -206,7 +208,7 @@ public final class ObjectExpansion {
         if (contextValue != null) {
             activeContext = activeContext
                     .newContext()
-                    .create(contextValue, adapter, baseUrl);
+                    .create(contextValue, adapter, params.baseUrl());
         }
     }
 
@@ -330,12 +332,12 @@ public final class ObjectExpansion {
                 return null;
 
                 // 15.4
-            } else if (!frameExpansion
+            } else if (!params.frameExpansion()
                     && !(value instanceof String) && result.containsKey(Keywords.LANGUAGE)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
 
                 // 15.5
-            } else if (!frameExpansion
+            } else if (!params.frameExpansion()
                     && type != null
                     && (!(type instanceof String uri) || UriUtils.isNotURI(uri))) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE, "Invalid @type [" + type + "].");
@@ -398,7 +400,7 @@ public final class ObjectExpansion {
 
             // 19.1. If result is a map which is empty, or contains only the entries @value
             // or @list, set result to null
-            if (!frameExpansion && result.isEmpty()
+            if (!params.frameExpansion() && result.isEmpty()
                     || result.containsKey(Keywords.VALUE)
                     || result.containsKey(Keywords.LIST)) {
                 return null;
@@ -407,7 +409,7 @@ public final class ObjectExpansion {
             // 19.2. if result is a map whose only entry is @id, set result to null. When
             // the frameExpansion flag is set, a map containing only the @id entry is
             // retained.
-            if (!frameExpansion && result.size() == 1 && result.containsKey(Keywords.ID)) {
+            if (!params.frameExpansion() && result.size() == 1 && result.containsKey(Keywords.ID)) {
                 return null;
             }
 

@@ -44,8 +44,8 @@ import jakarta.json.JsonValue;
 public final class Expansion {
 
     public record Params(
-            boolean frameExpansion, 
-            boolean ordered, 
+            boolean frameExpansion,
+            boolean ordered,
             boolean fromMap,
             URI baseUrl) {
 
@@ -125,27 +125,13 @@ public final class Expansion {
                         node,
                         nodeAdapter,
                         activeProperty,
-                        params.baseUrl)
-                .frameExpansion(params.frameExpansion && !Keywords.DEFAULT.equals(activeProperty))
-                .ordered(params.ordered)
-                .fromMap(params.fromMap)
+                        new Params(
+                                params.frameExpansion && !Keywords.DEFAULT.equals(activeProperty),
+                                params.ordered,
+                                params.fromMap,
+                                params.baseUrl))
                 .expand();
     }
-
-//    public Expansion frameExpansion(boolean value) {
-//        this.frameExpansion = value;
-//        return this;
-//    }
-//
-//    public Expansion ordered(boolean value) {
-//        this.ordered = value;
-//        return this;
-//    }
-//
-//    public Expansion fromMap(boolean value) {
-//        this.fromMap = value;
-//        return this;
-//    }
 
     /**
      * Expands a scalar value based on the active context and property.
@@ -251,7 +237,7 @@ public final class Expansion {
             context.runtime().tick();
 
             // 5.2.1
-            Object expanded = expand(context, item, nodeAdapter, property, params);
+            var expanded = expand(context, item, nodeAdapter, property, params);
 
             // 5.2.2
             if (expanded instanceof Collection<?> list
@@ -268,8 +254,8 @@ public final class Expansion {
                         .filter(Objects::nonNull)
                         .forEach(result::add);
 
-                // append non-null element
             } else if (expanded != null) {
+                // append non-null element
                 result.add(expanded);
             }
         }
