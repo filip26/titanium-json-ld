@@ -23,9 +23,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -82,9 +86,71 @@ public final class ObjectExpansion {
 
         initPreviousContext();
 
+        try {
+
+            // 8. init property context
+            if (propertyContext != null) {
+                activeContext = activeContext
+                        .newContext()
+                        .overrideProtected(true)
+                        .create(
+                                propertyContext,
+                                activeContext
+                                        .getTerm(activeProperty)
+                                        .map(TermDefinition::getBaseUrl)
+                                        .orElse(null))
+                        .toCompletableFuture().get();
+            }
+
+            initLocalContext();
+
+            // 10.
+            final Context typeContext = activeContext;
+
+            final String typeKey = processTypeScoped(typeContext);
+
+            final String inputType = findInputType(typeKey);
+
+            final Map<String, Object> result = new LinkedHashMap<>();
+
+            ObjectExpansion1314
+                    .with(activeContext, element, activeProperty, baseUrl)
+                    .inputType(inputType)
+                    .result(result)
+                    .typeContext(typeContext)
+                    .nest(new LinkedHashMap<>())
+                    .frameExpansion(frameExpansion)
+                    .ordered(ordered)
+                    .expand();
+
+            // 15.
+            if (result.containsKey(Keywords.VALUE)) {
+                return normalizeValue(result);
+
+                // 16.
+            } else if (result.containsKey(Keywords.TYPE)) {
+                return normalizeType(result);
+
+                // 17.
+            } else if (result.containsKey(Keywords.LIST) || result.containsKey(Keywords.SET)) {
+                return normalizeContainer(result);
+            }
+
+            return normalize(result);
+        } catch (InterruptedException | ExecutionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public CompletionStage<?> expandAsync() throws JsonLdError, IOException {
+
+        initPreviousContext();
+
         // 8. init property context
         if (propertyContext != null) {
-            activeContext = activeContext
+            return activeContext
                     .newContext()
                     .overrideProtected(true)
                     .create(
@@ -92,11 +158,43 @@ public final class ObjectExpansion {
                             activeContext
                                     .getTerm(activeProperty)
                                     .map(TermDefinition::getBaseUrl)
-                                    .orElse(null));
+                                    .orElse(null))
+
+                    .thenCompose(context -> {
+                        activeContext = context;
+                        return expandAsync2();
+                    });
         }
 
-        initLocalContext();
+        return expandAsync2();
+    }
 
+    public CompletionStage<?> expandAsync2() {
+
+        // 9. Init local context
+        if (element.containsKey(Keywords.CONTEXT)) {
+            
+            try {
+            
+            return activeContext
+                    .newContext()
+                    .create(element.get(Keywords.CONTEXT), baseUrl)
+                    .thenCompose(context -> {
+                        activeContext = context;
+                        return expandAsync3();
+                    })
+                    ;
+            } catch (JsonLdError e) {
+                return CompletableFuture.failedStage(e);
+            }
+        }
+
+        return expandAsync3();
+    }
+
+    public CompletionStage<?> expandAsync3() {
+
+        try {
         // 10.
         final Context typeContext = activeContext;
 
@@ -106,7 +204,7 @@ public final class ObjectExpansion {
 
         final Map<String, Object> result = new LinkedHashMap<>();
 
-        ObjectExpansion1314
+        return ObjectExpansionAsync
                 .with(activeContext, element, activeProperty, baseUrl)
                 .inputType(inputType)
                 .result(result)
@@ -114,22 +212,31 @@ public final class ObjectExpansion {
                 .nest(new LinkedHashMap<>())
                 .frameExpansion(frameExpansion)
                 .ordered(ordered)
-                .expand();
+                .expandAsync()
+                .thenApply(r -> {
+                    try {
+                        if (result.containsKey(Keywords.VALUE)) {
+                            // 15.
+                            return normalizeValue(result);
 
-        // 15.
-        if (result.containsKey(Keywords.VALUE)) {
-            return normalizeValue(result);
+                        } else if (result.containsKey(Keywords.TYPE)) {
+                            // 16.
+                            return normalizeType(result);
 
-            // 16.
-        } else if (result.containsKey(Keywords.TYPE)) {
-            return normalizeType(result);
+                        } else if (result.containsKey(Keywords.LIST) || result.containsKey(Keywords.SET)) {
+                            // 17.
+                            return normalizeContainer(result);
+                        }
 
-            // 17.
-        } else if (result.containsKey(Keywords.LIST) || result.containsKey(Keywords.SET)) {
-            return normalizeContainer(result);
+                        return normalize(result);
+
+                    } catch (JsonLdError e) {
+                        return CompletableFuture.failedStage(e);
+                    }
+                });
+        } catch (JsonLdError | IOException | InterruptedException | ExecutionException e) {
+            return CompletableFuture.failedStage(e);
         }
-
-        return normalize(result);
     }
 
     public ObjectExpansion frameExpansion(boolean value) {
@@ -183,16 +290,16 @@ public final class ObjectExpansion {
         }
     }
 
-    private void initLocalContext() throws JsonLdError {
+    private void initLocalContext() throws JsonLdError, InterruptedException, ExecutionException {
         // 9.
         if (element.containsKey(Keywords.CONTEXT)) {
             activeContext = activeContext
                     .newContext()
-                    .create(element.get(Keywords.CONTEXT), baseUrl);
+                    .create(element.get(Keywords.CONTEXT), baseUrl).toCompletableFuture().get();
         }
     }
 
-    private String processTypeScoped(final Context typeContext) throws JsonLdError {
+    private String processTypeScoped(final Context typeContext) throws JsonLdError, InterruptedException, ExecutionException {
 
         String typeKey = null;
 
@@ -237,7 +344,7 @@ public final class ObjectExpansion {
                             .create(localContext.get(),
                                     activeContext.getTerm(term)
                                             .map(TermDefinition::getBaseUrl)
-                                            .orElse(null));
+                                            .orElse(null)).toCompletableFuture().get();
                 }
             }
         }

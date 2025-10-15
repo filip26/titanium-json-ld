@@ -16,6 +16,9 @@
 package com.apicatalog.jsonld.expansion;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.Context;
@@ -62,7 +65,7 @@ final class ScalarExpansion {
      *         if the scalar is dropped
      * @throws JsonLdError if an error occurs during expansion
      */
-    public static Map<String, ?> expand(
+    public static CompletionStage<Object> expand(
             final Context context,
             final String property,
             final JsonValue propertyContext,
@@ -73,7 +76,7 @@ final class ScalarExpansion {
          * returning null.
          */
         if (property == null || Keywords.GRAPH.equals(property)) {
-            return null;
+            return CompletableFuture.completedStage(null);
         }
 
         /*
@@ -89,13 +92,24 @@ final class ScalarExpansion {
                             context.getTerm(property)
                                     .map(TermDefinition::getBaseUrl)
                                     .orElse(null))
-                    .expandValue(property, element);
+                    .thenApply(c -> {
+                        try {
+                            return c.expandValue(property, element);
+
+                        } catch (JsonLdError e) {
+                            return CompletableFuture.failedStage(e);
+                        }
+
+                    });
+//                        .toCompletableFuture()
+//                        .get();
+
         }
 
         /*
          * 4.3. Return the result of the Value Expansion algorithm, passing the active
          * context, active property, and element as value.
          */
-        return context.expandValue(property, element);
+        return CompletableFuture.completedStage(context.expandValue(property, element));
     }
 }

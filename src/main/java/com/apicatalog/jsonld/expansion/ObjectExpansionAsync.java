@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -63,9 +65,9 @@ import jakarta.json.JsonValue;
  *      Algorithm</a>
  *
  */
-final class ObjectExpansion1314 {
+final class ObjectExpansionAsync {
 
-    private static final Logger LOGGER = Logger.getLogger(ObjectExpansion1314.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ObjectExpansionAsync.class.getName());
 
     // mandatory
     private Context activeContext;
@@ -83,7 +85,7 @@ final class ObjectExpansion1314 {
     private boolean frameExpansion;
     private boolean ordered;
 
-    private ObjectExpansion1314(final Context activeContext, final JsonObject element,
+    private ObjectExpansionAsync(final Context activeContext, final JsonObject element,
             final String activeProperty, final URI baseUrl) {
         this.activeContext = activeContext;
         this.element = element;
@@ -95,12 +97,12 @@ final class ObjectExpansion1314 {
         this.ordered = false;
     }
 
-    public static final ObjectExpansion1314 with(final Context activeContext, final JsonObject element,
+    public static final ObjectExpansionAsync with(final Context activeContext, final JsonObject element,
             final String activeProperty, final URI baseUrl) {
-        return new ObjectExpansion1314(activeContext, element, activeProperty, baseUrl);
+        return new ObjectExpansionAsync(activeContext, element, activeProperty, baseUrl);
     }
 
-    public void expand() throws JsonLdError, IOException {
+    public CompletionStage<?> expandAsync() throws JsonLdError, IOException {
 
         // 13.
         for (final String key : Utils.index(element.keySet(), ordered)) {
@@ -339,8 +341,6 @@ final class ObjectExpansion1314 {
 
                         } else if (JsonUtils.isArray(value)) {
 
-//                            final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
-
                             var array = new ArrayList<>(value.asJsonArray().size());
 
                             for (final JsonValue item : value.asJsonArray()) {
@@ -366,16 +366,13 @@ final class ObjectExpansion1314 {
                     // 13.4.4.5
                     if (result.containsKey(Keywords.TYPE)) {
 
-                        final Object typeValue = result.get(Keywords.TYPE);
-
-//                        final JsonValue typeValue = result.get(Keywords.TYPE).orElse(null);
+                        var typeValue = result.get(Keywords.TYPE);
 
                         if (typeValue instanceof HashSet set) {
                             set.add(expandedValue);
                             expandedValue = set;
 
                         } else if (typeValue instanceof Collection<?> set) {
-
                             var newSet = (new HashSet<Object>(set));
                             newSet.add(expandedValue);
                             expandedValue = newSet;
@@ -383,19 +380,12 @@ final class ObjectExpansion1314 {
                         } else {
                             expandedValue = Set.of(typeValue, expandedValue);
                         }
-//                        if (JsonUtils.isArray(typeValue)) {
-//                            expandedValue = JsonProvider.instance().createArrayBuilder(typeValue.asJsonArray()).add(expandedValue).build();
-//
-//                        } else {
-//                            expandedValue = JsonProvider.instance().createArrayBuilder().add(typeValue).add(expandedValue).build();
-//                        }
                     }
                 }
 
                 // 13.4.5
                 else if (Keywords.GRAPH.equals(expandedProperty)) {
                     expandedValue = JsonUtils.toList(Expansion
-//                    expandedValue = JsonUtils.toJsonArray(Expansion
                             .with(typeContext, value, Keywords.GRAPH, baseUrl)
                             .frameExpansion(frameExpansion)
                             .ordered(ordered)
@@ -602,10 +592,6 @@ final class ObjectExpansion1314 {
                     if (!(expandedValue instanceof Collection<?>)) {
                         expandedValue = Set.of(expandedValue);
                     }
-
-//                    if (JsonUtils.isNotArray(expandedValue)) {
-//                        expandedValue = JsonProvider.instance().createArrayBuilder().add(expandedValue).build();
-//                    }
                 }
 
                 // 13.4.12
@@ -778,8 +764,6 @@ final class ObjectExpansion1314 {
 //                    expandedValue = map;
 //                }
 
-//                expandedValue = JsonProvider.instance().createObjectBuilder().add(Keywords.VALUE, value)
-//                        .add(Keywords.TYPE, Keywords.JSON).build();
 
                 // 13.7.
             } else if (containerMapping.contains(Keywords.LANGUAGE) && JsonUtils.isObject(value)) {
@@ -922,18 +906,12 @@ final class ObjectExpansion1314 {
                     }
 
                     // 13.8.3.6.
-                    // FIXME
-                    Collection<?> indexValues = ArrayExpansion
+                    var indexValues = ArrayExpansion
                             .with(mapContext, indexValue.asJsonArray(), key, baseUrl)
                             .fromMap(true)
                             .frameExpansion(frameExpansion)
                             .ordered(ordered)
                             .expand();
-
-//                    Collection<Object> indexValues = (Collection)Expansion.with(mapContext, indexValue, key, baseUrl)
-//                            .fromMap(true)
-//                            .frameExpansion(frameExpansion)
-//                            .ordered(ordered).compute();
 
                     // 13.8.3.7.
                     for (var item : indexValues) {
@@ -1120,34 +1098,35 @@ final class ObjectExpansion1314 {
         if (nest != null) {
             processNest();
         }
+        return CompletableFuture.completedStage(result);
     }
 
-    public ObjectExpansion1314 frameExpansion(boolean value) {
+    public ObjectExpansionAsync frameExpansion(boolean value) {
         this.frameExpansion = value;
         return this;
     }
 
-    public ObjectExpansion1314 ordered(boolean value) {
+    public ObjectExpansionAsync ordered(boolean value) {
         this.ordered = value;
         return this;
     }
 
-    public ObjectExpansion1314 nest(Map<String, JsonValue> nest) {
+    public ObjectExpansionAsync nest(Map<String, JsonValue> nest) {
         this.nest = nest;
         return this;
     }
 
-    public ObjectExpansion1314 typeContext(Context typeContext) {
+    public ObjectExpansionAsync typeContext(Context typeContext) {
         this.typeContext = typeContext;
         return this;
     }
 
-    public ObjectExpansion1314 result(Map<String, Object> result) {
+    public ObjectExpansionAsync result(Map<String, Object> result) {
         this.result = result;
         return this;
     }
 
-    public ObjectExpansion1314 inputType(String inputType) {
+    public ObjectExpansionAsync inputType(String inputType) {
         this.inputType = inputType;
         return this;
     }
@@ -1172,7 +1151,9 @@ final class ObjectExpansion1314 {
                                 activeContext
                                         .getTerm(activeProperty)
                                         .map(TermDefinition::getBaseUrl)
-                                        .orElse(null)).toCompletableFuture().get();
+                                        .orElse(null))
+                        .toCompletableFuture().get()
+                        ;
             } catch (InterruptedException | ExecutionException  e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -1181,7 +1162,7 @@ final class ObjectExpansion1314 {
         }
 
         // steps 13-14
-        expand();
+        expandAsync();
     }
 
     private final void processNest() throws JsonLdError, IOException {
@@ -1207,7 +1188,7 @@ final class ObjectExpansion1314 {
                 }
 
                 // 14.2.2
-                ObjectExpansion1314
+                ObjectExpansionAsync
                         .with(activeContext, nestValue.asJsonObject(), nestedKey, baseUrl)
                         .inputType(inputType)
                         .result(result)

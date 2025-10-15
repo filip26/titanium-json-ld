@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.Context;
@@ -114,7 +116,7 @@ public final class ArrayExpansion {
      *         node representations.
      * @throws JsonLdError if an error occurs during the recursive expansion of an
      *                     item
-     * @throws IOException 
+     * @throws IOException
      */
     public Collection<?> expand() throws JsonLdError, IOException {
 
@@ -157,6 +159,55 @@ public final class ArrayExpansion {
 
         // 5.3
         return result;
+    }
+
+    public CompletionStage<Collection<?>> expandAsync() {
+
+        final List<Object> result = new ArrayList<>(element.size());
+
+        var stages = new CompletableFuture[element.size()];
+
+        int i = 0;
+
+        // 5.2.
+        for (final JsonValue item : element) {
+            // 5.2.1
+            stages[i++] = Expansion
+                    .with(context, item, property, baseUrl)
+                    .frameExpansion(frameExpansion)
+                    .ordered(ordered)
+                    .fromMap(fromMap)
+                    .expandAsync()
+                    .thenAccept(r -> {
+
+                        var expanded = r;
+
+                        if (expanded instanceof Collection<?> list) {
+                            // 5.2.2
+                            if (context.getTerm(property)
+                                    .map(TermDefinition::getContainerMapping)
+                                    .filter(c -> c.contains(Keywords.LIST)).isPresent()) {
+
+                                expanded = ListNode.asListNode(list);
+
+                            } else {
+                                // 5.2.3
+                                list.stream()
+                                        .filter(Objects::nonNull)
+                                        .forEach(result::add);
+                            }
+
+                        } else if (expanded != null) {
+                            // append non-null element
+                            result.add(expanded);
+                        }
+
+                    }).toCompletableFuture();
+        }
+
+        // 5.3
+        return CompletableFuture.allOf(stages).thenApply(v -> result);
+
     }
 
     /**

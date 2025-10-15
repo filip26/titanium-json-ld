@@ -22,6 +22,10 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -99,55 +103,73 @@ public final class ExpansionProcessor {
 
         ActiveContext activeContext = new ActiveContext(baseUri, baseUrl, ProcessingRuntime.of(options));
 
-        // 6. If the expandContext option in options is set, update the active context
-        // using the Context Processing algorithm, passing the expandContext as
-        // local context and the original base URL from active context as base URL.
-        // If expandContext is a map having an @context entry, pass that entry's value
-        // instead for local context.
-        if (options.getExpandContext() != null) {
-
-            final Optional<JsonStructure> contextValue = options.getExpandContext().getJsonContent();
-
-            if (contextValue.isPresent()) {
-                activeContext = updateContext(activeContext, contextValue.get(), baseUrl);
-            }
-        }
-
-        // 7.
-        if (input.getContextUrl() != null) {
-            activeContext = activeContext
-                    .newContext()
-                    .create(JsonProvider.instance().createValue(input.getContextUrl().toString()), input.getContextUrl());
-        }
-
         // 8.
-        Object expanded = Expansion
-                .with(activeContext, jsonStructure, null, baseUrl)
-                .frameExpansion(frameExpansion)
-                .ordered(options.isOrdered())
-                .compute();
+        try {
+            // 6. If the expandContext option in options is set, update the active context
+            // using the Context Processing algorithm, passing the expandContext as
+            // local context and the original base URL from active context as base URL.
+            // If expandContext is a map having an @context entry, pass that entry's value
+            // instead for local context.
+            if (options.getExpandContext() != null) {
 
-        // 8.1
-        if (expanded instanceof Map object
-                && object.size() == 1
-                && object.containsKey(Keywords.GRAPH)) {
-            expanded = object.get(Keywords.GRAPH);
-        }
+                final Optional<JsonStructure> contextValue = options.getExpandContext().getJsonContent();
 
-        // 8.2
-        if (expanded == null) {
-            return Collections.emptySet();
-        }
-        
-        if (expanded instanceof Collection<?> collection) {
-            return collection;
-        }
+                if (contextValue.isPresent()) {
+                    activeContext = updateContext(activeContext, contextValue.get(), baseUrl)
+                            .toCompletableFuture()
+                            .get();
+                }
+            }
 
-        // 8.3
-        return Set.of(expanded);
+            // 7.
+            if (input.getContextUrl() != null) {
+                activeContext = activeContext
+                        .newContext()
+                        .create(JsonProvider.instance()
+                                .createValue(input.getContextUrl().toString()), input.getContextUrl())
+                        
+                        .toCompletableFuture().get()
+                        ;
+            }
+
+            
+            return (Collection<?>) Expansion
+                    .with(activeContext, jsonStructure, null, baseUrl)
+                    .frameExpansion(frameExpansion)
+                    .ordered(options.isOrdered())
+                    .expandAsync()
+                    .thenApply(result -> {
+                        var expanded = result;
+
+                        if (expanded instanceof Map object
+                                && object.size() == 1
+                                && object.containsKey(Keywords.GRAPH)) {
+                            expanded = object.get(Keywords.GRAPH);
+                        }
+
+                        // 8.2
+                        if (expanded == null) {
+                            return Collections.emptySet();
+                        }
+
+                        if (expanded instanceof Collection<?> collection) {
+                            return collection;
+                        }
+
+                        // 8.3
+                        return Set.of(expanded);
+
+                    }).toCompletableFuture().get(1, TimeUnit.SECONDS);
+
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            if (e.getCause() instanceof JsonLdError err) {
+                throw err;
+            }
+            throw new JsonLdError(JsonLdErrorCode.UNSPECIFIED, e);
+        }
     }
 
-    private static final ActiveContext updateContext(final ActiveContext activeContext, final JsonValue expandedContext, final URI baseUrl) throws JsonLdError {
+    private static final CompletionStage<ActiveContext> updateContext(final ActiveContext activeContext, final JsonValue expandedContext, final URI baseUrl) throws JsonLdError {
 
         if (JsonUtils.isArray(expandedContext)) {
 

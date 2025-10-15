@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -108,7 +111,7 @@ public final class ActiveContextBuilder {
         return this;
     }
 
-    public ActiveContext create(final JsonValue localContext, final URI baseUrl) throws JsonLdError {
+    public CompletionStage<ActiveContext> create(final JsonValue localContext, final URI baseUrl) throws JsonLdError {
 
         // 1. Initialize result to the result of cloning active context, with inverse
         // context set to null.
@@ -455,7 +458,7 @@ public final class ActiveContextBuilder {
             }
         }
         // 6.
-        return result;
+        return CompletableFuture.completedStage(result);
     }
 
     private void fetch(final String context, final URI baseUrl) throws JsonLdError {
@@ -497,11 +500,19 @@ public final class ActiveContextBuilder {
                 && activeContext.runtime().getContextCache().containsKey(contextKey) && !validateScopedContext) {
 
             JsonValue cachedContext = activeContext.runtime().getContextCache().get(contextKey);
-            result = result
-                    .newContext()
-                    .remoteContexts(new ArrayList<>(remoteContexts))
-                    .validateScopedContext(validateScopedContext)
-                    .create(cachedContext, contextUri);
+            try {
+                result = result
+                        .newContext()
+                        .remoteContexts(new ArrayList<>(remoteContexts))
+                        .validateScopedContext(validateScopedContext)
+                        .create(cachedContext, contextUri)
+                        .toCompletableFuture().get()
+                        ;
+            } catch (InterruptedException | ExecutionException  e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                throw new IllegalStateException(e);
+            }
             return;
         }
 
@@ -570,7 +581,8 @@ public final class ActiveContextBuilder {
                     .newContext()
                     .remoteContexts(new ArrayList<>(remoteContexts))
                     .validateScopedContext(validateScopedContext)
-                    .create(importedContext, remoteImport.getDocumentUrl());
+                    .create(importedContext, remoteImport.getDocumentUrl())
+                    .toCompletableFuture().get();
 
             if (result.runtime().getContextCache() != null && !validateScopedContext) {
                 result.runtime().getContextCache().put(contextKey, importedContext);
@@ -578,6 +590,10 @@ public final class ActiveContextBuilder {
 
         } catch (JsonLdError e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
+        } catch (InterruptedException | ExecutionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new IllegalStateException(e);
         }
     }
 }

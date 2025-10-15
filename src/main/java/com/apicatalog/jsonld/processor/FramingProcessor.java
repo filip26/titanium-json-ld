@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -134,9 +135,16 @@ public final class FramingProcessor {
                 : options.getBase();
 
         // 10-11.
-        final ActiveContext activeContext = new ActiveContext(input.getDocumentUrl(), input.getDocumentUrl(), ProcessingRuntime.of(options))
-                .newContext()
-                .create(context, contextBase);
+        ActiveContext activeContext;
+        try {
+            activeContext = new ActiveContext(input.getDocumentUrl(), input.getDocumentUrl(), ProcessingRuntime.of(options))
+                    .newContext()
+                    .create(context, contextBase).toCompletableFuture().get();
+
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new IllegalStateException(e);
+        }
 
         final String graphKey = activeContext.uriCompaction().vocab(true).compact(Keywords.GRAPH);
 

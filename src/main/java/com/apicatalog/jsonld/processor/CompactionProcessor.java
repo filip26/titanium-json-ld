@@ -17,6 +17,7 @@ package com.apicatalog.jsonld.processor;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -28,10 +29,9 @@ import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoaderOptions;
-import com.apicatalog.tree.io.JakartaMaterializer;
 import com.apicatalog.tree.io.NativeAdapter;
+import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 
-import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
@@ -118,8 +118,16 @@ public final class CompactionProcessor {
                 .orElse(JsonValue.EMPTY_JSON_OBJECT);
 
         // 7.
-        final ActiveContext activeContext = new ActiveContext(
-                ProcessingRuntime.of(options)).newContext().create(contextValue, contextBase);
+        ActiveContext activeContext;
+        try {
+            activeContext = new ActiveContext(
+                    ProcessingRuntime.of(options)).newContext().create(contextValue, contextBase)
+                    .toCompletableFuture().get();
+        } catch (InterruptedException | ExecutionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new IllegalStateException(e);
+        }
 
         // 8.
         if (activeContext.getBaseUri() == null) {

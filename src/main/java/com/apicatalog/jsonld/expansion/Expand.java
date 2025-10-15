@@ -3,7 +3,6 @@ package com.apicatalog.jsonld.expansion;
 import java.net.URI;
 
 import com.apicatalog.jsonld.context.Context;
-import com.apicatalog.tree.io.PolyMorph;
 
 import jakarta.json.JsonValue;
 

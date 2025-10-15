@@ -17,6 +17,9 @@ package com.apicatalog.jsonld.expansion;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.Context;
@@ -90,8 +93,15 @@ public final class Expansion {
 
         // 4. If element is a scalar
         if (JsonUtils.isScalar(element)) {
-            return ScalarExpansion
-                    .expand(activeContext, activeProperty, propertyContext, element);
+            try {
+                return ScalarExpansion
+                        .expand(activeContext, activeProperty, propertyContext, element)
+                        .toCompletableFuture()
+                        .get()
+                        ;
+            } catch (InterruptedException | ExecutionException  e) {
+                throw new IllegalStateException(e);
+            }
         }
 
         // 6. Otherwise element is a map
@@ -101,6 +111,51 @@ public final class Expansion {
                 .ordered(ordered)
                 .fromMap(fromMap)
                 .expand();
+    }
+
+    public CompletionStage<?> expandAsync() {
+
+        // 1. If element is null, return null
+        if (JsonUtils.isNull(element)) {
+            return CompletableFuture.completedStage(null);
+        }
+
+        try {
+
+            // 5. If element is an array,
+            if (JsonUtils.isArray(element)) {
+                return ArrayExpansion
+                        .with(activeContext, element.asJsonArray(), activeProperty, baseUrl)
+                        .frameExpansion(frameExpansion)
+                        .ordered(ordered)
+                        .fromMap(fromMap)
+                        .expandAsync();
+            }
+
+            // 3. If active property has a term definition in active context with a local
+            // context, initialize property-scoped context to that local context.
+            final JsonValue propertyContext = activeContext
+                    .getTerm(activeProperty)
+                    .map(TermDefinition::getLocalContext)
+                    .orElse(null);
+
+            // 4. If element is a scalar
+            if (JsonUtils.isScalar(element)) {
+                return ScalarExpansion
+                        .expand(activeContext, activeProperty, propertyContext, element);
+            }
+
+            // 6. Otherwise element is a map
+            return ObjectExpansion
+                    .with(activeContext, propertyContext, element.asJsonObject(), activeProperty, baseUrl)
+                    .frameExpansion(frameExpansion && !Keywords.DEFAULT.equals(activeProperty))
+                    .ordered(ordered)
+                    .fromMap(fromMap)
+                    .expandAsync();
+
+        } catch (IOException | JsonLdError e) {
+            return CompletableFuture.failedFuture(e);
+        }
     }
 
     public Expansion frameExpansion(boolean value) {

@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -158,11 +159,17 @@ public final class Compaction {
         // 6.
         if (activePropertyDefinition.map(TermDefinition::getLocalContext).isPresent()) {
 
-            activeContext = activeContext
-                    .newContext()
-                    .overrideProtected(true)
-                    .create(activePropertyDefinition.get().getLocalContext(),
-                            activePropertyDefinition.get().getBaseUrl());
+            try {
+                activeContext = activeContext
+                        .newContext()
+                        .overrideProtected(true)
+                        .create(activePropertyDefinition.get().getLocalContext(),
+                                activePropertyDefinition.get().getBaseUrl()).toCompletableFuture().get();
+            } catch (InterruptedException | ExecutionException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                throw new IllegalStateException(e);
+            }
         }
 
         // 7.
@@ -218,10 +225,18 @@ public final class Compaction {
                 // 11.1.
                 if (termDefinition.filter(TermDefinition::hasLocalContext).isPresent()) {
 
-                    activeContext = activeContext
-                            .newContext()
-                            .propagate(false)
-                            .create(termDefinition.get().getLocalContext(), termDefinition.get().getBaseUrl());
+                    try {
+                        activeContext = activeContext
+                                .newContext()
+                                .propagate(false)
+                                .create(termDefinition.get().getLocalContext(), termDefinition.get().getBaseUrl())
+                                .toCompletableFuture().get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                        throw new IllegalStateException(e);
+                    }
+                            ;
                 }
             }
         }
