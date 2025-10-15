@@ -679,7 +679,7 @@ public final class TermDefinitionBuilder {
 
             definition.setNestValue(nestString);
         }
-System.out.println(">>> " + valueObject);
+
         // 25.
         var prefixValue = adapter.property(Keywords.PREFIX, valueObject);
         
@@ -716,8 +716,7 @@ System.out.println(">>> " + valueObject);
 
         // 27.
         if (!overrideProtectedFlag && previousDefinition != null && previousDefinition.isProtected()) {
-System.out.println("1 >>> " + definition);
-System.out.println("2 >>> " + previousDefinition);
+
             // 27.1.
             if (definition.isNotSameExcept(previousDefinition)) {
                 throw new JsonLdError(JsonLdErrorCode.PROTECTED_TERM_REDEFINITION);
@@ -756,7 +755,7 @@ System.out.println("2 >>> " + previousDefinition);
         }
 
         if (adapter.isString(container)) {
-            return CONTAINER_KEYWORDS.contains(((JsonString) container).getString());
+            return CONTAINER_KEYWORDS.contains(adapter.stringValue(container));
         }
 
         return adapter.isCollection(container) && validateContainerArray(container.asJsonArray());

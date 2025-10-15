@@ -27,12 +27,13 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.expansion.Expansion;
 import com.apicatalog.jsonld.json.JsonProvider;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoaderOptions;
+import com.apicatalog.tree.io.NativeAdapter;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
@@ -99,7 +100,10 @@ public final class ExpansionProcessor {
             baseUri = options.getBase();
         }
 
-        ActiveContext activeContext = new ActiveContext(baseUri, baseUrl, ProcessingRuntime.of(options));
+        var contextBuilder = new Context.Builder(
+                baseUri,
+                baseUrl,
+                ProcessingRuntime.of(options));
 
         // 6. If the expandContext option in options is set, update the active context
         // using the Context Processing algorithm, passing the expandContext as
@@ -111,18 +115,16 @@ public final class ExpansionProcessor {
             final Optional<JsonStructure> contextValue = options.getExpandContext().getJsonContent();
 
             if (contextValue.isPresent()) {
-                activeContext = updateContext(activeContext, contextValue.get(), JakartaAdapter.instance(), baseUrl);
+                contextBuilder.update(contextValue.get(), JakartaAdapter.instance(), baseUrl);
             }
         }
 
         // 7.
         if (input.getContextUrl() != null) {
-            activeContext = activeContext
-                    .newContext()
-                    .create(
-                            JsonProvider.instance().createValue(input.getContextUrl().toString()),
-                            JakartaAdapter.instance(),
-                            input.getContextUrl());
+            contextBuilder.update(
+                    input.getContextUrl().toString(),
+                    NativeAdapter.instance(),
+                    input.getContextUrl());
         }
 
         // 8.
@@ -130,8 +132,13 @@ public final class ExpansionProcessor {
                 .with()
                 .frameExpansion(frameExpansion)
                 .ordered(options.isOrdered())
-                //FIXME adapter
-                .compute(activeContext, jsonStructure, JakartaAdapter.instance(), null, baseUrl);
+                // FIXME adapter
+                .expand(
+                        contextBuilder.build(),
+                        jsonStructure,
+                        JakartaAdapter.instance(),
+                        null,
+                        baseUrl);
 
         // 8.1
         if (expanded instanceof Map object

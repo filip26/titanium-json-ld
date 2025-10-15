@@ -390,7 +390,7 @@ final class ObjectExpansion1314 {
                             .with()
                             .frameExpansion(frameExpansion)
                             .ordered(ordered)
-                            .compute(typeContext, value, adapter, Keywords.GRAPH, baseUrl));
+                            .expand(typeContext, value, adapter, Keywords.GRAPH, baseUrl));
                 }
 
                 // 13.4.6
@@ -406,7 +406,7 @@ final class ObjectExpansion1314 {
                             .with()
                             .frameExpansion(frameExpansion)
                             .ordered(ordered)
-                            .compute(activeContext, value, adapter, null, baseUrl);
+                            .expand(activeContext, value, adapter, null, baseUrl);
 
                     if (expandedValue != null) {
 
@@ -588,7 +588,7 @@ final class ObjectExpansion1314 {
                             .with()
                             .frameExpansion(frameExpansion)
                             .ordered(ordered)
-                            .compute(activeContext, value, adapter, activeProperty, baseUrl);
+                            .expand(activeContext, value, adapter, activeProperty, baseUrl);
 
                     if (!(expandedValue instanceof Collection<?>)) {
                         expandedValue = Set.of(expandedValue);
@@ -605,7 +605,7 @@ final class ObjectExpansion1314 {
                             .with()
                             .frameExpansion(frameExpansion)
                             .ordered(ordered)
-                            .compute(activeContext, value, adapter, activeProperty, baseUrl);
+                            .expand(activeContext, value, adapter, activeProperty, baseUrl);
                 }
 
                 // 13.4.13
@@ -621,7 +621,7 @@ final class ObjectExpansion1314 {
                             .with()
                             .frameExpansion(frameExpansion)
                             .ordered(ordered)
-                            .compute(activeContext, value, adapter, Keywords.REVERSE, baseUrl);
+                            .expand(activeContext, value, adapter, Keywords.REVERSE, baseUrl);
 
                     if (expandedValue instanceof Map expandedValueObject) {
 //                    if (JsonUtils.isObject(expandedValue)) {
@@ -706,7 +706,7 @@ final class ObjectExpansion1314 {
                             .with()
                             .frameExpansion(frameExpansion)
                             .ordered(ordered)
-                            .compute(activeContext, value, adapter, Keywords.ANNOTATION, baseUrl));
+                            .expand(activeContext, value, adapter, Keywords.ANNOTATION, baseUrl));
                 }
 
                 // 13.4.15
@@ -720,7 +720,7 @@ final class ObjectExpansion1314 {
                     expandedValue = Expansion.with()
                             .frameExpansion(frameExpansion)
                             .ordered(ordered)
-                            .compute(activeContext, value, adapter, expandedProperty, baseUrl);
+                            .expand(activeContext, value, adapter, expandedProperty, baseUrl);
                 }
 
                 // 13.4.16
@@ -1027,7 +1027,7 @@ final class ObjectExpansion1314 {
                         .with()
                         .frameExpansion(frameExpansion)
                         .ordered(ordered)
-                        .compute(activeContext, value, adapter, key, baseUrl);
+                        .expand(activeContext, value, adapter, key, baseUrl);
             }
 
             // 13.10.

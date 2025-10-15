@@ -28,17 +28,13 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.tree.io.AdaptedNode;
 import com.apicatalog.tree.io.NodeAdapter;
 
 import jakarta.json.JsonObject;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
 
 /**
  *
@@ -52,7 +48,7 @@ public final class ObjectExpansion {
     // mandatory
     private Context activeContext;
     private AdaptedNode propertyContext;
-    private JsonObject element;
+    private Object element;
     private NodeAdapter adapter;
     private String activeProperty;
     private URI baseUrl;
@@ -63,8 +59,8 @@ public final class ObjectExpansion {
     private boolean fromMap;
 
     private ObjectExpansion(final Context activeContext,
-            final AdaptedNode propertyContext, 
-            final JsonObject element, final NodeAdapter adapter,
+            final AdaptedNode propertyContext,
+            final Object element, final NodeAdapter adapter,
             final String activeProperty, final URI baseUrl) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
@@ -79,14 +75,14 @@ public final class ObjectExpansion {
         this.fromMap = false;
     }
 
-    public static final ObjectExpansion with(final Context activeContext, 
+    public static final ObjectExpansion with(final Context activeContext,
             final AdaptedNode propertyContext,
-            final JsonObject node, 
-            final NodeAdapter nodeAdapter, 
-            final String activeProperty, 
+            final Object node,
+            final NodeAdapter nodeAdapter,
+            final String activeProperty,
             final URI baseUrl) {
-        return new ObjectExpansion(activeContext, 
-                propertyContext, 
+        return new ObjectExpansion(activeContext,
+                propertyContext,
                 node, nodeAdapter, activeProperty, baseUrl);
     }
 
@@ -127,7 +123,7 @@ public final class ObjectExpansion {
                 .nest(new LinkedHashMap<>())
                 .frameExpansion(frameExpansion)
                 .ordered(ordered)
-                .expand(activeContext, element, adapter, activeProperty, baseUrl);
+                .expand(activeContext, (JsonObject) element, adapter, activeProperty, baseUrl);
 
         // 15.
         if (result.containsKey(Keywords.VALUE)) {
@@ -175,16 +171,21 @@ public final class ObjectExpansion {
 
             boolean revert = true;
 
-            for (final String key : Utils.index(element.keySet(), true)) {
+            var it = adapter.keyStream(element, AdaptedNode.comparingElement(adapter::stringValue)).iterator();
 
+            while (it.hasNext()) {
+//final String key : Utils.index(element.keySet(), true)
                 activeContext.runtime().tick();
+
+                var key = adapter.stringValue(it.next());
 
                 final String expandedKey = activeContext
                         .uriExpansion()
                         .vocab(true)
                         .expand(key);
 
-                if (Keywords.VALUE.equals(expandedKey) || (Keywords.ID.equals(expandedKey) && (element.size() == 1))) {
+                if (Keywords.VALUE.equals(expandedKey)
+                        || (Keywords.ID.equals(expandedKey) && (adapter.isSingleElement(element)))) {
                     revert = false;
                     break;
                 }
@@ -198,10 +199,12 @@ public final class ObjectExpansion {
 
     private void initLocalContext() throws JsonLdError, IOException {
         // 9.
-        if (element.containsKey(Keywords.CONTEXT)) {
+        var contextValue = adapter.property(Keywords.CONTEXT, element);
+
+        if (contextValue != null) {
             activeContext = activeContext
                     .newContext()
-                    .create(element.get(Keywords.CONTEXT), adapter, baseUrl);
+                    .create(contextValue, adapter, baseUrl);
         }
     }
 
@@ -209,8 +212,13 @@ public final class ObjectExpansion {
 
         String typeKey = null;
 
+        var it = adapter.keyStream(element, AdaptedNode.comparingElement(adapter::stringValue)).iterator();
+
         // 11.
-        for (var key : Utils.index(element.keySet(), true)) {
+        while (it.hasNext()) {
+//            for (var key : Utils.index(adapter.keys(element), true)) {            
+
+            var key = adapter.stringValue(it.next());
 
             activeContext.runtime().tick();
 
@@ -227,11 +235,10 @@ public final class ObjectExpansion {
             }
 
             // 11.2
-            final Iterator<String> terms = JsonUtils
-                    .toStream(element.get(key))
-                    .filter(JsonUtils::isString)
-                    .map(JsonString.class::cast)
-                    .map(JsonString::getString)
+            final Iterator<String> terms = adapter.asStream(adapter.property(key, element))
+//                    .toStream(element.get(key))
+                    .filter(adapter::isString)
+                    .map(adapter::stringValue)
                     .sorted()
                     .iterator();
 
@@ -269,24 +276,26 @@ public final class ObjectExpansion {
         // value of the matched entry are IRI expanded.
         if (typeKey != null) {
 
-            final JsonValue type = element.get(typeKey);
+            var type = adapter.property(typeKey, element);
 
-            if (JsonUtils.isArray(type)) {
+            if (adapter.isCollection(type)) {
 
-                var lastValue = type.asJsonArray()
-                        .stream()
-                        .filter(JsonUtils::isString)
-                        .map(JsonString.class::cast)
-                        .map(JsonString::getString)
+                var lastValue = adapter.elementStream(type)
+                        .filter(adapter::isString)
+                        .map(adapter::stringValue)
                         .sorted()
                         .reduce((first, second) -> second);
 
                 if (lastValue.isPresent()) {
-                    return activeContext.uriExpansion().vocab(true).expand(lastValue.get());
+                    return activeContext.uriExpansion()
+                            .vocab(true)
+                            .expand(lastValue.get());
                 }
 
-            } else if (type instanceof JsonString jsonString) {
-                return activeContext.uriExpansion().vocab(true).expand(jsonString.getString());
+            } else if (adapter.isString(type)) {
+                return activeContext.uriExpansion()
+                        .vocab(true)
+                        .expand(adapter.stringValue(type));
             }
         }
 

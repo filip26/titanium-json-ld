@@ -33,6 +33,46 @@ import com.apicatalog.tree.io.NodeAdapter;
  */
 public interface Context {
 
+    static class Builder {
+
+        URI baseUri;
+        URI baseUrl;
+        ProcessingRuntime runtime;
+
+        Object context;
+        NodeAdapter adapter;
+
+        //TODO remove runtime
+        public Builder(URI base, ProcessingRuntime runtime) {
+            this(base, base, runtime);
+        }
+
+        public Builder(URI baseUri, URI baseUrl, ProcessingRuntime runtime) {
+            this.baseUri = baseUri;
+            this.baseUrl = baseUrl;
+            this.runtime = runtime;
+        }
+
+        // TODO better
+        public Context build() throws JsonLdError, IOException {
+            var ctx = new ActiveContext(baseUri, baseUrl, runtime);
+            if (context != null) {
+                ctx = ctx.newContext()
+                        .create(context, adapter, baseUrl);
+            }
+            return ctx;
+        }
+
+        public void update(Object node, NodeAdapter adapter, URI baseUrl) {
+            // TODO merge if set
+            this.context = node;
+            this.adapter = adapter;
+            this.baseUrl = baseUrl;
+
+        }
+
+    }
+
     Optional<TermDefinition> getTerm(final String value);
 
     DirectionType getDefaultBaseDirection();

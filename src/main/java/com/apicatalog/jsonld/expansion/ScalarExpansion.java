@@ -23,7 +23,7 @@ import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.AdaptedNode;
-import com.apicatalog.tree.io.jakarta.JakartaAdapter;
+import com.apicatalog.tree.io.NodeAdapter;
 
 import jakarta.json.JsonValue;
 
@@ -60,17 +60,18 @@ final class ScalarExpansion {
      *                        the {@code element}
      * @param propertyContext a property-scoped context to apply, or {@code null} if
      *                        none
-     * @param element         the scalar {@link JsonValue} to expand
+     * @param node            the scalar {@link JsonValue} to expand
      * @return a {@link Map} representing the expanded value object, or {@code null}
      *         if the scalar is dropped
      * @throws JsonLdError if an error occurs during expansion
-     * @throws IOException 
+     * @throws IOException
      */
     public static Map<String, ?> expand(
             final Context context,
             final String property,
             final AdaptedNode propertyContext,
-            final JsonValue element) throws JsonLdError, IOException {
+            final Object node,
+            final NodeAdapter nodeAdapter) throws JsonLdError, IOException {
 
         /*
          * 4.1. If active property is null or @graph, drop the free-floating scalar by
@@ -94,13 +95,13 @@ final class ScalarExpansion {
                             context.getTerm(property)
                                     .map(TermDefinition::getBaseUrl)
                                     .orElse(null))
-                    .expandValue(property, element, JakartaAdapter.instance()); //FIXME
+                    .expandValue(property, node, nodeAdapter);
         }
 
         /*
          * 4.3. Return the result of the Value Expansion algorithm, passing the active
          * context, active property, and element as value.
          */
-        return context.expandValue(property, element, JakartaAdapter.instance()); //FIXME
+        return context.expandValue(property, node, nodeAdapter);
     }
 }

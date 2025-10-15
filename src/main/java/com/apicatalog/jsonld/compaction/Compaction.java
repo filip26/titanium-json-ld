@@ -417,7 +417,10 @@ public final class Compaction {
                     final String nestTerm = nestProperty.get();
 
                     // 12.7.2.1.
-                    if (!Keywords.NEST.equals(nestTerm) && !Keywords.NEST.equals(activeContext.uriExpansion().vocab(true).expand(nestTerm))) {
+                    if (!Keywords.NEST.equals(nestTerm) && !Keywords.NEST.equals(activeContext
+                            .uriExpansion()
+                            .vocab(true)
+                            .expand(nestTerm))) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
 

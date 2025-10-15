@@ -25,8 +25,6 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.NodeType;
 
-import jakarta.json.JsonValue;
-
 /**
  *
  * @see <a href=
@@ -52,21 +50,21 @@ public final class Expansion {
         return new Expansion();
     }
 
-    public Object compute(
+    public Object expand(
             Context activeContext,
-            JsonValue node,
-            NodeAdapter adapter,
+            Object node,
+            NodeAdapter nodeAdapter,
             String activeProperty,
             URI baseUrl
 
     ) throws JsonLdError, IOException {
 
         // 1. If element is null, return null
-        if (adapter.isNull(node)) {
+        if (nodeAdapter.isNull(node)) {
             return null;
         }
         
-        var nodeType = adapter.type(node) ;
+        var nodeType = nodeAdapter.type(node) ;
 
         // 5. If element is an array,
         if (nodeType == NodeType.COLLECTION) {
@@ -75,7 +73,7 @@ public final class Expansion {
                     .frameExpansion(frameExpansion)
                     .ordered(ordered)
                     .fromMap(fromMap)
-                    .expand(activeContext, node.asJsonArray(), adapter, activeProperty, baseUrl);
+                    .expand(activeContext, node, nodeAdapter, activeProperty, baseUrl);
         }
 
         // 3. If active property has a term definition in active context with a local
@@ -88,15 +86,15 @@ public final class Expansion {
         // 4. If element is a scalar
         if (nodeType.isScalar()) {
             return ScalarExpansion
-                    .expand(activeContext, activeProperty, propertyContext, node);
+                    .expand(activeContext, activeProperty, propertyContext, node, nodeAdapter);
         }
 
         // 6. Otherwise element is a map
         return ObjectExpansion
                 .with(activeContext,
                         propertyContext,
-                        ((JsonValue) node).asJsonObject(),
-                        adapter,
+                        node,
+                        nodeAdapter,
                         activeProperty,
                         baseUrl)
                 .frameExpansion(frameExpansion && !Keywords.DEFAULT.equals(activeProperty))

@@ -310,8 +310,10 @@ public final class UriExpansion {
         if (vocab && activeContext.getVocabularyMapping() != null) {
             return activeContext.getVocabularyMapping().concat(result);
 
-            // 8. If documentRelative is true, resolve the result against the base URI.
+      
         } else if (documentRelative) {
+            System.out.println("!!!!!!! " + activeContext.getBaseUri() + ", " + result);
+            // 8. If documentRelative is true, resolve the result against the base URI.
             return UriResolver.resolve(activeContext.getBaseUri(), result);
         }
 

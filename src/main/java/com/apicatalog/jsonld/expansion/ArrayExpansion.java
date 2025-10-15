@@ -30,7 +30,6 @@ import com.apicatalog.jsonld.node.ListNode;
 import com.apicatalog.tree.io.NodeAdapter;
 
 import jakarta.json.JsonArray;
-import jakarta.json.JsonValue;
 
 /**
  * Implements Step 5 of the JSON-LD
@@ -102,15 +101,15 @@ public final class ArrayExpansion {
      * @throws IOException
      */
     public Collection<?> expand(final Context context,
-            final JsonArray node,
-            final NodeAdapter adapter,
+            final Object node,
+            final NodeAdapter nodeAdapter,
             final String property,
             final URI baseUrl) throws JsonLdError, IOException {
 
-        final List<Object> result = new ArrayList<>(node.size());
+        final List<Object> result = new ArrayList<>();
 
         // 5.2.
-        for (final JsonValue item : node) {
+        for (var item : nodeAdapter.asIterable(node)) {
 
             context.runtime().tick();
 
@@ -120,7 +119,7 @@ public final class ArrayExpansion {
                     .frameExpansion(frameExpansion)
                     .ordered(ordered)
                     .fromMap(fromMap)
-                    .compute(context, item, adapter, property, baseUrl);
+                    .expand(context, item, nodeAdapter, property, baseUrl);
 
             // 5.2.2
             if (expanded instanceof Collection<?> list
