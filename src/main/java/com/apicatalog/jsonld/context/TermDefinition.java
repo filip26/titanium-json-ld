@@ -176,7 +176,7 @@ public final class TermDefinition {
                 || !Objects.equals(nestValue, ref.nestValue)
                 || !Objects.equals(typeMapping, ref.typeMapping)
                 || !Objects.equals(languageMapping, ref.languageMapping)
-                || !Objects.equals(localContext, ref.localContext);
+                || !AdaptedNode.deepEquals(localContext, ref.localContext);
     }
 
     public boolean hasContainerMapping(String value) {

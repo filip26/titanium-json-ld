@@ -31,7 +31,6 @@ import com.apicatalog.jsonld.api.StringUtils;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.http.ProfileConstants;
-import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -329,7 +328,7 @@ public final class ActiveContextBuilder {
 
             // 5.8.
             var vocabValue = adapter.property(Keywords.VOCAB, contextDefinition);
-            System.out.println(">>> " + contextDefinition );
+
             if (vocabValue != null) {
 
                 // 5.8.2.
