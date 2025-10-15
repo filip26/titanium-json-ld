@@ -28,11 +28,12 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriUtils;
-import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.PolyNode;
 
 import jakarta.json.JsonObject;
 
@@ -51,7 +52,7 @@ public final class ObjectExpansion {
     private Object element;
     private NodeAdapter adapter;
     private String activeProperty;
-    private URI baseUrl;
+    private final URI baseUrl;
 
     // optional
     private boolean frameExpansion;
@@ -61,18 +62,19 @@ public final class ObjectExpansion {
     private ObjectExpansion(final Context activeContext,
             final PolyNode propertyContext,
             final Object element, final NodeAdapter adapter,
-            final String activeProperty, final URI baseUrl) {
+            final String activeProperty,
+            final URI baseUri) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
         this.element = element;
         this.adapter = adapter;
         this.activeProperty = activeProperty;
-        this.baseUrl = baseUrl;
 
         // default values
         this.frameExpansion = false;
         this.ordered = false;
         this.fromMap = false;
+        this.baseUrl = baseUri;
     }
 
     public static final ObjectExpansion with(final Context activeContext,
@@ -116,14 +118,14 @@ public final class ObjectExpansion {
         final Map<String, Object> result = new LinkedHashMap<>();
 
         ObjectExpansion1314
-                .with()
+                .with(new Params(frameExpansion, ordered, false, baseUrl))
                 .inputType(inputType)
                 .result(result)
                 .typeContext(typeContext)
                 .nest(new LinkedHashMap<>())
-                .frameExpansion(frameExpansion)
-                .ordered(ordered)
-                .expand(activeContext, (JsonObject) element, adapter, activeProperty, baseUrl);
+//                .frameExpansion(frameExpansion)
+//                .ordered(ordered)
+                .expand(activeContext, (JsonObject) element, adapter, activeProperty);
 
         // 15.
         if (result.containsKey(Keywords.VALUE)) {

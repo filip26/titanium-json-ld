@@ -33,8 +33,6 @@ import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
-import jakarta.json.JsonString;
-
 /**
  * Implements the
  * <a href="https://www.w3.org/TR/json-ld11-api/#iri-expansion">IRI
@@ -257,7 +255,7 @@ public final class UriExpansion {
 
             if (adapter.isString(entryValue)) {
 
-                final String entryValueString = ((JsonString) entryValue).getString();
+                final String entryValueString = adapter.stringValue(entryValue);
 
                 if (!defined.containsKey(entryValueString) || Boolean.FALSE.equals(defined.get(entryValueString))) {
                     //FIXME 
@@ -312,7 +310,6 @@ public final class UriExpansion {
 
       
         } else if (documentRelative) {
-            System.out.println("!!!!!!! " + activeContext.getBaseUri() + ", " + result);
             // 8. If documentRelative is true, resolve the result against the base URI.
             return UriResolver.resolve(activeContext.getBaseUri(), result);
         }

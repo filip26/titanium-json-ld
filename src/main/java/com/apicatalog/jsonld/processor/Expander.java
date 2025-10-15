@@ -29,7 +29,7 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.expansion.Expansion;
-import com.apicatalog.jsonld.expansion.Expansion.Config;
+import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.tree.io.NativeAdapter;
@@ -127,13 +127,12 @@ public final class Expander {
 
         // 8.
         var expanded = Expansion
-                .with(new Config(frameExpansion, options.isOrdered(), false))
                 .expand(
                         contextBuilder.build(),
                         content.node(),
                         content.adapter(),
                         null,
-                        baseUrl);
+                        new Params(frameExpansion, options.isOrdered(), false, baseUrl));
 
         // 8.1
         if (expanded instanceof Map object

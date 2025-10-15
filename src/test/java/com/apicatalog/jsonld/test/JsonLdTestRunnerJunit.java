@@ -29,7 +29,6 @@ import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.expansion.JsonLdAdapter;
 import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.jsonld.loader.QuadSetDocument;
@@ -42,6 +41,7 @@ import com.apicatalog.rdf.nquads.NQuadsWriter;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.flow.QuadEmitter;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
+import com.apicatalog.tree.io.NativeAdapter;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 import com.google.common.base.Objects;
 
@@ -175,7 +175,7 @@ public class JsonLdTestRunnerJunit {
                 return validateJsonLd(
                         testCase,
                         options,
-                        (JsonStructure) new JakartaMaterializer().node(collection, new JsonLdAdapter()));
+                        (JsonStructure) new JakartaMaterializer().node(collection, new NativeAdapter()));
 
             } catch (IOException e) {
                 fail(e);

@@ -43,20 +43,22 @@ import jakarta.json.JsonValue;
  */
 public final class Expansion {
 
-    public record Config(boolean frameExpansion, boolean ordered, boolean fromMap) {
+    public record Params(
+            boolean frameExpansion, 
+            boolean ordered, 
+            boolean fromMap,
+            URI baseUrl) {
 
-//
-//    /**
-//     * Sets the {@code frameExpansion} flag.
-//     *
-//     * @param value if {@code true}, indicates that expansion is being performed as
-//     *              part of the JSON-LD Framing algorithm.
-//     * @return this instance, for method chaining.
-//     */
-//    public ArrayExpansion frameExpansion(boolean value) {
-//        this.frameExpansion = value;
-//        return this;
-//    }
+        /**
+         * The {@code frameExpansion} flag.
+         *
+         * @return {@code true}, indicates that expansion is being performed as part of
+         *         the JSON-LD Framing algorithm.
+         */
+        @Override
+        public boolean frameExpansion() {
+            return frameExpansion;
+        }
 //
 //    /**
 //     * Sets the {@code ordered} flag.
@@ -83,31 +85,12 @@ public final class Expansion {
 //    }
     }
 
-    final Config config;
-
-//    // optional
-//    private boolean frameExpansion;
-//    private boolean ordered;
-//    private boolean fromMap;
-
-    private Expansion(Config config) {
-        this.config = config;
-        // default values
-//        this.frameExpansion = false;
-//        this.ordered = false;
-//        this.fromMap = false;
-    }
-
-    public static final Expansion with(Config config) {
-        return new Expansion(config);
-    }
-
-    public Object expand(
+    public static final Object expand(
             Context activeContext,
             Object node,
             NodeAdapter nodeAdapter,
             String activeProperty,
-            URI baseUrl
+            Params params
 
     ) throws JsonLdError, IOException {
 
@@ -120,7 +103,7 @@ public final class Expansion {
 
         // 5. If element is an array,
         if (nodeType == NodeType.COLLECTION) {
-            return array(activeContext, node, nodeAdapter, activeProperty, baseUrl, config);
+            return array(activeContext, node, nodeAdapter, activeProperty, params);
         }
 
         // 3. If active property has a term definition in active context with a local
@@ -142,10 +125,10 @@ public final class Expansion {
                         node,
                         nodeAdapter,
                         activeProperty,
-                        baseUrl)
-                .frameExpansion(config.frameExpansion && !Keywords.DEFAULT.equals(activeProperty))
-                .ordered(config.ordered)
-                .fromMap(config.fromMap)
+                        params.baseUrl)
+                .frameExpansion(params.frameExpansion && !Keywords.DEFAULT.equals(activeProperty))
+                .ordered(params.ordered)
+                .fromMap(params.fromMap)
                 .expand();
     }
 
@@ -191,7 +174,7 @@ public final class Expansion {
      * @throws JsonLdError if an error occurs during expansion
      * @throws IOException
      */
-    static Map<String, ?> scalar(
+    static final Map<String, ?> scalar(
             final Context context,
             final String property,
             final PolyNode propertyContext,
@@ -258,8 +241,7 @@ public final class Expansion {
             final Object node,
             final NodeAdapter nodeAdapter,
             final String property,
-            final URI baseUrl,
-            final Config config) throws JsonLdError, IOException {
+            final Params params) throws JsonLdError, IOException {
 
         final List<Object> result = new ArrayList<>();
 
@@ -269,9 +251,7 @@ public final class Expansion {
             context.runtime().tick();
 
             // 5.2.1
-            Object expanded = Expansion
-                    .with(config)
-                    .expand(context, item, nodeAdapter, property, baseUrl);
+            Object expanded = expand(context, item, nodeAdapter, property, params);
 
             // 5.2.2
             if (expanded instanceof Collection<?> list
@@ -292,7 +272,6 @@ public final class Expansion {
             } else if (expanded != null) {
                 result.add(expanded);
             }
-
         }
 
         // 5.3
