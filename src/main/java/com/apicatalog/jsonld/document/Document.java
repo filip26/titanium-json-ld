@@ -77,6 +77,7 @@ public interface Document {
      * @return {@link JsonStructure} or {@link Optional#empty()} if document content
      *         is not JSON based
      */
+    @Deprecated
     public default Optional<JsonStructure> getJsonContent() {
         return Optional.empty();
     }

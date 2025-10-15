@@ -26,8 +26,6 @@ import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.processor.ProcessingRuntime;
 import com.apicatalog.tree.io.NodeAdapter;
 
-import jakarta.json.JsonValue;
-
 /**
  * A context that is used to resolve terms while the processing algorithm is
  * running.
@@ -57,7 +55,7 @@ public interface Context {
 
     UriExpansion uriExpansion();
 
-    Map<String, ?> expandValue(final String activeProperty, final JsonValue value) throws JsonLdError, IOException;
+    Map<String, ?> expandValue(String activeProperty, Object value, NodeAdapter adapter) throws JsonLdError, IOException;
     // ---
 //  void createInverseContext();
 

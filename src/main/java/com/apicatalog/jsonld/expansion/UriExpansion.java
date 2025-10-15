@@ -25,17 +25,15 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.node.BlankNode;
 import com.apicatalog.jsonld.uri.UriResolver;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
+import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
-import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
 
 /**
  * Implements the
@@ -76,7 +74,8 @@ public final class UriExpansion {
     private boolean vocab;
     private UriValidationPolicy uriValidation;
 
-    private JsonObject localContext;
+    private Object localContext;
+    private NodeAdapter adapter;
     private Map<String, Boolean> defined;
 
     private UriExpansion(final Context activeContext) {
@@ -86,6 +85,7 @@ public final class UriExpansion {
         this.documentRelative = false;
         this.vocab = false;
         this.localContext = null;
+        this.adapter = null;
         this.defined = null;
         this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
@@ -201,11 +201,13 @@ public final class UriExpansion {
     /**
      * Sets the local context to be used during expansion.
      *
-     * @param value the local context as a {@link JsonObject}
+     * @param value the local context
+     * @param adapter
      * @return this instance, for method chaining
      */
-    public UriExpansion localContext(JsonObject value) {
+    public UriExpansion localContext(Object value, NodeAdapter adapter) {
         this.localContext = value;
+        this.adapter = adapter;
         return this;
     }
 
@@ -249,11 +251,11 @@ public final class UriExpansion {
          * value as term, and defined. This will ensure that a term definition is
          * created for value in active context during Context Processing
          */
-        if (localContext != null && localContext.containsKey(value)) {
+        if (localContext != null && adapter.keys(localContext).contains(value)) {
 
-            final JsonValue entryValue = localContext.get(value);
+            var entryValue = adapter.property(value, localContext);
 
-            if (JsonUtils.isString(entryValue)) {
+            if (adapter.isString(entryValue)) {
 
                 final String entryValueString = ((JsonString) entryValue).getString();
 
@@ -279,9 +281,11 @@ public final class UriExpansion {
     private String initPropertyContext(final String prefix, final String suffix, final String result) throws JsonLdError, IOException {
 
         // 6.3. Create term definition for the prefix if it exists in the local context.
-        if (localContext != null && localContext.containsKey(prefix) && !Boolean.TRUE.equals(defined.get(prefix))) {
-            //FIXME
-            activeContext.newTerm(localContext, JakartaAdapter.instance(), defined).create(prefix);
+        if (localContext != null 
+                && adapter.keys(localContext).contains(prefix) 
+                && !Boolean.TRUE.equals(defined.get(prefix))) {
+
+            activeContext.newTerm(localContext, adapter, defined).create(prefix);
         }
 
         // 6.4. If the prefix is a term in the active context, append the suffix to its

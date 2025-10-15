@@ -26,6 +26,7 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.tree.io.NodeAdapter;
 
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonString;
@@ -50,6 +51,7 @@ public final class ValueExpansion {
      * @param property The active property being expanded, which determines which
      *                 term definition to apply.
      * @param value    The JSON value to expand.
+     * @param adapter
      * @return A {@code Map} representing the expanded value object, typically
      *         containing keys like {@code @id}, {@code @value}, {@code @type},
      *         {@code @language}, or {@code @direction}.
@@ -58,7 +60,7 @@ public final class ValueExpansion {
      * @see <a href="https://www.w3.org/TR/json-ld11-api/#value-expansion">Value
      *      Expansion Algorithm</a>
      */
-    public static Map<String, ?> expand(final Context context, final String property, final JsonValue value) throws JsonLdError, IOException {
+    public static Map<String, ?> expand(final Context context, final String property, final Object value, final NodeAdapter adapter) throws JsonLdError, IOException {
 
         final Optional<TermDefinition> definition = context.getTerm(property);
 
@@ -70,13 +72,12 @@ public final class ValueExpansion {
         case Keywords.ID:
             String idValue = null;
 
-            if (value instanceof JsonString jsonString) {
-                idValue = jsonString.getString();
+            if (adapter.isString(value)) {
+                idValue = adapter.stringValue(value);
 
                 // custom extension allowing to process numeric ids
-            } else if (context.runtime().isNumericId()
-                    && value instanceof JsonNumber jsonNumber) {
-                idValue = jsonNumber.toString();
+            } else if (context.runtime().isNumericId() && adapter.isNumber(value)) {
+                idValue = adapter.asString(value);
             }
 
             if (idValue != null) {
@@ -88,11 +89,11 @@ public final class ValueExpansion {
             break;
 
         case Keywords.VOCAB:
-            if (value instanceof JsonString jsonString) {
+            if (adapter.isString(value)) {
                 return Map.of(Keywords.ID, context.uriExpansion()
                         .documentRelative(true)
                         .vocab(true)
-                        .expand(jsonString.getString()));
+                        .expand(adapter.stringValue(value)));
             }
             break;
 
@@ -103,14 +104,14 @@ public final class ValueExpansion {
         default:
             return Map.of(
                     Keywords.TYPE, typeMapping,
-                    Keywords.VALUE, JsonUtils.asScalar(value));
+                    Keywords.VALUE, adapter.asScalar(value));
 
         }
 
-        if (value instanceof JsonString jsonString) {
+        if (adapter.isString(value)) {
 
             var map = new HashMap<String, String>(3);
-            map.put(Keywords.VALUE, jsonString.getString());
+            map.put(Keywords.VALUE, adapter.stringValue(value));
 
             // 5.1.
             var language = definition
@@ -136,6 +137,6 @@ public final class ValueExpansion {
         }
 
         // 6.
-        return Map.of(Keywords.VALUE, JsonUtils.asScalar(value));
+        return Map.of(Keywords.VALUE, adapter.asScalar(value));
     }
 }

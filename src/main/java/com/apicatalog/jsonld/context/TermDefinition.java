@@ -22,8 +22,8 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.apicatalog.jsonld.lang.DirectionType;
-
-import jakarta.json.JsonValue;
+import com.apicatalog.tree.io.AdaptedNode;
+import com.apicatalog.tree.io.NodeAdapter;
 
 public final class TermDefinition {
 
@@ -39,7 +39,7 @@ public final class TermDefinition {
     // optional
     private URI baseUrl;
 
-    private JsonValue localContext;
+    private AdaptedNode localContext;
 
     private Set<String> containerMapping;
 
@@ -60,8 +60,8 @@ public final class TermDefinition {
         this.containerMapping = new HashSet<>();
     }
 
-    public void setLocalContext(JsonValue context) {
-        this.localContext = context;
+    public void setLocalContext(Object context, NodeAdapter adapter) {
+        this.localContext = new AdaptedNode(context, adapter);
     }
 
     protected void setBaseUrl(URI baseUrl) {
@@ -108,10 +108,11 @@ public final class TermDefinition {
         return containerMapping;
     }
 
-    public JsonValue getLocalContext() {
+    //FIXME trace usage and add adapter()
+    public AdaptedNode getLocalContext() {
         return localContext;
     }
-
+    
     public URI getBaseUrl() {
         return baseUrl;
     }

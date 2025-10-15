@@ -47,7 +47,9 @@ import com.apicatalog.jsonld.node.ListNode;
 import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.tree.io.AdaptedNode;
+import com.apicatalog.tree.io.NativeAdapter;
 import com.apicatalog.tree.io.NativeMaterializer;
+import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonNumber;
@@ -66,13 +68,6 @@ final class ObjectExpansion1314 {
 
     private static final Logger LOGGER = Logger.getLogger(ObjectExpansion1314.class.getName());
 
-    // mandatory
-    private Context activeContext;
-
-    private final JsonObject element;
-    private final String activeProperty;
-    private final URI baseUrl;
-
     private Context typeContext;
     private Map<String, Object> result;
     private String inputType;
@@ -82,24 +77,21 @@ final class ObjectExpansion1314 {
     private boolean frameExpansion;
     private boolean ordered;
 
-    private ObjectExpansion1314(final Context activeContext, final JsonObject element,
-            final String activeProperty, final URI baseUrl) {
-        this.activeContext = activeContext;
-        this.element = element;
-        this.activeProperty = activeProperty;
-        this.baseUrl = baseUrl;
-
+    private ObjectExpansion1314() {
         // default values
         this.frameExpansion = false;
         this.ordered = false;
     }
 
-    public static final ObjectExpansion1314 with(final Context activeContext, final JsonObject element,
-            final String activeProperty, final URI baseUrl) {
-        return new ObjectExpansion1314(activeContext, element, activeProperty, baseUrl);
+    public static final ObjectExpansion1314 with() {
+        return new ObjectExpansion1314();
     }
 
-    public void expand() throws JsonLdError, IOException {
+    public void expand(
+            final Context activeContext, final JsonObject element,
+            final NodeAdapter adapter,
+            final String activeProperty, final URI baseUrl
+            ) throws JsonLdError, IOException {
 
         // 13.
         for (final String key : Utils.index(element.keySet(), ordered)) {
@@ -395,10 +387,10 @@ final class ObjectExpansion1314 {
                 else if (Keywords.GRAPH.equals(expandedProperty)) {
                     expandedValue = JsonUtils.toList(Expansion
 //                    expandedValue = JsonUtils.toJsonArray(Expansion
-                            .with(typeContext, value, Keywords.GRAPH, baseUrl)
+                            .with()
                             .frameExpansion(frameExpansion)
                             .ordered(ordered)
-                            .compute());
+                            .compute(typeContext, value, adapter, Keywords.GRAPH, baseUrl));
                 }
 
                 // 13.4.6
@@ -411,10 +403,10 @@ final class ObjectExpansion1314 {
 
                     // 13.4.6.2
                     expandedValue = Expansion
-                            .with(activeContext, value, null, baseUrl)
+                            .with()
                             .frameExpansion(frameExpansion)
                             .ordered(ordered)
-                            .compute();
+                            .compute(activeContext, value, adapter, null, baseUrl);
 
                     if (expandedValue != null) {
 
@@ -593,10 +585,10 @@ final class ObjectExpansion1314 {
 
                     // 13.4.11.1
                     expandedValue = Expansion
-                            .with(activeContext, value, activeProperty, baseUrl)
+                            .with()
                             .frameExpansion(frameExpansion)
                             .ordered(ordered)
-                            .compute();
+                            .compute(activeContext, value, adapter, activeProperty, baseUrl);
 
                     if (!(expandedValue instanceof Collection<?>)) {
                         expandedValue = Set.of(expandedValue);
@@ -610,10 +602,10 @@ final class ObjectExpansion1314 {
                 // 13.4.12
                 if (Keywords.SET.equals(expandedProperty)) {
                     expandedValue = Expansion
-                            .with(activeContext, value, activeProperty, baseUrl)
+                            .with()
                             .frameExpansion(frameExpansion)
                             .ordered(ordered)
-                            .compute();
+                            .compute(activeContext, value, adapter, activeProperty, baseUrl);
                 }
 
                 // 13.4.13
@@ -626,10 +618,10 @@ final class ObjectExpansion1314 {
 
                     // 13.4.13.2.
                     expandedValue = Expansion
-                            .with(activeContext, value, Keywords.REVERSE, baseUrl)
+                            .with()
                             .frameExpansion(frameExpansion)
                             .ordered(ordered)
-                            .compute();
+                            .compute(activeContext, value, adapter, Keywords.REVERSE, baseUrl);
 
                     if (expandedValue instanceof Map expandedValueObject) {
 //                    if (JsonUtils.isObject(expandedValue)) {
@@ -711,10 +703,10 @@ final class ObjectExpansion1314 {
                     }
 
                     expandedValue = JsonUtils.toList(Expansion
-                            .with(activeContext, value, Keywords.ANNOTATION, baseUrl)
+                            .with()
                             .frameExpansion(frameExpansion)
                             .ordered(ordered)
-                            .compute());
+                            .compute(activeContext, value, adapter, Keywords.ANNOTATION, baseUrl));
                 }
 
                 // 13.4.15
@@ -725,10 +717,10 @@ final class ObjectExpansion1314 {
                                 || Keywords.OMIT_DEFAULT.equals(expandedProperty)
                                 || Keywords.REQUIRE_ALL.equals(expandedProperty))) {
 
-                    expandedValue = Expansion.with(activeContext, value, expandedProperty, baseUrl)
+                    expandedValue = Expansion.with()
                             .frameExpansion(frameExpansion)
                             .ordered(ordered)
-                            .compute();
+                            .compute(activeContext, value, adapter, expandedProperty, baseUrl);
                 }
 
                 // 13.4.16
@@ -892,8 +884,8 @@ final class ObjectExpansion1314 {
                         mapContext = mapContext
                                 .newContext()
                                 .create(
-                                        indexTermDefinition.get().getLocalContext(),
-                                        JakartaAdapter.instance(),
+                                        indexTermDefinition.get().getLocalContext().node(),
+                                        indexTermDefinition.get().getLocalContext().adapter(),
                                         indexTermDefinition.get().getBaseUrl());
                     }
 
@@ -916,11 +908,11 @@ final class ObjectExpansion1314 {
                     // 13.8.3.6.
                     // FIXME
                     Collection<?> indexValues = ArrayExpansion
-                            .with(mapContext, indexValue.asJsonArray(), key, baseUrl)
+                            .with()
                             .fromMap(true)
                             .frameExpansion(frameExpansion)
                             .ordered(ordered)
-                            .expand();
+                            .expand(mapContext, indexValue.asJsonArray(), adapter, key, baseUrl);
 
 //                    Collection<Object> indexValues = (Collection)Expansion.with(mapContext, indexValue, key, baseUrl)
 //                            .fromMap(true)
@@ -946,11 +938,10 @@ final class ObjectExpansion1314 {
                                 && !Keywords.NONE.equals(expandedIndex)) {
 
                             // 13.8.3.7.2.1.
-                            // FIXME
-//                            JsonValue reExpandedIndex = activeContext.valueExpansion()
-//                                    .expand(JsonProvider.instance().createValue(index), indexKey);
-
-                            var reExpandedIndex = activeContext.expandValue(indexKey, JsonProvider.instance().createValue(index));
+                            var reExpandedIndex = activeContext.expandValue(
+                                    indexKey,
+                                    index,
+                                    NativeAdapter.instance());
 
                             // 13.8.3.7.2.2.
                             var expandedIndexKey = activeContext
@@ -959,11 +950,9 @@ final class ObjectExpansion1314 {
                                     .expand(indexKey);
 
                             // 13.8.3.7.2.3.
-//                            final List<?> indexPropertyValues = JsonProvider.instance().createArrayBuilder().add(reExpandedIndex);
                             var indexPropertyValues = new ArrayList<>();
                             indexPropertyValues.add(reExpandedIndex);
 
-//                            final JsonValue existingValues = item.asJsonObject().get(expandedIndexKey);
                             var existingValues = result.get(expandedIndexKey);
 
                             if (existingValues instanceof Collection<?> values) {
@@ -1035,10 +1024,10 @@ final class ObjectExpansion1314 {
                 // 13.9.
             } else {
                 expandedValue = Expansion
-                        .with(activeContext, value, key, baseUrl)
+                        .with()
                         .frameExpansion(frameExpansion)
                         .ordered(ordered)
-                        .compute();
+                        .compute(activeContext, value, adapter, key, baseUrl);
             }
 
             // 13.10.
@@ -1110,7 +1099,7 @@ final class ObjectExpansion1314 {
 
         // 14.
         if (nest != null) {
-            processNest();
+            processNest(activeContext, element, adapter, activeProperty, baseUrl);
         }
     }
 
@@ -1144,12 +1133,16 @@ final class ObjectExpansion1314 {
         return this;
     }
 
-    private void recurse() throws JsonLdError, IOException {
+    private void recurse(  final Context context, final JsonObject element,
+            final NodeAdapter adapter,
+            final String activeProperty, final URI baseUrl) throws JsonLdError, IOException {
 
+        var activeContext = context;
+        
         activeContext.runtime().tick();
 
         // step 3
-        final Optional<JsonValue> propertyContext = activeContext
+        final Optional<AdaptedNode> propertyContext = activeContext
                 .getTerm(activeProperty)
                 .map(TermDefinition::getLocalContext);
 
@@ -1159,8 +1152,8 @@ final class ObjectExpansion1314 {
                     .newContext()
                     .overrideProtected(true)
                     .create(
-                            propertyContext.get(),
-                            JakartaAdapter.instance(),
+                            propertyContext.get().node(),
+                            propertyContext.get().adapter(),
                             activeContext
                                     .getTerm(activeProperty)
                                     .map(TermDefinition::getBaseUrl)
@@ -1168,10 +1161,14 @@ final class ObjectExpansion1314 {
         }
 
         // steps 13-14
-        expand();
+        expand(activeContext, element, adapter, activeProperty, baseUrl);
     }
 
-    private final void processNest() throws JsonLdError, IOException {
+    private final void processNest(
+            final Context activeContext, final JsonObject element,
+            final NodeAdapter adapter,
+            final String activeProperty, final URI baseUrl
+            ) throws JsonLdError, IOException {
 
         for (final String nestedKey : Utils.index(nest.keySet(), ordered)) {
 
@@ -1195,14 +1192,14 @@ final class ObjectExpansion1314 {
 
                 // 14.2.2
                 ObjectExpansion1314
-                        .with(activeContext, nestValue.asJsonObject(), nestedKey, baseUrl)
+                        .with()
                         .inputType(inputType)
                         .result(result)
                         .typeContext(typeContext)
                         .nest(new LinkedHashMap<>())
                         .frameExpansion(frameExpansion)
                         .ordered(ordered)
-                        .recurse();
+                        .recurse(activeContext, nestValue.asJsonObject(), adapter, nestedKey, baseUrl);
             }
         }
     }

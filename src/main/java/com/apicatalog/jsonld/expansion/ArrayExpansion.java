@@ -27,6 +27,7 @@ import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.node.ListNode;
+import com.apicatalog.tree.io.NodeAdapter;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonValue;
@@ -50,27 +51,12 @@ import jakarta.json.JsonValue;
  */
 public final class ArrayExpansion {
 
-    // mandatory
-    private Context context;
-    private JsonArray element;
-    private String property;
-    private URI baseUrl;
-
     // optional
     private boolean frameExpansion;
     private boolean ordered;
     private boolean fromMap;
 
-    private ArrayExpansion(
-            final Context context,
-            final JsonArray element,
-            final String property,
-            final URI baseUrl) {
-        this.context = context;
-        this.element = element;
-        this.property = property;
-        this.baseUrl = baseUrl;
-
+    private ArrayExpansion() {
         // default values
         this.frameExpansion = false;
         this.ordered = false;
@@ -87,9 +73,8 @@ public final class ArrayExpansion {
      * @return a new {@code ArrayExpansion} instance ready for configuration and
      *         execution
      */
-    public static final ArrayExpansion with(final Context context, final JsonArray element,
-            final String property, final URI baseUrl) {
-        return new ArrayExpansion(context, element, property, baseUrl);
+    public static final ArrayExpansion with() {
+        return new ArrayExpansion();
     }
 
     /**
@@ -114,24 +99,28 @@ public final class ArrayExpansion {
      *         node representations.
      * @throws JsonLdError if an error occurs during the recursive expansion of an
      *                     item
-     * @throws IOException 
+     * @throws IOException
      */
-    public Collection<?> expand() throws JsonLdError, IOException {
+    public Collection<?> expand(final Context context,
+            final JsonArray node,
+            final NodeAdapter adapter,
+            final String property,
+            final URI baseUrl) throws JsonLdError, IOException {
 
-        final List<Object> result = new ArrayList<>(element.size());
+        final List<Object> result = new ArrayList<>(node.size());
 
         // 5.2.
-        for (final JsonValue item : element) {
+        for (final JsonValue item : node) {
 
             context.runtime().tick();
 
             // 5.2.1
             Object expanded = Expansion
-                    .with(context, item, property, baseUrl)
+                    .with()
                     .frameExpansion(frameExpansion)
                     .ordered(ordered)
                     .fromMap(fromMap)
-                    .compute();
+                    .compute(context, item, adapter, property, baseUrl);
 
             // 5.2.2
             if (expanded instanceof Collection<?> list

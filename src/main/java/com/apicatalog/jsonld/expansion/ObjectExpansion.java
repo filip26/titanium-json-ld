@@ -33,7 +33,8 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriUtils;
-import com.apicatalog.tree.io.jakarta.JakartaAdapter;
+import com.apicatalog.tree.io.AdaptedNode;
+import com.apicatalog.tree.io.NodeAdapter;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
@@ -50,8 +51,9 @@ public final class ObjectExpansion {
 
     // mandatory
     private Context activeContext;
-    private JsonValue propertyContext;
+    private AdaptedNode propertyContext;
     private JsonObject element;
+    private NodeAdapter adapter;
     private String activeProperty;
     private URI baseUrl;
 
@@ -60,11 +62,14 @@ public final class ObjectExpansion {
     private boolean ordered;
     private boolean fromMap;
 
-    private ObjectExpansion(final Context activeContext, final JsonValue propertyContext, final JsonObject element,
+    private ObjectExpansion(final Context activeContext,
+            final AdaptedNode propertyContext, 
+            final JsonObject element, final NodeAdapter adapter,
             final String activeProperty, final URI baseUrl) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
         this.element = element;
+        this.adapter = adapter;
         this.activeProperty = activeProperty;
         this.baseUrl = baseUrl;
 
@@ -74,9 +79,15 @@ public final class ObjectExpansion {
         this.fromMap = false;
     }
 
-    public static final ObjectExpansion with(final Context activeContext, final JsonValue propertyContext,
-            final JsonObject element, final String activeProperty, final URI baseUrl) {
-        return new ObjectExpansion(activeContext, propertyContext, element, activeProperty, baseUrl);
+    public static final ObjectExpansion with(final Context activeContext, 
+            final AdaptedNode propertyContext,
+            final JsonObject node, 
+            final NodeAdapter nodeAdapter, 
+            final String activeProperty, 
+            final URI baseUrl) {
+        return new ObjectExpansion(activeContext, 
+                propertyContext, 
+                node, nodeAdapter, activeProperty, baseUrl);
     }
 
     public Object expand() throws JsonLdError, IOException {
@@ -89,8 +100,8 @@ public final class ObjectExpansion {
                     .newContext()
                     .overrideProtected(true)
                     .create(
-                            propertyContext,
-                            JakartaAdapter.instance(),
+                            propertyContext.node(),
+                            propertyContext.adapter(),
                             activeContext
                                     .getTerm(activeProperty)
                                     .map(TermDefinition::getBaseUrl)
@@ -109,14 +120,14 @@ public final class ObjectExpansion {
         final Map<String, Object> result = new LinkedHashMap<>();
 
         ObjectExpansion1314
-                .with(activeContext, element, activeProperty, baseUrl)
+                .with()
                 .inputType(inputType)
                 .result(result)
                 .typeContext(typeContext)
                 .nest(new LinkedHashMap<>())
                 .frameExpansion(frameExpansion)
                 .ordered(ordered)
-                .expand();
+                .expand(activeContext, element, adapter, activeProperty, baseUrl);
 
         // 15.
         if (result.containsKey(Keywords.VALUE)) {
@@ -190,7 +201,7 @@ public final class ObjectExpansion {
         if (element.containsKey(Keywords.CONTEXT)) {
             activeContext = activeContext
                     .newContext()
-                    .create(element.get(Keywords.CONTEXT), JakartaAdapter.instance(), baseUrl);
+                    .create(element.get(Keywords.CONTEXT), adapter, baseUrl);
         }
     }
 
@@ -230,14 +241,15 @@ public final class ObjectExpansion {
 
                 final String term = terms.next();
 
-                final Optional<JsonValue> localContext = typeContext.getTerm(term).map(TermDefinition::getLocalContext);
+                final Optional<AdaptedNode> localContext = typeContext
+                        .getTerm(term).map(TermDefinition::getLocalContext);
 
                 if (localContext.isPresent()) {
                     activeContext = activeContext
                             .newContext()
                             .propagate(false)
-                            .create(localContext.get(),
-                                    JakartaAdapter.instance(),
+                            .create(localContext.get().node(),
+                                    localContext.get().adapter(),
                                     activeContext.getTerm(term)
                                             .map(TermDefinition::getBaseUrl)
                                             .orElse(null));

@@ -127,10 +127,11 @@ public final class ExpansionProcessor {
 
         // 8.
         Object expanded = Expansion
-                .with(activeContext, jsonStructure, null, baseUrl)
+                .with()
                 .frameExpansion(frameExpansion)
                 .ordered(options.isOrdered())
-                .compute();
+                //FIXME adapter
+                .compute(activeContext, jsonStructure, JakartaAdapter.instance(), null, baseUrl);
 
         // 8.1
         if (expanded instanceof Map object

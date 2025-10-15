@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,6 +29,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.StringUtils;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.http.ProfileConstants;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -38,13 +40,15 @@ import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.jsonld.node.BlankNode;
 import com.apicatalog.jsonld.uri.UriResolver;
 import com.apicatalog.jsonld.uri.UriUtils;
+import com.apicatalog.tree.io.AdaptedNode;
+import com.apicatalog.tree.io.NativeAdapter;
+import com.apicatalog.tree.io.NativeMaterializer;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonObject;
-import jakarta.json.JsonStructure;
-import jakarta.json.JsonValue;
+
 
 /**
  * @see <a href=
@@ -224,7 +228,7 @@ public final class ActiveContextBuilder {
                 loaderOptions.setProfile(ProfileConstants.CONTEXT);
                 loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
 
-                JsonStructure importedStructure = null;
+                AdaptedNode importedTree = null;
 
                 try {
 
@@ -233,38 +237,45 @@ public final class ActiveContextBuilder {
                     if (importedDocument == null) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context[" + contextImportUri + "] is null.");
                     }
-
-                    importedStructure = importedDocument
-                            .getJsonContent()
-                            .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE));
+                    
+                    if (importedDocument instanceof JsonDocument jsonDocument) {
+                        importedTree = jsonDocument.node();
+                        
+                    } else {
+                        throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Invalid context " + contextImportUri + " to import.");
+                    }
+//                    importedStructure = importedDocument
+//                            .getJsonContent()
+//                            .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE));
 
                     // 5.6.5
                 } catch (JsonLdError e) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE, e);
                 }
-
+                
+                var importedNode = importedTree.node();
+                var importAdapter = importedTree.adapter();
+                
                 // 5.6.6
-                if (JsonUtils.isNotObject(importedStructure)) {
+                if (!importAdapter.isMap(importedNode)) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT);
                 }
 
-                final JsonValue importedContext = importedStructure.asJsonObject().get(Keywords.CONTEXT);
+                var importedContext = importAdapter.property(Keywords.CONTEXT, importedNode);
 
                 if (importedContext == null
-                        || JsonUtils.isNotObject(importedContext)) {
+                        || !importAdapter.isMap(importedContext)) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT);
                 }
 
-                final JsonObject importedContextObject = importedContext.asJsonObject();
-
                 // 5.6.7
-                if (importedContextObject.containsKey(Keywords.IMPORT)) {
+                if (importAdapter.keys(importedContext).contains(Keywords.IMPORT)) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_CONTEXT_ENTRY);
                 }
 
                 // 5.6.8
 //               FIXME importedContextObject.forEach(contextDefinition::put);
-                contextDefinition = JsonUtils.merge(importedContextObject, (JsonObject) contextDefinition);
+                contextDefinition = JsonUtils.merge((JsonObject) importedContext, (JsonObject) contextDefinition);
             }
 
             // 5.7. If context has an @base entry and remote contexts is empty,
@@ -508,7 +519,7 @@ public final class ActiveContextBuilder {
         if (activeContext.runtime().getContextCache() != null
                 && activeContext.runtime().getContextCache().containsKey(contextKey) && !validateScopedContext) {
 
-            JsonValue cachedContext = activeContext.runtime().getContextCache().get(contextKey);
+            var cachedContext = activeContext.runtime().getContextCache().get(contextKey);
             result = result
                     .newContext()
                     .remoteContexts(new ArrayList<>(remoteContexts))
@@ -551,26 +562,37 @@ public final class ActiveContextBuilder {
             }
         }
 
-        final JsonStructure importedStructure = remoteImport.getJsonContent()
-                .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null."));
-
-        // 5.2.5.2.
-        if (JsonUtils.isNotObject(importedStructure)) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is not valid Json Object [" + importedStructure.getValueType() + "].");
+        AdaptedNode importedNode = null;
+        
+        if (remoteImport instanceof JsonDocument jsonDocument) {
+            importedNode = jsonDocument.node();
+            
+        } else {
+            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");
         }
-
-        JsonValue importedContext = importedStructure.asJsonObject();
-
-        if (!importedContext.asJsonObject().containsKey(Keywords.CONTEXT)) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context does not contain @context key and is not valid JSON-LD context.");
+        
+        var importedContext = importedNode.node();
+        var importAdapter = importedNode.adapter();
+        
+        // 5.2.5.2.
+        if (!importAdapter.isMap(importedContext)) {
+            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is not valid Json Object: " + importedContext + ".");
         }
 
         // 5.2.5.3.
-        importedContext = importedContext.asJsonObject().get(Keywords.CONTEXT);
+        importedContext = importAdapter.property(Keywords.CONTEXT, importedContext);
+        
+        if (importedContext == null) {
+            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context does not contain @context key and is not valid JSON-LD context.");
+        }
 
-        // remote @base from a remote context
-        if (JsonUtils.containsKey(importedContext, Keywords.BASE)) {
-            importedContext = JsonProvider.instance().createObjectBuilder(importedContext.asJsonObject()).remove(Keywords.BASE).build();
+        var newContext = new NativeMaterializer().node(importedContext, importAdapter); 
+
+        // remove @base from a remote context
+        if (newContext instanceof Map map && map.containsKey(Keywords.BASE)) {
+            Map<Object, Object> hashMap = new HashMap<>(map);
+            hashMap.remove(Keywords.BASE);
+            newContext = hashMap;
         }
 
         if (activeContext.runtime().getDocumentCache() != null) {
@@ -583,12 +605,12 @@ public final class ActiveContextBuilder {
                     .newContext()
                     .remoteContexts(new ArrayList<>(remoteContexts))
                     .validateScopedContext(validateScopedContext)
-                    // FIXME - adapter
-                    .create(importedContext, JakartaAdapter.instance(), remoteImport.getDocumentUrl());
+                    .create(newContext, NativeAdapter.instance(), remoteImport.getDocumentUrl());
 
-            if (result.runtime().getContextCache() != null && !validateScopedContext) {
-                result.runtime().getContextCache().put(contextKey, importedContext);
-            }
+//FIXME
+//            if (result.runtime().getContextCache() != null && !validateScopedContext) {
+//                result.runtime().getContextCache().put(contextKey, importedContext);
+//            }
 
         } catch (JsonLdError e) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);

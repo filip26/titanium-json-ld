@@ -22,6 +22,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.tree.io.AdaptedNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonValue;
@@ -68,7 +69,7 @@ final class ScalarExpansion {
     public static Map<String, ?> expand(
             final Context context,
             final String property,
-            final JsonValue propertyContext,
+            final AdaptedNode propertyContext,
             final JsonValue element) throws JsonLdError, IOException {
 
         /*
@@ -88,18 +89,18 @@ final class ScalarExpansion {
         if (propertyContext != null) {
             return context
                     .newContext()
-                    .create(propertyContext,
-                            JakartaAdapter.instance(),
+                    .create(propertyContext.node(),
+                            propertyContext.adapter(),
                             context.getTerm(property)
                                     .map(TermDefinition::getBaseUrl)
                                     .orElse(null))
-                    .expandValue(property, element);
+                    .expandValue(property, element, JakartaAdapter.instance()); //FIXME
         }
 
         /*
          * 4.3. Return the result of the Value Expansion algorithm, passing the active
          * context, active property, and element as value.
          */
-        return context.expandValue(property, element);
+        return context.expandValue(property, element, JakartaAdapter.instance()); //FIXME
     }
 }

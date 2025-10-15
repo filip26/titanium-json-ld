@@ -21,8 +21,9 @@ import java.net.URI;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.NodeType;
 
 import jakarta.json.JsonValue;
 
@@ -35,68 +36,69 @@ import jakarta.json.JsonValue;
  */
 public final class Expansion {
 
-    // mandatory
-    private Context activeContext;
-    private JsonValue element;
-    private String activeProperty;
-    private URI baseUrl;
-
     // optional
     private boolean frameExpansion;
     private boolean ordered;
     private boolean fromMap;
 
-    private Expansion(final Context activeContext, final JsonValue element, final String activeProperty,
-            final URI baseUrl) {
-        this.activeContext = activeContext;
-        this.element = element;
-        this.activeProperty = activeProperty;
-        this.baseUrl = baseUrl;
-
+    private Expansion() {
         // default values
         this.frameExpansion = false;
         this.ordered = false;
         this.fromMap = false;
     }
 
-    public static final Expansion with(final Context activeContext, final JsonValue element, final String activeProperty, final URI baseUrl) {
-        return new Expansion(activeContext, element, activeProperty, baseUrl);
+    public static final Expansion with() {
+        return new Expansion();
     }
 
-    public Object compute() throws JsonLdError, IOException {
+    public Object compute(
+            Context activeContext,
+            JsonValue node,
+            NodeAdapter adapter,
+            String activeProperty,
+            URI baseUrl
+
+    ) throws JsonLdError, IOException {
 
         // 1. If element is null, return null
-        if (JsonUtils.isNull(element)) {
+        if (adapter.isNull(node)) {
             return null;
         }
+        
+        var nodeType = adapter.type(node) ;
 
         // 5. If element is an array,
-        if (JsonUtils.isArray(element)) {
-
+        if (nodeType == NodeType.COLLECTION) {
             return ArrayExpansion
-                    .with(activeContext, element.asJsonArray(), activeProperty, baseUrl)
+                    .with()
                     .frameExpansion(frameExpansion)
                     .ordered(ordered)
                     .fromMap(fromMap)
-                    .expand();
+                    .expand(activeContext, node.asJsonArray(), adapter, activeProperty, baseUrl);
         }
 
         // 3. If active property has a term definition in active context with a local
         // context, initialize property-scoped context to that local context.
-        final JsonValue propertyContext = activeContext
+        var propertyContext = activeContext
                 .getTerm(activeProperty)
                 .map(TermDefinition::getLocalContext)
                 .orElse(null);
 
         // 4. If element is a scalar
-        if (JsonUtils.isScalar(element)) {
+        if (nodeType.isScalar()) {
             return ScalarExpansion
-                    .expand(activeContext, activeProperty, propertyContext, element);
+                    .expand(activeContext, activeProperty, propertyContext, node);
         }
 
         // 6. Otherwise element is a map
         return ObjectExpansion
-                .with(activeContext, propertyContext, element.asJsonObject(), activeProperty, baseUrl)
+                .with(activeContext,
+                        propertyContext,
+                        ((JsonValue) node).asJsonObject(),
+                        adapter,
+                        activeProperty,
+                        baseUrl)
                 .frameExpansion(frameExpansion && !Keywords.DEFAULT.equals(activeProperty))
                 .ordered(ordered)
                 .fromMap(fromMap)

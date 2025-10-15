@@ -25,6 +25,8 @@ import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.tree.io.AdaptedNode;
+import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonException;
 import jakarta.json.JsonStructure;
@@ -225,5 +227,10 @@ public final class JsonDocument implements Document {
     @Override
     public Optional<String> getProfile() {
         return Optional.ofNullable(profile);
+    }
+
+    public AdaptedNode node() {
+        //TODO
+        return new AdaptedNode(structure, JakartaAdapter.instance());
     }
 }

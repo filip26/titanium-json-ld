@@ -20,7 +20,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,7 +35,6 @@ import com.apicatalog.jsonld.node.BlankNode;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.tree.io.NodeAdapter;
-import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
@@ -177,7 +175,7 @@ public final class TermDefinitionBuilder {
                         && protect != null
                         && adapter.keys(value).size() == 2) {
 
-                    //FIXME
+                    // FIXME
                     if (!JsonUtils.contains(Keywords.SET, (JsonValue) container)) {
                         throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
                     }
@@ -210,22 +208,20 @@ public final class TermDefinitionBuilder {
         // 7.
         if (adapter.isNull(value)) {
 
-            valueObject = JsonValue.EMPTY_JSON_OBJECT; //FIXME
+            valueObject = JsonValue.EMPTY_JSON_OBJECT; // FIXME
             idValue = JsonValue.NULL;
             simpleTerm = false;
 
-
         } else if (adapter.isString(value)) {
             // 8.
-            valueObject =  JsonValue.EMPTY_JSON_OBJECT; //FIXME Collections.emptyMap();
+            valueObject = JsonValue.EMPTY_JSON_OBJECT; // FIXME Collections.emptyMap();
             idValue = value;
             simpleTerm = true;
-
 
         } else if (adapter.isMap(value)) {
             // 9.
             valueObject = value;
-            idValue =  adapter.property(Keywords.ID, value);
+            idValue = adapter.property(Keywords.ID, value);
             simpleTerm = false;
 
         } else {
@@ -237,7 +233,7 @@ public final class TermDefinitionBuilder {
 
         // 11.
         var protectedValue = adapter.property(Keywords.PROTECTED, valueObject);
-        
+
         if (protectedValue != null) {
 
             if (activeContext.runtime().isV10()) {
@@ -253,7 +249,7 @@ public final class TermDefinitionBuilder {
 
         // 12.
         var typeValue = adapter.property(Keywords.TYPE, valueObject);
-        
+
         if (typeValue != null) {
 
             if (!adapter.isString(typeValue)) {
@@ -263,7 +259,12 @@ public final class TermDefinitionBuilder {
             // 12.2.
             final String expandedTypeString = activeContext
                     .uriExpansion()
-                    .localContext((JsonObject) new JakartaMaterializer().node(localContext, adapter))
+                    .localContext(
+                            localContext,
+                            adapter
+//                            (JsonObject) new JakartaMaterializer().node(localContext, adapter)
+                            
+                            )
                     .defined(defined)
                     .vocab(true)
                     .expand(adapter.stringValue(typeValue));
@@ -287,7 +288,7 @@ public final class TermDefinitionBuilder {
 
         // 13.
         var reverseValue = adapter.property(Keywords.REVERSE, valueObject);
-        
+
         if (reverseValue != null) {
 
             // 13.1.
@@ -313,7 +314,11 @@ public final class TermDefinitionBuilder {
             definition.setUriMapping(
                     activeContext
                             .uriExpansion()
-                            .localContext((JsonObject) localContext)    //FIXME
+                            .localContext(
+//                                    (JsonObject) localContext
+                                    localContext,
+                                    adapter
+                                    ) // FIXME
                             .defined(defined)
                             .vocab(true)
                             .expand(reverseString));
@@ -324,7 +329,7 @@ public final class TermDefinitionBuilder {
 
             // 13.5.
             var containerValue = adapter.property(Keywords.CONTAINER, valueObject);
-            
+
             if (containerValue != null) {
 
                 if (!adapter.isString(containerValue) && !adapter.isNull(containerValue)) {
@@ -352,9 +357,9 @@ public final class TermDefinitionBuilder {
             defined.put(term, Boolean.TRUE);
 
             // 14.
-        } else if (idValue != null 
-                && (!adapter.isString(idValue) 
-                || !term.equals(((JsonString) idValue).getString()))) {
+        } else if (idValue != null
+                && (!adapter.isString(idValue)
+                        || !term.equals(adapter.stringValue(idValue)))) {
 
             // 14.1.
             if (!adapter.isNull(idValue)) {
@@ -364,7 +369,7 @@ public final class TermDefinitionBuilder {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_IRI_MAPPING);
                 }
 
-                final String idValueString = ((JsonString) idValue).getString();
+                final String idValueString = adapter.stringValue(idValue);
 
                 // 14.2.2
                 if (!Keywords.contains(idValueString) && Keywords.matchForm(idValueString)) {
@@ -376,7 +381,11 @@ public final class TermDefinitionBuilder {
                 definition.setUriMapping(
                         activeContext
                                 .uriExpansion()
-                                .localContext((JsonObject) localContext)    //FIXME
+                                .localContext(
+//                                        (JsonObject) localContext
+                                        localContext,
+                                        adapter
+                                        ) // FIXME
                                 .defined(defined)
                                 .vocab(true)
                                 .expand(idValueString));
@@ -400,7 +409,11 @@ public final class TermDefinitionBuilder {
                     // 14.2.4.2
                     final String expandedTerm = activeContext
                             .uriExpansion()
-                            .localContext((JsonObject) localContext)    //FIXME
+                            .localContext(
+//                                    (JsonObject) localContext
+                                    localContext,
+                                    adapter
+                                    ) // FIXME
                             .defined(defined)
                             .vocab(true)
                             .expand(term);
@@ -428,8 +441,8 @@ public final class TermDefinitionBuilder {
             final CompactUri compactUri = CompactUri.create(term);
 
             // 15.1.
-            if (compactUri != null 
-                    && compactUri.isNotBlank() 
+            if (compactUri != null
+                    && compactUri.isNotBlank()
                     && adapter.keys(localContext).contains(compactUri.getPrefix())) {
 
                 activeContext.newTerm(localContext, adapter, defined).create(compactUri.getPrefix());
@@ -455,7 +468,11 @@ public final class TermDefinitionBuilder {
             definition.setUriMapping(
                     activeContext
                             .uriExpansion()
-                            .localContext((JsonObject) localContext)    //FIXME
+                            .localContext(
+//                                    (JsonObject) localContext
+                                    localContext,
+                                    adapter
+                                    ) // FIXME
                             .defined(defined)
                             .vocab(true)
                             .expand(term));
@@ -480,7 +497,7 @@ public final class TermDefinitionBuilder {
         if (adapter.keys(valueObject).contains(Keywords.CONTAINER)) {
 
             // 19.1.
-            final JsonValue containerValue = ((JsonObject)valueObject).get(Keywords.CONTAINER);
+            final JsonValue containerValue = ((JsonObject) valueObject).get(Keywords.CONTAINER);
 
             if (!validateContainer(containerValue)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
@@ -518,7 +535,7 @@ public final class TermDefinitionBuilder {
             }
 
             // 20.2.
-            final JsonValue index = ((JsonObject)valueObject).get(Keywords.INDEX);
+            final JsonValue index = ((JsonObject) valueObject).get(Keywords.INDEX);
 
             if (JsonUtils.isNotString(index)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
@@ -528,7 +545,11 @@ public final class TermDefinitionBuilder {
 
             final String expandedIndex = activeContext
                     .uriExpansion()
-                    .localContext((JsonObject) localContext)    //FIXME
+                    .localContext(
+//                            (JsonObject) localContext
+                            localContext,
+                            adapter
+                            ) // FIXME
                     .defined(defined)
                     .vocab(true)
                     .expand(indexString);
@@ -541,15 +562,14 @@ public final class TermDefinitionBuilder {
         }
 
         // 21.
-        if (((JsonObject)valueObject).containsKey(Keywords.CONTEXT)) {
+        var contextValue = adapter.property(Keywords.CONTEXT, valueObject);
+        
+        if (contextValue != null) {
 
             // 21.1.
             if (activeContext.runtime().isV10()) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
-
-            // 21.2.
-            final JsonValue context = ((JsonObject)valueObject).get(Keywords.CONTEXT);
 
             // 21.3.
             try {
@@ -558,22 +578,24 @@ public final class TermDefinitionBuilder {
                         .overrideProtected(true)
                         .remoteContexts(new ArrayList<>(remoteContexts))
                         .validateScopedContext(false)
-                        .create(context, adapter, baseUrl);
+                        .create(contextValue, adapter, baseUrl);
 
             } catch (JsonLdError e) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_SCOPED_CONTEXT, e);
             }
 
             // 21.4.
-            definition.setLocalContext(context);
+            definition.setLocalContext(contextValue, adapter);
             definition.setBaseUrl(baseUrl);
         }
 
         // 22.
-        if (((JsonObject)valueObject).containsKey(Keywords.LANGUAGE) && !((JsonObject)valueObject).containsKey(Keywords.TYPE)) {
+        var languageValue = adapter.property(Keywords.LANGUAGE, valueObject);
+        
+        if (languageValue != null && !adapter.keys(valueObject).contains(Keywords.TYPE)) {
 
             // 22.1. - 2.
-            final JsonValue language = ((JsonObject)valueObject).get(Keywords.LANGUAGE);
+            final JsonValue language = ((JsonObject) valueObject).get(Keywords.LANGUAGE);
 
             if (language == null) {
 
@@ -605,9 +627,11 @@ public final class TermDefinitionBuilder {
         }
 
         // 23.
-        if (((JsonObject)valueObject).containsKey(Keywords.DIRECTION) && !((JsonObject)valueObject).containsKey(Keywords.TYPE)) {
+        var directionValue = adapter.property(Keywords.DIRECTION, valueObject);
+        
+        if (directionValue != null && !((JsonObject) valueObject).containsKey(Keywords.TYPE)) {
 
-            final JsonValue direction = ((JsonObject)valueObject).get(Keywords.DIRECTION);
+            final JsonValue direction = ((JsonObject) valueObject).get(Keywords.DIRECTION);
 
             if (JsonUtils.isNull(direction)) {
                 definition.setDirectionMapping(DirectionType.NULL);
@@ -632,14 +656,16 @@ public final class TermDefinitionBuilder {
         }
 
         // 24.
-        if (((JsonObject)valueObject).containsKey(Keywords.NEST)) {
+        var nestValue = adapter.property(Keywords.NEST, valueObject);
+        
+        if (nestValue != null) {
 
             // 24.1
             if (activeContext.runtime().isV10()) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
 
-            final JsonValue nest = ((JsonObject)valueObject).get(Keywords.NEST);
+            final JsonValue nest = ((JsonObject) valueObject).get(Keywords.NEST);
 
             if (JsonUtils.isNotString(nest)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
@@ -655,7 +681,9 @@ public final class TermDefinitionBuilder {
         }
 
         // 25.
-        if (((JsonObject)valueObject).containsKey(Keywords.PREFIX)) {
+        var prefixValue = adapter.property(Keywords.PREFIX, valueObject);
+        
+        if (prefixValue != null) {
 
             // 25.1.
             if (activeContext.runtime().isV10() || term.contains(":") || term.contains("/")) {
@@ -663,7 +691,7 @@ public final class TermDefinitionBuilder {
             }
 
             // 25.2.
-            final JsonValue prefix = ((JsonObject)valueObject).get(Keywords.PREFIX);
+            final JsonValue prefix = ((JsonObject) valueObject).get(Keywords.PREFIX);
 
             if (adapter.isTrue(prefix)) {
                 definition.setPrefix(true);

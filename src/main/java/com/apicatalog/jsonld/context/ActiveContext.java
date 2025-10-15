@@ -31,8 +31,6 @@ import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.processor.ProcessingRuntime;
 import com.apicatalog.tree.io.NodeAdapter;
 
-import jakarta.json.JsonValue;
-
 /**
  * A context that is used to resolve terms while the processing algorithm is
  * running.
@@ -166,8 +164,8 @@ public final class ActiveContext implements Context {
         return UriExpansion.with(this).uriValidation(runtime.getUriValidation());
     }
 
-    public Map<String, ?> expandValue(final String activeProperty, final JsonValue value) throws JsonLdError, IOException {
-        return ValueExpansion.expand(this, activeProperty, value);
+    public Map<String, ?> expandValue(final String activeProperty, final Object value, final NodeAdapter adapter) throws JsonLdError, IOException {
+        return ValueExpansion.expand(this, activeProperty, value, adapter);
     }
 
     public UriCompaction uriCompaction() {
