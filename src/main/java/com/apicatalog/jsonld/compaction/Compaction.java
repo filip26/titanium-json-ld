@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.compaction;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,6 +36,7 @@ import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.node.GraphNode;
 import com.apicatalog.jsonld.node.ListNode;
 import com.apicatalog.jsonld.node.NodeObject;
+import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
@@ -87,11 +89,11 @@ public final class Compaction {
         return this;
     }
 
-    public JsonValue compact(final JsonValue element) throws JsonLdError {
+    public JsonValue compact(final JsonValue element) throws JsonLdError, IOException {
         return compact(null, element);
     }
 
-    public JsonValue compact(final String activeProperty, final JsonValue element) throws JsonLdError {
+    public JsonValue compact(final String activeProperty, final JsonValue element) throws JsonLdError, IOException {
 
         // 1.
         ActiveContext typeContext = context;
@@ -162,6 +164,7 @@ public final class Compaction {
                     .newContext()
                     .overrideProtected(true)
                     .create(activePropertyDefinition.get().getLocalContext(),
+                            JakartaAdapter.instance(),
                             activePropertyDefinition.get().getBaseUrl());
         }
 
@@ -221,7 +224,10 @@ public final class Compaction {
                     activeContext = activeContext
                             .newContext()
                             .propagate(false)
-                            .create(termDefinition.get().getLocalContext(), termDefinition.get().getBaseUrl());
+                            .create(
+                                    termDefinition.get().getLocalContext(),
+                                    JakartaAdapter.instance(),
+                                    termDefinition.get().getBaseUrl());
                 }
             }
         }

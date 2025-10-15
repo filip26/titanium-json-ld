@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.URI;
 
 import org.junit.jupiter.api.Test;
@@ -39,14 +40,14 @@ class FrameApiTest {
     public static final MockLoader MOCK_LOADER = new MockLoader(JsonValue.EMPTY_JSON_OBJECT);
 
     @Test
-    void test1() throws JsonLdError {
+    void test1() throws JsonLdError, IOException {
         JsonObject framed = JsonLd.frame(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT), JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).get();
         assertNotNull(framed);
         assertEquals(JsonValue.EMPTY_JSON_OBJECT, framed);
     }
 
     @Test
-    void test2() throws JsonLdError {
+    void test2() throws JsonLdError, IOException {
         JsonObject framed = JsonLd.frame(JsonDocument.of(MediaType.JSON, new ByteArrayInputStream(JsonValue.EMPTY_JSON_OBJECT.toString().getBytes())),
                 JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT))
                 .context(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT))
@@ -56,14 +57,14 @@ class FrameApiTest {
     }
 
     @Test
-    void test3() throws JsonLdError {
+    void test3() throws JsonLdError, IOException {
         JsonObject framed = JsonLd.frame("https://example.com", "https://example.com/frame").loader(MOCK_LOADER).base("").get();
         assertNotNull(framed);
         assertEquals(JsonValue.EMPTY_JSON_OBJECT, framed);
     }
 
     @Test
-    void test4() throws JsonLdError {
+    void test4() throws JsonLdError, IOException {
         JsonObject framed = JsonLd.frame(URI.create("https://example.com"), URI.create("https://example.com/frame")).loader(MOCK_LOADER).mode(JsonLdVersion.V1_0).get();
         assertNotNull(framed);
         assertEquals(Json.createObjectBuilder().add(Keywords.GRAPH, JsonValue.EMPTY_JSON_ARRAY).build(), framed);

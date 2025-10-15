@@ -28,10 +28,10 @@ import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoaderOptions;
-import com.apicatalog.tree.io.JakartaMaterializer;
 import com.apicatalog.tree.io.NativeAdapter;
+import com.apicatalog.tree.io.jakarta.JakartaAdapter;
+import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 
-import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
@@ -119,7 +119,7 @@ public final class CompactionProcessor {
 
         // 7.
         final ActiveContext activeContext = new ActiveContext(
-                ProcessingRuntime.of(options)).newContext().create(contextValue, contextBase);
+                ProcessingRuntime.of(options)).newContext().create(contextValue, JakartaAdapter.instance(), contextBase);
 
         // 8.
         if (activeContext.getBaseUri() == null) {

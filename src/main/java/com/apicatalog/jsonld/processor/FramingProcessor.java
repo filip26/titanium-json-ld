@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.processor;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,6 +44,7 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.jsonld.node.BlankNode;
+import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
@@ -63,7 +65,7 @@ public final class FramingProcessor {
     private FramingProcessor() {
     }
 
-    public static final JsonObject frame(final URI input, final Document frame, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonObject frame(final URI input, final Document frame, final JsonLdOptions options) throws JsonLdError, IOException {
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
@@ -80,7 +82,7 @@ public final class FramingProcessor {
         return frame(remoteDocument, frame, options);
     }
 
-    public static final JsonObject frame(final Document input, final URI frameUri, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonObject frame(final Document input, final URI frameUri, final JsonLdOptions options) throws JsonLdError, IOException {
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + frameUri + "].");
         }
@@ -94,7 +96,7 @@ public final class FramingProcessor {
         return frame(input, frameDocument, options);
     }
 
-    public static final JsonObject frame(final Document input, final Document frame, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonObject frame(final Document input, final Document frame, final JsonLdOptions options) throws JsonLdError, IOException {
 
         if (frame == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame or Frame.Document is null.");
@@ -136,7 +138,7 @@ public final class FramingProcessor {
         // 10-11.
         final ActiveContext activeContext = new ActiveContext(input.getDocumentUrl(), input.getDocumentUrl(), ProcessingRuntime.of(options))
                 .newContext()
-                .create(context, contextBase);
+                .create(context, JakartaAdapter.instance(), contextBase);
 
         final String graphKey = activeContext.uriCompaction().vocab(true).compact(Keywords.GRAPH);
 
@@ -254,7 +256,7 @@ public final class FramingProcessor {
         return compactedResults.asJsonObject();
     }
 
-    public static final JsonObject frame(final URI input, final URI frame, final JsonLdOptions options) throws JsonLdError {
+    public static final JsonObject frame(final URI input, final URI frame, final JsonLdOptions options) throws JsonLdError, IOException {
         return frame(getDocument(input, options), getDocument(frame, options), options);
     }
 

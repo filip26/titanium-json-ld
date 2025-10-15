@@ -42,7 +42,7 @@ import com.apicatalog.rdf.nquads.NQuadsWriter;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.flow.QuadEmitter;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
-import com.apicatalog.tree.io.JakartaMaterializer;
+import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 import com.google.common.base.Objects;
 
 import jakarta.json.Json;

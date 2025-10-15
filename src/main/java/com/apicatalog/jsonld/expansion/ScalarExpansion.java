@@ -15,12 +15,14 @@
  */
 package com.apicatalog.jsonld.expansion;
 
+import java.io.IOException;
 import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonValue;
 
@@ -61,12 +63,13 @@ final class ScalarExpansion {
      * @return a {@link Map} representing the expanded value object, or {@code null}
      *         if the scalar is dropped
      * @throws JsonLdError if an error occurs during expansion
+     * @throws IOException 
      */
     public static Map<String, ?> expand(
             final Context context,
             final String property,
             final JsonValue propertyContext,
-            final JsonValue element) throws JsonLdError {
+            final JsonValue element) throws JsonLdError, IOException {
 
         /*
          * 4.1. If active property is null or @graph, drop the free-floating scalar by
@@ -86,6 +89,7 @@ final class ScalarExpansion {
             return context
                     .newContext()
                     .create(propertyContext,
+                            JakartaAdapter.instance(),
                             context.getTerm(property)
                                     .map(TermDefinition::getBaseUrl)
                                     .orElse(null))

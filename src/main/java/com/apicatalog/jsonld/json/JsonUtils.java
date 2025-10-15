@@ -33,6 +33,7 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
+@Deprecated
 public final class JsonUtils {
 
     JsonUtils() {

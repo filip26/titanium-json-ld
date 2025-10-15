@@ -33,6 +33,7 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriUtils;
+import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
@@ -89,6 +90,7 @@ public final class ObjectExpansion {
                     .overrideProtected(true)
                     .create(
                             propertyContext,
+                            JakartaAdapter.instance(),
                             activeContext
                                     .getTerm(activeProperty)
                                     .map(TermDefinition::getBaseUrl)
@@ -147,7 +149,7 @@ public final class ObjectExpansion {
         return this;
     }
 
-    private void initPreviousContext() throws JsonLdError {
+    private void initPreviousContext() throws JsonLdError, IOException {
 
         // 7. If active context has a previous context, the active context is not
         // propagated.
@@ -183,16 +185,16 @@ public final class ObjectExpansion {
         }
     }
 
-    private void initLocalContext() throws JsonLdError {
+    private void initLocalContext() throws JsonLdError, IOException {
         // 9.
         if (element.containsKey(Keywords.CONTEXT)) {
             activeContext = activeContext
                     .newContext()
-                    .create(element.get(Keywords.CONTEXT), baseUrl);
+                    .create(element.get(Keywords.CONTEXT), JakartaAdapter.instance(), baseUrl);
         }
     }
 
-    private String processTypeScoped(final Context typeContext) throws JsonLdError {
+    private String processTypeScoped(final Context typeContext) throws JsonLdError, IOException {
 
         String typeKey = null;
 
@@ -235,6 +237,7 @@ public final class ObjectExpansion {
                             .newContext()
                             .propagate(false)
                             .create(localContext.get(),
+                                    JakartaAdapter.instance(),
                                     activeContext.getTerm(term)
                                             .map(TermDefinition::getBaseUrl)
                                             .orElse(null));
@@ -245,7 +248,7 @@ public final class ObjectExpansion {
         return typeKey;
     }
 
-    private String findInputType(final String typeKey) throws JsonLdError {
+    private String findInputType(final String typeKey) throws JsonLdError, IOException {
 
         // Initialize input type to expansion of the last value of the first entry in
         // element

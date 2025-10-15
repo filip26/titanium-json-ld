@@ -18,6 +18,8 @@ package com.apicatalog.jsonld.api;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLd;
@@ -32,7 +34,7 @@ import jakarta.json.JsonObjectBuilder;
 class FramingReversePerformanceTest {
 
     @Test
-    void testFramingPerformance1000Elements() throws JsonLdError {
+    void testFramingPerformance1000Elements() throws JsonLdError, IOException {
 
         final long executionTime = measureFramingPerformance(1_000);
 
@@ -43,7 +45,7 @@ class FramingReversePerformanceTest {
     }
 
     @Test
-    void testFramingPerformance10000Elements() throws JsonLdError {
+    void testFramingPerformance10000Elements() throws JsonLdError, IOException {
 
         final long executionTime = measureFramingPerformance(10_000);
 
@@ -53,7 +55,7 @@ class FramingReversePerformanceTest {
                 "Framing 10_000 elements took too long: " + executionTime + " ms");
     }
 
-    private long measureFramingPerformance(final int elementCount) throws JsonLdError {
+    private long measureFramingPerformance(final int elementCount) throws JsonLdError, IOException {
 
         final JsonObject document = buildTestDocument(elementCount);
         final JsonObject frame = buildTestFrame();

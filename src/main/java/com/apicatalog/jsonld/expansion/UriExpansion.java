@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.expansion;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -30,6 +31,7 @@ import com.apicatalog.jsonld.node.BlankNode;
 import com.apicatalog.jsonld.uri.UriResolver;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
+import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
@@ -108,8 +110,9 @@ public final class UriExpansion {
      * @return the fully expanded IRI as a {@link String}, or {@code null} if the
      *         value has an invalid keyword-like form
      * @throws JsonLdError if an error occurs during context processing
+     * @throws IOException 
      */
-    public String expand(final String value) throws JsonLdError {
+    public String expand(final String value) throws JsonLdError, IOException {
 
         // 1. If value is a keyword or null, return value as is.
         if (value == null || Keywords.contains(value)) {
@@ -236,8 +239,9 @@ public final class UriExpansion {
      *
      * @param value the term to potentially define
      * @throws JsonLdError if an error occurs during term creation
+     * @throws IOException 
      */
-    private void initLocalContext(final String value) throws JsonLdError {
+    private void initLocalContext(final String value) throws JsonLdError, IOException {
         /*
          * 3. If local context is not null, it contains an entry with a key that equals
          * value, and the value of the entry for value in defined is not true, invoke
@@ -254,7 +258,8 @@ public final class UriExpansion {
                 final String entryValueString = ((JsonString) entryValue).getString();
 
                 if (!defined.containsKey(entryValueString) || Boolean.FALSE.equals(defined.get(entryValueString))) {
-                    activeContext.newTerm(localContext, defined).create(value);
+                    //FIXME 
+                    activeContext.newTerm(localContext, JakartaAdapter.instance(), defined).create(value);
                 }
             }
         }
@@ -269,12 +274,14 @@ public final class UriExpansion {
      * @param result the original value, to be returned if expansion fails
      * @return the expanded IRI or the original result
      * @throws JsonLdError if an error occurs during term creation
+     * @throws IOException 
      */
-    private String initPropertyContext(final String prefix, final String suffix, final String result) throws JsonLdError {
+    private String initPropertyContext(final String prefix, final String suffix, final String result) throws JsonLdError, IOException {
 
         // 6.3. Create term definition for the prefix if it exists in the local context.
         if (localContext != null && localContext.containsKey(prefix) && !Boolean.TRUE.equals(defined.get(prefix))) {
-            activeContext.newTerm(localContext, defined).create(prefix);
+            //FIXME
+            activeContext.newTerm(localContext, JakartaAdapter.instance(), defined).create(prefix);
         }
 
         // 6.4. If the prefix is a term in the active context, append the suffix to its

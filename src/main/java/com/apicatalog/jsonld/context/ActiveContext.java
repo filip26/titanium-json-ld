@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.context;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -28,6 +29,7 @@ import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.expansion.ValueExpansion;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.processor.ProcessingRuntime;
+import com.apicatalog.tree.io.NodeAdapter;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
@@ -165,7 +167,7 @@ public final class ActiveContext implements Context {
         return UriExpansion.with(this).uriValidation(runtime.getUriValidation());
     }
 
-    public Map<String, ?> expandValue(final String activeProperty, final JsonValue value) throws JsonLdError {
+    public Map<String, ?> expandValue(final String activeProperty, final JsonValue value) throws JsonLdError, IOException {
         return ValueExpansion.expand(this, activeProperty, value);
     }
 
@@ -177,8 +179,8 @@ public final class ActiveContext implements Context {
         return ValueCompaction.with(this);
     }
 
-    public TermDefinitionBuilder newTerm(final JsonObject localContext, final Map<String, Boolean> defined) {
-        return TermDefinitionBuilder.with(this, localContext, defined);
+    public TermDefinitionBuilder newTerm(final Object localContext, final NodeAdapter adapter, final Map<String, Boolean> defined) {
+        return TermDefinitionBuilder.with(this, localContext, adapter, defined);
     }
 
     public TermSelector termSelector(final String variable, final Collection<String> containerMapping, final String typeLanguage) {

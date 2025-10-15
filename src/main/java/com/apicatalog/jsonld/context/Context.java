@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.context;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
@@ -23,8 +24,8 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.processor.ProcessingRuntime;
+import com.apicatalog.tree.io.NodeAdapter;
 
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
 /**
@@ -48,7 +49,7 @@ public interface Context {
 
     ProcessingRuntime runtime();
 
-    TermDefinitionBuilder newTerm(JsonObject localContext, Map<String, Boolean> defined);
+    TermDefinitionBuilder newTerm(Object localContext, NodeAdapter adapter, Map<String, Boolean> defined);
 
     ActiveContextBuilder newContext();
 
@@ -56,7 +57,7 @@ public interface Context {
 
     UriExpansion uriExpansion();
 
-    Map<String, ?> expandValue(final String activeProperty, final JsonValue value) throws JsonLdError;
+    Map<String, ?> expandValue(final String activeProperty, final JsonValue value) throws JsonLdError, IOException;
     // ---
 //  void createInverseContext();
 

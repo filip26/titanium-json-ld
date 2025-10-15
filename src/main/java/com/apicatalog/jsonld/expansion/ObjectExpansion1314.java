@@ -46,9 +46,9 @@ import com.apicatalog.jsonld.node.GraphNode;
 import com.apicatalog.jsonld.node.ListNode;
 import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriUtils;
-import com.apicatalog.tree.io.JakartaAdapter;
+import com.apicatalog.tree.io.AdaptedNode;
 import com.apicatalog.tree.io.NativeMaterializer;
-import com.apicatalog.tree.io.PolyMorph;
+import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
@@ -481,7 +481,7 @@ final class ObjectExpansion1314 {
                             throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
                         }
 
-                        expandedValue = new PolyMorph(value, JakartaAdapter.instance());
+                        expandedValue = new AdaptedNode(value, JakartaAdapter.instance());
 
                         // 13.4.7.2
                     } else if (JsonUtils.isNull(value)
@@ -763,7 +763,7 @@ final class ObjectExpansion1314 {
 //                (JsonStructure) new JakartaMaterializer().node(collection, new JsonLdAdapter())
 
 //                expandedValue = new NativeMaterializer().node(value, JakartaAdapter.instance());
-                expandedValue = new PolyMorph(value, JakartaAdapter.instance());
+                expandedValue = new AdaptedNode(value, JakartaAdapter.instance());
 
 //                if (expandedValue != null) {
                 expandedValue = Map.of(
@@ -893,6 +893,7 @@ final class ObjectExpansion1314 {
                                 .newContext()
                                 .create(
                                         indexTermDefinition.get().getLocalContext(),
+                                        JakartaAdapter.instance(),
                                         indexTermDefinition.get().getBaseUrl());
                     }
 
@@ -1159,6 +1160,7 @@ final class ObjectExpansion1314 {
                     .overrideProtected(true)
                     .create(
                             propertyContext.get(),
+                            JakartaAdapter.instance(),
                             activeContext
                                     .getTerm(activeProperty)
                                     .map(TermDefinition::getBaseUrl)
