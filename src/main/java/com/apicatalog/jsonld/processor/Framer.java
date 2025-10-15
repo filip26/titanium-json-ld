@@ -96,7 +96,7 @@ public final class Framer {
         return frame(input, frameDocument, options);
     }
 
-    public static final JsonObject frame(final Document input, final Document frame, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final JsonObject frame(final Document input, final Document<?> frame, final JsonLdOptions options) throws JsonLdError, IOException {
 
         if (frame == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame or Frame.Document is null.");

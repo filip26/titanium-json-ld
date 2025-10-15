@@ -46,7 +46,7 @@ import com.apicatalog.jsonld.node.GraphNode;
 import com.apicatalog.jsonld.node.ListNode;
 import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriUtils;
-import com.apicatalog.tree.io.AdaptedNode;
+import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.NativeAdapter;
 import com.apicatalog.tree.io.NativeMaterializer;
 import com.apicatalog.tree.io.NodeAdapter;
@@ -473,7 +473,7 @@ final class ObjectExpansion1314 {
                             throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
                         }
 
-                        expandedValue = new AdaptedNode(value, JakartaAdapter.instance());
+                        expandedValue = new PolyNode(value, JakartaAdapter.instance());
 
                         // 13.4.7.2
                     } else if (JsonUtils.isNull(value)
@@ -755,7 +755,7 @@ final class ObjectExpansion1314 {
 //                (JsonStructure) new JakartaMaterializer().node(collection, new JsonLdAdapter())
 
 //                expandedValue = new NativeMaterializer().node(value, JakartaAdapter.instance());
-                expandedValue = new AdaptedNode(value, JakartaAdapter.instance());
+                expandedValue = new PolyNode(value, JakartaAdapter.instance());
 
 //                if (expandedValue != null) {
                 expandedValue = Map.of(
@@ -1142,7 +1142,7 @@ final class ObjectExpansion1314 {
         activeContext.runtime().tick();
 
         // step 3
-        final Optional<AdaptedNode> propertyContext = activeContext
+        final Optional<PolyNode> propertyContext = activeContext
                 .getTerm(activeProperty)
                 .map(TermDefinition::getLocalContext);
 

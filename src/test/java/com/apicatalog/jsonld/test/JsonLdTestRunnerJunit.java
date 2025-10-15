@@ -197,7 +197,7 @@ public class JsonLdTestRunnerJunit {
             assertNotNull(expectedDocument);
 
             // compare expected with the result
-            return compareJson(testCase, result, expectedDocument.getJsonContent().get());
+            return compareJson(testCase, result, (JsonStructure) expectedDocument.getJsonContent().get());
 
         } catch (JsonLdError e) {
             fail(e.getMessage());

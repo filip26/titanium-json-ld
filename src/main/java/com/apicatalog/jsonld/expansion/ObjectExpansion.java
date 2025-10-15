@@ -31,7 +31,7 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriUtils;
-import com.apicatalog.tree.io.AdaptedNode;
+import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.NodeAdapter;
 
 import jakarta.json.JsonObject;
@@ -47,7 +47,7 @@ public final class ObjectExpansion {
 
     // mandatory
     private Context activeContext;
-    private AdaptedNode propertyContext;
+    private PolyNode propertyContext;
     private Object element;
     private NodeAdapter adapter;
     private String activeProperty;
@@ -59,7 +59,7 @@ public final class ObjectExpansion {
     private boolean fromMap;
 
     private ObjectExpansion(final Context activeContext,
-            final AdaptedNode propertyContext,
+            final PolyNode propertyContext,
             final Object element, final NodeAdapter adapter,
             final String activeProperty, final URI baseUrl) {
         this.activeContext = activeContext;
@@ -76,7 +76,7 @@ public final class ObjectExpansion {
     }
 
     public static final ObjectExpansion with(final Context activeContext,
-            final AdaptedNode propertyContext,
+            final PolyNode propertyContext,
             final Object node,
             final NodeAdapter nodeAdapter,
             final String activeProperty,
@@ -171,7 +171,7 @@ public final class ObjectExpansion {
 
             boolean revert = true;
 
-            var it = adapter.keyStream(element, AdaptedNode.comparingElement(adapter::stringValue)).iterator();
+            var it = adapter.keyStream(element, PolyNode.comparingElement(adapter::stringValue)).iterator();
 
             while (it.hasNext()) {
 //final String key : Utils.index(element.keySet(), true)
@@ -212,7 +212,7 @@ public final class ObjectExpansion {
 
         String typeKey = null;
 
-        var it = adapter.keyStream(element, AdaptedNode.comparingElement(adapter::stringValue)).iterator();
+        var it = adapter.keyStream(element, PolyNode.comparingElement(adapter::stringValue)).iterator();
 
         // 11.
         while (it.hasNext()) {
@@ -248,7 +248,7 @@ public final class ObjectExpansion {
 
                 final String term = terms.next();
 
-                final Optional<AdaptedNode> localContext = typeContext
+                final Optional<PolyNode> localContext = typeContext
                         .getTerm(term).map(TermDefinition::getLocalContext);
 
                 if (localContext.isPresent()) {

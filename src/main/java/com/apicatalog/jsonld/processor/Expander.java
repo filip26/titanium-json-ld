@@ -26,19 +26,16 @@ import java.util.Set;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.expansion.Expansion;
-import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.tree.io.NativeAdapter;
-import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonStructure;
-import jakarta.json.JsonValue;
 
 /**
  *
@@ -60,31 +57,28 @@ public final class Expander {
         final LoaderOptions loaderOptions = new LoaderOptions();
         loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
 
-        final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
+        var remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
 
-        if (remoteDocument == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+        if (remoteDocument != null && remoteDocument.getContent() instanceof PolyNode) {
+            @SuppressWarnings("unchecked")
+            final Document<PolyNode> remote = remoteDocument;
+            return expand(remote, options, false);
         }
 
-        return expand(remoteDocument, options, false);
+        throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
     }
 
-    public static final Collection<?> expand(Document input, final JsonLdOptions options, boolean frameExpansion) throws JsonLdError, IOException {
+    public static final Collection<?> expand(Document<PolyNode> input, final JsonLdOptions options, boolean frameExpansion) throws JsonLdError, IOException {
 
         if (input == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "RemoteDocument is null.");
         }
-
-        final JsonStructure jsonStructure = input
-                .getJsonContent()
-                .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document is not pased JSON."));
 
         // 5. Initialize a new empty active context. The base IRI and
         // original base URL of the active context is set to the documentUrl
         // from remote document, if available; otherwise to the base option from
         // options.
         // If set, the base option from options overrides the base IRI.
-
         URI baseUri = null;
         URI baseUrl = null;
 
@@ -96,6 +90,7 @@ public final class Expander {
         if (baseUrl == null) {
             baseUrl = options.getBase();
         }
+
         if (options.getBase() != null) {
             baseUri = options.getBase();
         }
@@ -112,6 +107,7 @@ public final class Expander {
         // instead for local context.
         if (options.getExpandContext() != null) {
 
+            @SuppressWarnings("unchecked")
             final Optional<JsonStructure> contextValue = options.getExpandContext().getJsonContent();
 
             if (contextValue.isPresent()) {
@@ -127,16 +123,17 @@ public final class Expander {
                     input.getContextUrl());
         }
 
+        var content = input.getContent();
+
         // 8.
         var expanded = Expansion
                 .with()
                 .frameExpansion(frameExpansion)
                 .ordered(options.isOrdered())
-                // FIXME adapter
                 .expand(
                         contextBuilder.build(),
-                        jsonStructure,
-                        JakartaAdapter.instance(),
+                        content.node(),
+                        content.adapter(),
                         null,
                         baseUrl);
 

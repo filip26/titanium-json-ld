@@ -29,7 +29,6 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.StringUtils;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.http.ProfileConstants;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.DirectionType;
@@ -39,7 +38,7 @@ import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.jsonld.node.BlankNode;
 import com.apicatalog.jsonld.uri.UriResolver;
 import com.apicatalog.jsonld.uri.UriUtils;
-import com.apicatalog.tree.io.AdaptedNode;
+import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.NativeAdapter;
 import com.apicatalog.tree.io.NativeMaterializer;
 import com.apicatalog.tree.io.NodeAdapter;
@@ -47,7 +46,6 @@ import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonObject;
-
 
 /**
  * @see <a href=
@@ -147,7 +145,7 @@ public final class ActiveContextBuilder {
                         ? new ActiveContext(activeContext.getBaseUrl(),
                                 activeContext.getBaseUrl(),
                                 activeContext.runtime())
-                                
+
                         : new ActiveContext(activeContext.getBaseUrl(),
                                 activeContext.getBaseUrl(),
                                 result.getPreviousContext(),
@@ -227,7 +225,7 @@ public final class ActiveContextBuilder {
                 loaderOptions.setProfile(ProfileConstants.CONTEXT);
                 loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
 
-                AdaptedNode importedTree = null;
+                PolyNode importedTree = null;
 
                 try {
 
@@ -236,10 +234,10 @@ public final class ActiveContextBuilder {
                     if (importedDocument == null) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context[" + contextImportUri + "] is null.");
                     }
-                    
-                    if (importedDocument instanceof JsonDocument jsonDocument) {
-                        importedTree = jsonDocument.node();
-                        
+
+//                    if (importedDocument instanceof JsonDocument jsonDocument) {
+                    if (importedDocument.getContent() instanceof PolyNode adaptedContent) {
+                        importedTree = adaptedContent;
                     } else {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Invalid context " + contextImportUri + " to import.");
                     }
@@ -251,10 +249,10 @@ public final class ActiveContextBuilder {
                 } catch (JsonLdError e) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE, e);
                 }
-                
+
                 var importedNode = importedTree.node();
                 var importAdapter = importedTree.adapter();
-                
+
                 // 5.6.6
                 if (!importAdapter.isMap(importedNode)) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT);
@@ -561,18 +559,18 @@ public final class ActiveContextBuilder {
             }
         }
 
-        AdaptedNode importedNode = null;
-        
-        if (remoteImport instanceof JsonDocument jsonDocument) {
-            importedNode = jsonDocument.node();
-            
+        PolyNode importedNode = null;
+
+        if (remoteImport.getContent() instanceof PolyNode adaptedNode) {
+            importedNode = adaptedNode;
+
         } else {
             throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");
         }
-        
+
         var importedContext = importedNode.node();
         var importAdapter = importedNode.adapter();
-        
+
         // 5.2.5.2.
         if (!importAdapter.isMap(importedContext)) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is not valid Json Object: " + importedContext + ".");
@@ -580,12 +578,12 @@ public final class ActiveContextBuilder {
 
         // 5.2.5.3.
         importedContext = importAdapter.property(Keywords.CONTEXT, importedContext);
-        
+
         if (importedContext == null) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context does not contain @context key and is not valid JSON-LD context.");
         }
 
-        var newContext = new NativeMaterializer().node(importedContext, importAdapter); 
+        var newContext = new NativeMaterializer().node(importedContext, importAdapter);
 
         // remove @base from a remote context
         if (newContext instanceof Map map && map.containsKey(Keywords.BASE)) {

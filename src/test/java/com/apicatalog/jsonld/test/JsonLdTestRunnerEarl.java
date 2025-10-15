@@ -32,6 +32,7 @@ import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.model.RdfQuadSet;
 
 import jakarta.json.JsonStructure;
+import jakarta.json.JsonValue;
 
 public class JsonLdTestRunnerEarl {
 
@@ -79,7 +80,7 @@ public class JsonLdTestRunnerEarl {
 
                 return (result instanceof JsonStructure)
                         && JsonLdComparison.equals(
-                                expectedDocument.getJsonContent().get(),
+                                (JsonValue) expectedDocument.getJsonContent().get(),
                                 (JsonStructure) result);
 
             } else if (expectedDocument instanceof QuadSetDocument) {

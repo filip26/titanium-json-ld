@@ -31,7 +31,7 @@ import jakarta.json.JsonStructure;
  * {@link DocumentParser}.
  *
  */
-public interface Document {
+public interface Document<T> {
 
     /**
      * The <a href="https://tools.ietf.org/html/rfc2045#section-5">Content-Type</a>
@@ -81,4 +81,6 @@ public interface Document {
     public default Optional<JsonStructure> getJsonContent() {
         return Optional.empty();
     }
+    
+    public T getContent();
 }

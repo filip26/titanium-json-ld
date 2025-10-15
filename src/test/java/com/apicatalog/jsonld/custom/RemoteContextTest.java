@@ -177,7 +177,7 @@ class RemoteContextTest {
 
             assertNotNull(result);
 
-            boolean match = JsonLdComparison.equals(result, expected.getJsonContent().orElse(null));
+            boolean match = JsonLdComparison.equals(result, (JsonValue) expected.getJsonContent().orElse(null));
 
             assertTrue(match);
         });

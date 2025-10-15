@@ -60,7 +60,7 @@ public final class JsonLdManifestLoader {
 
         try {
 
-            Document manifest = loader.loadDocument(URI.create(manifestBase + manifestName), new LoaderOptions());
+            Document<?> manifest = loader.loadDocument(URI.create(manifestBase + manifestName), new LoaderOptions());
 
             assertNotNull(manifest);
 

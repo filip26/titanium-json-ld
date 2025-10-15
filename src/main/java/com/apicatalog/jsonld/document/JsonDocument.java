@@ -25,7 +25,7 @@ import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.tree.io.AdaptedNode;
+import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonException;
@@ -33,7 +33,7 @@ import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 
-public final class JsonDocument implements Document {
+public final class JsonDocument implements Document<PolyNode> {
 
     private static final String PLUS_JSON = "+json";
 
@@ -229,8 +229,8 @@ public final class JsonDocument implements Document {
         return Optional.ofNullable(profile);
     }
 
-    public AdaptedNode node() {
-        //TODO
-        return new AdaptedNode(structure, JakartaAdapter.instance());
+    @Override
+    public PolyNode getContent() {
+        return new PolyNode(structure, JakartaAdapter.instance());
     }
 }

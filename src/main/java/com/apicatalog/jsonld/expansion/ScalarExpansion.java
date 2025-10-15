@@ -22,7 +22,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.AdaptedNode;
+import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.NodeAdapter;
 
 import jakarta.json.JsonValue;
@@ -69,7 +69,7 @@ final class ScalarExpansion {
     public static Map<String, ?> expand(
             final Context context,
             final String property,
-            final AdaptedNode propertyContext,
+            final PolyNode propertyContext,
             final Object node,
             final NodeAdapter nodeAdapter) throws JsonLdError, IOException {
 

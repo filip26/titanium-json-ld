@@ -94,7 +94,7 @@ public final class Compactor {
         return compact(input, contextDocument, options);
     }
 
-    public static final JsonObject compact(final Document input, final Document context, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final JsonObject compact(final Document input, final Document<?> context, final JsonLdOptions options) throws JsonLdError, IOException {
 
         // 4.
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
