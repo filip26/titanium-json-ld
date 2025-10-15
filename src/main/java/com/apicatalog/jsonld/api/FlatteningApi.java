@@ -24,7 +24,7 @@ import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.JsonLdLoader;
-import com.apicatalog.jsonld.processor.FlatteningProcessor;
+import com.apicatalog.jsonld.processor.Flattener;
 import com.apicatalog.jsonld.uri.UriUtils;
 
 import jakarta.json.JsonStructure;
@@ -145,27 +145,27 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
     public JsonStructure get() throws JsonLdError, IOException {
 
         if (document != null && context != null) {
-            return FlatteningProcessor.flatten(document, context, options);
+            return Flattener.flatten(document, context, options);
         }
 
         if (document != null && contextUri != null) {
-            return FlatteningProcessor.flatten(document, contextUri, options);
+            return Flattener.flatten(document, contextUri, options);
         }
 
         if (document != null) {
-            return FlatteningProcessor.flatten(document, (Document)null, options);
+            return Flattener.flatten(document, (Document)null, options);
         }
 
         if (documentUri != null && context != null) {
-            return FlatteningProcessor.flatten(documentUri, context, options);
+            return Flattener.flatten(documentUri, context, options);
         }
 
         if (documentUri != null && contextUri != null) {
-            return FlatteningProcessor.flatten(documentUri, contextUri, options);
+            return Flattener.flatten(documentUri, contextUri, options);
         }
 
         if (documentUri != null) {
-            return FlatteningProcessor.flatten(documentUri, (Document)null, options);
+            return Flattener.flatten(documentUri, (Document)null, options);
         }
 
         throw new IllegalStateException();

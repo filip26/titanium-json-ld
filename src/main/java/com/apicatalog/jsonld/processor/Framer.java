@@ -60,9 +60,9 @@ import jakarta.json.JsonValue;
  *      "https://www.w3.org/TR/json-ld11-framing/#dom-jsonldprocessor-frame">JsonLdProcessor.frame()</a>
  *
  */
-public final class FramingProcessor {
+public final class Framer {
 
-    private FramingProcessor() {
+    private Framer() {
     }
 
     public static final JsonObject frame(final URI input, final Document frame, final JsonLdOptions options) throws JsonLdError, IOException {
@@ -193,14 +193,14 @@ public final class FramingProcessor {
             final List<String> remove = findBlankNodes(resultMap.valuesToArray());
 
             if (!remove.isEmpty()) {
-                result = result.map(v -> FramingProcessor.removeBlankIdKey(v, remove));
+                result = result.map(v -> Framer.removeBlankIdKey(v, remove));
             }
         }
 
         // 18. - remove preserve
         final JsonArrayBuilder filtered = JsonProvider.instance().createArrayBuilder();
 
-        result.map(FramingProcessor::removePreserve).forEach(filtered::add);
+        result.map(Framer::removePreserve).forEach(filtered::add);
 
         // 19.
         JsonValue compactedResults = Compaction

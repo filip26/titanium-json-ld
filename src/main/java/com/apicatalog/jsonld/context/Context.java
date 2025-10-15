@@ -22,9 +22,13 @@ import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.expansion.UriExpansion;
+import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.lang.DirectionType;
+import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.processor.ProcessingRuntime;
 import com.apicatalog.tree.io.NodeAdapter;
+
+import jakarta.json.JsonValue;
 
 /**
  * A context that is used to resolve terms while the processing algorithm is
@@ -69,6 +73,43 @@ public interface Context {
             this.adapter = adapter;
             this.baseUrl = baseUrl;
 
+        }
+        
+
+        private static final ActiveContext updateContext(final ActiveContext activeContext, final Object expandedContext, final NodeAdapter adapter, final URI baseUrl) throws JsonLdError, IOException {
+
+            if (adapter.isCollection(expandedContext)) {
+
+                if (adapter.isSingleElement(expandedContext)) {
+
+                    var value = adapter.singleElement(expandedContext);
+
+                    if (adapter.isMap(value)) {
+
+                        var context = adapter.property(Keywords.CONTEXT, value);
+
+                        if (!adapter.isNull(context)) {
+                            return activeContext
+                                    .newContext()
+                                    .create(context, adapter, baseUrl);
+                        }
+                    }
+                }
+
+                return activeContext.newContext().create(expandedContext, adapter, baseUrl);
+
+            } else if (adapter.isMap(expandedContext)) {
+
+                var context = adapter.property(Keywords.CONTEXT, expandedContext);
+
+                if (!adapter.isNull(context)) {
+                    return activeContext
+                            .newContext()
+                            .create(context, adapter, baseUrl);
+                }
+            }
+            return activeContext.newContext().create(
+                    JsonProvider.instance().createArrayBuilder().add((JsonValue) expandedContext).build(), adapter, baseUrl);
         }
 
     }

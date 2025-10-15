@@ -25,7 +25,7 @@ import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.JsonLdLoader;
-import com.apicatalog.jsonld.processor.FramingProcessor;
+import com.apicatalog.jsonld.processor.Framer;
 import com.apicatalog.jsonld.uri.UriUtils;
 
 import jakarta.json.JsonObject;
@@ -195,19 +195,19 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
     public JsonObject get() throws JsonLdError, IOException {
         if (document != null) {
             if (frame != null) {
-                return FramingProcessor.frame(document, frame, options);
+                return Framer.frame(document, frame, options);
             }
             if (frameUri != null) {
-                return FramingProcessor.frame(document, frameUri, options);
+                return Framer.frame(document, frameUri, options);
             }
         }
 
         if (documentUri != null) {
             if (frame != null) {
-                return FramingProcessor.frame(documentUri, frame, options);
+                return Framer.frame(documentUri, frame, options);
             }
             if (frameUri != null) {
-                return FramingProcessor.frame(documentUri, frameUri, options);
+                return Framer.frame(documentUri, frameUri, options);
             }
         }
 

@@ -46,9 +46,9 @@ import jakarta.json.JsonValue;
  *      "https://www.w3.org/TR/json-ld11-api/#dom-jsonldprocessor-expand">JsonLdProcessor.expand()</a>
  *
  */
-public final class ExpansionProcessor {
+public final class Expander {
 
-    ExpansionProcessor() {
+    Expander() {
     }
 
     public static final Collection<?> expand(final URI input, final JsonLdOptions options) throws JsonLdError, IOException {
@@ -128,7 +128,7 @@ public final class ExpansionProcessor {
         }
 
         // 8.
-        Object expanded = Expansion
+        var expanded = Expansion
                 .with()
                 .frameExpansion(frameExpansion)
                 .ordered(options.isOrdered())
@@ -159,41 +159,4 @@ public final class ExpansionProcessor {
         // 8.3
         return Set.of(expanded);
     }
-
-    private static final ActiveContext updateContext(final ActiveContext activeContext, final Object expandedContext, final NodeAdapter adapter, final URI baseUrl) throws JsonLdError, IOException {
-
-        if (adapter.isCollection(expandedContext)) {
-
-            if (adapter.isSingleElement(expandedContext)) {
-
-                var value = adapter.singleElement(expandedContext);
-
-                if (adapter.isMap(value)) {
-
-                    var context = adapter.property(Keywords.CONTEXT, value);
-
-                    if (!adapter.isNull(context)) {
-                        return activeContext
-                                .newContext()
-                                .create(context, adapter, baseUrl);
-                    }
-                }
-            }
-
-            return activeContext.newContext().create(expandedContext, adapter, baseUrl);
-
-        } else if (adapter.isMap(expandedContext)) {
-
-            var context = adapter.property(Keywords.CONTEXT, expandedContext);
-
-            if (!adapter.isNull(context)) {
-                return activeContext
-                        .newContext()
-                        .create(context, adapter, baseUrl);
-            }
-        }
-        return activeContext.newContext().create(
-                JsonProvider.instance().createArrayBuilder().add((JsonValue) expandedContext).build(), adapter, baseUrl);
-    }
-
 }

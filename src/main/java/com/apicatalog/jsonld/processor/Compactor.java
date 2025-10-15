@@ -41,9 +41,9 @@ import jakarta.json.JsonValue;
  *      "https://www.w3.org/TR/json-ld11-api/#dom-jsonldprocessor-compact">JsonLdProcessor.compact()</a>
  *
  */
-public final class CompactionProcessor {
+public final class Compactor {
 
-    private CompactionProcessor() {
+    private Compactor() {
     }
 
     public static final JsonObject compact(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError, IOException {
@@ -101,7 +101,7 @@ public final class CompactionProcessor {
         expansionOptions.setOrdered(false);
         expansionOptions.setExtractAllScripts(false);
 
-        var expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
+        var expandedInput = Expander.expand(input, expansionOptions, false);
         var m = new JakartaMaterializer().node(expandedInput, NativeAdapter.instance());
 
         

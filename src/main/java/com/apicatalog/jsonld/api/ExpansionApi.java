@@ -26,7 +26,7 @@ import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.JsonLdLoader;
-import com.apicatalog.jsonld.processor.ExpansionProcessor;
+import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.uri.UriUtils;
 
 import jakarta.json.JsonArray;
@@ -132,10 +132,10 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
      */
     public Collection<?> get() throws JsonLdError, IOException {
         if (document != null) {
-            return ExpansionProcessor.expand(document, options, false);
+            return Expander.expand(document, options, false);
 
         } else if (documentUri != null) {
-            return ExpansionProcessor.expand(documentUri, options);
+            return Expander.expand(documentUri, options);
         }
         throw new IllegalStateException();
     }

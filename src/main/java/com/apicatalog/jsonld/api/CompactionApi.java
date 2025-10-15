@@ -23,7 +23,7 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.loader.JsonLdLoader;
-import com.apicatalog.jsonld.processor.CompactionProcessor;
+import com.apicatalog.jsonld.processor.Compactor;
 
 import jakarta.json.JsonObject;
 
@@ -171,19 +171,19 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
 
         if (document != null) {
             if (context != null)  {
-                return CompactionProcessor.compact(document, context, options);
+                return Compactor.compact(document, context, options);
             }
             if (contextUri != null) {
-                return CompactionProcessor.compact(document, contextUri, options);
+                return Compactor.compact(document, contextUri, options);
             }
         }
 
         if (documentUri != null) {
             if (context != null)  {
-                return CompactionProcessor.compact(documentUri, context, options);
+                return Compactor.compact(documentUri, context, options);
             }
             if (contextUri != null)  {
-                return CompactionProcessor.compact(documentUri, contextUri, options);
+                return Compactor.compact(documentUri, contextUri, options);
             }
         }
 

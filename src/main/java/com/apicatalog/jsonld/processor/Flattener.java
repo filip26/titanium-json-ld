@@ -36,9 +36,9 @@ import jakarta.json.JsonStructure;
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#dom-jsonldprocessor-compact">JsonLdProcessor.compact()</a>
  *
  */
-public final class FlatteningProcessor {
+public final class Flattener {
 
-    private FlatteningProcessor() {
+    private Flattener() {
     }
 
     public static final JsonStructure flatten(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError, IOException {
@@ -97,7 +97,7 @@ public final class FlatteningProcessor {
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
         expansionOptions.setOrdered(false);
 
-        var expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
+        var expandedInput = Expander.expand(input, expansionOptions, false);
         //JsonArray expandedInput = JsonValue.EMPTY_JSON_ARRAY;
         var m = new JakartaMaterializer().node(expandedInput, NativeAdapter.instance());
 
@@ -119,7 +119,7 @@ public final class FlatteningProcessor {
                 compactionOptions.setBase(input.getDocumentUrl());
             }
 
-            flattenedOutput = CompactionProcessor.compact(document, context, compactionOptions);
+            flattenedOutput = Compactor.compact(document, context, compactionOptions);
         }
 
         return flattenedOutput;
