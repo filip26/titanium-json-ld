@@ -17,13 +17,22 @@ package com.apicatalog.jsonld.expansion;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.node.ListNode;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.NodeType;
+import com.apicatalog.tree.io.PolyNode;
+
+import jakarta.json.JsonValue;
 
 /**
  *
@@ -34,20 +43,63 @@ import com.apicatalog.tree.io.NodeType;
  */
 public final class Expansion {
 
-    // optional
-    private boolean frameExpansion;
-    private boolean ordered;
-    private boolean fromMap;
+    public record Config(boolean frameExpansion, boolean ordered, boolean fromMap) {
 
-    private Expansion() {
-        // default values
-        this.frameExpansion = false;
-        this.ordered = false;
-        this.fromMap = false;
+//
+//    /**
+//     * Sets the {@code frameExpansion} flag.
+//     *
+//     * @param value if {@code true}, indicates that expansion is being performed as
+//     *              part of the JSON-LD Framing algorithm.
+//     * @return this instance, for method chaining.
+//     */
+//    public ArrayExpansion frameExpansion(boolean value) {
+//        this.frameExpansion = value;
+//        return this;
+//    }
+//
+//    /**
+//     * Sets the {@code ordered} flag.
+//     *
+//     * @param value if {@code true}, properties and values are processed in lexical
+//     *              order.
+//     * @return this instance, for method chaining.
+//     */
+//    public ArrayExpansion ordered(boolean value) {
+//        this.ordered = value;
+//        return this;
+//    }
+//
+//    /**
+//     * Sets the {@code fromMap} flag.
+//     *
+//     * @param value if {@code true}, indicates that the expanded element originates
+//     *              from a map (JSON object).
+//     * @return this instance, for method chaining.
+//     */
+//    public ArrayExpansion fromMap(boolean value) {
+//        this.fromMap = value;
+//        return this;
+//    }
     }
 
-    public static final Expansion with() {
-        return new Expansion();
+    final Config config;
+
+//    // optional
+//    private boolean frameExpansion;
+//    private boolean ordered;
+//    private boolean fromMap;
+
+    private Expansion(Config config) {
+        this.config = config;
+        // default values
+//        this.frameExpansion = false;
+//        this.ordered = false;
+//        this.fromMap = false;
+    }
+
+    public static final Expansion with(Config config) {
+        return new Expansion(config);
     }
 
     public Object expand(
@@ -63,17 +115,12 @@ public final class Expansion {
         if (nodeAdapter.isNull(node)) {
             return null;
         }
-        
-        var nodeType = nodeAdapter.type(node) ;
+
+        var nodeType = nodeAdapter.type(node);
 
         // 5. If element is an array,
         if (nodeType == NodeType.COLLECTION) {
-            return ArrayExpansion
-                    .with()
-                    .frameExpansion(frameExpansion)
-                    .ordered(ordered)
-                    .fromMap(fromMap)
-                    .expand(activeContext, node, nodeAdapter, activeProperty, baseUrl);
+            return array(activeContext, node, nodeAdapter, activeProperty, baseUrl, config);
         }
 
         // 3. If active property has a term definition in active context with a local
@@ -85,8 +132,7 @@ public final class Expansion {
 
         // 4. If element is a scalar
         if (nodeType.isScalar()) {
-            return ScalarExpansion
-                    .expand(activeContext, activeProperty, propertyContext, node, nodeAdapter);
+            return scalar(activeContext, activeProperty, propertyContext, node, nodeAdapter);
         }
 
         // 6. Otherwise element is a map
@@ -97,24 +143,159 @@ public final class Expansion {
                         nodeAdapter,
                         activeProperty,
                         baseUrl)
-                .frameExpansion(frameExpansion && !Keywords.DEFAULT.equals(activeProperty))
-                .ordered(ordered)
-                .fromMap(fromMap)
+                .frameExpansion(config.frameExpansion && !Keywords.DEFAULT.equals(activeProperty))
+                .ordered(config.ordered)
+                .fromMap(config.fromMap)
                 .expand();
     }
 
-    public Expansion frameExpansion(boolean value) {
-        this.frameExpansion = value;
-        return this;
+//    public Expansion frameExpansion(boolean value) {
+//        this.frameExpansion = value;
+//        return this;
+//    }
+//
+//    public Expansion ordered(boolean value) {
+//        this.ordered = value;
+//        return this;
+//    }
+//
+//    public Expansion fromMap(boolean value) {
+//        this.fromMap = value;
+//        return this;
+//    }
+
+    /**
+     * Expands a scalar value based on the active context and property.
+     * <p>
+     * This method implements the following steps from the Expansion Algorithm:
+     * </p>
+     * <ul>
+     * <li><b>4.1.</b> If the {@code property} is {@code null} or {@code "@graph"},
+     * the free-floating scalar is dropped by returning {@code null}.</li>
+     * <li><b>4.2.</b> If a {@code propertyContext} is defined, a new active context
+     * is created by processing it. The value is then expanded against this new
+     * context.</li>
+     * <li><b>4.3.</b> The scalar {@code element} is expanded by invoking the
+     * <a href="https://www.w3.org/TR/json-ld11-api/#value-expansion">Value
+     * Expansion</a> algorithm.</li>
+     * </ul>
+     *
+     * @param context         the active context
+     * @param property        the active property, which is the key associated with
+     *                        the {@code element}
+     * @param propertyContext a property-scoped context to apply, or {@code null} if
+     *                        none
+     * @param node            the scalar {@link JsonValue} to expand
+     * @return a {@link Map} representing the expanded value object, or {@code null}
+     *         if the scalar is dropped
+     * @throws JsonLdError if an error occurs during expansion
+     * @throws IOException
+     */
+    static Map<String, ?> scalar(
+            final Context context,
+            final String property,
+            final PolyNode propertyContext,
+            final Object node,
+            final NodeAdapter nodeAdapter) throws JsonLdError, IOException {
+
+        /*
+         * 4.1. If active property is null or @graph, drop the free-floating scalar by
+         * returning null.
+         */
+        if (property == null || Keywords.GRAPH.equals(property)) {
+            return null;
+        }
+
+        /*
+         * 4.2. If property-scoped context is defined, set active context to the result
+         * of the Context Processing algorithm, passing active context, property-scoped
+         * context as local context, and base URL from the term definition for active
+         * property in active context.
+         */
+        if (propertyContext != null) {
+            return context
+                    .newContext()
+                    .create(propertyContext.node(),
+                            propertyContext.adapter(),
+                            context.getTerm(property)
+                                    .map(TermDefinition::getBaseUrl)
+                                    .orElse(null))
+                    .expandValue(property, node, nodeAdapter);
+        }
+
+        /*
+         * 4.3. Return the result of the Value Expansion algorithm, passing the active
+         * context, active property, and element as value.
+         */
+        return context.expandValue(property, node, nodeAdapter);
     }
 
-    public Expansion ordered(boolean value) {
-        this.ordered = value;
-        return this;
-    }
+    /**
+     * Executes the array expansion logic.
+     * <p>
+     * This method implements the following steps from the Expansion Algorithm:
+     * </p>
+     * <ul>
+     * <li><b>5.2.</b> Iterates through each item in the input array.</li>
+     * <li><b>5.2.1.</b> Recursively expands each item by invoking the main
+     * Expansion algorithm.</li>
+     * <li><b>5.2.2.</b> If the active property has a {@code @list} container
+     * mapping and the expanded item is an array, it is converted into a list
+     * object.</li>
+     * <li><b>5.2.3.</b> Appends the expanded item(s) to the result list, filtering
+     * out any {@code null} values and flattening nested arrays.</li>
+     * <li><b>5.3.</b> Returns the resulting collection.</li>
+     * </ul>
+     *
+     * @return a {@link Collection} containing the expanded values, which may
+     *         include {@link java.util.Map}s, {@link String}s, or other JSON-LD
+     *         node representations.
+     * @throws JsonLdError if an error occurs during the recursive expansion of an
+     *                     item
+     * @throws IOException
+     */
+    static final Collection<?> array(final Context context,
+            final Object node,
+            final NodeAdapter nodeAdapter,
+            final String property,
+            final URI baseUrl,
+            final Config config) throws JsonLdError, IOException {
 
-    public Expansion fromMap(boolean value) {
-        this.fromMap = value;
-        return this;
+        final List<Object> result = new ArrayList<>();
+
+        // 5.2.
+        for (var item : nodeAdapter.asIterable(node)) {
+
+            context.runtime().tick();
+
+            // 5.2.1
+            Object expanded = Expansion
+                    .with(config)
+                    .expand(context, item, nodeAdapter, property, baseUrl);
+
+            // 5.2.2
+            if (expanded instanceof Collection<?> list
+                    && context.getTerm(property)
+                            .map(TermDefinition::getContainerMapping)
+                            .filter(c -> c.contains(Keywords.LIST)).isPresent()) {
+
+                expanded = ListNode.asListNode(list);
+            }
+
+            // 5.2.3
+            if (expanded instanceof Collection<?> collection) {
+                collection.stream()
+                        .filter(Objects::nonNull)
+                        .forEach(result::add);
+
+                // append non-null element
+            } else if (expanded != null) {
+                result.add(expanded);
+            }
+
+        }
+
+        // 5.3
+        return result;
     }
 }

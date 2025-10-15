@@ -29,6 +29,7 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.expansion.Expansion;
+import com.apicatalog.jsonld.expansion.Expansion.Config;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.tree.io.NativeAdapter;
@@ -54,10 +55,9 @@ public final class Expander {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
 
-        final LoaderOptions loaderOptions = new LoaderOptions();
-        loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
-
-        var remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
+        var remoteDocument = options.getDocumentLoader().loadDocument(
+                input,
+                new LoaderOptions().setExtractAllScripts(options.isExtractAllScripts()));
 
         if (remoteDocument != null && remoteDocument.getContent() instanceof PolyNode) {
             @SuppressWarnings("unchecked")
@@ -127,9 +127,7 @@ public final class Expander {
 
         // 8.
         var expanded = Expansion
-                .with()
-                .frameExpansion(frameExpansion)
-                .ordered(options.isOrdered())
+                .with(new Config(frameExpansion, options.isOrdered(), false))
                 .expand(
                         contextBuilder.build(),
                         content.node(),

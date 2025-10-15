@@ -34,6 +34,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.expansion.Expansion.Config;
 import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -46,10 +47,10 @@ import com.apicatalog.jsonld.node.GraphNode;
 import com.apicatalog.jsonld.node.ListNode;
 import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriUtils;
-import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.NativeAdapter;
 import com.apicatalog.tree.io.NativeMaterializer;
 import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonNumber;
@@ -90,8 +91,7 @@ final class ObjectExpansion1314 {
     public void expand(
             final Context activeContext, final JsonObject element,
             final NodeAdapter adapter,
-            final String activeProperty, final URI baseUrl
-            ) throws JsonLdError, IOException {
+            final String activeProperty, final URI baseUrl) throws JsonLdError, IOException {
 
         // 13.
         for (final String key : Utils.index(element.keySet(), ordered)) {
@@ -387,9 +387,7 @@ final class ObjectExpansion1314 {
                 else if (Keywords.GRAPH.equals(expandedProperty)) {
                     expandedValue = JsonUtils.toList(Expansion
 //                    expandedValue = JsonUtils.toJsonArray(Expansion
-                            .with()
-                            .frameExpansion(frameExpansion)
-                            .ordered(ordered)
+                            .with(new Config(frameExpansion, ordered, false))
                             .expand(typeContext, value, adapter, Keywords.GRAPH, baseUrl));
                 }
 
@@ -403,9 +401,7 @@ final class ObjectExpansion1314 {
 
                     // 13.4.6.2
                     expandedValue = Expansion
-                            .with()
-                            .frameExpansion(frameExpansion)
-                            .ordered(ordered)
+                            .with(new Config(frameExpansion, ordered, false))
                             .expand(activeContext, value, adapter, null, baseUrl);
 
                     if (expandedValue != null) {
@@ -585,9 +581,7 @@ final class ObjectExpansion1314 {
 
                     // 13.4.11.1
                     expandedValue = Expansion
-                            .with()
-                            .frameExpansion(frameExpansion)
-                            .ordered(ordered)
+                            .with(new Config(frameExpansion, ordered, false))
                             .expand(activeContext, value, adapter, activeProperty, baseUrl);
 
                     if (!(expandedValue instanceof Collection<?>)) {
@@ -602,9 +596,7 @@ final class ObjectExpansion1314 {
                 // 13.4.12
                 if (Keywords.SET.equals(expandedProperty)) {
                     expandedValue = Expansion
-                            .with()
-                            .frameExpansion(frameExpansion)
-                            .ordered(ordered)
+                            .with(new Config(frameExpansion, ordered, false))
                             .expand(activeContext, value, adapter, activeProperty, baseUrl);
                 }
 
@@ -618,9 +610,7 @@ final class ObjectExpansion1314 {
 
                     // 13.4.13.2.
                     expandedValue = Expansion
-                            .with()
-                            .frameExpansion(frameExpansion)
-                            .ordered(ordered)
+                            .with(new Config(frameExpansion, ordered, false))
                             .expand(activeContext, value, adapter, Keywords.REVERSE, baseUrl);
 
                     if (expandedValue instanceof Map expandedValueObject) {
@@ -703,9 +693,7 @@ final class ObjectExpansion1314 {
                     }
 
                     expandedValue = JsonUtils.toList(Expansion
-                            .with()
-                            .frameExpansion(frameExpansion)
-                            .ordered(ordered)
+                            .with(new Config(frameExpansion, ordered, false))
                             .expand(activeContext, value, adapter, Keywords.ANNOTATION, baseUrl));
                 }
 
@@ -717,9 +705,7 @@ final class ObjectExpansion1314 {
                                 || Keywords.OMIT_DEFAULT.equals(expandedProperty)
                                 || Keywords.REQUIRE_ALL.equals(expandedProperty))) {
 
-                    expandedValue = Expansion.with()
-                            .frameExpansion(frameExpansion)
-                            .ordered(ordered)
+                    expandedValue = Expansion.with(new Config(frameExpansion, ordered, false))
                             .expand(activeContext, value, adapter, expandedProperty, baseUrl);
                 }
 
@@ -907,12 +893,13 @@ final class ObjectExpansion1314 {
 
                     // 13.8.3.6.
                     // FIXME
-                    Collection<?> indexValues = ArrayExpansion
-                            .with()
-                            .fromMap(true)
-                            .frameExpansion(frameExpansion)
-                            .ordered(ordered)
-                            .expand(mapContext, indexValue.asJsonArray(), adapter, key, baseUrl);
+                    var indexValues = Expansion.array(
+                            mapContext,
+                            indexValue.asJsonArray(),
+                            adapter,
+                            key,
+                            baseUrl,
+                            new Config(frameExpansion, ordered, true));
 
 //                    Collection<Object> indexValues = (Collection)Expansion.with(mapContext, indexValue, key, baseUrl)
 //                            .fromMap(true)
@@ -1024,9 +1011,7 @@ final class ObjectExpansion1314 {
                 // 13.9.
             } else {
                 expandedValue = Expansion
-                        .with()
-                        .frameExpansion(frameExpansion)
-                        .ordered(ordered)
+                        .with(new Config(frameExpansion, ordered, false))
                         .expand(activeContext, value, adapter, key, baseUrl);
             }
 
@@ -1133,12 +1118,12 @@ final class ObjectExpansion1314 {
         return this;
     }
 
-    private void recurse(  final Context context, final JsonObject element,
+    private void recurse(final Context context, final JsonObject element,
             final NodeAdapter adapter,
             final String activeProperty, final URI baseUrl) throws JsonLdError, IOException {
 
         var activeContext = context;
-        
+
         activeContext.runtime().tick();
 
         // step 3
@@ -1167,8 +1152,7 @@ final class ObjectExpansion1314 {
     private final void processNest(
             final Context activeContext, final JsonObject element,
             final NodeAdapter adapter,
-            final String activeProperty, final URI baseUrl
-            ) throws JsonLdError, IOException {
+            final String activeProperty, final URI baseUrl) throws JsonLdError, IOException {
 
         for (final String nestedKey : Utils.index(nest.keySet(), ordered)) {
 

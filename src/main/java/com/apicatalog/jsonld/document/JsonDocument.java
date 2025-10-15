@@ -33,6 +33,7 @@ import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 
+@Deprecated
 public final class JsonDocument implements Document<PolyNode> {
 
     private static final String PLUS_JSON = "+json";

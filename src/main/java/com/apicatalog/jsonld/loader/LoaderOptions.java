@@ -46,8 +46,9 @@ public class LoaderOptions {
         return extractAllScripts;
     }
 
-    public void setExtractAllScripts(boolean extractAllScripts) {
+    public LoaderOptions setExtractAllScripts(boolean extractAllScripts) {
         this.extractAllScripts = extractAllScripts;
+        return this;
     }
 
     public String getProfile() {
