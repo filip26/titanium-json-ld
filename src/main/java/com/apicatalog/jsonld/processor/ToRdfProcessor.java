@@ -24,7 +24,7 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.loader.LoaderOptions;
-import com.apicatalog.jsonld.rdf.out.JsonLdToRdf;
+import com.apicatalog.jsonld.rdf.out.ToRdf;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 
 import jakarta.json.JsonArray;
@@ -72,7 +72,7 @@ public final class ToRdfProcessor {
     }
 
     public static final void toRdf(final RdfQuadConsumer consumer, final JsonArray expandedInput, final JsonLdOptions options) throws JsonLdError {
-        JsonLdToRdf
+        ToRdf
                 .with(NodeMapBuilder.with(expandedInput, new NodeMap()).build())
                 .produceGeneralizedRdf(options.isProduceGeneralizedRdf())
                 .rdfDirection(options.getRdfDirection())

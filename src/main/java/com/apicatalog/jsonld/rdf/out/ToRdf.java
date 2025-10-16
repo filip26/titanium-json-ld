@@ -51,9 +51,9 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
-public final class JsonLdToRdf {
+public final class ToRdf {
 
-    private static final Logger LOGGER = Logger.getLogger(JsonLdToRdf.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ToRdf.class.getName());
 
     private static final DecimalFormat xsdNumberFormat = new DecimalFormat("0.0##############E0", new DecimalFormatSymbols(Locale.ENGLISH));
 
@@ -69,7 +69,7 @@ public final class JsonLdToRdf {
     private RdfDirection rdfDirection;
     private UriValidationPolicy uriValidation;
 
-    private JsonLdToRdf(NodeMap nodeMap) {
+    private ToRdf(NodeMap nodeMap) {
         this.nodeMap = nodeMap;
 
         this.produceGeneralizedRdf = false;
@@ -77,16 +77,16 @@ public final class JsonLdToRdf {
         this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
-    public static final JsonLdToRdf with(NodeMap nodeMap) {
-        return new JsonLdToRdf(nodeMap);
+    public static final ToRdf with(NodeMap nodeMap) {
+        return new ToRdf(nodeMap);
     }
 
-    public JsonLdToRdf produceGeneralizedRdf(boolean enable) {
+    public ToRdf produceGeneralizedRdf(boolean enable) {
         this.produceGeneralizedRdf = enable;
         return this;
     }
 
-    public JsonLdToRdf rdfDirection(RdfDirection rdfDirection) {
+    public ToRdf rdfDirection(RdfDirection rdfDirection) {
         this.rdfDirection = rdfDirection;
         return this;
     }
@@ -116,6 +116,7 @@ public final class JsonLdToRdf {
                 consumer.namedGraph(graphName);
 
             } else {
+                //TODO log skipped graph
                 continue;
             }
 
@@ -167,7 +168,7 @@ public final class JsonLdToRdf {
         }
     }
 
-    public JsonLdToRdf uriValidation(UriValidationPolicy uriValidation) {
+    public ToRdf uriValidation(UriValidationPolicy uriValidation) {
         this.uriValidation = uriValidation;
         return this;
     }

@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
@@ -229,7 +229,11 @@ public final class Expansion {
             final String property,
             final Params params) throws JsonLdError, IOException {
 
-        final List<Object> result = new ArrayList<>();
+        if (nodeAdapter.isEmptyCollection(node)) {
+            return Collections.emptySet();
+        }
+        
+        var result = new ArrayList<Object>();
 
         // 5.2.
         for (var item : nodeAdapter.asIterable(node)) {

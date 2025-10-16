@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.api.StringUtils;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.http.ProfileConstants;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -38,11 +37,11 @@ import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.jsonld.node.BlankNode;
 import com.apicatalog.jsonld.uri.UriResolver;
 import com.apicatalog.jsonld.uri.UriUtils;
-import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.NativeAdapter;
 import com.apicatalog.tree.io.NativeMaterializer;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.NodeType;
+import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonObject;
@@ -115,14 +114,12 @@ public final class ActiveContextBuilder {
             }
         }
 
-        // 3. If propagate is false, and result does not have a previous context,
-        // set previous context in result to active context.
+        // 3. If propagate is false, and result does not have a previous context, set
+        // previous context in result to active context.
         if (!propagate && result.getPreviousContext() == null) {
             result.setPreviousContext(activeContext);
         }
 
-        // 4. If local context is not an array, set local context to an array containing
-        // only local context.
         // 5. For each item context in local context:
         for (var itemContext : adapter.asIterable(localContext)) {
 
@@ -130,17 +127,16 @@ public final class ActiveContextBuilder {
             if (adapter.isNull(itemContext)) {
 
                 // 5.1.1. If override protected is false and active context contains any
-                // protected term definitions,
-                // an invalid context nullification has been detected and processing is aborted.
+                // protected term definitions, an invalid context nullification has been
+                // detected and processing is aborted.
                 if (!overrideProtected && result.containsProtectedTerm()) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_CONTEXT_NULLIFICATION);
                 }
-
-                // 5.1.2. Initialize result as a newly-initialized active context,
-                // setting both base IRI and original base URL to the value of original base URL
-                // in active context,
-                // and, if propagate is false, previous context in result to the previous value
-                // of result.
+                System.out.println("X " + propagate + ", " + activeContext.getBaseUri() + ", " + activeContext.getBaseUrl());
+                // 5.1.2. Initialize result as a newly-initialized active context, setting both
+                // base IRI and original base URL to the value of original base URL in active
+                // context, and, if propagate is false, previous context in result to the
+                // previous value of result.
                 result = propagate
                         ? new ActiveContext(activeContext.getBaseUrl(),
                                 activeContext.getBaseUrl(),
@@ -229,7 +225,7 @@ public final class ActiveContextBuilder {
 
                 try {
 
-                    final Document importedDocument = activeContext.runtime().getDocumentLoader().loadDocument(contextImportUri, loaderOptions);
+                    final Document<?> importedDocument = activeContext.runtime().getDocumentLoader().loadDocument(contextImportUri, loaderOptions);
 
                     if (importedDocument == null) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context[" + contextImportUri + "] is null.");
@@ -277,11 +273,11 @@ public final class ActiveContextBuilder {
 
             // 5.7. If context has an @base entry and remote contexts is empty,
             // i.e., the currently being processed context is not a remote context:
-
             var baseValue = adapter.property(Keywords.BASE, contextDefinition);
 
             if (baseValue != null /* && remoteContexts.isEmpty() */) {
-                // 5.7.1
+
+                System.out.println("BASE: " + baseValue);
 
                 // 5.7.2.
                 if (adapter.isNull(baseValue)) {
@@ -313,7 +309,7 @@ public final class ActiveContextBuilder {
                                             "]. Please use JsonLdOptions.setBase() method to set an absolute IRI.");
                         }
 
-                    } else if (StringUtils.isNotBlank(valueString)) {
+                    } else if (valueString != null && !valueString.isBlank()) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_IRI,
                                 "An invalid base IRI has been detected [@base = " + valueString + "].");
                     }
@@ -338,15 +334,17 @@ public final class ActiveContextBuilder {
 
                     final String valueString = adapter.stringValue(vocabValue);
 
-                    if (StringUtils.isBlank(valueString) || BlankNode.hasPrefix(valueString) || UriUtils.isURI(valueString)) {
+                    if (valueString == null
+                            || valueString.isBlank()
+                            || BlankNode.hasPrefix(valueString)
+                            || UriUtils.isURI(valueString)) {
 
                         final String vocabularyMapping = result
                                 .uriExpansion()
                                 .vocab(true)
                                 .documentRelative(true)
                                 .expand(valueString);
-                        System.out.println(">> " + contextDefinition);
-                        System.out.println(">> " + valueString + " - > " + vocabularyMapping);
+
                         if (BlankNode.hasPrefix(valueString) || UriUtils.isURI(vocabularyMapping)) {
                             result.setVocabularyMapping(vocabularyMapping);
 
@@ -531,7 +529,7 @@ public final class ActiveContextBuilder {
             throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Document loader is null. Cannot fetch [" + contextUri + "].");
         }
 
-        Document remoteImport = null;
+        Document<?> remoteImport = null;
 
         if (activeContext.runtime().getDocumentCache() != null
                 && activeContext.runtime().getDocumentCache().containsKey(contextKey)) {
@@ -587,7 +585,8 @@ public final class ActiveContextBuilder {
 
         // remove @base from a remote context
         if (newContext instanceof Map map && map.containsKey(Keywords.BASE)) {
-            Map<Object, Object> hashMap = new HashMap<>(map);
+            @SuppressWarnings("unchecked")
+            var hashMap = new HashMap<>(map);
             hashMap.remove(Keywords.BASE);
             newContext = hashMap;
         }

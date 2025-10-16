@@ -460,7 +460,7 @@ public final class UriCompaction {
             }
 
             // 4.20.
-            final Optional<String> term = activeContext.termSelector(variable, containers, typeLanguage).match(preferredValues);
+            final Optional<String> term = activeContext.selectTerm(preferredValues, variable, containers, typeLanguage);
 
             // 4.21.
             if (term.isPresent()) {

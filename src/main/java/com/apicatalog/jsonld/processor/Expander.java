@@ -126,19 +126,18 @@ public final class Expander {
         var content = input.getContent();
 
         // 8.
-        var expanded = Expansion
-                .expand(
-                        contextBuilder.build(),
-                        content.node(),
-                        content.adapter(),
-                        null,
-                        new Params(frameExpansion, options.isOrdered(), false, baseUrl));
+        var expanded = Expansion.expand(
+                contextBuilder.build(),
+                content.node(),
+                content.adapter(),
+                null,
+                new Params(frameExpansion, options.isOrdered(), false, baseUrl));
 
         // 8.1
-        if (expanded instanceof Map object
-                && object.size() == 1
-                && object.containsKey(Keywords.GRAPH)) {
-            expanded = object.get(Keywords.GRAPH);
+        if (expanded instanceof Map map
+                && map.size() == 1
+                && map.containsKey(Keywords.GRAPH)) {
+            expanded = map.get(Keywords.GRAPH);
         }
 
         // 8.2

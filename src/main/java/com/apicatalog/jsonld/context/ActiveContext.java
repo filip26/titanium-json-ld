@@ -180,8 +180,12 @@ public final class ActiveContext implements Context {
         return TermDefinitionBuilder.with(this, localContext, adapter, defined);
     }
 
-    public TermSelector termSelector(final String variable, final Collection<String> containerMapping, final String typeLanguage) {
-        return TermSelector.with(this, variable, containerMapping, typeLanguage);
+    public Optional<String> selectTerm(
+            final Collection<String> preferredValues,
+            final String variable,
+            final Collection<String> containerMapping,
+            final String typeLanguage) {
+        return TermSelector.match(preferredValues, this, variable, containerMapping, typeLanguage);
     }
 
     protected void setDefaultBaseDirection(final DirectionType defaultBaseDirection) {
