@@ -298,12 +298,12 @@ public final class UriCompaction {
                 if (ValueNode.isValueObject(value)) {
 
                     // 4.9.1.1.
-                    if (JsonUtils.contains(Keywords.DIRECTION, value)
-                            && !JsonUtils.contains(Keywords.INDEX, value)) {
+                    if (JsonUtils.containsKey(Keywords.DIRECTION, value)
+                            && !JsonUtils.containsKey(Keywords.INDEX, value)) {
 
                         typeLanguageValue = "";
 
-                        if (JsonUtils.contains(Keywords.LANGUAGE, value)) {
+                        if (JsonUtils.containsKey(Keywords.LANGUAGE, value)) {
 
                             JsonValue language = value.asJsonObject().get(Keywords.LANGUAGE);
 
@@ -321,10 +321,10 @@ public final class UriCompaction {
                         containers.add(Keywords.LANGUAGE.concat(Keywords.SET));
 
                         // 4.9.1.2.
-                    } else if (JsonUtils.contains(Keywords.LANGUAGE, value)
-                            && !JsonUtils.contains(Keywords.INDEX, value)) {
+                    } else if (JsonUtils.containsKey(Keywords.LANGUAGE, value)
+                            && !JsonUtils.containsKey(Keywords.INDEX, value)) {
 
-                        if (JsonUtils.contains(Keywords.LANGUAGE, value)) {
+                        if (JsonUtils.containsKey(Keywords.LANGUAGE, value)) {
 
                             JsonValue language = value.asJsonObject().get(Keywords.LANGUAGE);
 

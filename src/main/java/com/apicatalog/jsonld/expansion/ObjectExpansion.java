@@ -35,7 +35,8 @@ import com.apicatalog.tree.io.PolyNode;
 import jakarta.json.JsonObject;
 
 /**
- *
+ * O
+ * 
  * @see <a href=
  *      "https://www.w3.org/TR/json-ld11-api/#expansion-algorithm">Expansion
  *      Algorithm</a>
@@ -190,7 +191,7 @@ public final class ObjectExpansion {
                         .expand(key);
 
                 if (Keywords.VALUE.equals(expandedKey)
-                        || (Keywords.ID.equals(expandedKey) && (adapter.isSingleElement(element)))) {
+                        || (Keywords.ID.equals(expandedKey) && (adapter.isSingleEntry(element)))) {
                     revert = false;
                     break;
                 }
@@ -206,7 +207,7 @@ public final class ObjectExpansion {
 
         // 9.
         var contextValue = adapter.property(Keywords.CONTEXT, element);
-        System.out.println("initLocalContext -> " + contextValue);
+
         if (contextValue != null) {
             activeContext = activeContext
                     .newContext()

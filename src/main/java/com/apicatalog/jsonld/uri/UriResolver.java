@@ -43,7 +43,7 @@ public final class UriResolver {
     }
 
     public static final String resolve(final URI base, final URI relative) {
-        System.out.println("R: " + base + ", " + relative);
+
         if (relative == null) {
             return base != null ? base.toString() : null;
         }
@@ -70,7 +70,7 @@ public final class UriResolver {
         return resolveAsUri(base, UriUtils.create(relative));
     }
 
-    public static final  URI resolveAsUri(final URI base, final URI relative) {
+    public static final URI resolveAsUri(final URI base, final URI relative) {
 
         if (relative == null) {
             return base;
@@ -84,8 +84,7 @@ public final class UriResolver {
 
         try {
             if (components[0] != null
-                    && components[1] == null
-                    ) {
+                    && components[1] == null) {
                 return new URI(components[0], components[2].trim().isEmpty() ? "." : components[2], components[4]);
             }
 
@@ -191,14 +190,14 @@ public final class UriResolver {
             } else if (input.startsWith("./")) {
                 input = input.substring(2);
 
-            // B.
+                // B.
             } else if (input.startsWith("/./")) {
                 input = "/".concat(input.substring(3));
 
             } else if ("/.".equals(input)) {
                 input = "/";
 
-            // C.
+                // C.
             } else if (input.startsWith("/../")) {
                 input = "/".concat(input.substring(4));
                 if (!output.isEmpty()) {
@@ -211,11 +210,11 @@ public final class UriResolver {
                     output.remove(output.size() - 1);
                 }
 
-            // D.
+                // D.
             } else if ("..".equals(input) || ".".equals(input)) {
                 input = "";
 
-            // E.
+                // E.
             } else {
                 int nextSlashIndex = input.indexOf('/', 1);
 

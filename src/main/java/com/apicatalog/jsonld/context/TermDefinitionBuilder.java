@@ -35,6 +35,7 @@ import com.apicatalog.jsonld.node.BlankNode;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.NodeType;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
@@ -107,26 +108,6 @@ public final class TermDefinitionBuilder {
 
     public static final TermDefinitionBuilder with(ActiveContext activeContext, Object localContext, NodeAdapter adapter, Map<String, Boolean> defined) {
         return new TermDefinitionBuilder(activeContext, localContext, adapter, defined);
-    }
-
-    public TermDefinitionBuilder baseUrl(URI baseUrl) {
-        this.baseUrl = baseUrl;
-        return this;
-    }
-
-    public TermDefinitionBuilder protectedFlag(boolean protectedFlag) {
-        this.protectedFlag = protectedFlag;
-        return this;
-    }
-
-    public TermDefinitionBuilder overrideProtectedFlag(boolean overrideProtectedFlag) {
-        this.overrideProtectedFlag = overrideProtectedFlag;
-        return this;
-    }
-
-    public TermDefinitionBuilder remoteContexts(Collection<String> remoteContexts) {
-        this.remoteContexts = remoteContexts;
-        return this;
     }
 
     public void create(final String term) throws JsonLdError, IOException {
@@ -263,8 +244,8 @@ public final class TermDefinitionBuilder {
                             localContext,
                             adapter
 //                            (JsonObject) new JakartaMaterializer().node(localContext, adapter)
-                            
-                            )
+
+                    )
                     .defined(defined)
                     .vocab(true)
                     .expand(adapter.stringValue(typeValue));
@@ -317,8 +298,7 @@ public final class TermDefinitionBuilder {
                             .localContext(
 //                                    (JsonObject) localContext
                                     localContext,
-                                    adapter
-                                    ) // FIXME
+                                    adapter) // FIXME
                             .defined(defined)
                             .vocab(true)
                             .expand(reverseString));
@@ -384,8 +364,7 @@ public final class TermDefinitionBuilder {
                                 .localContext(
 //                                        (JsonObject) localContext
                                         localContext,
-                                        adapter
-                                        ) // FIXME
+                                        adapter) // FIXME
                                 .defined(defined)
                                 .vocab(true)
                                 .expand(idValueString));
@@ -412,8 +391,7 @@ public final class TermDefinitionBuilder {
                             .localContext(
 //                                    (JsonObject) localContext
                                     localContext,
-                                    adapter
-                                    ) // FIXME
+                                    adapter) // FIXME
                             .defined(defined)
                             .vocab(true)
                             .expand(term);
@@ -471,8 +449,7 @@ public final class TermDefinitionBuilder {
                             .localContext(
 //                                    (JsonObject) localContext
                                     localContext,
-                                    adapter
-                                    ) // FIXME
+                                    adapter) // FIXME
                             .defined(defined)
                             .vocab(true)
                             .expand(term));
@@ -494,20 +471,18 @@ public final class TermDefinitionBuilder {
         }
 
         // 19.
-        if (adapter.keys(valueObject).contains(Keywords.CONTAINER)) {
-
-            // 19.1.
-            final JsonValue containerValue = ((JsonObject) valueObject).get(Keywords.CONTAINER);
+        var containerValue = adapter.property(Keywords.CONTAINER, valueObject);
+        
+        if (containerValue != null) {
 
             if (!validateContainer(containerValue)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
             }
 
             // 19.3.
-            JsonUtils.toStream(containerValue)
-                    .filter(JsonUtils::isString)
-                    .map(JsonString.class::cast)
-                    .map(JsonString::getString)
+            adapter.asStream(containerValue)
+                    .filter(adapter::isString)
+                    .map(adapter::stringValue)
                     .forEach(definition::addContainerMapping);
 
             // 19.4.
@@ -548,8 +523,7 @@ public final class TermDefinitionBuilder {
                     .localContext(
 //                            (JsonObject) localContext
                             localContext,
-                            adapter
-                            ) // FIXME
+                            adapter) // FIXME
                     .defined(defined)
                     .vocab(true)
                     .expand(indexString);
@@ -563,7 +537,7 @@ public final class TermDefinitionBuilder {
 
         // 21.
         var contextValue = adapter.property(Keywords.CONTEXT, valueObject);
-        
+
         if (contextValue != null) {
 
             // 21.1.
@@ -591,7 +565,7 @@ public final class TermDefinitionBuilder {
 
         // 22.
         var languageValue = adapter.property(Keywords.LANGUAGE, valueObject);
-        
+
         if (languageValue != null && !adapter.keys(valueObject).contains(Keywords.TYPE)) {
 
             // 22.1. - 2.
@@ -628,17 +602,16 @@ public final class TermDefinitionBuilder {
 
         // 23.
         var directionValue = adapter.property(Keywords.DIRECTION, valueObject);
-        
-        if (directionValue != null && !((JsonObject) valueObject).containsKey(Keywords.TYPE)) {
 
-            final JsonValue direction = ((JsonObject) valueObject).get(Keywords.DIRECTION);
+        if (directionValue != null
+                && !adapter.keys(valueObject).contains(Keywords.TYPE)) {
 
-            if (JsonUtils.isNull(direction)) {
+            if (adapter.isNull(directionValue)) {
                 definition.setDirectionMapping(DirectionType.NULL);
 
-            } else if (JsonUtils.isString(direction)) {
+            } else if (adapter.isString(directionValue)) {
 
-                String directionString = ((JsonString) direction).getString();
+                var directionString = adapter.stringValue(directionValue);
 
                 if ("ltr".equals(directionString)) {
                     definition.setDirectionMapping(DirectionType.LTR);
@@ -657,7 +630,7 @@ public final class TermDefinitionBuilder {
 
         // 24.
         var nestValue = adapter.property(Keywords.NEST, valueObject);
-        
+
         if (nestValue != null) {
 
             // 24.1
@@ -665,13 +638,11 @@ public final class TermDefinitionBuilder {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
 
-            final JsonValue nest = ((JsonObject) valueObject).get(Keywords.NEST);
-
-            if (JsonUtils.isNotString(nest)) {
+            if (!adapter.isString(nestValue)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
             }
 
-            final String nestString = ((JsonString) nest).getString();
+            var nestString = adapter.stringValue(nestValue);
 
             if (Keywords.contains(nestString) && !Keywords.NEST.equals(nestString)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
@@ -682,7 +653,7 @@ public final class TermDefinitionBuilder {
 
         // 25.
         var prefixValue = adapter.property(Keywords.PREFIX, valueObject);
-        
+
         if (prefixValue != null) {
 
             // 25.1.
@@ -690,13 +661,12 @@ public final class TermDefinitionBuilder {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
 
-            // 25.2.
-            final JsonValue prefix = ((JsonObject) valueObject).get(Keywords.PREFIX);
+            var prefixType = adapter.type(prefixValue);
 
-            if (adapter.isTrue(prefix)) {
+            if (prefixType == NodeType.TRUE) {
                 definition.setPrefix(true);
 
-            } else if (adapter.isFalse(prefix)) {
+            } else if (prefixType == NodeType.FALSE) {
                 definition.setPrefix(false);
 
             } else {
@@ -732,13 +702,33 @@ public final class TermDefinitionBuilder {
         defined.put(term, true);
     }
 
-    private final boolean validateContainer(final JsonValue value) {
+    public TermDefinitionBuilder baseUrl(URI baseUrl) {
+        this.baseUrl = baseUrl;
+        return this;
+    }
 
-        JsonValue container = value;
+    public TermDefinitionBuilder protectedFlag(boolean protectedFlag) {
+        this.protectedFlag = protectedFlag;
+        return this;
+    }
 
-        if (adapter.isNull(container)) {
+    public TermDefinitionBuilder overrideProtectedFlag(boolean overrideProtectedFlag) {
+        this.overrideProtectedFlag = overrideProtectedFlag;
+        return this;
+    }
+
+    public TermDefinitionBuilder remoteContexts(Collection<String> remoteContexts) {
+        this.remoteContexts = remoteContexts;
+        return this;
+    }
+
+    private final boolean validateContainer(final Object value) {
+
+        if (adapter.isNull(value)) {
             return false;
         }
+        
+        var container = value;
 
         if (activeContext.runtime().isV10()) {
 
@@ -750,37 +740,41 @@ public final class TermDefinitionBuilder {
                             Keywords.TYPE);
         }
 
-        if (adapter.isCollection(container) && container.asJsonArray().size() == 1) {
-            container = container.asJsonArray().get(0);
+        if (adapter.isSingleElement(container)) {
+            container = adapter.singleElement(container);
         }
 
         if (adapter.isString(container)) {
             return CONTAINER_KEYWORDS.contains(adapter.stringValue(container));
         }
 
-        return adapter.isCollection(container) && validateContainerArray(container.asJsonArray());
+        return adapter.isCollection(container) 
+                && validateContainerArray(adapter.elementStream(container)
+                        .filter(adapter::isString)
+                        .map(adapter::stringValue)
+                        .toList());
     }
 
-    private static final boolean validateContainerArray(final JsonArray containers) {
+    private static final boolean validateContainerArray(final Collection<String> containers) {
 
         if (containers.size() > 3) {
             return false;
         }
 
-        if (JsonUtils.contains(Keywords.GRAPH, containers)
-                && (JsonUtils.contains(Keywords.ID, containers)
-                        || JsonUtils.contains(Keywords.INDEX, containers))) {
+        if (containers.contains(Keywords.GRAPH)
+                && (containers.contains(Keywords.ID)
+                        || containers.contains(Keywords.INDEX))) {
 
-            return containers.size() == 2 || JsonUtils.contains(Keywords.SET, containers);
+            return containers.size() == 2 || containers.contains(Keywords.SET);
         }
 
         return containers.size() == 2
-                && JsonUtils.contains(Keywords.SET, containers)
-                && (JsonUtils.contains(Keywords.GRAPH, containers)
-                        || JsonUtils.contains(Keywords.ID, containers)
-                        || JsonUtils.contains(Keywords.INDEX, containers)
-                        || JsonUtils.contains(Keywords.LANGUAGE, containers)
-                        || JsonUtils.contains(Keywords.TYPE, containers));
+                && containers.contains(Keywords.SET)
+                && (containers.contains(Keywords.GRAPH)
+                        || containers.contains(Keywords.ID)
+                        || containers.contains(Keywords.INDEX)
+                        || containers.contains(Keywords.LANGUAGE)
+                        || containers.contains(Keywords.TYPE));
     }
 
 }

@@ -131,7 +131,7 @@ public final class ActiveContextBuilder {
                 if (!overrideProtected && result.containsProtectedTerm()) {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_CONTEXT_NULLIFICATION);
                 }
-                System.out.println("X " + propagate + ", " + activeContext.getBaseUri() + ", " + activeContext.getBaseUrl());
+
                 // 5.1.2. Initialize result as a newly-initialized active context, setting both
                 // base IRI and original base URL to the value of original base URL in active
                 // context, and, if propagate is false, previous context in result to the

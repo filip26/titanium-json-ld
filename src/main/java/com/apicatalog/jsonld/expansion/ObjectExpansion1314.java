@@ -89,10 +89,6 @@ final class ObjectExpansion1314 {
             final NodeAdapter adapter,
             final String activeProperty) throws JsonLdError, IOException {
 
-        System.out.println("1 > " + activeProperty + ", " + inputType);
-        System.out.println("2 > " + activeContext);
-        System.out.println("3 > " + typeContext);
-
         var keys = params.ordered()
                 ? adapter.keyStream(element, PolyNode.comparingElement(adapter::asString)).iterator()
                 : adapter.keyStream(element).iterator();
