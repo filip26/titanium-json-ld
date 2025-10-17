@@ -1118,18 +1118,19 @@ final class ObjectExpansion1314 {
         activeContext.runtime().tick();
 
         // step 3
-        final Optional<PolyNode> propertyContext = activeContext
+        var propertyContext = activeContext
                 .getTerm(activeProperty)
-                .map(TermDefinition::getLocalContext);
+                .map(TermDefinition::getLocalContext)
+                .orElse(null);
 
         // step 8
-        if (propertyContext.isPresent()) {
+        if (propertyContext != null) {
             activeContext = activeContext
                     .newContext()
                     .overrideProtected(true)
                     .build(
-                            propertyContext.get().node(),
-                            propertyContext.get().adapter(),
+                            propertyContext.node(),
+                            propertyContext.adapter(),
                             activeContext
                                     .getTerm(activeProperty)
                                     .map(TermDefinition::getBaseUrl)
@@ -1141,7 +1142,8 @@ final class ObjectExpansion1314 {
     }
 
     private final void processNest(
-            final Context activeContext, final JsonObject element,
+            final Context activeContext,
+            final JsonObject element,
             final NodeAdapter adapter,
             final String activeProperty) throws JsonLdError, IOException {
 
@@ -1156,9 +1158,7 @@ final class ObjectExpansion1314 {
                 }
 
                 for (final String nestedValueKey : nestValue.asJsonObject().keySet()) {
-
-                    if (Keywords.VALUE.equals(typeContext
-                            .uriExpansion()
+                    if (Keywords.VALUE.equals(typeContext.uriExpansion()
                             .vocab(true)
                             .expand(nestedValueKey))) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);

@@ -83,9 +83,13 @@ public final class ObjectExpansion {
             final NodeAdapter nodeAdapter,
             final String activeProperty,
             final Params params) {
-        return new ObjectExpansion(activeContext,
+        return new ObjectExpansion(
+                activeContext,
                 propertyContext,
-                node, nodeAdapter, activeProperty, params);
+                node,
+                nodeAdapter,
+                activeProperty,
+                params);
     }
 
     public Object expand() throws JsonLdError, IOException {
@@ -175,7 +179,7 @@ public final class ObjectExpansion {
             var it = adapter.keyStream(element, PolyNode.comparingElement(adapter::stringValue)).iterator();
 
             while (it.hasNext()) {
-//final String key : Utils.index(element.keySet(), true)
+
                 activeContext.runtime().tick();
 
                 var key = adapter.stringValue(it.next());
@@ -199,9 +203,10 @@ public final class ObjectExpansion {
     }
 
     private void initLocalContext() throws JsonLdError, IOException {
+
         // 9.
         var contextValue = adapter.property(Keywords.CONTEXT, element);
-
+        System.out.println("initLocalContext -> " + contextValue);
         if (contextValue != null) {
             activeContext = activeContext
                     .newContext()

@@ -157,14 +157,16 @@ public final class Compaction {
             activeContext = activeContext.getPreviousContext();
         }
 
-        // 6.
+        // 6.        
         if (activePropertyDefinition.map(TermDefinition::getLocalContext).isPresent()) {
 
+            var localContext = activePropertyDefinition.get().getLocalContext();
+            
             activeContext = activeContext
                     .newContext()
                     .overrideProtected(true)
-                    .build(activePropertyDefinition.get().getLocalContext(),
-                            JakartaAdapter.instance(),
+                    .build(localContext.node(),
+                            localContext.adapter(),
                             activePropertyDefinition.get().getBaseUrl());
         }
 

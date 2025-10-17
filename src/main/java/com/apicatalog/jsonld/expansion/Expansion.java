@@ -86,11 +86,11 @@ public final class Expansion {
     }
 
     public static final Object expand(
-            Context activeContext,
-            Object node,
-            NodeAdapter nodeAdapter,
-            String activeProperty,
-            Params params
+            final Context activeContext,
+            final Object node,
+            final NodeAdapter nodeAdapter,
+            final String activeProperty,
+            final Params params
 
     ) throws JsonLdError, IOException {
 
@@ -128,7 +128,7 @@ public final class Expansion {
                         new Params(
                                 params.frameExpansion && !Keywords.DEFAULT.equals(activeProperty),
                                 params.ordered,
-                                params.fromMap,
+                                params.fromMap(),
                                 params.baseUrl))
                 .expand();
     }
@@ -232,7 +232,7 @@ public final class Expansion {
         if (nodeAdapter.isEmptyCollection(node)) {
             return Collections.emptySet();
         }
-        
+
         var result = new ArrayList<Object>();
 
         // 5.2.
