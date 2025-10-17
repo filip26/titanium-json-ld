@@ -29,6 +29,8 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.tree.io.NativeAdapter;
+import com.apicatalog.tree.io.NodeVisitor;
+import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 
@@ -79,13 +81,13 @@ public final class Compactor {
         return compact(remoteDocument, context, options);
     }
 
-    public static final JsonObject compact(final Document input, final URI context, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final JsonObject compact(final Document<PolyNode> input, final URI context, final JsonLdOptions options) throws JsonLdError, IOException {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + context + "].");
         }
 
-        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new LoaderOptions());
+        final Document<?> contextDocument = options.getDocumentLoader().loadDocument(context, new LoaderOptions());
 
         if (contextDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Returned context is null [" + context + "] is null.");
@@ -94,17 +96,23 @@ public final class Compactor {
         return compact(input, contextDocument, options);
     }
 
-    public static final JsonObject compact(final Document input, final Document<?> context, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final JsonObject compact(final Document<PolyNode> input, final Document<?> context, final JsonLdOptions options) throws JsonLdError, IOException {
 
         // 4.
-        final JsonLdOptions expansionOptions = new JsonLdOptions(options);
-        expansionOptions.setOrdered(false);
-        expansionOptions.setExtractAllScripts(false);
+        final var expansionOptions = new JsonLdOptions(options)
+                .setOrdered(false)
+                .setExtractAllScripts(false);
 
         var expandedInput = Expander.expand(input, expansionOptions, false);
+//new NodeVisitor().root(expandedInput, NativeAdapter.instance()).traverse(
+//        
+//        v -> {
+//            System.out.println(v.node() + ", " + v.nodeType() + ", " + v.nodeContext() + ", " + v.node().getClass());
+//        }
+//        
+//        );
         var m = new JakartaMaterializer().node(expandedInput, NativeAdapter.instance());
 
-        
         // 5.
         URI contextBase = input.getDocumentUrl();
 

@@ -32,8 +32,6 @@ import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.PolyNode;
 
-import jakarta.json.JsonValue;
-
 /**
  *
  * @see <a href=
@@ -154,7 +152,7 @@ public final class Expansion {
      *                        the {@code element}
      * @param propertyContext a property-scoped context to apply, or {@code null} if
      *                        none
-     * @param node            the scalar {@link JsonValue} to expand
+     * @param node            the scalar to expand
      * @return a {@link Map} representing the expanded value object, or {@code null}
      *         if the scalar is dropped
      * @throws JsonLdError if an error occurs during expansion

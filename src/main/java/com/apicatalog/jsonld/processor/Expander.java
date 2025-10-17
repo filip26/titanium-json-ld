@@ -20,7 +20,6 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -35,8 +34,6 @@ import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.tree.io.NativeAdapter;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
-
-import jakarta.json.JsonStructure;
 
 /**
  *
@@ -107,8 +104,7 @@ public final class Expander {
         // instead for local context.
         if (options.getExpandContext() != null) {
 
-            @SuppressWarnings("unchecked")
-            final Optional<JsonStructure> contextValue = options.getExpandContext().getJsonContent();
+            final var contextValue = options.getExpandContext().getJsonContent();
 
             if (contextValue.isPresent()) {
                 contextBuilder.update(contextValue.get(), JakartaAdapter.instance(), baseUrl);

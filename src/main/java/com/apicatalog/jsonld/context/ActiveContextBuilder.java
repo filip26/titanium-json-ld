@@ -45,6 +45,8 @@ import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonObject;
 
+//import jakarta.json.JsonObject;
+
 /**
  * @see <a href=
  *      "https://www.w3.org/TR/json-ld11-api/#context-processing-algorithms">Context
@@ -193,6 +195,7 @@ public final class ActiveContextBuilder {
             var contextImport = adapter.property(Keywords.IMPORT, itemContext);
 
             var contextDefinition = itemContext;
+            var contextAdapter = adapter;
 
             if (contextImport != null) {
 
@@ -266,6 +269,13 @@ public final class ActiveContextBuilder {
                 }
 
                 // 5.6.8
+                if (importAdapter.isCompatibleWith(contextAdapter)) {
+//TODO                    System.out.println("CCCCC");
+//                    contextDefinition
+                } else {
+
+                }
+                
 //               FIXME importedContextObject.forEach(contextDefinition::put);
                 contextDefinition = JsonUtils.merge((JsonObject) importedContext, (JsonObject) contextDefinition);
             }
@@ -382,7 +392,7 @@ public final class ActiveContextBuilder {
             }
 
             // 5.10.
-            var dirValue = adapter.property(Keywords.DIRECTION, contextDefinition);
+            final var dirValue = adapter.property(Keywords.DIRECTION, contextDefinition);
 
             if (dirValue != null) {
 

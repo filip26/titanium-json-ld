@@ -325,12 +325,14 @@ public final class JsonLdOptions {
         this.documentLoader = documentLoader;
     }
 
-    public void setExtractAllScripts(boolean extractAllScripts) {
+    public JsonLdOptions setExtractAllScripts(boolean extractAllScripts) {
         this.extractAllScripts = extractAllScripts;
+        return this;
     }
 
-    public void setOrdered(boolean ordered) {
+    public JsonLdOptions setOrdered(boolean ordered) {
         this.ordered = ordered;
+        return this;
     }
 
     public void setProcessingMode(JsonLdVersion processingMode) {

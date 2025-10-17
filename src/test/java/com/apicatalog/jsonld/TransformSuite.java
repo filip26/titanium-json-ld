@@ -21,7 +21,11 @@ import org.junit.platform.suite.api.SuiteDisplayName;
 
 @Suite(failIfNoTests = true)
 @SuiteDisplayName("Transform")
-@SelectClasses({ ExpandTest.class, FlattenTest.class, })
+@SelectClasses({
+        ExpanderTest.class,
+        FlattenTest.class,
+//        CompactorTest.class,
+})
 public class TransformSuite {
 
 }

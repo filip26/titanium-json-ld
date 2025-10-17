@@ -157,11 +157,11 @@ public final class Compaction {
             activeContext = activeContext.getPreviousContext();
         }
 
-        // 6.        
+        // 6.
         if (activePropertyDefinition.map(TermDefinition::getLocalContext).isPresent()) {
 
             var localContext = activePropertyDefinition.get().getLocalContext();
-            
+
             activeContext = activeContext
                     .newContext()
                     .overrideProtected(true)
@@ -216,20 +216,22 @@ public final class Compaction {
 
             Collections.sort(compactedTypes);
 
-            for (final String term : compactedTypes) {
+            for (final var term : compactedTypes) {
 
-                final Optional<TermDefinition> termDefinition = typeContext.getTerm(term);
+                final var termDefinition = typeContext.getTerm(term).orElse(null);
 
                 // 11.1.
-                if (termDefinition.filter(TermDefinition::hasLocalContext).isPresent()) {
+                if (termDefinition != null && termDefinition.getLocalContext() != null) {
+
+                    final var localContext = termDefinition.getLocalContext();
 
                     activeContext = activeContext
                             .newContext()
                             .propagate(false)
                             .build(
-                                    termDefinition.get().getLocalContext(),
-                                    JakartaAdapter.instance(),
-                                    termDefinition.get().getBaseUrl());
+                                    localContext.node(),
+                                    localContext.adapter(),
+                                    termDefinition.getBaseUrl());
                 }
             }
         }

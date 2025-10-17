@@ -54,6 +54,4 @@ public final class ValueNode {
     public static final boolean isNotValueNode(Object value) {
         return !(value instanceof Map map && VALUE_KEYWORDS.containsAll(map.keySet()));
     }
-
-
 }

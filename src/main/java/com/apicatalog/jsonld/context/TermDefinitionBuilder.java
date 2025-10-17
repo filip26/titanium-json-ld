@@ -179,28 +179,28 @@ public final class TermDefinitionBuilder {
         // 6.
         final var previousDefinition = activeContext.removeTerm(term).orElse(null);
 
-        final Function<String, ?> propertyValue;
+        final Function<String, ?> propertyGetter;
         final Collection<String> valueObjectKeys;
         final boolean simpleTerm;
         final Object idValue;
 
         // 7.
         if (adapter.isNull(value)) {
-            propertyValue = x -> null;
+            propertyGetter = x -> null;
             valueObjectKeys = Collections.emptySet();
             idValue = false;
             simpleTerm = false;
 
         } else if (adapter.isString(value)) {
             // 8.
-            propertyValue = x -> null;
+            propertyGetter = x -> null;
             valueObjectKeys = Collections.emptySet();
             idValue = value;
             simpleTerm = true;
 
         } else if (adapter.isMap(value)) {
             // 9.
-            propertyValue = name -> adapter.property(name, value);
+            propertyGetter = name -> adapter.property(name, value);
             valueObjectKeys = adapter
                     .keyStream(value)
                     .map(adapter::stringValue)
@@ -216,7 +216,7 @@ public final class TermDefinitionBuilder {
         final var definition = new TermDefinition(false, protectedFlag, false);
 
         // 11.
-        final var protectedValue = propertyValue.apply(Keywords.PROTECTED);
+        final var protectedValue = propertyGetter.apply(Keywords.PROTECTED);
 
         if (protectedValue != null) {
 
@@ -232,7 +232,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 12.
-        final var typeValue = propertyValue.apply(Keywords.TYPE);
+        final var typeValue = propertyGetter.apply(Keywords.TYPE);
 
         if (typeValue != null) {
 
@@ -266,7 +266,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 13.
-        final var reverseValue = propertyValue.apply(Keywords.REVERSE);
+        final var reverseValue = propertyGetter.apply(Keywords.REVERSE);
 
         if (reverseValue != null) {
 
@@ -302,7 +302,7 @@ public final class TermDefinitionBuilder {
             }
 
             // 13.5.
-            final var containerValue = propertyValue.apply(Keywords.CONTAINER);
+            final var containerValue = propertyGetter.apply(Keywords.CONTAINER);
 
             if (containerValue != null) {
 
@@ -456,7 +456,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 19.
-        var containerValue = propertyValue.apply(Keywords.CONTAINER);
+        var containerValue = propertyGetter.apply(Keywords.CONTAINER);
 
         if (containerValue != null) {
 
@@ -495,7 +495,7 @@ public final class TermDefinitionBuilder {
             }
 
             // 20.2.
-            final var index = propertyValue.apply(Keywords.INDEX);
+            final var index = propertyGetter.apply(Keywords.INDEX);
 
             if (!adapter.isString(index)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
@@ -518,7 +518,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 21.
-        final var contextValue = propertyValue.apply(Keywords.CONTEXT);
+        final var contextValue = propertyGetter.apply(Keywords.CONTEXT);
 
         if (contextValue != null) {
 
@@ -546,7 +546,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 22.
-        final var languageValue = propertyValue.apply(Keywords.LANGUAGE);
+        final var languageValue = propertyGetter.apply(Keywords.LANGUAGE);
 
         if (languageValue != null && !valueObjectKeys.contains(Keywords.TYPE)) {
 
@@ -581,7 +581,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 23.
-        final var directionValue = propertyValue.apply(Keywords.DIRECTION);
+        final var directionValue = propertyGetter.apply(Keywords.DIRECTION);
 
         if (directionValue != null
                 && !valueObjectKeys.contains(Keywords.TYPE)) {
@@ -609,7 +609,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 24.
-        final var nestValue = propertyValue.apply(Keywords.NEST);
+        final var nestValue = propertyGetter.apply(Keywords.NEST);
 
         if (nestValue != null) {
 
@@ -632,7 +632,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 25.
-        final var prefixValue = propertyValue.apply(Keywords.PREFIX);
+        final var prefixValue = propertyGetter.apply(Keywords.PREFIX);
 
         if (prefixValue != null) {
 

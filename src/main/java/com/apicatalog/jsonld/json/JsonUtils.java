@@ -198,12 +198,6 @@ public final class JsonUtils {
                     ;
     }
     
-    public static Collection<?> toList(Object value) {
-        if (value instanceof Collection<?> collection) {
-            return List.copyOf(collection);
-        }
-        return Set.of(value);
-    }
 
     public static boolean isBlankString(JsonValue value) {
         return isString(value) && StringUtils.isBlank(((JsonString) value).getString());

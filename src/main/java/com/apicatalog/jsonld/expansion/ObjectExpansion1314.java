@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -126,7 +127,7 @@ final class ObjectExpansion1314 {
                 }
             }
 
-            JsonValue value = element.get(key);
+            final var value = element.get(key);
 
             // 13.4. If expanded property is a keyword:
             if (Keywords.contains(expandedProperty)) {
@@ -169,12 +170,16 @@ final class ObjectExpansion1314 {
 //                        // 13.4.3.1
 //                    } else 
 
-                    if (!params.frameExpansion() && JsonUtils.isNotString(value) && (!activeContext.runtime().isNumericId() || JsonUtils.isNotNumber(value))
+                    if (!params.frameExpansion()
+                            && !adapter.isString(value)
+                            && (!activeContext.runtime().isNumericId()
+                                    || !adapter.isNumber(value))
                             || params.frameExpansion()
-                                    && JsonUtils.isNotString(value)
-                                    && JsonUtils.isNonEmptyObject(value)
-                                    && (JsonUtils.isNotArray(value)
-                                            || value.asJsonArray().stream().anyMatch(JsonUtils::isNotString))) {
+                                    && !adapter.isString(value)
+                                    && !adapter.isEmptyMap(value)
+                                    && (!adapter.isCollection(value)
+                                            || adapter.elementStream(value)
+                                                    .anyMatch(Predicate.not(adapter::isString)))) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE, "An @id entry was encountered whose value [" + value + "] was not a string.");
 
                         // 13.4.3.2
@@ -272,14 +277,16 @@ final class ObjectExpansion1314 {
                 else if (Keywords.TYPE.equals(expandedProperty)) {
                     // 13.4.4.1
                     if ((!params.frameExpansion()
-                            && JsonUtils.isNotString(value)
-                            && (JsonUtils.isNotArray(value)
-                                    || value.asJsonArray().stream().anyMatch(JsonUtils::isNotString)))
+                            && !adapter.isString(value)
+                            && (!adapter.isCollection(value)
+                                    || adapter.elementStream(value)
+                                            .anyMatch(Predicate.not(adapter::isString))))
                             || params.frameExpansion()
-                                    && JsonUtils.isNotString(value)
-                                    && JsonUtils.isNonEmptyObject(value)
-                                    && (JsonUtils.isNotArray(value)
-                                            || value.asJsonArray().stream().anyMatch(JsonUtils::isNotString))
+                                    && !adapter.isString(value)
+                                    && !adapter.isEmptyMap(value)
+                                    && (!adapter.isCollection(value)
+                                            || adapter.elementStream(value)
+                                                    .anyMatch(Predicate.not(adapter::isString)))
                                     && !DefaultObject.isDefaultObject(value)
                                     && DefaultObject.getValue(value)
                                             .filter(adapter::isString)
@@ -356,7 +363,9 @@ final class ObjectExpansion1314 {
                         var typeValue = result.get(Keywords.TYPE);
 
                         if (typeValue instanceof HashSet set) {
-                            set.add(expandedValue);
+                            @SuppressWarnings("unchecked")
+                            var hashset = ((HashSet<Object>) set);
+                            hashset.add(expandedValue);
                             expandedValue = set;
 
                         } else if (typeValue instanceof Collection<?> set) {
@@ -379,9 +388,12 @@ final class ObjectExpansion1314 {
 
                 // 13.4.5
                 else if (Keywords.GRAPH.equals(expandedProperty)) {
-                    expandedValue = JsonUtils.toList(Expansion
-//                    expandedValue = JsonUtils.toJsonArray(Expansion
-                            .expand(typeContext, value, adapter, Keywords.GRAPH, params));
+                    expandedValue = asList(Expansion.expand(
+                            typeContext,
+                            value,
+                            adapter,
+                            Keywords.GRAPH,
+                            params));
                 }
 
                 // 13.4.6
@@ -463,7 +475,7 @@ final class ObjectExpansion1314 {
                         expandedValue = new NativeMaterializer().node(value, JakartaAdapter.instance());
 
                         if (params.frameExpansion()) {
-                            expandedValue = JsonUtils.toList(expandedValue);
+                            expandedValue = asList(expandedValue);
                         }
 
                     } else {
@@ -506,7 +518,7 @@ final class ObjectExpansion1314 {
                         }
 
                         if (params.frameExpansion()) {
-                            expandedValue = JsonUtils.toList(expandedValue);
+                            expandedValue = asList(expandedValue);
                         }
 
                     } else {
@@ -533,10 +545,10 @@ final class ObjectExpansion1314 {
                                                             .allMatch(adapter::isString))) {
 
                         // 13.4.9.3.
-                        expandedValue = value;
+                        expandedValue = adapter.stringValue(value);
 
                         if (params.frameExpansion()) {
-                            expandedValue = JsonUtils.toList(expandedValue);
+                            expandedValue = asList(expandedValue);
                         }
 
                     } else {
@@ -679,7 +691,7 @@ final class ObjectExpansion1314 {
                         continue;
                     }
 
-                    expandedValue = JsonUtils.toList(Expansion
+                    expandedValue = asList(Expansion
                             .expand(activeContext, value, adapter, Keywords.ANNOTATION, params));
                 }
 
@@ -1209,5 +1221,12 @@ final class ObjectExpansion1314 {
         }
 
         map.put(key, List.of(previous, value));
+    }
+
+    final static Collection<?> asList(Object value) {
+        if (value instanceof Collection<?> collection) {
+            return List.copyOf(collection);
+        }
+        return Set.of(value);
     }
 }
