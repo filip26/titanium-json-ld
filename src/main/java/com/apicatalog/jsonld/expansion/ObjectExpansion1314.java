@@ -84,7 +84,8 @@ final class ObjectExpansion1314 {
     }
 
     public void expand(
-            final Context activeContext, final JsonObject element,
+            final Context activeContext,
+            final JsonObject element,
             final NodeAdapter adapter,
             final String activeProperty) throws JsonLdError, IOException {
 

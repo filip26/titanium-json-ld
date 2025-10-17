@@ -200,9 +200,9 @@ public final class ActiveContext implements Context {
         this.vocabularyMapping = vocabularyMapping;
     }
 
-    protected void setBaseUrl(final URI baseUrl) {
-        this.baseUrl = baseUrl;
-    }
+//    protected void setBaseUrl(final URI baseUrl) {
+//        this.baseUrl = baseUrl;
+//    }
 
     protected void setPreviousContext(final ActiveContext previousContext) {
         this.previousContext = previousContext;
@@ -218,7 +218,9 @@ public final class ActiveContext implements Context {
 
     @Override
     public String toString() {
-        return "ActiveContext[uri=" + baseUri + ", terms=" + terms + ", previousContext=" + previousContext + "]";
+        return "ActiveContext[uri=" + baseUri
+                + ", terms=" + terms
+                + ", previousContext=" + previousContext + "]";
     }
 
     public ProcessingRuntime runtime() {
