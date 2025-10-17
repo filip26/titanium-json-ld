@@ -16,7 +16,6 @@
 package com.apicatalog.jsonld.expansion;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,7 +34,6 @@ import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
-import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.DirectionType;
@@ -90,8 +88,18 @@ final class ObjectExpansion1314 {
             final NodeAdapter adapter,
             final String activeProperty) throws JsonLdError, IOException {
 
+        System.out.println("1 > " + activeProperty + ", " + inputType);
+        System.out.println("2 > " + activeContext);
+        System.out.println("3 > " + typeContext);
+
+        var keys = params.ordered()
+                ? adapter.keyStream(element, PolyNode.comparingElement(adapter::asString)).iterator()
+                : adapter.keyStream(element).iterator();
+
         // 13.
-        for (var key : Utils.index(element.keySet(), params.ordered())) {
+        while (keys.hasNext()) {
+
+            var key = adapter.asString(keys.next());
 
             // 13.1.
             if (Keywords.CONTEXT.equals(key)) {
@@ -115,6 +123,7 @@ final class ObjectExpansion1314 {
                             "An undefined term has been found [" + key + "]. Change policy to Ignore or Warn or define the term in a context");
                 case Warn:
                     LOGGER.log(Level.WARNING, "An undefined term has been found [{0}]", key);
+
                 case Ignore:
                     continue;
                 }
@@ -635,7 +644,7 @@ final class ObjectExpansion1314 {
                                         }
 
                                         // 13.4.13.4.2.1.1
-                                        JsonMapBuilder.merge(reverseMap, entry.getKey(), item);
+                                        merge(reverseMap, entry.getKey(), item);
                                     }
                                 }
                             }
@@ -841,17 +850,18 @@ final class ObjectExpansion1314 {
                     }
 
                     // 13.8.3.2.
-                    final Optional<TermDefinition> indexTermDefinition = mapContext.getTerm(index);
+                    var indexTermDefinition = mapContext.getTerm(index).orElse(null);
 
                     if (containerMapping.contains(Keywords.TYPE)
-                            && indexTermDefinition.map(TermDefinition::getLocalContext).isPresent()) {
+                            && indexTermDefinition != null
+                            && indexTermDefinition.getLocalContext() != null) {
 
                         mapContext = mapContext
                                 .newContext()
-                                .create(
-                                        indexTermDefinition.get().getLocalContext().node(),
-                                        indexTermDefinition.get().getLocalContext().adapter(),
-                                        indexTermDefinition.get().getBaseUrl());
+                                .build(
+                                        indexTermDefinition.getLocalContext().node(),
+                                        indexTermDefinition.getLocalContext().adapter(),
+                                        indexTermDefinition.getBaseUrl());
                     }
 
                     // 13.8.3.3.
@@ -942,12 +952,14 @@ final class ObjectExpansion1314 {
                         } else if (containerMapping.contains(Keywords.INDEX)
                                 && !result.containsKey(Keywords.INDEX)
                                 && !Keywords.NONE.equals(expandedIndex)) {
+
                             // 13.8.3.7.4.
                             result.put(Keywords.INDEX, index);
 
                         } else if (containerMapping.contains(Keywords.ID)
                                 && !result.containsKey(Keywords.ID)
                                 && !Keywords.NONE.equals(expandedIndex)) {
+
                             // 13.8.3.7.4.
                             result.put(Keywords.ID, activeContext
                                     .uriExpansion()
@@ -957,8 +969,9 @@ final class ObjectExpansion1314 {
 
                         } else if (containerMapping.contains(Keywords.TYPE)
                                 && !Keywords.NONE.equals(expandedIndex)) {
+
                             // 13.8.3.7.5.
-                            final List<Object> types = new ArrayList<>();
+                            var types = new ArrayList<>();
                             types.add(expandedIndex);
 
                             final Object existingType = result.get(Keywords.TYPE);
@@ -982,9 +995,12 @@ final class ObjectExpansion1314 {
 
                 // 13.9.
             } else {
-                expandedValue = Expansion
-                        .expand(activeContext, value, adapter, key,
-                                params);
+                expandedValue = Expansion.expand(
+                        activeContext,
+                        value,
+                        adapter,
+                        key,
+                        params);
             }
 
             // 13.10.
@@ -1021,7 +1037,9 @@ final class ObjectExpansion1314 {
             // 13.13.
             if (keyTermDefinition.filter(TermDefinition::isReverseProperty).isPresent()) {
 
-                expandedValue = JsonUtils.asCollection(expandedValue);
+                if (!(expandedValue instanceof Collection)) {
+                    expandedValue = Set.of(expandedValue);
+                }
 
                 // 13.13.4.
                 for (var item : (Collection<?>) expandedValue) {
@@ -1032,24 +1050,24 @@ final class ObjectExpansion1314 {
                     }
 
                     // 13.13.4.3.
-                    var map = (Map<String, Object>) result.get(Keywords.REVERSE);
+                    var map = result.get(Keywords.REVERSE);
                     if (map == null) {
                         result.put(Keywords.REVERSE, Map.of(expandedProperty, Set.of(item)));
 
-                    } else if (map instanceof LinkedHashMap<String, Object> hashMap) {
-                        JsonMapBuilder.merge(hashMap, expandedProperty, item);
+                    } else if (map instanceof LinkedHashMap hashmap) {
+                        merge(hashmap, expandedProperty, item);
 
-                    } else {
-                        map = new LinkedHashMap<>(map);
-                        JsonMapBuilder.merge(map, expandedProperty, item);
-                        result.put(Keywords.REVERSE, map);
+                    } else if (map instanceof Map<?, ?> rawMap) {
+                        var hashmap = new LinkedHashMap<>(rawMap);
+                        merge(hashmap, expandedProperty, item);
+                        result.put(Keywords.REVERSE, hashmap);
                     }
                 }
 
                 // 13.14
             } else {
 
-                JsonMapBuilder.merge(result, expandedProperty, expandedValue);
+                merge(result, expandedProperty, expandedValue);
 //                result.add(expandedProperty, expandedValue);
             }
         }
@@ -1108,7 +1126,7 @@ final class ObjectExpansion1314 {
             activeContext = activeContext
                     .newContext()
                     .overrideProtected(true)
-                    .create(
+                    .build(
                             propertyContext.get().node(),
                             propertyContext.get().adapter(),
                             activeContext
@@ -1156,5 +1174,43 @@ final class ObjectExpansion1314 {
                         .recurse(activeContext, nestValue.asJsonObject(), adapter, nestedKey);
             }
         }
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    static void merge(Map map, String key, Object value) {
+
+        Object previous = map.get(key);
+
+        if (previous == null) {
+            if (value instanceof Collection<?>) {
+                map.put(key, value);
+                return;
+            }
+            map.put(key, Set.of(value));
+            return;
+        }
+
+        if (previous instanceof Collection<?> c1) {
+
+            final Collection<Object> result;
+
+            if (previous instanceof ArrayList list) {
+                result = list;
+            } else {
+                result = new ArrayList<Object>(c1);
+            }
+
+            if (value instanceof Collection<?> c2) {
+                result.addAll(c2);
+
+            } else {
+                result.add(value);
+            }
+
+            map.put(key, result);
+            return;
+        }
+
+        map.put(key, List.of(previous, value));
     }
 }

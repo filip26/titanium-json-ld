@@ -40,7 +40,6 @@ import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.tree.io.NativeAdapter;
 import com.apicatalog.tree.io.NativeMaterializer;
 import com.apicatalog.tree.io.NodeAdapter;
-import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
@@ -91,7 +90,7 @@ public final class ActiveContextBuilder {
         return new ActiveContextBuilder(activeContext);
     }
 
-    public ActiveContext create(final Object localContext, final NodeAdapter adapter, final URI baseUrl) throws JsonLdError, IOException {
+    public ActiveContext build(final Object localContext, final NodeAdapter adapter, final URI baseUrl) throws JsonLdError, IOException {
 
         // 1. Initialize result to the result of cloning active context, with inverse
         // context set to null.
@@ -110,7 +109,7 @@ public final class ActiveContextBuilder {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_PROPAGATE_VALUE);
                 }
 
-                propagate = adapter.type(propagateValue) == NodeType.TRUE;
+                propagate = adapter.isTrue(propagateValue);
             }
         }
 
@@ -276,8 +275,6 @@ public final class ActiveContextBuilder {
             var baseValue = adapter.property(Keywords.BASE, contextDefinition);
 
             if (baseValue != null /* && remoteContexts.isEmpty() */) {
-
-                System.out.println("BASE: " + baseValue);
 
                 // 5.7.2.
                 if (adapter.isNull(baseValue)) {
@@ -520,7 +517,7 @@ public final class ActiveContextBuilder {
                     .remoteContexts(new ArrayList<>(remoteContexts))
                     .validateScopedContext(validateScopedContext)
                     // FIXME adapter
-                    .create(cachedContext, JakartaAdapter.instance(), contextUri);
+                    .build(cachedContext, JakartaAdapter.instance(), contextUri);
             return;
         }
 
@@ -601,7 +598,7 @@ public final class ActiveContextBuilder {
                     .newContext()
                     .remoteContexts(new ArrayList<>(remoteContexts))
                     .validateScopedContext(validateScopedContext)
-                    .create(newContext, NativeAdapter.instance(), remoteImport.getDocumentUrl());
+                    .build(newContext, NativeAdapter.instance(), remoteImport.getDocumentUrl());
 
 //FIXME
 //            if (result.runtime().getContextCache() != null && !validateScopedContext) {

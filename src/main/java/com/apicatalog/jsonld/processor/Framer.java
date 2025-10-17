@@ -138,7 +138,7 @@ public final class Framer {
         // 10-11.
         final ActiveContext activeContext = new ActiveContext(input.getDocumentUrl(), input.getDocumentUrl(), ProcessingRuntime.of(options))
                 .newContext()
-                .create(context, JakartaAdapter.instance(), contextBase);
+                .build(context, JakartaAdapter.instance(), contextBase);
 
         final String graphKey = activeContext.uriCompaction().vocab(true).compact(Keywords.GRAPH);
 

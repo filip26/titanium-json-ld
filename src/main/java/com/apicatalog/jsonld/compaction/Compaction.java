@@ -163,7 +163,7 @@ public final class Compaction {
             activeContext = activeContext
                     .newContext()
                     .overrideProtected(true)
-                    .create(activePropertyDefinition.get().getLocalContext(),
+                    .build(activePropertyDefinition.get().getLocalContext(),
                             JakartaAdapter.instance(),
                             activePropertyDefinition.get().getBaseUrl());
         }
@@ -224,7 +224,7 @@ public final class Compaction {
                     activeContext = activeContext
                             .newContext()
                             .propagate(false)
-                            .create(
+                            .build(
                                     termDefinition.get().getLocalContext(),
                                     JakartaAdapter.instance(),
                                     termDefinition.get().getBaseUrl());

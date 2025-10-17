@@ -578,7 +578,7 @@ public final class TermDefinitionBuilder {
                         .overrideProtected(true)
                         .remoteContexts(new ArrayList<>(remoteContexts))
                         .validateScopedContext(false)
-                        .create(contextValue, adapter, baseUrl);
+                        .build(contextValue, adapter, baseUrl);
 
             } catch (JsonLdError e) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_SCOPED_CONTEXT, e);

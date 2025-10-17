@@ -43,7 +43,7 @@ public final class UriResolver {
     }
 
     public static final String resolve(final URI base, final URI relative) {
-
+        System.out.println("R: " + base + ", " + relative);
         if (relative == null) {
             return base != null ? base.toString() : null;
         }

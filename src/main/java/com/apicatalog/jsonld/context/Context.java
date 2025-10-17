@@ -46,6 +46,8 @@ public interface Context {
         Object context;
         NodeAdapter adapter;
 
+        Context ctx;
+        
         //TODO remove runtime
         public Builder(URI base, ProcessingRuntime runtime) {
             this(base, base, runtime);
@@ -55,24 +57,25 @@ public interface Context {
             this.baseUri = baseUri;
             this.baseUrl = baseUrl;
             this.runtime = runtime;
+            this.ctx = new ActiveContext(baseUri, baseUrl, runtime);
         }
 
         // TODO better
         public Context build() throws JsonLdError, IOException {
-            var ctx = new ActiveContext(baseUri, baseUrl, runtime);
-            if (context != null) {
-                ctx = ctx.newContext()
-                        .create(context, adapter, baseUrl);
-            }
+//            var ctx = new ActiveContext(baseUri, baseUrl, runtime);
+//            if (context != null) {
+//                ctx = ctx.newContext()
+//                        .create(context, adapter, baseUrl);
+//            }
             return ctx;
         }
 
-        public void update(Object node, NodeAdapter adapter, URI baseUrl) {
+        public void update(Object node, NodeAdapter adapter, URI baseUrl) throws JsonLdError, IOException {
             // TODO merge if set
             this.context = node;
             this.adapter = adapter;
             this.baseUrl = baseUrl;
-
+            this.ctx = ctx.newContext().build(node, adapter, baseUrl);
         }
         
 
@@ -91,12 +94,12 @@ public interface Context {
                         if (!adapter.isNull(context)) {
                             return activeContext
                                     .newContext()
-                                    .create(context, adapter, baseUrl);
+                                    .build(context, adapter, baseUrl);
                         }
                     }
                 }
 
-                return activeContext.newContext().create(expandedContext, adapter, baseUrl);
+                return activeContext.newContext().build(expandedContext, adapter, baseUrl);
 
             } else if (adapter.isMap(expandedContext)) {
 
@@ -105,10 +108,10 @@ public interface Context {
                 if (!adapter.isNull(context)) {
                     return activeContext
                             .newContext()
-                            .create(context, adapter, baseUrl);
+                            .build(context, adapter, baseUrl);
                 }
             }
-            return activeContext.newContext().create(
+            return activeContext.newContext().build(
                     JsonProvider.instance().createArrayBuilder().add((JsonValue) expandedContext).build(), adapter, baseUrl);
         }
 
@@ -139,6 +142,8 @@ public interface Context {
     Map<String, ?> expandValue(String activeProperty, Object value, NodeAdapter adapter) throws JsonLdError, IOException;
     // ---
 //  void createInverseContext();
+
+//    URI getBaseUrl();
 
 //  boolean containsTerm(final String term);
 

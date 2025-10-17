@@ -117,6 +117,7 @@ public final class Expander {
 
         // 7.
         if (input.getContextUrl() != null) {
+            
             contextBuilder.update(
                     input.getContextUrl().toString(),
                     NativeAdapter.instance(),

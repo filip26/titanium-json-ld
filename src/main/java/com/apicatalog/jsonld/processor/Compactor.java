@@ -119,7 +119,7 @@ public final class Compactor {
 
         // 7.
         final ActiveContext activeContext = new ActiveContext(
-                ProcessingRuntime.of(options)).newContext().create(contextValue, JakartaAdapter.instance(), contextBase);
+                ProcessingRuntime.of(options)).newContext().build(contextValue, JakartaAdapter.instance(), contextBase);
 
         // 8.
         if (activeContext.getBaseUri() == null) {

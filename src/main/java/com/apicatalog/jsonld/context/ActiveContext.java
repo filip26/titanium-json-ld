@@ -218,7 +218,7 @@ public final class ActiveContext implements Context {
 
     @Override
     public String toString() {
-        return "ActiveContext[terms=" + terms + ", previousContext=" + previousContext + "]";
+        return "ActiveContext[uri=" + baseUri + ", terms=" + terms + ", previousContext=" + previousContext + "]";
     }
 
     public ProcessingRuntime runtime() {

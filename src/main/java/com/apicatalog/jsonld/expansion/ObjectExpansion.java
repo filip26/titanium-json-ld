@@ -17,10 +17,8 @@ package com.apicatalog.jsonld.expansion;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -57,7 +55,7 @@ public final class ObjectExpansion {
 //    private boolean frameExpansion;
 //    private boolean ordered;
 //    private boolean fromMap;
-    
+
     private Params params;
 
     private ObjectExpansion(final Context activeContext,
@@ -91,7 +89,6 @@ public final class ObjectExpansion {
     }
 
     public Object expand() throws JsonLdError, IOException {
-
         initPreviousContext();
 
         // 8. init property context
@@ -99,7 +96,7 @@ public final class ObjectExpansion {
             activeContext = activeContext
                     .newContext()
                     .overrideProtected(true)
-                    .create(
+                    .build(
                             propertyContext.node(),
                             propertyContext.adapter(),
                             activeContext
@@ -208,7 +205,7 @@ public final class ObjectExpansion {
         if (contextValue != null) {
             activeContext = activeContext
                     .newContext()
-                    .create(contextValue, adapter, params.baseUrl());
+                    .build(contextValue, adapter, params.baseUrl());
         }
     }
 
@@ -216,13 +213,12 @@ public final class ObjectExpansion {
 
         String typeKey = null;
 
-        var it = adapter.keyStream(element, PolyNode.comparingElement(adapter::stringValue)).iterator();
+        var it = adapter.keyStream(element, PolyNode.comparingElement(adapter::asString)).iterator();
 
         // 11.
         while (it.hasNext()) {
-//            for (var key : Utils.index(adapter.keys(element), true)) {            
 
-            var key = adapter.stringValue(it.next());
+            var key = adapter.asString(it.next());
 
             activeContext.runtime().tick();
 
@@ -231,39 +227,39 @@ public final class ObjectExpansion {
                     .vocab(true)
                     .expand(key);
 
-            if (!Keywords.TYPE.equals(expandedKey)) {
-                continue;
+            if (Keywords.TYPE.equals(expandedKey)) {
 
-            } else if (typeKey == null) {
-                typeKey = key;
-            }
+                if (typeKey == null) {
+                    typeKey = key;
+                }
 
-            // 11.2
-            final Iterator<String> terms = adapter.asStream(adapter.property(key, element))
-//                    .toStream(element.get(key))
-                    .filter(adapter::isString)
-                    .map(adapter::stringValue)
-                    .sorted()
-                    .iterator();
+                // 11.2
+                var terms = adapter.asStream(adapter.property(key, element))
+                        .filter(adapter::isString)
+                        .map(adapter::stringValue)
+                        .sorted()
+                        .iterator();
 
-            while (terms.hasNext()) {
+                while (terms.hasNext()) {
 
-                activeContext.runtime().tick();
+                    activeContext.runtime().tick();
 
-                final String term = terms.next();
+                    var term = terms.next();
 
-                final Optional<PolyNode> localContext = typeContext
-                        .getTerm(term).map(TermDefinition::getLocalContext);
+                    var localContext = typeContext
+                            .getTerm(term).map(TermDefinition::getLocalContext)
+                            .orElse(null);
 
-                if (localContext.isPresent()) {
-                    activeContext = activeContext
-                            .newContext()
-                            .propagate(false)
-                            .create(localContext.get().node(),
-                                    localContext.get().adapter(),
-                                    activeContext.getTerm(term)
-                                            .map(TermDefinition::getBaseUrl)
-                                            .orElse(null));
+                    if (localContext != null) {
+                        activeContext = activeContext
+                                .newContext()
+                                .propagate(false)
+                                .build(localContext.node(),
+                                        localContext.adapter(),
+                                        activeContext.getTerm(term)
+                                                .map(TermDefinition::getBaseUrl)
+                                                .orElse(null));
+                    }
                 }
             }
         }
@@ -331,15 +327,15 @@ public final class ObjectExpansion {
             if (value == null || value instanceof Collection<?> c && c.isEmpty()) {
                 return null;
 
-                // 15.4
             } else if (!params.frameExpansion()
                     && !(value instanceof String) && result.containsKey(Keywords.LANGUAGE)) {
+                // 15.4
                 throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
 
-                // 15.5
             } else if (!params.frameExpansion()
                     && type != null
                     && (!(type instanceof String uri) || UriUtils.isNotURI(uri))) {
+                // 15.5
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE, "Invalid @type [" + type + "].");
             }
         }
@@ -414,7 +410,6 @@ public final class ObjectExpansion {
             }
 
         }
-
         return result;
     }
 }

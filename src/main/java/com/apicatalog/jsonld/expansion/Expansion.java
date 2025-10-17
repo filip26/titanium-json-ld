@@ -184,7 +184,7 @@ public final class Expansion {
         if (propertyContext != null) {
             return context
                     .newContext()
-                    .create(propertyContext.node(),
+                    .build(propertyContext.node(),
                             propertyContext.adapter(),
                             context.getTerm(property)
                                     .map(TermDefinition::getBaseUrl)

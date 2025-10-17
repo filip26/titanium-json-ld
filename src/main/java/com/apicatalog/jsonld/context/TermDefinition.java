@@ -108,7 +108,6 @@ public final class TermDefinition {
         return containerMapping;
     }
 
-    //FIXME trace usage and add adapter()
     public PolyNode getLocalContext() {
         return localContext;
     }
@@ -185,8 +184,8 @@ public final class TermDefinition {
 
     @Override
     public String toString() {
-        return "TermDefinition[uriMapping=" + uriMapping + ", "
-                + "localContext=" + localContext + ", "
+        return "TermDefinition[uri=" + uriMapping + ", "
+                + "baseUri=" + baseUrl + ", "
                 + "indexMapping=" + indexMapping + ", "
                 + "typeMapping=" + typeMapping + ", "
                 + "containerMapping=" + containerMapping
