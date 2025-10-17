@@ -20,7 +20,9 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,11 +37,6 @@ import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.NodeType;
-
-import jakarta.json.JsonObject;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
-import jakarta.json.JsonValue.ValueType;
 
 /**
  *
@@ -180,27 +177,34 @@ public final class TermDefinitionBuilder {
         }
 
         // 6.
-        final TermDefinition previousDefinition = activeContext.removeTerm(term).orElse(null);
-        final Object valueObject;
+        final var previousDefinition = activeContext.removeTerm(term).orElse(null);
+
+        final Function<String, ?> propertyValue;
+        final Collection<String> valueObjectKeys;
         final boolean simpleTerm;
         final Object idValue;
 
         // 7.
         if (adapter.isNull(value)) {
-
-            valueObject = JsonValue.EMPTY_JSON_OBJECT; // FIXME
-            idValue = JsonValue.NULL;
+            propertyValue = x -> null;
+            valueObjectKeys = Collections.emptySet();
+            idValue = false;
             simpleTerm = false;
 
         } else if (adapter.isString(value)) {
             // 8.
-            valueObject = JsonValue.EMPTY_JSON_OBJECT; // FIXME Collections.emptyMap();
+            propertyValue = x -> null;
+            valueObjectKeys = Collections.emptySet();
             idValue = value;
             simpleTerm = true;
 
         } else if (adapter.isMap(value)) {
             // 9.
-            valueObject = value;
+            propertyValue = name -> adapter.property(name, value);
+            valueObjectKeys = adapter
+                    .keyStream(value)
+                    .map(adapter::stringValue)
+                    .toList();
             idValue = adapter.property(Keywords.ID, value);
             simpleTerm = false;
 
@@ -209,10 +213,10 @@ public final class TermDefinitionBuilder {
         }
 
         // 10.
-        final TermDefinition definition = new TermDefinition(false, protectedFlag, false);
+        final var definition = new TermDefinition(false, protectedFlag, false);
 
         // 11.
-        var protectedValue = adapter.property(Keywords.PROTECTED, valueObject);
+        final var protectedValue = propertyValue.apply(Keywords.PROTECTED);
 
         if (protectedValue != null) {
 
@@ -228,7 +232,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 12.
-        var typeValue = adapter.property(Keywords.TYPE, valueObject);
+        final var typeValue = propertyValue.apply(Keywords.TYPE);
 
         if (typeValue != null) {
 
@@ -262,13 +266,12 @@ public final class TermDefinitionBuilder {
         }
 
         // 13.
-        var reverseValue = adapter.property(Keywords.REVERSE, valueObject);
+        final var reverseValue = propertyValue.apply(Keywords.REVERSE);
 
         if (reverseValue != null) {
 
             // 13.1.
-//            if (valueObject.containsKey(Keywords.ID) || valueObject.containsKey(Keywords.NEST)) {
-            if (idValue != null || adapter.keys(valueObject).contains(Keywords.NEST)) {
+            if (valueObjectKeys.contains(Keywords.ID) || valueObjectKeys.contains(Keywords.NEST)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY);
             }
 
@@ -299,7 +302,7 @@ public final class TermDefinitionBuilder {
             }
 
             // 13.5.
-            var containerValue = adapter.property(Keywords.CONTAINER, valueObject);
+            final var containerValue = propertyValue.apply(Keywords.CONTAINER);
 
             if (containerValue != null) {
 
@@ -333,7 +336,7 @@ public final class TermDefinitionBuilder {
                         || !term.equals(adapter.stringValue(idValue)))) {
 
             // 14.1.
-            if (!adapter.isNull(idValue)) {
+            if (!adapter.isNull(idValue) && !Boolean.FALSE.equals(idValue)) {
 
                 // 14.2.1
                 if (!adapter.isString(idValue)) {
@@ -453,7 +456,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 19.
-        var containerValue = adapter.property(Keywords.CONTAINER, valueObject);
+        var containerValue = propertyValue.apply(Keywords.CONTAINER);
 
         if (containerValue != null) {
 
@@ -484,7 +487,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 20.
-        if (adapter.keys(valueObject).contains(Keywords.INDEX)) {
+        if (valueObjectKeys.contains(Keywords.INDEX)) {
 
             // 20.1.
             if (activeContext.runtime().isV10() || !definition.getContainerMapping().contains(Keywords.INDEX)) {
@@ -492,15 +495,15 @@ public final class TermDefinitionBuilder {
             }
 
             // 20.2.
-            var index = adapter.property(Keywords.INDEX, valueObject);
+            final var index = propertyValue.apply(Keywords.INDEX);
 
             if (!adapter.isString(index)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
 
-            final String indexString = ((JsonString) index).getString();
+            final var indexString = adapter.stringValue(index);
 
-            final String expandedIndex = activeContext
+            final var expandedIndex = activeContext
                     .uriExpansion()
                     .localContext(localContext, adapter)
                     .defined(defined)
@@ -515,7 +518,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 21.
-        var contextValue = adapter.property(Keywords.CONTEXT, valueObject);
+        final var contextValue = propertyValue.apply(Keywords.CONTEXT);
 
         if (contextValue != null) {
 
@@ -543,24 +546,22 @@ public final class TermDefinitionBuilder {
         }
 
         // 22.
-        var languageValue = adapter.property(Keywords.LANGUAGE, valueObject);
+        final var languageValue = propertyValue.apply(Keywords.LANGUAGE);
 
-        if (languageValue != null && !adapter.keys(valueObject).contains(Keywords.TYPE)) {
+        if (languageValue != null && !valueObjectKeys.contains(Keywords.TYPE)) {
 
-            // 22.1. - 2.
-            final JsonValue language = ((JsonObject) valueObject).get(Keywords.LANGUAGE);
-
-            if (language == null) {
-
-            } else if (ValueType.NULL == language.getValueType()) {
+            if (adapter.isNull(languageValue)) {
                 definition.setLanguageMapping(Keywords.NULL);
 
-            } else if (language instanceof JsonString jsonString) {
-                if (!LanguageTag.isWellFormed(jsonString.getString())) {
-                    LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", jsonString.getString());
+            } else if (adapter.isString(languageValue)) {
+
+                final var language = adapter.stringValue(languageValue);
+
+                if (!LanguageTag.isWellFormed(language)) {
+                    LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", language);
                 }
 
-                definition.setLanguageMapping(jsonString.getString());
+                definition.setLanguageMapping(language);
 
             } else {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_MAPPING);
@@ -580,10 +581,10 @@ public final class TermDefinitionBuilder {
         }
 
         // 23.
-        var directionValue = adapter.property(Keywords.DIRECTION, valueObject);
+        final var directionValue = propertyValue.apply(Keywords.DIRECTION);
 
         if (directionValue != null
-                && !adapter.keys(valueObject).contains(Keywords.TYPE)) {
+                && !valueObjectKeys.contains(Keywords.TYPE)) {
 
             if (adapter.isNull(directionValue)) {
                 definition.setDirectionMapping(DirectionType.NULL);
@@ -608,7 +609,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 24.
-        var nestValue = adapter.property(Keywords.NEST, valueObject);
+        final var nestValue = propertyValue.apply(Keywords.NEST);
 
         if (nestValue != null) {
 
@@ -631,7 +632,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 25.
-        var prefixValue = adapter.property(Keywords.PREFIX, valueObject);
+        final var prefixValue = propertyValue.apply(Keywords.PREFIX);
 
         if (prefixValue != null) {
 
@@ -640,7 +641,7 @@ public final class TermDefinitionBuilder {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
 
-            var prefixType = adapter.type(prefixValue);
+            final var prefixType = adapter.type(prefixValue);
 
             if (prefixType == NodeType.TRUE) {
                 definition.setPrefix(true);
@@ -659,7 +660,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 26.
-        if (!PROTECTED_KEYWORDS.containsAll(adapter.keys(valueObject))) {
+        if (!PROTECTED_KEYWORDS.containsAll(valueObjectKeys)) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
         }
 
@@ -713,7 +714,7 @@ public final class TermDefinitionBuilder {
 
             return adapter.isString(container)
                     && Keywords.noneMatch(
-                            ((JsonString) container).getString(),
+                            adapter.stringValue(container),
                             Keywords.GRAPH,
                             Keywords.ID,
                             Keywords.TYPE);
