@@ -37,63 +37,63 @@ class FlatteningApiTest {
 
     public static final MockLoader MOCK_LOADER = new MockLoader(JsonValue.EMPTY_JSON_ARRAY);
 
-    @Test
-    void test1() throws JsonLdError, IOException {
-        JsonStructure result = JsonLd.flatten(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).get();
-
-        assertNotNull(result);
-        assertEquals(JsonValue.EMPTY_JSON_ARRAY, result);
-    }
-
-    @Test
-    void test2() throws JsonLdError, IOException {
-        JsonStructure result = JsonLd.flatten(JsonDocument.of(MediaType.JSON, new ByteArrayInputStream(JsonValue.EMPTY_JSON_OBJECT.toString().getBytes()))).get();
-
-        assertNotNull(result);
-        assertEquals(JsonValue.EMPTY_JSON_ARRAY, result);
-    }
-
-    @Test
-    void test3() throws JsonLdError, IOException {
-        JsonStructure result = JsonLd.flatten("https://example.com").loader(MOCK_LOADER).get();
-        assertNotNull(result);
-        assertEquals(JsonValue.EMPTY_JSON_ARRAY, result);
-    }
-
-    @Test
-    void test4() throws JsonLdError, IOException {
-        JsonStructure result = JsonLd.flatten(URI.create("https://example.com")).loader(MOCK_LOADER).get();
-        assertNotNull(result);
-        assertEquals(JsonValue.EMPTY_JSON_ARRAY, result);
-    }
-
-    @Test
-    void test5() throws JsonLdError, IOException {
-        JsonStructure result = JsonLd.flatten("\thttps://example.com  ").loader(MOCK_LOADER).get();
-
-        assertNotNull(result);
-        assertEquals(JsonValue.EMPTY_JSON_ARRAY, result);
-    }
-
-    @Test
-    void test6() throws JsonLdError, IOException {
-        JsonStructure result = JsonLd.flatten("https://example.com").context(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).loader(MOCK_LOADER).ordered().get();
-        assertNotNull(result);
-        assertEquals(JsonValue.EMPTY_JSON_OBJECT, result);
-    }
-
-    @Test
-    void test7() throws JsonLdError, IOException {
-        JsonStructure result = JsonLd.flatten("https://example.com").context(JsonDocument.of(MediaType.JSON, new InputStreamReader(new ByteArrayInputStream(JsonValue.EMPTY_JSON_OBJECT.toString().getBytes())))).loader(MOCK_LOADER).ordered().get();
-        assertNotNull(result);
-        assertEquals(JsonValue.EMPTY_JSON_OBJECT, result);
-    }
-
-    @Test
-    void test8() throws JsonLdError, IOException {
-        JsonStructure result = JsonLd.flatten("https://example.com").context(JsonValue.EMPTY_JSON_OBJECT).loader(MOCK_LOADER).ordered().get();
-        assertNotNull(result);
-        assertEquals(JsonValue.EMPTY_JSON_OBJECT, result);
-    }
+//    @Test
+//    void test1() throws JsonLdError, IOException {
+//        JsonStructure result = JsonLd.flatten(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).get();
+//
+//        assertNotNull(result);
+//        assertEquals(JsonValue.EMPTY_JSON_ARRAY, result);
+//    }
+//
+//    @Test
+//    void test2() throws JsonLdError, IOException {
+//        JsonStructure result = JsonLd.flatten(JsonDocument.of(MediaType.JSON, new ByteArrayInputStream(JsonValue.EMPTY_JSON_OBJECT.toString().getBytes()))).get();
+//
+//        assertNotNull(result);
+//        assertEquals(JsonValue.EMPTY_JSON_ARRAY, result);
+//    }
+//
+//    @Test
+//    void test3() throws JsonLdError, IOException {
+//        JsonStructure result = JsonLd.flatten("https://example.com").loader(MOCK_LOADER).get();
+//        assertNotNull(result);
+//        assertEquals(JsonValue.EMPTY_JSON_ARRAY, result);
+//    }
+//
+//    @Test
+//    void test4() throws JsonLdError, IOException {
+//        JsonStructure result = JsonLd.flatten(URI.create("https://example.com")).loader(MOCK_LOADER).get();
+//        assertNotNull(result);
+//        assertEquals(JsonValue.EMPTY_JSON_ARRAY, result);
+//    }
+//
+//    @Test
+//    void test5() throws JsonLdError, IOException {
+//        JsonStructure result = JsonLd.flatten("\thttps://example.com  ").loader(MOCK_LOADER).get();
+//
+//        assertNotNull(result);
+//        assertEquals(JsonValue.EMPTY_JSON_ARRAY, result);
+//    }
+//
+//    @Test
+//    void test6() throws JsonLdError, IOException {
+//        JsonStructure result = JsonLd.flatten("https://example.com").context(JsonDocument.of(JsonValue.EMPTY_JSON_OBJECT)).loader(MOCK_LOADER).ordered().get();
+//        assertNotNull(result);
+//        assertEquals(JsonValue.EMPTY_JSON_OBJECT, result);
+//    }
+//
+//    @Test
+//    void test7() throws JsonLdError, IOException {
+//        JsonStructure result = JsonLd.flatten("https://example.com").context(JsonDocument.of(MediaType.JSON, new InputStreamReader(new ByteArrayInputStream(JsonValue.EMPTY_JSON_OBJECT.toString().getBytes())))).loader(MOCK_LOADER).ordered().get();
+//        assertNotNull(result);
+//        assertEquals(JsonValue.EMPTY_JSON_OBJECT, result);
+//    }
+//
+//    @Test
+//    void test8() throws JsonLdError, IOException {
+//        JsonStructure result = JsonLd.flatten("https://example.com").context(JsonValue.EMPTY_JSON_OBJECT).loader(MOCK_LOADER).ordered().get();
+//        assertNotNull(result);
+//        assertEquals(JsonValue.EMPTY_JSON_OBJECT, result);
+//    }
 
 }

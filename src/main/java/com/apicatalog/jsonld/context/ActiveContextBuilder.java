@@ -37,11 +37,11 @@ import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.jsonld.node.BlankNode;
 import com.apicatalog.jsonld.uri.UriResolver;
 import com.apicatalog.jsonld.uri.UriUtils;
-import com.apicatalog.tree.io.NativeAdapter;
-import com.apicatalog.tree.io.NativeMaterializer;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
+import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.java.NativeMaterializer3;
 
 import jakarta.json.JsonObject;
 
@@ -588,7 +588,7 @@ public final class ActiveContextBuilder {
             throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context does not contain @context key and is not valid JSON-LD context.");
         }
 
-        var newContext = new NativeMaterializer().node(importedContext, importAdapter);
+        var newContext = new NativeMaterializer3().node(importedContext, importAdapter);
 
         // remove @base from a remote context
         if (newContext instanceof Map map && map.containsKey(Keywords.BASE)) {

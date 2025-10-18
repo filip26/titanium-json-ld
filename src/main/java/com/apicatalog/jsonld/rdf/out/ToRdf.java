@@ -90,18 +90,18 @@ public final class ToRdf {
         this.rdfDirection = rdfDirection;
         return this;
     }
-    
+
     public void provide(RdfQuadConsumer consumer) throws JsonLdError {
         try {
             from(RdfQuadEmitter.newInstance(consumer));
         } catch (RdfConsumerException e) {
             if (e.getCause() instanceof JsonLdError) {
-                throw (JsonLdError)e.getCause();
+                throw (JsonLdError) e.getCause();
             }
             throw new JsonLdError(JsonLdErrorCode.UNSPECIFIED, e);
         }
     }
-    
+
     protected void from(RdfTripleConsumer consumer) throws JsonLdError, RdfConsumerException {
 
         for (final String graphName : Utils.index(nodeMap.graphs(), true)) {
@@ -116,7 +116,7 @@ public final class ToRdf {
                 consumer.namedGraph(graphName);
 
             } else {
-                //TODO log skipped graph
+                // TODO log skipped graph
                 continue;
             }
 
@@ -131,7 +131,7 @@ public final class ToRdf {
 
                     if (Keywords.TYPE.equals(property)) {
 
-                        for (final JsonValue type : nodeMap.get(graphName, subject, property).asJsonArray()) {
+                        for (final JsonValue type : ((JsonValue) nodeMap.get(graphName, subject, property)).asJsonArray()) {
 
                             if (JsonUtils.isNotString(type)) {
                                 continue;
@@ -155,7 +155,7 @@ public final class ToRdf {
                             continue;
                         }
 
-                        for (final JsonValue item : nodeMap.get(graphName, subject, property).asJsonArray()) {
+                        for (final JsonValue item : ((JsonValue) nodeMap.get(graphName, subject, property)).asJsonArray()) {
                             fromObject(
                                     consumer,
                                     item.asJsonObject(),
@@ -312,7 +312,7 @@ public final class ToRdf {
             // 13.2.
             if (RdfDirection.I18N_DATATYPE == rdfDirection) {
                 consumer.triple(
-                        subject, 
+                        subject,
                         predicate,
                         valueString, language, item.getString(Keywords.DIRECTION));
 

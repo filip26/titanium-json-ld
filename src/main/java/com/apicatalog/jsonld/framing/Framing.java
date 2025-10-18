@@ -95,7 +95,7 @@ public final class Framing {
         // 4.
         for (final String id : Utils.index(matchedSubjects, ordered)) {
 
-            final Map<String, JsonValue> node = state.getGraphMap().get(state.getGraphName(), id);
+            final Map<String, JsonValue> node = (Map)state.getGraphMap().get(state.getGraphName(), id);
 
             final String nodeId = JsonUtils.isString(node.get(Keywords.ID))
                                 ? ((JsonString)node.get(Keywords.ID)).getString()
@@ -203,7 +203,7 @@ public final class Framing {
 
             // 4.7.
             for (final String property : Utils.index(state.getGraphMap().properties(state.getGraphName(), id), ordered)) {
-                final JsonValue objects = state.getGraphMap().get(state.getGraphName(), id, property);
+                final JsonValue objects = (JsonValue) state.getGraphMap().get(state.getGraphName(), id, property);
 
                 // 4.7.1.
                 if (Keywords.contains(property)) {

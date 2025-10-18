@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -46,11 +45,12 @@ import com.apicatalog.jsonld.node.GraphNode;
 import com.apicatalog.jsonld.node.ListNode;
 import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriUtils;
-import com.apicatalog.tree.io.NativeAdapter;
-import com.apicatalog.tree.io.NativeMaterializer;
 import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
+import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.java.NativeMaterializer3;
 
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
@@ -429,9 +429,9 @@ final class ObjectExpansion1314 {
 //                        }
 
                         // 13.4.6.4
-                        if (result.containsKey(Keywords.INCLUDED)) {
+                        final var includedValue = result.get(Keywords.INCLUDED);
 
-                            var includedValue = result.get(Keywords.INCLUDED);
+                        if (includedValue != null) {
 
                             final List<Object> included;
 
@@ -461,18 +461,20 @@ final class ObjectExpansion1314 {
                             throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
                         }
 
-                        expandedValue = new PolyNode(value, JakartaAdapter.instance());
+                        expandedValue = new PolyNode(value, adapter);
 
                         // 13.4.7.2
-                    } else if (JsonUtils.isNull(value)
-                            || JsonUtils.isScalar(value)
+                    } else if (adapter.isNull(value)
+                            || adapter.type(value).isScalar()
                             || params.frameExpansion()
-                                    && (JsonUtils.isEmptyObject(value)
-                                            || JsonUtils.isEmptyArray(value)
-                                            || JsonUtils.isArray(value)
-                                                    && value.asJsonArray().stream().allMatch(JsonUtils::isScalar))) {
+                                    && (adapter.isEmptyMap(value)
+                                            || adapter.isEmptyCollection(value)
+                                            || adapter.isCollection(value)
+                                                    && value.asJsonArray().stream()
+                                                            .map(adapter::type)
+                                                            .allMatch(NodeType::isScalar))) {
 
-                        expandedValue = new NativeMaterializer().node(value, JakartaAdapter.instance());
+                        expandedValue = new NativeMaterializer3().node(value, adapter);
 
                         if (params.frameExpansion()) {
                             expandedValue = asList(expandedValue);
@@ -619,9 +621,12 @@ final class ObjectExpansion1314 {
 //                        final JsonObject expandedValueObject = expandedValue.asJsonObject();
                         // FIXME
                         // 13.4.13.3.
-                        if (expandedValueObject.containsKey(Keywords.REVERSE)) {
+                        if (expandedValueObject.get(Keywords.REVERSE) instanceof Map map) {
 
-                            for (final Entry<String, Object> entry : ((Map<String, Object>) expandedValueObject.get(Keywords.REVERSE)).entrySet()) {
+                            @SuppressWarnings("unchecked")
+                            final var reverse = (Map<String, Object>) map;
+
+                            for (var entry : reverse.entrySet()) {
                                 // 13.4.13.3.1.
                                 result.put(entry.getKey(), entry.getValue());
                             }
@@ -691,8 +696,12 @@ final class ObjectExpansion1314 {
                         continue;
                     }
 
-                    expandedValue = asList(Expansion
-                            .expand(activeContext, value, adapter, Keywords.ANNOTATION, params));
+                    expandedValue = asList(Expansion.expand(
+                            activeContext,
+                            value,
+                            adapter,
+                            Keywords.ANNOTATION,
+                            params));
                 }
 
                 // 13.4.15
@@ -770,7 +779,7 @@ final class ObjectExpansion1314 {
                 final JsonObject valueObject = value.asJsonObject();
 
                 // 13.7.4.
-                for (var langCode : Utils.index(valueObject.keySet(), params.ordered())) {
+                for (final var langCode : Utils.index(valueObject.keySet(), params.ordered())) {
 
                     JsonValue langValue = valueObject.get(langCode);
 
@@ -781,7 +790,7 @@ final class ObjectExpansion1314 {
                     }
 
                     // 13.7.4.2.
-                    for (var item : langValue.asJsonArray()) {
+                    for (final var item : langValue.asJsonArray()) {
 
                         // 13.7.4.2.1.
                         if (adapter.isNull(item)) {
@@ -798,7 +807,7 @@ final class ObjectExpansion1314 {
 //                                .createObjectBuilder()
 //                                .add(Keywords.VALUE, item);
 
-                        final Map<String, Object> langMap = new LinkedHashMap<>();
+                        final var langMap = new LinkedHashMap<>();
                         langMap.put(Keywords.VALUE, ((JsonString) item).getString());
 
                         // 13.7.4.2.4.
@@ -841,12 +850,12 @@ final class ObjectExpansion1314 {
                 var indices = new ArrayList<>();
 
                 // 13.8.2.
-                final String indexKey = keyTermDefinition
+                final var indexKey = keyTermDefinition
                         .map(TermDefinition::getIndexMapping)
                         .orElse(Keywords.INDEX);
 
                 // 13.8.3.
-                for (final String index : Utils.index(value.asJsonObject().keySet(), params.ordered())) {
+                for (final var index : Utils.index(value.asJsonObject().keySet(), params.ordered())) {
 
                     JsonValue indexValue = value.asJsonObject().get(index);
 
@@ -879,7 +888,7 @@ final class ObjectExpansion1314 {
                     }
 
                     // 13.8.3.4.
-                    String expandedIndex = activeContext
+                    final var expandedIndex = activeContext
                             .uriExpansion()
                             .vocab(true)
                             .expand(index);
@@ -891,7 +900,7 @@ final class ObjectExpansion1314 {
 
                     // 13.8.3.6.
                     // FIXME
-                    var indexValues = Expansion.array(
+                    final var indexValues = Expansion.array(
                             mapContext,
                             indexValue.asJsonArray(),
                             adapter,

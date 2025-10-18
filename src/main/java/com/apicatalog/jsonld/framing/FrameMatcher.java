@@ -59,7 +59,7 @@ public final class FrameMatcher {
 
         for (final String subject : subjects) {
 
-            if (match(state.getGraphMap().get(state.getGraphName(), subject))) {
+            if (match((Map)state.getGraphMap().get(state.getGraphName(), subject))) {
                 result.add(subject);
             }
         }

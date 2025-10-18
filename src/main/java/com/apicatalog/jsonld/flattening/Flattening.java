@@ -15,109 +15,63 @@
  */
 package com.apicatalog.jsonld.flattening;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.json.JsonProvider;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.Utils;
-
-import jakarta.json.JsonArray;
-import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonStructure;
-import jakarta.json.JsonValue;
 
 public final class Flattening {
 
-    // required
-    private JsonStructure element;
-
-    // optional
-    private boolean ordered;
-
-    private Flattening(final JsonStructure element) {
-        this.element = element;
-
-        // default values
-        this.ordered = false;
-    }
-
-    public static final Flattening with(final JsonStructure element) {
-        return new Flattening(element);
-    }
-
-    public Flattening ordered(boolean ordered) {
-        this.ordered = ordered;
-        return this;
-    }
-
-    public JsonArray flatten() throws JsonLdError {
+    public static Object flatten(final Collection<?> elements, boolean ordered) throws JsonLdError {
 
         // 1.
-        final NodeMap nodeMap = new NodeMap();
+        final var nodeMap = new NodeMap();
 
         // 2.
-        NodeMapBuilder.with(element, nodeMap).build();
+        NodeMapBuilder.with(elements, nodeMap).build();
 
         // 3.
-        final Map<String, Map<String, JsonValue>> defaultGraph = nodeMap.get(Keywords.DEFAULT).orElseThrow(IllegalStateException::new);
+        final var defaultGraph = nodeMap.get(Keywords.DEFAULT).orElseThrow(IllegalStateException::new);
 
         // 4.
-        for (String graphName : Utils.index(nodeMap.graphs(), ordered)) {
+        final var graphNames = (ordered
+                ? nodeMap.graphs().stream().sorted()
+                : nodeMap.graphs().stream())
+                .filter(Predicate.not(Keywords.DEFAULT::equals))
+                .iterator();
 
-            if (Keywords.DEFAULT.equals(graphName)) {
-                continue;
-            }
+        while (graphNames.hasNext()) {
 
-            final Map<String, Map<String, JsonValue>> graph = nodeMap.get(graphName).orElseThrow(IllegalStateException::new);
+            final var graphName = graphNames.next();
+
+            final var graph = nodeMap.get(graphName).orElseThrow(IllegalStateException::new);
 
             // 4.1.
             if (!defaultGraph.containsKey(graphName)) {
-                defaultGraph.put(graphName, JsonProvider.instance().createObjectBuilder().add(Keywords.ID, graphName).build());
+                defaultGraph.put(graphName, Map.of(Keywords.ID, graphName));
             }
 
             // 4.2.
-            final Map<String, JsonValue> entry = new LinkedHashMap<>(defaultGraph.get(graphName));
+            final var entry = new LinkedHashMap<String, Object>(defaultGraph.get(graphName));
 
-            // 4.3.
-            final JsonArrayBuilder graphArray =  JsonProvider.instance().createArrayBuilder();
-
-            // 4.4.
-            for (final String id : Utils.index(graph.keySet(), ordered)) {
-
-                final Map<String, JsonValue> node = graph.get(id);
-
-                if (node == null || node.size() == 1 && node.containsKey(Keywords.ID)) {
-                    continue;
-                }
-
-                graphArray.add(JsonUtils.toJsonObject(node));
-            }
-
-            entry.put(Keywords.GRAPH, graphArray.build());
+            entry.put(Keywords.GRAPH, filter(graph, ordered).toList());
 
             defaultGraph.put(graphName, entry);
         }
 
-        // 5.
-        final JsonArrayBuilder flattened = JsonProvider.instance().createArrayBuilder();
-
-        // 6.
-        for (String id : Utils.index(defaultGraph.keySet(), ordered)) {
-
-            final Map<String, JsonValue> node = defaultGraph.get(id);
-
-            if (node == null || node.size() == 1 && node.containsKey(Keywords.ID)) {
-                continue;
-            }
-
-            flattened.add(JsonUtils.toJsonObject(node));
-        }
-
-        // 7.
-        return flattened.build();
+        return filter(defaultGraph, ordered).toList();
     }
 
+    private static Stream<?> filter(Map<String, Map<String, Object>> nodeMap, boolean ordered) {
+        return (ordered
+                ? nodeMap.keySet().stream().sorted()
+                : nodeMap.keySet().stream())
+                .map(nodeMap::get)
+                .filter(node -> node != null && (node.size() != 1
+                        || !node.containsKey(Keywords.ID)));
+    }
 }

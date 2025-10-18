@@ -277,7 +277,7 @@ public final class Frame {
                     state
                         .getGraphMap()
                         .get(state.getGraphName())
-                        .map(graph -> graph.get(value.asJsonObject().getString(Keywords.ID)));
+                        .map(graph -> (Map) graph.get(value.asJsonObject().getString(Keywords.ID)));
 
         return valueObject.isPresent() && FrameMatcher.with(state, this, requireAll).match(valueObject.get());
     }

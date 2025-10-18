@@ -142,7 +142,7 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
      * @throws JsonLdError if the document flattening fails
      * @throws IOException 
      */
-    public JsonStructure get() throws JsonLdError, IOException {
+    public Object get() throws JsonLdError, IOException {
 
         if (document != null && context != null) {
             return Flattener.flatten(document, context, options);

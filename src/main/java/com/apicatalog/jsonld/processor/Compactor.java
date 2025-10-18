@@ -28,11 +28,11 @@ import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoaderOptions;
-import com.apicatalog.tree.io.NativeAdapter;
-import com.apicatalog.tree.io.NodeVisitor;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
+import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.traverse.Visitor;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;

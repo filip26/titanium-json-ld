@@ -15,73 +15,85 @@
  */
 package com.apicatalog.jsonld.flattening;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.json.JsonProvider;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-
-import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonValue;
 
 public final class NodeMap {
 
-    private final Map<String, Map<String, Map<String, JsonValue>>> index;
+    private final Map<String, Map<String, Map<String, Object>>> index;
 
-    private final BlankNodeIdGenerator generator = new BlankNodeIdGenerator();
+    private final BlankNodeIdGenerator generator;
 
     public NodeMap() {
-        this.index = new LinkedHashMap<>();
-        this.index.put(Keywords.DEFAULT, new LinkedHashMap<>());
+        this(new BlankNodeIdGenerator());
     }
 
-    public void set(String graphName, String subject, String property, JsonValue value) {
+    public NodeMap(BlankNodeIdGenerator generator) {
+        this.index = new LinkedHashMap<>();
+        this.index.put(Keywords.DEFAULT, new LinkedHashMap<>());
+        this.generator = generator;
+    }
 
-        if (subject == null) {
+    public void set(String graphName, String subject, String property, Object value) {
+
+        if (subject == null) { // TODO ?!
             return;
         }
 
-        index
-            .computeIfAbsent(graphName, x -> new LinkedHashMap<>())
-            .computeIfAbsent(subject, x -> new LinkedHashMap<>())
-            .put(property, value);
+        index.computeIfAbsent(graphName, x -> new LinkedHashMap<>())
+                .computeIfAbsent(subject, x -> new LinkedHashMap<>())
+                .put(property, value);
+    }
+    
+    public Optional<Map<String, Map<String, Object>>> get(String graphName) {
+        return Optional.ofNullable(index.get(graphName));
     }
 
-    public JsonValue get(String graphName, String subject, String property) {
 
-        if (index.containsKey(graphName) && index.get(graphName).containsKey(subject)) {
-            return index.get(graphName).get(subject).get(property);
-        }
-
-        return null;
+    //TODO Optional for all get or no? and if yes, then find or get?
+    public Map<String, ?> get(String graphName, String subject) {
+        return Optional.ofNullable(index.get(graphName))
+                .map(g -> g.get(subject))
+                .orElse(null);
+//        if (index.containsKey(graphName)) {
+//            return index.get(graphName).get(subject);
+//        }
+//
+//        return null;
     }
-
-    public Map<String, JsonValue> get(String graphName, String subject) {
-
-        if (index.containsKey(graphName)) {
-            return index.get(graphName).get(subject);
-        }
-
-        return null;
+    
+    public Object get(String graphName, String subject, String property) {
+        return Optional.ofNullable(index.get(graphName))
+                .map(g -> g.get(subject))
+                .map(s -> s.get(property))
+                .orElse(null);
+//        if (index.containsKey(graphName) && index.get(graphName).containsKey(subject)) {
+//            return index.get(graphName).get(subject).get(property);
+//        }
+//
+//        return null;
     }
 
     public boolean contains(String graphName, String subject) {
-        return index.containsKey(graphName) && index.get(graphName).containsKey(subject);
+        return Optional.ofNullable(index.get(graphName))
+                    .map(g -> g.containsKey(subject))
+                    .orElse(false);
+//        return index.containsKey(graphName) && index.get(graphName).containsKey(subject);
     }
 
+    @Deprecated
     public boolean contains(String graphName, String subject, String property) {
         return index.containsKey(graphName)
-                    && index.get(graphName).containsKey(subject)
-                    && index.get(graphName).get(subject).containsKey(property);
-    }
-
-    public Optional<Map<String, Map<String, JsonValue>>> get(String graphName) {
-        return Optional.ofNullable(index.get(graphName));
+                && index.get(graphName).containsKey(subject)
+                && index.get(graphName).get(subject).containsKey(property);
     }
 
     public String createIdentifier(String name) {
@@ -101,12 +113,15 @@ public final class NodeMap {
     }
 
     public Collection<String> properties(String graphName, String subject) {
-        return index.getOrDefault(graphName, Collections.emptyMap()).getOrDefault(subject, Collections.emptyMap()).keySet();
+        return index.getOrDefault(graphName, Collections.emptyMap())
+                .getOrDefault(subject, Collections.emptyMap())
+                .keySet();
     }
 
     /**
      *
-     * @see <a href="https://www.w3.org/TR/json-ld11-api/#merge-node-maps">Merge Node Maps</a>
+     * @see <a href="https://www.w3.org/TR/json-ld11-api/#merge-node-maps">Merge
+     *      Node Maps</a>
      */
     public void merge() {
 
@@ -114,39 +129,46 @@ public final class NodeMap {
         final NodeMap result = new NodeMap();
 
         // 2.
-        for (final Map.Entry<String, Map<String, Map<String, JsonValue>>> graphEntry : index.entrySet()) {
+        for (final var graphEntry : index.entrySet()) {
 
-            for (final Map.Entry<String, Map<String, JsonValue>> subject : graphEntry.getValue().entrySet()) {
+            for (final var subject : graphEntry.getValue().entrySet()) {
 
                 // 2.1.
                 if (!result.contains(Keywords.MERGED, subject.getKey())) {
-                    result.set(Keywords.MERGED, subject.getKey(), Keywords.ID, JsonProvider.instance().createValue(subject.getKey()));
+                    result.set(
+                            Keywords.MERGED, subject.getKey(),
+                            Keywords.ID, subject.getKey());
                 }
 
                 // 2.2.
-                for (final Map.Entry<String, JsonValue> property : subject.getValue().entrySet()) {
+                for (final var property : subject.getValue().entrySet()) {
 
                     // 2.2.1.
                     if (!Keywords.TYPE.equals(property.getKey())
-                            && Keywords.matchForm(property.getKey())
-                            ) {
+                            && Keywords.matchForm(property.getKey())) {
 
                         result.set(Keywords.MERGED, subject.getKey(), property.getKey(), property.getValue());
 
                     } else {
 
-                        final JsonArrayBuilder array;
+                        final List<Object> array;
 
-                        if (result.contains(Keywords.MERGED, subject.getKey(), property.getKey())) {
-                            array = JsonProvider.instance().createArrayBuilder(JsonUtils.toJsonArray(result.get(Keywords.MERGED, subject.getKey(), property.getKey())));
+                        if (result.get(Keywords.MERGED, subject.getKey(), property.getKey()) instanceof Collection<?> col) {
+                            array = new ArrayList<Object>(col);
 
                         } else {
-                            array = JsonProvider.instance().createArrayBuilder();
+                            array = new ArrayList<>();
                         }
 
-                        JsonUtils.toJsonArray(property.getValue()).forEach(array::add);
+                        if (property.getValue() instanceof Collection col) {
+                            array.addAll(col);
+                        } else {
+                            array.add(property.getValue());
+                        }
 
-                        result.set(Keywords.MERGED, subject.getKey(), property.getKey(), array.build());
+//                        JsonUtils.toJsonArray(property.getValue()).forEach(array::add);
+
+                        result.set(Keywords.MERGED, subject.getKey(), property.getKey(), array);
                     }
 
                 }

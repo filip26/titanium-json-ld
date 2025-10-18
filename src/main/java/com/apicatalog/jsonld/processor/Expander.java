@@ -31,9 +31,9 @@ import com.apicatalog.jsonld.expansion.Expansion;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoaderOptions;
-import com.apicatalog.tree.io.NativeAdapter;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
+import com.apicatalog.tree.io.java.NativeAdapter;
 
 /**
  *
