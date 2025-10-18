@@ -17,6 +17,7 @@ package com.apicatalog.jsonld.framing;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -59,7 +60,7 @@ public final class FrameMatcher {
 
         for (final String subject : subjects) {
 
-            if (match((Map)state.getGraphMap().get(state.getGraphName(), subject))) {
+            if (match((Map)state.getGraphMap().get(state.getGraphName(), subject).orElse(Collections.emptyMap()))) {
                 result.add(subject);
             }
         }

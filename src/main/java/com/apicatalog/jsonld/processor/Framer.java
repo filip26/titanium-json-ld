@@ -18,6 +18,7 @@ package com.apicatalog.jsonld.processor;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -413,7 +414,7 @@ public final class Framer {
             for (final String subject : graphMap.subjects(graphName)) {
 
                 //TODO
-                final Map<String, JsonValue> node = (Map) graphMap.get(graphName, subject);
+                final Map<String, JsonValue> node = (Map) graphMap.get(graphName, subject).orElse(Collections.emptyMap());
 
                 if (node == null) {
                     continue;

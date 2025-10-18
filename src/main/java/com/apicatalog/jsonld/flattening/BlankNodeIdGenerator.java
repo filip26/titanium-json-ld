@@ -37,7 +37,7 @@ public final class BlankNodeIdGenerator {
     /**
      * The default prefix for generated blank node identifiers.
      */
-    public static final String PREFIX = "_b:";
+    public static final String PREFIX = "_:b";
 
     private final Map<String, String> map;
     private final String prefix;

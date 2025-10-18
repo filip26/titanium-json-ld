@@ -95,7 +95,7 @@ public final class Framing {
         // 4.
         for (final String id : Utils.index(matchedSubjects, ordered)) {
 
-            final Map<String, JsonValue> node = (Map)state.getGraphMap().get(state.getGraphName(), id);
+            final Map<String, JsonValue> node = (Map)state.getGraphMap().get(state.getGraphName(), id).orElse(Collections.emptyMap());
 
             final String nodeId = JsonUtils.isString(node.get(Keywords.ID))
                                 ? ((JsonString)node.get(Keywords.ID)).getString()

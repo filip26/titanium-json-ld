@@ -130,14 +130,12 @@ public final class NodeMapBuilder {
             // 3.1.
             if (elementTypeValue instanceof Collection<?> values) {
 
-                types = new ArrayList<String>(values.size());
-
-                ((Collection<?>) elementTypeValue).stream()
+                types = values.stream()
                         .map(String.class::cast)
                         .map(item -> BlankNode.hasPrefix(item)
                                 ? nodeMap.createIdentifier(item)
                                 : item)
-                        .forEach(types::add);
+                        .toList();
 
             } else if (elementTypeValue instanceof String value) {
                 types = Set.of(BlankNode.hasPrefix(value) ? nodeMap.createIdentifier(value) : value);
@@ -151,40 +149,43 @@ public final class NodeMapBuilder {
 
         // 4.
         if (elementMap.containsKey(Keywords.VALUE)) {
-            System.out.println("value " + activeProperty + ", " + list + ", " + elementMap);
-            System.out.println("      " + nodeMap.get(activeGraph, activeSubject, activeProperty));
+
             // 4.1.
             if (list == null) {
 
                 // 4.1.1.
-//                if (nodeMap.contains(activeGraph, activeSubject, activeProperty)) {
+                final var propertyValue = nodeMap.get(activeGraph, activeSubject, activeProperty);
 
-                if (nodeMap.get(activeGraph, activeSubject, activeProperty) instanceof Collection activePropertyValue) {
-                    if (activePropertyValue.stream().noneMatch(e -> Objects.equals(e, element))) {
-                        final var array = new ArrayList<Object>(activePropertyValue);
-                        array.add(element);
-                        nodeMap.set(activeGraph, activeSubject, activeProperty, array);
+                if (propertyValue != null) {
+
+                    if (propertyValue instanceof Collection<?> values) {
+
+                        if (values.stream().noneMatch(element::equals)) {
+
+                            final List<Object> list;
+
+                            if (propertyValue instanceof ArrayList array) {
+                                list = array;
+
+                            } else {
+                                list = new ArrayList<Object>(values);
+                                nodeMap.set(activeGraph, activeSubject, activeProperty, list);
+                            }
+
+                            list.add(element);
+                        }
+
+                    } else {
+                        nodeMap.set(activeGraph, activeSubject, activeProperty, List.of(propertyValue, element));
                     }
-//                    }
 
-//                    if (activePropertyValue.stream().noneMatch(e -> Objects.equals(e, element))) {
-//                        nodeMap.set(activeGraph, activeSubject, activeProperty,
-//                                JsonProvider.instance()
-//                                        .createArrayBuilder(activePropertyValue).add(element).build());
-//                    }
-
-                    // 4.1.2.
                 } else {
+                    // 4.1.2.
                     nodeMap.set(activeGraph, activeSubject, activeProperty, Set.of(elementMap));
-//                            JsonProvider.instance()
-//                                    .createArrayBuilder()
-//                                    .add(JsonUtils.toJsonObject(elementObject))
-//                                    .build());
                 }
 
-                // 4.2.
             } else {
-                System.out.println("list " + element + ", " + append(list.get(Keywords.LIST), element));
+                // 4.2.
                 list.put(Keywords.LIST, append(list.get(Keywords.LIST), element));
             }
 
@@ -192,8 +193,7 @@ public final class NodeMapBuilder {
         } else if (elementMap.containsKey(Keywords.LIST)) {
 
             // 5.1.
-            final var result = new LinkedHashMap<String, Object>();
-            result.put(Keywords.LIST, Collections.emptyList());
+            final var result = new LinkedHashMap<String, Object>(Map.of(Keywords.LIST, Collections.emptyList()));
 
             // 5.2.
             NodeMapBuilder
@@ -208,62 +208,45 @@ public final class NodeMapBuilder {
             // 5.3.
             if (list == null) {
 
-                final var value = nodeMap.get(activeGraph, activeSubject, activeProperty);
+                final var propertyValue = nodeMap.get(activeGraph, activeSubject, activeProperty);
 
-                nodeMap.set(activeGraph, activeSubject, activeProperty, append(value, result));
+                if (propertyValue != null) {
+                    nodeMap.set(activeGraph, activeSubject, activeProperty, append(propertyValue, result));
 
-//                if (value instanceof ArrayList array) {
-//                    array.add(result);
-//                    nodeMap.set(activeGraph, activeSubject, activeProperty, array);
-////                    nodeMap.set(activeGraph, activeSubject, activeProperty,
-////                            
-////                            JsonProvider.instance().createArrayBuilder(
-////                                    nodeMap.get(activeGraph, activeSubject, activeProperty)
-////                                            .asJsonArray())
-////                                    .add(JsonUtils.toJsonObject(result))
-////                                    .build());
-//
-//                } else if (value instanceof Collection<?> col) {
-//                    final var array = new ArrayList<Object>(col);
-//                    array.add(result);
-//                    nodeMap.set(activeGraph, activeSubject, activeProperty, array);
-//
-//                } else {
-//                    nodeMap.set(activeGraph, activeSubject, activeProperty, Set.of(result));
-//                }
-//
+                } else {
+                    nodeMap.set(activeGraph, activeSubject, activeProperty, Set.of(result));
+                }
+
             } else {
                 // 5.4.
-                System.out.println("2: " + list.get(Keywords.LIST) + ", " + result);
                 list.put(Keywords.LIST, append(list.get(Keywords.LIST), result));
             }
 
             // 6.
         } else if (NodeObject.isNodeObject(element, NativeAdapter.instance())) {
 
-            String id = (String) elementMap.get(Keywords.ID);
+            var id = (String) elementMap.get(Keywords.ID);
 
             // 6.1.
             if (id != null) {
 
-//                if (JsonUtils.isNull(idValue) || JsonUtils.isNotString(idValue)) {
-//                    return nodeMap;
-//                }
+                if (id instanceof String) {
+                    if (BlankNode.hasPrefix(id)) {
+                        id = nodeMap.createIdentifier(id);
+                    }
+                    elementMap.remove(Keywords.ID);
 
-//                id = ((JsonString) idValue).getString();
-
-                if (BlankNode.hasPrefix(id)) {
-                    id = nodeMap.createIdentifier(id);
+                } else {
+                    return nodeMap;
                 }
-                elementMap.remove(Keywords.ID);
 
-                // 6.2.
             } else {
+                // 6.2.
                 id = nodeMap.createIdentifier();
             }
 
             // 6.3.
-            if (id != null && !nodeMap.contains(activeGraph, id)) {
+            if (id != null && nodeMap.get(activeGraph, id).isEmpty()) {
                 nodeMap.set(activeGraph, id, Keywords.ID, id);
             }
 
@@ -272,15 +255,15 @@ public final class NodeMapBuilder {
             // 6.5.
             if (referencedNode != null) {
 
+                final var activePropertyValue = nodeMap.get(activeGraph, id, activeProperty);
+
                 // 6.5.1.
-                if (nodeMap.contains(activeGraph, id, activeProperty)) {
+                if (activePropertyValue != null) {
 
-                    final Collection activePropertyValue = (Collection) nodeMap.get(activeGraph, id, activeProperty);
-
-                    if (activePropertyValue.stream()
+                    if (((Collection<?>) activePropertyValue).stream()
                             .filter(Map.class::isInstance)
                             .noneMatch(referencedNode::equals)) {
-                        System.out.println("3 " + referencedNode + ", " + activePropertyValue + ", " + activeProperty);
+
                         nodeMap.set(
                                 activeGraph,
                                 id,
@@ -288,14 +271,8 @@ public final class NodeMapBuilder {
                                 append(activePropertyValue, referencedNode));
                     }
 
-//                    if (activePropertyValue.stream().filter(JsonUtils::isObject).noneMatch(e -> Objects.equals(e.asJsonObject(),
-//                            JsonUtils.toJsonObject(referencedNode)))) {
-//                        nodeMap.set(activeGraph, id, activeProperty, JsonProvider.instance().createArrayBuilder(activePropertyValue)
-//                                .add(JsonUtils.toJsonObject(referencedNode)).build());
-//                    }
-
-                    // 6.5.2.
                 } else {
+                    // 6.5.2.
                     nodeMap.set(activeGraph, id, activeProperty, Set.of(referencedNode));
                 }
 
@@ -304,21 +281,25 @@ public final class NodeMapBuilder {
 
                 // 6.6.1.
                 final var reference = Map.of(Keywords.ID, id);
-                System.out.println("active " + activeProperty + ", " + reference + ", " + list);
+                
                 // 6.6.2.
                 if (list == null) {
 
                     // 6.6.2.2.
-                    if (nodeMap.contains(activeGraph, activeSubject, activeProperty)) {
+                    final var activePropertyValue = nodeMap.get(activeGraph, activeSubject, activeProperty);
 
-                        final Collection activePropertyValue = (Collection) nodeMap.get(activeGraph, activeSubject, activeProperty);
+                    if (activePropertyValue != null) {
 
-                        if (activePropertyValue.stream().noneMatch(e -> Objects.equals(e, reference))) {
-                            nodeMap.set(activeGraph, activeSubject, activeProperty, append(activePropertyValue, reference));
+                        if (((Collection<?>) activePropertyValue).stream().noneMatch(reference::equals)) {
+                            nodeMap.set(
+                                    activeGraph,
+                                    activeSubject,
+                                    activeProperty,
+                                    append(activePropertyValue, reference));
                         }
 
-                        // 6.6.2.1.
                     } else {
+                        // 6.6.2.1.
                         nodeMap.set(activeGraph, activeSubject, activeProperty, Set.of(reference));
                     }
 
@@ -335,7 +316,7 @@ public final class NodeMapBuilder {
 
                 final var nodeTypeValue = nodeMap.get(activeGraph, id, Keywords.TYPE);
 
-                if (nodeTypeValue instanceof Collection col) {
+                if (nodeTypeValue instanceof Collection<?> col) {
                     col.stream().filter(Predicate.not(Objects::isNull)).forEach(nodeType::add);
 
                 } else if (nodeTypeValue != null) {
@@ -343,7 +324,7 @@ public final class NodeMapBuilder {
                 }
 
                 final var typeValue = elementMap.get(Keywords.TYPE);
-                System.out.println("type " + typeValue + ", " + nodeTypeValue);
+
                 if (typeValue instanceof Collection<?> values) {
                     values.stream()
                             .filter(Predicate.not(Objects::isNull))
@@ -416,7 +397,7 @@ public final class NodeMapBuilder {
 
             // 6.11.
             final var includedMap = elementMap.get(Keywords.INCLUDED);
-            
+
             if (includedMap != null) {
 
                 NodeMapBuilder
@@ -429,13 +410,13 @@ public final class NodeMapBuilder {
 
             // 6.12.
             final var properties = elementMap.keySet().stream().sorted().iterator();
-            
+
             while (properties.hasNext()) {
-                
+
                 var property = properties.next();
 
                 final var value = elementMap.get(property);
-                
+
                 System.out.println("prop " + property + " -> " + value);
                 // ignore invalid expanded values - see expansion test #122
                 if (value == null || !(value instanceof Map) && !(value instanceof Collection)) {
@@ -454,7 +435,7 @@ public final class NodeMapBuilder {
 
                 // 6.12.2.
                 if (!nodeMap.contains(activeGraph, id, property)) {
-//                    nodeMap.set(activeGraph, id, property, Collections.emptySet());
+                    nodeMap.set(activeGraph, id, property, Collections.emptySet());
                 }
 
                 // 6.12.3.
@@ -470,7 +451,7 @@ public final class NodeMapBuilder {
     }
 
     static final Object append(Object container, Object value) {
-         
+
         if (container instanceof ArrayList array) {
             array.add(value);
             return array;
@@ -483,76 +464,60 @@ public final class NodeMapBuilder {
 //                            .build());
 //        } lese
 //            
-        } else if (container == null) {
-            if (value instanceof Collection) {
-                return value;
-            }
-            return Set.of(value);
-            
-        } else if (value instanceof Collection<?> col) {
+//        } else if (container == null) {
+//            if (value instanceof Collection) {
+//                return value;
+//            }
+//            return Set.of(value);
+
+        } else if (container instanceof Collection<?> col) {
             final var array = new ArrayList<Object>(col);
             array.add(value);
             return array;
 
-        } else if (value != null) {
-            return List.of(container, value);
-
+//        } else if (value != null) {
+//            return List.of(container, value);
+//
         } else {
-            return Set.of(value);
+            throw new IllegalStateException();
+//            return Set.of(value);
         }
     }
 }
 /*
-         if (container instanceof ArrayList array) {
-
-            if (value instanceof Collection<?> values) {
-                array.addAll(values);
-                return array;
-
-            } else if (value != null) {
-                array.add(value);
-                return array;
-
-            }
-            return container;
-
-        } else if (container instanceof Collection<?> collection) {
-
-            if (value == null) {
-                return container;
-            }
-
-            final var array = new ArrayList<Object>(collection);
-
-            if (value instanceof Collection<?> values) {
-                array.addAll(values);
-                return array;
-            }
-
-            array.add(value);
-            return array;
-
-        } else if (container != null) {
-
-            if (value instanceof Collection<?> values) {
-                var array = new ArrayList<Object>(1 + values.size());
-                array.add(container);
-                array.addAll(values);
-                return array;
-            }
-
-            if (value != null) {
-                return List.of(container, value);
-            }
-
-            return Set.of(container);
-            
-        }
-
-//        if (value instanceof Collection) {
-            return value;
-//        }
-//        return Set.of(value);
-
+ * if (container instanceof ArrayList array) {
+ * 
+ * if (value instanceof Collection<?> values) { array.addAll(values); return
+ * array;
+ * 
+ * } else if (value != null) { array.add(value); return array;
+ * 
+ * } return container;
+ * 
+ * } else if (container instanceof Collection<?> collection) {
+ * 
+ * if (value == null) { return container; }
+ * 
+ * final var array = new ArrayList<Object>(collection);
+ * 
+ * if (value instanceof Collection<?> values) { array.addAll(values); return
+ * array; }
+ * 
+ * array.add(value); return array;
+ * 
+ * } else if (container != null) {
+ * 
+ * if (value instanceof Collection<?> values) { var array = new
+ * ArrayList<Object>(1 + values.size()); array.add(container);
+ * array.addAll(values); return array; }
+ * 
+ * if (value != null) { return List.of(container, value); }
+ * 
+ * return Set.of(container);
+ * 
+ * }
+ * 
+ * // if (value instanceof Collection) { return value; // } // return
+ * Set.of(value);
+ * 
  */
- 

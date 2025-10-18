@@ -38,15 +38,15 @@ public final class Flattening {
         final var defaultGraph = nodeMap.get(Keywords.DEFAULT).orElseThrow(IllegalStateException::new);
 
         // 4.
-        final var graphNames = (ordered
+        final var namedGraphs = (ordered
                 ? nodeMap.graphs().stream().sorted()
                 : nodeMap.graphs().stream())
                 .filter(Predicate.not(Keywords.DEFAULT::equals))
                 .iterator();
 
-        while (graphNames.hasNext()) {
+        while (namedGraphs.hasNext()) {
 
-            final var graphName = graphNames.next();
+            final var graphName = namedGraphs.next();
 
             final var graph = nodeMap.get(graphName).orElseThrow(IllegalStateException::new);
 
@@ -71,7 +71,7 @@ public final class Flattening {
                 ? nodeMap.keySet().stream().sorted()
                 : nodeMap.keySet().stream())
                 .map(nodeMap::get)
-                .filter(node -> node != null && (node.size() != 1
-                        || !node.containsKey(Keywords.ID)));
+                .filter(node -> node != null
+                        && (node.size() != 1 || !node.containsKey(Keywords.ID)));
     }
 }
