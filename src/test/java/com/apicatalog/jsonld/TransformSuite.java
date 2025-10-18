@@ -24,7 +24,7 @@ import org.junit.platform.suite.api.SuiteDisplayName;
 @SelectClasses({
         ExpanderTest.class,
         FlattenTest.class,
-//        CompactorTest.class,
+        CompactorTest.class,
 })
 public class TransformSuite {
 

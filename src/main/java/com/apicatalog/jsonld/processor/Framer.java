@@ -414,7 +414,7 @@ public final class Framer {
             for (final String subject : graphMap.subjects(graphName)) {
 
                 //TODO
-                final Map<String, JsonValue> node = (Map) graphMap.get(graphName, subject).orElse(Collections.emptyMap());
+                final Map<String, JsonValue> node = (Map) graphMap.find(graphName, subject).orElse(Collections.emptyMap());
 
                 if (node == null) {
                     continue;

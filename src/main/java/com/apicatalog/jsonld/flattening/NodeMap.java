@@ -43,30 +43,18 @@ public final class NodeMap {
     }
 
     public void set(String graphName, String subject, String property, Object value) {
-
-        if (subject == null) { // TODO ?!
-            return;
-        }
-
         index.computeIfAbsent(graphName, x -> new LinkedHashMap<>())
                 .computeIfAbsent(subject, x -> new LinkedHashMap<>())
                 .put(property, value);
     }
 
-    public Optional<Map<String, Map<String, Object>>> get(String graphName) {
+    public Optional<Map<String, Map<String, Object>>> find(String graphName) {
         return Optional.ofNullable(index.get(graphName));
     }
 
-    // TODO Optional for all get or no? and if yes, then find or get?
-    public Optional<Map<String, ?>> get(String graphName, String subject) {
+    public Optional<Map<String, ?>> find(String graphName, String subject) {
         return Optional.ofNullable(index.get(graphName))
                 .map(g -> g.get(subject));
-//                .orElse(null);
-//        if (index.containsKey(graphName)) {
-//            return index.get(graphName).get(subject);
-//        }
-//
-//        return null;
     }
 
     public Object get(String graphName, String subject, String property) {
@@ -74,28 +62,13 @@ public final class NodeMap {
                 .map(g -> g.get(subject))
                 .map(s -> s.get(property))
                 .orElse(null);
-//        if (index.containsKey(graphName) && index.get(graphName).containsKey(subject)) {
-//            return index.get(graphName).get(subject).get(property);
-//        }
-//
-//        return null;
     }
 
-//    public boolean contains(String graphName, String subject) {
-//        return Optional.ofNullable(index.get(graphName))
-//                    .map(g -> g.containsKey(subject))
-//                    .orElse(false);
-////        return index.containsKey(graphName) && index.get(graphName).containsKey(subject);
-//    }
-//
     public boolean contains(String graphName, String subject, String property) {
         return Optional.ofNullable(index.get(graphName))
                 .map(g -> g.get(subject))
                 .map(s -> s.containsKey(property))
                 .orElse(false);
-////        return index.containsKey(graphName)
-////                && index.get(graphName).containsKey(subject)
-////                && index.get(graphName).get(subject).containsKey(property);
     }
 
     public String createIdentifier(String name) {
@@ -136,7 +109,7 @@ public final class NodeMap {
             for (final var subject : graphEntry.getValue().entrySet()) {
 
                 // 2.1.
-                if (result.get(Keywords.MERGED, subject.getKey()).isEmpty()) {
+                if (result.find(Keywords.MERGED, subject.getKey()).isEmpty()) {
                     result.set(
                             Keywords.MERGED, subject.getKey(),
                             Keywords.ID, subject.getKey());

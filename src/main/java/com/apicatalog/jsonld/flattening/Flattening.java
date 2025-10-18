@@ -35,7 +35,7 @@ public final class Flattening {
         NodeMapBuilder.with(elements, nodeMap).build();
 
         // 3.
-        final var defaultGraph = nodeMap.get(Keywords.DEFAULT).orElseThrow(IllegalStateException::new);
+        final var defaultGraph = nodeMap.find(Keywords.DEFAULT).orElseThrow(IllegalStateException::new);
 
         // 4.
         final var namedGraphs = (ordered
@@ -48,7 +48,7 @@ public final class Flattening {
 
             final var graphName = namedGraphs.next();
 
-            final var graph = nodeMap.get(graphName).orElseThrow(IllegalStateException::new);
+            final var graph = nodeMap.find(graphName).orElseThrow(IllegalStateException::new);
 
             // 4.1.
             if (!defaultGraph.containsKey(graphName)) {
