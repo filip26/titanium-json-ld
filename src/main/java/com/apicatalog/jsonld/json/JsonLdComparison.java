@@ -36,6 +36,14 @@ public final class JsonLdComparison {
     }
 
     public static final boolean equals(
+            final Object value1,
+            final Object value2,
+            final NodeAdapter adapter) {
+
+        return equals(value1, adapter, value2, adapter, null);
+    }
+
+    public static final boolean equals(
             final Object value1, final NodeAdapter adapter1,
             final Object value2, final NodeAdapter adapter2) {
 
@@ -46,6 +54,13 @@ public final class JsonLdComparison {
             final Object value1, final NodeAdapter adapter1,
             final Object value2, final NodeAdapter adapter2,
             final String parentProperty) {
+
+        if (value1 == null) {
+            return value2 != null;
+
+        } else if (value2 == null) {
+            return false;
+        }
 
         final var type1 = adapter1.type(value1);
 
@@ -70,7 +85,7 @@ public final class JsonLdComparison {
         }
 
         boolean nativeEquals = adapter1.isCompatibleWith(adapter2);
-        
+
         return switch (type1) {
         case NULL, TRUE, FALSE -> true;
 

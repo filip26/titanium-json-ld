@@ -41,6 +41,7 @@ import com.apicatalog.rdf.nquads.NQuadsWriter;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.flow.QuadEmitter;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
+import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 import com.apicatalog.tree.io.java.NativeAdapter;
@@ -126,17 +127,17 @@ public class JsonLdTestRunnerJunit {
         } catch (IOException e) {
             fail(e);
             return false;
-            
+
         } catch (JsonLdError e) {
 
             if (Objects.equal(e.getCode(), testCase.expectErrorCode)) {
                 return true;
             }
-            
+
             write(testCase, null, null, e);
 
             if (testCase.expectErrorCode != null) {
-                fail("Unexpected error " + e.getCode() + ", exptected " + testCase.expectErrorCode  + ".");                
+                fail("Unexpected error " + e.getCode() + ", exptected " + testCase.expectErrorCode + ".");
             } else {
                 fail("Unexpected error " + e.getCode() + ": " + e.getMessage() + ".");
             }
@@ -168,19 +169,15 @@ public class JsonLdTestRunnerJunit {
             return validateQuads(testCase, options, quads);
         }
         if (result instanceof JsonStructure json) {
-            return validateJsonLd(testCase, options, json);
+            return validateJsonLd(testCase, options, json, JakartaAdapter.instance());
         }
 
         if (result instanceof Collection<?> collection) {
-            try {
-                return validateJsonLd(
-                        testCase,
-                        options,
-                        (JsonStructure) new JakartaMaterializer().node(collection, new NativeAdapter()));
-
-            } catch (IOException e) {
-                fail(e);
-            }
+            return validateJsonLd(
+                    testCase,
+                    options,
+                    collection,
+                    NativeAdapter.instance());
         }
 
         System.out.println("Unexpected result type [" + result.getClass() + "]");
@@ -188,7 +185,7 @@ public class JsonLdTestRunnerJunit {
         return false;
     }
 
-    private boolean validateJsonLd(final JsonLdTestCase testCase, final JsonLdOptions options, final JsonStructure result) {
+    private boolean validateJsonLd(final JsonLdTestCase testCase, final JsonLdOptions options, final Object result, final NodeAdapter resultAdapter) {
 
         assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
 
@@ -198,7 +195,7 @@ public class JsonLdTestRunnerJunit {
             assertNotNull(expectedDocument);
 
             // compare expected with the result
-            return compareJson(testCase, result, (JsonStructure) expectedDocument.getJsonContent().get());
+            return compareJson(testCase, result, resultAdapter, (JsonStructure) expectedDocument.getJsonContent().get());
 
         } catch (JsonLdError e) {
             fail(e.getMessage());
@@ -232,9 +229,9 @@ public class JsonLdTestRunnerJunit {
         return false;
     }
 
-    public static final boolean compareJson(final JsonLdTestCase testCase, final JsonStructure result, final JsonStructure expected) {
+    public static final boolean compareJson(final JsonLdTestCase testCase, final Object result, final NodeAdapter resultAdapter, final JsonStructure expected) {
 
-        if (JsonLdComparison.equals(expected, JakartaAdapter.instance(), result, JakartaAdapter.instance())) {
+        if (JsonLdComparison.equals(expected, JakartaAdapter.instance(), result, resultAdapter)) {
             return true;
         }
 
@@ -244,7 +241,7 @@ public class JsonLdTestRunnerJunit {
         return false;
     }
 
-    public static void write(final JsonLdTestCase testCase, final JsonStructure result, final JsonStructure expected, JsonLdError error) {
+    public static void write(final JsonLdTestCase testCase, final Object result, final JsonStructure expected, JsonLdError error) {
         final StringWriter stringWriter = new StringWriter();
 
         try (final PrintWriter writer = new PrintWriter(stringWriter)) {
@@ -273,17 +270,18 @@ public class JsonLdTestRunnerJunit {
         System.out.println(stringWriter.toString());
     }
 
-    public static final void write(final PrintWriter writer, final JsonWriterFactory writerFactory, final String name, final JsonValue result) {
+    public static final void write(final PrintWriter writer, final JsonWriterFactory writerFactory, final String name, final Object result) {
 
         writer.println(name + ":");
-
-        final StringWriter out = new StringWriter();
-
-        try (final JsonWriter jsonWriter = writerFactory.createWriter(out)) {
-            jsonWriter.write(result);
-        }
-
-        writer.write(out.toString());
+        writer.println(result);
+        //FIXME
+//        final StringWriter out = new StringWriter();
+//writer
+////        try (final JsonWriter jsonWriter = writerFactory.createWriter(out)) {
+////            jsonWriter.write(result);
+////        }
+//
+//        writer.write(out.toString());
         writer.println();
     }
 
