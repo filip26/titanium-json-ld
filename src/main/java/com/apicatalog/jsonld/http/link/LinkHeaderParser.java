@@ -60,7 +60,7 @@ final class LinkHeaderParser {
     private URI targetUri;
     private String attributeName;
     private String attributeValue;
-    private Map<String, List<LinkAttribute>> attributes;
+    private Map<String, List<Link.Attribute>> attributes;
 
     public LinkHeaderParser(final URI baseUri) {
         this.baseUri = baseUri;
@@ -189,7 +189,7 @@ final class LinkHeaderParser {
             if (attributeValue != null) {
                 attributes
                         .computeIfAbsent(attributeName, l -> new ArrayList<>())
-                        .add(new LinkAttribute(attributeName, attributeValue));
+                        .add(new Link.Attribute(attributeName, attributeValue));
 
                 attributeValue = null;
 
@@ -197,7 +197,7 @@ final class LinkHeaderParser {
 
                 attributes
                         .computeIfAbsent(attributeName, l -> new ArrayList<>())
-                        .add(new LinkAttribute(attributeName));
+                        .add(new Link.Attribute(attributeName));
             }
 
             attributeName = null;

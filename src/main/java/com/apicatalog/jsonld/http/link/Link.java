@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.http.link;
 
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +38,7 @@ public record Link(
         URI target,
         Set<String> relations,
         MediaType type,
-        Map<String, List<LinkAttribute>> attributeMap) {
+        Map<String, List<Attribute>> attributeMap) {
 
     public static final Collection<Link> of(final String linkHeader) {
         return of(linkHeader, null);
@@ -47,21 +48,64 @@ public record Link(
         return new LinkHeaderParser(baseUri).parse(Objects.requireNonNull(linkHeader));
     }
 
-    public List<LinkAttribute> attributes(final String name) {
-        return attributeMap.containsKey(name)
-                ? attributeMap.get(name)
+    public List<Attribute> attributes(final String attributeName) {
+        return attributeMap.containsKey(attributeName)
+                ? attributeMap.get(attributeName)
                 : Collections.emptyList();
     }
 
-    public List<LinkAttribute> attributes() {
+    public List<Attribute> attributes() {
         return attributeMap.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
     }
 
-    public Optional<LinkAttribute> findFirstAttribute(final String name) {
-        return Optional.ofNullable(attributeMap.get(name)).map(attrs -> attrs.get(0));
+    public Optional<Attribute> findFirstAttribute(final String attributeName) {
+        return Optional.ofNullable(attributeMap.get(attributeName)).map(attrs -> attrs.get(0));
     }
 
     public Set<String> attributeNames() {
         return attributeMap.keySet();
+    }
+    
+    /**
+     * A read-only view of Link attribute.
+     *
+     */
+    public static record Attribute(String name, String value, String languageTag) {
+
+        public Attribute(final String name) {
+            this(name, name, null);
+        }
+
+        public Attribute(final String name, final String value) {
+            this(name, value, null);
+        }
+
+        public Attribute(final String name, final String value, final String languageTag) {
+            this.name = Objects.requireNonNull(name);
+            this.value = Objects.requireNonNull(value);
+            this.languageTag = languageTag;
+        }
+
+        @Override
+        public String toString() {
+            if (value == null) {
+                return name;
+            }
+
+            final StringBuilder builder = new StringBuilder();
+
+            builder.append(name);
+            builder.append('=');
+
+            if (languageTag != null) {
+                builder.append(Charset.defaultCharset().name());
+                builder.append('\'');
+                builder.append(languageTag);
+                builder.append('\'');
+            }
+            builder.append(value);
+
+            return builder.toString();
+        }
     }
 }
