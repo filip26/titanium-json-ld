@@ -69,20 +69,28 @@ public final class JsonLdComparison {
             return false;
         }
 
+        boolean nativeEquals = adapter1.isCompatibleWith(adapter2);
+        
         return switch (type1) {
         case NULL, TRUE, FALSE -> true;
 
-        case STRING -> Objects.equals(
-                adapter1.stringValue(value1),
-                adapter2.stringValue(value2));
+        case STRING -> nativeEquals
+                ? Objects.equals(value1, value2)
+                : Objects.equals(
+                        adapter1.stringValue(value1),
+                        adapter2.stringValue(value2));
 
-        case NUMBER -> Objects.equals(
-                adapter1.numericValue(value1),
-                adapter2.numericValue(value2));
+        case NUMBER -> nativeEquals
+                ? Objects.equals(value1, value2)
+                : Objects.equals(
+                        adapter1.numericValue(value1),
+                        adapter2.numericValue(value2));
 
-        case BINARY -> Objects.equals(
-                adapter1.binaryValue(value1),
-                adapter2.binaryValue(value2));
+        case BINARY -> nativeEquals
+                ? Objects.equals(value1, value2)
+                : Objects.equals(
+                        adapter1.binaryValue(value1),
+                        adapter2.binaryValue(value2));
 
         case COLLECTION -> arrayEquals(value1, adapter1, value2, adapter2, parentProperty);
 
@@ -150,7 +158,7 @@ public final class JsonLdComparison {
 
         var list1 = adapter1.elementStream(array1).toList();
         var list2 = adapter2.elementStream(array2).toList();
-        
+
         if (list1.size() != list2.size()) {
             return false;
         }
