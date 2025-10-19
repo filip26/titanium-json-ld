@@ -59,7 +59,7 @@ public final class ObjectExpansion {
 
     private Params params;
 
-    private ObjectExpansion(final Context activeContext,
+    public ObjectExpansion(final Context activeContext,
             final PolyNode propertyContext,
             final Object element, final NodeAdapter adapter,
             final String activeProperty,
@@ -78,20 +78,21 @@ public final class ObjectExpansion {
 //        this.baseUrl = baseUri;
     }
 
-    public static final ObjectExpansion with(final Context activeContext,
-            final PolyNode propertyContext,
-            final Object node,
-            final NodeAdapter nodeAdapter,
-            final String activeProperty,
-            final Params params) {
-        return new ObjectExpansion(
-                activeContext,
-                propertyContext,
-                node,
-                nodeAdapter,
-                activeProperty,
-                params);
-    }
+//    public static final ObjectExpansion with(final Context activeContext,
+//            final PolyNode propertyContext,
+//            final Object node,
+//            final NodeAdapter nodeAdapter,
+//            final String activeProperty,
+//            final Params params) {
+//        
+//        return new ObjectExpansion(
+//                activeContext,
+//                propertyContext,
+//                node,
+//                nodeAdapter,
+//                activeProperty,
+//                params);
+//    }
 
     public Object expand() throws JsonLdError, IOException {
         initPreviousContext();
@@ -119,7 +120,7 @@ public final class ObjectExpansion {
 
         final String inputType = findInputType(typeKey);
 
-        final Map<String, Object> result = new LinkedHashMap<>();
+        final var result = new LinkedHashMap<String, Object>();
 
         ObjectExpansion1314
                 .with(params)
@@ -127,8 +128,6 @@ public final class ObjectExpansion {
                 .result(result)
                 .typeContext(typeContext)
                 .nest(new LinkedHashMap<>())
-//                .frameExpansion(frameExpansion)
-//                .ordered(ordered)
                 .expand(activeContext, (JsonObject) element, adapter, activeProperty);
 
         // 15.
@@ -147,21 +146,6 @@ public final class ObjectExpansion {
         return normalize(result);
     }
 
-//    public ObjectExpansion frameExpansion(boolean value) {
-//        this.frameExpansion = value;
-//        return this;
-//    }
-//
-//    public ObjectExpansion ordered(boolean value) {
-//        this.ordered = value;
-//        return this;
-//    }
-//
-//    public ObjectExpansion fromMap(boolean value) {
-//        this.fromMap = value;
-//        return this;
-//    }
-
     private void initPreviousContext() throws JsonLdError, IOException {
 
         // 7. If active context has a previous context, the active context is not
@@ -177,7 +161,7 @@ public final class ObjectExpansion {
 
             boolean revert = true;
 
-            var it = adapter.keyStream(element, PolyNode.comparingElement(adapter::stringValue)).iterator();
+            var it = adapter.keyStream(element).sorted(PolyNode.comparingElement(adapter::stringValue)).iterator();
 
             while (it.hasNext()) {
 
@@ -219,12 +203,15 @@ public final class ObjectExpansion {
 
         String typeKey = null;
 
-        var it = adapter.keyStream(element, PolyNode.comparingElement(adapter::asString)).iterator();
+        final var typeKeys = adapter
+                .keyStream(element)
+                .sorted(PolyNode.comparingElement(adapter::asString))
+                .iterator();
 
         // 11.
-        while (it.hasNext()) {
+        while (typeKeys.hasNext()) {
 
-            var key = adapter.asString(it.next());
+            final var key = adapter.asString(typeKeys.next());
 
             activeContext.runtime().tick();
 

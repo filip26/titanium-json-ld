@@ -115,8 +115,7 @@ class DefaultHttpLoader implements JsonLdLoader {
                             Optional<Link> alternate = linkValues.stream()
                                     .flatMap(l -> Link.of(l, baseUri).stream())
                                     .filter(l -> l.relations().contains("alternate")
-                                            && l.type().isPresent()
-                                            && MediaType.JSON_LD.match(l.type().get()))
+                                            && MediaType.JSON_LD.match(l.type()))
                                     .findFirst();
 
                             if (alternate.isPresent()) {

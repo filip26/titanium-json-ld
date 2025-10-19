@@ -42,21 +42,10 @@ public final class DefaultObject {
         return JsonUtils.containsKey(value, Keywords.DEFAULT);
     }
     
-    public static final boolean isDefaultNode(Object node, NodeAdapter adapter) {
-        return adapter.isMap(node) && adapter.keys(node).contains(Keywords.DEFAULT);
-    }
-
     public static Optional<JsonValue> getValue(JsonValue value) {
         return JsonUtils.isObject(value)
                             ? Optional.ofNullable(value.asJsonObject().get(Keywords.DEFAULT))
                             : Optional.empty();
     }
-    
-    public static Optional<?> getValue(Object node, NodeAdapter adapter) {
-        return adapter.isMap(node)
-                            ? Optional.ofNullable(adapter.property(Keywords.DEFAULT, node))
-                            : Optional.empty();
-    }
-
 
 }

@@ -14,8 +14,7 @@ class Ticker extends ProcessingRuntime {
 
     Ticker(JsonLdOptions options) {
         super(options);
-        this.ttl = options.getTimeout();
-        this.ticker = Instant.now();
+        resetTicker();
     }
 
     @Override
@@ -33,6 +32,7 @@ class Ticker extends ProcessingRuntime {
 
     @Override
     public void resetTicker() {
+        ttl = options.getTimeout();
         ticker = Instant.now();
     }
 }

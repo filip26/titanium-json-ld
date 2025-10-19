@@ -37,9 +37,8 @@ import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
-import com.apicatalog.jsonld.node.DefaultObject;
-import com.apicatalog.jsonld.node.GraphNode;
 import com.apicatalog.jsonld.node.ListNode;
+import com.apicatalog.jsonld.node.Node;
 import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.tree.io.NodeAdapter;
@@ -83,7 +82,7 @@ final class ObjectExpansion1314 {
             final String activeProperty) throws JsonLdError, IOException {
 
         var keys = params.ordered()
-                ? adapter.keyStream(element, PolyNode.comparingElement(adapter::asString)).iterator()
+                ? adapter.keyStream(element).sorted(PolyNode.comparingElement(adapter::asString)).iterator()
                 : adapter.keyStream(element).iterator();
 
         // 13.
@@ -275,8 +274,8 @@ final class ObjectExpansion1314 {
                                     && (!adapter.isCollection(value)
                                             || adapter.elementStream(value)
                                                     .anyMatch(Predicate.not(adapter::isString)))
-                                    && !DefaultObject.isDefaultNode(value, adapter)
-                                    && DefaultObject.getValue(value, adapter)
+                                    && !Node.isDefaultNode(value, adapter)
+                                    && Node.findDefaultValue(value, adapter)
                                             .filter(adapter::isString)
                                             .map(adapter::stringValue)
                                             .map(UriUtils::isNotURI)
@@ -290,9 +289,9 @@ final class ObjectExpansion1314 {
                         expandedValue = Collections.emptyMap();
 
                         // 13.4.4.3
-                    } else if (DefaultObject.isDefaultNode(value, adapter)) {
+                    } else if (Node.isDefaultNode(value, adapter)) {
 
-                        final var defaultValue = DefaultObject.getValue(value, adapter);
+                        final var defaultValue = Node.findDefaultValue(value, adapter);
 
                         if (defaultValue.filter(adapter::isString).isPresent()) {
                             expandedValue = Map.of(
@@ -889,7 +888,7 @@ final class ObjectExpansion1314 {
                         final var indexMap = new LinkedHashMap<String, Object>();
 
                         // 13.8.3.7.1.
-                        if (containerMapping.contains(Keywords.GRAPH) && !GraphNode.isGraph(item)) {
+                        if (containerMapping.contains(Keywords.GRAPH) && Node.isNotGraphNode(item)) {
                             indexMap.put(Keywords.GRAPH, Set.of(item));
 
                         } else {

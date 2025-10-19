@@ -25,8 +25,9 @@ import java.util.stream.Collectors;
 
 /**
  * A read-only view of a list of {@link LinkAttribute}.
- *
+ * 
  */
+@Deprecated
 public class LinkAttributes {
 
     private final Map<String, List<LinkAttribute>> attributes;

@@ -117,17 +117,16 @@ public final class Expansion {
         }
 
         // 6. Otherwise element is a map
-        return ObjectExpansion
-                .with(activeContext,
-                        propertyContext,
-                        node,
-                        nodeAdapter,
-                        activeProperty,
-                        new Params(
-                                params.frameExpansion && !Keywords.DEFAULT.equals(activeProperty),
-                                params.ordered,
-                                params.fromMap(),
-                                params.baseUrl))
+        return new ObjectExpansion(activeContext,
+                propertyContext,
+                node,
+                nodeAdapter,
+                activeProperty,
+                new Params(
+                        params.frameExpansion && !Keywords.DEFAULT.equals(activeProperty),
+                        params.ordered,
+                        params.fromMap,
+                        params.baseUrl))
                 .expand();
     }
 

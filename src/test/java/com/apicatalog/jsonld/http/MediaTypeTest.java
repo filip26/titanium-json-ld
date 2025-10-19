@@ -36,7 +36,7 @@ class MediaTypeTest {
 
     @Test
     void testNull() {
-        assertThrows(IllegalArgumentException.class, () -> MediaType.of(null));
+        assertThrows(NullPointerException.class, () -> MediaType.of(null));
     }
 
     @Test
@@ -141,12 +141,12 @@ class MediaTypeTest {
 
     @Test
     void test14() {
-        assertThrows(IllegalArgumentException.class, () -> MediaType.of(null, "a"));
+        assertThrows(NullPointerException.class, () -> MediaType.of(null, "a"));
     }
 
     @Test
     void test15() {
-        assertThrows(IllegalArgumentException.class, () -> MediaType.of("b", null));
+        assertThrows(NullPointerException.class, () -> MediaType.of("b", null));
     }
 
     @Test
@@ -162,5 +162,10 @@ class MediaTypeTest {
     @Test
     void testM03() {
         assertFalse(MediaType.JSON.match(MediaType.JSON_LD));
+    }
+    
+    @Test
+    void testM05() {
+        assertTrue(MediaType.of("application", "*").match(MediaType.JSON_LD));
     }
 }

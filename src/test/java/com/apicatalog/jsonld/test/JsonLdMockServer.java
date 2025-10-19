@@ -77,9 +77,9 @@ public final class JsonLdMockServer {
 
             final MediaType contentType;
 
-            if (link.type().isPresent()) {
+            if (link.type() != null) {
 
-                contentType = link.type().get();
+                contentType = link.type();
 
             } else {
 

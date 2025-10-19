@@ -15,12 +15,12 @@
  */
 package com.apicatalog.jsonld.node;
 
-import java.util.Map;
 import java.util.Set;
 
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.tree.io.NodeAdapter;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
@@ -47,13 +47,6 @@ public final class GraphNode {
             return false;
         }
         return ALLOWED.containsAll(value.asJsonObject().keySet());
-    }
-
-    public static final boolean isGraph(Object value) {
-        return value != null
-                && value instanceof Map map
-                && map.containsKey(Keywords.GRAPH)
-                && ALLOWED.containsAll(map.keySet());
     }
 
     public static final boolean isSimpleGraphNode(JsonValue value) {

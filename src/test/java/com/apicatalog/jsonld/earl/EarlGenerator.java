@@ -44,8 +44,8 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 public class EarlGenerator {
 
     public static final String FILE_NAME = "titanium-json-ld-earl.ttl";
-    public static final String VERSION = "0.7";
-    public static final String RELEASE_DATE = "2020-06-17";
+    public static final String VERSION = "2.0";
+    public static final String RELEASE_DATE = "2025-10-19";
 
     public static void main(String[] args) throws JsonLdError, IOException {
         (new EarlGenerator()).generate(Paths.get(FILE_NAME));
@@ -234,10 +234,10 @@ public class EarlGenerator {
         writer.println("    doap:revision \"" + VERSION + "\";");
         writer.println("    doap:created \"" + RELEASE_DATE + "\"^^xsd:date;");
         writer.println("  ] ;");
-        writer.println("  doap:programming-language \"Java\".");
+        writer.println("  doap:programming-language \"Java\" .");
         writer.println();
         writer.println("<https://github.com/filip26> a earl:Assertor, foaf:Person;");
         writer.println("  foaf:name \"Filip Kolarik\";");
-        writer.println("  foaf:homepage <https://github.com/filip26>.");
+        writer.println("  foaf:homepage <https://github.com/filip26> .");
     }
 }

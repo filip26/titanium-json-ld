@@ -19,11 +19,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.apicatalog.jsonld.api.StringUtils;
-
 /**
  *
- * @see <a href="https://tools.ietf.org/html/rfc7231#section-3.1.1.1">Media Type</a>
+ * @see <a href="https://tools.ietf.org/html/rfc7231#section-3.1.1.1">Media
+ *      Type</a>
  *
  */
 public final class MediaType {
@@ -84,28 +83,28 @@ public final class MediaType {
     }
 
     public static final MediaType of(String type, String subtype, Map<String, List<String>> parameters) {
-        if (type == null || subtype == null || parameters == null) {
-            throw new IllegalArgumentException();
-        }
+        Objects.requireNonNull(type);
+        Objects.requireNonNull(subtype);
 
-        return new MediaType(type, subtype, new MediaTypeParameters(parameters));
+        return new MediaType(type, subtype, parameters != null
+                ? new MediaTypeParameters(parameters)
+                : MediaTypeParameters.EMPTY);
     }
 
     public static final MediaType of(String type, String subtype) {
-        if (type == null || subtype == null) {
-            throw new IllegalArgumentException();
-        }
+        Objects.requireNonNull(type);
+        Objects.requireNonNull(subtype);
 
         return new MediaType(type, subtype);
     }
 
     public static final MediaType of(final String value) {
-        if (value == null) {
-            throw new IllegalArgumentException();
-        }
-        if (StringUtils.isBlank(value)) {
+        Objects.requireNonNull(value);
+
+        if (value.isBlank()) {
             return null;
         }
+
         return new MediaTypeParser(value).parse();
     }
 }
