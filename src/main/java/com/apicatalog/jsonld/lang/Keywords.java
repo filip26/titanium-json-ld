@@ -102,7 +102,7 @@ public final class Keywords {
             // star
             ANNOTATION);
 
-    protected Keywords() {
+    private Keywords() {
     }
 
     public static boolean contains(final String value) {

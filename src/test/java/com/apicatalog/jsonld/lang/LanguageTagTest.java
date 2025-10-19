@@ -48,7 +48,7 @@ class LanguageTagTest {
     @MethodSource("validTags")
     void testToString(final String tag) {
 
-        final LanguageTag languageTag = LanguageTag.create(tag);
+        final LanguageTag languageTag = LanguageTag.of(tag);
 
         assertNotNull(languageTag);
         assertEquals(tag, languageTag.toString());
@@ -62,13 +62,13 @@ class LanguageTagTest {
             final String script,
             final String region) {
 
-        final LanguageTag languageTag = LanguageTag.create(tag);
+        final LanguageTag languageTag = LanguageTag.of(tag);
 
         assertNotNull(languageTag);
-        assertEquals(language, languageTag.getLanguage());
-        assertEquals(langExt, languageTag.getLanguageExtensions());
-        assertEquals(script, languageTag.getScript());
-        assertEquals(region, languageTag.getRegion());
+        assertEquals(language, languageTag.language());
+        assertEquals(langExt, languageTag.languageExtensions());
+        assertEquals(script, languageTag.script());
+        assertEquals(region, languageTag.region());
     }
 
     static final Stream<Arguments> data() {

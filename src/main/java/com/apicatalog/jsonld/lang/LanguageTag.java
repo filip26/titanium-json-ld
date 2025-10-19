@@ -15,28 +15,24 @@
  */
 package com.apicatalog.jsonld.lang;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Objects;
 
-public final class LanguageTag {
+public record LanguageTag(
+        String language,
+        Collection<String> languageExtensions,
+        String script,
+        String region,
 
-    private String language;
-    private Collection<String> languageExtensions;
-    private String script;
-    private String region;
-
-    private Collection<Extension> extensions;
-    private Collection<String> variants;
-    private Collection<String> privateUse;
-    
-    LanguageTag() {
-    }
+        Collection<Extension> extensions,
+        Collection<String> variants,
+        Collection<String> privateUse) {
 
     /**
-     * Language tags are used to help identify languages and are defined by <code>RFC 5646</code>
+     * Language tags are used to help identify languages and are defined by
+     * <code>RFC 5646</code>
      *
-     * @see <a href="https://datatracker.ietf.org/doc/html/rfc5646#section-2.1">RFC 5643 - 2.1 Syntax</a>
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc5646#section-2.1">RFC
+     *      5643 - 2.1 Syntax</a>
      *
      * @param languageTag to check
      * @return <code>true</code> if the provided value is well-formed language tag
@@ -48,19 +44,19 @@ public final class LanguageTag {
             throw new IllegalArgumentException("The parameter 'laguageTag' must not be null");
         }
 
-       return LanguageTagParser.isWellFormed(languageTag);
+        return LanguageTagParser.isWellFormed(languageTag);
     }
 
     /**
-     * Creates a language tag by parsing the given string as defined by RFC&nbsp;5646.
+     * Creates a language tag by parsing the given string as defined by
+     * RFC&nbsp;5646.
      *
-     * @param  languageTag the string to be parsed into a language tag
+     * @param languageTag the string to be parsed into a language tag
      * @return The new language tag
      *
-     * @throws IllegalArgumentException
-     *         if the given string is not well-formed
+     * @throws IllegalArgumentException if the given string is not well-formed
      */
-    public static LanguageTag create(final String languageTag) {
+    public static LanguageTag of(final String languageTag) {
         if (languageTag == null) {
             throw new IllegalArgumentException("The parameter 'laguageTag' must not be null");
         }
@@ -69,11 +65,12 @@ public final class LanguageTag {
     }
 
     /**
-     * Language as shortest ISO 639 code or reserved code for future use or registered language subtag code.
+     * Language as shortest ISO 639 code or reserved code for future use or
+     * registered language subtag code.
      *
      * @return the language code
      */
-    public String getLanguage() {
+    public String language() {
         return language;
     }
 
@@ -82,7 +79,7 @@ public final class LanguageTag {
      *
      * @return the extension codes
      */
-    public Collection<String> getLanguageExtensions() {
+    public Collection<String> languageExtensions() {
         return languageExtensions;
     }
 
@@ -91,7 +88,7 @@ public final class LanguageTag {
      *
      * @return the script name code
      */
-    public String getScript() {
+    public String script() {
         return script;
     }
 
@@ -100,7 +97,7 @@ public final class LanguageTag {
      *
      * @return the region code
      */
-    public String getRegion() {
+    public String region() {
         return region;
     }
 
@@ -109,7 +106,7 @@ public final class LanguageTag {
      *
      * @return the variant codes
      */
-    public Collection<String> getVariants() {
+    public Collection<String> variants() {
         return variants;
     }
 
@@ -118,7 +115,7 @@ public final class LanguageTag {
      *
      * @return a collection of sub-tags
      */
-    public Collection<Extension> getExtensions() {
+    public Collection<Extension> extensions() {
         return extensions;
     }
 
@@ -127,71 +124,8 @@ public final class LanguageTag {
      *
      * @return a collection of private sub-tags
      */
-    public Collection<String> getPrivateUse() {
+    public Collection<String> privateUse() {
         return privateUse;
-    }
-
-    protected void setLanguage(String language) {
-        this.language = language;
-    }
-
-    protected void addLanguageExtension(String languageExtension) {
-        if (this.languageExtensions == null) {
-            this.languageExtensions = new ArrayList<>();
-        }
-        this.languageExtensions.add(languageExtension);
-    }
-
-    protected void setScript(String script) {
-        this.script = script;
-    }
-
-    protected void setRegion(String region) {
-        this.region = region;
-    }
-
-    protected void addVariant(String variant) {
-        if (this.variants == null) {
-            this.variants = new ArrayList<>();
-        }
-        this.variants.add(variant);
-    }
-
-    protected void addExtension(Extension extension) {
-        if (this.extensions == null) {
-            this.extensions = new ArrayList<>();
-        }
-        this.extensions.add(extension);
-    }
-
-    protected void addPrivateUse(String privateTag) {
-        if (this.privateUse == null) {
-            this.privateUse = new ArrayList<>();
-        }
-        this.privateUse.add(privateTag);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(extensions, language, languageExtensions, privateUse, region, script, variants);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        LanguageTag other = (LanguageTag) obj;
-        return Objects.equals(extensions, other.extensions) && Objects.equals(language, other.language)
-                && Objects.equals(languageExtensions, other.languageExtensions)
-                && Objects.equals(privateUse, other.privateUse) && Objects.equals(region, other.region)
-                && Objects.equals(script, other.script) && Objects.equals(variants, other.variants);
     }
 
     @Override
@@ -201,7 +135,10 @@ public final class LanguageTag {
         sb.append(language);
 
         if (languageExtensions != null) {
-            languageExtensions.forEach(tag -> { sb.append('-'); sb.append(tag); });
+            languageExtensions.forEach(tag -> {
+                sb.append('-');
+                sb.append(tag);
+            });
         }
 
         if (script != null) {
@@ -215,62 +152,37 @@ public final class LanguageTag {
         }
 
         if (variants != null) {
-            variants.forEach(tag -> { sb.append('-'); sb.append(tag); });
+            variants.forEach(tag -> {
+                sb.append('-');
+                sb.append(tag);
+            });
         }
 
         if (extensions != null) {
-            extensions.forEach(tag -> { sb.append('-'); sb.append(tag); });
+            extensions.forEach(tag -> {
+                sb.append('-');
+                sb.append(tag);
+            });
         }
 
         if (privateUse != null) {
             sb.append('-');
             sb.append('x');
-            privateUse.forEach(tag -> { sb.append('-'); sb.append(tag); });
+            privateUse.forEach(tag -> {
+                sb.append('-');
+                sb.append(tag);
+            });
         }
 
         return sb.toString();
     }
 
-    public static class Extension {
-
-        private char code;
-        private Collection<String> tags;
-
-        public Extension(char code, Collection<String> tags) {
-            this.code = code;
-            this.tags = tags;
-        }
+    public static record Extension(
+            char code,
+            Collection<String> tags) {
 
         protected void addTag(String tag) {
             this.tags.add(tag);
-        }
-
-        public char getCode() {
-            return code;
-        }
-
-        public Collection<String> getTags() {
-            return tags;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(code, tags);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
-            Extension other = (Extension) obj;
-            return code == other.code && Objects.equals(tags, other.tags);
         }
 
         @Override
@@ -279,7 +191,10 @@ public final class LanguageTag {
 
             sb.append(code);
 
-            tags.forEach(tag -> { sb.append('-'); sb.append(tag); });
+            tags.forEach(tag -> {
+                sb.append('-');
+                sb.append(tag);
+            });
 
             return sb.toString();
         }

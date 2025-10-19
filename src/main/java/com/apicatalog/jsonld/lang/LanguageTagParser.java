@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.lang;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.IntPredicate;
 import java.util.regex.Pattern;
@@ -30,27 +31,34 @@ import com.apicatalog.jsonld.lang.LanguageTag.Extension;
  */
 final class LanguageTagParser {
 
-    static final IntPredicate ASCII_ALPHA = ch -> 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z';
+    private static final IntPredicate ASCII_ALPHA = ch -> 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z';
 
-    static final IntPredicate ASCII_DIGIT = ch -> '0' <= ch && ch <= '9';
+    private static final IntPredicate ASCII_DIGIT = ch -> '0' <= ch && ch <= '9';
 
-    static final IntPredicate ASCII_ALPHA_NUM = ASCII_DIGIT.or(ASCII_ALPHA);
+    private static final IntPredicate ASCII_ALPHA_NUM = ASCII_DIGIT.or(ASCII_ALPHA);
 
-  
-    
-    static final Pattern LANG_DEL_RE = Pattern.compile("-");
+    private static final Pattern LANG_DEL_RE = Pattern.compile("-");
 
-    final String languageTag;
-    final String[] tags;
+    private final String languageTag;
+    private final String[] tags;
 
-    int tagIndex;
+    private int tagIndex;
+    private boolean verifierMode;
 
-    boolean verififierMode;
+    // parsed values
+    private String language;
+    private Collection<String> languageExtensions;
+    private String script;
+    private String region;
+
+    private Collection<Extension> extensions;
+    private Collection<String> variants;
+    private Collection<String> privateUse;
 
     LanguageTagParser(final String languageTag, final String[] tags, final boolean verifierMode) {
         this.languageTag = languageTag;
         this.tags = tags;
-        this.verififierMode = verifierMode;
+        this.verifierMode = verifierMode;
         this.tagIndex = 0;
     }
 
@@ -111,49 +119,54 @@ final class LanguageTagParser {
             return null;
         }
 
-        final LanguageTag tag = new LanguageTag();
-
         tagIndex = 0;
 
         // language - 2*3ALPHA
-        if (acceptAlpha(2, 3, tag::setLanguage)) {
+        if (acceptAlpha(2, 3, this::setLanguage)) {
 
             // extlang 3ALPHA
-            if (acceptAlpha(3, tag::addLanguageExtension)) {
+            if (acceptAlpha(3, this::addLanguageExtension)) {
 
                 // *2("-" 3ALPHA)
-                acceptAlpha(3, tag::addLanguageExtension);
-                acceptAlpha(3, tag::addLanguageExtension);
+                acceptAlpha(3, this::addLanguageExtension);
+                acceptAlpha(3, this::addLanguageExtension);
             }
 
             // reserved 4ALPHA or registered for future use 5*8ALPHA
-        } else if (acceptAlpha(4, 8, tag::setLanguage)) {
+        } else if (acceptAlpha(4, 8, this::setLanguage)) {
 
             // private use
-        } else if (acceptPrivateUse(tag)) {
+        } else if (acceptPrivateUse()) {
 
             if (tagIndex != tags.length) {
                 throw new IllegalArgumentException("The language tag [" + languageTag + "] is not well-formed.");
             }
 
-            return tag;
+            return new LanguageTag(
+                    language,
+                    languageExtensions,
+                    script,
+                    region,
+                    extensions,
+                    variants,
+                    privateUse);
 
         } else {
             throw new IllegalArgumentException("The language tag [" + languageTag + "] is not well-formed.");
         }
 
         // ["-" script]
-        acceptAlpha(4, tag::setScript); // script = 4ALPHA
+        acceptAlpha(4, this::setScript); // script = 4ALPHA
 
         // ["-" region]
-        if (!acceptAlpha(2, tag::setRegion)) { // region = 2ALPHA | 3DIGIT
-            acceptDigit(3, tag::setRegion);
+        if (!acceptAlpha(2, this::setRegion)) { // region = 2ALPHA | 3DIGIT
+            acceptDigit(3, this::setRegion);
         }
 
         // *("-" variant)
         // variant = 5*8alphanum | (DIGIT 3alphanum)
-        while (acceptAlphaNun(5, 8, tag::addVariant)
-                || (digitRange(0, 1) && alphaNumRange(1, 3) && accept(4, tag::addVariant)))
+        while (acceptAlphaNun(5, 8, this::addVariant)
+                || (digitRange(0, 1) && alphaNumRange(1, 3) && accept(4, this::addVariant)))
             ;
 
         // *("-" extension)
@@ -172,29 +185,36 @@ final class LanguageTagParser {
             while (acceptAlphaNun(2, 8, extension::addTag))
                 ;
 
-            tag.addExtension(extension);
+            addExtension(extension);
         }
 
-        acceptPrivateUse(tag);
+        acceptPrivateUse();
 
         if (tagIndex != tags.length) {
             throw new IllegalArgumentException("The language tag [" + languageTag + "] is not well-formed.");
         }
 
-        return tag;
+        return new LanguageTag(
+                language,
+                languageExtensions,
+                script,
+                region,
+                extensions,
+                variants,
+                privateUse);
     }
 
-    boolean acceptPrivateUse(final LanguageTag tag) {
+    private boolean acceptPrivateUse() {
         // ["-" privateuse]
         // privateuse = "x" 1*("-" (1*8alphanum))
         if (alphaRange(0, 1) && tags[tagIndex].equalsIgnoreCase("x") && accept(1)) {
 
             // 1*("-" (1*8alphanum))
-            if (!acceptAlphaNun(1, 8, tag::addPrivateUse)) {
+            if (!acceptAlphaNun(1, 8, this::addPrivateUse)) {
                 tagIndex--;
 
             } else {
-                while (acceptAlphaNun(1, 8, tag::addPrivateUse))
+                while (acceptAlphaNun(1, 8, this::addPrivateUse))
                     ;
                 return true;
             }
@@ -202,37 +222,37 @@ final class LanguageTagParser {
         return false;
     }
 
-    boolean acceptAlpha(int length, Consumer<String> consumer) {
+    private boolean acceptAlpha(int length, Consumer<String> consumer) {
         return acceptAlpha(length, length, consumer);
     }
 
-    boolean acceptAlpha(int min, int max, Consumer<String> consumer) {
+    private boolean acceptAlpha(int min, int max, Consumer<String> consumer) {
         return accept(min, max, ASCII_ALPHA, consumer);
     }
 
-    boolean acceptDigit(int length) {
+    private boolean acceptDigit(int length) {
         return acceptDigit(length, length, null);
     }
 
-    boolean acceptDigit(int length, Consumer<String> consumer) {
+    private boolean acceptDigit(int length, Consumer<String> consumer) {
         return acceptDigit(length, length, consumer);
     }
 
-    boolean acceptDigit(int min, int max, Consumer<String> consumer) {
+    private boolean acceptDigit(int min, int max, Consumer<String> consumer) {
         return accept(min, max, ASCII_DIGIT, consumer);
     }
 
-    boolean acceptAlphaNun(int min, int max, Consumer<String> consumer) {
+    private boolean acceptAlphaNun(int min, int max, Consumer<String> consumer) {
         return accept(min, max, ASCII_ALPHA_NUM, consumer);
     }
 
-    boolean accept(int min, int max, IntPredicate predicate, Consumer<String> consumer) {
+    private boolean accept(int min, int max, IntPredicate predicate, Consumer<String> consumer) {
         if (tagIndex < tags.length
                 && tags[tagIndex].length() >= min
                 && tags[tagIndex].length() <= max
                 && tags[tagIndex].chars().allMatch(predicate)) {
 
-            if (!verififierMode && consumer != null) {
+            if (!verifierMode && consumer != null) {
                 consumer.accept(tags[tagIndex]);
             }
 
@@ -242,14 +262,14 @@ final class LanguageTagParser {
         return false;
     }
 
-    boolean accept(int length) {
+    private boolean accept(int length) {
         return accept(length, null);
     }
 
-    boolean accept(int length, Consumer<String> consumer) {
+    private boolean accept(int length, Consumer<String> consumer) {
         if (tagIndex < tags.length && tags[tagIndex].length() == length) {
 
-            if (!verififierMode && consumer != null) {
+            if (!verifierMode && consumer != null) {
                 consumer.accept(tags[tagIndex]);
             }
 
@@ -259,22 +279,62 @@ final class LanguageTagParser {
         return false;
     }
 
-    boolean alphaRange(int index, int length) {
+    private boolean alphaRange(int index, int length) {
         return range(index, length, ASCII_ALPHA);
     }
 
-    boolean alphaNumRange(int index, int length) {
+    private boolean alphaNumRange(int index, int length) {
         return range(index, length, ASCII_ALPHA_NUM);
     }
 
-    boolean digitRange(int index, int length) {
+    private boolean digitRange(int index, int length) {
         return range(index, length, ASCII_DIGIT);
     }
 
-    boolean range(int index, int length, IntPredicate predicate) {
+    private boolean range(int index, int length, IntPredicate predicate) {
         return tagIndex < tags.length
                 && index < tags[tagIndex].length()
                 && (index + length) <= tags[tagIndex].length()
                 && tags[tagIndex].substring(index, index + length).chars().allMatch(predicate);
+    }
+
+    private void setLanguage(String language) {
+        this.language = language;
+    }
+
+    private void addLanguageExtension(String languageExtension) {
+        if (this.languageExtensions == null) {
+            this.languageExtensions = new ArrayList<>();
+        }
+        this.languageExtensions.add(languageExtension);
+    }
+
+    private void setScript(String script) {
+        this.script = script;
+    }
+
+    private void setRegion(String region) {
+        this.region = region;
+    }
+
+    private void addVariant(String variant) {
+        if (this.variants == null) {
+            this.variants = new ArrayList<>();
+        }
+        this.variants.add(variant);
+    }
+
+    private void addExtension(Extension extension) {
+        if (this.extensions == null) {
+            this.extensions = new ArrayList<>();
+        }
+        this.extensions.add(extension);
+    }
+
+    private void addPrivateUse(String privateTag) {
+        if (this.privateUse == null) {
+            this.privateUse = new ArrayList<>();
+        }
+        this.privateUse.add(privateTag);
     }
 }
