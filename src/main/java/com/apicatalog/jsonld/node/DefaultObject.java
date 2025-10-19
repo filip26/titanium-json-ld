@@ -15,15 +15,14 @@
  */
 package com.apicatalog.jsonld.node;
 
-import java.util.Map;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.NodeAdapter;
 
 import jakarta.json.JsonValue;
 
+@Deprecated
 public final class DefaultObject {
 
     private DefaultObject() {

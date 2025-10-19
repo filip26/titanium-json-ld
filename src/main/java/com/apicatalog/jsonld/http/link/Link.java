@@ -49,7 +49,7 @@ public record Link(
 
     public List<LinkAttribute> attributes(final String name) {
         return attributeMap.containsKey(name)
-                ? Collections.unmodifiableList(attributeMap.get(name))
+                ? attributeMap.get(name)
                 : Collections.emptyList();
     }
 

@@ -31,6 +31,7 @@ import jakarta.json.JsonValue;
  *      Objects</a>
  *
  */
+@Deprecated
 public final class GraphNode {
 
     static final Set<String> ALLOWED = Set.of(

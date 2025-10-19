@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.apicatalog.jsonld.api.StringUtils;
 import com.apicatalog.jsonld.http.HttpAlphabet;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.uri.UriResolver;
@@ -164,11 +163,11 @@ final class LinkHeaderParser {
             MediaType type = null;
 
             if (attributes.containsKey(REL) && attributes.get(REL) != null) {
-                rel = new HashSet<>(Arrays.asList(REL_SPLIT_RE.split(StringUtils.strip(attributes.get(REL).get(0).value()))));
+                rel = new HashSet<>(Arrays.asList(REL_SPLIT_RE.split(attributes.get(REL).get(0).value().strip())));
                 attributes.remove(REL);
             }
             if (attributes.containsKey(ANCHOR) && attributes.get(ANCHOR) != null) {
-                context = UriResolver.resolveAsUri(baseUri, StringUtils.strip(attributes.get(ANCHOR).get(0).value()));
+                context = UriResolver.resolveAsUri(baseUri, attributes.get(ANCHOR).get(0).value().strip());
                 attributes.remove(ANCHOR);
             }
             if (attributes.containsKey(TYPE) && attributes.get(TYPE) != null) {

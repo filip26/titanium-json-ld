@@ -54,12 +54,17 @@ public final class UriResolver {
 
         final String[] components = resolveAsComponents(base, relative);
 
-        return UriUtils.recompose(components[0], components[1], components[2], components[3], components[4]);
+        return UriUtils.recompose(
+                components[0],
+                components[1],
+                components[2],
+                components[3],
+                components[4]);
     }
 
     public static final URI resolveAsUri(final URI base, final String relative) {
 
-        if (StringUtils.isBlank(relative)) {
+        if (relative == null || relative.isBlank()) {
             return base;
         }
 
@@ -181,7 +186,7 @@ public final class UriResolver {
         String input = path;
         List<String> output = new ArrayList<>();
 
-        while (StringUtils.isNotBlank(input)) {
+        while (input != null && !input.isBlank()) {
 
             // A.
             if (input.startsWith("../")) {

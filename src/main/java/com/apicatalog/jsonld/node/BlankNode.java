@@ -50,13 +50,13 @@ public final class BlankNode {
             || (0x0300 <= ch && ch <= 0x036F)
             || (0x203F <= ch && ch <= 0x2040));
 
-    
     private BlankNode() {
 
     }
 
     /**
-     * Returns <code>true</code> if the given value starts with a blank node prefix '<code>_:</code>'.
+     * Returns <code>true</code> if the given value starts with a blank node prefix
+     * '<code>_:</code>'.
      *
      * @param value to check
      * @return <code>true</code> if the give value has blank node prefix
@@ -71,13 +71,10 @@ public final class BlankNode {
      * @see <a href="https://www.w3.org/TR/n-quads/#sec-grammar">N-Quads Grammar</a>
      *
      * @param blankNodeId to check
-     * @return <code>true</code> if the provided string is well formed blank node identifier
+     * @return <code>true</code> if the provided string is well formed blank node
+     *         identifier
      */
     public static boolean isWellFormed(final String blankNodeId) {
-
-        if (blankNodeId == null) {
-            throw new IllegalArgumentException();
-        }
 
         if (blankNodeId.length() < 3) {
             return false;
@@ -89,8 +86,7 @@ public final class BlankNode {
                 || chars[1] != ':'
                 || (PN_CHARS_U.negate().test(chars[2])
                         && ASCII_DIGIT.negate().test(chars[2]))
-                || chars[chars.length - 1] == '.'
-                        )  {
+                || chars[chars.length - 1] == '.') {
             return false;
         }
 

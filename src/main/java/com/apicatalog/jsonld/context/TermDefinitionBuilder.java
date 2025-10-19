@@ -402,25 +402,25 @@ public final class TermDefinitionBuilder {
             }
 
             // 15.
-        } else if (term.indexOf(':', 1) != -1) {
+        } else if (term.indexOf(':', 1)  != -1) {
 
-            final CompactUri compactUri = CompactUri.create(term);
+            final CompactUri compactUri = CompactUri.of(term);
 
             // 15.1.
             if (compactUri != null
                     && compactUri.isNotBlank()
-                    && adapter.keys(localContext).contains(compactUri.getPrefix())) {
+                    && adapter.keys(localContext).contains(compactUri.prefix())) {
 
-                activeContext.newTerm(localContext, adapter, defined).create(compactUri.getPrefix());
+                activeContext.newTerm(localContext, adapter, defined).create(compactUri.prefix());
             }
             // 15.2.
-            if (compactUri != null && compactUri.isNotBlank() && activeContext.containsTerm(compactUri.getPrefix())) {
+            if (compactUri != null && compactUri.isNotBlank() && activeContext.containsTerm(compactUri.prefix())) {
 
                 definition.setUriMapping(
                         activeContext
-                                .getTerm(compactUri.getPrefix())
+                                .getTerm(compactUri.prefix())
                                 .map(TermDefinition::getUriMapping)
-                                .map(u -> u.concat(compactUri.getSuffix()))
+                                .map(u -> u.concat(compactUri.suffix()))
                                 .orElse(null));
 
                 // 15.3.
