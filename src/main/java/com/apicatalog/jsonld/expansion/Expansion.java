@@ -231,10 +231,10 @@ public final class Expansion {
             return Collections.emptySet();
         }
 
-        var result = new ArrayList<Object>();
+        final var result = new ArrayList<Object>();
 
         // 5.2.
-        for (var item : nodeAdapter.asIterable(node)) {
+        for (final var item : nodeAdapter.asIterable(node)) {
 
             context.runtime().tick();
 
