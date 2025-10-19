@@ -17,7 +17,6 @@ package com.apicatalog.jsonld.json;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.NodeAdapter;
@@ -149,20 +148,20 @@ public final class JsonLdComparison {
             final Object array1, final NodeAdapter adapter1,
             final Object array2, final NodeAdapter adapter2) {
 
-        var set1 = adapter1.elementStream(array1).collect(Collectors.toUnmodifiableSet());
-        var set2 = adapter2.elementStream(array2).collect(Collectors.toUnmodifiableSet());
+        var list1 = adapter1.elementStream(array1).toList();
+        var list2 = adapter2.elementStream(array2).toList();
         
-        if (set1.size() != set2.size()) {
+        if (list1.size() != list2.size()) {
             return false;
         }
 
-        if (set1.isEmpty()) {
+        if (list1.isEmpty()) {
             return true;
         }
 
-        final var remaining = new ArrayList<>(set2);
+        final var remaining = new ArrayList<>(list2);
 
-        for (final var item1 : set1) {
+        for (final var item1 : list1) {
 
             boolean found = false;
 
