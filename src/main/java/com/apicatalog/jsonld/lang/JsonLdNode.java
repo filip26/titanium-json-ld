@@ -1,37 +1,58 @@
-/*
- * Copyright 2020 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.apicatalog.jsonld.node;
+package com.apicatalog.jsonld.lang;
 
 import java.util.Arrays;
-import java.util.Map.Entry;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.tree.io.NodeAdapter;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
-public final class NodeObject {
+public class JsonLdNode {
 
-    private NodeObject() {
+    private static final Set<String> GRAPH_ALLOWED_KEYS = Set.of(
+            Keywords.GRAPH,
+            Keywords.ID,
+            Keywords.INDEX,
+            Keywords.CONTEXT);
+
+    /**
+     * @see <a href="https://www.w3.org/TR/json-ld11/#graph-objects">Graph
+     *      Objects</a>
+     */
+    public static final boolean isNotGraphNode(Object value) {
+        return value == null
+                || !(value instanceof Map map)
+                || !map.keySet().contains(Keywords.GRAPH)
+                || !GRAPH_ALLOWED_KEYS.containsAll(map.keySet());
     }
 
+    /**
+     * A default node is a map that has a @default key.
+     *
+     * @see <a href="https://www.w3.org/TR/json-ld11/#dfn-default-object">Default
+     *      Object</a>
+     *
+     * @param value to check
+     * @return <code>true</code> if the provided value is valid default object
+     */
+    public static final boolean isDefaultNode(Object node, NodeAdapter adapter) {
+        return adapter.isMap(node) && adapter.keys(node).contains(Keywords.DEFAULT);
+    }
+
+    public static Optional<?> findDefaultValue(Object node, NodeAdapter adapter) {
+        return adapter.isMap(node)
+                ? Optional.ofNullable(adapter.property(Keywords.DEFAULT, node))
+                : Optional.empty();
+    }
+
+    
+    
     /**
      * Check if the given value is valid node object.
      *
@@ -41,7 +62,7 @@ public final class NodeObject {
      * @param value to check
      * @return <code>true</code> if the provided value is valid node object
      */
-    public static final boolean isNodeObject(JsonValue value) {
+    public static final boolean isNode(JsonValue value) {
         return JsonUtils.isObject(value)
                 && ((!value.asJsonObject().containsKey(Keywords.VALUE)
                         && !value.asJsonObject().containsKey(Keywords.LIST)
@@ -50,7 +71,7 @@ public final class NodeObject {
                         || Arrays.asList(Keywords.CONTEXT, Keywords.GRAPH).containsAll(value.asJsonObject().keySet()));
     }
 
-    public static final boolean isNodeObject(Object value, NodeAdapter adapter) {
+    public static final boolean isNode(Object value, NodeAdapter adapter) {
         if (!adapter.isMap(value)) {
             return false;
         }
@@ -63,16 +84,16 @@ public final class NodeObject {
                         Keywords.GRAPH).containsAll(adapter.keys(value));
     }
 
-    public static final boolean isNotNodeObject(JsonValue value) {
-        return !isNodeObject(value);
+    public static final boolean isNotNode(JsonValue value) {
+        return !isNode(value);
     }
 
-    public static final boolean isNodeReference(JsonValue value) {
+    public static final boolean isReference(JsonValue value) {
         return JsonUtils.containsKey(value, Keywords.ID) && value.asJsonObject().size() == 1;
     }
 
     // Extension: JSON-LD-STAR (Experimental)
-    public static final boolean isEmbeddedNode(JsonValue value) {
+    public static final boolean isEmbedded(JsonValue value) {
 
         if (JsonUtils.isNotObject(value)) {
             return false;
@@ -114,7 +135,7 @@ public final class NodeObject {
                 }
 
                 if (JsonUtils.isString(propertyValue)
-                        || (JsonUtils.isObject(propertyValue) && isEmbeddedNode(propertyValue.asJsonObject()))) {
+                        || (JsonUtils.isObject(propertyValue) && isEmbedded(propertyValue.asJsonObject()))) {
                     found = true;
                     continue;
                 }
@@ -126,16 +147,16 @@ public final class NodeObject {
     }
 
     // Extension: JSON-LD-STAR (Experimental)
-    public static final boolean isNotAnnotationObject(final JsonValue annotation) {
-        return !isAnnotationObject(annotation);
+    public static final boolean isNotAnnotation(final JsonValue annotation) {
+        return !isAnnotation(annotation);
     }
 
-    public static final boolean isAnnotationObject(final JsonValue annotation) {
+    public static final boolean isAnnotation(final JsonValue annotation) {
 
         JsonValue value = annotation;
 
         if (JsonUtils.isArray(value)) {
-            return value.asJsonArray().stream().allMatch(NodeObject::isAnnotationObject);
+            return value.asJsonArray().stream().allMatch(JsonLdNode::isAnnotation);
         }
 
         if (JsonUtils.isNotObject(value)) {
@@ -144,7 +165,7 @@ public final class NodeObject {
 
         for (Entry<String, JsonValue> property : value.asJsonObject().entrySet()) {
 
-            if (Keywords.ANNOTATION.equals(property.getKey()) && !isAnnotationObject(property.getValue())) {
+            if (Keywords.ANNOTATION.equals(property.getKey()) && !isAnnotation(property.getValue())) {
                 return false;
             }
 
@@ -156,4 +177,5 @@ public final class NodeObject {
 
         return true;
     }
+    
 }

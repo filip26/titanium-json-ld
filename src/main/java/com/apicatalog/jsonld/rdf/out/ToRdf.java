@@ -30,15 +30,15 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.BlankNode;
+import com.apicatalog.jsonld.lang.JsonLdNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.lang.RdfConstants;
 import com.apicatalog.jsonld.lang.Utils;
+import com.apicatalog.jsonld.lang.ValueNode;
 import com.apicatalog.jsonld.lang.XsdConstants;
-import com.apicatalog.jsonld.node.BlankNode;
 import com.apicatalog.jsonld.node.ListNode;
-import com.apicatalog.jsonld.node.NodeObject;
-import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.api.RdfConsumerException;
@@ -185,7 +185,7 @@ public final class ToRdf {
             final String predicate) throws JsonLdError, RdfConsumerException {
 
         // 1. - 2.
-        if (NodeObject.isNodeObject(item)) {
+        if (JsonLdNode.isNode(item)) {
 
             JsonValue id = item.get(Keywords.ID);
 

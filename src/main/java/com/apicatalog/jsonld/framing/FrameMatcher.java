@@ -23,10 +23,10 @@ import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.JsonLdNode;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.ValueNode;
 import com.apicatalog.jsonld.node.ListNode;
-import com.apicatalog.jsonld.node.NodeObject;
-import com.apicatalog.jsonld.node.ValueNode;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonStructure;
@@ -204,7 +204,7 @@ public final class FrameMatcher {
                                 return true;
                             }
 
-                        } else if (NodeObject.isNodeObject(listValue.asJsonArray().get(0)) || NodeObject.isNodeReference(listValue.asJsonArray().get(0))) {
+                        } else if (JsonLdNode.isNode(listValue.asJsonArray().get(0)) || JsonLdNode.isReference(listValue.asJsonArray().get(0))) {
 
                             final Frame frame = Frame.of((JsonStructure)listValue);
                             boolean match = false;

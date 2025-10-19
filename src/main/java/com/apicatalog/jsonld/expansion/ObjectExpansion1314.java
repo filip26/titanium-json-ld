@@ -35,11 +35,11 @@ import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.DirectionType;
+import com.apicatalog.jsonld.lang.JsonLdNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
+import com.apicatalog.jsonld.lang.ValueNode;
 import com.apicatalog.jsonld.node.ListNode;
-import com.apicatalog.jsonld.node.Node;
-import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.NodeType;
@@ -274,8 +274,8 @@ final class ObjectExpansion1314 {
                                     && (!adapter.isCollection(value)
                                             || adapter.elementStream(value)
                                                     .anyMatch(Predicate.not(adapter::isString)))
-                                    && !Node.isDefaultNode(value, adapter)
-                                    && Node.findDefaultValue(value, adapter)
+                                    && !JsonLdNode.isDefaultNode(value, adapter)
+                                    && JsonLdNode.findDefaultValue(value, adapter)
                                             .filter(adapter::isString)
                                             .map(adapter::stringValue)
                                             .map(UriUtils::isNotURI)
@@ -289,9 +289,9 @@ final class ObjectExpansion1314 {
                         expandedValue = Collections.emptyMap();
 
                         // 13.4.4.3
-                    } else if (Node.isDefaultNode(value, adapter)) {
+                    } else if (JsonLdNode.isDefaultNode(value, adapter)) {
 
-                        final var defaultValue = Node.findDefaultValue(value, adapter);
+                        final var defaultValue = JsonLdNode.findDefaultValue(value, adapter);
 
                         if (defaultValue.filter(adapter::isString).isPresent()) {
                             expandedValue = Map.of(
@@ -888,7 +888,7 @@ final class ObjectExpansion1314 {
                         final var indexMap = new LinkedHashMap<String, Object>();
 
                         // 13.8.3.7.1.
-                        if (containerMapping.contains(Keywords.GRAPH) && Node.isNotGraphNode(item)) {
+                        if (containerMapping.contains(Keywords.GRAPH) && JsonLdNode.isNotGraphNode(item)) {
                             indexMap.put(Keywords.GRAPH, Set.of(item));
 
                         } else {

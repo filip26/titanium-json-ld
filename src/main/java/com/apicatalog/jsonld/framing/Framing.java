@@ -27,11 +27,11 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.JsonLdNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Utils;
+import com.apicatalog.jsonld.lang.ValueNode;
 import com.apicatalog.jsonld.node.ListNode;
-import com.apicatalog.jsonld.node.NodeObject;
-import com.apicatalog.jsonld.node.ValueNode;
 
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
@@ -256,7 +256,7 @@ public final class Framing {
                             for (final JsonValue listItem : JsonUtils.toCollection(item.asJsonObject().get(Keywords.LIST))) {
 
                                 // 4.7.3.1.1.
-                                if (NodeObject.isNodeReference(listItem)) {
+                                if (JsonLdNode.isReference(listItem)) {
 
                                     FramingState listState = new FramingState(state);
                                     listState.setEmbedded(true);
@@ -285,7 +285,7 @@ public final class Framing {
 
                             output.add(property, JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, list));
 
-                    } else if (NodeObject.isNodeReference(item)) {
+                    } else if (JsonLdNode.isReference(item)) {
 
                         FramingState clonedState = new FramingState(state);
                         clonedState.setEmbedded(true);

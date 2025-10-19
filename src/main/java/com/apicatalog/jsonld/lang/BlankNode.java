@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.node;
+package com.apicatalog.jsonld.lang;
 
 import java.util.Arrays;
 import java.util.function.IntPredicate;

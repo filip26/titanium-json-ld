@@ -31,11 +31,11 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.JsonLdNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.node.GraphNode;
 import com.apicatalog.jsonld.node.ListNode;
-import com.apicatalog.jsonld.node.NodeObject;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
@@ -250,7 +250,7 @@ public final class Compaction {
                     compactedValue = JsonUtils.toJsonValue(activeContext.uriCompaction().compact(((JsonString) expandedValue).getString()));
 
                     // json-ld-star
-                } else if (activeContext.runtime().isRdfStar() && NodeObject.isEmbeddedNode(expandedValue)) {
+                } else if (activeContext.runtime().isRdfStar() && JsonLdNode.isEmbedded(expandedValue)) {
                     compactedValue = Compaction.with(activeContext)
                             .compactArrays(compactArrays)
                             .ordered(ordered)

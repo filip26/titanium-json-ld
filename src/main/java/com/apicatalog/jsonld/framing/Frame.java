@@ -24,11 +24,11 @@ import com.apicatalog.jsonld.JsonLdEmbed;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.JsonLdNode;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.ValueNode;
 import com.apicatalog.jsonld.node.DefaultObject;
 import com.apicatalog.jsonld.node.ListNode;
-import com.apicatalog.jsonld.node.NodeObject;
-import com.apicatalog.jsonld.node.ValueNode;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 
@@ -260,11 +260,11 @@ public final class Frame {
     }
 
     public boolean isNodePattern() {
-        return NodeObject.isNodeObject(frameObject);
+        return JsonLdNode.isNode(frameObject);
     }
 
     public boolean isNodeReference() {
-        return NodeObject.isNodeReference(frameObject);
+        return JsonLdNode.isReference(frameObject);
     }
 
     public boolean matchNode(FramingState state, JsonValue value, boolean requireAll) throws JsonLdError {

@@ -28,9 +28,9 @@ import java.util.function.Predicate;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.lang.BlankNode;
+import com.apicatalog.jsonld.lang.JsonLdNode;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.node.BlankNode;
-import com.apicatalog.jsonld.node.NodeObject;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
 public final class NodeMapBuilder {
@@ -239,7 +239,7 @@ public final class NodeMapBuilder {
             }
 
             // 6.
-        } else if (NodeObject.isNodeObject(element, NativeAdapter.instance())) {
+        } else if (JsonLdNode.isNode(element, NativeAdapter.instance())) {
 
             var id = (String) elementMap.get(Keywords.ID);
 
