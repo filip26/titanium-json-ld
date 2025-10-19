@@ -84,7 +84,7 @@ class JsonDocumentTest {
     void test5() {
         Document document = JsonDocument.of(MediaType.of("application/custom+json;profile=https://example.org/profile"), JsonValue.EMPTY_JSON_OBJECT);
         assertNotNull(document);
-        assertTrue(MediaType.of("application", "custom+json").match(document.getContentType()));
+        assertTrue(new MediaType("application", "custom+json").match(document.getContentType()));
         assertTrue(document.getJsonContent().isPresent());
         assertTrue(document.getProfile().isPresent());
         assertEquals("https://example.org/profile", document.getProfile().get());

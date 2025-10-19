@@ -15,9 +15,12 @@
  */
 package com.apicatalog.jsonld.http.media;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  *
@@ -25,7 +28,10 @@ import java.util.Objects;
  *      Type</a>
  *
  */
-public final class MediaType {
+public record MediaType(
+        String type,
+        String subtype,
+        Parameters parameters) {
 
     private static final String TYPE_APPLICATION = "application";
     private static final String TYPE_TEXT = "text";
@@ -43,19 +49,16 @@ public final class MediaType {
 
     public static final MediaType ANY = new MediaType(WILDCARD, WILDCARD);
 
-    private final String type;
-    private final String subtype;
-
-    private final MediaTypeParameters parameters;
-
-    protected MediaType(String type, String subtype, MediaTypeParameters parameters) {
-        this.type = type;
-        this.subtype = subtype;
-        this.parameters = parameters;
+    public MediaType(String type, String subtype) {
+        this(type, subtype, Parameters.EMPTY);
     }
 
-    protected MediaType(String type, String subtype) {
-        this(type, subtype, MediaTypeParameters.EMPTY);
+    public MediaType(String type, String subtype, Parameters parameters) {
+        this.type = Objects.requireNonNull(type);
+        this.subtype = Objects.requireNonNull(subtype);
+        this.parameters = parameters != null
+                ? parameters
+                : Parameters.EMPTY;
     }
 
     public boolean match(MediaType mediaType) {
@@ -65,46 +68,40 @@ public final class MediaType {
                         || Objects.equals(subtype, mediaType.subtype));
     }
 
-    public String type() {
-        return type;
-    }
-
-    public String subtype() {
-        return subtype;
-    }
-
-    public MediaTypeParameters parameters() {
-        return parameters;
-    }
-
     @Override
     public String toString() {
-        return String.valueOf(type).concat("/").concat(subtype);
-    }
-
-    public static final MediaType of(String type, String subtype, Map<String, List<String>> parameters) {
-        Objects.requireNonNull(type);
-        Objects.requireNonNull(subtype);
-
-        return new MediaType(type, subtype, parameters != null
-                ? new MediaTypeParameters(parameters)
-                : MediaTypeParameters.EMPTY);
-    }
-
-    public static final MediaType of(String type, String subtype) {
-        Objects.requireNonNull(type);
-        Objects.requireNonNull(subtype);
-
-        return new MediaType(type, subtype);
+        return type + "/" + subtype;
     }
 
     public static final MediaType of(final String value) {
-        Objects.requireNonNull(value);
-
-        if (value.isBlank()) {
+        if (Objects.requireNonNull(value).isBlank()) {
             return null;
         }
-
         return new MediaTypeParser(value).parse();
+    }
+
+    public static record Parameters(Map<String, List<String>> parameters) {
+
+        protected static final Parameters EMPTY = new Parameters(Collections.emptyMap());
+
+        public Set<String> names() {
+            return parameters.keySet();
+        }
+
+        public List<String> values(final String name) {
+            return parameters.containsKey(name)
+                    ? Collections.unmodifiableList(parameters.get(name))
+                    : Collections.emptyList();
+        }
+
+        public Optional<String> firstValue(final String name) {
+            return parameters.containsKey(name)
+                    ? Optional.of(parameters.get(name).get(0))
+                    : Optional.empty();
+        }
+
+        public boolean isEmpty() {
+            return parameters.isEmpty();
+        }
     }
 }

@@ -41,7 +41,7 @@ class DocumentResolverTest {
 
     @Test
     void test4() throws JsonLdError {
-        DocumentReader<InputStream> reader = (new DocumentResolver()).getReader(MediaType.of("application", "test+json"));
+        DocumentReader<InputStream> reader = (new DocumentResolver()).getReader(new MediaType("application", "test+json"));
         assertNotNull(reader);
     }
 

@@ -80,7 +80,7 @@ public final class JsonDocument implements Document<PolyNode> {
             throw new IllegalArgumentException("The provided JSON structure is null.");
         }
 
-        return new JsonDocument(MediaType.of(contentType.type(), contentType.subtype()), contentType.parameters().firstValue("profile").orElse(null), structure);
+        return new JsonDocument(new MediaType(contentType.type(), contentType.subtype()), contentType.parameters().firstValue("profile").orElse(null), structure);
     }
 
     /**
@@ -172,7 +172,7 @@ public final class JsonDocument implements Document<PolyNode> {
         }
 
         if (JsonUtils.isObject(root)) {
-            return new JsonDocument(MediaType.of(contentType.type(), contentType.subtype()), profile, root.asJsonObject());
+            return new JsonDocument(new MediaType(contentType.type(), contentType.subtype()), profile, root.asJsonObject());
         }
 
         throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "JSON document's top level element must be JSON array or object.");
