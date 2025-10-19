@@ -32,7 +32,7 @@ public final class Flattening {
         final var nodeMap = new NodeMap();
 
         // 2.
-        NodeMapBuilder.with(elements, nodeMap).build();
+        new NodeMapBuilder(elements, nodeMap).build();
 
         // 3.
         final var defaultGraph = nodeMap.find(Keywords.DEFAULT).orElseThrow(IllegalStateException::new);

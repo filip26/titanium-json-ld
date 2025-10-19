@@ -161,7 +161,7 @@ public final class Framer {
         state.setRequireAll(options.isRequiredAll()); // 14.4.
         state.setOmitDefault(options.isOmitDefault()); // 14.5.
 
-        state.setGraphMap(NodeMapBuilder.with(expandedInput, new NodeMap()).build()); // 14.7.
+        state.setGraphMap(new NodeMapBuilder(expandedInput, new NodeMap()).build()); // 14.7.
 
         if (frameDefault) {
             state.setGraphName(Keywords.DEFAULT); // 14.6.

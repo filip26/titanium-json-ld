@@ -38,35 +38,35 @@ public final class NodeMapBuilder {
     // required
     private final Object element; // collection or map
     private final NodeMap nodeMap;
+    private final String activeGraph;
 
     // optional
-    private String activeGraph;
     private String activeSubject;
     private String activeProperty;
 
     private Map<String, String> referencedNode;
     private Map<String, Collection<?>> list;
 
-    private NodeMapBuilder(final Object element, final NodeMap nodeMap) {
+    public NodeMapBuilder(final Object element, final NodeMap nodeMap) {
+        this(element, nodeMap, Keywords.DEFAULT);
+    }
+
+    public NodeMapBuilder(final Object element, final NodeMap nodeMap, final String activeGraph) {
         this.element = element;
         this.nodeMap = nodeMap;
+        this.activeGraph = activeGraph;
 
         // default values
-        this.activeGraph = Keywords.DEFAULT;
         this.activeSubject = null;
         this.activeProperty = null;
         this.list = null;
         this.referencedNode = null;
     }
 
-    public static NodeMapBuilder with(final Object element, final NodeMap nodeMap) {
-        return new NodeMapBuilder(element, nodeMap);
-    }
-
-    public NodeMapBuilder activeGraph(String activeGraph) {
-        this.activeGraph = activeGraph;
-        return this;
-    }
+//    public NodeMapBuilder activeGraph(String activeGraph) {
+//        this.activeGraph = activeGraph;
+//        return this;
+//    }
 
     public NodeMapBuilder activeProperty(String activeProperty) {
         this.activeProperty = activeProperty;
@@ -100,9 +100,7 @@ public final class NodeMapBuilder {
                     throw new IllegalStateException();
                 }
 
-                NodeMapBuilder
-                        .with(item, nodeMap)
-                        .activeGraph(activeGraph)
+                new NodeMapBuilder(item, nodeMap, activeGraph)
                         .activeProperty(activeProperty)
                         .activeSubject(activeSubject)
                         .list(list)
@@ -208,9 +206,7 @@ public final class NodeMapBuilder {
             final var result = new LinkedHashMap<String, Collection<?>>(Map.of(Keywords.LIST, Collections.emptyList()));
 
             // 5.2.
-            NodeMapBuilder
-                    .with(elementMap.get(Keywords.LIST), nodeMap)
-                    .activeGraph(activeGraph)
+            new NodeMapBuilder(elementMap.get(Keywords.LIST), nodeMap, activeGraph)
                     .activeSubject(activeSubject)
                     .activeProperty(activeProperty)
                     .referencedNode(referencedNode)
@@ -389,9 +385,7 @@ public final class NodeMapBuilder {
                     for (final var value : (Collection<?>) entry.getValue()) {
 
                         // 6.9.3.1.1.
-                        NodeMapBuilder
-                                .with(value, nodeMap)
-                                .activeGraph(activeGraph)
+                        new NodeMapBuilder(value, nodeMap, activeGraph)
                                 .referencedNode(referenced)
                                 .activeProperty(entry.getKey().toString())
                                 .build();
@@ -407,10 +401,7 @@ public final class NodeMapBuilder {
 
             if (graphMap != null) {
 
-                NodeMapBuilder
-                        .with(graphMap, nodeMap)
-                        .activeGraph(id)
-                        .build();
+                new NodeMapBuilder(graphMap, nodeMap, id).build();
 
                 elementMap.remove(Keywords.GRAPH);
             }
@@ -421,10 +412,7 @@ public final class NodeMapBuilder {
 
             if (includedMap != null) {
 
-                NodeMapBuilder
-                        .with(includedMap, nodeMap)
-                        .activeGraph(activeGraph)
-                        .build();
+                new NodeMapBuilder(includedMap, nodeMap, activeGraph).build();
 
                 elementMap.remove(Keywords.INCLUDED);
             }
@@ -454,9 +442,7 @@ public final class NodeMapBuilder {
                 }
 
                 // 6.12.3.
-                NodeMapBuilder
-                        .with(value, nodeMap)
-                        .activeGraph(activeGraph)
+                new NodeMapBuilder(value, nodeMap, activeGraph)
                         .activeSubject(id)
                         .activeProperty(property)
                         .build();

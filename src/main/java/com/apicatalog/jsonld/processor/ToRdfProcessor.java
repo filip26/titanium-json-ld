@@ -73,7 +73,7 @@ public final class ToRdfProcessor {
 
     public static final void toRdf(final RdfQuadConsumer consumer, final JsonArray expandedInput, final JsonLdOptions options) throws JsonLdError {
         ToRdf
-                .with(NodeMapBuilder.with(expandedInput, new NodeMap()).build())
+                .with(new NodeMapBuilder(expandedInput, new NodeMap()).build())
                 .produceGeneralizedRdf(options.isProduceGeneralizedRdf())
                 .rdfDirection(options.getRdfDirection())
                 .uriValidation(options.getUriValidation())

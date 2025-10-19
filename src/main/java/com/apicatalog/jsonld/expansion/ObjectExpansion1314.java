@@ -893,7 +893,7 @@ final class ObjectExpansion1314 {
                             indexMap.put(Keywords.GRAPH, Set.of(item));
 
                         } else {
-                            indexMap.putAll((Map<String, Object>) item);
+                            indexMap.putAll((Map) item);
                         }
 
                         // 13.8.3.7.2.

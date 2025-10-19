@@ -119,35 +119,37 @@ public final class NodeMap {
                 for (final var property : subject.getValue().entrySet()) {
 
                     // 2.2.1.
-                    if (!Keywords.TYPE.equals(property.getKey())
-                            && Keywords.matchForm(property.getKey())) {
+                    if (!Keywords.TYPE.equals(property.getKey()) && Keywords.matchForm(property.getKey())) {
 
                         result.set(Keywords.MERGED, subject.getKey(), property.getKey(), property.getValue());
 
                     } else {
 
-                        final List<Object> array;
+                        final List<Object> mergedValues;
 
-                        if (result.get(Keywords.MERGED, subject.getKey(), property.getKey()) instanceof Collection<?> col) {
-                            array = new ArrayList<Object>(col);
+                        if (result.get(Keywords.MERGED, subject.getKey(), property.getKey()) instanceof Collection<?> values) {
+
+                            if (values instanceof ArrayList list) {
+                                mergedValues = list;
+
+                            } else {
+                                mergedValues = new ArrayList<Object>(values);
+                                result.set(Keywords.MERGED, subject.getKey(), property.getKey(), mergedValues);
+                            }
 
                         } else {
-                            array = new ArrayList<>();
+                            mergedValues = new ArrayList<>();
+                            result.set(Keywords.MERGED, subject.getKey(), property.getKey(), mergedValues);
                         }
 
-                        if (property.getValue() instanceof Collection<?> col) {
-                            array.addAll(col);
+                        if (property.getValue() instanceof Collection<?> properties) {
+                            mergedValues.addAll(properties);
+
                         } else {
-                            array.add(property.getValue());
+                            mergedValues.add(property.getValue());
                         }
-
-//                        JsonUtils.toJsonArray(property.getValue()).forEach(array::add);
-
-                        result.set(Keywords.MERGED, subject.getKey(), property.getKey(), array);
                     }
-
                 }
-
             }
         }
 
