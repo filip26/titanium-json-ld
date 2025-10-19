@@ -59,7 +59,7 @@ class LinkTest {
         assertEquals(URI.create("http://example.com/TheBook/chapter2"), l1.target());
         assertEquals(new HashSet<>(Arrays.asList("title")), l1.attributeNames());
 
-        assertEquals(Arrays.asList(new LinkAttribute("title", "previous chapter")), l1.attributes("title"));
+        assertEquals(Arrays.asList(new Link.Attribute("title", "previous chapter")), l1.attributes("title"));
 
         assertEquals(new HashSet<>(Arrays.asList("previous")), l1.relations());
 
@@ -210,7 +210,7 @@ class LinkTest {
         assertEquals(URI.create("x"), l1.target());
         assertEquals(new HashSet<>(Arrays.asList("x")), l1.attributeNames());
 
-        Optional<LinkAttribute> value = l1.findFirstAttribute("x");
+        Optional<Link.Attribute> value = l1.findFirstAttribute("x");
         assertTrue(value.isPresent());
 
         assertEquals("x=ab", value.get().toString());
@@ -304,8 +304,8 @@ class LinkTest {
         assertTrue(l1.findFirstAttribute("x").isPresent());
         assertEquals("123", l1.findFirstAttribute("x").get().value());
 
-        assertEquals(Arrays.asList(new LinkAttribute("x", "123"), new LinkAttribute("x", "x")), l1.attributes("x"));
-        assertEquals(Arrays.asList(new LinkAttribute("y", "y")), l1.attributes("y"));
+        assertEquals(Arrays.asList(new Link.Attribute("x", "123"), new Link.Attribute("x", "x")), l1.attributes("x"));
+        assertEquals(Arrays.asList(new Link.Attribute("y", "y")), l1.attributes("y"));
 
         assertEquals(Collections.emptySet(), l1.relations());
         assertNull(l1.type());
@@ -322,7 +322,7 @@ class LinkTest {
 
         assertNull(l1.target());
 
-        assertEquals(Arrays.asList(new LinkAttribute("1", "2")), l1.attributes());
+        assertEquals(Arrays.asList(new Link.Attribute("1", "2")), l1.attributes());
 
         assertEquals(Collections.emptySet(), l1.relations());
         assertNull(l1.type());
@@ -339,7 +339,7 @@ class LinkTest {
 
         assertNull(l1.target());
 
-        assertEquals(Arrays.asList(new LinkAttribute("1", "23")), l1.attributes());
+        assertEquals(Arrays.asList(new Link.Attribute("1", "23")), l1.attributes());
 
         assertEquals(Collections.emptySet(), l1.relations());
         assertNull(l1.type());
@@ -392,7 +392,7 @@ class LinkTest {
         assertEquals(new HashSet<>(Arrays.asList("x", "y")), l1.attributeNames());
         assertFalse(l1.attributeMap().isEmpty());
 
-        assertEquals(Arrays.asList(new LinkAttribute("x"), new LinkAttribute("y")), l1.attributes());
+        assertEquals(Arrays.asList(new Link.Attribute("x"), new Link.Attribute("y")), l1.attributes());
 
         assertTrue(l1.findFirstAttribute("x").isPresent());
         assertTrue(l1.findFirstAttribute("y").isPresent());
@@ -400,8 +400,8 @@ class LinkTest {
         assertEquals("x", l1.findFirstAttribute("x").get().value());
         assertEquals("y", l1.findFirstAttribute("y").get().value());
 
-        assertEquals(Arrays.asList(new LinkAttribute("x")), l1.attributes("x"));
-        assertEquals(Arrays.asList(new LinkAttribute("y")), l1.attributes("y"));
+        assertEquals(Arrays.asList(new Link.Attribute("x")), l1.attributes("x"));
+        assertEquals(Arrays.asList(new Link.Attribute("y")), l1.attributes("y"));
 
         assertEquals(Collections.emptySet(), l1.relations());
 

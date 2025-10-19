@@ -40,6 +40,18 @@ public record Link(
         MediaType type,
         Map<String, List<Attribute>> attributeMap) {
 
+    public Link(URI context, URI target, Set<String> relations, MediaType type, Map<String, List<Attribute>> attributeMap) {
+        this.context = context;
+        this.target = target;
+        this.relations = relations != null
+                ? relations
+                : Collections.emptySet();
+        this.type = type;
+        this.attributeMap = attributeMap != null
+                ? attributeMap
+                : Collections.emptyMap();
+    }
+
     public static final Collection<Link> of(final String linkHeader) {
         return of(linkHeader, null);
     }
@@ -65,7 +77,7 @@ public record Link(
     public Set<String> attributeNames() {
         return attributeMap.keySet();
     }
-    
+
     /**
      * A read-only view of Link attribute.
      *

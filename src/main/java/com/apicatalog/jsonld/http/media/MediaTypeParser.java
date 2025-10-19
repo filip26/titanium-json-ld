@@ -117,7 +117,7 @@ final class MediaTypeParser {
                     break;
                 }
                 if (ch != ';') {
-                    return new MediaType(type, subtype, new MediaType.Parameters(params));
+                    return new MediaType(type, subtype, params);
                 }
                 state = State.PARAM_NAME;
                 index = i + 1;
@@ -220,6 +220,6 @@ final class MediaTypeParser {
         if (type == null || subtype == null) {
             return null;
         }
-        return new MediaType(type, subtype, new MediaType.Parameters(params));
+        return new MediaType(type, subtype, params);
     }
 }

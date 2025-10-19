@@ -72,11 +72,11 @@ class MediaTypeTest {
         assertNotNull(type);
         assertEquals("1", type.type());
         assertEquals("2.a", type.subtype());
-        assertEquals(new HashSet<>(Arrays.asList("3", "5")), type.parameters().names());
-        assertTrue(type.parameters().firstValue("3").isPresent());
-        assertEquals("4", type.parameters().firstValue("3").get());
-        assertTrue(type.parameters().firstValue("5").isPresent());
-        assertEquals("5", type.parameters().firstValue("5").get());
+        assertEquals(new HashSet<>(Arrays.asList("3", "5")), type.parameterNames());
+        assertTrue(type.findFirstParameter("3").isPresent());
+        assertEquals("4", type.findFirstParameter("3").get());
+        assertTrue(type.findFirstParameter("5").isPresent());
+        assertEquals("5", type.findFirstParameter("5").get());
     }
 
     @Test
@@ -85,11 +85,11 @@ class MediaTypeTest {
         assertNotNull(type);
         assertEquals("A#", type.type());
         assertEquals("Z^", type.subtype());
-        assertEquals(new HashSet<>(Arrays.asList("a")), type.parameters().names());
-        assertTrue(type.parameters().firstValue("a").isPresent());
-        assertEquals("4", type.parameters().firstValue("a").get());
-        assertEquals(Arrays.asList("4"), type.parameters().values("a"));
-        assertEquals(Collections.emptyList(), type.parameters().values("Z"));
+        assertEquals(new HashSet<>(Arrays.asList("a")), type.parameterNames());
+        assertTrue(type.findFirstParameter("a").isPresent());
+        assertEquals("4", type.findFirstParameter("a").get());
+        assertEquals(Arrays.asList("4"), type.parameters("a"));
+        assertEquals(Collections.emptyList(), type.parameters("Z"));
     }
 
     @Test
@@ -98,11 +98,11 @@ class MediaTypeTest {
         assertNotNull(type);
         assertEquals("a", type.type());
         assertEquals("b", type.subtype());
-        assertEquals(new HashSet<>(Arrays.asList("1", "2")), type.parameters().names());
-        assertTrue(type.parameters().firstValue("1").isPresent());
-        assertEquals("1", type.parameters().firstValue("1").get());
-        assertTrue(type.parameters().firstValue("2").isPresent());
-        assertEquals("3", type.parameters().firstValue("2").get());
+        assertEquals(new HashSet<>(Arrays.asList("1", "2")), type.parameterNames());
+        assertTrue(type.findFirstParameter("1").isPresent());
+        assertEquals("1", type.findFirstParameter("1").get());
+        assertTrue(type.findFirstParameter("2").isPresent());
+        assertEquals("3", type.findFirstParameter("2").get());
     }
 
     @Test
@@ -112,7 +112,7 @@ class MediaTypeTest {
         assertEquals("a", type.type());
         assertEquals("b", type.subtype());
         assertTrue(type.parameters().isEmpty());
-        assertEquals(Collections.emptySet(), type.parameters().names());
+        assertEquals(Collections.emptySet(), type.parameterNames());
     }
 
     @Test
@@ -121,10 +121,10 @@ class MediaTypeTest {
         assertNotNull(type);
         assertEquals("a", type.type());
         assertEquals("b", type.subtype());
-        assertEquals(new HashSet<>(Arrays.asList("1")), type.parameters().names());
-        assertTrue(type.parameters().firstValue("1").isPresent());
-        assertEquals("2", type.parameters().firstValue("1").get());
-        assertEquals(Arrays.asList("2", "3"), type.parameters().values("1"));
+        assertEquals(new HashSet<>(Arrays.asList("1")), type.parameterNames());
+        assertTrue(type.findFirstParameter("1").isPresent());
+        assertEquals("2", type.findFirstParameter("1").get());
+        assertEquals(Arrays.asList("2", "3"), type.parameters("1"));
     }
 
     @Test
@@ -133,10 +133,10 @@ class MediaTypeTest {
         assertNotNull(type);
         assertEquals("a", type.type());
         assertEquals("b", type.subtype());
-        assertEquals(new HashSet<>(Arrays.asList("1")), type.parameters().names());
-        assertTrue(type.parameters().firstValue("1").isPresent());
-        assertEquals("a\tb", type.parameters().firstValue("1").get());
-        assertEquals(Arrays.asList("a\tb"), type.parameters().values("1"));
+        assertEquals(new HashSet<>(Arrays.asList("1")), type.parameterNames());
+        assertTrue(type.findFirstParameter("1").isPresent());
+        assertEquals("a\tb", type.findFirstParameter("1").get());
+        assertEquals(Arrays.asList("a\tb"), type.parameters("1"));
     }
 
     @Test

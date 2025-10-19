@@ -80,7 +80,7 @@ public final class JsonDocument implements Document<PolyNode> {
             throw new IllegalArgumentException("The provided JSON structure is null.");
         }
 
-        return new JsonDocument(new MediaType(contentType.type(), contentType.subtype()), contentType.parameters().firstValue("profile").orElse(null), structure);
+        return new JsonDocument(new MediaType(contentType.type(), contentType.subtype()), contentType.findFirstParameter("profile").orElse(null), structure);
     }
 
     /**
@@ -165,7 +165,7 @@ public final class JsonDocument implements Document<PolyNode> {
 
         final JsonValue root = parser.getValue();
 
-        final String profile = contentType.parameters().firstValue("profile").orElse(null);
+        final String profile = contentType.findFirstParameter("profile").orElse(null);
 
         if (JsonUtils.isArray(root)) {
             return new JsonDocument(contentType, profile, root.asJsonArray());

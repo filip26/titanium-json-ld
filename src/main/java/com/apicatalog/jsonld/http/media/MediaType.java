@@ -31,7 +31,7 @@ import java.util.Set;
 public record MediaType(
         String type,
         String subtype,
-        Parameters parameters) {
+        Map<String, List<String>> parameters) {
 
     private static final String TYPE_APPLICATION = "application";
     private static final String TYPE_TEXT = "text";
@@ -50,15 +50,22 @@ public record MediaType(
     public static final MediaType ANY = new MediaType(WILDCARD, WILDCARD);
 
     public MediaType(String type, String subtype) {
-        this(type, subtype, Parameters.EMPTY);
+        this(type, subtype, Collections.emptyMap());
     }
 
-    public MediaType(String type, String subtype, Parameters parameters) {
+    public MediaType(String type, String subtype, Map<String, List<String>> parameters) {
         this.type = Objects.requireNonNull(type);
         this.subtype = Objects.requireNonNull(subtype);
         this.parameters = parameters != null
                 ? parameters
-                : Parameters.EMPTY;
+                : Collections.emptyMap();
+    }
+    
+    public static final MediaType of(final String value) {
+        if (Objects.requireNonNull(value).isBlank()) {
+            return null;
+        }
+        return MediaTypeParser.parse(value);
     }
 
     public boolean match(MediaType mediaType) {
@@ -73,35 +80,19 @@ public record MediaType(
         return type + "/" + subtype;
     }
 
-    public static final MediaType of(final String value) {
-        if (Objects.requireNonNull(value).isBlank()) {
-            return null;
-        }
-        return MediaTypeParser.parse(value);
+    public Set<String> parameterNames() {
+        return parameters.keySet();
     }
 
-    public static record Parameters(Map<String, List<String>> parameters) {
+    public List<String> parameters(final String name) {
+        return parameters.containsKey(name)
+                ? Collections.unmodifiableList(parameters.get(name))
+                : Collections.emptyList();
+    }
 
-        protected static final Parameters EMPTY = new Parameters(Collections.emptyMap());
-
-        public Set<String> names() {
-            return parameters.keySet();
-        }
-
-        public List<String> values(final String name) {
-            return parameters.containsKey(name)
-                    ? Collections.unmodifiableList(parameters.get(name))
-                    : Collections.emptyList();
-        }
-
-        public Optional<String> firstValue(final String name) {
-            return parameters.containsKey(name)
-                    ? Optional.of(parameters.get(name).get(0))
-                    : Optional.empty();
-        }
-
-        public boolean isEmpty() {
-            return parameters.isEmpty();
-        }
+    public Optional<String> findFirstParameter(final String name) {
+        return parameters.containsKey(name)
+                ? Optional.of(parameters.get(name).get(0))
+                : Optional.empty();
     }
 }
