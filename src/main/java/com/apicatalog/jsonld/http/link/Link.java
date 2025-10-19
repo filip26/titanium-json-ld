@@ -17,8 +17,13 @@ package com.apicatalog.jsonld.http.link;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.http.media.MediaType;
 
@@ -32,7 +37,7 @@ public record Link(
         URI target,
         Set<String> relations,
         MediaType type,
-        LinkAttributes attributes) {
+        Map<String, List<LinkAttribute>> attributeMap) {
 
     public static final Collection<Link> of(final String linkHeader) {
         return of(linkHeader, null);
@@ -40,5 +45,23 @@ public record Link(
 
     public static final Collection<Link> of(final String linkHeader, final URI baseUri) {
         return new LinkHeaderParser(baseUri).parse(Objects.requireNonNull(linkHeader));
+    }
+
+    public List<LinkAttribute> attributes(final String name) {
+        return attributeMap.containsKey(name)
+                ? Collections.unmodifiableList(attributeMap.get(name))
+                : Collections.emptyList();
+    }
+
+    public List<LinkAttribute> attributes() {
+        return attributeMap.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+    }
+
+    public Optional<LinkAttribute> findFirstAttribute(final String name) {
+        return Optional.ofNullable(attributeMap.get(name)).map(attrs -> attrs.get(0));
+    }
+
+    public Set<String> attributeNames() {
+        return attributeMap.keySet();
     }
 }

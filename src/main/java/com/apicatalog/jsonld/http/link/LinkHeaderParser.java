@@ -178,7 +178,7 @@ final class LinkHeaderParser {
                 }
             }
 
-            links.add(new Link(context, targetUri, rel, type, new LinkAttributes(attributes)));
+            links.add(new Link(context, targetUri, rel, type, attributes));
             targetUri = null;
             attributes = new LinkedHashMap<>();
             foundLink = false;
