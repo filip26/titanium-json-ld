@@ -77,7 +77,7 @@ public record MediaType(
         if (Objects.requireNonNull(value).isBlank()) {
             return null;
         }
-        return new MediaTypeParser(value).parse();
+        return MediaTypeParser.parse(value);
     }
 
     public static record Parameters(Map<String, List<String>> parameters) {
