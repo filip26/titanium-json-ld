@@ -36,7 +36,6 @@ import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.node.GraphNode;
 import com.apicatalog.jsonld.node.ListNode;
 import com.apicatalog.jsonld.node.NodeObject;
-import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;

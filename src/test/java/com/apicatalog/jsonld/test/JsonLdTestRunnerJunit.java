@@ -41,6 +41,7 @@ import com.apicatalog.rdf.nquads.NQuadsWriter;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.flow.QuadEmitter;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
+import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.google.common.base.Objects;
@@ -233,7 +234,7 @@ public class JsonLdTestRunnerJunit {
 
     public static final boolean compareJson(final JsonLdTestCase testCase, final JsonStructure result, final JsonStructure expected) {
 
-        if (JsonLdComparison.equals(expected, result)) {
+        if (JsonLdComparison.equals(expected, JakartaAdapter.instance(), result, JakartaAdapter.instance())) {
             return true;
         }
 

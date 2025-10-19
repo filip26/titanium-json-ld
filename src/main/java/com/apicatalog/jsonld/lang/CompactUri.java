@@ -63,8 +63,8 @@ public record CompactUri(
 
         if (splitIndex != -1) {
 
-            final String prefix = value.substring(0, splitIndex);
-            final String suffix = value.substring(splitIndex + 1);
+            final var prefix = value.substring(0, splitIndex);
+            final var suffix = value.substring(splitIndex + 1);
 
             if (!suffix.startsWith("/") && ("_".equals(prefix) || Character.isAlphabetic(prefix.charAt(0)))) {
                 return new CompactUri(prefix, suffix);

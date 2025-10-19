@@ -30,6 +30,7 @@ import com.apicatalog.jsonld.test.JsonLdTestCase.Type;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.model.RdfQuadSet;
+import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
@@ -81,7 +82,9 @@ public class JsonLdTestRunnerEarl {
                 return (result instanceof JsonStructure)
                         && JsonLdComparison.equals(
                                 (JsonValue) expectedDocument.getJsonContent().get(),
-                                (JsonStructure) result);
+                                JakartaAdapter.instance(),
+                                (JsonStructure) result,
+                                JakartaAdapter.instance());
 
             } else if (expectedDocument instanceof QuadSetDocument) {
                 return (result instanceof RdfQuadSet)
@@ -92,7 +95,7 @@ public class JsonLdTestRunnerEarl {
 
         } catch (IOException e) {
             throw new IllegalStateException(e);
-            
+
         } catch (JsonLdError e) {
             return Objects.equals(e.getCode(), testCase.expectErrorCode);
 

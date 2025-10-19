@@ -104,20 +104,20 @@ public record Link(
                 return name;
             }
 
-            final StringBuilder builder = new StringBuilder();
-
-            builder.append(name);
-            builder.append('=');
+            final var builder = new StringBuilder()
+                    .append(name)
+                    .append('=');
 
             if (languageTag != null) {
-                builder.append(Charset.defaultCharset().name());
-                builder.append('\'');
-                builder.append(languageTag);
-                builder.append('\'');
+                builder
+                        .append(Charset.defaultCharset().name())
+                        .append('\'')
+                        .append(languageTag)
+                        .append('\'');
             }
-            builder.append(value);
-
-            return builder.toString();
+            return builder
+                    .append(value)
+                    .toString();
         }
     }
 }

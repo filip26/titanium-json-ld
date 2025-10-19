@@ -43,6 +43,7 @@ import com.apicatalog.rdf.nquads.NQuadsReaderException;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.set.OrderedQuadDataset;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
+import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonValue;
@@ -165,7 +166,10 @@ class RemoteContextTest {
 
             assertNotNull(result);
 
-            boolean match = JsonLdComparison.equals(result, (JsonValue) expected.getJsonContent().orElse(null));
+            boolean match = JsonLdComparison.equals(result, JakartaAdapter.instance(),
+                    (JsonValue) expected.getJsonContent().orElse(null), JakartaAdapter.instance()
+
+            );
 
             assertTrue(match);
         });
