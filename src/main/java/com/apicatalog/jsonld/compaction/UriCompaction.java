@@ -31,9 +31,7 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.JsonLdNode;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.ValueNode;
 import com.apicatalog.jsonld.node.GraphNode;
-import com.apicatalog.jsonld.node.ListNode;
 import com.apicatalog.jsonld.uri.UriRelativizer;
 
 import jakarta.json.JsonArray;
@@ -150,7 +148,7 @@ public final class UriCompaction {
                 containers.add(Keywords.SET);
 
                 // 4.7.
-            } else if (ListNode.isListObject(value)) {
+            } else if (JsonLdNode.isListObject(value)) {
 
                 // 4.7.1.
                 if (!value.asJsonObject().containsKey(Keywords.INDEX)) {
@@ -295,7 +293,7 @@ public final class UriCompaction {
             } else {
 
                 // 4.9.1.
-                if (ValueNode.isValueObject(value)) {
+                if (JsonLdNode.isValueObject(value)) {
 
                     // 4.9.1.1.
                     if (JsonUtils.containsKey(Keywords.DIRECTION, value)
@@ -437,7 +435,7 @@ public final class UriCompaction {
                 preferredValues.add(typeLanguageValue);
                 preferredValues.add(Keywords.NONE);
 
-                if (ListNode.isListObject(value)
+                if (JsonLdNode.isListObject(value)
                         && JsonUtils.isEmptyArray(value.asJsonObject().get(Keywords.LIST))) {
 
                     typeLanguage = Keywords.ANY;

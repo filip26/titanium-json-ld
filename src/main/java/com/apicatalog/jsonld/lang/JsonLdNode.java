@@ -1,11 +1,13 @@
 package com.apicatalog.jsonld.lang;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Map.Entry;
 
+import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.tree.io.NodeAdapter;
@@ -21,11 +23,32 @@ public class JsonLdNode {
             Keywords.INDEX,
             Keywords.CONTEXT);
 
+    private static final Collection<String> VALUE_KEYWORDS = Arrays.asList(
+            Keywords.TYPE,
+            Keywords.VALUE,
+            Keywords.DIRECTION,
+            Keywords.LANGUAGE,
+            Keywords.INDEX,
+            Keywords.ANNOTATION);
+
+    public static boolean isNode(Object value, NodeAdapter adapter) {
+        if (!adapter.isMap(value)) {
+            return false;
+        }
+        return adapter.keyStream(value).noneMatch(Set.of(
+                Keywords.VALUE,
+                Keywords.LIST,
+                Keywords.SET)::contains)
+                || Set.of(
+                        Keywords.CONTEXT,
+                        Keywords.GRAPH).containsAll(adapter.keys(value));
+    }
+
     /**
      * @see <a href="https://www.w3.org/TR/json-ld11/#graph-objects">Graph
      *      Objects</a>
      */
-    public static final boolean isNotGraphNode(Object value) {
+    public static boolean isNotGraph(Object value) {
         return value == null
                 || !(value instanceof Map map)
                 || !map.keySet().contains(Keywords.GRAPH)
@@ -41,7 +64,7 @@ public class JsonLdNode {
      * @param value to check
      * @return <code>true</code> if the provided value is valid default object
      */
-    public static final boolean isDefaultNode(Object node, NodeAdapter adapter) {
+    public static boolean isDefault(Object node, NodeAdapter adapter) {
         return adapter.isMap(node) && adapter.keys(node).contains(Keywords.DEFAULT);
     }
 
@@ -51,8 +74,42 @@ public class JsonLdNode {
                 : Optional.empty();
     }
 
-    
-    
+    /**
+     * A list object is a map that has a @list key. It may also have an @index key,
+     * but no other entries. See the Lists and Sets section of JSON-LD 1.1 for a
+     * normative description.
+     *
+     * @see <a href="https://www.w3.org/TR/json-ld11/#dfn-list-object">List
+     *      Object</a>
+     *
+     * @param node to check
+     * @return <code>true</code> if the provided value is valid list object
+     */
+    public static boolean isList(Object node) {
+        return (node instanceof Map map)
+                && map.containsKey(Keywords.LIST)
+                && (map.size() == 1
+                        || map.size() == 2
+                                && map.containsKey(Keywords.INDEX));
+    }
+
+    public static Map<String, ?> toList(Object node) {
+        return node instanceof Collection
+                ? Map.of(Keywords.LIST, node)
+                : Map.of(Keywords.LIST, Set.of(node));
+    }
+
+    public static boolean isValueNode(Object node) {
+        return node instanceof Map map
+                && map.containsKey(Keywords.VALUE);
+    }
+
+    public static boolean isNotValueNode(Object node) {
+        return !(node instanceof Map map && VALUE_KEYWORDS.containsAll(map.keySet()));
+    }
+
+    /* ---- TODO ---- */
+
     /**
      * Check if the given value is valid node object.
      *
@@ -62,6 +119,7 @@ public class JsonLdNode {
      * @param value to check
      * @return <code>true</code> if the provided value is valid node object
      */
+    @Deprecated
     public static final boolean isNode(JsonValue value) {
         return JsonUtils.isObject(value)
                 && ((!value.asJsonObject().containsKey(Keywords.VALUE)
@@ -71,28 +129,18 @@ public class JsonLdNode {
                         || Arrays.asList(Keywords.CONTEXT, Keywords.GRAPH).containsAll(value.asJsonObject().keySet()));
     }
 
-    public static final boolean isNode(Object value, NodeAdapter adapter) {
-        if (!adapter.isMap(value)) {
-            return false;
-        }
-        return adapter.keyStream(value).noneMatch(Set.of(
-                Keywords.VALUE,
-                Keywords.LIST,
-                Keywords.SET)::contains)
-                || Set.of(
-                        Keywords.CONTEXT,
-                        Keywords.GRAPH).containsAll(adapter.keys(value));
-    }
-
+    @Deprecated
     public static final boolean isNotNode(JsonValue value) {
         return !isNode(value);
     }
 
+    @Deprecated
     public static final boolean isReference(JsonValue value) {
         return JsonUtils.containsKey(value, Keywords.ID) && value.asJsonObject().size() == 1;
     }
 
     // Extension: JSON-LD-STAR (Experimental)
+    @Deprecated
     public static final boolean isEmbedded(JsonValue value) {
 
         if (JsonUtils.isNotObject(value)) {
@@ -130,8 +178,8 @@ public class JsonLdNode {
                     propertyValue = propertyValue.asJsonArray().get(0);
                 }
 
-                if (ValueNode.isValueObject(propertyValue)) {
-                    propertyValue = ValueNode.getValue(propertyValue).orElse(null);
+                if (isValueObject(propertyValue)) {
+                    propertyValue = getValue(propertyValue).orElse(null);
                 }
 
                 if (JsonUtils.isString(propertyValue)
@@ -147,10 +195,12 @@ public class JsonLdNode {
     }
 
     // Extension: JSON-LD-STAR (Experimental)
+    @Deprecated
     public static final boolean isNotAnnotation(final JsonValue annotation) {
         return !isAnnotation(annotation);
     }
 
+    @Deprecated
     public static final boolean isAnnotation(final JsonValue annotation) {
 
         JsonValue value = annotation;
@@ -177,5 +227,42 @@ public class JsonLdNode {
 
         return true;
     }
-    
+
+    @Deprecated
+    public static final boolean isListObject(JsonValue value) {
+        return JsonUtils.containsKey(value, Keywords.LIST)
+                && (value.asJsonObject().size() == 1
+                        || (value.asJsonObject().size() == 2
+                                && value.asJsonObject().containsKey(Keywords.INDEX)));
+    }
+
+    /**
+     * Convert expanded value to a list object by first setting it to an array
+     * containing only expanded value if it is not already an array, and then by
+     * setting it to a map containing the key-value pair @list-expanded value.
+     *
+     * @param value to convert
+     * @return list object containing the provided value
+     */
+    @Deprecated
+    public static final JsonObject toListObject(JsonValue value) {
+        if (JsonUtils.isArray(value)) {
+            return JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, value).build();
+        }
+
+        return JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, JsonProvider.instance().createArrayBuilder().add(value)).build();
+    }
+
+    @Deprecated
+    public static final boolean isValueObject(JsonValue value) {
+        return JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.VALUE);
+    }
+
+    @Deprecated
+    public static Optional<JsonValue> getValue(JsonValue value) {
+        return isValueObject(value)
+                ? Optional.ofNullable(value.asJsonObject().get(Keywords.VALUE))
+                : Optional.empty();
+    }
+
 }

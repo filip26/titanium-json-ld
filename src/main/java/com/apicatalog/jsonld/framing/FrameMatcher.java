@@ -25,8 +25,6 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.JsonLdNode;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.ValueNode;
-import com.apicatalog.jsonld.node.ListNode;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonStructure;
@@ -179,11 +177,11 @@ public final class FrameMatcher {
 
                     JsonValue listValue = propertyFrame.get(Keywords.LIST);
 
-                    if (!nodeValues.isEmpty() && ListNode.isListObject(nodeValues.get(0))) {
+                    if (!nodeValues.isEmpty() && JsonLdNode.isListObject(nodeValues.get(0))) {
 
                         JsonValue nodeListValue = nodeValues.get(0).asJsonObject().get(Keywords.LIST);
 
-                        if (ValueNode.isValueObject(listValue.asJsonArray().get(0))) {
+                        if (JsonLdNode.isValueObject(listValue.asJsonArray().get(0))) {
 
                             final Frame frame = Frame.of((JsonStructure)listValue);
                             boolean match = false;

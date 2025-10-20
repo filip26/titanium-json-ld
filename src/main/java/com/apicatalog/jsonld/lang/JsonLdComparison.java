@@ -54,13 +54,6 @@ public final class JsonLdComparison {
             final Object value2, final NodeAdapter adapter2,
             final String parentProperty) {
 
-        if (value1 == null) {
-            return value2 != null;
-
-        } else if (value2 == null) {
-            return false;
-        }
-
         final var type1 = adapter1.type(value1);
 
         if (type1 == NodeType.POLY) {
@@ -126,11 +119,6 @@ public final class JsonLdComparison {
         for (final var entry1 : it1) {
 
             final var prop2 = adapter2.property(entry1.getKey(), adapter1, map2);
-
-            if (prop2 == null && entry1.getValue() != null
-                    || prop2 != null && entry1.getValue() == null) {
-                return false;
-            }
 
             if (!equals(
                     entry1.getValue(), adapter1,

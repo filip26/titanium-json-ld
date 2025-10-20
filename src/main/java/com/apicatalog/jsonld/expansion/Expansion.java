@@ -26,8 +26,8 @@ import java.util.Objects;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.lang.JsonLdNode;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.node.ListNode;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.PolyNode;
@@ -246,7 +246,7 @@ public final class Expansion {
                             .map(TermDefinition::getContainerMapping)
                             .filter(c -> c.contains(Keywords.LIST)).isPresent()) {
 
-                expanded = ListNode.asListNode(list);
+                expanded = JsonLdNode.toList(list);
             }
 
             // 5.2.3

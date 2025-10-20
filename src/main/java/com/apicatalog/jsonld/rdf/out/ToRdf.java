@@ -36,9 +36,7 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.lang.RdfConstants;
 import com.apicatalog.jsonld.lang.Utils;
-import com.apicatalog.jsonld.lang.ValueNode;
 import com.apicatalog.jsonld.lang.XsdConstants;
-import com.apicatalog.jsonld.node.ListNode;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.api.RdfConsumerException;
@@ -203,12 +201,12 @@ public final class ToRdf {
         }
 
         // 3.
-        if (ListNode.isListObject(item)) {
+        if (JsonLdNode.isListObject(item)) {
             fromList(consumer, item.get(Keywords.LIST).asJsonArray(), subject, predicate);
         }
 
         // 4.
-        if (!ValueNode.isValueObject(item)) {
+        if (!JsonLdNode.isValueObject(item)) {
             return;
         }
 

@@ -38,8 +38,6 @@ import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.JsonLdNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
-import com.apicatalog.jsonld.lang.ValueNode;
-import com.apicatalog.jsonld.node.ListNode;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.NodeType;
@@ -274,7 +272,7 @@ final class ObjectExpansion1314 {
                                     && (!adapter.isCollection(value)
                                             || adapter.elementStream(value)
                                                     .anyMatch(Predicate.not(adapter::isString)))
-                                    && !JsonLdNode.isDefaultNode(value, adapter)
+                                    && !JsonLdNode.isDefault(value, adapter)
                                     && JsonLdNode.findDefaultValue(value, adapter)
                                             .filter(adapter::isString)
                                             .map(adapter::stringValue)
@@ -289,7 +287,7 @@ final class ObjectExpansion1314 {
                         expandedValue = Collections.emptyMap();
 
                         // 13.4.4.3
-                    } else if (JsonLdNode.isDefaultNode(value, adapter)) {
+                    } else if (JsonLdNode.isDefault(value, adapter)) {
 
                         final var defaultValue = JsonLdNode.findDefaultValue(value, adapter);
 
@@ -637,7 +635,7 @@ final class ObjectExpansion1314 {
                                     for (var item : collection) {
 
                                         // 13.4.13.4.2.1.1
-                                        if (ListNode.isListNode(item) || ValueNode.isValueNode(item)) {
+                                        if (JsonLdNode.isList(item) || JsonLdNode.isValueNode(item)) {
                                             throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
                                         }
 
@@ -888,7 +886,7 @@ final class ObjectExpansion1314 {
                         final var indexMap = new LinkedHashMap<String, Object>();
 
                         // 13.8.3.7.1.
-                        if (containerMapping.contains(Keywords.GRAPH) && JsonLdNode.isNotGraphNode(item)) {
+                        if (containerMapping.contains(Keywords.GRAPH) && JsonLdNode.isNotGraph(item)) {
                             indexMap.put(Keywords.GRAPH, Set.of(item));
 
                         } else {
@@ -933,7 +931,7 @@ final class ObjectExpansion1314 {
                             indexMap.put(expandedIndexKey, indexPropertyValues);
 
                             // 13.8.3.7.2.5.
-                            if (ValueNode.isValueNode(item) && indexMap.size() > 1) {
+                            if (JsonLdNode.isValueNode(item) && indexMap.size() > 1) {
                                 throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
                             }
 
@@ -997,8 +995,8 @@ final class ObjectExpansion1314 {
             }
 
             // 13.11.
-            if (containerMapping.contains(Keywords.LIST) && !ListNode.isListNode(expandedValue)) {
-                expandedValue = ListNode.asListNode(expandedValue);
+            if (containerMapping.contains(Keywords.LIST) && !JsonLdNode.isList(expandedValue)) {
+                expandedValue = JsonLdNode.toList(expandedValue);
 
             }
 
@@ -1033,7 +1031,7 @@ final class ObjectExpansion1314 {
                 for (var item : (Collection<?>) expandedValue) {
 
                     // 13.13.4.1.
-                    if (ListNode.isListNode(item) || ValueNode.isValueNode(item)) {
+                    if (JsonLdNode.isList(item) || JsonLdNode.isValueNode(item)) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
                     }
 

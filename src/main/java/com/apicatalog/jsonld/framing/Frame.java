@@ -26,9 +26,7 @@ import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.JsonLdNode;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.ValueNode;
 import com.apicatalog.jsonld.node.DefaultObject;
-import com.apicatalog.jsonld.node.ListNode;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 
@@ -94,8 +92,8 @@ public final class Frame {
                 return defaultValue;
             }
 
-            if (ValueNode.isValueObject(embed)) {
-                embed = ValueNode.getValue(embed).orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE));
+            if (JsonLdNode.isValueObject(embed)) {
+                embed = JsonLdNode.getValue(embed).orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE));
             }
 
             if (JsonUtils.isString(embed)) {
@@ -139,8 +137,8 @@ public final class Frame {
                 return defaultValue;
             }
 
-            if (ValueNode.isValueObject(value)) {
-                value = ValueNode.getValue(value).orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_FRAME));
+            if (JsonLdNode.isValueObject(value)) {
+                value = JsonLdNode.getValue(value).orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_FRAME));
             }
 
             if (JsonUtils.isString(value)) {
@@ -244,7 +242,7 @@ public final class Frame {
     }
 
     public boolean isValuePattern() {
-        return ValueNode.isValueObject(frameObject);
+        return JsonLdNode.isValueObject(frameObject);
     }
 
     public boolean matchValue(JsonValue value) {
@@ -283,6 +281,6 @@ public final class Frame {
     }
 
     public boolean isListObject() {
-        return ListNode.isListObject(frameObject);
+        return JsonLdNode.isListObject(frameObject);
     }
 }
