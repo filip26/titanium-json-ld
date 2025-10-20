@@ -4,8 +4,8 @@ import java.net.URI;
 import java.util.Objects;
 
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.context.cache.LruCache;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.cache.LruCache;
 
 public class LRUDocumentCache implements JsonLdLoader {
 

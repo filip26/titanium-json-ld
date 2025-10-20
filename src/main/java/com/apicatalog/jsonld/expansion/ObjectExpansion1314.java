@@ -180,7 +180,7 @@ final class ObjectExpansion1314 {
                                 .expand(adapter.stringValue(value));
 
                         if (params.frameExpansion() && expandedValue != null) {
-                            expandedValue = Set.of(expandedValue);
+                            expandedValue = List.of(expandedValue);
 
                         } else if (expandedValue == null) {
                             result.put(Keywords.ID, null);
@@ -208,7 +208,7 @@ final class ObjectExpansion1314 {
                                 .expand(adapter.asString(value));
 
                         if (params.frameExpansion() && expandedValue != null) {
-                            expandedValue = Set.of(expandedValue);
+                            expandedValue = List.of(expandedValue);
 
                         } else if (expandedValue == null) {
                             result.put(Keywords.ID, null);
@@ -1200,6 +1200,6 @@ final class ObjectExpansion1314 {
         if (value instanceof Collection<?> collection) {
             return List.copyOf(collection);
         }
-        return Set.of(value);
+        return List.of(value);
     }
 }

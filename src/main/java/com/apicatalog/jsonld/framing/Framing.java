@@ -26,19 +26,10 @@ import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdEmbed;
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.json.JsonMapBuilder;
-import com.apicatalog.jsonld.json.JsonProvider;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.JsonLdNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.tree.io.java.NativeAdapter;
-
-import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonString;
-import jakarta.json.JsonStructure;
-import jakarta.json.JsonValue;
 
 /**
  *
@@ -98,10 +89,10 @@ public final class Framing {
         // 4.
         for (final var id : Utils.index(matchedSubjects, ordered)) {
 
-            final Map<String, JsonValue> node = (Map) state.getGraphMap().find(state.getGraphName(), id).orElse(Collections.emptyMap());
+            final Map<String, ?> node = (Map) state.getGraphMap().find(state.getGraphName(), id).orElse(Collections.emptyMap());
 
-            final String nodeId = JsonUtils.isString(node.get(Keywords.ID))
-                    ? ((JsonString) node.get(Keywords.ID)).getString()
+            final String nodeId = node.get(Keywords.ID) instanceof String stringId
+                    ? stringId
                     : null;
 
             // 4.1.
@@ -120,9 +111,7 @@ public final class Framing {
             // 4.3.
             if (state.isEmbedded()
                     && (JsonLdEmbed.NEVER == embed
-                            || state.isParent(nodeId))
-
-            ) {
+                            || state.isParent(nodeId))) {
                 addToResult(parent, activeProperty, output);
                 continue;
             }
@@ -193,7 +182,7 @@ public final class Framing {
                 Framing.with(
                         includedState,
                         subjects,
-                        Frame.of((JsonStructure) frame.get(Keywords.INCLUDED)),
+                        Frame.of(frame.get(Keywords.INCLUDED)),
                         output,
                         Keywords.INCLUDED)
                         .ordered(ordered)
@@ -202,7 +191,7 @@ public final class Framing {
 
             // 4.7.
             for (final String property : Utils.index(state.getGraphMap().properties(state.getGraphName(), id), ordered)) {
-                final JsonValue objects = (JsonValue) state.getGraphMap().get(state.getGraphName(), id, property);
+                final var objects = state.getGraphMap().get(state.getGraphName(), id, property);
 
                 // 4.7.1.
                 if (Keywords.contains(property)) {
@@ -221,11 +210,9 @@ public final class Framing {
                     var subframe = frame.get(property);
 
                     if (subframe == null) {
-                        subframe = JsonProvider.instance().createObjectBuilder()
-                                .add(Keywords.EMBED, "@".concat(embed.name().toLowerCase()))
-                                .add(Keywords.EXPLICIT, explicit)
-                                .add(Keywords.REQUIRE_ALL, requireAll)
-                                .build();
+                        subframe = Map.of(Keywords.EMBED, "@".concat(embed.name().toLowerCase()),
+                                Keywords.EXPLICIT, explicit,
+                                Keywords.REQUIRE_ALL, requireAll);
                     }
 
                     // 4.7.3.1.
@@ -255,7 +242,7 @@ public final class Framing {
                         final var list = new ArrayList<Object>();
 
                         for (final var listItem : NativeAdapter.asCollection(
-                                ((Map)item).get(Keywords.LIST))) {
+                                ((Map) item).get(Keywords.LIST))) {
 
                             // 4.7.3.1.1.
                             if (JsonLdNode.isReference(listItem)) {
@@ -276,7 +263,7 @@ public final class Framing {
                                         .frame();
 
                                 var existingList = listResult.get(Keywords.LIST);
-                                
+
                                 if (existingList != null) {
                                     list.add(existingList);
                                 }
@@ -298,15 +285,15 @@ public final class Framing {
                         Framing.with(
                                 clonedState,
                                 Arrays.asList(((Map<String, String>) item).get(Keywords.ID)),
-                                Frame.of((JsonStructure) subframe),
+                                Frame.of(subframe),
                                 output,
                                 property)
                                 .ordered(ordered)
                                 .frame();
 
                     } else if (JsonLdNode.isValueNode(item)) {
-                        if (Frame.of((JsonStructure) subframe).matchValue(item)) {
-                            output.put(property, item);
+                        if (Frame.of(subframe).matchValue(item)) {
+                            output.put(property, List.of(item));
                         }
 
                     } else {
@@ -399,7 +386,7 @@ public final class Framing {
             result.put(Integer.toHexString(result.size()), value);
 
         } else {
-            result.put(property, value);
+            result.put(property, List.of(value)); // TODO ?!?!
         }
     }
 }

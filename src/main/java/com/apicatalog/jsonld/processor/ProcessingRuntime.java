@@ -4,8 +4,8 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.ProcessingPolicy;
 import com.apicatalog.jsonld.JsonLdVersion;
-import com.apicatalog.jsonld.context.cache.Cache;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.cache.Cache;
 import com.apicatalog.jsonld.loader.JsonLdLoader;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 

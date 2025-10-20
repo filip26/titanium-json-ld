@@ -59,7 +59,7 @@ public final class ValuePatternMatcher {
         final var value1 = value.getOrDefault(Keywords.VALUE, null);
 
         return (value1 != null && isWildcard(value2))
-                || value2 != null
+                || value2 != null && value1 != null
                         && (value2 instanceof Collection array && array.contains(value1)
                                 || value2.equals(value1));
 

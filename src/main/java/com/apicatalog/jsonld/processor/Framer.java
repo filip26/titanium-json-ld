@@ -125,6 +125,7 @@ public final class Framer {
 
         // 4.
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
+
         expansionOptions.setOrdered(false);
 
         var expandedInput = Expander.expand(input, expansionOptions, false);
@@ -210,19 +211,21 @@ public final class Framer {
         }
 
         // 18. - remove preserve
-        final var filtered = new ArrayList<Object>();
+        final var filtered = result
+                .map(Framer::removePreserve)
+                .toList();
 
-        result.map(Framer::removePreserve).forEach(filtered::add);
-
-        var compactedResults = new JakartaMaterializer().node(filtered, NativeAdapter.instance());
-
+        var xy = new JakartaMaterializer().node(filtered, NativeAdapter.instance());
+        System.out.println(expandedInput);
+        System.out.println(resultMap.values());
+        System.out.println(xy);
         // 19.
         // FIXME
-//        JsonValue compactedResults = Compaction
-//                .with(activeContext)
-//                .compactArrays(options.isCompactArrays())
-//                .ordered(options.isOrdered())
-//                .compact(filtered);
+        JsonValue compactedResults = Compaction
+                .with(activeContext)
+                .compactArrays(options.isCompactArrays())
+                .ordered(options.isOrdered())
+                .compact(xy);
 
         // 19.1.
         if (JsonUtils.isEmptyArray(compactedResults)) {
@@ -418,13 +421,13 @@ public final class Framer {
             for (final String subject : graphMap.subjects(graphName)) {
 
                 // TODO
-                final Map<String, JsonValue> node = (Map) graphMap.find(graphName, subject).orElse(Collections.emptyMap());
+                final var node = (Map<String, ?>) graphMap.find(graphName, subject).orElse(Collections.emptyMap());
 
                 if (node == null) {
                     continue;
                 }
 
-                for (final Entry<String, JsonValue> propEntry : node.entrySet()) {
+                for (final var propEntry : node.entrySet()) {
 
                     final String property = propEntry.getKey();
 
@@ -451,7 +454,7 @@ public final class Framer {
 
                     } else if (value instanceof Map map && map.containsKey(Keywords.ID)) {
 
-                        final var targetId = map.get(Keywords.ID).toString(); // TODO ?!
+                        final var targetId = (String) map.get(Keywords.ID);
 
                         graphIndex
                                 .computeIfAbsent(property, k -> new HashMap<>())

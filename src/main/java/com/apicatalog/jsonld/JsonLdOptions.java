@@ -18,10 +18,10 @@ package com.apicatalog.jsonld;
 import java.net.URI;
 import java.time.Duration;
 
-import com.apicatalog.jsonld.context.cache.Cache;
-import com.apicatalog.jsonld.context.cache.LruCache;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.document.cache.Cache;
+import com.apicatalog.jsonld.document.cache.LruCache;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.loader.JsonLdLoader;
 import com.apicatalog.jsonld.loader.SchemeRouter;

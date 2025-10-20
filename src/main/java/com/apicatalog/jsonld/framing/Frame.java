@@ -55,6 +55,9 @@ public final class Frame {
         } else if (node instanceof Map map) {
             frameMap = map;
 
+        } else if (node == null) {
+            return EMPTY;   //TODO ?!?!
+            
         } else {
             throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame is not JSON object. [" + node + "]");
         }
@@ -68,6 +71,7 @@ public final class Frame {
         if (frameMap.containsKey(Keywords.TYPE) && !validateFrameType(frameMap)) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @type value i not valid [@type = " + frameMap.get(Keywords.TYPE) + "].");
         }
+        
         return new Frame(frameMap);
     }
 
@@ -84,7 +88,7 @@ public final class Frame {
             if (JsonLdNode.isValueNode(embed)) {
                 embed = JsonLdNode.findValue(embed).orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE));
             }
-
+            System.out.println(">>> " + embed + ",  " + embed.getClass());
             if (embed instanceof String stringValue) {
 
                 if (Keywords.noneMatch(stringValue, Keywords.ALWAYS, Keywords.ONCE, Keywords.NEVER)) {
