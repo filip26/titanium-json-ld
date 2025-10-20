@@ -20,15 +20,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.JsonLdNode;
 import com.apicatalog.jsonld.lang.Keywords;
-
-import jakarta.json.JsonArray;
-import jakarta.json.JsonStructure;
-import jakarta.json.JsonValue;
+import com.apicatalog.tree.io.java.NativeAdapter;
 
 public final class FrameMatcher {
 
@@ -54,11 +51,11 @@ public final class FrameMatcher {
             return new ArrayList<>(subjects);
         }
 
-        final List<String> result = new ArrayList<>();
+        final var result = new ArrayList<String>();
 
-        for (final String subject : subjects) {
+        for (final var subject : subjects) {
 
-            if (match((Map)state.getGraphMap().find(state.getGraphName(), subject).orElse(Collections.emptyMap()))) {
+            if (match((Map<?, ?>) state.getGraphMap().find(state.getGraphName(), subject).orElse(Collections.emptyMap()))) {
                 result.add(subject);
             }
         }
@@ -66,7 +63,7 @@ public final class FrameMatcher {
         return result;
     }
 
-    public boolean match(final Map<String, JsonValue> node) throws JsonLdError {
+    public boolean match(final Map<?, ?> node) throws JsonLdError {
 
         int count = 0;
 
@@ -74,17 +71,25 @@ public final class FrameMatcher {
 
         for (final String property : frame.keys()) {
 
-            JsonValue nodeValue = node.get(property);
+            var nodeValue = node.get(property);
 
             // 2.1.
             if (Keywords.ID.equals(property)) {
 
-                nodeValue = JsonUtils.toJsonArray(nodeValue);
+                nodeValue = nodeValue instanceof Collection
+                        ? nodeValue
+                        : Set.of(nodeValue);
 
-                if (JsonUtils.toStream(frame.get(property)).anyMatch(nodeValue.asJsonArray()::contains)
+//                        JsonUtils.toJsonArray(nodeValue);
+
+                final var propertyValue = frame.get(property);
+
+                if (propertyValue instanceof Collection<?> array
+                        && array.stream().anyMatch(((Collection<?>) nodeValue)::contains)
+
+//                        JsonUtils.toStream(frame.get(property)).anyMatch(((Collection<?>)nodeValue)::contains)
                         || frame.isWildCard(Keywords.ID)
-                        || frame.isNone(Keywords.ID)
-                        ) {
+                        || frame.isNone(Keywords.ID)) {
 
                     if (requireAll) {
                         count++;
@@ -94,14 +99,19 @@ public final class FrameMatcher {
                 }
                 return false;
 
-            // 2.2.
+                // 2.2.
             } else if (Keywords.TYPE.equals(property)) {
 
-                if ((JsonUtils.isNotNull(nodeValue) && !nodeValue.asJsonArray().isEmpty() && frame.isWildCard(property))
-                        || ((JsonUtils.isNull(nodeValue) || nodeValue.asJsonArray().isEmpty()) && frame.isNone(property))
+                if ((nodeValue != null && !((Collection<?>) nodeValue).isEmpty() && frame.isWildCard(property))
+                        || ((nodeValue == null || ((Collection<?>) nodeValue).isEmpty()) && frame.isNone(property))
                         || frame.isDefaultObject(property)
-                        || (JsonUtils.isNotNull(nodeValue) && frame.getCollection(property).stream().anyMatch(nodeValue.asJsonArray()::contains))
-                        ){
+                        || (nodeValue != null && frame.asCollection(property).stream().anyMatch(((Collection<?>) nodeValue)::contains))) {
+
+//                if ((JsonUtils.isNotNull(nodeValue) && !nodeValue.asJsonArray().isEmpty() && frame.isWildCard(property))
+//                        || ((JsonUtils.isNull(nodeValue) || nodeValue.asJsonArray().isEmpty()) && frame.isNone(property))
+//                        || frame.isDefaultObject(property)
+//                        || (JsonUtils.isNotNull(nodeValue) && frame.getCollection(property).stream().anyMatch(nodeValue.asJsonArray()::contains))
+//                        ){
 
                     if (requireAll) {
 
@@ -112,29 +122,30 @@ public final class FrameMatcher {
                 }
                 return false;
 
-            // skip other keywords
+                // skip other keywords
             } else if (Keywords.matchForm(property)) {
                 continue;
             }
 
             nonKeywordProperty = true;
 
-            JsonValue propertyValue = frame.get(property);
+            var propertyValue = frame.get(property);
 
-            final Frame propertyFrame =
-                            (JsonUtils.isNotNull(propertyValue) && JsonUtils.isNonEmptyArray(propertyValue))
-                                ? Frame.of((JsonStructure)propertyValue)
-                                : null;
+            final Frame propertyFrame = propertyValue instanceof Collection array && !array.isEmpty()
+//                            (JsonUtils.isNotNull(propertyValue) && JsonUtils.isNonEmptyArray(propertyValue))
+                    ? Frame.of(array)
+                    : null;
 
-            final JsonArray nodeValues = nodeValue != null
-                                            ? JsonUtils.toJsonArray(nodeValue)
-                                            : JsonValue.EMPTY_JSON_ARRAY;
+            final Collection<?> nodeValues = nodeValue instanceof Collection array
+                    ? array
+                    : nodeValue != null
+                            ? List.of(nodeValue)
+                            : Collections.emptyList();
 
             // 2.5.
             if (nodeValues.isEmpty()
                     && propertyFrame != null
-                    && propertyFrame.containsOnly(Keywords.DEFAULT)
-                    ) {
+                    && propertyFrame.containsOnly(Keywords.DEFAULT)) {
                 continue;
             }
 
@@ -171,22 +182,24 @@ public final class FrameMatcher {
                     return true;
                 }
 
-            } else  {
+            } else {
 
-                if (propertyFrame.isListObject()) {
+                if (propertyFrame.isList()) {
 
-                    JsonValue listValue = propertyFrame.get(Keywords.LIST);
+                    var listValue = propertyFrame.get(Keywords.LIST);
 
-                    if (!nodeValues.isEmpty() && JsonLdNode.isListObject(nodeValues.get(0))) {
+                    if (!nodeValues.isEmpty() && JsonLdNode.isList(nodeValues.iterator().next())) {
 
-                        JsonValue nodeListValue = nodeValues.get(0).asJsonObject().get(Keywords.LIST);
+                        final var first = (Map<?, ?>) nodeValues.iterator().next();
 
-                        if (JsonLdNode.isValueObject(listValue.asJsonArray().get(0))) {
+                        final var nodeListValue = first.get(Keywords.LIST);
 
-                            final Frame frame = Frame.of((JsonStructure)listValue);
+                        if (JsonLdNode.isValueNode(((Collection<?>) listValue).iterator().next())) {
+
+                            final Frame frame = Frame.of(listValue);
                             boolean match = false;
 
-                            for (final JsonValue value : JsonUtils.toCollection(nodeListValue)) {
+                            for (final var value : NativeAdapter.asCollection(nodeListValue)) {
 
                                 match = frame.matchValue(value);
                                 if (match) {
@@ -202,12 +215,13 @@ public final class FrameMatcher {
                                 return true;
                             }
 
-                        } else if (JsonLdNode.isNode(listValue.asJsonArray().get(0)) || JsonLdNode.isReference(listValue.asJsonArray().get(0))) {
+                        } else if (JsonLdNode.isNode(((Collection<?>) listValue).iterator().next())
+                                || JsonLdNode.isReference(((Collection<?>) listValue).iterator().next())) {
 
-                            final Frame frame = Frame.of((JsonStructure)listValue);
+                            final Frame frame = Frame.of(listValue);
                             boolean match = false;
 
-                            for (final JsonValue value : JsonUtils.toCollection(nodeListValue)) {
+                            for (final var value : NativeAdapter.asCollection(nodeListValue)) {
 
                                 match = frame.matchNode(state, value, requireAll);
 
@@ -236,30 +250,30 @@ public final class FrameMatcher {
                         return true;
                     }
 
-                } else if (propertyFrame.isNodeReference()) {
+                } else if (propertyFrame.isReference()) {
 
-                        boolean match = false;
+                    boolean match = false;
 
-                        if (!nodeValues.isEmpty()) {
+                    if (!nodeValues.isEmpty()) {
 
-                            for (JsonValue values : nodeValues) {
+                        for (final var values : nodeValues) {
 
-                                match = propertyFrame.matchNode(state, values, requireAll);
-                                if (match) {
-                                    break;
-                                }
+                            match = propertyFrame.matchNode(state, values, requireAll);
+                            if (match) {
+                                break;
                             }
                         }
+                    }
 
-                        if (match) {
-                            if (requireAll) {
-                                count++;
-                                continue;
-                            }
-                            return true;
+                    if (match) {
+                        if (requireAll) {
+                            count++;
+                            continue;
                         }
+                        return true;
+                    }
 
-                } else  {
+                } else {
 
                     if (!nodeValues.isEmpty()) {
                         if (requireAll) {
@@ -278,5 +292,4 @@ public final class FrameMatcher {
 
         return !nonKeywordProperty || count > 0;
     }
-
 }

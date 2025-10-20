@@ -18,9 +18,11 @@ package com.apicatalog.jsonld.processor;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,6 +36,7 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.framing.Frame;
@@ -46,6 +49,8 @@ import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
+import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
+import com.apicatalog.tree.io.java.NativeAdapter;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
@@ -97,15 +102,20 @@ public final class Framer {
         return frame(input, frameDocument, options);
     }
 
-    public static final JsonObject frame(final Document input, final Document<?> frame, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final JsonObject frame(final Document input, final Document frame, final JsonLdOptions options) throws JsonLdError, IOException {
 
         if (frame == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame or Frame.Document is null.");
         }
 
-        final JsonStructure frameStructure = frame
-                .getJsonContent()
-                .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but null."));
+        final JsonStructure frameStructure;
+
+        if (frame instanceof JsonDocument x) {
+            frameStructure = x.getJsonContent()
+                    .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but null."));
+        } else {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but null.");
+        }
 
         if (JsonUtils.isNotObject(frameStructure)) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but [" + frameStructure + "].");
@@ -117,13 +127,14 @@ public final class Framer {
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
         expansionOptions.setOrdered(false);
 
-//FIXME        JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
-        JsonArray expandedInput = JsonValue.EMPTY_JSON_ARRAY;
-
+        var expandedInput = Expander.expand(input, expansionOptions, false);
+//        JsonArray expandedInput = JsonValue.EMPTY_JSON_ARRAY;
+//        var a = new JakartaMaterializer().node(expandedInput, NativeAdapter.instance());
         // 7.
-//FIXME        JsonArray expandedFrame = ExpansionProcessor.expand(frame, expansionOptions, true);
-        JsonArray expandedFrame = JsonValue.EMPTY_JSON_ARRAY;
+        var expandedFrame = Expander.expand(frame, expansionOptions, true);
 
+        var b = new JakartaMaterializer().node(expandedFrame, NativeAdapter.instance());
+//        JsonArray expandedFrame = JsonValue.EMPTY_JSON_ARRAY;
 
         JsonValue context = JsonValue.EMPTY_JSON_OBJECT;
 
@@ -175,7 +186,7 @@ public final class Framer {
         state.setReversePropertyIndex(buildReversePropertyIndex(state.getGraphMap()));
 
         // 15.
-        final JsonMapBuilder resultMap = JsonMapBuilder.create();
+        final var resultMap = new LinkedHashMap<String, Object>();
 
         // 16.
         Framing.with(state,
@@ -186,12 +197,12 @@ public final class Framer {
                 .ordered(options.isOrdered())
                 .frame();
 
-        Stream<JsonValue> result = resultMap.valuesToArray().stream();
+        Stream<?> result = resultMap.values().stream();
 
         // 17. - remove blank @id
         if (!activeContext.runtime().isV10()) {
 
-            final List<String> remove = findBlankNodes(resultMap.valuesToArray());
+            final List<String> remove = findBlankNodes(resultMap.values());
 
             if (!remove.isEmpty()) {
                 result = result.map(v -> Framer.removeBlankIdKey(v, remove));
@@ -199,16 +210,19 @@ public final class Framer {
         }
 
         // 18. - remove preserve
-        final JsonArrayBuilder filtered = JsonProvider.instance().createArrayBuilder();
+        final var filtered = new ArrayList<Object>();
 
         result.map(Framer::removePreserve).forEach(filtered::add);
 
+        var compactedResults = new JakartaMaterializer().node(filtered, NativeAdapter.instance());
+
         // 19.
-        JsonValue compactedResults = Compaction
-                .with(activeContext)
-                .compactArrays(options.isCompactArrays())
-                .ordered(options.isOrdered())
-                .compact(filtered.build());
+        // FIXME
+//        JsonValue compactedResults = Compaction
+//                .with(activeContext)
+//                .compactArrays(options.isCompactArrays())
+//                .ordered(options.isOrdered())
+//                .compact(filtered);
 
         // 19.1.
         if (JsonUtils.isEmptyArray(compactedResults)) {
@@ -279,33 +293,29 @@ public final class Framer {
         return remoteDocument;
     }
 
-    private static final JsonValue removePreserve(JsonValue value) {
+    private static final Object removePreserve(Object value) {
 
-        if (JsonUtils.isScalar(value)) {
-            return value;
+        if (value instanceof Collection<?> array) {
+            return array.stream().map(Framer::removePreserve).toList();
         }
 
-        if (JsonUtils.isArray(value)) {
+        if (value instanceof Map<?, ?> map) {
 
-            final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
+            final var object = new LinkedHashMap<Object, Object>();
 
-            value.asJsonArray().forEach(item -> array.add(removePreserve(item)));
+            for (final var entry : map.entrySet()) {
 
-            return array.build();
-        }
+                if (Keywords.PRESERVE.equals(entry.getKey())) {
+                    return ((Collection<?>) entry.getValue()).iterator().next();
+                }
 
-        final JsonObjectBuilder object = JsonProvider.instance().createObjectBuilder();
-
-        for (final Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
-
-            if (Keywords.PRESERVE.equals(entry.getKey())) {
-
-                return entry.getValue().asJsonArray().get(0);
+                object.put(entry.getKey(), removePreserve(entry.getValue()));
             }
-            object.add(entry.getKey(), removePreserve(entry.getValue()));
+
+            return object;
         }
 
-        return object.build();
+        return value;
     }
 
     private static final JsonValue replaceNull(JsonValue value) {
@@ -334,39 +344,40 @@ public final class Framer {
         return object.build();
     }
 
-    private static final JsonValue removeBlankIdKey(JsonValue value, List<String> blankNodes) {
+    private static final Object removeBlankIdKey(Object value, List<String> blankNodes) {
 
-        if (JsonUtils.isScalar(value)) {
-            return value;
+        if (value instanceof Collection<?> array) {
+            return array.stream().map(item -> removeBlankIdKey(item, blankNodes)).toList();
+//            final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
+//
+//            value.asJsonArray().forEach(item -> array.add(removeBlankIdKey(item, blankNodes)));
+//
+//            return array.build();
         }
 
-        if (JsonUtils.isArray(value)) {
+        if (value instanceof Map<?, ?> map) {
 
-            final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
+            final var object = new LinkedHashMap<Object, Object>();
 
-            value.asJsonArray().forEach(item -> array.add(removeBlankIdKey(item, blankNodes)));
+            for (final var entry : map.entrySet()) {
 
-            return array.build();
-        }
+                if (Keywords.ID.equals(entry.getKey())
+                        && entry.getValue() instanceof String stringValue
+                        && blankNodes.contains(stringValue)) {
 
-        final JsonObjectBuilder object = JsonProvider.instance().createObjectBuilder();
+                    continue;
+                }
 
-        for (final Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
-
-            if (Keywords.ID.equals(entry.getKey())
-                    && JsonUtils.isString(entry.getValue())
-                    && blankNodes.contains(((JsonString) entry.getValue()).getString())) {
-
-                continue;
+                object.put(entry.getKey(), removeBlankIdKey(entry.getValue(), blankNodes));
             }
 
-            object.add(entry.getKey(), removeBlankIdKey(entry.getValue(), blankNodes));
+            return object;
         }
 
-        return object.build();
+        return value;
     }
 
-    private static final List<String> findBlankNodes(final JsonArray array) {
+    private static final List<String> findBlankNodes(final Collection<?> array) {
 
         Map<String, Integer> candidates = new HashMap<>();
 
@@ -375,31 +386,24 @@ public final class Framer {
         return candidates.entrySet().stream().filter(e -> e.getValue() == 1).map(Entry::getKey).collect(Collectors.toList());
     }
 
-    private static final void findBlankNodes(JsonValue value, final Map<String, Integer> blankNodes) {
+    private static final void findBlankNodes(Object value, final Map<String, Integer> blankNodes) {
 
-        if (JsonUtils.isString(value)) {
+        if (value instanceof String string) {
 
-            if (BlankNode.isWellFormed(((JsonString) value).getString())) {
-                Integer count = blankNodes.computeIfAbsent(((JsonString) value).getString(), x -> 0);
-                blankNodes.put(((JsonString) value).getString(), ++count);
+            if (BlankNode.isWellFormed(string)) {
+                Integer count = blankNodes.computeIfAbsent(string, x -> 0);
+                blankNodes.put(string, ++count);
             }
 
             return;
         }
-
-        if (JsonUtils.isScalar(value)) {
+        if (value instanceof Collection<?> array) {
+            array.forEach(item -> findBlankNodes(item, blankNodes));
             return;
         }
 
-        if (JsonUtils.isArray(value)) {
-            for (JsonValue item : value.asJsonArray()) {
-                findBlankNodes(item, blankNodes);
-            }
-            return;
-        }
-
-        for (Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
-            findBlankNodes(entry.getValue(), blankNodes);
+        if (value instanceof Map<?, ?> map) {
+            map.values().forEach(v -> findBlankNodes(v, blankNodes));
         }
     }
 
@@ -413,7 +417,7 @@ public final class Framer {
 
             for (final String subject : graphMap.subjects(graphName)) {
 
-                //TODO
+                // TODO
                 final Map<String, JsonValue> node = (Map) graphMap.find(graphName, subject).orElse(Collections.emptyMap());
 
                 if (node == null) {
@@ -428,15 +432,15 @@ public final class Framer {
                         continue;
                     }
 
-                    final JsonValue value = propEntry.getValue();
+                    final Object value = propEntry.getValue();
 
-                    if (JsonUtils.isArray(value)) {
+                    if (value instanceof Collection<?> items) {
 
-                        for (final JsonValue item : value.asJsonArray()) {
+                        for (final var item : items) {
 
-                            if (JsonUtils.isObject(item) && item.asJsonObject().containsKey(Keywords.ID)) {
+                            if (item instanceof Map map && map.containsKey(Keywords.ID)) {
 
-                                final String targetId = item.asJsonObject().getString(Keywords.ID);
+                                final var targetId = map.get(Keywords.ID).toString(); // TODO ?!
 
                                 graphIndex
                                         .computeIfAbsent(property, k -> new HashMap<>())
@@ -445,9 +449,9 @@ public final class Framer {
                             }
                         }
 
-                    } else if (JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.ID)) {
+                    } else if (value instanceof Map map && map.containsKey(Keywords.ID)) {
 
-                        final String targetId = value.asJsonObject().getString(Keywords.ID);
+                        final var targetId = map.get(Keywords.ID).toString(); // TODO ?!
 
                         graphIndex
                                 .computeIfAbsent(property, k -> new HashMap<>())

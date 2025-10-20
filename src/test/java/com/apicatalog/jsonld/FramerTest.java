@@ -28,7 +28,7 @@ import com.apicatalog.jsonld.test.JsonLdManifestLoader;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 
-class FrameTest {
+class FramerTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")

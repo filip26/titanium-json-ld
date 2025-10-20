@@ -17,7 +17,9 @@ package com.apicatalog.jsonld.framing;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,6 +32,7 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.JsonLdNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Utils;
+import com.apicatalog.tree.io.java.NativeAdapter;
 
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
@@ -39,7 +42,9 @@ import jakarta.json.JsonValue;
 
 /**
  *
- * @see <a href="https://w3c.github.io/json-ld-framing/#framing-algorithm">Framing Algorithm</a>
+ * @see <a href=
+ *      "https://w3c.github.io/json-ld-framing/#framing-algorithm">Framing
+ *      Algorithm</a>
  *
  */
 public final class Framing {
@@ -48,14 +53,14 @@ public final class Framing {
     private final FramingState state;
     private final List<String> subjects;
     private final Frame frame;
-    private final JsonMapBuilder parent;
+    private final Map<String, Object> parent;
 
     private String activeProperty;
 
     // optional
     private boolean ordered;
 
-    private Framing(FramingState state, List<String> subjects, Frame frame, JsonMapBuilder parent, String activeProperty) {
+    private Framing(FramingState state, List<String> subjects, Frame frame, Map<String, Object> parent, String activeProperty) {
         this.state = state;
         this.subjects = subjects;
         this.frame = frame;
@@ -66,7 +71,8 @@ public final class Framing {
         this.ordered = false;
     }
 
-    public static final Framing with(FramingState state, List<String> subjects, Frame frame, JsonMapBuilder parent, String activeProperty) {
+    public static final Framing with(FramingState state, List<String> subjects, Frame frame,
+            Map<String, Object> parent, String activeProperty) {
         return new Framing(state, subjects, frame, parent, activeProperty);
     }
 
@@ -85,42 +91,39 @@ public final class Framing {
         final boolean requireAll = frame.getRequireAll(state.isRequireAll());
 
         // 3.
-        final List<String> matchedSubjects =
-                                FrameMatcher
-                                    .with(state, frame, requireAll)
-                                    .match(subjects);
+        final List<String> matchedSubjects = FrameMatcher
+                .with(state, frame, requireAll)
+                .match(subjects);
 
         // 4.
-        for (final String id : Utils.index(matchedSubjects, ordered)) {
+        for (final var id : Utils.index(matchedSubjects, ordered)) {
 
-            final Map<String, JsonValue> node = (Map)state.getGraphMap().find(state.getGraphName(), id).orElse(Collections.emptyMap());
+            final Map<String, JsonValue> node = (Map) state.getGraphMap().find(state.getGraphName(), id).orElse(Collections.emptyMap());
 
             final String nodeId = JsonUtils.isString(node.get(Keywords.ID))
-                                ? ((JsonString)node.get(Keywords.ID)).getString()
-                                : null;
+                    ? ((JsonString) node.get(Keywords.ID)).getString()
+                    : null;
 
             // 4.1.
-            final JsonMapBuilder output = JsonMapBuilder.create();
-            output.put(Keywords.ID, JsonProvider.instance().createValue(id));
-
+            final var output = new LinkedHashMap<String, Object>();
+            output.put(Keywords.ID, id);
 
             if (activeProperty == null) {
                 state.clearDone();
             }
 
             // 4.2.
-            if (!state.isEmbedded() && state.isDone(id))  {
+            if (!state.isEmbedded() && state.isDone(id)) {
                 continue;
             }
 
             // 4.3.
             if (state.isEmbedded()
                     && (JsonLdEmbed.NEVER == embed
-                            || state.isParent(nodeId)
-                            )
+                            || state.isParent(nodeId))
 
-                    ) {
-                addToResult(parent, activeProperty, output.build());
+            ) {
+                addToResult(parent, activeProperty, output);
                 continue;
             }
 
@@ -129,8 +132,8 @@ public final class Framing {
                     && JsonLdEmbed.ONCE == embed
                     && state.isDone(id)
 
-                    ) {
-                addToResult(parent, activeProperty, output.build());
+            ) {
+                addToResult(parent, activeProperty, output);
                 continue;
             }
 
@@ -148,14 +151,14 @@ public final class Framing {
                     recurse = !Keywords.MERGED.equals(state.getGraphName());
                     subframe = Frame.EMPTY;
 
-                // 4.5.2.
                 } else {
+                    // 4.5.2.
                     recurse = !Keywords.MERGED.equals(id) && !Keywords.DEFAULT.equals(id);
 
-                    if (JsonUtils.isObject(frame.get(Keywords.GRAPH))
-                            || JsonUtils.isArray(frame.get(Keywords.GRAPH))
-                            ) {
-                        subframe = Frame.of((JsonStructure)frame.get(Keywords.GRAPH));
+                    final var graph = frame.get(Keywords.GRAPH);
+
+                    if (graph instanceof Map || graph instanceof Collection) {
+                        subframe = Frame.of(graph);
 
                     } else {
                         subframe = Frame.EMPTY;
@@ -171,12 +174,11 @@ public final class Framing {
                     graphState.setEmbedded(false);
 
                     Framing.with(
-                                graphState,
-                                new ArrayList<>(state.getGraphMap().find(id).map(Map::keySet).orElse(Collections.emptySet())),
-                                subframe,
-                                output,
-                                Keywords.GRAPH
-                                )
+                            graphState,
+                            new ArrayList<>(state.getGraphMap().find(id).map(Map::keySet).orElse(Collections.emptySet())),
+                            subframe,
+                            output,
+                            Keywords.GRAPH)
                             .ordered(ordered)
                             .frame();
                 }
@@ -189,12 +191,11 @@ public final class Framing {
                 includedState.setEmbedded(false);
 
                 Framing.with(
-                            includedState,
-                            subjects,
-                            Frame.of((JsonStructure)frame.get(Keywords.INCLUDED)),
-                            output,
-                            Keywords.INCLUDED
-                            )
+                        includedState,
+                        subjects,
+                        Frame.of((JsonStructure) frame.get(Keywords.INCLUDED)),
+                        output,
+                        Keywords.INCLUDED)
                         .ordered(ordered)
                         .frame();
             }
@@ -215,73 +216,79 @@ public final class Framing {
                 }
 
                 // 4.7.3.
-                for (final JsonValue item : JsonUtils.toCollection(objects)) {
+                for (final var item : NativeAdapter.asCollection(objects)) {
 
-                    JsonValue subframe = frame.get(property);
+                    var subframe = frame.get(property);
 
                     if (subframe == null) {
                         subframe = JsonProvider.instance().createObjectBuilder()
-                                        .add(Keywords.EMBED, "@".concat(embed.name().toLowerCase()))
-                                        .add(Keywords.EXPLICIT, explicit)
-                                        .add(Keywords.REQUIRE_ALL, requireAll)
-                                        .build();
+                                .add(Keywords.EMBED, "@".concat(embed.name().toLowerCase()))
+                                .add(Keywords.EXPLICIT, explicit)
+                                .add(Keywords.REQUIRE_ALL, requireAll)
+                                .build();
                     }
 
                     // 4.7.3.1.
-                    if (JsonLdNode.isListObject(item)) {
+                    if (JsonLdNode.isList(item)) {
 
-                            JsonValue listFrameValue = null;
+                        Object listFrameValue = null;
 
-                            if (frame.contains(property)
-                                    && !JsonUtils.isEmptyArray(frame.get(property))
-                                    && JsonUtils.isObject(frame.get(property).asJsonArray().get(0))
-                                ) {
-                                listFrameValue = frame.get(property).asJsonArray().get(0).asJsonObject().get(Keywords.LIST);
-                            }
+                        var propertyValue = frame.get(property);
 
-                            if (listFrameValue == null) {
-                                listFrameValue = JsonProvider.instance().createObjectBuilder()
-                                        .add(Keywords.EMBED, "@".concat(embed.name().toLowerCase()))
-                                        .add(Keywords.EXPLICIT, explicit)
-                                        .add(Keywords.REQUIRE_ALL, requireAll)
-                                        .build();
-                            }
+                        if (propertyValue instanceof Collection array
+                                && !array.isEmpty()
+                                && array.iterator().next() instanceof Map map) {
+//                                && !JsonUtils.isEmptyArray()
+//                                && JsonUtils.isObject(frame.get(property).asJsonArray().get(0))) {
+                            listFrameValue = map.get(Keywords.LIST);
+                        }
 
-                            final Frame listFrame = Frame.of((JsonStructure)listFrameValue);
+                        if (listFrameValue == null) {
+                            listFrameValue = Map.of(
+                                    Keywords.EMBED, "@".concat(embed.name().toLowerCase()),
+                                    Keywords.EXPLICIT, explicit,
+                                    Keywords.REQUIRE_ALL, requireAll);
+                        }
 
-                            final JsonArrayBuilder list = JsonProvider.instance().createArrayBuilder();
+                        final Frame listFrame = Frame.of(listFrameValue);
 
-                            for (final JsonValue listItem : JsonUtils.toCollection(item.asJsonObject().get(Keywords.LIST))) {
+                        final var list = new ArrayList<Object>();
 
-                                // 4.7.3.1.1.
-                                if (JsonLdNode.isReference(listItem)) {
+                        for (final var listItem : NativeAdapter.asCollection(
+                                ((Map)item).get(Keywords.LIST))) {
 
-                                    FramingState listState = new FramingState(state);
-                                    listState.setEmbedded(true);
+                            // 4.7.3.1.1.
+                            if (JsonLdNode.isReference(listItem)) {
 
+                                FramingState listState = new FramingState(state);
+                                listState.setEmbedded(true);
 
-                                    final JsonMapBuilder listResult = JsonMapBuilder.create();
+                                final var listResult = new LinkedHashMap<String, Object>();
 
-                                    Framing.with(
-                                                listState,
-                                                Arrays.asList(listItem.asJsonObject().getString(Keywords.ID)),
-                                                listFrame,
-                                                listResult,
-                                                Keywords.LIST)
-                                            .ordered(ordered)
-                                            .frame();
+                                Framing.with(
+                                        listState,
+                                        Arrays.asList(((Map<String, String>) listItem).get(Keywords.ID)),
+//                                        Arrays.asList(listItem.asJsonObject().getString(Keywords.ID)),
+                                        listFrame,
+                                        listResult,
+                                        Keywords.LIST)
+                                        .ordered(ordered)
+                                        .frame();
 
-                                    if (listResult.containsKey(Keywords.LIST)) {
-                                        listResult.get(Keywords.LIST).ifPresent(list::add);
-                                    }
+                                var existingList = listResult.get(Keywords.LIST);
+                                
+                                if (existingList != null) {
+                                    list.add(existingList);
+                                }
 
                                 // 4.7.3.1.2.
-                                } else {
-                                    list.add(listItem);
-                                }
+                            } else {
+                                list.add(listItem);
                             }
+                        }
 
-                            output.add(property, JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, list));
+                        output.put(property, Map.of(Keywords.LIST, list));
+//                                JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, list)
 
                     } else if (JsonLdNode.isReference(item)) {
 
@@ -289,21 +296,21 @@ public final class Framing {
                         clonedState.setEmbedded(true);
 
                         Framing.with(
-                                    clonedState,
-                                    Arrays.asList(item.asJsonObject().getString(Keywords.ID)),
-                                    Frame.of((JsonStructure)subframe),
-                                    output,
-                                    property)
+                                clonedState,
+                                Arrays.asList(((Map<String, String>) item).get(Keywords.ID)),
+                                Frame.of((JsonStructure) subframe),
+                                output,
+                                property)
                                 .ordered(ordered)
                                 .frame();
 
-                    } else if (JsonLdNode.isValueObject(item)) {
-                        if (Frame.of((JsonStructure)subframe).matchValue(item)) {
-                            output.add(property, item);
+                    } else if (JsonLdNode.isValueNode(item)) {
+                        if (Frame.of((JsonStructure) subframe).matchValue(item)) {
+                            output.put(property, item);
                         }
 
                     } else {
-                        output.add(property, item);
+                        output.put(property, item);
                     }
                 }
             }
@@ -312,19 +319,18 @@ public final class Framing {
             for (String property : frame.keys()) {
                 if (output.containsKey(property)
                         || !Keywords.TYPE.equals(property) && Keywords.matchForm(property)
-                        || Keywords.TYPE.equals(property) && !frame.isDefaultObject(property)
-                        ) {
+                        || Keywords.TYPE.equals(property) && !frame.isDefaultObject(property)) {
                     continue;
                 }
 
                 // 4.7.4.2.
-                final JsonObject propertyFrame;
+                final Map<?, ?> propertyFrame;
 
-                if (JsonUtils.isNonEmptyArray(frame.get(property))) {
-                    propertyFrame = frame.get(property).asJsonArray().getJsonObject(0);
+                if (frame.get(property) instanceof Collection<?> array && !array.isEmpty()) {
+                    propertyFrame = (Map<?, ?>) array.iterator().next();
 
                 } else {
-                    propertyFrame = JsonValue.EMPTY_JSON_OBJECT;
+                    propertyFrame = Collections.emptyMap();
 
                 }
 
@@ -334,50 +340,48 @@ public final class Framing {
                 }
 
                 // 4.7.4.4.
-                JsonValue defaultValue = propertyFrame.get(Keywords.DEFAULT);
+                var defaultValue = propertyFrame.get(Keywords.DEFAULT);
 
-                if (JsonUtils.isNull(defaultValue)) {
-                    defaultValue = JsonProvider.instance().createValue(Keywords.NULL);
+                if (defaultValue == null) {
+                    defaultValue = Keywords.NULL;
                 }
 
-                output.add(property, JsonProvider.instance().createObjectBuilder()
-                                                    .add(Keywords.PRESERVE,
-                                                            JsonProvider.instance().createArrayBuilder().add(
-                                                            defaultValue)));
+                output.put(property, Map.of(Keywords.PRESERVE, List.of(defaultValue)));
             }
 
             // 4.7.5. - reverse properties
             if (frame.contains(Keywords.REVERSE)) {
 
-                final JsonValue reverseObject = frame.get(Keywords.REVERSE);
+                final var reverseObject = frame.get(Keywords.REVERSE);
 
-                if (JsonUtils.isObject(reverseObject)) {
+                if (reverseObject instanceof Map<?, ?> map) {
 
-                    for (final String reverseProperty : reverseObject.asJsonObject().keySet()) {
+                    for (final var reverseEntry : map.entrySet()) {
 
-                        final Frame subframe = Frame.of((JsonStructure) reverseObject.asJsonObject().get(reverseProperty));
+                        final Frame subframe = Frame.of(map.get(reverseEntry.getValue()));
 
-                        final Set<String> subjectProperties = state.getReversePropertySubjects(state.getGraphName(), reverseProperty, id);
+                        final Set<String> subjectProperties = state.getReversePropertySubjects(state.getGraphName(), (String) reverseEntry.getKey(), id);
 
                         if (!subjectProperties.isEmpty()) {
 
-                            final JsonMapBuilder reverseResult = JsonMapBuilder.create();
+                            final var reverseResult = new LinkedHashMap<String, Object>();
 
                             final FramingState reverseState = new FramingState(state);
                             reverseState.setEmbedded(true);
 
                             Framing.with(
-                                            reverseState,
-                                            new ArrayList<>(subjectProperties),
-                                            subframe,
-                                            reverseResult,
-                                            null)
+                                    reverseState,
+                                    new ArrayList<>(subjectProperties),
+                                    subframe,
+                                    reverseResult,
+                                    null)
                                     .ordered(ordered)
                                     .frame();
 
-                            output
-                                    .getMapBuilder(Keywords.REVERSE)
-                                    .add(reverseProperty, reverseResult.valuesToArray());
+                            ((Map) output.get(Keywords.REVERSE))
+                                    .put(reverseEntry.getKey(), reverseResult.values());
+//                                    .getMapBuilder(Keywords.REVERSE)
+//                                    .add(reverseProperty, reverseResult.valuesToArray());
                         }
                     }
                 }
@@ -386,16 +390,16 @@ public final class Framing {
             state.removeLastParent();
 
             // 4.8.
-            addToResult(parent, activeProperty, output.build());
+            addToResult(parent, activeProperty, output);
         }
     }
 
-    private static void addToResult(JsonMapBuilder result, String property, JsonValue value) {
+    private static void addToResult(Map<String, Object> result, String property, Object value) {
         if (property == null) {
             result.put(Integer.toHexString(result.size()), value);
 
         } else {
-            result.add(property, value);
+            result.put(property, value);
         }
     }
 }

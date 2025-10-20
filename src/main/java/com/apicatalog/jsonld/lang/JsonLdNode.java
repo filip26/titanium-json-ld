@@ -31,6 +31,23 @@ public class JsonLdNode {
             Keywords.INDEX,
             Keywords.ANNOTATION);
 
+    /**
+     * Check if the given value is valid node object.
+     *
+     * @see <a href="https://www.w3.org/TR/json-ld11/#dfn-node-object">Node
+     *      Object</a>
+     *
+     * @param node to check
+     * @return <code>true</code> if the provided value is valid node object
+     */
+    public static final boolean isNode(Object node) {
+        return node instanceof Map map
+                && ((!map.containsKey(Keywords.VALUE)
+                        && !map.containsKey(Keywords.LIST)
+                        && !map.containsKey(Keywords.SET))
+                        || Arrays.asList(Keywords.CONTEXT, Keywords.GRAPH).containsAll(map.keySet()));
+    }
+
     public static boolean isNode(Object value, NodeAdapter adapter) {
         if (!adapter.isMap(value)) {
             return false;
@@ -44,6 +61,12 @@ public class JsonLdNode {
                         Keywords.GRAPH).containsAll(adapter.keys(value));
     }
 
+    public static final boolean isReference(Object node) {
+        return node instanceof Map map
+                && map.size() == 1
+                && map.containsKey(Keywords.ID);
+    }
+    
     /**
      * @see <a href="https://www.w3.org/TR/json-ld11/#graph-objects">Graph
      *      Objects</a>
@@ -62,6 +85,21 @@ public class JsonLdNode {
      *      Object</a>
      *
      * @param value to check
+     * @return <code>true</code> if the provided value is valid default object
+     */
+    public static boolean isDefault(Object node) {
+        return node instanceof Map map && map.keySet().contains(Keywords.DEFAULT);
+    }
+
+    
+    /**
+     * A default node is a map that has a @default key.
+     *
+     * @see <a href="https://www.w3.org/TR/json-ld11/#dfn-default-object">Default
+     *      Object</a>
+     *
+     * @param value to check
+     * @param adapter
      * @return <code>true</code> if the provided value is valid default object
      */
     public static boolean isDefault(Object node, NodeAdapter adapter) {
@@ -108,19 +146,19 @@ public class JsonLdNode {
         return !(node instanceof Map map && VALUE_KEYWORDS.containsAll(map.keySet()));
     }
 
-    /* ---- TODO ---- */
+    public static Optional<Object> findValue(Object node) {
+        return (node instanceof Map<?, ?> map)
+                ? Optional.ofNullable(map.get(Keywords.VALUE))
+                : Optional.empty();
 
-    /**
-     * Check if the given value is valid node object.
-     *
-     * @see <a href="https://www.w3.org/TR/json-ld11/#dfn-node-object">Node
-     *      Object</a>
-     *
-     * @param value to check
-     * @return <code>true</code> if the provided value is valid node object
-     */
+//        return isValueObject(node)
+//                ? Optional.ofNullable(node.asJsonObject().get(Keywords.VALUE))
+//                : Optional.empty();
+    }
+    
+    /* ---- TODO ---- */
     @Deprecated
-    public static final boolean isNode(JsonValue value) {
+    public static final boolean isNodeJakarta(JsonValue value) {
         return JsonUtils.isObject(value)
                 && ((!value.asJsonObject().containsKey(Keywords.VALUE)
                         && !value.asJsonObject().containsKey(Keywords.LIST)
@@ -130,12 +168,12 @@ public class JsonLdNode {
     }
 
     @Deprecated
-    public static final boolean isNotNode(JsonValue value) {
-        return !isNode(value);
+    public static final boolean isNotNodeJakarta(JsonValue value) {
+        return !isNodeJakarta(value);
     }
 
     @Deprecated
-    public static final boolean isReference(JsonValue value) {
+    public static final boolean isReferenceJakarta(JsonValue value) {
         return JsonUtils.containsKey(value, Keywords.ID) && value.asJsonObject().size() == 1;
     }
 
@@ -179,7 +217,7 @@ public class JsonLdNode {
                 }
 
                 if (isValueObject(propertyValue)) {
-                    propertyValue = getValue(propertyValue).orElse(null);
+                    propertyValue = getValueObject(propertyValue).orElse(null);
                 }
 
                 if (JsonUtils.isString(propertyValue)
@@ -259,7 +297,7 @@ public class JsonLdNode {
     }
 
     @Deprecated
-    public static Optional<JsonValue> getValue(JsonValue value) {
+    public static Optional<JsonValue> getValueObject(JsonValue value) {
         return isValueObject(value)
                 ? Optional.ofNullable(value.asJsonObject().get(Keywords.VALUE))
                 : Optional.empty();

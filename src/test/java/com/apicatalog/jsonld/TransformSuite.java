@@ -25,6 +25,7 @@ import org.junit.platform.suite.api.SuiteDisplayName;
         ExpanderTest.class,
         FlattenTest.class,
         CompactorTest.class,
+        FramerTest.class
 })
 public class TransformSuite {
 

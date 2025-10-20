@@ -183,7 +183,7 @@ public final class ToRdf {
             final String predicate) throws JsonLdError, RdfConsumerException {
 
         // 1. - 2.
-        if (JsonLdNode.isNode(item)) {
+        if (JsonLdNode.isNodeJakarta(item)) {
 
             JsonValue id = item.get(Keywords.ID);
 
