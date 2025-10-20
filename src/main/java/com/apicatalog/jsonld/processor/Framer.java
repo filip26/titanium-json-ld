@@ -309,7 +309,8 @@ public final class Framer {
             for (final var entry : map.entrySet()) {
 
                 if (Keywords.PRESERVE.equals(entry.getKey())) {
-                    return ((Collection<?>) entry.getValue()).iterator().next();
+                    return entry.getValue();
+                            //((Collection<?>) entry.getValue()).iterator().next();
                 }
 
                 object.put(entry.getKey(), removePreserve(entry.getValue()));

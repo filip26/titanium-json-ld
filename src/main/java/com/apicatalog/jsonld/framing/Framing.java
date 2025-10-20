@@ -274,7 +274,7 @@ public final class Framing {
                             }
                         }
 
-                        output.put(property, Map.of(Keywords.LIST, list));
+                        output.put(property, List.of(Map.of(Keywords.LIST, list)));
 //                                JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, list)
 
                     } else if (JsonLdNode.isReference(item)) {
@@ -318,7 +318,6 @@ public final class Framing {
 
                 } else {
                     propertyFrame = Collections.emptyMap();
-
                 }
 
                 // 4.7.4.3.
@@ -365,8 +364,14 @@ public final class Framing {
                                     .ordered(ordered)
                                     .frame();
 
-                            ((Map) output.get(Keywords.REVERSE))
-                                    .put(reverseEntry.getKey(), reverseResult.values());
+                            var reverse = (Map) output.get(Keywords.REVERSE);
+                            
+                            if (reverse == null) {
+                                reverse = new LinkedHashMap<>();
+                                output.put(Keywords.REVERSE, reverse);
+                            }
+                            
+                            reverse.put(reverseEntry.getKey(), reverseResult.values());
 //                                    .getMapBuilder(Keywords.REVERSE)
 //                                    .add(reverseProperty, reverseResult.valuesToArray());
                         }
