@@ -117,7 +117,7 @@ public interface Context {
 
     }
 
-    Optional<TermDefinition> getTerm(final String value);
+    Optional<TermDefinition> findTerm(final String value);
 
     DirectionType getDefaultBaseDirection();
 

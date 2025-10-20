@@ -114,7 +114,11 @@ public final class JsonLdComparison {
             final Object map1, final NodeAdapter adapter1,
             final Object map2, final NodeAdapter adapter2) {
 
-        final var it1 = adapter1.entries(map1);
+        final var it1 = adapter1.entryStream(map1).toList();
+
+        if (it1.size() != adapter2.keyStream(map2).count()) {
+            return false;
+        }
 
         for (final var entry1 : it1) {
 

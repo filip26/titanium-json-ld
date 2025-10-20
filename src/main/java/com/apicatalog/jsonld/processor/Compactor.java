@@ -102,9 +102,9 @@ public final class Compactor {
         final var expansionOptions = new JsonLdOptions(options)
                 .setOrdered(false)
                 .setExtractAllScripts(false);
-
+//        System.out.println(input.getContent().node());
         var expandedInput = Expander.expand(input, expansionOptions, false);
-//new NodeVisitor().root(expandedInput, NativeAdapter.instance()).traverse(
+//new Visitor().root(expandedInput, NativeAdapter.instance()).traverse(
 //        
 //        v -> {
 //            System.out.println(v.node() + ", " + v.nodeType() + ", " + v.nodeContext() + ", " + v.node().getClass());
@@ -112,7 +112,7 @@ public final class Compactor {
 //        
 //        );
         var m = new JakartaMaterializer().node(expandedInput, NativeAdapter.instance());
-
+//System.out.println(m);
         // 5.
         URI contextBase = input.getDocumentUrl();
 

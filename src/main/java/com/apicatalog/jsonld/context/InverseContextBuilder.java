@@ -54,7 +54,7 @@ public final class InverseContextBuilder {
         activeContext.getTerms()
                 .stream()
                 .filter(termName -> activeContext
-                        .getTerm(termName)
+                        .findTerm(termName)
                         .map(TermDefinition::getUriMapping)
                         .isPresent())
                 .sorted()
@@ -62,7 +62,7 @@ public final class InverseContextBuilder {
                         termName,
                         result,
                         activeContext
-                                .getTerm(termName)
+                                .findTerm(termName)
                                 .map(TermDefinition::getUriMapping)
                                 .get(),
                         defaultLanguage));
@@ -75,7 +75,7 @@ public final class InverseContextBuilder {
 
         // 3.2.
         final String container = activeContext
-                .getTerm(termName)
+                .findTerm(termName)
                 .map(TermDefinition::getContainerMapping)
                 .filter(collection -> !collection.isEmpty())
                 .orElseGet(() -> Arrays.asList(Keywords.NONE))
@@ -86,14 +86,14 @@ public final class InverseContextBuilder {
         result.setIfAbsent(variableValue, container, Keywords.ANY, Keywords.NONE, termName);
 
         // 3.10.
-        if (activeContext.getTerm(termName).filter(TermDefinition::isReverseProperty).isPresent()) {
+        if (activeContext.findTerm(termName).filter(TermDefinition::isReverseProperty).isPresent()) {
 
             // 3.10.1
             result.setIfAbsent(variableValue, container, Keywords.TYPE, Keywords.REVERSE, termName);
             return;
         }
 
-        final Optional<String> typeMapping = activeContext.getTerm(termName).map(TermDefinition::getTypeMapping);
+        final Optional<String> typeMapping = activeContext.findTerm(termName).map(TermDefinition::getTypeMapping);
 
         // 3.11.
         if (typeMapping.filter(Keywords.NONE::equals).isPresent()) {
@@ -112,11 +112,11 @@ public final class InverseContextBuilder {
         }
 
         final Optional<String> languageMapping = activeContext
-                .getTerm(termName)
+                .findTerm(termName)
                 .map(TermDefinition::getLanguageMapping);
 
         final Optional<DirectionType> directionMapping = activeContext
-                .getTerm(termName)
+                .findTerm(termName)
                 .map(TermDefinition::getDirectionMapping);
 
         if (languageMapping.isPresent()) {

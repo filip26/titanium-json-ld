@@ -127,7 +127,7 @@ public final class UriExpansion {
 
         initLocalContext(value);
 
-        final Optional<TermDefinition> definition = activeContext.getTerm(value)
+        final Optional<TermDefinition> definition = activeContext.findTerm(value)
                 .filter(term -> vocab || Keywords.contains(term.getUriMapping()));
 
         // 4. if active context has a term definition for value,
@@ -288,7 +288,7 @@ public final class UriExpansion {
 
         // 6.4. If the prefix is a term in the active context, append the suffix to its
         // IRI mapping.
-        return activeContext.getTerm(prefix)
+        return activeContext.findTerm(prefix)
                 .filter(TermDefinition::isPrefix)
                 .map(TermDefinition::getUriMapping)
                 .map(uriMapping -> uriMapping.concat(suffix))

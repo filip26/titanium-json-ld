@@ -197,7 +197,7 @@ public class JsonLdTestRunnerJunit {
             // compare expected with the result
             return compareJson(testCase, result, resultAdapter, (JsonStructure) expectedDocument.getJsonContent().get());
 
-        } catch (JsonLdError e) {
+        } catch (JsonLdError | IOException e) {
             fail(e.getMessage());
         }
         return false;
@@ -229,19 +229,19 @@ public class JsonLdTestRunnerJunit {
         return false;
     }
 
-    public static final boolean compareJson(final JsonLdTestCase testCase, final Object result, final NodeAdapter resultAdapter, final JsonStructure expected) {
+    public static final boolean compareJson(final JsonLdTestCase testCase, final Object result, final NodeAdapter resultAdapter, final JsonStructure expected) throws IOException {
 
         if (JsonLdComparison.equals(expected, JakartaAdapter.instance(), result, resultAdapter)) {
             return true;
         }
 
-        write(testCase, result, expected, null);
+        write(testCase, new JakartaMaterializer().node(result, resultAdapter), expected, null);
 
         fail("Expected " + expected + ", but was" + result);
         return false;
     }
 
-    public static void write(final JsonLdTestCase testCase, final Object result, final JsonStructure expected, JsonLdError error) {
+    public static void write(final JsonLdTestCase testCase, final JsonValue result, final JsonStructure expected, JsonLdError error) {
         final StringWriter stringWriter = new StringWriter();
 
         try (final PrintWriter writer = new PrintWriter(stringWriter)) {
@@ -270,18 +270,17 @@ public class JsonLdTestRunnerJunit {
         System.out.println(stringWriter.toString());
     }
 
-    public static final void write(final PrintWriter writer, final JsonWriterFactory writerFactory, final String name, final Object result) {
+    public static final void write(final PrintWriter writer, final JsonWriterFactory writerFactory, final String name, final JsonValue result) {
 
         writer.println(name + ":");
-        writer.println(result);
-        //FIXME
-//        final StringWriter out = new StringWriter();
-//writer
-////        try (final JsonWriter jsonWriter = writerFactory.createWriter(out)) {
-////            jsonWriter.write(result);
-////        }
-//
-//        writer.write(out.toString());
+
+        final StringWriter out = new StringWriter();
+
+        try (final JsonWriter jsonWriter = writerFactory.createWriter(out)) {
+            jsonWriter.write(result);
+        }
+
+        writer.write(out.toString());
         writer.println();
     }
 

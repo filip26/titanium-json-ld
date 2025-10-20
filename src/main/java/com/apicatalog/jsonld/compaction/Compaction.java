@@ -102,7 +102,7 @@ public final class Compaction {
             return element;
         }
 
-        final Optional<TermDefinition> activePropertyDefinition = activeContext.getTerm(activeProperty);
+        final Optional<TermDefinition> activePropertyDefinition = activeContext.findTerm(activeProperty);
 
         // 3.
         if (JsonUtils.isArray(element)) {
@@ -216,7 +216,7 @@ public final class Compaction {
 
             for (final var term : compactedTypes) {
 
-                final var termDefinition = typeContext.getTerm(term).orElse(null);
+                final var termDefinition = typeContext.findTerm(term).orElse(null);
 
                 // 11.1.
                 if (termDefinition != null && termDefinition.getLocalContext() != null) {
@@ -302,7 +302,7 @@ public final class Compaction {
                 // 12.2.4.
                 final boolean asArray = !compactArrays
                         || (activeContext.runtime().isV11()
-                                && activeContext.getTerm(alias).filter(t -> t.hasContainerMapping(Keywords.SET)).isPresent());
+                                && activeContext.findTerm(alias).filter(t -> t.hasContainerMapping(Keywords.SET)).isPresent());
 
                 // 12.2.5.
                 result.add(alias, compactedValue, asArray);
@@ -328,12 +328,12 @@ public final class Compaction {
                 for (final Entry<String, JsonValue> entry : compactedMap.entrySet()) {
 
                     // 12.3.2.1.
-                    if (activeContext.getTerm(entry.getKey()).filter(TermDefinition::isReverseProperty).isPresent()) {
+                    if (activeContext.findTerm(entry.getKey()).filter(TermDefinition::isReverseProperty).isPresent()) {
 
                         // 12.3.2.1.1
                         final boolean asArray = !compactArrays
                                 || activeContext
-                                        .getTerm(entry.getKey())
+                                        .findTerm(entry.getKey())
                                         .filter(td -> td.hasContainerMapping(Keywords.SET))
                                         .isPresent();
 
@@ -411,7 +411,7 @@ public final class Compaction {
                         .compact(expandedProperty);
                 // 12.7.2.
                 final Optional<String> nestProperty = activeContext
-                        .getTerm(itemActiveProperty)
+                        .findTerm(itemActiveProperty)
                         .map(TermDefinition::getNestValue);
 
                 if (nestProperty.isPresent()) {
@@ -452,7 +452,7 @@ public final class Compaction {
 
                 // 12.8.2.
                 final Optional<String> nestProperty = activeContext
-                        .getTerm(itemActiveProperty)
+                        .findTerm(itemActiveProperty)
                         .map(TermDefinition::getNestValue);
 
                 if (nestProperty.isPresent()) {
@@ -475,7 +475,7 @@ public final class Compaction {
 
                 // 12.8.4.
                 final Collection<String> container = activeContext
-                        .getTerm(itemActiveProperty)
+                        .findTerm(itemActiveProperty)
                         .map(TermDefinition::getContainerMapping)
                         .orElseGet(() -> Collections.emptyList());
 
@@ -657,7 +657,7 @@ public final class Compaction {
 
                     // 12.8.9.3.
                     final String indexKey = activeContext
-                            .getTerm(itemActiveProperty)
+                            .findTerm(itemActiveProperty)
                             .map(TermDefinition::getIndexMapping)
                             .orElse(Keywords.INDEX);
 

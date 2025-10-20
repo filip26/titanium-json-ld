@@ -112,7 +112,7 @@ public final class ActiveContext implements Context {
         return Optional.empty();
     }
 
-    public Optional<TermDefinition> getTerm(final String value) {
+    public Optional<TermDefinition> findTerm(final String value) {
         return Optional.ofNullable(terms.get(value));
     }
 

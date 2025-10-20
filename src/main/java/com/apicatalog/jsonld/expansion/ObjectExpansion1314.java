@@ -460,7 +460,7 @@ final class ObjectExpansion1314 {
                                                             .map(adapter::type)
                                                             .allMatch(NodeType::isScalar))) {
 
-                        expandedValue = new NativeMaterializer3().node(value, adapter);
+                        expandedValue = NativeMaterializer3.node(value, adapter);
 
                         if (params.frameExpansion()) {
                             expandedValue = asList(expandedValue);
@@ -709,7 +709,7 @@ final class ObjectExpansion1314 {
             }
 
             // 13.5.
-            final Optional<TermDefinition> keyTermDefinition = activeContext.getTerm(key);
+            final Optional<TermDefinition> keyTermDefinition = activeContext.findTerm(key);
 
             final Collection<String> containerMapping = keyTermDefinition
                     .map(TermDefinition::getContainerMapping)
@@ -847,7 +847,7 @@ final class ObjectExpansion1314 {
                     }
 
                     // 13.8.3.2.
-                    var indexTermDefinition = mapContext.getTerm(index).orElse(null);
+                    var indexTermDefinition = mapContext.findTerm(index).orElse(null);
 
                     if (containerMapping.contains(Keywords.TYPE)
                             && indexTermDefinition != null
@@ -1094,7 +1094,7 @@ final class ObjectExpansion1314 {
 
         // step 3
         var propertyContext = activeContext
-                .getTerm(activeProperty)
+                .findTerm(activeProperty)
                 .map(TermDefinition::getLocalContext)
                 .orElse(null);
 
@@ -1107,7 +1107,7 @@ final class ObjectExpansion1314 {
                             propertyContext.node(),
                             propertyContext.adapter(),
                             activeContext
-                                    .getTerm(activeProperty)
+                                    .findTerm(activeProperty)
                                     .map(TermDefinition::getBaseUrl)
                                     .orElse(null));
         }

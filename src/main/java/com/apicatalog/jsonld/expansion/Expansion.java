@@ -107,7 +107,7 @@ public final class Expansion {
         // 3. If active property has a term definition in active context with a local
         // context, initialize property-scoped context to that local context.
         var propertyContext = activeContext
-                .getTerm(activeProperty)
+                .findTerm(activeProperty)
                 .map(TermDefinition::getLocalContext)
                 .orElse(null);
 
@@ -183,7 +183,7 @@ public final class Expansion {
                     .newContext()
                     .build(propertyContext.node(),
                             propertyContext.adapter(),
-                            context.getTerm(property)
+                            context.findTerm(property)
                                     .map(TermDefinition::getBaseUrl)
                                     .orElse(null))
                     .expandValue(property, node, nodeAdapter);
@@ -242,7 +242,7 @@ public final class Expansion {
 
             // 5.2.2
             if (expanded instanceof Collection<?> list
-                    && context.getTerm(property)
+                    && context.findTerm(property)
                             .map(TermDefinition::getContainerMapping)
                             .filter(c -> c.contains(Keywords.LIST)).isPresent()) {
 

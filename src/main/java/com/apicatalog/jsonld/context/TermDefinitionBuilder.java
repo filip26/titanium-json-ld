@@ -418,7 +418,7 @@ public final class TermDefinitionBuilder {
 
                 definition.setUriMapping(
                         activeContext
-                                .getTerm(compactUri.prefix())
+                                .findTerm(compactUri.prefix())
                                 .map(TermDefinition::getUriMapping)
                                 .map(u -> u.concat(compactUri.suffix()))
                                 .orElse(null));

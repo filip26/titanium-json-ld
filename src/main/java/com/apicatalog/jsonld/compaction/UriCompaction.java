@@ -408,7 +408,7 @@ public final class UriCompaction {
 
                     final String compactedIdValue = activeContext.uriCompaction().vocab(true).compact(idString);
 
-                    final Optional<TermDefinition> compactedIdValueTermDefinition = activeContext.getTerm(compactedIdValue);
+                    final Optional<TermDefinition> compactedIdValueTermDefinition = activeContext.findTerm(compactedIdValue);
 
                     if (compactedIdValueTermDefinition
                             .map(TermDefinition::getUriMapping)
@@ -503,7 +503,7 @@ public final class UriCompaction {
             if (((compactUri == null || (compactUriCandidate.compareTo(compactUri) < 0))
                     && !activeContext.containsTerm(compactUriCandidate))
                     || (activeContext
-                            .getTerm(compactUriCandidate)
+                            .findTerm(compactUriCandidate)
                             .map(TermDefinition::getUriMapping)
                             .filter(u -> u.equals(variable))
                             .isPresent()
@@ -525,7 +525,7 @@ public final class UriCompaction {
                     && uri.isAbsolute()
                     && uri.getScheme() != null
                     && uri.getAuthority() == null
-                    && activeContext.getTerm(uri.getScheme()).filter(TermDefinition::isPrefix).isPresent()) {
+                    && activeContext.findTerm(uri.getScheme()).filter(TermDefinition::isPrefix).isPresent()) {
                 throw new JsonLdError(JsonLdErrorCode.IRI_CONFUSED_WITH_PREFIX);
             }
         } catch (IllegalArgumentException e) {

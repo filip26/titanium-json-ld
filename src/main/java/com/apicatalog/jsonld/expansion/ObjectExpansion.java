@@ -32,8 +32,6 @@ import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.PolyNode;
 
-import jakarta.json.JsonObject;
-
 /**
  * O
  * 
@@ -106,7 +104,7 @@ public final class ObjectExpansion {
                             propertyContext.node(),
                             propertyContext.adapter(),
                             activeContext
-                                    .getTerm(activeProperty)
+                                    .findTerm(activeProperty)
                                     .map(TermDefinition::getBaseUrl)
                                     .orElse(null));
         }
@@ -128,7 +126,7 @@ public final class ObjectExpansion {
                 .result(result)
                 .typeContext(typeContext)
                 .nest(new LinkedHashMap<>())
-                .expand(activeContext, (JsonObject) element, adapter, activeProperty);
+                .expand(activeContext, element, adapter, activeProperty);
 
         // 15.
         if (result.containsKey(Keywords.VALUE)) {
@@ -240,7 +238,7 @@ public final class ObjectExpansion {
                     var term = terms.next();
 
                     var localContext = typeContext
-                            .getTerm(term).map(TermDefinition::getLocalContext)
+                            .findTerm(term).map(TermDefinition::getLocalContext)
                             .orElse(null);
 
                     if (localContext != null) {
@@ -249,7 +247,7 @@ public final class ObjectExpansion {
                                 .propagate(false)
                                 .build(localContext.node(),
                                         localContext.adapter(),
-                                        activeContext.getTerm(term)
+                                        activeContext.findTerm(term)
                                                 .map(TermDefinition::getBaseUrl)
                                                 .orElse(null));
                     }

@@ -57,7 +57,7 @@ public final class ValueExpansion {
      */
     public static Map<String, ?> expand(final Context context, final String property, final Object value, final NodeAdapter adapter) throws JsonLdError, IOException {
 
-        final Optional<TermDefinition> definition = context.getTerm(property);
+        final Optional<TermDefinition> definition = context.findTerm(property);
 
         final String typeMapping = definition
                 .map(TermDefinition::getTypeMapping)
