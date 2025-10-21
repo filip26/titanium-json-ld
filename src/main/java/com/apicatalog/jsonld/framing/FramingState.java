@@ -146,17 +146,17 @@ public final class FramingState {
             return Collections.emptySet();
         }
 
-        final Map<String, Map<String, Set<String>>> graphIndex = reversePropertyIndex.get(graphName);
+        final var graphIndex = reversePropertyIndex.get(graphName);
         if (graphIndex == null) {
             return Collections.emptySet();
         }
 
-        final Map<String, Set<String>> propertyIndex = graphIndex.get(property);
+        final var propertyIndex = graphIndex.get(property);
         if (propertyIndex == null) {
             return Collections.emptySet();
         }
 
-        final Set<String> subjects = propertyIndex.get(value);
+        final var subjects = propertyIndex.get(value);
         return subjects != null ? subjects : Collections.emptySet();
     }
 

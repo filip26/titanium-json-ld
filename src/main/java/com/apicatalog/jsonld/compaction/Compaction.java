@@ -435,7 +435,7 @@ public final class Compaction {
                 }
 
             }
-System.out.println(expandedValue);
+//System.out.println(expandedValue);
             // 12.8.
             for (final JsonValue expandedItem : expandedValue.asJsonArray()) {
 

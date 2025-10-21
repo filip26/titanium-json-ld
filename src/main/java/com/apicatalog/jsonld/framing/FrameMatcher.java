@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.lang.JsonLdNode;
@@ -78,16 +77,12 @@ public final class FrameMatcher {
 
                 nodeValue = nodeValue instanceof Collection
                         ? nodeValue
-                        : Set.of(nodeValue);
-
-//                        JsonUtils.toJsonArray(nodeValue);
+                        : List.of(nodeValue);
 
                 final var propertyValue = frame.get(property);
 
                 if (propertyValue instanceof Collection<?> array
                         && array.stream().anyMatch(((Collection<?>) nodeValue)::contains)
-
-//                        JsonUtils.toStream(frame.get(property)).anyMatch(((Collection<?>)nodeValue)::contains)
                         || frame.isWildCard(Keywords.ID)
                         || frame.isNone(Keywords.ID)) {
 
@@ -107,14 +102,7 @@ public final class FrameMatcher {
                         || frame.isDefaultObject(property)
                         || (nodeValue != null && frame.asCollection(property).stream().anyMatch(((Collection<?>) nodeValue)::contains))) {
 
-//                if ((JsonUtils.isNotNull(nodeValue) && !nodeValue.asJsonArray().isEmpty() && frame.isWildCard(property))
-//                        || ((JsonUtils.isNull(nodeValue) || nodeValue.asJsonArray().isEmpty()) && frame.isNone(property))
-//                        || frame.isDefaultObject(property)
-//                        || (JsonUtils.isNotNull(nodeValue) && frame.getCollection(property).stream().anyMatch(nodeValue.asJsonArray()::contains))
-//                        ){
-
                     if (requireAll) {
-
                         count++;
                         continue;
                     }
@@ -129,14 +117,13 @@ public final class FrameMatcher {
 
             nonKeywordProperty = true;
 
-            var propertyValue = frame.get(property);
+            final var propertyValue = frame.get(property);
 
-            final Frame propertyFrame = propertyValue instanceof Collection array && !array.isEmpty()
-//                            (JsonUtils.isNotNull(propertyValue) && JsonUtils.isNonEmptyArray(propertyValue))
+            final var propertyFrame = propertyValue instanceof Collection array && !array.isEmpty()
                     ? Frame.of(array)
                     : null;
 
-            final Collection<?> nodeValues = nodeValue instanceof Collection array
+            final var nodeValues = nodeValue instanceof Collection<?> array
                     ? array
                     : nodeValue != null
                             ? List.of(nodeValue)

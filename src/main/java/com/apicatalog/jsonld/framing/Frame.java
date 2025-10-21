@@ -52,12 +52,12 @@ public final class Frame {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame is not JSON object nor an array containing JSON object [" + node + "]");
             }
 
-        } else if (node instanceof Map map) {
+        } else if ((node instanceof Map map)) {
             frameMap = map;
 
         } else if (node == null) {
-            return EMPTY;   //TODO ?!?!
-            
+            return EMPTY;
+
         } else {
             throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame is not JSON object. [" + node + "]");
         }
@@ -71,7 +71,7 @@ public final class Frame {
         if (frameMap.containsKey(Keywords.TYPE) && !validateFrameType(frameMap)) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @type value is not valid [@type = " + frameMap.get(Keywords.TYPE) + "].");
         }
-        
+
         return new Frame(frameMap);
     }
 
@@ -149,7 +149,7 @@ public final class Frame {
         return defaultValue;
     }
 
-    private static final boolean validateFrameId(Map<String, ?> frame) {
+    private static final boolean validateFrameId(Map<?, ?> frame) {
 
         final var id = frame.get(Keywords.ID);
 
@@ -165,10 +165,10 @@ public final class Frame {
                 && UriUtils.isAbsoluteUri(uri, UriValidationPolicy.Full);
     }
 
-    private static final boolean validateFrameType(Map<String, ?> frame) {
+    private static final boolean validateFrameType(Map<?, ?> frame) {
 
         var type = frame.get(Keywords.TYPE);
-        
+
         if (type instanceof Collection<?> typeArray && !typeArray.isEmpty()) {
             return ((typeArray.size() == 1
                     && (typeArray.iterator().next() instanceof Map map &&
@@ -184,8 +184,7 @@ public final class Frame {
 
         return type instanceof Collection array && array.isEmpty()
                 || type instanceof Map map && map.isEmpty()
-                || type instanceof String stringType && (
-                        Keywords.JSON.equals(stringType)    // see https://github.com/w3c/json-ld-framing/issues/142
+                || type instanceof String stringType && (Keywords.JSON.equals(stringType) // see https://github.com/w3c/json-ld-framing/issues/142
                         || UriUtils.isAbsoluteUri(stringType, UriValidationPolicy.Full));
     }
 
@@ -240,8 +239,7 @@ public final class Frame {
     }
 
     public boolean matchValue(Object value) {
-        return value instanceof Map map && ValuePatternMatcher.with(frameNode, map).match();
-//        return JsonUtils.isObject(value) && ValuePatternMatcher.with(frameObject, value.asJsonObject()).match();
+        return value instanceof Map map && ValuePatternMatcher.match(frameNode, map);
     }
 
     public boolean isDefaultObject(String property) {
