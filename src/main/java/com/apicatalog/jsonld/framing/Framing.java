@@ -274,7 +274,7 @@ public final class Framing {
                             }
                         }
 
-                        JsonLdNode.setOrAdd(output, property, List.of(Map.of(Keywords.LIST, list)));
+                        JsonLdNode.setOrAdd(output, property, Map.of(Keywords.LIST, list));
 
 //                        output.put(property, List.of(Map.of(Keywords.LIST, list)));
 //                                JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, list)

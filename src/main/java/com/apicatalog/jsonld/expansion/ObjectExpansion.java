@@ -18,8 +18,8 @@ package com.apicatalog.jsonld.expansion;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -338,7 +338,7 @@ public final class ObjectExpansion {
         var type = result.get(Keywords.TYPE);
 
         if (!(type instanceof Collection)) {
-            result.put(Keywords.TYPE, Set.of(type));
+            result.put(Keywords.TYPE, List.of(type));
         }
 
         return normalize(result);

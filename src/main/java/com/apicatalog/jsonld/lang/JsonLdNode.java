@@ -165,7 +165,7 @@ public class JsonLdNode {
     }
 
     public static void setOrAdd(Map<String, Object> result, String key, Object value, boolean asArray) {
-
+System.out.println("ADD " + key + " -> " + value + ", " + value.getClass());
         var previous = result.get(key);
 
         if (previous == null) {

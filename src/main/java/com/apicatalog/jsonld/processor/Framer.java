@@ -50,6 +50,7 @@ import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.traverse.Visitor;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
@@ -131,11 +132,19 @@ public final class Framer {
 //        JsonArray expandedInput = JsonValue.EMPTY_JSON_ARRAY;
 //        var a = new JakartaMaterializer().node(expandedInput, NativeAdapter.instance());
         // 7.
+        System.out.println("FX " + ((JsonDocument)frame).getContent().node());
         var expandedFrame = Expander.expand(frame, expansionOptions, true);
 
-        var b = new JakartaMaterializer().node(expandedFrame, NativeAdapter.instance());
-//        JsonArray expandedFrame = JsonValue.EMPTY_JSON_ARRAY;
+      new Visitor().root(expandedFrame, NativeAdapter.instance()).traverse(
+      
+      v -> {
+          System.out.println(v.node() + ", " + v.nodeType() + ", " + v.nodeContext() + ", " + v.node().getClass());
+      }
+      
+      );
 
+        
+     
         JsonValue context = JsonValue.EMPTY_JSON_OBJECT;
 
         if (frameObject.containsKey(Keywords.CONTEXT)) {

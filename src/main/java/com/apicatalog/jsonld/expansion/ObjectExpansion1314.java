@@ -228,7 +228,7 @@ final class ObjectExpansion1314 {
 
                     } else if (adapter.isMap(value)) {
 
-                        expandedValue = Set.of(Collections.emptyMap());
+                        expandedValue = List.of(Collections.emptyMap());
 
                     } else if (adapter.isEmptyCollection(value)) {
 
@@ -367,7 +367,7 @@ final class ObjectExpansion1314 {
                             expandedValue = newSet;
 
                         } else {
-                            expandedValue = Set.of(typeValue, expandedValue);
+                            expandedValue = List.of(typeValue, expandedValue);
                         }
                     }
                 }
@@ -397,7 +397,7 @@ final class ObjectExpansion1314 {
                     if (expandedValue != null) {
 
                         if (!(expandedValue instanceof Collection)) {
-                            expandedValue = Set.of(expandedValue);
+                            expandedValue = List.of(expandedValue);
                         }
 
                         // FIXME
@@ -481,33 +481,31 @@ final class ObjectExpansion1314 {
                 if (Keywords.LANGUAGE.equals(expandedProperty)) {
 
                     // 13.4.8.1
-                    if (adapter.isString(value)
-                            || params.frameExpansion()
-                                    && (adapter.isEmptyMap(value)
-                                            || adapter.isEmptyCollection(value)
-                                            || adapter.isCollection(value)
-                                                    && adapter
-                                                            .elementStream(value)
-                                                            .allMatch(adapter::isString))) {
+                    if (adapter.isString(value)) {
 
-                        if (adapter.isString(value)) {
+                        var stringValue = adapter.stringValue(value);
 
-                            var stringValue = adapter.stringValue(value);
-
-                            if (!LanguageTag.isWellFormed(stringValue)) {
-                                LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", stringValue);
-                            }
-
-                            // 13.4.8.2
-                            expandedValue = stringValue.toLowerCase();
-
-                        } else {
-                            expandedValue = adapter.asScalar(value);
+                        if (!LanguageTag.isWellFormed(stringValue)) {
+                            LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", stringValue);
                         }
+
+                        // 13.4.8.2
+                        expandedValue = stringValue.toLowerCase();
 
                         if (params.frameExpansion()) {
                             expandedValue = asList(expandedValue);
                         }
+
+                    } else if (params.frameExpansion()
+                            && (adapter.isEmptyMap(value)
+                                    || adapter.isEmptyCollection(value)
+                                    || adapter.isCollection(value)
+                                            && adapter
+                                                    .elementStream(value)
+                                                    .allMatch(adapter::isString))) {
+
+                        expandedValue = asList(NativeMaterializer3.node(value, adapter));
+
 
                     } else {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
@@ -576,7 +574,7 @@ final class ObjectExpansion1314 {
                             params);
 
                     if (!(expandedValue instanceof Collection<?>)) {
-                        expandedValue = Set.of(expandedValue);
+                        expandedValue = List.of(expandedValue);
                     }
                 }
 
@@ -887,7 +885,7 @@ final class ObjectExpansion1314 {
 
                         // 13.8.3.7.1.
                         if (containerMapping.contains(Keywords.GRAPH) && JsonLdNode.isNotGraph(item)) {
-                            indexMap.put(Keywords.GRAPH, Set.of(item));
+                            indexMap.put(Keywords.GRAPH, List.of(item));
 
                         } else {
                             indexMap.putAll((Map) item);
@@ -1010,13 +1008,13 @@ final class ObjectExpansion1314 {
                     var list = new ArrayList<Object>(expandedValues.size());
 
                     for (var item : expandedValues) {
-                        list.add(Map.of(Keywords.GRAPH, Set.of(item)));
+                        list.add(Map.of(Keywords.GRAPH, List.of(item)));
                     }
 
                     expandedValue = list;
 
                 } else {
-                    expandedValue = Set.of(Map.of(Keywords.GRAPH, Set.of(expandedValue)));
+                    expandedValue = List.of(Map.of(Keywords.GRAPH, List.of(expandedValue)));
                 }
             }
 
@@ -1024,7 +1022,7 @@ final class ObjectExpansion1314 {
             if (keyTermDefinition.filter(TermDefinition::isReverseProperty).isPresent()) {
 
                 if (!(expandedValue instanceof Collection)) {
-                    expandedValue = Set.of(expandedValue);
+                    expandedValue = List.of(expandedValue);
                 }
 
                 // 13.13.4.
@@ -1037,9 +1035,9 @@ final class ObjectExpansion1314 {
 
                     // 13.13.4.3.
                     var map = result.get(Keywords.REVERSE);
-                    
+
                     if (map == null) {
-                        result.put(Keywords.REVERSE, Map.of(expandedProperty, Set.of(item)));
+                        result.put(Keywords.REVERSE, Map.of(expandedProperty, List.of(item)));
                     } else if (map instanceof LinkedHashMap hashmap) {
 
                         JsonLdNode.setOrAdd(hashmap, expandedProperty, item);
@@ -1058,7 +1056,9 @@ final class ObjectExpansion1314 {
         }
 
         // 14.
-        if (nest != null) {
+        if (nest != null)
+
+        {
             processNest(activeContext, element, adapter);
         }
     }

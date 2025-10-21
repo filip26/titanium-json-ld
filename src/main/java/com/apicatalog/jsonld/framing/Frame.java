@@ -32,14 +32,14 @@ public final class Frame {
 
     public static final Frame EMPTY = new Frame(Collections.emptyMap());
 
-    private final Map<String, ?> frameObject;
+    private final Map<String, ?> frameNode;
 
     private Frame(final Map<String, ?> frameObject) {
-        this.frameObject = frameObject;
+        this.frameNode = frameObject;
     }
 
     public static final Frame of(final Object node) throws JsonLdError {
-
+System.out.println("FRAME " + node);
         final Map<String, ?> frameMap;
 
         // 1.
@@ -77,9 +77,9 @@ public final class Frame {
 
     public JsonLdEmbed getEmbed(final JsonLdEmbed defaultValue) throws JsonLdError {
 
-        if (frameObject.containsKey(Keywords.EMBED)) {
+        if (frameNode.containsKey(Keywords.EMBED)) {
 
-            var embed = frameObject.get(Keywords.EMBED);
+            var embed = frameNode.get(Keywords.EMBED);
 
             if (embed == null) {
                 return defaultValue;
@@ -88,7 +88,7 @@ public final class Frame {
             if (JsonLdNode.isValueNode(embed)) {
                 embed = JsonLdNode.findValue(embed).orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE));
             }
-            System.out.println(">>> " + embed + ",  " + embed.getClass());
+
             if (embed instanceof String stringValue) {
 
                 if (Keywords.noneMatch(stringValue, Keywords.ALWAYS, Keywords.ONCE, Keywords.NEVER)) {
@@ -111,11 +111,11 @@ public final class Frame {
     }
 
     public boolean getExplicit(boolean defaultValue) throws JsonLdError {
-        return getBoolean(frameObject, Keywords.EXPLICIT, defaultValue);
+        return getBoolean(frameNode, Keywords.EXPLICIT, defaultValue);
     }
 
     public boolean getRequireAll(boolean defaultValue) throws JsonLdError {
-        return getBoolean(frameObject, Keywords.REQUIRE_ALL, defaultValue);
+        return getBoolean(frameNode, Keywords.REQUIRE_ALL, defaultValue);
     }
 
     public static final boolean getBoolean(Map<?, ?> frame, String key, boolean defaultValue) throws JsonLdError {
@@ -193,38 +193,38 @@ public final class Frame {
     }
 
     public Set<String> keys() {
-        return frameObject.keySet();
+        return frameNode.keySet();
     }
 
     public Object get(String property) {
-        return frameObject.get(property);
+        return frameNode.get(property);
     }
 
     public boolean contains(String property) {
-        return frameObject.containsKey(property);
+        return frameNode.containsKey(property);
     }
 
     public boolean containsOnly(String property) {
-        return frameObject.containsKey(property) && ValuePatternMatcher.isWildcard(frameObject, property);
+        return frameNode.containsKey(property) && ValuePatternMatcher.isWildcard(frameNode, property);
     }
 
     public boolean isWildCard() {
-        return ValuePatternMatcher.isWildcard(frameObject);
+        return ValuePatternMatcher.isWildcard(frameNode);
     }
 
     public boolean isWildCard(String property) {
-        return frameObject.containsKey(property)
-                && ValuePatternMatcher.isWildcard(frameObject.get(property));
+        return frameNode.containsKey(property)
+                && ValuePatternMatcher.isWildcard(frameNode.get(property));
     }
 
     public boolean isNone(String property) {
-        return frameObject.containsKey(property)
-                && ValuePatternMatcher.isNone(frameObject.get(property));
+        return frameNode.containsKey(property)
+                && ValuePatternMatcher.isNone(frameNode.get(property));
     }
 
     public Collection<?> asCollection(String property) {
 
-        final var value = frameObject.get(property);
+        final var value = frameNode.get(property);
 
         return value instanceof Collection col
                 ? col
@@ -235,31 +235,31 @@ public final class Frame {
 
     @Override
     public String toString() {
-        return frameObject.toString();
+        return frameNode.toString();
     }
 
     public boolean isValuePattern() {
-        return JsonLdNode.isValueNode(frameObject);
+        return JsonLdNode.isValueNode(frameNode);
     }
 
     public boolean matchValue(Object value) {
-        return value instanceof Map map && ValuePatternMatcher.with(frameObject, map).match();
+        return value instanceof Map map && ValuePatternMatcher.with(frameNode, map).match();
 //        return JsonUtils.isObject(value) && ValuePatternMatcher.with(frameObject, value.asJsonObject()).match();
     }
 
     public boolean isDefaultObject(String property) {
-        return JsonLdNode.isDefault(frameObject.get(property))
-                || frameObject.get(property) instanceof Collection array
+        return JsonLdNode.isDefault(frameNode.get(property))
+                || frameNode.get(property) instanceof Collection array
                         && array.size() == 1
                         && JsonLdNode.isDefault(array.iterator().next());
     }
 
     public boolean isPattern() {
-        return JsonLdNode.isNode(frameObject);
+        return JsonLdNode.isNode(frameNode);
     }
 
     public boolean isReference() {
-        return JsonLdNode.isReference(frameObject);
+        return JsonLdNode.isReference(frameNode);
     }
 
     public boolean matchNode(FramingState state, Object value, boolean requireAll) throws JsonLdError {
@@ -279,6 +279,6 @@ public final class Frame {
     }
 
     public boolean isList() {
-        return JsonLdNode.isList(frameObject);
+        return JsonLdNode.isList(frameNode);
     }
 }

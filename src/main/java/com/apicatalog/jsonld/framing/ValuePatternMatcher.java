@@ -44,14 +44,14 @@ public final class ValuePatternMatcher {
 
     public boolean match() {
 
-        final var value2 = pattern.getOrDefault(Keywords.VALUE, null);
+        final var valuePattern = pattern.getOrDefault(Keywords.VALUE, null);
 
-        final var type2 = pattern.getOrDefault(Keywords.TYPE, null);
+        final var typePattern = pattern.getOrDefault(Keywords.TYPE, null);
 
-        final var lang2 = pattern.getOrDefault(Keywords.LANGUAGE, null);
+        final var langPattern = pattern.getOrDefault(Keywords.LANGUAGE, null);
 
-        return (value2 == null && type2 == null && lang2 == null)
-                || (matchValue(value2) && matchType(type2) && matchLanguage(lang2));
+        return (valuePattern == null && typePattern == null && langPattern == null)
+                || (matchValue(valuePattern) && matchType(typePattern) && matchLanguage(langPattern));
     }
 
     private boolean matchValue(final Object value2) {
@@ -84,7 +84,7 @@ public final class ValuePatternMatcher {
         final String lang1 = value.get(Keywords.LANGUAGE) instanceof String lang
                 ? lang.toLowerCase()
                 : null;
-
+System.out.println("LANG: " + lang1 + ", " + lang2);
         return ((lang1 != null && isWildcard(lang2)) || (lang1 == null && isNone(lang2)))
                 || (lang1 != null && lang2 != null
                         && ((lang2 instanceof Collection<?> col
@@ -98,20 +98,20 @@ public final class ValuePatternMatcher {
 
     protected static final boolean isWildcard(final Object value, final String... except) {
 
-        if (value instanceof Map map && map.isEmpty()) {
-            return true;
-        }
-
         Map<String, ?> frame = null;
 
         if (value instanceof Map map) {
 
+            // wildcard
+            if (map.isEmpty()) {
+                return true;
+            }
+            
             frame = map;
 
         } else if (value instanceof Collection array
                 && array.size() == 1
                 && array.iterator().next() instanceof Map map) {
-
             frame = map;
         }
 
@@ -125,6 +125,7 @@ public final class ValuePatternMatcher {
     }
 
     protected static final boolean isNone(Object value) {
+        System.out.println("none " + value);
         return value == null || value instanceof Collection array && array.isEmpty();
 //        return JsonUtils.isNull(value) || JsonUtils.isEmptyArray(value);
     }
