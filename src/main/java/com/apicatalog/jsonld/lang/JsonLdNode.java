@@ -1,7 +1,9 @@
 package com.apicatalog.jsonld.lang;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -155,6 +157,52 @@ public class JsonLdNode {
 //                ? Optional.ofNullable(node.asJsonObject().get(Keywords.VALUE))
 //                : Optional.empty();
     }
+    
+    /* --- */
+    
+    public static void setOrAdd(Map<String, Object> result, String key, Object value) {
+        setOrAdd(result, key, value, true);
+    }
+
+    public static void setOrAdd(Map<String, Object> result, String key, Object value, boolean asArray) {
+
+        var previous = result.get(key);
+
+        if (previous == null) {
+            if (value instanceof Collection<?>) {
+                result.put(key, value);
+                return;
+            }
+            if (asArray) {
+                result.put(key, List.of(value));
+                return;
+            }
+            result.put(key, value);
+            return;
+        }
+        
+        final Collection<Object> array;
+        
+        if (previous instanceof ArrayList list) {
+            array = list;
+            
+        } else if (previous instanceof Collection<?> col) {
+            array = new ArrayList<Object>(col);
+            result.put(key, array);
+            
+        } else {
+            array = new ArrayList<>();            
+            array.add(previous);
+            result.put(key, array);            
+        }
+        
+        if (value instanceof Collection<?> col) {
+            array.addAll(col);
+        } else {
+            array.add(value);
+        }
+    }
+
     
     /* ---- TODO ---- */
     @Deprecated

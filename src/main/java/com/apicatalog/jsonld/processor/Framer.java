@@ -42,7 +42,6 @@ import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.framing.Frame;
 import com.apicatalog.jsonld.framing.Framing;
 import com.apicatalog.jsonld.framing.FramingState;
-import com.apicatalog.jsonld.json.JsonMapBuilder;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
@@ -188,6 +187,8 @@ public final class Framer {
 
         // 15.
         final var resultMap = new LinkedHashMap<String, Object>();
+//        final var resultMap = MapBuilder.create();
+
 
         // 16.
         Framing.with(state,
@@ -198,16 +199,25 @@ public final class Framer {
                 .ordered(options.isOrdered())
                 .frame();
 
-        Stream<?> result = resultMap.values().stream();
+        Stream<?> result = null;
 
         // 17. - remove blank @id
         if (!activeContext.runtime().isV10()) {
 
-            final List<String> remove = findBlankNodes(resultMap.values());
+            final var values = resultMap.values();
+            
+            final var remove = findBlankNodes(values);
 
             if (!remove.isEmpty()) {
-                result = result.map(v -> Framer.removeBlankIdKey(v, remove));
+                result = values.stream().map(v -> Framer.removeBlankIdKey(v, remove));
+                
+            } else {
+                result = values.stream();
             }
+        }
+        
+        if (result == null) {
+            result = resultMap.values().stream();
         }
 
         // 18. - remove preserve

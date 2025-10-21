@@ -274,7 +274,9 @@ public final class Framing {
                             }
                         }
 
-                        output.put(property, List.of(Map.of(Keywords.LIST, list)));
+                        JsonLdNode.setOrAdd(output, property, List.of(Map.of(Keywords.LIST, list)));
+
+//                        output.put(property, List.of(Map.of(Keywords.LIST, list)));
 //                                JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, list)
 
                     } else if (JsonLdNode.isReference(item)) {
@@ -293,11 +295,11 @@ public final class Framing {
 
                     } else if (JsonLdNode.isValueNode(item)) {
                         if (Frame.of(subframe).matchValue(item)) {
-                            output.put(property, List.of(item));
+                            JsonLdNode.setOrAdd(output, property, item);
                         }
 
                     } else {
-                        output.put(property, item);
+                        JsonLdNode.setOrAdd(output, property, item);
                     }
                 }
             }
@@ -332,7 +334,7 @@ public final class Framing {
                     defaultValue = Keywords.NULL;
                 }
 
-                output.put(property, Map.of(Keywords.PRESERVE, List.of(defaultValue)));
+                JsonLdNode.setOrAdd(output, property, Map.of(Keywords.PRESERVE, List.of(defaultValue)));
             }
 
             // 4.7.5. - reverse properties
@@ -364,16 +366,14 @@ public final class Framing {
                                     .ordered(ordered)
                                     .frame();
 
-                            var reverse = (Map) output.get(Keywords.REVERSE);
-                            
+                            var reverse = (Map<String, Object>) output.get(Keywords.REVERSE);
+
                             if (reverse == null) {
-                                reverse = new LinkedHashMap<>();
+                                reverse = new LinkedHashMap<String, Object>();
                                 output.put(Keywords.REVERSE, reverse);
                             }
-                            
-                            reverse.put(reverseEntry.getKey(), reverseResult.values());
-//                                    .getMapBuilder(Keywords.REVERSE)
-//                                    .add(reverseProperty, reverseResult.valuesToArray());
+
+                            JsonLdNode.setOrAdd(reverse, (String) reverseEntry.getKey(), reverseResult.values());
                         }
                     }
                 }
@@ -389,9 +389,8 @@ public final class Framing {
     private static void addToResult(Map<String, Object> result, String property, Object value) {
         if (property == null) {
             result.put(Integer.toHexString(result.size()), value);
-
-        } else {
-            result.put(property, List.of(value)); // TODO ?!?!
+            return;
         }
+        JsonLdNode.setOrAdd(result, property, value);
     }
 }

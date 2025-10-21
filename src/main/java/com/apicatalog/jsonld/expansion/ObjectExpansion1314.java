@@ -612,7 +612,7 @@ final class ObjectExpansion1314 {
 
                             for (var entry : reverse.entrySet()) {
                                 // 13.4.13.3.1.
-                                result.put(entry.getKey(), entry.getValue());
+                                JsonLdNode.setOrAdd(result, entry.getKey(), entry.getValue());
                             }
                         }
 
@@ -640,7 +640,7 @@ final class ObjectExpansion1314 {
                                         }
 
                                         // 13.4.13.4.2.1.1
-                                        merge(reverseMap, entry.getKey(), item);
+                                        JsonLdNode.setOrAdd(reverseMap, entry.getKey(), item);
                                     }
                                 }
                             }
@@ -1037,22 +1037,23 @@ final class ObjectExpansion1314 {
 
                     // 13.13.4.3.
                     var map = result.get(Keywords.REVERSE);
+                    
                     if (map == null) {
                         result.put(Keywords.REVERSE, Map.of(expandedProperty, Set.of(item)));
-
                     } else if (map instanceof LinkedHashMap hashmap) {
-                        merge(hashmap, expandedProperty, item);
 
-                    } else if (map instanceof Map<?, ?> rawMap) {
-                        var hashmap = new LinkedHashMap<>(rawMap);
-                        merge(hashmap, expandedProperty, item);
+                        JsonLdNode.setOrAdd(hashmap, expandedProperty, item);
+
+                    } else if (map instanceof Map rawMap) {
+                        var hashmap = new LinkedHashMap<String, Object>(rawMap);
+                        JsonLdNode.setOrAdd(hashmap, expandedProperty, item);
                         result.put(Keywords.REVERSE, hashmap);
                     }
                 }
 
             } else {
                 // 13.14
-                merge(result, expandedProperty, expandedValue);
+                JsonLdNode.setOrAdd(result, expandedProperty, expandedValue);
             }
         }
 
@@ -1157,44 +1158,44 @@ final class ObjectExpansion1314 {
             }
         }
     }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static void merge(Map map, String key, Object value) {
-
-        var previous = map.get(key);
-
-        if (previous == null) {
-            if (value instanceof Collection<?>) {
-                map.put(key, value);
-                return;
-            }
-            map.put(key, Set.of(value));
-            return;
-        }
-
-        if (previous instanceof Collection<?> c1) {
-
-            final Collection<Object> result;
-
-            if (previous instanceof ArrayList list) {
-                result = list;
-            } else {
-                result = new ArrayList<Object>(c1);
-            }
-
-            if (value instanceof Collection<?> c2) {
-                result.addAll(c2);
-
-            } else {
-                result.add(value);
-            }
-
-            map.put(key, result);
-            return;
-        }
-
-        map.put(key, List.of(previous, value));
-    }
+//
+//    @SuppressWarnings({ "unchecked", "rawtypes" })
+//    private static void merge(Map map, String key, Object value) {
+//
+//        var previous = map.get(key);
+//
+//        if (previous == null) {
+//            if (value instanceof Collection<?>) {
+//                map.put(key, value);
+//                return;
+//            }
+//            map.put(key, Set.of(value));
+//            return;
+//        }
+//
+//        if (previous instanceof Collection<?> c1) {
+//
+//            final Collection<Object> result;
+//
+//            if (previous instanceof ArrayList list) {
+//                result = list;
+//            } else {
+//                result = new ArrayList<Object>(c1);
+//            }
+//
+//            if (value instanceof Collection<?> c2) {
+//                result.addAll(c2);
+//
+//            } else {
+//                result.add(value);
+//            }
+//
+//            map.put(key, result);
+//            return;
+//        }
+//
+//        map.put(key, List.of(previous, value));
+//    }
 
     private static Collection<?> asList(Object value) {
         if (value instanceof Collection<?> collection) {
