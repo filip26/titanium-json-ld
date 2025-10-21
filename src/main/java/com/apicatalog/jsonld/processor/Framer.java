@@ -132,16 +132,17 @@ public final class Framer {
 //        JsonArray expandedInput = JsonValue.EMPTY_JSON_ARRAY;
 //        var a = new JakartaMaterializer().node(expandedInput, NativeAdapter.instance());
         // 7.
-        System.out.println("FX " + ((JsonDocument)frame).getContent().node());
+        
         var expandedFrame = Expander.expand(frame, expansionOptions, true);
-
-      new Visitor().root(expandedFrame, NativeAdapter.instance()).traverse(
-      
-      v -> {
-          System.out.println(v.node() + ", " + v.nodeType() + ", " + v.nodeContext() + ", " + v.node().getClass());
-      }
-      
-      );
+//        System.out.println(">>> INPUT " + expandedInput);
+//        System.out.println(">>> FRAME " + expandedFrame);
+//      new Visitor().root(expandedFrame, NativeAdapter.instance()).traverse(
+//      
+//      v -> {
+//          System.out.println(v.node() + ", " + v.nodeType() + ", " + v.nodeContext() + ", " + v.node().getClass());
+//      }
+//      
+//      );
 
         
      
@@ -235,11 +236,11 @@ public final class Framer {
                 .toList();
 
         var xy = new JakartaMaterializer().node(filtered, NativeAdapter.instance());
-        System.out.println(expandedInput);
-        System.out.println(resultMap.values());
-        System.out.println(xy);
+//        System.out.println(expandedInput);
+//        System.out.println(resultMap.values());
+//        System.out.println(xy);
         // 19.
-        // FIXME
+        // FIXME output
         JsonValue compactedResults = Compaction
                 .with(activeContext)
                 .compactArrays(options.isCompactArrays())

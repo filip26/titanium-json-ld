@@ -84,7 +84,7 @@ public final class ValuePatternMatcher {
         final String lang1 = value.get(Keywords.LANGUAGE) instanceof String lang
                 ? lang.toLowerCase()
                 : null;
-System.out.println("LANG: " + lang1 + ", " + lang2);
+
         return ((lang1 != null && isWildcard(lang2)) || (lang1 == null && isNone(lang2)))
                 || (lang1 != null && lang2 != null
                         && ((lang2 instanceof Collection<?> col
@@ -125,7 +125,6 @@ System.out.println("LANG: " + lang1 + ", " + lang2);
     }
 
     protected static final boolean isNone(Object value) {
-        System.out.println("none " + value);
         return value == null || value instanceof Collection array && array.isEmpty();
 //        return JsonUtils.isNull(value) || JsonUtils.isEmptyArray(value);
     }

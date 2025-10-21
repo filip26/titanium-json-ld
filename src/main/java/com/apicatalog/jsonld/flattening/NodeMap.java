@@ -99,7 +99,7 @@ public final class NodeMap {
      *      Node Maps</a>
      */
     public void merge() {
-System.out.println("HIT " + this.index);
+
         // 1.
         final NodeMap result = new NodeMap();
 
@@ -156,7 +156,6 @@ System.out.println("HIT " + this.index);
         if (result.index.get(Keywords.MERGED) != null) {
             index.put(Keywords.MERGED, result.index.get(Keywords.MERGED));
         }
-        System.out.println("<   " + this.index);
     }
 
     public boolean contains(String id) {

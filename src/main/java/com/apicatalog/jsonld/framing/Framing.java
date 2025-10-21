@@ -334,7 +334,7 @@ public final class Framing {
                     defaultValue = Keywords.NULL;
                 }
 
-                JsonLdNode.setOrAdd(output, property, Map.of(Keywords.PRESERVE, List.of(defaultValue)));
+                JsonLdNode.setOrAdd(output, property, Map.of(Keywords.PRESERVE, defaultValue));
             }
 
             // 4.7.5. - reverse properties

@@ -447,7 +447,7 @@ final class ObjectExpansion1314 {
                             throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
                         }
 
-                        expandedValue = new PolyNode(value, adapter);
+                        expandedValue = NativeMaterializer3.node(value, adapter); //FIXMEnew PolyNode(value, adapter);
 
                         // 13.4.7.2
                     } else if (adapter.isNull(value)
@@ -496,16 +496,20 @@ final class ObjectExpansion1314 {
                             expandedValue = asList(expandedValue);
                         }
 
-                    } else if (params.frameExpansion()
-                            && (adapter.isEmptyMap(value)
-                                    || adapter.isEmptyCollection(value)
-                                    || adapter.isCollection(value)
-                                            && adapter
-                                                    .elementStream(value)
-                                                    .allMatch(adapter::isString))) {
+                    } else if (params.frameExpansion() && adapter.isEmptyMap(value)) {
 
-                        expandedValue = asList(NativeMaterializer3.node(value, adapter));
+                        expandedValue = List.of(Collections.emptyMap());
 
+                    } else if (params.frameExpansion() && adapter.isEmptyCollection(value)) {
+
+                        expandedValue = Collections.emptyList();
+
+                    } else if (params.frameExpansion() && adapter.isCollection(value)
+                            && adapter
+                                    .elementStream(value)
+                                    .allMatch(adapter::isString)) {
+
+                        expandedValue = adapter.elementStream(value).map(adapter::stringValue).toList();
 
                     } else {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
@@ -521,16 +525,9 @@ final class ObjectExpansion1314 {
                     }
 
                     // 13.4.9.2.
-                    if ((adapter.isString(value)
+                    if (adapter.isString(value)
                             && ("ltr".equals(adapter.stringValue(value))
-                                    || "rtl".equals(adapter.stringValue(value))))
-                            || params.frameExpansion()
-                                    && (adapter.isEmptyMap(value)
-                                            || adapter.isEmptyCollection(value)
-                                            || adapter.isCollection(value)
-                                                    && adapter
-                                                            .elementStream(value)
-                                                            .allMatch(adapter::isString))) {
+                                    || "rtl".equals(adapter.stringValue(value)))) {
 
                         // 13.4.9.3.
                         expandedValue = adapter.stringValue(value);
@@ -538,6 +535,21 @@ final class ObjectExpansion1314 {
                         if (params.frameExpansion()) {
                             expandedValue = asList(expandedValue);
                         }
+
+                    } else if (params.frameExpansion() && adapter.isEmptyMap(value)) {
+
+                        expandedValue = List.of(Collections.emptyMap());
+
+                    } else if (params.frameExpansion() && adapter.isEmptyCollection(value)) {
+
+                        expandedValue = Collections.emptyList();
+
+                    } else if (params.frameExpansion() && adapter.isCollection(value)
+                            && adapter
+                                    .elementStream(value)
+                                    .allMatch(adapter::isString)) {
+
+                        expandedValue = adapter.elementStream(value).map(adapter::stringValue).toList();
 
                     } else {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);

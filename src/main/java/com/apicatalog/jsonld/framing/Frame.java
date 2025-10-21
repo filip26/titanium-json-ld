@@ -39,7 +39,7 @@ public final class Frame {
     }
 
     public static final Frame of(final Object node) throws JsonLdError {
-System.out.println("FRAME " + node);
+
         final Map<String, ?> frameMap;
 
         // 1.
@@ -69,7 +69,7 @@ System.out.println("FRAME " + node);
 
         // 1.3.
         if (frameMap.containsKey(Keywords.TYPE) && !validateFrameType(frameMap)) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @type value i not valid [@type = " + frameMap.get(Keywords.TYPE) + "].");
+            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @type value is not valid [@type = " + frameMap.get(Keywords.TYPE) + "].");
         }
         
         return new Frame(frameMap);
@@ -167,10 +167,9 @@ System.out.println("FRAME " + node);
 
     private static final boolean validateFrameType(Map<String, ?> frame) {
 
-        final var type = frame.get(Keywords.TYPE);
-
+        var type = frame.get(Keywords.TYPE);
+        
         if (type instanceof Collection<?> typeArray && !typeArray.isEmpty()) {
-
             return ((typeArray.size() == 1
                     && (typeArray.iterator().next() instanceof Map map &&
                             (map.isEmpty()
@@ -185,11 +184,9 @@ System.out.println("FRAME " + node);
 
         return type instanceof Collection array && array.isEmpty()
                 || type instanceof Map map && map.isEmpty()
-                || type instanceof String uri && UriUtils.isAbsoluteUri(uri, UriValidationPolicy.Full);
-
-//        return JsonUtils.isEmptyArray(type)
-//                || JsonUtils.isEmptyObject(type)
-//                || JsonUtils.isString(type) && UriUtils.isAbsoluteUri(((JsonString) type).getString(), UriValidationPolicy.Full);
+                || type instanceof String stringType && (
+                        Keywords.JSON.equals(stringType)    // see https://github.com/w3c/json-ld-framing/issues/142
+                        || UriUtils.isAbsoluteUri(stringType, UriValidationPolicy.Full));
     }
 
     public Set<String> keys() {

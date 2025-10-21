@@ -68,7 +68,7 @@ public class JsonLdNode {
                 && map.size() == 1
                 && map.containsKey(Keywords.ID);
     }
-    
+
     /**
      * @see <a href="https://www.w3.org/TR/json-ld11/#graph-objects">Graph
      *      Objects</a>
@@ -93,14 +93,13 @@ public class JsonLdNode {
         return node instanceof Map map && map.keySet().contains(Keywords.DEFAULT);
     }
 
-    
     /**
      * A default node is a map that has a @default key.
      *
      * @see <a href="https://www.w3.org/TR/json-ld11/#dfn-default-object">Default
      *      Object</a>
      *
-     * @param value to check
+     * @param value   to check
      * @param adapter
      * @return <code>true</code> if the provided value is valid default object
      */
@@ -157,15 +156,14 @@ public class JsonLdNode {
 //                ? Optional.ofNullable(node.asJsonObject().get(Keywords.VALUE))
 //                : Optional.empty();
     }
-    
+
     /* --- */
-    
+
     public static void setOrAdd(Map<String, Object> result, String key, Object value) {
         setOrAdd(result, key, value, true);
     }
 
     public static void setOrAdd(Map<String, Object> result, String key, Object value, boolean asArray) {
-System.out.println("ADD " + key + " -> " + value + ", " + value.getClass());
         var previous = result.get(key);
 
         if (previous == null) {
@@ -180,22 +178,22 @@ System.out.println("ADD " + key + " -> " + value + ", " + value.getClass());
             result.put(key, value);
             return;
         }
-        
+
         final Collection<Object> array;
-        
+
         if (previous instanceof ArrayList list) {
             array = list;
-            
+
         } else if (previous instanceof Collection<?> col) {
             array = new ArrayList<Object>(col);
             result.put(key, array);
-            
+
         } else {
-            array = new ArrayList<>();            
+            array = new ArrayList<>();
             array.add(previous);
-            result.put(key, array);            
+            result.put(key, array);
         }
-        
+
         if (value instanceof Collection<?> col) {
             array.addAll(col);
         } else {
@@ -203,7 +201,6 @@ System.out.println("ADD " + key + " -> " + value + ", " + value.getClass());
         }
     }
 
-    
     /* ---- TODO ---- */
     @Deprecated
     public static final boolean isNodeJakarta(JsonValue value) {
