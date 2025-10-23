@@ -29,7 +29,7 @@ import java.util.function.Predicate;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.lang.BlankNode;
-import com.apicatalog.jsonld.lang.JsonLdNode;
+import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
@@ -62,11 +62,6 @@ public final class NodeMapBuilder {
         this.list = null;
         this.referencedNode = null;
     }
-
-//    public NodeMapBuilder activeGraph(String activeGraph) {
-//        this.activeGraph = activeGraph;
-//        return this;
-//    }
 
     public NodeMapBuilder activeProperty(String activeProperty) {
         this.activeProperty = activeProperty;
@@ -203,7 +198,7 @@ public final class NodeMapBuilder {
         } else if (elementMap.containsKey(Keywords.LIST)) {
 
             // 5.1.
-            final var result = new LinkedHashMap<String, Collection<?>>(Map.of(Keywords.LIST, Collections.emptyList()));
+            final var result = new LinkedHashMap<String, Collection<?>>(Map.of(Keywords.LIST, List.of()));
 
             // 5.2.
             new NodeMapBuilder(elementMap.get(Keywords.LIST), nodeMap, activeGraph)
@@ -239,7 +234,7 @@ public final class NodeMapBuilder {
             }
 
             // 6.
-        } else if (JsonLdNode.isNode(element, NativeAdapter.instance())) {
+        } else if (JsonLdAdapter.isNode(element, NativeAdapter.instance())) {
 
             var id = (String) elementMap.get(Keywords.ID);
 
@@ -438,7 +433,7 @@ public final class NodeMapBuilder {
 
                 // 6.12.2.
                 if (!nodeMap.contains(activeGraph, id, property)) {
-                    nodeMap.set(activeGraph, id, property, Collections.emptySet());
+                    nodeMap.set(activeGraph, id, property, List.of());
                 }
 
                 // 6.12.3.

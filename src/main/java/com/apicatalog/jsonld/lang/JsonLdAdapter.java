@@ -17,7 +17,7 @@ import com.apicatalog.tree.io.NodeAdapter;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
-public class JsonLdNode {
+public class JsonLdAdapter {
 
     private static final Set<String> GRAPH_ALLOWED_KEYS = Set.of(
             Keywords.GRAPH,
@@ -68,14 +68,25 @@ public class JsonLdNode {
                 && map.size() == 1
                 && map.containsKey(Keywords.ID);
     }
+    
+    public static final boolean isGraph(Object node) {
+        return node instanceof Map map
+                && map.containsKey(Keywords.GRAPH)
+                && GRAPH_ALLOWED_KEYS.containsAll(map.keySet());        
+    }
 
+    public static final boolean isSimpleGraph(Map<?, ?> node) {
+        return isGraph(node) && !node.containsKey(Keywords.ID);
+    }
+
+    
     /**
      * @see <a href="https://www.w3.org/TR/json-ld11/#graph-objects">Graph
      *      Objects</a>
      */
-    public static boolean isNotGraph(Object value) {
-        return value == null
-                || !(value instanceof Map map)
+    public static boolean isNotGraph(Object node) {
+        return node == null
+                || !(node instanceof Map map)
                 || !map.keySet().contains(Keywords.GRAPH)
                 || !GRAPH_ALLOWED_KEYS.containsAll(map.keySet());
     }
@@ -124,23 +135,26 @@ public class JsonLdNode {
      * @param node to check
      * @return <code>true</code> if the provided value is valid list object
      */
-    public static boolean isList(Object node) {
-        return (node instanceof Map map)
-                && map.containsKey(Keywords.LIST)
-                && (map.size() == 1
-                        || map.size() == 2
-                                && map.containsKey(Keywords.INDEX));
+    public static boolean isList(Map<?, ?> node) {
+        return node.containsKey(Keywords.LIST)
+                && (node.size() == 1
+                        || node.size() == 2
+                                && node.containsKey(Keywords.INDEX));
     }
 
+//    public static boolean isList(Object node) {
+//        return node instanceof Map map && isList(map);
+//    }
+//
+    
     public static Map<String, ?> toList(Object node) {
         return node instanceof Collection
                 ? Map.of(Keywords.LIST, node)
                 : Map.of(Keywords.LIST, Set.of(node));
     }
 
-    public static boolean isValueNode(Object node) {
-        return node instanceof Map map
-                && map.containsKey(Keywords.VALUE);
+    public static boolean isValueNode(Map<?, ?> node) {
+        return node.containsKey(Keywords.VALUE);
     }
 
     public static boolean isNotValueNode(Object node) {
@@ -289,7 +303,7 @@ public class JsonLdNode {
         JsonValue value = annotation;
 
         if (JsonUtils.isArray(value)) {
-            return value.asJsonArray().stream().allMatch(JsonLdNode::isAnnotation);
+            return value.asJsonArray().stream().allMatch(JsonLdAdapter::isAnnotation);
         }
 
         if (JsonUtils.isNotObject(value)) {

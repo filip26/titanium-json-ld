@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld;
+package com.apicatalog.jsonld.lang;
 
 /**
  *
  * @see <a href="https://www.w3.org/TR/json-ld11-framing/#dom-jsonldembed">JsonLdEmbed</a>
  *
  */
-public enum JsonLdEmbed {
+public enum Embed {
 
     /**
      * Always embed node objects as property values,

@@ -15,21 +15,17 @@
  */
 package com.apicatalog.jsonld.compaction;
 
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.json.JsonProvider;
-import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.lang.DirectionType;
+import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
-
-import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
+import com.apicatalog.tree.io.java.NativeAdapter;
 
 /**
  *
@@ -50,10 +46,10 @@ public final class ValueCompaction {
         return new ValueCompaction(activeContext);
     }
 
-    public JsonValue compact(final JsonObject value, final String activeProperty) throws JsonLdError {
+    public Object compact(final Map<String, ?> value, final String activeProperty) throws JsonLdError {
 
         // 1.
-        JsonValue result = value;
+        Object result = value;
 
         // 2.
         if (activeContext.getInverseContext() == null) {
@@ -64,7 +60,7 @@ public final class ValueCompaction {
 
         // 4. - 5.
         String language = null;
-        DirectionType direction = null;
+        Direction direction = null;
 
         if (activePropertyDefinition.isPresent()) {
             language = activePropertyDefinition.get().getLanguageMapping();
@@ -91,10 +87,10 @@ public final class ValueCompaction {
                     .map(TermDefinition::getTypeMapping)
                     .filter(Keywords.ID::equals)
                     .isPresent()) {
-
-                result = JsonUtils.toJsonValue(activeContext
+                // result = JsonUtils.toJsonValue(activeContext
+                result = activeContext
                         .uriCompaction()
-                        .compact(value.getString(Keywords.ID)));
+                        .compact((String) value.get(Keywords.ID));
 
                 // 6.2.
             } else if (activePropertyDefinition
@@ -102,18 +98,21 @@ public final class ValueCompaction {
                     .filter(Keywords.VOCAB::equals)
                     .isPresent()) {
 
-                result = JsonUtils.toJsonValue(activeContext
+                // result = JsonUtils.toJsonValue(activeContext
+                result = activeContext
                         .uriCompaction()
                         .vocab(true)
-                        .compact(value.getString(Keywords.ID)));
+                        .compact((String) value.get(Keywords.ID));
             }
             // 7.
-        } else if (value.containsKey(Keywords.TYPE)
+        } else if (value.get(Keywords.TYPE) instanceof Collection<?> types
                 && activePropertyDefinition
                         .map(TermDefinition::getTypeMapping)
-                        .filter(d -> JsonUtils.contains(
-                                d,
-                                value.get(Keywords.TYPE)))
+                        .filter(types::contains)
+
+//                        .filter(d -> JsonUtils.contains(
+//                                d,
+//                                value.get(Keywords.TYPE)))
                         .isPresent()) {
 
             result = value.get(Keywords.VALUE);
@@ -123,30 +122,34 @@ public final class ValueCompaction {
                 .map(TermDefinition::getTypeMapping)
                 .filter(Keywords.NONE::equals)
                 .isPresent()
-                || (value.containsKey(Keywords.TYPE)
+                || (value.get(Keywords.TYPE) instanceof Collection<?> types
                         && (activePropertyDefinition
                                 .map(TermDefinition::getTypeMapping)
-                                .map(d -> !JsonUtils.contains(d, value.get(Keywords.TYPE)))
+                                .map(d -> !types.contains(d))
+//                                .map(d -> !JsonUtils.contains(d, value.get(Keywords.TYPE)))
                                 .orElse(true)))) {
 
             // 8.1.
-            final JsonArrayBuilder types = JsonProvider.instance().createArrayBuilder();
+            final var types = new ArrayList<String>();
 
-            final JsonValue resultTypes = result.asJsonObject().get(Keywords.TYPE);
+            final var resultTypes = value.get(Keywords.TYPE);
+//                    result.get(Keywords.TYPE);
 
-            if (JsonUtils.isNotNull(resultTypes)) {
-                for (final JsonValue type : JsonUtils.toCollection(resultTypes)) {
+            if (resultTypes != null) {
+                for (final var type : NativeAdapter.asCollection(resultTypes)) {
 
 //                    System.out.println(" >>> " + type + ", " + resultTypes);
-                    
-                    types.add(activeContext.uriCompaction().vocab(true).compact(((JsonString) type).getString()));
-                }
 
-                result = JsonProvider.instance().createObjectBuilder(result.asJsonObject()).add(Keywords.TYPE, types.build()).build();
+                    types.add(activeContext.uriCompaction().vocab(true).compact((String) type));
+                }
+//                result = Map.of(result.asJsonObject()).add(Keywords.TYPE, types.build()).build();
+                var resultMap = new HashMap<String, Object>(value);
+                resultMap.put(Keywords.TYPE, types);
+                result = resultMap;
             }
 
             // 9.
-        } else if (JsonUtils.isNotString(value.get(Keywords.VALUE))) {
+        } else if (!(value.get(Keywords.VALUE) instanceof String)) {
 
             if (!value.containsKey(Keywords.INDEX)
                     || activePropertyDefinition.filter(td -> td.hasContainerMapping(Keywords.INDEX)).isPresent()) {
@@ -154,42 +157,43 @@ public final class ValueCompaction {
             }
 
             // 10.
-        } else if ((((value.containsKey(Keywords.LANGUAGE)
-                && JsonUtils.isString(value.get(Keywords.LANGUAGE))
+        } else if ((((value.get(Keywords.LANGUAGE) instanceof String langString
                 && language != null
-                && (language.equalsIgnoreCase(value.getString(Keywords.LANGUAGE))))
+                && (language.equalsIgnoreCase(langString)))
                 || ((language == null || Keywords.NULL.equals(language))
-                        && (!value.containsKey(Keywords.LANGUAGE) || JsonUtils.isNull(value.get(Keywords.LANGUAGE)))))
-                && ((direction != null && direction != DirectionType.NULL
-                        && JsonUtils.isString(value.get(Keywords.DIRECTION))
-                        && direction == DirectionType.valueOf(value.getString(Keywords.DIRECTION).toUpperCase()))
-                        || ((direction == null || direction == DirectionType.NULL)
-                                && (!value.containsKey(Keywords.DIRECTION)
-                                        || DirectionType.NULL == DirectionType.valueOf(value.getString(Keywords.DIRECTION).toUpperCase())))))
-                && (!value.containsKey(Keywords.INDEX) || activePropertyDefinition.filter(d -> d.hasContainerMapping(Keywords.INDEX)).isPresent())) {
+                        && (!(value.get(Keywords.LANGUAGE) instanceof String langString)
+                                || Keywords.NULL.equals(langString)
+//                                || JsonUtils.isNull (value.get(Keywords.LANGUAGE))
+                        )))
+                && ((direction != null && direction != Direction.NULL
+                        && value.get(Keywords.DIRECTION) instanceof String dirString
+                        && direction == Direction.valueOf(dirString.toUpperCase()))
+                        || ((direction == null || direction == Direction.NULL)
+                                && (!(value.get(Keywords.DIRECTION) instanceof String dirString)
+                                        || Direction.NULL == Direction.valueOf(dirString.toUpperCase())))))
+                && (!value.containsKey(Keywords.INDEX)
+                        || activePropertyDefinition.filter(d -> d.hasContainerMapping(Keywords.INDEX)).isPresent())) {
 
             result = value.get(Keywords.VALUE);
         }
 
         // 11.
-        if (JsonUtils.isObject(result)) {
+        if (result instanceof Map<?, ?> map) {
 
-            final JsonObjectBuilder resultBuilder = JsonProvider.instance().createObjectBuilder();
+            final var resultMap = new HashMap<String, Object>();
 
-            for (Entry<String, JsonValue> entry : result.asJsonObject().entrySet()) {
-                resultBuilder.add(
+            for (final var entry : map.entrySet()) {
+                resultMap.put(
                         activeContext
                                 .uriCompaction()
                                 .vocab(true)
-                                .compact(entry.getKey()),
+                                .compact((String) entry.getKey()),
                         entry.getValue());
             }
-
-            result = resultBuilder.build();
+            result = resultMap;
         }
 
         // 12.
         return result;
     }
-
 }

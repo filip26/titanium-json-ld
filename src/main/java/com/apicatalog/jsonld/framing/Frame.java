@@ -15,51 +15,118 @@
  */
 package com.apicatalog.jsonld.framing;
 
+import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.apicatalog.jsonld.JsonLdEmbed;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.lang.JsonLdNode;
+import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.PolyNodeDocument;
+import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.Embed;
+import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
+import com.apicatalog.tree.io.PolyNode;
+
+import jakarta.json.JsonValue;
 
 public final class Frame {
 
-    public static final Frame EMPTY = new Frame(Collections.emptyMap());
+    public static final Frame EMPTY = new Frame(Map.of(), null);
 
     private final Map<String, ?> frameNode;
+    private final PolyNode context;
 
-    private Frame(final Map<String, ?> frameObject) {
-        this.frameNode = frameObject;
+    private Frame(final Map<String, ?> frameNode, final PolyNode context) {
+        this.frameNode = frameNode;
+        this.context = context;
     }
 
-    public static final Frame of(final Object node) throws JsonLdError {
+    public static final Frame of(final PolyNodeDocument document, final JsonLdOptions options) throws JsonLdError, IOException {
+
+//      final JsonStructure frameStructure;
+//
+//      if (frameDocument instanceof JsonDocument x) {
+//          frameStructure = x.getJsonContent()
+//                  .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but null."));
+//      } else {
+//          throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but null.");
+//      }
+
+//      if (JsonUtils.isNotObject(frameStructure)) {
+//          throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but [" + frameStructure + "].");
+//      }
+//
+//      final JsonObject frameObject = frameStructure.asJsonObject();
+
+//        JsonValue context = JsonValue.EMPTY_JSON_OBJECT;
+//
+//        if (frameObject.containsKey(Keywords.CONTEXT)) {
+//            context = frameObject.get(Keywords.CONTEXT);
+//        }
+
+        final var node = document.getContent().node();
+        final var adapter = document.getContent().adapter();
+
+        if (!adapter.isMap(node)) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but [" + node + "].");
+        }
+
+        PolyNode context = null;
+
+        if (adapter.keys(node).contains(Keywords.CONTEXT)) {
+            var contextNode = adapter.property(Keywords.CONTEXT, node);
+            if ((adapter.isString(contextNode)
+                    || adapter.isCollection(contextNode)
+                    || adapter.isMap(contextNode))
+                    && !adapter.isEmptyCollection(contextNode)
+                    && !adapter.isEmptyMap(contextNode)) {
+                context = new PolyNode(contextNode, adapter);
+            }
+        }
+
+        var expanded = Expander.expand(
+                document,
+                new JsonLdOptions(options).setOrdered(false),
+                true);
+
+        return of(expanded, context);
+    }
+
+    static final Frame of(final Object expanded) throws JsonLdError {
+        // TODO
+        return of(expanded, null);
+    }
+
+    static final Frame of(final Object expanded, final PolyNode context) throws JsonLdError {
 
         final Map<String, ?> frameMap;
 
         // 1.
-        if (node instanceof Collection<?> array) {
+        if (expanded instanceof Collection array) {
 
             if (array.size() == 1 && (array.iterator().next() instanceof Map map)) {
                 frameMap = map;
 
             } else {
-                throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame is not JSON object nor an array containing JSON object [" + node + "]");
+                throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame is not JSON object nor an array containing JSON object [" + expanded + "]");
             }
 
-        } else if ((node instanceof Map map)) {
+        } else if ((expanded instanceof Map map)) {
             frameMap = map;
 
-        } else if (node == null) {
+        } else if (expanded == null) {
             return EMPTY;
 
         } else {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame is not JSON object. [" + node + "]");
+            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame is not JSON object. [" + expanded + "]");
         }
 
         // 1.2.
@@ -72,10 +139,10 @@ public final class Frame {
             throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @type value is not valid [@type = " + frameMap.get(Keywords.TYPE) + "].");
         }
 
-        return new Frame(frameMap);
+        return new Frame(frameMap, context);
     }
 
-    public JsonLdEmbed getEmbed(final JsonLdEmbed defaultValue) throws JsonLdError {
+    public Embed getEmbed(final Embed defaultValue) throws JsonLdError {
 
         if (frameNode.containsKey(Keywords.EMBED)) {
 
@@ -85,8 +152,8 @@ public final class Frame {
                 return defaultValue;
             }
 
-            if (JsonLdNode.isValueNode(embed)) {
-                embed = JsonLdNode.findValue(embed).orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE));
+            if (embed instanceof Map map && JsonLdAdapter.isValueNode(map)) {
+                embed = JsonLdAdapter.findValue(embed).orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE));
             }
 
             if (embed instanceof String stringValue) {
@@ -95,13 +162,13 @@ public final class Frame {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag [@embed = " + stringValue + "].");
                 }
 
-                return JsonLdEmbed.valueOf(stringValue.substring(1).toUpperCase());
+                return Embed.valueOf(stringValue.substring(1).toUpperCase());
 
             } else if (Boolean.FALSE.equals(embed)) {
-                return JsonLdEmbed.NEVER;
+                return Embed.NEVER;
 
             } else if (Boolean.TRUE.equals(embed)) {
-                return JsonLdEmbed.ONCE;
+                return Embed.ONCE;
             }
 
             throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag [@embed = " + embed + "].");
@@ -128,8 +195,8 @@ public final class Frame {
                 return defaultValue;
             }
 
-            if (JsonLdNode.isValueNode(value)) {
-                value = JsonLdNode.findValue(value).orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_FRAME));
+            if (value instanceof Map map && JsonLdAdapter.isValueNode(map)) {
+                value = JsonLdAdapter.findValue(value).orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_FRAME));
             }
 
             if (value instanceof String bool) {
@@ -225,8 +292,8 @@ public final class Frame {
         return value instanceof Collection col
                 ? col
                 : value != null
-                        ? Set.of(value)
-                        : Collections.emptyList();
+                        ? List.of(value)
+                        : List.of();
     }
 
     @Override
@@ -235,7 +302,7 @@ public final class Frame {
     }
 
     public boolean isValuePattern() {
-        return JsonLdNode.isValueNode(frameNode);
+        return JsonLdAdapter.isValueNode(frameNode);
     }
 
     public boolean matchValue(Object value) {
@@ -243,18 +310,18 @@ public final class Frame {
     }
 
     public boolean isDefaultObject(String property) {
-        return JsonLdNode.isDefault(frameNode.get(property))
+        return JsonLdAdapter.isDefault(frameNode.get(property))
                 || frameNode.get(property) instanceof Collection array
                         && array.size() == 1
-                        && JsonLdNode.isDefault(array.iterator().next());
+                        && JsonLdAdapter.isDefault(array.iterator().next());
     }
 
     public boolean isPattern() {
-        return JsonLdNode.isNode(frameNode);
+        return JsonLdAdapter.isNode(frameNode);
     }
 
     public boolean isReference() {
-        return JsonLdNode.isReference(frameNode);
+        return JsonLdAdapter.isReference(frameNode);
     }
 
     public boolean matchNode(FramingState state, Object value, boolean requireAll) throws JsonLdError {
@@ -274,6 +341,26 @@ public final class Frame {
     }
 
     public boolean isList() {
-        return JsonLdNode.isList(frameNode);
+        return JsonLdAdapter.isList(frameNode);
+    }
+
+    public PolyNode context() {
+        return context;
+    }
+
+    public boolean isDefault(String graphKey) {
+//        if (context != null) {
+        //FIXME frameObject
+            for (final String key :  frameNode.keySet()) {
+                if (key.equals(graphKey)) {
+                    return true;
+                }
+            }
+//        }
+        return false;
+    }
+
+    public boolean hasContext() {
+        return context != null;
     }
 }

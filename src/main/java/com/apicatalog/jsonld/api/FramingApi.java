@@ -17,13 +17,14 @@ package com.apicatalog.jsonld.api;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Map;
 
-import com.apicatalog.jsonld.JsonLdEmbed;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.loader.JsonLdLoader;
 import com.apicatalog.jsonld.processor.Framer;
 import com.apicatalog.jsonld.uri.UriUtils;
@@ -144,7 +145,7 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
         return this;
     }
 
-    public FramingApi embed(JsonLdEmbed value) {
+    public FramingApi embed(Embed value) {
         options.setEmbed(value);
         return this;
     }
@@ -192,7 +193,7 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
      * @throws JsonLdError if the document framing fails
      * @throws IOException 
      */
-    public JsonObject get() throws JsonLdError, IOException {
+    public Map<String, ?> get() throws JsonLdError, IOException {
         if (document != null) {
             if (frame != null) {
                 return Framer.frame(document, frame, options);

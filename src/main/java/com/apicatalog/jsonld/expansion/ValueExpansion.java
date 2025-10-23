@@ -23,7 +23,7 @@ import java.util.Optional;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.lang.DirectionType;
+import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.NodeAdapter;
 
@@ -124,7 +124,7 @@ public final class ValueExpansion {
                     .orElseGet(context::getDefaultBaseDirection);
 
             // 5.4.
-            if (direction != null && !DirectionType.NULL.equals(direction)) {
+            if (direction != null && !Direction.NULL.equals(direction)) {
                 map.put(Keywords.DIRECTION, direction.name().toLowerCase());
             }
 

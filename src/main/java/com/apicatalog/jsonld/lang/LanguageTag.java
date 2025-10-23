@@ -55,6 +55,7 @@ public record LanguageTag(
      * @return The new language tag
      *
      * @throws IllegalArgumentException if the given string is not well-formed
+     *                                  language tag
      */
     public static LanguageTag of(final String languageTag) {
         if (languageTag == null) {

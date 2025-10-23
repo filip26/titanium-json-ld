@@ -96,7 +96,7 @@ final class GraphMap {
     public List<Reference> getUsages(String graphName, String subject) {
         return usages.containsKey(graphName) && usages.get(graphName).containsKey(subject)
                 ? usages.get(graphName).get(subject)
-                : Collections.emptyList();
+                : List.of();
     }
 
     public void addUsage(String graphName, String subject, Reference reference) {

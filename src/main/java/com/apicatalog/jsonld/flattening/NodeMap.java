@@ -84,12 +84,12 @@ public final class NodeMap {
     }
 
     public Collection<String> subjects(String graphName) {
-        return index.getOrDefault(graphName, Collections.emptyMap()).keySet();
+        return index.getOrDefault(graphName, Map.of()).keySet();
     }
 
     public Collection<String> properties(String graphName, String subject) {
-        return index.getOrDefault(graphName, Collections.emptyMap())
-                .getOrDefault(subject, Collections.emptyMap())
+        return index.getOrDefault(graphName, Map.of())
+                .getOrDefault(subject, Map.of())
                 .keySet();
     }
 

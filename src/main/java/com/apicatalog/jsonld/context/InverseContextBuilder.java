@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.apicatalog.jsonld.lang.DirectionType;
+import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 
 /**
@@ -115,7 +115,7 @@ public final class InverseContextBuilder {
                 .findTerm(termName)
                 .map(TermDefinition::getLanguageMapping);
 
-        final Optional<DirectionType> directionMapping = activeContext
+        final Optional<Direction> directionMapping = activeContext
                 .findTerm(termName)
                 .map(TermDefinition::getDirectionMapping);
 
@@ -129,12 +129,12 @@ public final class InverseContextBuilder {
             // 3.13.
             if (directionMapping.isPresent()) {
 
-                final DirectionType direction = directionMapping.get();
+                final Direction direction = directionMapping.get();
 
                 // 3.13.2.
                 if (language != null) {
 
-                    if (direction != DirectionType.NULL) {
+                    if (direction != Direction.NULL) {
 
                         langDir = language
                                 .concat("_")
@@ -146,7 +146,7 @@ public final class InverseContextBuilder {
                     }
 
                     // 3.13.4.
-                } else if (direction != DirectionType.NULL) {
+                } else if (direction != Direction.NULL) {
 
                     langDir = "_".concat(direction.name().toLowerCase());
 
@@ -168,7 +168,7 @@ public final class InverseContextBuilder {
 
             // 3.15.1.
             final String direction = directionMapping
-                    .filter(d -> d != DirectionType.NULL)
+                    .filter(d -> d != Direction.NULL)
                     .map(d -> "_".concat(d.name().toLowerCase()))
                     .orElse(Keywords.NONE);
 

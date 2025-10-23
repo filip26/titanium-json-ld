@@ -18,17 +18,15 @@ package com.apicatalog.jsonld.framing;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.apicatalog.jsonld.JsonLdEmbed;
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.lang.JsonLdNode;
+import com.apicatalog.jsonld.lang.JsonLdAdapter;
+import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
 /**
@@ -75,7 +73,7 @@ public final class Framing {
     public void frame() throws JsonLdError {
 
         // 2.
-        final JsonLdEmbed embed = frame.getEmbed(state.getEmbed());
+        final Embed embed = frame.getEmbed(state.getEmbed());
 
         final boolean explicit = frame.getExplicit(state.isExplicitInclusion());
 
@@ -87,9 +85,17 @@ public final class Framing {
                 .match(subjects);
 
         // 4.
-        for (final var id : Utils.index(matchedSubjects, ordered)) {
+        final var ids = ordered
+                ? matchedSubjects.stream().sorted().iterator()
+                : matchedSubjects.iterator();
 
-            final Map<String, ?> node = (Map) state.getGraphMap().find(state.getGraphName(), id).orElse(Collections.emptyMap());
+        while (ids.hasNext()) {
+
+            final var id = ids.next();
+
+            final var node = (Map<String, ?>) state.getGraphMap()
+                    .find(state.getGraphName(), id)
+                    .orElse(Map.of());
 
             final String nodeId = node.get(Keywords.ID) instanceof String stringId
                     ? stringId
@@ -110,7 +116,7 @@ public final class Framing {
 
             // 4.3.
             if (state.isEmbedded()
-                    && (JsonLdEmbed.NEVER == embed
+                    && (Embed.NEVER == embed
                             || state.isParent(nodeId))) {
                 addToResult(parent, activeProperty, output);
                 continue;
@@ -118,7 +124,7 @@ public final class Framing {
 
             // 4.4.
             if (state.isEmbedded()
-                    && JsonLdEmbed.ONCE == embed
+                    && Embed.ONCE == embed
                     && state.isDone(id)
 
             ) {
@@ -164,7 +170,7 @@ public final class Framing {
 
                     Framing.with(
                             graphState,
-                            new ArrayList<>(state.getGraphMap().find(id).map(Map::keySet).orElse(Collections.emptySet())),
+                            new ArrayList<>(state.getGraphMap().find(id).map(Map::keySet).orElse(Set.of())),
                             subframe,
                             output,
                             Keywords.GRAPH)
@@ -190,7 +196,16 @@ public final class Framing {
             }
 
             // 4.7.
-            for (final String property : Utils.index(state.getGraphMap().properties(state.getGraphName(), id), ordered)) {
+            final var unsortedProps = state.getGraphMap().properties(state.getGraphName(), id);
+
+            final var properties = ordered
+                    ? unsortedProps.stream().sorted().iterator()
+                    : unsortedProps.iterator();
+
+            while (properties.hasNext()) {
+
+                final var property = properties.next();
+
                 final var objects = state.getGraphMap().get(state.getGraphName(), id, property);
 
                 // 4.7.1.
@@ -216,7 +231,7 @@ public final class Framing {
                     }
 
                     // 4.7.3.1.
-                    if (JsonLdNode.isList(item)) {
+                    if (item instanceof Map itemMap && JsonLdAdapter.isList(itemMap)) {
 
                         Object listFrameValue = null;
 
@@ -241,11 +256,10 @@ public final class Framing {
 
                         final var list = new ArrayList<Object>();
 
-                        for (final var listItem : NativeAdapter.asCollection(
-                                ((Map) item).get(Keywords.LIST))) {
+                        for (final var listItem : NativeAdapter.asCollection(itemMap.get(Keywords.LIST))) {
 
                             // 4.7.3.1.1.
-                            if (JsonLdNode.isReference(listItem)) {
+                            if (JsonLdAdapter.isReference(listItem)) {
 
                                 FramingState listState = new FramingState(state);
                                 listState.setEmbedded(true);
@@ -274,12 +288,12 @@ public final class Framing {
                             }
                         }
 
-                        JsonLdNode.setOrAdd(output, property, Map.of(Keywords.LIST, list));
+                        JsonLdAdapter.setOrAdd(output, property, Map.of(Keywords.LIST, list));
 
 //                        output.put(property, List.of(Map.of(Keywords.LIST, list)));
 //                                JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, list)
 
-                    } else if (JsonLdNode.isReference(item)) {
+                    } else if (JsonLdAdapter.isReference(item)) {
 
                         FramingState clonedState = new FramingState(state);
                         clonedState.setEmbedded(true);
@@ -293,13 +307,13 @@ public final class Framing {
                                 .ordered(ordered)
                                 .frame();
 
-                    } else if (JsonLdNode.isValueNode(item)) {
+                    } else if (item instanceof Map itemMap && JsonLdAdapter.isValueNode(itemMap)) {
                         if (Frame.of(subframe).matchValue(item)) {
-                            JsonLdNode.setOrAdd(output, property, item);
+                            JsonLdAdapter.setOrAdd(output, property, item);
                         }
 
                     } else {
-                        JsonLdNode.setOrAdd(output, property, item);
+                        JsonLdAdapter.setOrAdd(output, property, item);
                     }
                 }
             }
@@ -319,7 +333,7 @@ public final class Framing {
                     propertyFrame = (Map<?, ?>) array.iterator().next();
 
                 } else {
-                    propertyFrame = Collections.emptyMap();
+                    propertyFrame = Map.of();
                 }
 
                 // 4.7.4.3.
@@ -334,7 +348,7 @@ public final class Framing {
                     defaultValue = Keywords.NULL;
                 }
 
-                JsonLdNode.setOrAdd(output, property, Map.of(Keywords.PRESERVE, defaultValue));
+                JsonLdAdapter.setOrAdd(output, property, Map.of(Keywords.PRESERVE, defaultValue));
             }
 
             // 4.7.5. - reverse properties
@@ -373,7 +387,10 @@ public final class Framing {
                                 output.put(Keywords.REVERSE, reverse);
                             }
 
-                            JsonLdNode.setOrAdd(reverse, (String) reverseEntry.getKey(), reverseResult.values());
+                            JsonLdAdapter.setOrAdd(
+                                    reverse,
+                                    (String) reverseEntry.getKey(),
+                                    reverseResult.values());
                         }
                     }
                 }
@@ -391,6 +408,6 @@ public final class Framing {
             result.put(Integer.toHexString(result.size()), value);
             return;
         }
-        JsonLdNode.setOrAdd(result, property, value);
+        JsonLdAdapter.setOrAdd(result, property, value);
     }
 }

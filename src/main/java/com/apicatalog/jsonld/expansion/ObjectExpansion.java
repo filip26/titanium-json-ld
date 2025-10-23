@@ -26,7 +26,7 @@ import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
-import com.apicatalog.jsonld.lang.JsonLdNode;
+import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.tree.io.NodeAdapter;
@@ -296,7 +296,7 @@ public final class ObjectExpansion {
     private Map<String, ?> normalizeValue(final Map<String, ?> result) throws JsonLdError {
 
         // 15.1.
-        if (JsonLdNode.isNotValueNode(result)) {
+        if (JsonLdAdapter.isNotValueNode(result)) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
         }
 

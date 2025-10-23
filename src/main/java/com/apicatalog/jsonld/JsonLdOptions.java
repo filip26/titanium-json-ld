@@ -23,6 +23,7 @@ import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.cache.Cache;
 import com.apicatalog.jsonld.document.cache.LruCache;
 import com.apicatalog.jsonld.json.JsonProvider;
+import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.loader.JsonLdLoader;
 import com.apicatalog.jsonld.loader.SchemeRouter;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
@@ -109,7 +110,7 @@ public final class JsonLdOptions {
 
     // Framing https://www.w3.org/TR/json-ld11-framing/#jsonldoptions
 
-    private JsonLdEmbed embed;
+    private Embed embed;
 
     private boolean explicit;
 
@@ -161,7 +162,7 @@ public final class JsonLdOptions {
         this.useRdfType = false;
 
         // framing defaults
-        this.embed = JsonLdEmbed.ONCE;
+        this.embed = Embed.ONCE;
         this.explicit = false;
         this.omitDefault = false;
         this.omitGraph = null;
@@ -391,11 +392,11 @@ public final class JsonLdOptions {
 
     // Framing
 
-    public JsonLdEmbed getEmbed() {
+    public Embed getEmbed() {
         return embed;
     }
 
-    public void setEmbed(JsonLdEmbed embed) {
+    public void setEmbed(Embed embed) {
         this.embed = embed;
     }
 

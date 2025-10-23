@@ -15,7 +15,7 @@
  */
 package com.apicatalog.jsonld.lang;
 
-public enum DirectionType {
+public enum Direction {
 
     LTR,
 

@@ -27,7 +27,7 @@ import com.apicatalog.jsonld.compaction.UriCompaction;
 import com.apicatalog.jsonld.compaction.ValueCompaction;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.expansion.ValueExpansion;
-import com.apicatalog.jsonld.lang.DirectionType;
+import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.processor.ProcessingRuntime;
 import com.apicatalog.tree.io.NodeAdapter;
 
@@ -60,7 +60,7 @@ public final class ActiveContext implements Context {
     private String defaultLanguage;
 
     // an optional default base direction ("ltr" or "rtl")
-    private DirectionType defaultBaseDirection;
+    private Direction defaultBaseDirection;
 
     private final ProcessingRuntime runtime;
 
@@ -116,7 +116,7 @@ public final class ActiveContext implements Context {
         return Optional.ofNullable(terms.get(value));
     }
 
-    public DirectionType getDefaultBaseDirection() {
+    public Direction getDefaultBaseDirection() {
         return defaultBaseDirection;
     }
 
@@ -188,7 +188,7 @@ public final class ActiveContext implements Context {
         return TermSelector.match(preferredValues, this, variable, containerMapping, typeLanguage);
     }
 
-    protected void setDefaultBaseDirection(final DirectionType defaultBaseDirection) {
+    protected void setDefaultBaseDirection(final Direction defaultBaseDirection) {
         this.defaultBaseDirection = defaultBaseDirection;
     }
 

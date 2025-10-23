@@ -20,8 +20,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,7 +30,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.CompactUri;
-import com.apicatalog.jsonld.lang.DirectionType;
+import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.uri.UriUtils;
@@ -187,14 +187,14 @@ public final class TermDefinitionBuilder {
         // 7.
         if (adapter.isNull(value)) {
             propertyGetter = x -> null;
-            valueObjectKeys = Collections.emptySet();
+            valueObjectKeys = Set.of();
             idValue = false;
             simpleTerm = false;
 
         } else if (adapter.isString(value)) {
             // 8.
             propertyGetter = x -> null;
-            valueObjectKeys = Collections.emptySet();
+            valueObjectKeys = Set.of();
             idValue = value;
             simpleTerm = true;
 
@@ -587,17 +587,17 @@ public final class TermDefinitionBuilder {
                 && !valueObjectKeys.contains(Keywords.TYPE)) {
 
             if (adapter.isNull(directionValue)) {
-                definition.setDirectionMapping(DirectionType.NULL);
+                definition.setDirectionMapping(Direction.NULL);
 
             } else if (adapter.isString(directionValue)) {
 
                 var directionString = adapter.stringValue(directionValue);
 
                 if ("ltr".equals(directionString)) {
-                    definition.setDirectionMapping(DirectionType.LTR);
+                    definition.setDirectionMapping(Direction.LTR);
 
                 } else if ("rtl".equals(directionString)) {
-                    definition.setDirectionMapping(DirectionType.RTL);
+                    definition.setDirectionMapping(Direction.RTL);
 
                 } else {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);

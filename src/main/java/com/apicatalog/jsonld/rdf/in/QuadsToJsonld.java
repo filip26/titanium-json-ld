@@ -17,7 +17,6 @@ package com.apicatalog.jsonld.rdf.in;
 
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -292,7 +291,8 @@ public class QuadsToJsonld implements RdfQuadConsumer {
             for (Reference usage : graphMap.getUsages(graphName, RdfConstants.NIL)) {
 
                 // 6.4.1.
-                Map<String, JsonValue> node = graphMap.get(usage.graphName, usage.subject).orElseGet(() -> Collections.emptyMap());
+                Map<String, JsonValue> node = graphMap.get(usage.graphName, usage.subject)
+                        .orElse(Map.of());
 
                 // 6.4.2.
                 final JsonArrayBuilder list = JsonProvider.instance().createArrayBuilder();
@@ -371,7 +371,8 @@ public class QuadsToJsonld implements RdfQuadConsumer {
 
                 for (final String key : Utils.index(graphMap.keys(subject), ordered)) {
 
-                    final Map<String, JsonValue> entry = graphMap.get(subject, key).orElseGet(() -> Collections.emptyMap());
+                    final Map<String, JsonValue> entry = graphMap.get(subject, key)
+                            .orElse(Map.of());
 
                     if (entry.size() > 1 || !entry.containsKey(Keywords.ID)) {
                         array.add(JsonUtils.toJsonObject(entry));

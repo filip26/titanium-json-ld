@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -88,8 +89,8 @@ class MediaTypeTest {
         assertEquals(new HashSet<>(Arrays.asList("a")), type.parameterNames());
         assertTrue(type.findFirstParameter("a").isPresent());
         assertEquals("4", type.findFirstParameter("a").get());
-        assertEquals(Arrays.asList("4"), type.parameters("a"));
-        assertEquals(Collections.emptyList(), type.parameters("Z"));
+        assertEquals(List.of("4"), type.parameters("a"));
+        assertEquals(List.of(), type.parameters("Z"));
     }
 
     @Test

@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -37,6 +36,7 @@ import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.document.PolyNodeDocument;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.framing.Frame;
@@ -47,16 +47,12 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoaderOptions;
+import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 import com.apicatalog.tree.io.java.NativeAdapter;
-import com.apicatalog.tree.io.traverse.Visitor;
 
-import jakarta.json.JsonArray;
-import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
-import jakarta.json.JsonString;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 
@@ -71,7 +67,7 @@ public final class Framer {
     private Framer() {
     }
 
-    public static final JsonObject frame(final URI input, final Document frame, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Map<String, ?> frame(final URI input, final Document frame, final JsonLdOptions options) throws JsonLdError, IOException {
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
@@ -88,7 +84,7 @@ public final class Framer {
         return frame(remoteDocument, frame, options);
     }
 
-    public static final JsonObject frame(final Document input, final URI frameUri, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Map<String, ?> frame(final Document input, final URI frameUri, final JsonLdOptions options) throws JsonLdError, IOException {
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + frameUri + "].");
         }
@@ -102,38 +98,27 @@ public final class Framer {
         return frame(input, frameDocument, options);
     }
 
-    public static final JsonObject frame(final Document input, final Document frame, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Map<String, ?> frame(final URI input, final URI frame, final JsonLdOptions options) throws JsonLdError, IOException {
+        return frame(getDocument(input, options), getDocument(frame, options), options);
+    }
 
-        if (frame == null) {
+    public static final Map<String, ?> frame(final Document inputDocument, final Document frameDocument, final JsonLdOptions options) throws JsonLdError, IOException {
+
+        if (frameDocument == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame or Frame.Document is null.");
         }
-
-        final JsonStructure frameStructure;
-
-        if (frame instanceof JsonDocument x) {
-            frameStructure = x.getJsonContent()
-                    .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but null."));
-        } else {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but null.");
-        }
-
-        if (JsonUtils.isNotObject(frameStructure)) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but [" + frameStructure + "].");
-        }
-
-        final JsonObject frameObject = frameStructure.asJsonObject();
 
         // 4.
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
 
         expansionOptions.setOrdered(false);
 
-        var expandedInput = Expander.expand(input, expansionOptions, false);
+        var expandedInput = Expander.expand(inputDocument, expansionOptions, false);
 //        JsonArray expandedInput = JsonValue.EMPTY_JSON_ARRAY;
 //        var a = new JakartaMaterializer().node(expandedInput, NativeAdapter.instance());
         // 7.
-        
-        var expandedFrame = Expander.expand(frame, expansionOptions, true);
+
+        var expandedFrame = Expander.expand(frameDocument, expansionOptions, true);
 //        System.out.println(">>> INPUT " + expandedInput);
 //        System.out.println(">>> FRAME " + expandedFrame);
 //      new Visitor().root(expandedFrame, NativeAdapter.instance()).traverse(
@@ -144,37 +129,30 @@ public final class Framer {
 //      
 //      );
 
-        
-     
-        JsonValue context = JsonValue.EMPTY_JSON_OBJECT;
-
-        if (frameObject.containsKey(Keywords.CONTEXT)) {
-            context = frameObject.get(Keywords.CONTEXT);
-        }
+        final var frame = Frame.of((PolyNodeDocument) frameDocument, options);
 
         // 9.
-        final URI contextBase = (frame.getContextUrl() != null)
-                ? frame.getDocumentUrl()
+        final var contextBase = (frameDocument.getContextUrl() != null)
+                ? frameDocument.getDocumentUrl()
                 : options.getBase();
 
         // 10-11.
-        final ActiveContext activeContext = new ActiveContext(input.getDocumentUrl(), input.getDocumentUrl(), ProcessingRuntime.of(options))
+        final var activeContext = new ActiveContext(
+                inputDocument.getDocumentUrl(),
+                inputDocument.getDocumentUrl(),
+                ProcessingRuntime.of(options))
                 .newContext()
-                .build(context, JakartaAdapter.instance(), contextBase);
+                .build(frame.context() != null
+                        ? frame.context()
+                        // TODO
+                        : new PolyNode(Map.of(), NativeAdapter.instance()), contextBase);
 
-        final String graphKey = activeContext.uriCompaction().vocab(true).compact(Keywords.GRAPH);
-
-        // 13.
-        boolean frameDefault = false;
-        for (final String key : frameObject.keySet()) {
-            if (key.equals(graphKey)) {
-                frameDefault = true;
-                break;
-            }
-        }
+        final var graphKey = activeContext.uriCompaction()
+                .vocab(true)
+                .compact(Keywords.GRAPH);
 
         // 14.
-        final FramingState state = new FramingState();
+        final var state = new FramingState();
 
         state.setEmbed(options.getEmbed()); // 14.1.
         state.setEmbedded(false); // 14.2.
@@ -184,7 +162,7 @@ public final class Framer {
 
         state.setGraphMap(new NodeMapBuilder(expandedInput, new NodeMap()).build()); // 14.7.
 
-        if (frameDefault) {
+        if (frame.isDefault(graphKey)) {
             state.setGraphName(Keywords.DEFAULT); // 14.6.
 
         } else {
@@ -199,11 +177,10 @@ public final class Framer {
         final var resultMap = new LinkedHashMap<String, Object>();
 //        final var resultMap = MapBuilder.create();
 
-
         // 16.
         Framing.with(state,
                 new ArrayList<>(state.getGraphMap().subjects(state.getGraphName())),
-                Frame.of(expandedFrame),
+                frame,
                 resultMap,
                 null)
                 .ordered(options.isOrdered())
@@ -215,17 +192,17 @@ public final class Framer {
         if (!activeContext.runtime().isV10()) {
 
             final var values = resultMap.values();
-            
+
             final var remove = findBlankNodes(values);
 
             if (!remove.isEmpty()) {
                 result = values.stream().map(v -> Framer.removeBlankIdKey(v, remove));
-                
+
             } else {
                 result = values.stream();
             }
         }
-        
+
         if (result == null) {
             result = resultMap.values().stream();
         }
@@ -235,32 +212,32 @@ public final class Framer {
                 .map(Framer::removePreserve)
                 .toList();
 
-        var xy = new JakartaMaterializer().node(filtered, NativeAdapter.instance());
+//        var xy = new JakartaMaterializer().node(filtered, NativeAdapter.instance());
 //        System.out.println(expandedInput);
 //        System.out.println(resultMap.values());
 //        System.out.println(xy);
         // 19.
         // FIXME output
-        JsonValue compactedResults = Compaction
+        var compactedOutput = Compaction
                 .with(activeContext)
                 .compactArrays(options.isCompactArrays())
                 .ordered(options.isOrdered())
-                .compact(xy);
+                .compact(filtered);
 
         // 19.1.
-        if (JsonUtils.isEmptyArray(compactedResults)) {
-            compactedResults = JsonValue.EMPTY_JSON_OBJECT;
+        if (compactedOutput instanceof Collection<?> col) {
 
-            // 19.2.
-        } else if (JsonUtils.isArray(compactedResults)) {
+            if (col.isEmpty()) {
+                compactedOutput = Map.of();
 
-            compactedResults = JsonProvider.instance().createObjectBuilder()
-                    .add(graphKey, compactedResults).build();
-
+            } else {
+                // 19.2.
+                compactedOutput = Map.of(graphKey, compactedOutput);
+            }
         }
 
         // 20.
-        compactedResults = replaceNull(compactedResults);
+        compactedOutput = replaceNull(compactedOutput);
 
         final boolean omitGraph;
 
@@ -273,29 +250,28 @@ public final class Framer {
         }
 
         // 21.
-        if (!omitGraph && !compactedResults.asJsonObject().containsKey(graphKey)) {
-            if (compactedResults.asJsonObject().isEmpty()) {
+        if (!omitGraph && !((Map<String, ?>) compactedOutput).containsKey(graphKey)) {
+            if (((Map<?, ?>) compactedOutput).isEmpty()) {
 
-                compactedResults = JsonProvider.instance().createObjectBuilder().add(graphKey,
-                        JsonValue.EMPTY_JSON_ARRAY).build();
+                compactedOutput = Map.of(
+                        graphKey,
+                        List.of());
 
             } else {
-
-                compactedResults = JsonProvider.instance().createObjectBuilder().add(graphKey,
-                        JsonProvider.instance().createArrayBuilder().add(compactedResults)).build();
+                compactedOutput = Map.of(
+                        graphKey,
+                        List.of(compactedOutput));
             }
         }
 
         // 19.3.
-        if (!JsonUtils.isEmptyArray(context) && !JsonUtils.isEmptyObject(context)) {
-            compactedResults = JsonProvider.instance().createObjectBuilder(compactedResults.asJsonObject()).add(Keywords.CONTEXT, context).build();
+        if (frame.hasContext()) {
+            var compacted = new HashMap<>((Map<String, Object>) compactedOutput);
+            compacted.put(Keywords.CONTEXT, frame.context());
+            return compacted;
         }
 
-        return compactedResults.asJsonObject();
-    }
-
-    public static final JsonObject frame(final URI input, final URI frame, final JsonLdOptions options) throws JsonLdError, IOException {
-        return frame(getDocument(input, options), getDocument(frame, options), options);
+        return (Map<String, ?>) compactedOutput;
     }
 
     private static Document getDocument(final URI document, final JsonLdOptions options) throws JsonLdError {
@@ -330,7 +306,7 @@ public final class Framer {
 
                 if (Keywords.PRESERVE.equals(entry.getKey())) {
                     return entry.getValue();
-                            //((Collection<?>) entry.getValue()).iterator().next();
+                    // ((Collection<?>) entry.getValue()).iterator().next();
                 }
 
                 object.put(entry.getKey(), removePreserve(entry.getValue()));
@@ -342,30 +318,30 @@ public final class Framer {
         return value;
     }
 
-    private static final JsonValue replaceNull(JsonValue value) {
+    private static final Object replaceNull(Object node) {
 
-        if (JsonUtils.isString(value) && Keywords.NULL.equals(((JsonString) value).getString())) {
-            return JsonValue.NULL;
-
-        } else if (JsonUtils.isScalar(value)) {
-            return value;
-
-        } else if (JsonUtils.isArray(value)) {
-
-            final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
-
-            value.asJsonArray().forEach(item -> array.add(replaceNull(item)));
-
-            final JsonArray result = array.build();
-
-            return result.size() != 1 || JsonUtils.isNotNull(result.get(0)) ? result : JsonValue.EMPTY_JSON_ARRAY;
+        if (node == null) {
+            return null;
         }
 
-        final JsonObjectBuilder object = JsonProvider.instance().createObjectBuilder();
+        if (node instanceof Collection<?> col) {
 
-        value.asJsonObject().entrySet().forEach(entry -> object.add(entry.getKey(), replaceNull(entry.getValue())));
+            final var result = col.stream().map(Framer::replaceNull).toList();
 
-        return object.build();
+            return result.size() != 1
+                    || result.get(0) != null
+                            ? result
+                            : List.of();
+        }
+
+        if (node instanceof Map<?, ?> map) {
+            return map.entrySet().stream()
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            Framer::replaceNull));
+        }
+
+        return node;
     }
 
     private static final Object removeBlankIdKey(Object value, List<String> blankNodes) {
@@ -442,7 +418,9 @@ public final class Framer {
             for (final String subject : graphMap.subjects(graphName)) {
 
                 // TODO
-                final var node = (Map<String, ?>) graphMap.find(graphName, subject).orElse(Collections.emptyMap());
+                final var node = (Map<String, ?>) graphMap
+                        .find(graphName, subject)
+                        .orElse(Map.of());
 
                 if (node == null) {
                     continue;

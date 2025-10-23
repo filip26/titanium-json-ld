@@ -16,18 +16,17 @@
 package com.apicatalog.jsonld.framing;
 
 import java.util.ArrayDeque;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.apicatalog.jsonld.JsonLdEmbed;
 import com.apicatalog.jsonld.flattening.NodeMap;
+import com.apicatalog.jsonld.lang.Embed;
 
 public final class FramingState {
 
-    private JsonLdEmbed embed;
+    private Embed embed;
     private boolean requireAll;
     private boolean embedded;
     private boolean explicitInclusion;
@@ -61,11 +60,11 @@ public final class FramingState {
         this.reversePropertyIndex = state.reversePropertyIndex;
     }
 
-    public JsonLdEmbed getEmbed() {
+    public Embed getEmbed() {
         return embed;
     }
 
-    public void setEmbed(JsonLdEmbed embed) {
+    public void setEmbed(Embed embed) {
         this.embed = embed;
     }
 
@@ -143,21 +142,21 @@ public final class FramingState {
 
     public Set<String> getReversePropertySubjects(String graphName, String property, String value) {
         if (reversePropertyIndex == null) {
-            return Collections.emptySet();
+            return Set.of();
         }
 
         final var graphIndex = reversePropertyIndex.get(graphName);
         if (graphIndex == null) {
-            return Collections.emptySet();
+            return Set.of();
         }
 
         final var propertyIndex = graphIndex.get(property);
         if (propertyIndex == null) {
-            return Collections.emptySet();
+            return Set.of();
         }
 
         final var subjects = propertyIndex.get(value);
-        return subjects != null ? subjects : Collections.emptySet();
+        return subjects != null ? subjects : Set.of();
     }
 
     public void setReversePropertyIndex(Map<String, Map<String, Map<String, Set<String>>>> index) {

@@ -20,13 +20,14 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.lang.JsonLdNode;
+import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.NodeType;
@@ -227,7 +228,7 @@ public final class Expansion {
             final Params params) throws JsonLdError, IOException {
 
         if (nodeAdapter.isEmptyCollection(node)) {
-            return Collections.emptySet();
+            return List.of();
         }
 
         final var result = new ArrayList<Object>();
@@ -246,7 +247,7 @@ public final class Expansion {
                             .map(TermDefinition::getContainerMapping)
                             .filter(c -> c.contains(Keywords.LIST)).isPresent()) {
 
-                expanded = JsonLdNode.toList(list);
+                expanded = JsonLdAdapter.toList(list);
             }
 
             // 5.2.3

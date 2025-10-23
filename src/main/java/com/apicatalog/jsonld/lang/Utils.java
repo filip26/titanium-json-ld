@@ -18,6 +18,7 @@ package com.apicatalog.jsonld.lang;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Deprecated
 public final class Utils {
@@ -27,7 +28,7 @@ public final class Utils {
     public static final Collection<String> index(final Collection<String> keys, final boolean ordered) {
 
         if (keys == null || keys.isEmpty()) {
-            return Collections.emptyList();
+            return List.of();
         }
 
         if (ordered) {

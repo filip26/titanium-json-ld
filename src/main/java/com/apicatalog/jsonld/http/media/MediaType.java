@@ -50,7 +50,7 @@ public record MediaType(
     public static final MediaType ANY = new MediaType(WILDCARD, WILDCARD);
 
     public MediaType(String type, String subtype) {
-        this(type, subtype, Collections.emptyMap());
+        this(type, subtype, Map.of());
     }
 
     public MediaType(String type, String subtype, Map<String, List<String>> parameters) {
@@ -58,7 +58,7 @@ public record MediaType(
         this.subtype = Objects.requireNonNull(subtype);
         this.parameters = parameters != null
                 ? parameters
-                : Collections.emptyMap();
+                : Map.of();
     }
     
     public static final MediaType of(final String value) {
@@ -87,7 +87,7 @@ public record MediaType(
     public List<String> parameters(final String name) {
         return parameters.containsKey(name)
                 ? Collections.unmodifiableList(parameters.get(name))
-                : Collections.emptyList();
+                : List.of();
     }
 
     public Optional<String> findFirstParameter(final String name) {

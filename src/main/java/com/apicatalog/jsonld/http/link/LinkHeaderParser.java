@@ -158,7 +158,7 @@ final class LinkHeaderParser {
     private final void addLink() {
         if (foundLink) {
 
-            Set<String> rel = Collections.emptySet();
+            Set<String> rel = Set.of();
             URI context = null;
             MediaType type = null;
 

@@ -23,10 +23,11 @@ import java.util.Optional;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.json.JsonProvider;
-import com.apicatalog.jsonld.lang.DirectionType;
+import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.processor.ProcessingRuntime;
 import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.PolyNode;
 
 import jakarta.json.JsonValue;
 
@@ -37,6 +38,28 @@ import jakarta.json.JsonValue;
  */
 public interface Context {
 
+    
+    static class Bx {
+        
+//        void Bx of() {
+//            
+//            
+//            PolyNode context = null;
+//
+//            if (adapter.keys(node).contains(Keywords.CONTEXT)) {
+//                var contextNode = adapter.property(Keywords.CONTEXT, node);
+//                if ((adapter.isString(contextNode)
+//                        || adapter.isCollection(contextNode)
+//                        || adapter.isMap(contextNode))
+//                        && !adapter.isEmptyCollection(contextNode)
+//                        && !adapter.isEmptyMap(contextNode)) {
+//                    context = new PolyNode(contextNode, adapter);
+//                }
+//            }
+//        }
+        
+    }
+    
     static class Builder {
 
         URI baseUri;
@@ -119,7 +142,7 @@ public interface Context {
 
     Optional<TermDefinition> findTerm(final String value);
 
-    DirectionType getDefaultBaseDirection();
+    Direction getDefaultBaseDirection();
 
     String getDefaultLanguage();
 

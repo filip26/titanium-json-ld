@@ -31,7 +31,7 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.http.ProfileConstants;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
-import com.apicatalog.jsonld.lang.DirectionType;
+import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.loader.LoaderOptions;
@@ -92,6 +92,11 @@ public final class ActiveContextBuilder {
         return new ActiveContextBuilder(activeContext);
     }
 
+
+    public ActiveContext build(PolyNode context, URI baseUrl) throws JsonLdError, IOException {
+        return build(context.node(), context.adapter(), baseUrl);
+    }
+    
     public ActiveContext build(final Object localContext, final NodeAdapter adapter, final URI baseUrl) throws JsonLdError, IOException {
 
         // 1. Initialize result to the result of cloning active context, with inverse
@@ -403,7 +408,7 @@ public final class ActiveContextBuilder {
 
                 // 5.10.3.
                 if (adapter.isNull(dirValue)) {
-                    result.setDefaultBaseDirection(DirectionType.NULL);
+                    result.setDefaultBaseDirection(Direction.NULL);
 
                     // 5.10.4.
                 } else if (adapter.isString(dirValue)) {
@@ -411,10 +416,10 @@ public final class ActiveContextBuilder {
                     final String direction = adapter.stringValue(dirValue);
 
                     if ("ltr".equalsIgnoreCase(direction)) {
-                        result.setDefaultBaseDirection(DirectionType.LTR);
+                        result.setDefaultBaseDirection(Direction.LTR);
 
                     } else if ("rtl".equalsIgnoreCase(direction)) {
-                        result.setDefaultBaseDirection(DirectionType.RTL);
+                        result.setDefaultBaseDirection(Direction.RTL);
 
                     } else {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);

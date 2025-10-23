@@ -17,12 +17,11 @@ package com.apicatalog.jsonld.framing;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.lang.JsonLdNode;
+import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
@@ -54,7 +53,9 @@ public final class FrameMatcher {
 
         for (final var subject : subjects) {
 
-            if (match((Map<?, ?>) state.getGraphMap().find(state.getGraphName(), subject).orElse(Collections.emptyMap()))) {
+            if (match((Map<?, ?>) state.getGraphMap()
+                    .find(state.getGraphName(), subject)
+                    .orElse(Map.of()))) {
                 result.add(subject);
             }
         }
@@ -127,7 +128,7 @@ public final class FrameMatcher {
                     ? array
                     : nodeValue != null
                             ? List.of(nodeValue)
-                            : Collections.emptyList();
+                            : List.of();
 
             // 2.5.
             if (nodeValues.isEmpty()
@@ -175,13 +176,16 @@ public final class FrameMatcher {
 
                     var listValue = propertyFrame.get(Keywords.LIST);
 
-                    if (!nodeValues.isEmpty() && JsonLdNode.isList(nodeValues.iterator().next())) {
+                    if (!nodeValues.isEmpty() 
+                            && nodeValues.iterator().next() instanceof Map nodeValueMap
+                            && JsonLdAdapter.isList(nodeValueMap)) {
 
                         final var first = (Map<?, ?>) nodeValues.iterator().next();
 
                         final var nodeListValue = first.get(Keywords.LIST);
 
-                        if (JsonLdNode.isValueNode(((Collection<?>) listValue).iterator().next())) {
+                        if (((Collection<?>) listValue).iterator().next() instanceof Map map
+                                && JsonLdAdapter.isValueNode(map)) {
 
                             final Frame frame = Frame.of(listValue);
                             boolean match = false;
@@ -202,8 +206,8 @@ public final class FrameMatcher {
                                 return true;
                             }
 
-                        } else if (JsonLdNode.isNode(((Collection<?>) listValue).iterator().next())
-                                || JsonLdNode.isReference(((Collection<?>) listValue).iterator().next())) {
+                        } else if (JsonLdAdapter.isNode(((Collection<?>) listValue).iterator().next())
+                                || JsonLdAdapter.isReference(((Collection<?>) listValue).iterator().next())) {
 
                             final Frame frame = Frame.of(listValue);
                             boolean match = false;

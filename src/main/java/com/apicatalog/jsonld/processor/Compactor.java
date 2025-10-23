@@ -17,6 +17,9 @@ package com.apicatalog.jsonld.processor;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -24,17 +27,12 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
-import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
-import com.apicatalog.tree.io.java.NativeAdapter;
-import com.apicatalog.tree.io.traverse.Visitor;
 
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
 /**
@@ -48,7 +46,7 @@ public final class Compactor {
     private Compactor() {
     }
 
-    public static final JsonObject compact(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Map<String, ?> compact(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError, IOException {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + context + "].");
@@ -63,7 +61,7 @@ public final class Compactor {
         return compact(input, contextDocument, options);
     }
 
-    public static final JsonObject compact(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Map<String, ?> compact(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError, IOException {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
@@ -81,7 +79,7 @@ public final class Compactor {
         return compact(remoteDocument, context, options);
     }
 
-    public static final JsonObject compact(final Document<PolyNode> input, final URI context, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Map<String, ?> compact(final Document<PolyNode> input, final URI context, final JsonLdOptions options) throws JsonLdError, IOException {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + context + "].");
@@ -96,7 +94,7 @@ public final class Compactor {
         return compact(input, contextDocument, options);
     }
 
-    public static final JsonObject compact(final Document<PolyNode> input, final Document<?> context, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Map<String, ?> compact(final Document<PolyNode> input, final Document<?> context, final JsonLdOptions options) throws JsonLdError, IOException {
 
         // 4.
         final var expansionOptions = new JsonLdOptions(options)
@@ -111,7 +109,7 @@ public final class Compactor {
 //        }
 //        
 //        );
-        var m = new JakartaMaterializer().node(expandedInput, NativeAdapter.instance());
+//        var m = new JakartaMaterializer().node(expandedInput, NativeAdapter.instance());
 //System.out.println(m);
         // 5.
         URI contextBase = input.getDocumentUrl();
@@ -141,38 +139,43 @@ public final class Compactor {
         }
 
         // 9.
-        JsonValue compactedOutput = Compaction
+        var compactedOutput = Compaction
                 .with(activeContext)
                 .compactArrays(options.isCompactArrays())
                 .ordered(options.isOrdered())
-                .compact(m);
+                .compact(expandedInput);
 
         // 9.1.
-        if (JsonUtils.isEmptyArray(compactedOutput)) {
-            compactedOutput = JsonValue.EMPTY_JSON_OBJECT;
+        if (compactedOutput instanceof Collection<?> col) {
+            if (col.isEmpty()) {
+                compactedOutput = Map.of();
 
-            // 9.2.
-        } else if (JsonUtils.isArray(compactedOutput)) {
-            compactedOutput = JsonProvider.instance().createObjectBuilder()
-                    .add(
-                            activeContext.uriCompaction().vocab(true).compact(Keywords.GRAPH),
-                            compactedOutput)
-                    .build();
+            } else {
+                // 9.2.
+                compactedOutput = Map.of(
+                        activeContext.uriCompaction().vocab(true).compact(Keywords.GRAPH),
+                        compactedOutput);
+            }
         }
 
-        if (JsonUtils.isNull(compactedOutput) || compactedOutput.asJsonObject().isEmpty()) {
-            return JsonValue.EMPTY_JSON_OBJECT;
+        if (compactedOutput == null
+                || compactedOutput instanceof Map map && map.isEmpty()) {
+            return Map.of();
         }
 
         // 9.3.
         if (JsonUtils.isNotNull(contextValue)
                 && !JsonUtils.isEmptyArray(contextValue)
                 && !JsonUtils.isEmptyObject(contextValue)) {
-            compactedOutput = JsonProvider.instance().createObjectBuilder(compactedOutput.asJsonObject())
-                    .add(Keywords.CONTEXT, contextValue)
-                    .build();
+//            compactedOutput = JsonProvider.instance().createObjectBuilder((Map)compactedOutput)
+//                    .add(Keywords.CONTEXT, contextValue)
+//                    .build();
+            var compacted = new HashMap<String, Object>((Map) compactedOutput); 
+            compacted.put(Keywords.CONTEXT, contextValue);
+            return compacted;
         }
 
-        return compactedOutput.asJsonObject();
+
+        return (Map)compactedOutput;
     }
 }

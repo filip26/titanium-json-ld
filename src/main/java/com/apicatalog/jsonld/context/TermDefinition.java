@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import com.apicatalog.jsonld.lang.DirectionType;
+import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.NodeAdapter;
 
@@ -49,7 +49,7 @@ public final class TermDefinition {
 
     private String typeMapping;
 
-    private DirectionType directionMapping;
+    private Direction directionMapping;
 
     private String languageMapping;
 
@@ -80,7 +80,7 @@ public final class TermDefinition {
         return languageMapping;
     }
 
-    public DirectionType getDirectionMapping() {
+    public Direction getDirectionMapping() {
         return directionMapping;
     }
 
@@ -156,7 +156,7 @@ public final class TermDefinition {
         this.typeMapping = typeMapping;
     }
 
-    protected void setDirectionMapping(DirectionType directionMapping) {
+    protected void setDirectionMapping(Direction directionMapping) {
         this.directionMapping = directionMapping;
     }
 

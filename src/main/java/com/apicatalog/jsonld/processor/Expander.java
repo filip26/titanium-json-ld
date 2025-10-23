@@ -18,7 +18,6 @@ package com.apicatalog.jsonld.processor;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -139,7 +138,7 @@ public final class Expander {
 
         // 8.2
         if (expanded == null) {
-            return Collections.emptySet();
+            return Set.of();
         }
 
         if (expanded instanceof Collection<?> collection) {

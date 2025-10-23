@@ -31,7 +31,7 @@ import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
-import com.apicatalog.jsonld.lang.JsonLdNode;
+import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.lang.RdfConstants;
@@ -183,7 +183,7 @@ public final class ToRdf {
             final String predicate) throws JsonLdError, RdfConsumerException {
 
         // 1. - 2.
-        if (JsonLdNode.isNodeJakarta(item)) {
+        if (JsonLdAdapter.isNodeJakarta(item)) {
 
             JsonValue id = item.get(Keywords.ID);
 
@@ -201,12 +201,12 @@ public final class ToRdf {
         }
 
         // 3.
-        if (JsonLdNode.isListObject(item)) {
+        if (JsonLdAdapter.isListObject(item)) {
             fromList(consumer, item.get(Keywords.LIST).asJsonArray(), subject, predicate);
         }
 
         // 4.
-        if (!JsonLdNode.isValueObject(item)) {
+        if (!JsonLdAdapter.isValueObject(item)) {
             return;
         }
 

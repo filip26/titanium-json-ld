@@ -168,7 +168,7 @@ public final class JsonUtils {
     public static Collection<JsonValue> toCollection(JsonValue value) {
 
         if (value == null) {
-            return Collections.emptyList();
+            return List.of();
         }
 
         if (JsonValue.ValueType.ARRAY.equals(value.getValueType())) {

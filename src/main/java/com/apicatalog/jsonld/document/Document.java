@@ -51,6 +51,7 @@ public interface Document<T> {
      */
     URI getContextUrl();
 
+    @Deprecated
     void setContextUrl(URI contextUrl);
 
     /**
@@ -61,6 +62,7 @@ public interface Document<T> {
      */
     URI getDocumentUrl();
 
+    @Deprecated
     void setDocumentUrl(URI documentUrl);
 
     /**

@@ -45,11 +45,11 @@ public record Link(
         this.target = target;
         this.relations = relations != null
                 ? relations
-                : Collections.emptySet();
+                : Set.of();
         this.type = type;
         this.attributeMap = attributeMap != null
                 ? attributeMap
-                : Collections.emptyMap();
+                : Map.of();
     }
 
     public static final Collection<Link> of(final String linkHeader) {
@@ -63,7 +63,7 @@ public record Link(
     public List<Attribute> attributes(final String attributeName) {
         return attributeMap.containsKey(attributeName)
                 ? attributeMap.get(attributeName)
-                : Collections.emptyList();
+                : List.of();
     }
 
     public List<Attribute> attributes() {

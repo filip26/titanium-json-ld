@@ -18,12 +18,6 @@ package com.apicatalog.jsonld.lang;
 import java.util.Arrays;
 import java.util.function.IntPredicate;
 
-/**
- *
- * @see <a href="https://www.w3.org/TR/curie/">A syntax for expressing Compact
- *      URIs</a>
- *
- */
 public final class BlankNode {
 
     static final IntPredicate ASCII_ALPHA = ch -> 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z';

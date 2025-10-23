@@ -15,16 +15,14 @@
  */
 package com.apicatalog.jsonld.api;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.document.JsonDocument;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
@@ -61,14 +59,16 @@ class FramingReversePerformanceTest {
         final JsonObject frame = buildTestFrame();
 
         final long startTime = System.currentTimeMillis();
+//FIXME
+        fail("FIXME");
+        return 0;
+//        final JsonObject framed = JsonLd.frame(JsonDocument.of(document), JsonDocument.of(frame)).get();
 
-        final JsonObject framed = JsonLd.frame(JsonDocument.of(document), JsonDocument.of(frame)).get();
-
-        final long endTime = System.currentTimeMillis();
-
-        assertNotNull(framed);
-
-        return endTime - startTime;
+//        final long endTime = System.currentTimeMillis();
+//
+//        assertNotNull(framed);
+//
+//        return endTime - startTime;
     }
 
     private JsonObject buildTestDocument(final int elementCount) {
