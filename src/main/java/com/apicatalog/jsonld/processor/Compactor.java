@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -32,6 +33,7 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
+import com.apicatalog.tree.io.java.NativeMaterializer3;
 
 import jakarta.json.JsonValue;
 
@@ -100,8 +102,9 @@ public final class Compactor {
         final var expansionOptions = new JsonLdOptions(options)
                 .setOrdered(false)
                 .setExtractAllScripts(false);
-//        System.out.println(input.getContent().node());
-        var expandedInput = Expander.expand(input, expansionOptions, false);
+
+        final var expandedInput = Expander.expand(input, expansionOptions, false);
+
 //new Visitor().root(expandedInput, NativeAdapter.instance()).traverse(
 //        
 //        v -> {
@@ -124,8 +127,9 @@ public final class Compactor {
                 .orElse(JsonValue.EMPTY_JSON_OBJECT);
 
         // 7.
-        final ActiveContext activeContext = new ActiveContext(
-                ProcessingRuntime.of(options)).newContext().build(contextValue, JakartaAdapter.instance(), contextBase);
+        final var activeContext = new ActiveContext(ProcessingRuntime.of(options))
+                .newContext()
+                .build(contextValue, JakartaAdapter.instance(), contextBase);
 
         // 8.
         if (activeContext.getBaseUri() == null) {
@@ -159,7 +163,7 @@ public final class Compactor {
         }
 
         if (compactedOutput == null
-                || compactedOutput instanceof Map map && map.isEmpty()) {
+                /*|| compactedOutput instanceof Map map && map.isEmpty()*/) {
             return Map.of();
         }
 
@@ -170,12 +174,12 @@ public final class Compactor {
 //            compactedOutput = JsonProvider.instance().createObjectBuilder((Map)compactedOutput)
 //                    .add(Keywords.CONTEXT, contextValue)
 //                    .build();
-            var compacted = new HashMap<String, Object>((Map) compactedOutput); 
-            compacted.put(Keywords.CONTEXT, contextValue);
+            var compacted = new LinkedHashMap<String, Object>(((Map) compactedOutput).size());
+            compacted.put(Keywords.CONTEXT, new NativeMaterializer3().node(contextValue, JakartaAdapter.instance()));
+            compacted.putAll((Map) compactedOutput);
             return compacted;
         }
 
-
-        return (Map)compactedOutput;
+        return (Map) compactedOutput;
     }
 }

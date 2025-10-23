@@ -24,25 +24,15 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.json.JsonProvider;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.node.GraphNode;
 import com.apicatalog.tree.io.java.NativeAdapter;
-
-import jakarta.json.JsonArray;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
 
 /**
  *
@@ -217,7 +207,11 @@ public final class Compaction {
             final List<String> compactedTypes = new ArrayList<>();
 
             for (final var type : NativeAdapter.asCollection(object.get(Keywords.TYPE))) {
-                compactedTypes.add(activeContext.uriCompaction().vocab(true).compact(((JsonString) type).getString()));
+                compactedTypes.add(
+                        activeContext
+                                .uriCompaction()
+                                .vocab(true)
+                                .compact((String) type));
             }
 
             Collections.sort(compactedTypes);
@@ -501,7 +495,8 @@ public final class Compaction {
                     }
 
                     // 12.8.2.3.
-                    nestResult = (Map<String, Object>) result.get(nestTerm);
+                    //TODO ?!?!?
+                    nestResult = (Map<String, Object>) result.computeIfAbsent(nestTerm, k -> new LinkedHashMap<>());
 //                    nestResult = result.getMapBuilder(nestTerm);                    
                     nestResultKey = nestTerm;
 
@@ -937,7 +932,7 @@ public final class Compaction {
 
                     // 12.8.9.10.
 //                    nestResult.getMapBuilder(itemActiveProperty).add(mapKey, compactedItem, asArray);
-
+System.out.println(">>>>> " + nestResult.get(itemActiveProperty));
                     JsonLdAdapter.setOrAdd(
                             (Map<String, Object>) nestResult.computeIfAbsent(itemActiveProperty, k -> new LinkedHashMap<String, Object>()),
                             mapKey,

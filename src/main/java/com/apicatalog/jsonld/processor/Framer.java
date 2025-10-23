@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -223,7 +224,7 @@ public final class Framer {
                 .compactArrays(options.isCompactArrays())
                 .ordered(options.isOrdered())
                 .compact(filtered);
-
+        System.out.println("1 >>> " + compactedOutput);
         // 19.1.
         if (compactedOutput instanceof Collection<?> col) {
 
@@ -266,8 +267,9 @@ public final class Framer {
 
         // 19.3.
         if (frame.hasContext()) {
-            var compacted = new HashMap<>((Map<String, Object>) compactedOutput);
+            var compacted = new LinkedHashMap<String, Object>();
             compacted.put(Keywords.CONTEXT, frame.context());
+            compacted.putAll((Map<String, Object>) compactedOutput);
             return compacted;
         }
 
@@ -320,10 +322,10 @@ public final class Framer {
 
     private static final Object replaceNull(Object node) {
 
-        if (node == null) {
+        if (node == null || Keywords.NULL.equals(node)) {
             return null;
         }
-
+        
         if (node instanceof Collection<?> col) {
 
             final var result = col.stream().map(Framer::replaceNull).toList();
@@ -335,12 +337,21 @@ public final class Framer {
         }
 
         if (node instanceof Map<?, ?> map) {
-            return map.entrySet().stream()
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey,
-                            Framer::replaceNull));
+            
+            final var result = new LinkedHashMap<>(map.size());
+            
+            for (var entry : map.entrySet()) {
+                result.put(entry.getKey(), replaceNull(entry.getValue()));
+            }
+            
+            return result;
+//            return map.entrySet().stream()
+//                    .filter(Objects::nonNull)
+//                    .collect(Collectors.toMap(
+//                            Map.Entry::getKey,
+//                            e -> replaceNull(e.getValue())));
         }
-
+        
         return node;
     }
 

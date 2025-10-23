@@ -171,18 +171,18 @@ public class JsonLdTestRunnerJunit {
         if (result instanceof JsonStructure json) {
             return validateJsonLd(testCase, options, json, JakartaAdapter.instance());
         }
-
-        if (result instanceof Collection<?> collection) {
+System.out.println(" >>>> " + result);
+//        if (result instanceof Collection<?> collection) {
             return validateJsonLd(
                     testCase,
                     options,
-                    collection,
+                    result,
                     NativeAdapter.instance());
-        }
+//        }
 
-        System.out.println("Unexpected result type [" + result.getClass() + "]");
+//        fail("Unexpected result type [" + result.getClass() + "]");
 
-        return false;
+//        return false;
     }
 
     private boolean validateJsonLd(final JsonLdTestCase testCase, final JsonLdOptions options, final Object result, final NodeAdapter resultAdapter) {

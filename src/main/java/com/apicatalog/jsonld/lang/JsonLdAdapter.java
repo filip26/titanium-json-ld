@@ -177,11 +177,34 @@ public class JsonLdAdapter {
         setOrAdd(result, key, value, true);
     }
 
+//    public static Map<String, Object> setOrAdd(Map<String, Object> result, String parent, String key, Object value, boolean asArray) {
+//    
+//        Object node = result.computeIfAbsent(parent, k -> new LinkedHashMap<String, Object>());
+//        
+//        if (!node instanceof Map) {
+//            node = new 
+//        }
+//        
+//        JsonLdAdapter.setOrAdd(
+//            (Map<String, Object>) result.computeIfAbsent(parent, k -> new LinkedHashMap<String, Object>()),
+//            mapKey,
+//            compactedItem,
+//            asArray);
+//    
+//        return result;
+//    }
+
+    
     public static void setOrAdd(Map<String, Object> result, String key, Object value, boolean asArray) {
+        
         var previous = result.get(key);
 
         if (previous == null) {
-            if (value instanceof Collection<?>) {
+            if (value instanceof Collection<?> array) {
+                if (!asArray && array.size() == 1) {
+                    result.put(key, array.iterator().next());
+                    return;
+                }
                 result.put(key, value);
                 return;
             }
@@ -196,9 +219,21 @@ public class JsonLdAdapter {
         final Collection<Object> array;
 
         if (previous instanceof ArrayList list) {
+            
+            if (!asArray && list.isEmpty()) {
+                result.put(key, value);
+                return;
+            }
+            
             array = list;
 
         } else if (previous instanceof Collection<?> col) {
+            
+            if (!asArray && col.isEmpty()) {
+                result.put(key, value);
+                return;
+            }
+            
             array = new ArrayList<Object>(col);
             result.put(key, array);
 

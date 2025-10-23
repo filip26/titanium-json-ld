@@ -9,6 +9,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.document.PolyNodeDocument;
 import com.apicatalog.jsonld.http.media.MediaType;
 
 class DocumentResolver {
@@ -55,7 +56,7 @@ class DocumentResolver {
     private static final Optional<DocumentReader<InputStream>> findReader(final MediaType type) {
         if (type != null) {
             if (JsonDocument.accepts(type)) {
-                return Optional.of(is -> JsonDocument.of(type, is));
+                return Optional.of(is -> PolyNodeDocument.of(type, is));
             }
 
         }
