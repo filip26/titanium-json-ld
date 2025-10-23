@@ -1011,10 +1011,9 @@ final class ObjectExpansion1314 {
 
             // 13.11.
             if (containerMapping.contains(Keywords.LIST)
-                    && !(expandedValue instanceof Map)
-                    && !JsonLdAdapter.isList((Map<?, ?>) expandedValue)) {
+                    && (!(expandedValue instanceof Map expandedMap)
+                            || !JsonLdAdapter.isList(expandedMap))) {
                 expandedValue = JsonLdAdapter.toList(expandedValue);
-
             }
 
             // 13.12.
