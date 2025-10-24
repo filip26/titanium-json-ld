@@ -63,7 +63,7 @@ public final class ActiveContext implements Context {
     private Direction defaultBaseDirection;
 
     private final ProcessingRuntime runtime;
-
+    
     public ActiveContext(final ProcessingRuntime runtime) {
         this(null, null, null, runtime);
     }

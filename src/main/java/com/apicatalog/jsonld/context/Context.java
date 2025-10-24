@@ -22,13 +22,15 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.compaction.UriCompaction;
+import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.processor.ProcessingRuntime;
 import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.java.NativeAdapter;
 
 import jakarta.json.JsonValue;
 
@@ -67,7 +69,7 @@ public interface Context {
 //    UriCompaction uriCompaction();
 
     String compactUri(String variable) throws JsonLdError;
-    
+
     String compactUriWithVocab(String variable) throws JsonLdError;
 
     Object compactValue(Map<String, ?> value, String property) throws JsonLdError;
@@ -85,6 +87,72 @@ public interface Context {
     boolean containsTerm(final String term);
 
     Map<String, TermDefinition> getTermsMapping();
+
+    public static PolyNode unwrapContext(PolyNode context) {
+
+        Object node = context.node();
+        var adapter = context.adapter();
+
+        boolean changed = false;
+
+        if (adapter.isSingleElement(node)) {
+            node = adapter.singleElement(node);
+            changed = true;
+        }
+
+        if (adapter.isMap(node)) {
+            final var ctx = adapter.property(Keywords.CONTEXT, node);
+            if (ctx != null) {
+                node = ctx;
+                changed = true;
+            }
+        }
+
+        if (node == null || adapter.isNull(node) || adapter.isEmpty(node)) {
+            node = Map.of();
+            adapter = NativeAdapter.instance();
+            changed = true;
+        }
+
+        return changed
+                ? new PolyNode(node, adapter)
+                : context;
+    }
+
+    public static Context compactionContext(
+            PolyNode context,
+            URI baseUrl,
+            JsonLdOptions options) throws JsonLdError, IOException {
+
+        URI contextBase = baseUrl;
+
+        if (contextBase == null) {
+            contextBase = options.getBase();
+        }
+
+        // 6.
+//        final JsonValue contextValue = context.getJsonContent()
+//                .map(ctx -> JsonUtils.flatten(ctx, Keywords.CONTEXT))
+//                .orElse(JsonValue.EMPTY_JSON_OBJECT);
+
+        // 7.
+        final var activeContext = new ActiveContext(ProcessingRuntime.of(options))
+                .newContext()
+                .build(unwrapContext(context), contextBase);
+
+        // 8.
+        if (activeContext.getBaseUri() == null) {
+
+            if (options.getBase() != null) {
+                activeContext.setBaseUri(options.getBase());
+
+            } else if (options.isCompactToRelative()) {
+                activeContext.setBaseUri(baseUrl);
+            }
+        }
+
+        return activeContext;
+    }
 
     static class Bx {
 
@@ -186,6 +254,8 @@ public interface Context {
         }
 
     }
+
+//    PolyNode asNode();
 
     // ---
 //  void createInverseContext();
