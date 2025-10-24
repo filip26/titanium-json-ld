@@ -68,8 +68,6 @@ public interface Context {
 
     Context getPreviousContext();
 
-//    ProcessingRuntime runtime();
-
     TermDefinitionBuilder newTerm(Object localContext, NodeAdapter adapter, Map<String, Boolean> defined);
 
     ActiveContextBuilder newContext();
@@ -81,18 +79,6 @@ public interface Context {
 
     @Deprecated
     Map<String, ?> expandValue(String property, Object value, NodeAdapter adapter) throws JsonLdError, IOException;
-
-    /* compaction */
-//    UriCompaction uriCompaction();
-
-    @Deprecated
-    String compactUri(String variable) throws JsonLdError;
-
-    @Deprecated
-    String compactUriWithVocab(String variable) throws JsonLdError;
-
-    @Deprecated
-    Object compactValue(Map<String, ?> value, String property) throws JsonLdError;
 
     @Deprecated
     ProcessingRuntime runtime();

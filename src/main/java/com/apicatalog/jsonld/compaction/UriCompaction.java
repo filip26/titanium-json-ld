@@ -46,13 +46,13 @@ public final class UriCompaction {
         return compact(context, variable, null, false, false);
     }
 
-    public static String compactWithVocab(
+    public static String withVocab(
             final Context context,
             final String variable) throws JsonLdError {
         return compact(context, variable, null, true, false);
     }
 
-    public static String compactWithVocab(
+    public static String withVocab(
             final Context context,
             final String variable,
             final Object value,
@@ -383,7 +383,7 @@ public final class UriCompaction {
                 if (idValue instanceof String idString) {
 
                     // 4.16.1.
-                    final var compactedIdValue = context.compactUriWithVocab(idString);
+                    final var compactedIdValue = UriCompaction.withVocab(context, idString);
 
                     final var compactedIdValueTermDefinition = context.findTerm(compactedIdValue);
 

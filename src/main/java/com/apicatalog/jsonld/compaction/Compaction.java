@@ -173,7 +173,7 @@ public final class Compaction {
         if ((object.containsKey(Keywords.VALUE) || object.containsKey(Keywords.ID))
                 && (!runtime.isRdfStar() || !object.containsKey(Keywords.ANNOTATION))) {
 
-            final var result = activeContext.compactValue(object, activeProperty);
+            final var result = ValueCompaction.compact(activeContext, object, activeProperty);
 
             if (result != null && NativeAdapter.instance().type(result).isScalar()
                     || activePropertyDefinition
@@ -208,10 +208,7 @@ public final class Compaction {
             final List<String> compactedTypes = new ArrayList<>();
 
             for (final var type : NativeAdapter.asCollection(object.get(Keywords.TYPE))) {
-                compactedTypes.add(activeContext.compactUriWithVocab((String) type));
-//                                .uriCompaction()
-//                                .vocab(true)
-//                                .compact((String) type));
+                compactedTypes.add(UriCompaction.withVocab(activeContext, (String) type));
             }
 
             Collections.sort(compactedTypes);
@@ -254,7 +251,7 @@ public final class Compaction {
 
                 // 12.1.1.
                 if (expandedValue instanceof String stringValue) {
-                    compactedValue = activeContext.compactUri(stringValue);
+                    compactedValue = UriCompaction.compact(activeContext, stringValue);
 
 //FIXME                    // json-ld-star
 //                } else if (activeContext.runtime().isRdfStar()
@@ -265,15 +262,9 @@ public final class Compaction {
 //                            .compact(expandedValue);
                 }
 
-                // 12.1.2.
-//                final var alias = activeContext.compactUriWithVocab(expandedProperty);
-//                        .uriCompaction()
-//                        .vocab(true)
-//                        .compact(expandedProperty);
-
                 // 12.1.3.
                 result.put(
-                        activeContext.compactUriWithVocab(expandedProperty),
+                        UriCompaction.withVocab(activeContext, expandedProperty),
                         compactedValue);
 
                 continue;
@@ -286,9 +277,7 @@ public final class Compaction {
 
                 // 12.2.1.
                 if (expandedValue instanceof String stringValue) {
-                    compactedValue = typeContext.compactUriWithVocab(stringValue);
-//                            uriCompaction().vocab(true)
-//                            .compact(stringValue);
+                    compactedValue = UriCompaction.withVocab(typeContext, stringValue);
 
                     // 12.2.2.
                 } else if (expandedValue instanceof Collection<?> arrayValue) {
@@ -299,10 +288,7 @@ public final class Compaction {
                     // 12.2.2.2.
                     for (final var expandedType : arrayValue) {
 
-                        compactedArray.add(typeContext.compactUriWithVocab((String) expandedType));
-//                                        .uriCompaction()
-//                                        .vocab(true)
-//                                        .compact((String) expandedType));
+                        compactedArray.add(UriCompaction.withVocab(typeContext, (String) expandedType));
                     }
 
                     compactedValue = compactedArray;
@@ -312,10 +298,7 @@ public final class Compaction {
                 }
 
                 // 12.2.3.
-                final var alias = activeContext.compactUriWithVocab(expandedProperty);
-//                        .uriCompaction()
-//                        .vocab(true)
-//                        .compact(expandedProperty);
+                final var alias = UriCompaction.withVocab(activeContext, expandedProperty);
 
                 // 12.2.4.
                 final boolean asArray = !compactArrays
@@ -374,15 +357,9 @@ public final class Compaction {
                 // 12.8.3.
                 if (remaining != null) {
 
-                    // 12.8.3.1.
-//                    final var alias = activeContext.compactUriWithVocab(Keywords.REVERSE);
-//                            .uriCompaction()
-//                            .vocab(true)
-//                            .compact(Keywords.REVERSE);
-
                     // 12.8.3.2.
                     result.put(
-                            activeContext.compactUriWithVocab(Keywords.REVERSE),
+                            UriCompaction.withVocab(activeContext, Keywords.REVERSE),
                             remaining);
                 }
 
@@ -418,10 +395,7 @@ public final class Compaction {
 
                 // 12.6.2.
                 result.put(
-                        activeContext.compactUriWithVocab(expandedProperty),
-//                                .uriCompaction()
-//                                .vocab(true)
-//                                .compact(expandedProperty),
+                        UriCompaction.withVocab(activeContext, expandedProperty),
                         expandedValue);
 
                 continue;
@@ -431,7 +405,7 @@ public final class Compaction {
             if (expandedValue instanceof Collection<?> array && array.isEmpty()) {
 
                 // 12.7.1.
-                final var itemActiveProperty = UriCompaction.compactWithVocab(
+                final var itemActiveProperty = UriCompaction.withVocab(
                         activeContext,
                         expandedProperty,
                         expandedValue,
@@ -473,7 +447,7 @@ public final class Compaction {
             for (final var expandedItem : (Collection<?>) expandedValue) {
 
                 // 12.8.1.
-                final var itemActiveProperty = UriCompaction.compactWithVocab(
+                final var itemActiveProperty = UriCompaction.withVocab(
                         activeContext,
                         expandedProperty,
                         expandedItem,
@@ -548,18 +522,12 @@ public final class Compaction {
                     if (!container.contains(Keywords.LIST)) {
 
                         // 12.8.7.2.1.
-                        final var key = activeContext.compactUriWithVocab(Keywords.LIST);
-//                                .uriCompaction()
-//                                .vocab(true)
-//                                .compact(Keywords.LIST);
+                        final var key = UriCompaction.withVocab(activeContext, Keywords.LIST);
 
                         // 12.8.7.2.2.
                         if (expandedItemMap.containsKey(Keywords.INDEX)) {
 
-                            final var indexKey = activeContext.compactUriWithVocab(Keywords.INDEX);
-//                                    .uriCompaction()
-//                                    .vocab(true)
-//                                    .compact(Keywords.INDEX);
+                            final var indexKey = UriCompaction.withVocab(activeContext, Keywords.INDEX);
 
                             compactedItem = Map.of(
                                     key, compactedItem,
@@ -593,10 +561,10 @@ public final class Compaction {
 
                         if (id instanceof String idString) {
 
-                            mapKey = activeContext.compactUri(idString);
+                            mapKey = UriCompaction.compact(activeContext, idString);
 
                         } else if (id == null) {
-                            mapKey = activeContext.compactUriWithVocab(Keywords.NONE);
+                            mapKey = UriCompaction.withVocab(activeContext, Keywords.NONE);
 
                         } else {
                             throw new IllegalStateException();
@@ -638,10 +606,7 @@ public final class Compaction {
                         // 12.8.8.3.1.
                         if (compactedItem instanceof Collection array && array.size() > 1) {
                             compactedItem = Map.of(
-                                    activeContext.compactUriWithVocab(Keywords.INCLUDED),
-//                                            .uriCompaction()
-//                                            .vocab(true)
-//                                            .compact(Keywords.INCLUDED),
+                                    UriCompaction.withVocab(activeContext, Keywords.INCLUDED),
                                     compactedItem);
                         }
 
@@ -660,23 +625,23 @@ public final class Compaction {
                         // 12.8.8.4.2.
                         if (expandedItemMap.containsKey(Keywords.ID)) {
                             compactedItemMap = Map.of(
-                                    activeContext.compactUriWithVocab(Keywords.GRAPH),
+                                    UriCompaction.withVocab(activeContext, Keywords.GRAPH),
 //                                            .uriCompaction()
 //                                            .vocab(true)
 //                                            .compact(Keywords.GRAPH),
                                     compactedItem,
-                                    activeContext.compactUriWithVocab(Keywords.ID),
+                                    UriCompaction.withVocab(activeContext, Keywords.ID),
 //                                            .uriCompaction()
 //                                            .vocab(true)
 //                                            .compact(Keywords.ID),
-                                    activeContext.compactUri((String) expandedItemMap.get(Keywords.ID)));
+                                    UriCompaction.compact(activeContext, (String) expandedItemMap.get(Keywords.ID)));
 //                                            .uriCompaction()
 //                                            .compact((String) expandedItemMap.get(Keywords.ID)));
 
                         } else {
                             // 12.8.8.4.1.
                             compactedItemMap = Map.of(
-                                    activeContext.compactUriWithVocab(Keywords.GRAPH),
+                                    UriCompaction.withVocab(activeContext, Keywords.GRAPH),
 //                                            .uriCompaction()
 //                                            .vocab(true)
 //                                            .compact(Keywords.GRAPH),
@@ -690,7 +655,7 @@ public final class Compaction {
 
                             var map = new LinkedHashMap<>(compactedItemMap);
                             map.put(
-                                    activeContext.compactUriWithVocab(Keywords.INDEX),
+                                    UriCompaction.withVocab(activeContext, Keywords.INDEX),
 //                                            .uriCompaction()
 //                                            .vocab(true)
 //                                            .compact(Keywords.INDEX),
@@ -725,10 +690,7 @@ public final class Compaction {
                         keyToCompact = Keywords.TYPE;
                     }
 
-                    var containerKey = activeContext.compactUriWithVocab(keyToCompact);
-//                            .uriCompaction()
-//                            .vocab(true)
-//                            .compact(keyToCompact);
+                    var containerKey = UriCompaction.withVocab(activeContext, keyToCompact);
 
                     // 12.8.9.3.
                     final var indexKey = activeContext
@@ -765,11 +727,8 @@ public final class Compaction {
                     } else if (container.contains(Keywords.INDEX) && !Keywords.INDEX.equals(indexKey)) {
 
                         // 12.8.9.6.1.
-                        containerKey = activeContext.compactUriWithVocab(
+                        containerKey = UriCompaction.withVocab(activeContext,
                                 activeContext.uriExpansion().expand(indexKey));
-//                                .uriCompaction()
-//                                .vocab(true)
-//                                .compact(activeContext.uriExpansion().expand(indexKey));
 
                         // 12.8.9.6.2.
                         if (compactedItem instanceof Map<?, ?> compactedItemMap
@@ -930,8 +889,7 @@ public final class Compaction {
 
                     // 12.8.9.9.
                     if (mapKey == null) {
-                        mapKey = activeContext.compactUriWithVocab(Keywords.NONE);
-//                                .uriCompaction().vocab(true).compact(Keywords.NONE);
+                        mapKey = UriCompaction.withVocab(activeContext, Keywords.NONE);
                     }
 
                     // 12.8.9.10.

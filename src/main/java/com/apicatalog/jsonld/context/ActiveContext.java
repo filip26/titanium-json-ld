@@ -24,8 +24,6 @@ import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdVersion;
-import com.apicatalog.jsonld.compaction.UriCompaction;
-import com.apicatalog.jsonld.compaction.ValueCompaction;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.expansion.ValueExpansion;
 import com.apicatalog.jsonld.lang.Direction;
@@ -169,20 +167,6 @@ public final class ActiveContext implements Context {
 
     public Map<String, ?> expandValue(final String activeProperty, final Object value, final NodeAdapter adapter) throws JsonLdError, IOException {
         return ValueExpansion.expand(this, activeProperty, value, adapter, runtime);
-    }
-
-    public Object compactValue(final Map<String, ?> value, final String activeProperty) throws JsonLdError {
-        return ValueCompaction.compact(this, value, activeProperty);
-    }
-
-    @Override
-    public String compactUri(String variable) throws JsonLdError {
-        return UriCompaction.compact(this, variable);
-    }
-
-    @Override
-    public String compactUriWithVocab(String variable) throws JsonLdError {
-        return UriCompaction.compactWithVocab(this, variable);
     }
 
     public TermDefinitionBuilder newTerm(final Object localContext, final NodeAdapter adapter, final Map<String, Boolean> defined) {

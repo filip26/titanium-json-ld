@@ -74,10 +74,8 @@ public final class ValueCompaction {
                     .map(TermDefinition::getTypeMapping)
                     .filter(Keywords.ID::equals)
                     .isPresent()) {
-                // result = JsonUtils.toJsonValue(activeContext
-                result = context.compactUri((String) value.get(Keywords.ID));
-//                        .uriCompaction()
-//                        .compact((String) value.get(Keywords.ID));
+
+                result = UriCompaction.compact(context, (String) value.get(Keywords.ID));
 
                 // 6.2.
             } else if (activePropertyDefinition
@@ -85,11 +83,7 @@ public final class ValueCompaction {
                     .filter(Keywords.VOCAB::equals)
                     .isPresent()) {
 
-                // result = JsonUtils.toJsonValue(activeContext
-                result = context.compactUriWithVocab((String) value.get(Keywords.ID));
-//                        .uriCompaction()
-//                        .vocab(true)
-//                        .compact((String) value.get(Keywords.ID));
+                result = UriCompaction.withVocab(context, (String) value.get(Keywords.ID));
             }
             // 7.
         } else if ((value.get(Keywords.TYPE) instanceof String type
@@ -131,15 +125,13 @@ public final class ValueCompaction {
             final var types = new ArrayList<String>();
 
             final var resultTypes = value.get(Keywords.TYPE);
-//                    result.get(Keywords.TYPE);
 
             if (resultTypes != null) {
-                for (final var type : NativeAdapter.asCollection(resultTypes)) {
 
-                    types.add(context.compactUriWithVocab((String) type));
-//                            .uriCompaction().vocab(true).compact((String) type));
+                for (final var type : NativeAdapter.asCollection(resultTypes)) {
+                    types.add(UriCompaction.withVocab(context, (String) type));
                 }
-//                result = Map.of(result.asJsonObject()).add(Keywords.TYPE, types.build()).build();
+
                 var resultMap = new HashMap<String, Object>(value);
                 resultMap.put(Keywords.TYPE, types);
                 result = resultMap;
@@ -182,10 +174,7 @@ public final class ValueCompaction {
 
             for (final var entry : map.entrySet()) {
                 resultMap.put(
-                        context.compactUriWithVocab((String) entry.getKey()),
-//                                .uriCompaction()
-//                                .vocab(true)
-//                                .compact(),
+                        UriCompaction.withVocab(context, (String) entry.getKey()),
                         entry.getValue());
             }
             result = resultMap;

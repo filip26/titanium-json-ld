@@ -18,7 +18,6 @@ package com.apicatalog.jsonld.processor;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -26,17 +25,13 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.Compaction;
-import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.compaction.UriCompaction;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.tree.io.PolyNode;
-import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.java.NativeMaterializer3;
-
-import jakarta.json.JsonValue;
 
 /**
  *
@@ -181,13 +176,13 @@ public final class Compactor {
                 // 9.2.
                 if (PolyNode.isEmptyOrNull(contextNode)) {
                     return Map.of(
-                            context.compactUriWithVocab(Keywords.GRAPH),
+                            UriCompaction.withVocab(context, Keywords.GRAPH),
                             compactedOutput);
                 }
                 return Map.of(
                         Keywords.CONTEXT,
                         NativeMaterializer3.node(contextNode),
-                        context.compactUriWithVocab(Keywords.GRAPH),
+                        UriCompaction.withVocab(context, Keywords.GRAPH),
                         compactedOutput);
             }
         }

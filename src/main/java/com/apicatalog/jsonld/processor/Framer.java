@@ -33,6 +33,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.Compaction;
+import com.apicatalog.jsonld.compaction.UriCompaction;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.PolyDocument;
@@ -134,7 +135,7 @@ public final class Framer {
                         : new PolyNode(Map.of(), NativeAdapter.instance()),
                         contextBase);
 
-        final var graphKey = activeContext.compactUriWithVocab(Keywords.GRAPH);
+        final var graphKey = UriCompaction.withVocab(activeContext, Keywords.GRAPH);
 
         // 14.
         final var state = new FramingState();
