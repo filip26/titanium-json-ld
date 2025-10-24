@@ -58,6 +58,10 @@ public final class ValueCompaction {
 
         final var activePropertyDefinition = activeContext.findTerm(activeProperty);
 
+        System.out.println("VC >>> " + value + ", " + activeProperty);
+        System.out.println("TM >>> " + activePropertyDefinition
+                .map(TermDefinition::getTypeMapping).orElse(null));
+
         // 4. - 5.
         String language = null;
         Direction direction = null;
@@ -68,15 +72,15 @@ public final class ValueCompaction {
         }
 
         if (language == null) {
-            language = activeContext.getDefaultLanguage() != null
-                    ? activeContext.getDefaultLanguage()
-                    : null;
+            language = activeContext.getDefaultLanguage();
         }
 
         if (direction == null) {
             direction = activeContext.getDefaultBaseDirection();
         }
 
+        System.out.println("LD > " + language + ", " + direction);
+        
         // 6.
         if (value.containsKey(Keywords.ID) &&
                 ((value.size() == 1)
@@ -105,30 +109,41 @@ public final class ValueCompaction {
                         .compact((String) value.get(Keywords.ID));
             }
             // 7.
-        } else if (value.get(Keywords.TYPE) instanceof Collection<?> types
+        } else if ((value.get(Keywords.TYPE) instanceof String type
                 && activePropertyDefinition
                         .map(TermDefinition::getTypeMapping)
-                        .filter(types::contains)
+                        .filter(type::equals).isPresent())
+                ||
+                (value.get(Keywords.TYPE) instanceof Collection<?> types
+                        && activePropertyDefinition
+                                .map(TermDefinition::getTypeMapping)
+                                .filter(types::contains)
 
 //                        .filter(d -> JsonUtils.contains(
 //                                d,
 //                                value.get(Keywords.TYPE)))
-                        .isPresent()) {
+                                .isPresent())) {
 
             result = value.get(Keywords.VALUE);
-
+            System.out.println(" - 1");
             // 8.
         } else if (activePropertyDefinition
                 .map(TermDefinition::getTypeMapping)
                 .filter(Keywords.NONE::equals)
                 .isPresent()
+                || (value.get(Keywords.TYPE) instanceof String type
+                        && (activePropertyDefinition
+                                .map(TermDefinition::getTypeMapping)
+                                .map(d -> !type.equals(d))
+//                                .map(d -> !JsonUtils.contains(d, value.get(Keywords.TYPE)))
+                                .orElse(true)))
                 || (value.get(Keywords.TYPE) instanceof Collection<?> types
                         && (activePropertyDefinition
                                 .map(TermDefinition::getTypeMapping)
                                 .map(d -> !types.contains(d))
 //                                .map(d -> !JsonUtils.contains(d, value.get(Keywords.TYPE)))
                                 .orElse(true)))) {
-
+            System.out.println(" - 2");
             // 8.1.
             final var types = new ArrayList<String>();
 
@@ -150,33 +165,35 @@ public final class ValueCompaction {
 
             // 9.
         } else if (!(value.get(Keywords.VALUE) instanceof String)) {
-
+            System.out.println("X31 " + result);
             if (!value.containsKey(Keywords.INDEX)
                     || activePropertyDefinition.filter(td -> td.hasContainerMapping(Keywords.INDEX)).isPresent()) {
                 result = value.get(Keywords.VALUE);
             }
-
+            System.out.println("X32 " + result);
             // 10.
         } else if ((((value.get(Keywords.LANGUAGE) instanceof String langString
                 && language != null
                 && (language.equalsIgnoreCase(langString)))
                 || ((language == null || Keywords.NULL.equals(language))
-                        && (!(value.get(Keywords.LANGUAGE) instanceof String langString)
-                                || Keywords.NULL.equals(langString)
+                        && (value.get(Keywords.LANGUAGE) == null || (!(value.get(Keywords.LANGUAGE) instanceof String langString)
+                                || Keywords.NULL.equals(langString))
+//                                || language == null
 //                                || JsonUtils.isNull (value.get(Keywords.LANGUAGE))
                         )))
                 && ((direction != null && direction != Direction.NULL
                         && value.get(Keywords.DIRECTION) instanceof String dirString
                         && direction == Direction.valueOf(dirString.toUpperCase()))
                         || ((direction == null || direction == Direction.NULL)
-                                && (!(value.get(Keywords.DIRECTION) instanceof String dirString)
-                                        || Direction.NULL == Direction.valueOf(dirString.toUpperCase())))))
+                                && (value.get(Keywords.DIRECTION) == null || (!(value.get(Keywords.DIRECTION) instanceof String dirString)
+                                        || Direction.NULL == Direction.valueOf(dirString.toUpperCase()))))))
                 && (!value.containsKey(Keywords.INDEX)
                         || activePropertyDefinition.filter(d -> d.hasContainerMapping(Keywords.INDEX)).isPresent())) {
 
+            System.out.println(" - 3");
             result = value.get(Keywords.VALUE);
         }
-
+        System.out.println("X1 " + result);
         // 11.
         if (result instanceof Map<?, ?> map) {
 
@@ -192,8 +209,15 @@ public final class ValueCompaction {
             }
             result = resultMap;
         }
-
+        System.out.println("VC <<< " + result);
         // 12.
         return result;
+    }
+    
+    public static void main(String[] args) {
+        String x = null;
+        var y = "a";
+        System.out.println(x instanceof String);
+        System.out.println(y instanceof String);
     }
 }

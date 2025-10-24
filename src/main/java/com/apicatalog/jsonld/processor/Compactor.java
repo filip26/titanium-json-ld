@@ -148,7 +148,7 @@ public final class Compactor {
                 .compactArrays(options.isCompactArrays())
                 .ordered(options.isOrdered())
                 .compact(expandedInput);
-
+System.out.println("CMPOUT < " + compactedOutput);
         // 9.1.
         if (compactedOutput instanceof Collection<?> col) {
             if (col.isEmpty()) {

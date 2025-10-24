@@ -68,18 +68,17 @@ public class JsonLdAdapter {
                 && map.size() == 1
                 && map.containsKey(Keywords.ID);
     }
-    
+
     public static final boolean isGraph(Object node) {
         return node instanceof Map map
                 && map.containsKey(Keywords.GRAPH)
-                && GRAPH_ALLOWED_KEYS.containsAll(map.keySet());        
+                && GRAPH_ALLOWED_KEYS.containsAll(map.keySet());
     }
 
     public static final boolean isSimpleGraph(Map<?, ?> node) {
         return isGraph(node) && !node.containsKey(Keywords.ID);
     }
 
-    
     /**
      * @see <a href="https://www.w3.org/TR/json-ld11/#graph-objects">Graph
      *      Objects</a>
@@ -146,7 +145,7 @@ public class JsonLdAdapter {
 //        return node instanceof Map map && isList(map);
 //    }
 //
-    
+
     public static Map<String, ?> toList(Object node) {
         return node instanceof Collection
                 ? Map.of(Keywords.LIST, node)
@@ -194,9 +193,8 @@ public class JsonLdAdapter {
 //        return result;
 //    }
 
-    
     public static void setOrAdd(Map<String, Object> result, String key, Object value, boolean asArray) {
-        
+        System.out.println(">>>> !!! " + result + ", " + key + ", " + value + ", " + asArray);
         var previous = result.get(key);
 
         if (previous == null) {
@@ -209,6 +207,10 @@ public class JsonLdAdapter {
                 return;
             }
             if (asArray) {
+                if (value == null) {
+                    result.put(key, List.of());
+                    return;
+                }
                 result.put(key, List.of(value));
                 return;
             }
@@ -219,21 +221,31 @@ public class JsonLdAdapter {
         final Collection<Object> array;
 
         if (previous instanceof ArrayList list) {
-            
+
             if (!asArray && list.isEmpty()) {
+                if (value instanceof Collection<?> single && single.size() == 1) {
+                    result.put(key, single.iterator().next());
+                    return;
+                }
+
                 result.put(key, value);
                 return;
             }
-            
+
             array = list;
 
         } else if (previous instanceof Collection<?> col) {
-            
+
             if (!asArray && col.isEmpty()) {
+                if (value instanceof Collection<?> single && single.size() == 1) {
+                    result.put(key, single.iterator().next());
+                    return;
+                }
+
                 result.put(key, value);
                 return;
             }
-            
+
             array = new ArrayList<Object>(col);
             result.put(key, array);
 
@@ -243,7 +255,7 @@ public class JsonLdAdapter {
             result.put(key, array);
         }
 
-        if (value instanceof Collection<?> col) {
+        if (value instanceof Collection<?> col) {            
             array.addAll(col);
         } else {
             array.add(value);

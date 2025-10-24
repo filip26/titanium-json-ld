@@ -167,18 +167,18 @@ public final class Compaction {
         }
 
         // 7.
-        if ((object.containsKey(Keywords.VALUE)
-                || object.containsKey(Keywords.ID))
+        if ((object.containsKey(Keywords.VALUE) || object.containsKey(Keywords.ID))
                 && (!activeContext.runtime().isRdfStar() || !object.containsKey(Keywords.ANNOTATION))) {
 
             final var result = activeContext.valueCompaction().compact(object, activeProperty);
 
-            if (NativeAdapter.instance().type(result).isScalar()
+            if (result != null && NativeAdapter.instance().type(result).isScalar()
                     || activePropertyDefinition
                             .map(TermDefinition::getTypeMapping)
                             .filter(Keywords.JSON::equals)
                             .isPresent()) {
 
+                System.out.println("<<<<<<<<<<< " + activeProperty + ", " + result + " - " + object);
                 return result;
             }
 
@@ -424,7 +424,7 @@ public final class Compaction {
             }
 
             // 12.7.
-            if (expandedValue instanceof Collection<?> array && !array.isEmpty()) {
+            if (expandedValue instanceof Collection<?> array && array.isEmpty()) {
 
                 // 12.7.1.
                 final String itemActiveProperty = activeContext
@@ -495,7 +495,7 @@ public final class Compaction {
                     }
 
                     // 12.8.2.3.
-                    //TODO ?!?!?
+                    // TODO ?!?!?
                     nestResult = (Map<String, Object>) result.computeIfAbsent(nestTerm, k -> new LinkedHashMap<>());
 //                    nestResult = result.getMapBuilder(nestTerm);                    
                     nestResultKey = nestTerm;
@@ -534,6 +534,7 @@ public final class Compaction {
                         .compactArrays(compactArrays)
                         .ordered(ordered)
                         .compact(itemActiveProperty, expandedItemValue);
+                System.out.println("C1 " + compactedItem + ", " + expandedItemValue + ", " + itemActiveProperty);
 
                 // 12.8.7.
                 if (expandedItem instanceof Map expandedItemMap
@@ -932,7 +933,7 @@ public final class Compaction {
 
                     // 12.8.9.10.
 //                    nestResult.getMapBuilder(itemActiveProperty).add(mapKey, compactedItem, asArray);
-System.out.println(">>>>> " + nestResult.get(itemActiveProperty));
+                    System.out.println(">>>>> " + nestResult.get(itemActiveProperty));
                     JsonLdAdapter.setOrAdd(
                             (Map<String, Object>) nestResult.computeIfAbsent(itemActiveProperty, k -> new LinkedHashMap<String, Object>()),
                             mapKey,

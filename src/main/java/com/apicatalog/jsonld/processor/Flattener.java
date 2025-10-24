@@ -102,7 +102,7 @@ public final class Flattener {
 
         // 6.
         var flattenedOutput = Flattening.flatten(expandedInput, options.isOrdered());
-
+System.out.println("FLOUT < " + flattenedOutput);
         // 6.1.
         if (context != null) {
 
