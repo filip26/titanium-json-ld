@@ -37,7 +37,7 @@ import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.document.PolyNodeDocument;
+import com.apicatalog.jsonld.document.PolyDocument;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.framing.Frame;
@@ -130,7 +130,7 @@ public final class Framer {
 //      
 //      );
 
-        final var frame = Frame.of((PolyNodeDocument) frameDocument, options);
+        final var frame = Frame.of((PolyDocument) frameDocument, options);
 
         // 9.
         final var contextBase = (frameDocument.getContextUrl() != null)
@@ -148,9 +148,10 @@ public final class Framer {
                         // TODO
                         : new PolyNode(Map.of(), NativeAdapter.instance()), contextBase);
 
-        final var graphKey = activeContext.uriCompaction()
-                .vocab(true)
-                .compact(Keywords.GRAPH);
+        final var graphKey = activeContext.compactUriWithVocab(Keywords.GRAPH);
+//                .uriCompaction()
+//                .vocab(true)
+//                .compact(Keywords.GRAPH);
 
         // 14.
         final var state = new FramingState();
@@ -325,7 +326,7 @@ public final class Framer {
         if (node == null || Keywords.NULL.equals(node)) {
             return null;
         }
-        
+
         if (node instanceof Collection<?> col) {
 
             final var result = col.stream().map(Framer::replaceNull).toList();
@@ -337,13 +338,13 @@ public final class Framer {
         }
 
         if (node instanceof Map<?, ?> map) {
-            
+
             final var result = new LinkedHashMap<>(map.size());
-            
+
             for (var entry : map.entrySet()) {
                 result.put(entry.getKey(), replaceNull(entry.getValue()));
             }
-            
+
             return result;
 //            return map.entrySet().stream()
 //                    .filter(Objects::nonNull)
@@ -351,7 +352,7 @@ public final class Framer {
 //                            Map.Entry::getKey,
 //                            e -> replaceNull(e.getValue())));
         }
-        
+
         return node;
     }
 

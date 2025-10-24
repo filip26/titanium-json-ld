@@ -33,7 +33,7 @@ import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 
-public final class PolyNodeDocument implements Document<PolyNode> {
+public final class PolyDocument implements Document<PolyNode> {
 
     private static final String PLUS_JSON = "+json";
 
@@ -44,7 +44,7 @@ public final class PolyNodeDocument implements Document<PolyNode> {
     private URI documentUrl;
     private URI contextUrl;
 
-    private PolyNodeDocument(final MediaType type, final String profile, final JsonStructure structure) {
+    private PolyDocument(final MediaType type, final String profile, final JsonStructure structure) {
         this.contentType = type;
         this.profile = profile;
         this.structure = structure;
@@ -56,7 +56,7 @@ public final class PolyNodeDocument implements Document<PolyNode> {
      * @param structure representing parsed JSON content
      * @return {@link Document} representing JSON content
      */
-    public static PolyNodeDocument of(final JsonStructure structure) {
+    public static PolyDocument of(final JsonStructure structure) {
         return of(MediaType.JSON, structure);
     }
 
@@ -67,7 +67,7 @@ public final class PolyNodeDocument implements Document<PolyNode> {
      * @param structure representing parsed JSON content
      * @return {@link Document} representing JSON content
      */
-    public static PolyNodeDocument of(final MediaType contentType, final JsonStructure structure) {
+    public static PolyDocument of(final MediaType contentType, final JsonStructure structure) {
 
         if (contentType == null) {
             throw new IllegalArgumentException("The provided JSON type is null.");
@@ -79,7 +79,7 @@ public final class PolyNodeDocument implements Document<PolyNode> {
             throw new IllegalArgumentException("The provided JSON structure is null.");
         }
 
-        return new PolyNodeDocument(new MediaType(contentType.type(), contentType.subtype()), contentType.findFirstParameter("profile").orElse(null), structure);
+        return new PolyDocument(new MediaType(contentType.type(), contentType.subtype()), contentType.findFirstParameter("profile").orElse(null), structure);
     }
 
     /**
@@ -88,7 +88,7 @@ public final class PolyNodeDocument implements Document<PolyNode> {
      * @param is representing parsed JSON content
      * @return {@link Document} representing JSON document
      */
-    public static final PolyNodeDocument of(final InputStream is)  throws JsonLdError {
+    public static final PolyDocument of(final InputStream is)  throws JsonLdError {
         return of(MediaType.JSON, is);
     }
 
@@ -101,7 +101,7 @@ public final class PolyNodeDocument implements Document<PolyNode> {
      *
      * @throws JsonLdError if the document creation fails
      */
-    public static final PolyNodeDocument of(final MediaType contentType, final InputStream is)  throws JsonLdError {
+    public static final PolyDocument of(final MediaType contentType, final InputStream is)  throws JsonLdError {
 
         assertContentType(contentType);
 
@@ -124,7 +124,7 @@ public final class PolyNodeDocument implements Document<PolyNode> {
      * @param reader providing JSON content
      * @return {@link Document} representing JSON document
      */
-    public static final PolyNodeDocument of(final Reader reader)  throws JsonLdError {
+    public static final PolyDocument of(final Reader reader)  throws JsonLdError {
         return of(MediaType.JSON, reader);
     }
 
@@ -137,7 +137,7 @@ public final class PolyNodeDocument implements Document<PolyNode> {
      *
      * @throws JsonLdError if the document creation fails
      */
-    public static final PolyNodeDocument of(final MediaType contentType, final Reader reader)  throws JsonLdError {
+    public static final PolyDocument of(final MediaType contentType, final Reader reader)  throws JsonLdError {
 
         assertContentType(contentType);
 
@@ -154,7 +154,7 @@ public final class PolyNodeDocument implements Document<PolyNode> {
         }
     }
 
-    private static final PolyNodeDocument doParse(final MediaType contentType, final JsonParser parser) throws JsonLdError {
+    private static final PolyDocument doParse(final MediaType contentType, final JsonParser parser) throws JsonLdError {
 
         if (!parser.hasNext()) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Nothing to read. Provided document is empty.");
@@ -167,11 +167,11 @@ public final class PolyNodeDocument implements Document<PolyNode> {
         final String profile = contentType.findFirstParameter("profile").orElse(null);
 
         if (JsonUtils.isArray(root)) {
-            return new PolyNodeDocument(contentType, profile, root.asJsonArray());
+            return new PolyDocument(contentType, profile, root.asJsonArray());
         }
 
         if (JsonUtils.isObject(root)) {
-            return new PolyNodeDocument(new MediaType(contentType.type(), contentType.subtype()), profile, root.asJsonObject());
+            return new PolyDocument(new MediaType(contentType.type(), contentType.subtype()), profile, root.asJsonObject());
         }
 
         throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "JSON document's top level element must be JSON array or object.");

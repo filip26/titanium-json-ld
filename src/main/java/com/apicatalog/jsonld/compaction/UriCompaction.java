@@ -24,7 +24,7 @@ import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
@@ -40,28 +40,41 @@ import com.apicatalog.tree.io.java.NativeAdapter;
  */
 public final class UriCompaction {
 
-    // required
-    private final ActiveContext activeContext;
+////    // required
+////    private final Context activeContext;
+////
+////    // optional
+////    private Object value;
+////    private boolean vocab;
+////    private boolean reverse;
+//
+//    private UriCompaction(final Context activeContext) {
+//        this.activeContext = activeContext;
+//
+//        // default values
+//        this.value = null;
+//        this.vocab = false;
+//        this.reverse = false;
+//    }
+//
+//    public static UriCompaction with(final Context activeContext) {
+//        return new UriCompaction(activeContext);
+//    }
 
-    // optional
-    private Object value;
-    private boolean vocab;
-    private boolean reverse;
-
-    private UriCompaction(final ActiveContext activeContext) {
-        this.activeContext = activeContext;
-
-        // default values
-        this.value = null;
-        this.vocab = false;
-        this.reverse = false;
+    public static String compactWithVocab(
+            final Context activeContext,
+            final String variable
+            ) throws JsonLdError {
+        return compact(activeContext, variable, null, true, false);
     }
-
-    public static UriCompaction with(final ActiveContext activeContext) {
-        return new UriCompaction(activeContext);
-    }
-
-    public String compact(final String variable) throws JsonLdError {
+    
+    public static String compact(
+            final Context activeContext,
+            final String variable,
+            final Object value,
+            final boolean vocab,
+            final boolean reverse
+            ) throws JsonLdError {
 
         // 1.
         if (variable == null) {
@@ -76,6 +89,8 @@ public final class UriCompaction {
         // 3.
         var inverseContext = activeContext.getInverseContext();
 
+        var node = value;
+        
         // 4.
         if (vocab && inverseContext.contains(variable)) {
 
@@ -95,12 +110,12 @@ public final class UriCompaction {
             }
 
             // 4.2.
-            if (value instanceof Map map && map.containsKey(Keywords.PRESERVE)) {
+            if (node instanceof Map map && map.containsKey(Keywords.PRESERVE)) {
 
                 final var preserve = map.get(Keywords.PRESERVE);
 
                 if (preserve != null) {
-                    value = NativeAdapter.asCollection(preserve).iterator().next();
+                    node = NativeAdapter.asCollection(preserve).iterator().next();
                 }
             }
 
@@ -112,7 +127,7 @@ public final class UriCompaction {
             String typeLanguageValue = Keywords.NULL;
 
             // 4.5.
-            if (value instanceof Map<?, ?> map && map.containsKey(Keywords.INDEX)
+            if (node instanceof Map<?, ?> map && map.containsKey(Keywords.INDEX)
                     && JsonLdAdapter.isNotGraph(map)) { // TODO was !Gra...isGraph
 
                 containers.add(Keywords.INDEX);
@@ -128,7 +143,7 @@ public final class UriCompaction {
                 containers.add(Keywords.SET);
 
                 // 4.7.
-            } else if (value instanceof Map valueMap && JsonLdAdapter.isList(valueMap)) {
+            } else if (node instanceof Map valueMap && JsonLdAdapter.isList(valueMap)) {
 
                 // 4.7.1.
                 if (!valueMap.containsKey(Keywords.INDEX)) {
@@ -230,7 +245,7 @@ public final class UriCompaction {
                 }
 
                 // 4.8.
-            } else if (value instanceof Map<?, ?> map && JsonLdAdapter.isGraph(map)) {
+            } else if (node instanceof Map<?, ?> map && JsonLdAdapter.isGraph(map)) {
 
                 // 4.8.1.
                 if (map.containsKey(Keywords.INDEX)) {
@@ -273,7 +288,7 @@ public final class UriCompaction {
             } else {
 
                 // 4.9.1.
-                if (value instanceof Map<?, ?> map && JsonLdAdapter.isValueNode(map)) {
+                if (node instanceof Map<?, ?> map && JsonLdAdapter.isValueNode(map)) {
 
                     // 4.9.1.1.
                     if (map.containsKey(Keywords.DIRECTION)
@@ -333,8 +348,8 @@ public final class UriCompaction {
 
             // 4.11.
             if (!activeContext.runtime().isV10()
-                    && (!(value instanceof Map)
-                            || !((Map<?, ?>) value).containsKey(Keywords.INDEX))) {
+                    && (!(node instanceof Map)
+                            || !((Map<?, ?>) node).containsKey(Keywords.INDEX))) {
 //                    )
 //                    && (JsonUtils.isNotObject(value)
 //                            || !value.asJsonObject().containsKey(Keywords.INDEX))) {
@@ -344,7 +359,7 @@ public final class UriCompaction {
 
             // 4.12.
             if (!activeContext.runtime().isV10()
-                    && value instanceof Map<?, ?> map
+                    && node instanceof Map<?, ?> map
                     && map.size() == 1
                     && map.containsKey(Keywords.VALUE)) {
 
@@ -367,7 +382,7 @@ public final class UriCompaction {
 
             // 4.16.
             if ((Keywords.REVERSE.equals(typeLanguageValue) || Keywords.ID.equals(typeLanguageValue))
-                    && value instanceof Map valueMap
+                    && node instanceof Map valueMap
                     && valueMap.containsKey(Keywords.ID)) {
 //                    && JsonUtils.containsKey(value, Keywords.ID)) {
 
@@ -382,10 +397,7 @@ public final class UriCompaction {
                 if (idValue instanceof String idString) {
 
                     // 4.16.1.
-                    final var compactedIdValue = activeContext
-                            .uriCompaction()
-                            .vocab(true)
-                            .compact(idString);
+                    final var compactedIdValue = activeContext.compactUriWithVocab(idString);
 
                     final var compactedIdValueTermDefinition = activeContext.findTerm(compactedIdValue);
 
@@ -413,7 +425,7 @@ public final class UriCompaction {
                 preferredValues.add(typeLanguageValue);
                 preferredValues.add(Keywords.NONE);
 
-                if (value instanceof Map<?, ?> map
+                if (node instanceof Map<?, ?> map
                         && JsonLdAdapter.isList(map)
                         && map.get(Keywords.LIST) instanceof Collection<?> array
                         && array.isEmpty()) {
@@ -487,7 +499,7 @@ public final class UriCompaction {
                             .map(TermDefinition::getUriMapping)
                             .filter(u -> u.equals(variable))
                             .isPresent()
-                            && value == null)) {
+                            && node == null)) {
                 compactUri = compactUriCandidate;
             }
         }
@@ -524,20 +536,20 @@ public final class UriCompaction {
         // 11.
         return variable;
     }
-
-    public UriCompaction value(Object value) {
-        this.value = value;
-        return this;
-    }
-
-    public UriCompaction vocab(boolean vocab) {
-        this.vocab = vocab;
-        return this;
-    }
-
-    public UriCompaction reverse(boolean reverse) {
-        this.reverse = reverse;
-        return this;
-    }
+//
+//    public UriCompaction value(Object value) {
+//        this.value = value;
+//        return this;
+//    }
+//
+//    public UriCompaction vocab(boolean vocab) {
+//        this.vocab = vocab;
+//        return this;
+//    }
+//
+//    public UriCompaction reverse(boolean reverse) {
+//        this.reverse = reverse;
+//        return this;
+//    }
 
 }

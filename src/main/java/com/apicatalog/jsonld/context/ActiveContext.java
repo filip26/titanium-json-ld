@@ -168,12 +168,18 @@ public final class ActiveContext implements Context {
         return ValueExpansion.expand(this, activeProperty, value, adapter);
     }
 
-    public UriCompaction uriCompaction() {
-        return UriCompaction.with(this);
+    public Object compactValue(final Map<String, ?> value, final String activeProperty) throws JsonLdError {
+        return ValueCompaction.compact(this, value, activeProperty);
     }
 
-    public ValueCompaction valueCompaction() {
-        return ValueCompaction.with(this);
+    @Override
+    public String compactUri(String variable) throws JsonLdError {
+        return UriCompaction.compact(this, variable, null, false, false);
+    }
+
+    @Override
+    public String compactUriWithVocab(String variable) throws JsonLdError {
+        return UriCompaction.compactWithVocab(this, variable);
     }
 
     public TermDefinitionBuilder newTerm(final Object localContext, final NodeAdapter adapter, final Map<String, Boolean> defined) {

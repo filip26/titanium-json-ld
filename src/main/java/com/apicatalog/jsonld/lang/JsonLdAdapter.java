@@ -194,7 +194,7 @@ public class JsonLdAdapter {
 //    }
 
     public static void setOrAdd(Map<String, Object> result, String key, Object value, boolean asArray) {
-        System.out.println(">>>> !!! " + result + ", " + key + ", " + value + ", " + asArray);
+
         var previous = result.get(key);
 
         if (previous == null) {

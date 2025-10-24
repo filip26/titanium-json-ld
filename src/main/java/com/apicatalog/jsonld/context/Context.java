@@ -17,17 +17,18 @@ package com.apicatalog.jsonld.context;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.compaction.UriCompaction;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.processor.ProcessingRuntime;
 import com.apicatalog.tree.io.NodeAdapter;
-import com.apicatalog.tree.io.PolyNode;
 
 import jakarta.json.JsonValue;
 
@@ -38,9 +39,55 @@ import jakarta.json.JsonValue;
  */
 public interface Context {
 
+    Optional<TermDefinition> findTerm(final String value);
+
+    Direction getDefaultBaseDirection();
+
+    String getDefaultLanguage();
+
+    URI getBaseUri();
+
+    String getVocabularyMapping();
+
+    Context getPreviousContext();
+
+    ProcessingRuntime runtime();
+
+    TermDefinitionBuilder newTerm(Object localContext, NodeAdapter adapter, Map<String, Boolean> defined);
+
+    ActiveContextBuilder newContext();
+
+    // ---
+
+    UriExpansion uriExpansion();
+
+    Map<String, ?> expandValue(String property, Object value, NodeAdapter adapter) throws JsonLdError, IOException;
+
+    /* compaction */
+//    UriCompaction uriCompaction();
+
+    String compactUri(String variable) throws JsonLdError;
     
+    String compactUriWithVocab(String variable) throws JsonLdError;
+
+    Object compactValue(Map<String, ?> value, String property) throws JsonLdError;
+
+    InverseContext getInverseContext();
+
+    void createInverseContext();
+
+    Optional<String> selectTerm(
+            final Collection<String> preferredValues,
+            final String variable,
+            final Collection<String> containerMapping,
+            final String typeLanguage);
+
+    boolean containsTerm(final String term);
+
+    Map<String, TermDefinition> getTermsMapping();
+
     static class Bx {
-        
+
 //        void Bx of() {
 //            
 //            
@@ -57,9 +104,9 @@ public interface Context {
 //                }
 //            }
 //        }
-        
+
     }
-    
+
     static class Builder {
 
         URI baseUri;
@@ -70,8 +117,8 @@ public interface Context {
         NodeAdapter adapter;
 
         Context ctx;
-        
-        //TODO remove runtime
+
+        // TODO remove runtime
         public Builder(URI base, ProcessingRuntime runtime) {
             this(base, base, runtime);
         }
@@ -100,9 +147,9 @@ public interface Context {
             this.baseUrl = baseUrl;
             this.ctx = ctx.newContext().build(node, adapter, baseUrl);
         }
-        
 
-        private static final ActiveContext updateContext(final ActiveContext activeContext, final Object expandedContext, final NodeAdapter adapter, final URI baseUrl) throws JsonLdError, IOException {
+        private static final ActiveContext updateContext(final ActiveContext activeContext, final Object expandedContext, final NodeAdapter adapter, final URI baseUrl)
+                throws JsonLdError, IOException {
 
             if (adapter.isCollection(expandedContext)) {
 
@@ -140,29 +187,6 @@ public interface Context {
 
     }
 
-    Optional<TermDefinition> findTerm(final String value);
-
-    Direction getDefaultBaseDirection();
-
-    String getDefaultLanguage();
-
-    URI getBaseUri();
-
-    String getVocabularyMapping();
-
-    Context getPreviousContext();
-
-    ProcessingRuntime runtime();
-
-    TermDefinitionBuilder newTerm(Object localContext, NodeAdapter adapter, Map<String, Boolean> defined);
-
-    ActiveContextBuilder newContext();
-
-    // ---
-
-    UriExpansion uriExpansion();
-
-    Map<String, ?> expandValue(String activeProperty, Object value, NodeAdapter adapter) throws JsonLdError, IOException;
     // ---
 //  void createInverseContext();
 
@@ -173,18 +197,6 @@ public interface Context {
 //  boolean containsProtectedTerm();
 
 //    URI getBaseUrl();
-
-//    InverseContext getInverseContext();
-
-//    Map<String, TermDefinition> getTermsMapping();
-
-//    Collection<String> getTerms();
-
-//    UriCompaction uriCompaction();
-
-//    ValueCompaction valueCompaction();
-
-//    TermSelector termSelector(final String variable, final Collection<String> containerMapping, final String typeLanguage);
 
     // ---
 }

@@ -68,32 +68,15 @@ public final class ObjectExpansion {
         this.adapter = adapter;
         this.activeProperty = activeProperty;
         this.params = params;
-
-//        // default values
-//        this.frameExpansion = false;
-//        this.ordered = false;
-//        this.fromMap = false;
-//        this.baseUrl = baseUri;
     }
 
-//    public static final ObjectExpansion with(final Context activeContext,
-//            final PolyNode propertyContext,
-//            final Object node,
-//            final NodeAdapter nodeAdapter,
-//            final String activeProperty,
-//            final Params params) {
-//        
-//        return new ObjectExpansion(
-//                activeContext,
-//                propertyContext,
-//                node,
-//                nodeAdapter,
-//                activeProperty,
-//                params);
-//    }
-
     public Object expand() throws JsonLdError, IOException {
-        initPreviousContext();
+
+        activeContext = initPreviousContext(
+                activeContext,
+                element,
+                adapter,
+                params.fromMap());
 
         // 8. init property context
         if (propertyContext != null) {
@@ -109,14 +92,25 @@ public final class ObjectExpansion {
                                     .orElse(null));
         }
 
-        initLocalContext();
+        // 9. initialize local context
+        final var contextValue = adapter.property(Keywords.CONTEXT, element);
+
+        if (contextValue != null) {
+            activeContext = activeContext
+                    .newContext()
+                    .build(contextValue, adapter, params.baseUrl());
+        }
 
         // 10.
-        final Context typeContext = activeContext;
+        final var typeContext = activeContext;
 
-        final String typeKey = processTypeScoped(typeContext);
+        final var typeKey = processTypeScoped(typeContext);
 
-        final String inputType = findInputType(typeKey);
+        final var inputType = findInputType(
+                activeContext,
+                typeKey,
+                element,
+                adapter);
 
         final var result = new LinkedHashMap<String, Object>();
 
@@ -130,21 +124,25 @@ public final class ObjectExpansion {
 
         // 15.
         if (result.containsKey(Keywords.VALUE)) {
-            return normalizeValue(result);
+            return normalizeValue(result, activeProperty, params.frameExpansion());
 
             // 16.
         } else if (result.containsKey(Keywords.TYPE)) {
-            return normalizeType(result);
+            return normalizeType(result, activeProperty, params.frameExpansion());
 
             // 17.
         } else if (result.containsKey(Keywords.LIST) || result.containsKey(Keywords.SET)) {
-            return normalizeContainer(result);
+            return normalizeContainer(result, activeProperty, params.frameExpansion());
         }
 
-        return normalize(result);
+        return normalize(result, activeProperty, params.frameExpansion());
     }
 
-    private void initPreviousContext() throws JsonLdError, IOException {
+    private static Context initPreviousContext(
+            final Context context,
+            final Object element,
+            final NodeAdapter adapter,
+            final boolean fromMap) throws JsonLdError, IOException {
 
         // 7. If active context has a previous context, the active context is not
         // propagated.
@@ -155,7 +153,7 @@ public final class ObjectExpansion {
         // set active context to previous context from active context,
         // as the scope of a term-scoped context does not apply when processing new node
         // objects.
-        if (activeContext.getPreviousContext() != null && !params.fromMap()) {
+        if (context.getPreviousContext() != null && !fromMap) {
 
             boolean revert = true;
 
@@ -163,11 +161,11 @@ public final class ObjectExpansion {
 
             while (it.hasNext()) {
 
-                activeContext.runtime().tick();
+                context.runtime().tick();
 
                 var key = adapter.stringValue(it.next());
 
-                final String expandedKey = activeContext
+                final String expandedKey = context
                         .uriExpansion()
                         .vocab(true)
                         .expand(key);
@@ -180,24 +178,18 @@ public final class ObjectExpansion {
             }
 
             if (revert) {
-                activeContext = activeContext.getPreviousContext();
+                return context.getPreviousContext();
             }
         }
+        return context;
     }
 
-    private void initLocalContext() throws JsonLdError, IOException {
-
-        // 9.
-        var contextValue = adapter.property(Keywords.CONTEXT, element);
-
-        if (contextValue != null) {
-            activeContext = activeContext
-                    .newContext()
-                    .build(contextValue, adapter, params.baseUrl());
-        }
-    }
-
-    private String processTypeScoped(final Context typeContext) throws JsonLdError, IOException {
+    private String processTypeScoped(
+//            final Context activeContext,
+            final Context typeContext
+//            final Object element,
+//            final NodeAdapter adapter
+    ) throws JsonLdError, IOException {
 
         String typeKey = null;
 
@@ -235,10 +227,11 @@ public final class ObjectExpansion {
 
                     activeContext.runtime().tick();
 
-                    var term = terms.next();
+                    final var term = terms.next();
 
-                    var localContext = typeContext
-                            .findTerm(term).map(TermDefinition::getLocalContext)
+                    final var localContext = typeContext
+                            .findTerm(term)
+                            .map(TermDefinition::getLocalContext)
                             .orElse(null);
 
                     if (localContext != null) {
@@ -258,7 +251,13 @@ public final class ObjectExpansion {
         return typeKey;
     }
 
-    private String findInputType(final String typeKey) throws JsonLdError, IOException {
+    private static String findInputType(
+            final Context context,
+            final String typeKey,
+            final Object element,
+            final NodeAdapter adapter
+
+    ) throws JsonLdError, IOException {
 
         // Initialize input type to expansion of the last value of the first entry in
         // element
@@ -267,24 +266,24 @@ public final class ObjectExpansion {
         // value of the matched entry are IRI expanded.
         if (typeKey != null) {
 
-            var type = adapter.property(typeKey, element);
+            final var type = adapter.property(typeKey, element);
 
             if (adapter.isCollection(type)) {
 
-                var lastValue = adapter.elementStream(type)
+                final var lastValue = adapter.elementStream(type)
                         .filter(adapter::isString)
                         .map(adapter::stringValue)
                         .sorted()
                         .reduce((first, second) -> second);
 
                 if (lastValue.isPresent()) {
-                    return activeContext.uriExpansion()
+                    return context.uriExpansion()
                             .vocab(true)
                             .expand(lastValue.get());
                 }
 
             } else if (adapter.isString(type)) {
-                return activeContext.uriExpansion()
+                return context.uriExpansion()
                         .vocab(true)
                         .expand(adapter.stringValue(type));
             }
@@ -293,7 +292,12 @@ public final class ObjectExpansion {
         return null;
     }
 
-    private Map<String, ?> normalizeValue(final Map<String, ?> result) throws JsonLdError {
+    private static Map<String, ?> normalizeValue(
+            final Map<String, ?> result,
+            final String activeProperty,
+            final boolean frameExpansion
+
+    ) throws JsonLdError {
 
         // 15.1.
         if (JsonLdAdapter.isNotValueNode(result)) {
@@ -318,33 +322,39 @@ public final class ObjectExpansion {
             if (value == null || value instanceof Collection<?> c && c.isEmpty()) {
                 return null;
 
-            } else if (!params.frameExpansion()
+            } else if (!frameExpansion
                     && !(value instanceof String) && result.containsKey(Keywords.LANGUAGE)) {
                 // 15.4
                 throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
 
-            } else if (!params.frameExpansion()
+            } else if (!frameExpansion
                     && type != null
                     && (!(type instanceof String uri) || UriUtils.isNotURI(uri))) {
                 // 15.5
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE, "Invalid @type [" + type + "].");
             }
         }
-        return normalize(result);
+        return normalize(result, activeProperty, frameExpansion);
     }
 
-    private Map<String, ?> normalizeType(final Map<String, Object> result) throws JsonLdError {
+    private Map<String, ?> normalizeType(
+            final Map<String, Object> result,
+            final String activeProperty,
+            final boolean frameExpansion) throws JsonLdError {
 
-        var type = result.get(Keywords.TYPE);
+        final var type = result.get(Keywords.TYPE);
 
         if (!(type instanceof Collection)) {
             result.put(Keywords.TYPE, List.of(type));
         }
 
-        return normalize(result);
+        return normalize(result, activeProperty, frameExpansion);
     }
 
-    private Object normalizeContainer(final Map<String, ?> result) throws JsonLdError {
+    private Object normalizeContainer(
+            final Map<String, ?> result,
+            final String activeProperty,
+            final boolean frameExpansion) throws JsonLdError {
 
         // 17.1.
         if (result.size() > 2 || result.size() == 2 && !result.containsKey(Keywords.INDEX)) {
@@ -357,16 +367,19 @@ public final class ObjectExpansion {
         if (set instanceof Map<?, ?> rawMap) {
             @SuppressWarnings("unchecked")
             var map = (Map<String, Object>) rawMap;
-            return normalize(map);
+            return normalize(map, activeProperty, frameExpansion);
 
         } else if (set != null) {
             return set;
         }
 
-        return normalize(result);
+        return normalize(result, activeProperty, frameExpansion);
     }
 
-    private Map<String, ?> normalize(final Map<String, ?> result) throws JsonLdError {
+    private static Map<String, ?> normalize(
+            final Map<String, ?> result,
+            final String activeProperty,
+            final boolean frameExpansion) throws JsonLdError {
 
         // Extension: JSON-LD-STAR (Experimental)
 //        if (result.containsKey(Keywords.ANNOTATION)
@@ -387,7 +400,7 @@ public final class ObjectExpansion {
 
             // 19.1. If result is a map which is empty, or contains only the entries @value
             // or @list, set result to null
-            if (!params.frameExpansion() && result.isEmpty()
+            if (!frameExpansion && result.isEmpty()
                     || result.containsKey(Keywords.VALUE)
                     || result.containsKey(Keywords.LIST)) {
                 return null;
@@ -396,7 +409,7 @@ public final class ObjectExpansion {
             // 19.2. if result is a map whose only entry is @id, set result to null. When
             // the frameExpansion flag is set, a map containing only the @id entry is
             // retained.
-            if (!params.frameExpansion() && result.size() == 1 && result.containsKey(Keywords.ID)) {
+            if (!frameExpansion && result.size() == 1 && result.containsKey(Keywords.ID)) {
                 return null;
             }
 

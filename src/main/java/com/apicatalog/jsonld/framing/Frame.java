@@ -24,9 +24,7 @@ import java.util.Set;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.PolyNodeDocument;
-import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.document.PolyDocument;
 import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -34,8 +32,6 @@ import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.tree.io.PolyNode;
-
-import jakarta.json.JsonValue;
 
 public final class Frame {
 
@@ -49,7 +45,7 @@ public final class Frame {
         this.context = context;
     }
 
-    public static final Frame of(final PolyNodeDocument document, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Frame of(final PolyDocument document, final JsonLdOptions options) throws JsonLdError, IOException {
 
 //      final JsonStructure frameStructure;
 //
