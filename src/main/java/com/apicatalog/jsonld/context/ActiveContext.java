@@ -27,6 +27,7 @@ import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.expansion.ValueExpansion;
 import com.apicatalog.jsonld.lang.Direction;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.ProcessingRuntime;
 import com.apicatalog.tree.io.NodeAdapter;
 
@@ -40,6 +41,8 @@ public final class ActiveContext implements Context {
     // the active term definitions which specify how keys and values have to be
     // interpreted
     private final Map<String, TermDefinition> terms;
+
+    private JsonLdVersion version;
 
     // the current base IRI
     private URI baseUri;
@@ -61,22 +64,23 @@ public final class ActiveContext implements Context {
     // an optional default base direction ("ltr" or "rtl")
     private Direction defaultBaseDirection;
 
-    private final ProcessingRuntime runtime;
+//    private final ProcessingRuntime runtime;
 
-    public ActiveContext(final ProcessingRuntime runtime) {
-        this(null, null, null, runtime);
+    ActiveContext(final JsonLdVersion version) {
+        this(null, null, null, version);
     }
 
-    public ActiveContext(final URI baseUri, final URI baseUrl, ProcessingRuntime runtime) {
-        this(baseUri, baseUrl, null, runtime);
+    public ActiveContext(final URI baseUri, final URI baseUrl, JsonLdVersion version) {
+        this(baseUri, baseUrl, null, version);
     }
 
-    public ActiveContext(final URI baseUri, final URI baseUrl, final ActiveContext previousContext, final ProcessingRuntime runtime) {
+    ActiveContext(final URI baseUri, final URI baseUrl, final ActiveContext previousContext, final JsonLdVersion version) {
         this.baseUri = baseUri;
         this.baseUrl = baseUrl;
         this.previousContext = previousContext;
         this.terms = new LinkedHashMap<>();
-        this.runtime = runtime;
+//        this.runtime = runtime;
+        this.version = version;
     }
 
     // copy constructor
@@ -89,7 +93,8 @@ public final class ActiveContext implements Context {
         this.vocabularyMapping = origin.vocabularyMapping;
         this.defaultLanguage = origin.defaultLanguage;
         this.defaultBaseDirection = origin.defaultBaseDirection;
-        this.runtime = origin.runtime;
+//        this.runtime = origin.runtime;
+        this.version = origin.version;
     }
 
     public void createInverseContext() {
@@ -157,20 +162,26 @@ public final class ActiveContext implements Context {
         return terms.keySet();
     }
 
-    public ActiveContextBuilder newContext() {
-        return ActiveContextBuilder.with(this);
+    @Override
+    public ActiveContextBuilder newContext(DocumentLoader loader) {
+        return ActiveContextBuilder.with(this, loader);
     }
 
-    public UriExpansion uriExpansion() {
-        return UriExpansion.with(this).uriValidation(runtime.getUriValidation());
+    @Override
+    public UriExpansion uriExpansion(DocumentLoader loader) {
+        return UriExpansion.with(this, loader);
+//FIXME                .uriValidation(
+//                runtime.getUriValidation()
+//                );
     }
 
-    public Map<String, ?> expandValue(final String activeProperty, final Object value, final NodeAdapter adapter) throws JsonLdError, IOException {
-        return ValueExpansion.expand(this, activeProperty, value, adapter, runtime);
-    }
+//    public Map<String, ?> expandValue(final String activeProperty, final Object value, final NodeAdapter adapter) throws JsonLdError, IOException {
+//        return ValueExpansion.expand(this, activeProperty, value, adapter, runtime);
+//    }
 
-    public TermDefinitionBuilder newTerm(final Object localContext, final NodeAdapter adapter, final Map<String, Boolean> defined) {
-        return TermDefinitionBuilder.with(this, localContext, adapter, defined);
+    @Override
+    public TermDefinitionBuilder newTerm(final Object localContext, final NodeAdapter adapter, final Map<String, Boolean> defined, DocumentLoader loader) {
+        return TermDefinitionBuilder.with(this, localContext, adapter, defined, loader);
     }
 
     public Optional<String> selectTerm(
@@ -216,12 +227,12 @@ public final class ActiveContext implements Context {
                 + ", previousContext=" + previousContext + "]";
     }
 
-    public ProcessingRuntime runtime() {
-        return runtime;
-    }
-
     @Override
     public JsonLdVersion version() {
-        return runtime.version();
+        return version;
+    }
+
+    public void setVersion(JsonLdVersion version) {
+        this.version = version;
     }
 }

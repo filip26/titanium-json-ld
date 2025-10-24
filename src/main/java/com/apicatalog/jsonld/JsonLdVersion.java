@@ -15,6 +15,8 @@
  */
 package com.apicatalog.jsonld;
 
+import java.util.Objects;
+
 public enum JsonLdVersion {
 
     V1_0("json-ld-1.0"), V1_1("json-ld-1.1");
@@ -25,17 +27,16 @@ public enum JsonLdVersion {
         this.text = text;
     }
 
-    public static JsonLdVersion of(String text) {
+    public static JsonLdVersion of(String version) {
 
-        if (text == null) {
-            throw new IllegalArgumentException();
-        }
+        Objects.requireNonNull(version);
 
-        if (V1_0.text.equalsIgnoreCase(text)) {
-            return V1_0;
-        }
-        if (V1_1.text.equalsIgnoreCase(text)) {
+        if ("1.1".equals(version) || V1_1.text.equalsIgnoreCase(version)) {
             return V1_1;
+        }
+
+        if ("1.0".equals(version) || V1_0.text.equalsIgnoreCase(version)) {
+            return V1_0;
         }
         return null;
     }

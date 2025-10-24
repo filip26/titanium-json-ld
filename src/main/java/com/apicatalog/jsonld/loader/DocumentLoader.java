@@ -21,7 +21,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 
 /**
- * The {@link JsonLdLoader} defines an interface that custom loaders have to
+ * The {@link DocumentLoader} defines an interface that custom loaders have to
  * implement to be used to retrieve remote JSON-LD documents and contexts.
  *
  * @see <a href=
@@ -29,7 +29,7 @@ import com.apicatalog.jsonld.document.Document;
  *      Specification</a>
  *
  */
-public interface JsonLdLoader {
+public interface DocumentLoader {
 
     /**
      * Retrieve a remote document.

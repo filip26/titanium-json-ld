@@ -27,7 +27,7 @@ import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
 
-public class ClasspathLoader implements JsonLdLoader, TestLoader {
+public class ClasspathLoader implements DocumentLoader, TestLoader {
 
     @Override
     public Document loadDocument(URI url, LoaderOptions options) throws JsonLdError {

@@ -33,7 +33,7 @@ import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
 
-public class ZipResourceLoader implements JsonLdLoader, TestLoader {
+public class ZipResourceLoader implements DocumentLoader, TestLoader {
 
     private final DocumentResolver resolver;
 

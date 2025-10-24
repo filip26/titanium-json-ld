@@ -20,13 +20,13 @@ import java.net.URI;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.loader.JsonLdLoader;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.rdf.model.RdfDataset;
 
 import jakarta.json.JsonStructure;
 
-public class MockLoader implements JsonLdLoader {
+public class MockLoader implements DocumentLoader {
 
     private final JsonStructure structure;
     private final RdfDataset dataset;

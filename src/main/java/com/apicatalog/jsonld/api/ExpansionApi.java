@@ -25,7 +25,7 @@ import com.apicatalog.jsonld.JsonLdOptions.ProcessingPolicy;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.loader.JsonLdLoader;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.uri.UriUtils;
 
@@ -112,7 +112,7 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
     }
 
     @Override
-    public ExpansionApi loader(JsonLdLoader loader) {
+    public ExpansionApi loader(DocumentLoader loader) {
         options.setDocumentLoader(loader);
         return this;
     }

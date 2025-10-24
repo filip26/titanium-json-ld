@@ -21,14 +21,14 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 
-public final class UriBaseRewriter implements JsonLdLoader {
+public final class UriBaseRewriter implements DocumentLoader {
 
     private final String sourceBase;
     private final String targetBase;
 
-    private final JsonLdLoader loader;
+    private final DocumentLoader loader;
 
-    public UriBaseRewriter(final String sourceBase, final String targetBase, final JsonLdLoader loader) {
+    public UriBaseRewriter(final String sourceBase, final String targetBase, final DocumentLoader loader) {
         this.sourceBase = sourceBase;
         this.targetBase = targetBase;
 

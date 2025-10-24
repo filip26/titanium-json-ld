@@ -7,9 +7,9 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.cache.LruCache;
 
-public class LRUDocumentCache implements JsonLdLoader {
+public class LRUDocumentCache implements DocumentLoader {
 
-    private final JsonLdLoader documentLoader;
+    private final DocumentLoader documentLoader;
 
     private final LruCache<Object, Document> cache;
 
@@ -43,7 +43,7 @@ public class LRUDocumentCache implements JsonLdLoader {
         }
     }
 
-    public LRUDocumentCache(JsonLdLoader documentLoader, int cacheSize) {
+    public LRUDocumentCache(DocumentLoader documentLoader, int cacheSize) {
         this.documentLoader = documentLoader;
         this.cache = new LruCache<>(cacheSize);
     }

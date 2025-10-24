@@ -81,7 +81,7 @@ public final class ObjectExpansion {
         // 8. init property context
         if (propertyContext != null) {
             activeContext = activeContext
-                    .newContext()
+                    .newContext(params.runtime().getDocumentLoader())
                     .overrideProtected(true)
                     .build(
                             propertyContext.node(),
@@ -97,7 +97,7 @@ public final class ObjectExpansion {
 
         if (contextValue != null) {
             activeContext = activeContext
-                    .newContext()
+                    .newContext(params.runtime().getDocumentLoader())
                     .build(contextValue, adapter, params.baseUrl());
         }
 
@@ -166,7 +166,7 @@ public final class ObjectExpansion {
                 var key = adapter.stringValue(it.next());
 
                 final String expandedKey = context
-                        .uriExpansion()
+                        .uriExpansion(params.runtime().getDocumentLoader())
                         .vocab(true)
                         .expand(key);
 
@@ -206,7 +206,7 @@ public final class ObjectExpansion {
             params.runtime().tick();
 
             var expandedKey = activeContext
-                    .uriExpansion()
+                    .uriExpansion(params.runtime().getDocumentLoader())
                     .vocab(true)
                     .expand(key);
 
@@ -236,7 +236,7 @@ public final class ObjectExpansion {
 
                     if (localContext != null) {
                         activeContext = activeContext
-                                .newContext()
+                                .newContext(params.runtime().getDocumentLoader())
                                 .propagate(false)
                                 .build(localContext.node(),
                                         localContext.adapter(),
@@ -251,7 +251,7 @@ public final class ObjectExpansion {
         return typeKey;
     }
 
-    private static String findInputType(
+    private String findInputType(
             final Context context,
             final String typeKey,
             final Object element,
@@ -277,13 +277,13 @@ public final class ObjectExpansion {
                         .reduce((first, second) -> second);
 
                 if (lastValue.isPresent()) {
-                    return context.uriExpansion()
+                    return context.uriExpansion(params.runtime().getDocumentLoader())
                             .vocab(true)
                             .expand(lastValue.get());
                 }
 
             } else if (adapter.isString(type)) {
-                return context.uriExpansion()
+                return context.uriExpansion(params.runtime().getDocumentLoader())
                         .vocab(true)
                         .expand(adapter.stringValue(type));
             }

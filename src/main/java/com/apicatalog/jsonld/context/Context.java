@@ -28,7 +28,7 @@ import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.processor.ProcessingRuntime;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.java.NativeAdapter;
@@ -54,6 +54,7 @@ public interface Context {
                 : JsonLdVersion.V1_0 == version();
     }
 
+    /** context version, might be null if unspecified */
     JsonLdVersion version();
 
     Optional<TermDefinition> findTerm(final String value);
@@ -68,20 +69,16 @@ public interface Context {
 
     Context getPreviousContext();
 
-    TermDefinitionBuilder newTerm(Object localContext, NodeAdapter adapter, Map<String, Boolean> defined);
+    @Deprecated
+    TermDefinitionBuilder newTerm(Object localContext, NodeAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader);
 
-    ActiveContextBuilder newContext();
+    @Deprecated
+    ActiveContextBuilder newContext(DocumentLoader loader);
 
     // ---
 
     @Deprecated
-    UriExpansion uriExpansion();
-
-    @Deprecated
-    Map<String, ?> expandValue(String property, Object value, NodeAdapter adapter) throws JsonLdError, IOException;
-
-    @Deprecated
-    ProcessingRuntime runtime();
+    UriExpansion uriExpansion(DocumentLoader loader);
     
     InverseContext getInverseContext();
 
@@ -145,8 +142,8 @@ public interface Context {
 //                .orElse(JsonValue.EMPTY_JSON_OBJECT);
 
         // 7.
-        final var activeContext = new ActiveContext(ProcessingRuntime.of(options))
-                .newContext()
+        final var activeContext = new ActiveContext(options.getProcessingMode())
+                .newContext(options.getDocumentLoader())
                 .build(unwrap(context), contextBase);
 
         // 8.
@@ -167,23 +164,24 @@ public interface Context {
 
         URI baseUri;
         URI baseUrl;
-        ProcessingRuntime runtime;
+        JsonLdVersion version;
 
         Object context;
         NodeAdapter adapter;
 
         Context ctx;
+        
+        DocumentLoader loader;
 
-        // TODO remove runtime
-        public Builder(URI base, ProcessingRuntime runtime) {
-            this(base, base, runtime);
+        public Builder(URI base, JsonLdVersion version) {
+            this(base, base, version);
         }
 
-        public Builder(URI baseUri, URI baseUrl, ProcessingRuntime runtime) {
+        public Builder(URI baseUri, URI baseUrl, JsonLdVersion version) {
             this.baseUri = baseUri;
             this.baseUrl = baseUrl;
-            this.runtime = runtime;
-            this.ctx = new ActiveContext(baseUri, baseUrl, runtime);
+            this.version = version;
+            this.ctx = new ActiveContext(baseUri, baseUrl, version);
         }
 
         // TODO better
@@ -201,10 +199,10 @@ public interface Context {
             this.context = node;
             this.adapter = adapter;
             this.baseUrl = baseUrl;
-            this.ctx = ctx.newContext().build(node, adapter, baseUrl);
+            this.ctx = ctx.newContext(loader).build(node, adapter, baseUrl);
         }
 
-        private static final ActiveContext updateContext(final ActiveContext activeContext, final Object expandedContext, final NodeAdapter adapter, final URI baseUrl)
+        private final ActiveContext updateContext(final ActiveContext activeContext, final Object expandedContext, final NodeAdapter adapter, final URI baseUrl)
                 throws JsonLdError, IOException {
 
             if (adapter.isCollection(expandedContext)) {
@@ -219,13 +217,13 @@ public interface Context {
 
                         if (!adapter.isNull(context)) {
                             return activeContext
-                                    .newContext()
+                                    .newContext(loader)
                                     .build(context, adapter, baseUrl);
                         }
                     }
                 }
 
-                return activeContext.newContext().build(expandedContext, adapter, baseUrl);
+                return activeContext.newContext(loader).build(expandedContext, adapter, baseUrl);
 
             } else if (adapter.isMap(expandedContext)) {
 
@@ -233,12 +231,17 @@ public interface Context {
 
                 if (!adapter.isNull(context)) {
                     return activeContext
-                            .newContext()
+                            .newContext(loader)
                             .build(context, adapter, baseUrl);
                 }
             }
-            return activeContext.newContext().build(
+            return activeContext.newContext(loader).build(
                     JsonProvider.instance().createArrayBuilder().add((JsonValue) expandedContext).build(), adapter, baseUrl);
+        }
+        
+        public Builder loader(DocumentLoader loader) {
+            this.loader = loader;
+            return this;
         }
 
     }

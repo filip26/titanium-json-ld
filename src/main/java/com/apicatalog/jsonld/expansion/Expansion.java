@@ -115,7 +115,12 @@ public final class Expansion {
 
         // 4. If element is a scalar
         if (nodeType.isScalar()) {
-            return scalar(activeContext, activeProperty, propertyContext, node, nodeAdapter);
+            return scalar(activeContext,
+                    activeProperty,
+                    propertyContext,
+                    node,
+                    nodeAdapter,
+                    params);
         }
 
         // 6. Otherwise element is a map
@@ -165,7 +170,8 @@ public final class Expansion {
             final String property,
             final PolyNode propertyContext,
             final Object node,
-            final NodeAdapter nodeAdapter) throws JsonLdError, IOException {
+            final NodeAdapter nodeAdapter,
+            final Params params) throws JsonLdError, IOException {
 
         /*
          * 4.1. If active property is null or @graph, drop the free-floating scalar by
@@ -182,21 +188,24 @@ public final class Expansion {
          * property in active context.
          */
         if (propertyContext != null) {
-            return context
-                    .newContext()
+            return ValueExpansion.expand(context
+                    .newContext(params.runtime().getDocumentLoader())
                     .build(propertyContext.node(),
                             propertyContext.adapter(),
                             context.findTerm(property)
                                     .map(TermDefinition::getBaseUrl)
-                                    .orElse(null))
-                    .expandValue(property, node, nodeAdapter);
+                                    .orElse(null)),
+                    property,
+                    node,
+                    nodeAdapter,
+                    params.runtime());
         }
 
         /*
          * 4.3. Return the result of the Value Expansion algorithm, passing the active
          * context, active property, and element as value.
          */
-        return context.expandValue(property, node, nodeAdapter);
+        return ValueExpansion.expand(context, property, node, nodeAdapter, params.runtime());
     }
 
     /**

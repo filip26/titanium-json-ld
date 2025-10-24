@@ -29,7 +29,7 @@ public class LRUDocumentCacheTest {
 
     }
 
-    static class RecordRequestLoader implements JsonLdLoader {
+    static class RecordRequestLoader implements DocumentLoader {
 
         final List<Request> requests = new ArrayList<>();
 

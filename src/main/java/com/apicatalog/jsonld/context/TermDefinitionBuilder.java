@@ -33,6 +33,7 @@ import com.apicatalog.jsonld.lang.CompactUri;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.tree.io.NodeAdapter;
@@ -78,7 +79,7 @@ public final class TermDefinitionBuilder {
     private final NodeAdapter adapter;
 
     private final Map<String, Boolean> defined;
-
+    private final DocumentLoader loader;
     // optional
     private URI baseUrl;
 
@@ -88,11 +89,12 @@ public final class TermDefinitionBuilder {
 
     private Collection<String> remoteContexts;
 
-    private TermDefinitionBuilder(ActiveContext activeContext, Object localContext, NodeAdapter adapter, Map<String, Boolean> defined) {
+    private TermDefinitionBuilder(ActiveContext activeContext, Object localContext, NodeAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader) {
         this.activeContext = activeContext;
         this.localContext = localContext;
         this.adapter = adapter;
         this.defined = defined;
+        this.loader = loader;
 
         // default values
         this.baseUrl = null;
@@ -101,8 +103,8 @@ public final class TermDefinitionBuilder {
         this.remoteContexts = new ArrayList<>();
     }
 
-    public static final TermDefinitionBuilder with(ActiveContext activeContext, Object localContext, NodeAdapter adapter, Map<String, Boolean> defined) {
-        return new TermDefinitionBuilder(activeContext, localContext, adapter, defined);
+    public static final TermDefinitionBuilder with(ActiveContext activeContext, Object localContext, NodeAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader) {
+        return new TermDefinitionBuilder(activeContext, localContext, adapter, defined, loader);
     }
 
     public void create(final String term) throws JsonLdError, IOException {
@@ -130,7 +132,7 @@ public final class TermDefinitionBuilder {
         // 4.
         if (Keywords.TYPE.equals(term)) {
 
-            if (activeContext.runtime().isV10()) {
+            if (activeContext.isV10()) {
                 throw new JsonLdError(JsonLdErrorCode.KEYWORD_REDEFINITION);
             }
 
@@ -220,7 +222,7 @@ public final class TermDefinitionBuilder {
 
         if (protectedValue != null) {
 
-            if (activeContext.runtime().isV10()) {
+            if (activeContext.isV10()) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
 
@@ -242,7 +244,7 @@ public final class TermDefinitionBuilder {
 
             // 12.2.
             final String expandedTypeString = activeContext
-                    .uriExpansion()
+                    .uriExpansion(loader)
                     .localContext(localContext, adapter)
                     .defined(defined)
                     .vocab(true)
@@ -254,7 +256,7 @@ public final class TermDefinitionBuilder {
 
             // 12.3.
             if (((Keywords.JSON.equals(expandedTypeString) || Keywords.NONE.equals(expandedTypeString))
-                    && activeContext.runtime().isV10())
+                    && activeContext.isV10())
                     // 12.4.
                     || (Keywords.noneMatch(expandedTypeString, Keywords.ID, Keywords.JSON, Keywords.NONE, Keywords.VOCAB)
                             && UriUtils.isNotAbsoluteUri(expandedTypeString, UriValidationPolicy.Full))) {
@@ -291,7 +293,7 @@ public final class TermDefinitionBuilder {
             // 13.4.
             definition.setUriMapping(
                     activeContext
-                            .uriExpansion()
+                            .uriExpansion(loader)
                             .localContext(localContext, adapter)
                             .defined(defined)
                             .vocab(true)
@@ -354,7 +356,7 @@ public final class TermDefinitionBuilder {
                 // 14.2.3
                 definition.setUriMapping(
                         activeContext
-                                .uriExpansion()
+                                .uriExpansion(loader)
                                 .localContext(localContext, adapter)
                                 .defined(defined)
                                 .vocab(true)
@@ -378,7 +380,7 @@ public final class TermDefinitionBuilder {
 
                     // 14.2.4.2
                     final var expandedTerm = activeContext
-                            .uriExpansion()
+                            .uriExpansion(loader)
                             .localContext(localContext, adapter)
                             .defined(defined)
                             .vocab(true)
@@ -411,7 +413,7 @@ public final class TermDefinitionBuilder {
                     && compactUri.isNotBlank()
                     && adapter.keys(localContext).contains(compactUri.prefix())) {
 
-                activeContext.newTerm(localContext, adapter, defined).create(compactUri.prefix());
+                activeContext.newTerm(localContext, adapter, defined, loader).create(compactUri.prefix());
             }
             // 15.2.
             if (compactUri != null && compactUri.isNotBlank() && activeContext.containsTerm(compactUri.prefix())) {
@@ -433,7 +435,7 @@ public final class TermDefinitionBuilder {
 
             definition.setUriMapping(
                     activeContext
-                            .uriExpansion()
+                            .uriExpansion(loader)
                             .localContext(localContext, adapter)
                             .defined(defined)
                             .vocab(true)
@@ -490,7 +492,7 @@ public final class TermDefinitionBuilder {
         if (valueObjectKeys.contains(Keywords.INDEX)) {
 
             // 20.1.
-            if (activeContext.runtime().isV10() || !definition.getContainerMapping().contains(Keywords.INDEX)) {
+            if (activeContext.isV10() || !definition.getContainerMapping().contains(Keywords.INDEX)) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
 
@@ -504,7 +506,7 @@ public final class TermDefinitionBuilder {
             final var indexString = adapter.stringValue(index);
 
             final var expandedIndex = activeContext
-                    .uriExpansion()
+                    .uriExpansion(loader)
                     .localContext(localContext, adapter)
                     .defined(defined)
                     .vocab(true)
@@ -523,14 +525,14 @@ public final class TermDefinitionBuilder {
         if (contextValue != null) {
 
             // 21.1.
-            if (activeContext.runtime().isV10()) {
+            if (activeContext.isV10()) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
 
             // 21.3.
             try {
                 activeContext
-                        .newContext()
+                        .newContext(loader)
                         .overrideProtected(true)
                         .remoteContexts(new ArrayList<>(remoteContexts))
                         .validateScopedContext(false)
@@ -614,7 +616,7 @@ public final class TermDefinitionBuilder {
         if (nestValue != null) {
 
             // 24.1
-            if (activeContext.runtime().isV10()) {
+            if (activeContext.isV10()) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
 
@@ -637,7 +639,7 @@ public final class TermDefinitionBuilder {
         if (prefixValue != null) {
 
             // 25.1.
-            if (activeContext.runtime().isV10() || term.contains(":") || term.contains("/")) {
+            if (activeContext.isV10() || term.contains(":") || term.contains("/")) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_TERM_DEFINITION);
             }
 
@@ -710,8 +712,7 @@ public final class TermDefinitionBuilder {
 
         var container = value;
 
-        if (activeContext.runtime().isV10()) {
-
+        if (activeContext.isV10()) {
             return adapter.isString(container)
                     && Keywords.noneMatch(
                             adapter.stringValue(container),

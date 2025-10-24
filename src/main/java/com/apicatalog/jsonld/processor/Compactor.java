@@ -159,9 +159,11 @@ public final class Compactor {
 //        var m = new JakartaMaterializer().node(expandedInput, NativeAdapter.instance());
 //System.out.println(m);
 
+        final var runtime = new ProcessingRuntime(options);
+        
         // 9.
         var compactedOutput = Compaction
-                .with(context, context.runtime())
+                .with(context, runtime)
                 .compactArrays(options.isCompactArrays())
                 .ordered(options.isOrdered())
                 .compact(expandedInput);

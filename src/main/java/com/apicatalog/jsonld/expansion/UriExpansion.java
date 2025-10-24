@@ -27,6 +27,7 @@ import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.uri.UriResolver;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
@@ -66,6 +67,7 @@ public final class UriExpansion {
 
     // mandatory
     private final Context activeContext;
+    private final DocumentLoader loader;
 
     // optional
     private boolean documentRelative;
@@ -76,8 +78,9 @@ public final class UriExpansion {
     private NodeAdapter adapter;
     private Map<String, Boolean> defined;
 
-    private UriExpansion(final Context activeContext) {
+    private UriExpansion(final Context activeContext, final DocumentLoader loader) {
         this.activeContext = activeContext;
+        this.loader = loader;
 
         // default values
         this.documentRelative = false;
@@ -93,10 +96,11 @@ public final class UriExpansion {
      * This is the entry point for configuring and executing an IRI expansion.
      *
      * @param activeContext the active context to use for expansion
+     * @param loader
      * @return a new, configurable {@code UriExpansion} instance
      */
-    public static final UriExpansion with(final Context activeContext) {
-        return new UriExpansion(activeContext);
+    public static final UriExpansion with(final Context activeContext, final DocumentLoader loader) {
+        return new UriExpansion(activeContext, loader);
     }
 
     /**
@@ -108,7 +112,7 @@ public final class UriExpansion {
      * @return the fully expanded IRI as a {@link String}, or {@code null} if the
      *         value has an invalid keyword-like form
      * @throws JsonLdError if an error occurs during context processing
-     * @throws IOException 
+     * @throws IOException
      */
     public String expand(final String value) throws JsonLdError, IOException {
 
@@ -199,7 +203,7 @@ public final class UriExpansion {
     /**
      * Sets the local context to be used during expansion.
      *
-     * @param value the local context
+     * @param value   the local context
      * @param adapter
      * @return this instance, for method chaining
      */
@@ -239,7 +243,7 @@ public final class UriExpansion {
      *
      * @param value the term to potentially define
      * @throws JsonLdError if an error occurs during term creation
-     * @throws IOException 
+     * @throws IOException
      */
     private void initLocalContext(final String value) throws JsonLdError, IOException {
         /*
@@ -258,8 +262,12 @@ public final class UriExpansion {
                 final String entryValueString = adapter.stringValue(entryValue);
 
                 if (!defined.containsKey(entryValueString) || Boolean.FALSE.equals(defined.get(entryValueString))) {
-                    //FIXME 
-                    activeContext.newTerm(localContext, JakartaAdapter.instance(), defined).create(value);
+                    // FIXME
+                    activeContext.newTerm(
+                            localContext,
+                            JakartaAdapter.instance(),
+                            defined,
+                            loader).create(value);
                 }
             }
         }
@@ -274,16 +282,16 @@ public final class UriExpansion {
      * @param result the original value, to be returned if expansion fails
      * @return the expanded IRI or the original result
      * @throws JsonLdError if an error occurs during term creation
-     * @throws IOException 
+     * @throws IOException
      */
     private String initPropertyContext(final String prefix, final String suffix, final String result) throws JsonLdError, IOException {
 
         // 6.3. Create term definition for the prefix if it exists in the local context.
-        if (localContext != null 
-                && adapter.keys(localContext).contains(prefix) 
+        if (localContext != null
+                && adapter.keys(localContext).contains(prefix)
                 && !Boolean.TRUE.equals(defined.get(prefix))) {
 
-            activeContext.newTerm(localContext, adapter, defined).create(prefix);
+            activeContext.newTerm(localContext, adapter, defined, loader).create(prefix);
         }
 
         // 6.4. If the prefix is a term in the active context, append the suffix to its
@@ -308,7 +316,6 @@ public final class UriExpansion {
         if (vocab && activeContext.getVocabularyMapping() != null) {
             return activeContext.getVocabularyMapping().concat(result);
 
-      
         } else if (documentRelative) {
             // 8. If documentRelative is true, resolve the result against the base URI.
             return UriResolver.resolve(activeContext.getBaseUri(), result);

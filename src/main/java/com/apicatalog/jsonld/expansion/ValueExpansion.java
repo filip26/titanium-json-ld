@@ -79,7 +79,7 @@ public final class ValueExpansion {
             }
 
             if (idValue != null) {
-                return Map.of(Keywords.ID, context.uriExpansion()
+                return Map.of(Keywords.ID, context.uriExpansion(runtime.getDocumentLoader())
                         .documentRelative(true)
                         .vocab(false)
                         .expand(idValue));
@@ -88,7 +88,7 @@ public final class ValueExpansion {
 
         case Keywords.VOCAB:
             if (adapter.isString(value)) {
-                return Map.of(Keywords.ID, context.uriExpansion()
+                return Map.of(Keywords.ID, context.uriExpansion(runtime.getDocumentLoader())
                         .documentRelative(true)
                         .vocab(true)
                         .expand(adapter.stringValue(value)));

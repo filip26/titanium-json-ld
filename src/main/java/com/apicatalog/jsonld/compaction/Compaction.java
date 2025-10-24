@@ -162,7 +162,7 @@ public final class Compaction {
             var localContext = activePropertyDefinition.get().getLocalContext();
 
             activeContext = activeContext
-                    .newContext()
+                    .newContext(runtime.getDocumentLoader())
                     .overrideProtected(true)
                     .build(localContext.node(),
                             localContext.adapter(),
@@ -223,7 +223,7 @@ public final class Compaction {
                     final var localContext = termDefinition.getLocalContext();
 
                     activeContext = activeContext
-                            .newContext()
+                            .newContext(runtime.getDocumentLoader())
                             .propagate(false)
                             .build(
                                     localContext.node(),
@@ -422,7 +422,7 @@ public final class Compaction {
 
                     // 12.7.2.1.
                     if (!Keywords.NEST.equals(nestTerm) && !Keywords.NEST.equals(activeContext
-                            .uriExpansion()
+                            .uriExpansion(runtime.getDocumentLoader())
                             .vocab(true)
                             .expand(nestTerm))) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
@@ -466,7 +466,11 @@ public final class Compaction {
                     final String nestTerm = nestProperty.get();
 
                     // 12.8.2.1.
-                    if (!Keywords.NEST.equals(nestTerm) && !Keywords.NEST.equals(activeContext.uriExpansion().vocab(true).expand(nestTerm))) {
+                    if (!Keywords.NEST.equals(nestTerm) 
+                            && !Keywords.NEST.equals(activeContext
+                                    .uriExpansion(runtime.getDocumentLoader())
+                                    .vocab(true)
+                                    .expand(nestTerm))) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
 
@@ -728,7 +732,7 @@ public final class Compaction {
 
                         // 12.8.9.6.1.
                         containerKey = UriCompaction.withVocab(activeContext,
-                                activeContext.uriExpansion().expand(indexKey));
+                                activeContext.uriExpansion(runtime.getDocumentLoader()).expand(indexKey));
 
                         // 12.8.9.6.2.
                         if (compactedItem instanceof Map<?, ?> compactedItemMap
@@ -871,8 +875,8 @@ public final class Compaction {
                         if (compactedItem instanceof Map map && map.size() == 1) {
 //                        if (JsonUtils.isObject(compactedItem) && compactedItem.asJsonObject().size() == 1) {
 
-                            final String expandedKey = activeContext
-                                    .uriExpansion()
+                            final var expandedKey = activeContext
+                                    .uriExpansion(runtime.getDocumentLoader())
                                     .vocab(true)
                                     .expand((String) map.keySet().iterator().next());
 

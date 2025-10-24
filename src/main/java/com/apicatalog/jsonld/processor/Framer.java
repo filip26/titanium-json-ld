@@ -122,13 +122,13 @@ public final class Framer {
                 : options.getBase();
 
         final var runtime = ProcessingRuntime.of(options);
-        
+
         // 10-11.
         final var activeContext = new ActiveContext(
                 inputDocument.getDocumentUrl(),
                 inputDocument.getDocumentUrl(),
-                runtime)
-                .newContext()
+                options.getProcessingMode())
+                .newContext(options.getDocumentLoader())
                 .build(frame.context() != null
                         ? frame.context()
                         // TODO
@@ -174,7 +174,7 @@ public final class Framer {
         Stream<?> result = null;
 
         // 17. - remove blank @id
-        if (!activeContext.runtime().isV10()) {
+        if (!activeContext.isV10()) {
 
             final var values = resultMap.values();
 
@@ -220,15 +220,9 @@ public final class Framer {
         // 20.
         compactedOutput = replaceNull(compactedOutput);
 
-        final boolean omitGraph;
-
-        if (options.isOmitGraph() == null) {
-
-            omitGraph = activeContext.runtime().isV11();
-
-        } else {
-            omitGraph = options.isOmitGraph();
-        }
+        final var omitGraph = options.isOmitGraph() == null
+                ? activeContext.isV11()
+                : options.isOmitGraph();
 
         // 21.
         if (!omitGraph && !((Map<?, ?>) compactedOutput).containsKey(graphKey)) {

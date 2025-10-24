@@ -96,7 +96,7 @@ final class ObjectExpansion1314 {
 
             // 13.2.
             var expandedProperty = activeContext
-                    .uriExpansion()
+                    .uriExpansion(params.runtime().getDocumentLoader())
                     .documentRelative(false)
                     .vocab(true)
                     .expand(key);
@@ -173,7 +173,7 @@ final class ObjectExpansion1314 {
                     } else if (adapter.isString(value)) {
                         // 13.4.3.2
                         expandedValue = activeContext
-                                .uriExpansion()
+                                .uriExpansion(params.runtime().getDocumentLoader())
                                 .documentRelative(true)
                                 .vocab(false)
                                 .expand(adapter.stringValue(value));
@@ -201,7 +201,7 @@ final class ObjectExpansion1314 {
 
 //                        final String expandedStringValue = activeContext
                         expandedValue = activeContext
-                                .uriExpansion()
+                                .uriExpansion(params.runtime().getDocumentLoader())
                                 .documentRelative(true)
                                 .vocab(false)
                                 .expand(adapter.asString(value));
@@ -240,7 +240,7 @@ final class ObjectExpansion1314 {
                         for (var item : adapter.asIterable(value)) {
 
                             String expandedStringValue = activeContext
-                                    .uriExpansion()
+                                    .uriExpansion(params.runtime().getDocumentLoader())
                                     .documentRelative(true)
                                     .vocab(false)
                                     .expand(adapter.stringValue(item));
@@ -294,7 +294,7 @@ final class ObjectExpansion1314 {
                             expandedValue = Map.of(
                                     Keywords.DEFAULT,
                                     typeContext
-                                            .uriExpansion()
+                                            .uriExpansion(params.runtime().getDocumentLoader())
                                             .vocab(true)
                                             .documentRelative(true)
                                             // deepcode ignore checkIsPresent~Optional: false positive
@@ -308,7 +308,7 @@ final class ObjectExpansion1314 {
                         if (adapter.isString(value)) {
 
                             expandedValue = typeContext
-                                    .uriExpansion()
+                                    .uriExpansion(params.runtime().getDocumentLoader())
                                     .vocab(true)
                                     .documentRelative(true)
                                     .expand(adapter.stringValue(value));
@@ -332,7 +332,7 @@ final class ObjectExpansion1314 {
                                 final var item = items.next();
 
                                 final String expandedStringValue = typeContext
-                                        .uriExpansion()
+                                        .uriExpansion(params.runtime().getDocumentLoader())
                                         .vocab(true)
                                         .documentRelative(true)
                                         .expand(item);
@@ -387,7 +387,7 @@ final class ObjectExpansion1314 {
                 else if (Keywords.INCLUDED.equals(expandedProperty)) {
 
                     // 13.4.6.1
-                    if (params.runtime().isV10()) {
+                    if (activeContext.isV10()) {
                         continue;
                     }
 
@@ -444,7 +444,7 @@ final class ObjectExpansion1314 {
                     // 13.4.7.1
                     if (Keywords.JSON.equals(inputType)) {
 
-                        if (params.runtime().isV10()) {
+                        if (activeContext.isV10()) {
                             throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
                         }
 
@@ -521,7 +521,7 @@ final class ObjectExpansion1314 {
                 if (Keywords.DIRECTION.equals(expandedProperty)) {
 
                     // 13.4.9.1.
-                    if (params.runtime().isV10()) {
+                    if (activeContext.isV10()) {
                         continue;
                     }
 
@@ -798,7 +798,7 @@ final class ObjectExpansion1314 {
                         if (!Keywords.NONE.equals(langCode)) {
 
                             final String expandedLangCode = activeContext
-                                    .uriExpansion()
+                                    .uriExpansion(params.runtime().getDocumentLoader())
                                     .vocab(true)
                                     .expand((String) langCode);
 
@@ -867,7 +867,7 @@ final class ObjectExpansion1314 {
                             && indexTermDefinition.getLocalContext() != null) {
 
                         mapContext = mapContext
-                                .newContext()
+                                .newContext(params.runtime().getDocumentLoader())
                                 .build(
                                         indexTermDefinition.getLocalContext().node(),
                                         indexTermDefinition.getLocalContext().adapter(),
@@ -881,7 +881,7 @@ final class ObjectExpansion1314 {
 
                     // 13.8.3.4.
                     final var expandedIndex = activeContext
-                            .uriExpansion()
+                            .uriExpansion(params.runtime().getDocumentLoader())
                             .vocab(true)
                             .expand(index);
 
@@ -912,14 +912,16 @@ final class ObjectExpansion1314 {
                                 && !Keywords.NONE.equals(expandedIndex)) {
 
                             // 13.8.3.7.2.1.
-                            var reExpandedIndex = activeContext.expandValue(
+                            var reExpandedIndex = ValueExpansion.expand(
+                                    activeContext,
                                     indexKey,
                                     index,
-                                    NativeAdapter.instance());
+                                    NativeAdapter.instance(),
+                                    params.runtime());
 
                             // 13.8.3.7.2.2.
                             var expandedIndexKey = activeContext
-                                    .uriExpansion()
+                                    .uriExpansion(params.runtime().getDocumentLoader())
                                     .vocab(true)
                                     .expand(indexKey);
 
@@ -963,7 +965,7 @@ final class ObjectExpansion1314 {
 
                             // 13.8.3.7.4.
                             indexMap.put(Keywords.ID, activeContext
-                                    .uriExpansion()
+                                    .uriExpansion(params.runtime().getDocumentLoader())
                                     .vocab(false)
                                     .documentRelative(true)
                                     .expand(index));
@@ -1122,7 +1124,7 @@ final class ObjectExpansion1314 {
         // step 8
         if (propertyContext != null) {
             activeContext = activeContext
-                    .newContext()
+                    .newContext(params.runtime().getDocumentLoader())
                     .overrideProtected(true)
                     .build(
                             propertyContext.node(),
@@ -1160,7 +1162,7 @@ final class ObjectExpansion1314 {
 
                 for (final var nestedValueKey : adapter.keys(nestValue)) {
                     if (Keywords.VALUE.equals(
-                            typeContext.uriExpansion()
+                            typeContext.uriExpansion(params.runtime().getDocumentLoader())
                                     .vocab(true)
                                     .expand(adapter.asString(nestedValueKey)))) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);

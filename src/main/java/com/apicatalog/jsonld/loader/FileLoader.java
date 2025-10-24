@@ -31,7 +31,7 @@ import com.apicatalog.jsonld.api.StringUtils;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.http.media.MediaType;
 
-public final class FileLoader implements JsonLdLoader {
+public final class FileLoader implements DocumentLoader {
 
     private static final Logger LOGGER = Logger.getLogger(FileLoader.class.getName());
 

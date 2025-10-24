@@ -36,7 +36,7 @@ import com.apicatalog.jsonld.http.link.Link;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.uri.UriResolver;
 
-class DefaultHttpLoader implements JsonLdLoader {
+class DefaultHttpLoader implements DocumentLoader {
 
     private static final Logger LOGGER = Logger.getLogger(DefaultHttpLoader.class.getName());
 

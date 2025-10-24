@@ -6,7 +6,7 @@ import com.apicatalog.jsonld.JsonLdOptions.ProcessingPolicy;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.cache.Cache;
-import com.apicatalog.jsonld.loader.JsonLdLoader;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 
 import jakarta.json.JsonValue;
@@ -54,15 +54,15 @@ public class ProcessingRuntime {
         return options.getUriValidation();
     }
 
-    public boolean isV10() {
-        return options.getProcessingMode() != null && options.getProcessingMode().equals(JsonLdVersion.V1_0);
-    }
+//    public boolean isV10() {
+//        return options.getProcessingMode() != null && options.getProcessingMode().equals(JsonLdVersion.V1_0);
+//    }
+//
+//    public boolean isV11() {
+//        return options.getProcessingMode() != null && options.getProcessingMode().equals(JsonLdVersion.V1_1);
+//    }
 
-    public boolean isV11() {
-        return options.getProcessingMode() != null && options.getProcessingMode().equals(JsonLdVersion.V1_1);
-    }
-
-    public JsonLdLoader getDocumentLoader() {
+    public DocumentLoader getDocumentLoader() {
         return options.getDocumentLoader();
     }
 
@@ -86,6 +86,7 @@ public class ProcessingRuntime {
         return options.getUndefinedTermsPolicy();
     }
     
+    @Deprecated
     public JsonLdVersion version() {
         return options.getProcessingMode();
     }

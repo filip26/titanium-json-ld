@@ -21,7 +21,7 @@ import java.util.Objects;
 
 /**
  * The {@link LoaderOptions} is used to pass various options to the
- * {@link JsonLdLoader}.
+ * {@link DocumentLoader}.
  *
  * @see <a href=
  *      "https://www.w3.org/TR/json-ld11-api/#loaddocumentoptions">LoadDocumentOptions

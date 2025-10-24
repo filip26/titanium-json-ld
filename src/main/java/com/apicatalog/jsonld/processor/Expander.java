@@ -74,17 +74,15 @@ public final class Expander {
                 input.getContextUrl(),
                 input.getDocumentUrl(),
                 options,
-                false
-                );
+                false);
     }
-    
+
     public static final Collection<?> expand(
             final PolyNode node,
             final URI contextUrl,
             final URI documentUrl,
-            final JsonLdOptions options, 
+            final JsonLdOptions options,
             boolean frameExpansion) throws JsonLdError, IOException {
-
 
         // 5. Initialize a new empty active context. The base IRI and
         // original base URL of the active context is set to the documentUrl
@@ -108,11 +106,12 @@ public final class Expander {
         }
 
         final var runtime = ProcessingRuntime.of(options);
-        
+
         var contextBuilder = new Context.Builder(
                 baseUri,
                 baseUrl,
-                runtime);
+                options.getProcessingMode())
+                .loader(options.getDocumentLoader());
 
         // 6. If the expandContext option in options is set, update the active context
         // using the Context Processing algorithm, passing the expandContext as
