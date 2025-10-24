@@ -103,7 +103,7 @@ public final class Compactor {
                 .setOrdered(false)
                 .setExtractAllScripts(false);
 
-        final var expandedInput = Expander.expand(input, expansionOptions, false);
+        final var expandedInput = Expander.expand(input, expansionOptions);
 
 //new Visitor().root(expandedInput, NativeAdapter.instance()).traverse(
 //        

@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.framing;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -35,14 +36,23 @@ import com.apicatalog.tree.io.PolyNode;
 
 public final class Frame {
 
-    public static final Frame EMPTY = new Frame(Map.of(), null);
+    public static final Frame EMPTY = new Frame(Map.of(), null, null, null);
 
     private final Map<String, ?> frameNode;
     private final PolyNode context;
 
-    private Frame(final Map<String, ?> frameNode, final PolyNode context) {
+    private final URI contextUrl;
+    private final URI documentUrl;
+
+    private Frame(
+            final Map<String, ?> frameNode,
+            final PolyNode context,
+            final URI contextUrl,
+            final URI documentUrl) {
         this.frameNode = frameNode;
         this.context = context;
+        this.contextUrl = contextUrl;
+        this.documentUrl = documentUrl;
     }
 
     public static final Frame of(final PolyDocument document, final JsonLdOptions options) throws JsonLdError, IOException {
@@ -89,19 +99,25 @@ public final class Frame {
         }
 
         var expanded = Expander.expand(
-                document,
+                document.getContent(),
+                document.getContextUrl(),
+                document.getDocumentUrl(),
                 new JsonLdOptions(options).setOrdered(false),
                 true);
 
-        return of(expanded, context);
+        return of(expanded, context, document.getContextUrl(), document.getDocumentUrl());
     }
 
     static final Frame of(final Object expanded) throws JsonLdError {
         // TODO
-        return of(expanded, null);
+        return of(expanded, null, null, null);
     }
 
-    static final Frame of(final Object expanded, final PolyNode context) throws JsonLdError {
+    static final Frame of(
+            final Object expanded,
+            final PolyNode context,
+            final URI contextUrl,
+            final URI documentUrl) throws JsonLdError {
 
         final Map<String, ?> frameMap;
 
@@ -135,7 +151,7 @@ public final class Frame {
             throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @type value is not valid [@type = " + frameMap.get(Keywords.TYPE) + "].");
         }
 
-        return new Frame(frameMap, context);
+        return new Frame(frameMap, context, contextUrl, documentUrl);
     }
 
     public Embed getEmbed(final Embed defaultValue) throws JsonLdError {
@@ -346,17 +362,25 @@ public final class Frame {
 
     public boolean isDefault(String graphKey) {
 //        if (context != null) {
-        //FIXME frameObject
-            for (final String key :  frameNode.keySet()) {
-                if (key.equals(graphKey)) {
-                    return true;
-                }
+        // FIXME frameObject
+        for (final String key : frameNode.keySet()) {
+            if (key.equals(graphKey)) {
+                return true;
             }
+        }
 //        }
         return false;
     }
 
     public boolean hasContext() {
         return context != null;
+    }
+
+    public URI getContextUrl() {
+        return contextUrl;
+    }
+
+    public URI getDocumentUrl() {
+        return documentUrl;
     }
 }

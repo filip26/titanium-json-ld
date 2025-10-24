@@ -23,6 +23,7 @@ import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.document.PolyDocument;
 import com.apicatalog.jsonld.flattening.Flattening;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.LoaderOptions;
@@ -98,11 +99,11 @@ public final class Flattener {
         // 4.
         final var expansionOptions = new JsonLdOptions(options).setOrdered(false);
 
-        var expandedInput = Expander.expand(input, expansionOptions, false);
+        var expandedInput = Expander.expand(input, expansionOptions);
 
         // 6.
         var flattenedOutput = Flattening.flatten(expandedInput, options.isOrdered());
-System.out.println("FLOUT < " + flattenedOutput);
+//System.out.println("FLOUT < " + flattenedOutput);
         // 6.1.
         if (context != null) {
 
@@ -110,6 +111,8 @@ System.out.println("FLOUT < " + flattenedOutput);
             var y = new JakartaMaterializer().node(flattenedOutput, NativeAdapter.instance());
 
             var document = JsonDocument.of(MediaType.JSON_LD, (JsonStructure)y);
+            
+//            var document = PolyDocument.of(new PolyNode(flattenedOutput, NativeAdapter.instance()));
 
             JsonLdOptions compactionOptions = new JsonLdOptions(options);
 

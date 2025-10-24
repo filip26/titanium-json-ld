@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Collection;
 import java.util.Collections;
 
 import com.apicatalog.jsonld.JsonLd;
@@ -171,13 +170,13 @@ public class JsonLdTestRunnerJunit {
         if (result instanceof JsonStructure json) {
             return validateJsonLd(testCase, options, json, JakartaAdapter.instance());
         }
-System.out.println(" >>>> " + result);
+//System.out.println(" >>>> " + result);
 //        if (result instanceof Collection<?> collection) {
-            return validateJsonLd(
-                    testCase,
-                    options,
-                    result,
-                    NativeAdapter.instance());
+        return validateJsonLd(
+                testCase,
+                options,
+                result,
+                NativeAdapter.instance());
 //        }
 
 //        fail("Unexpected result type [" + result.getClass() + "]");

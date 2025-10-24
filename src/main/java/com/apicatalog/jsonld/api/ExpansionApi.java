@@ -132,7 +132,7 @@ public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<Ex
      */
     public Collection<?> get() throws JsonLdError, IOException {
         if (document != null) {
-            return Expander.expand(document, options, false);
+            return Expander.expand(document, options);
 
         } else if (documentUri != null) {
             return Expander.expand(documentUri, options);

@@ -25,7 +25,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,26 +35,17 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.PolyDocument;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.framing.Frame;
 import com.apicatalog.jsonld.framing.Framing;
 import com.apicatalog.jsonld.framing.FramingState;
-import com.apicatalog.jsonld.json.JsonProvider;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.tree.io.PolyNode;
-import com.apicatalog.tree.io.jakarta.JakartaAdapter;
-import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 import com.apicatalog.tree.io.java.NativeAdapter;
-
-import jakarta.json.JsonObject;
-import jakarta.json.JsonStructure;
-import jakarta.json.JsonValue;
 
 /**
  *
@@ -103,25 +93,20 @@ public final class Framer {
         return frame(getDocument(input, options), getDocument(frame, options), options);
     }
 
-    public static final Map<String, ?> frame(final Document inputDocument, final Document frameDocument, final JsonLdOptions options) throws JsonLdError, IOException {
-
-        if (frameDocument == null) {
+    public static final Map<String, ?> frame(final Document input, final Document frame, final JsonLdOptions options) throws JsonLdError, IOException {
+        if (frame == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame or Frame.Document is null.");
         }
 
-        // 4.
-        final JsonLdOptions expansionOptions = new JsonLdOptions(options);
+        return frame(input, Frame.of((PolyDocument) frame, options), options);
+    }
 
-        expansionOptions.setOrdered(false);
+    public static final Map<String, ?> frame(final Document<PolyNode> inputDocument, final Frame frame, final JsonLdOptions options) throws JsonLdError, IOException {
 
-        var expandedInput = Expander.expand(inputDocument, expansionOptions, false);
-//        JsonArray expandedInput = JsonValue.EMPTY_JSON_ARRAY;
-//        var a = new JakartaMaterializer().node(expandedInput, NativeAdapter.instance());
-        // 7.
+        final var expandedInput = Expander.expand(
+                inputDocument,
+                new JsonLdOptions(options).setOrdered(false));
 
-        var expandedFrame = Expander.expand(frameDocument, expansionOptions, true);
-//        System.out.println(">>> INPUT " + expandedInput);
-//        System.out.println(">>> FRAME " + expandedFrame);
 //      new Visitor().root(expandedFrame, NativeAdapter.instance()).traverse(
 //      
 //      v -> {
@@ -130,11 +115,9 @@ public final class Framer {
 //      
 //      );
 
-        final var frame = Frame.of((PolyDocument) frameDocument, options);
-
         // 9.
-        final var contextBase = (frameDocument.getContextUrl() != null)
-                ? frameDocument.getDocumentUrl()
+        final var contextBase = (frame.getContextUrl() != null)
+                ? frame.getDocumentUrl()
                 : options.getBase();
 
         // 10-11.
@@ -146,12 +129,10 @@ public final class Framer {
                 .build(frame.context() != null
                         ? frame.context()
                         // TODO
-                        : new PolyNode(Map.of(), NativeAdapter.instance()), contextBase);
+                        : new PolyNode(Map.of(), NativeAdapter.instance()),
+                        contextBase);
 
         final var graphKey = activeContext.compactUriWithVocab(Keywords.GRAPH);
-//                .uriCompaction()
-//                .vocab(true)
-//                .compact(Keywords.GRAPH);
 
         // 14.
         final var state = new FramingState();
@@ -177,7 +158,6 @@ public final class Framer {
 
         // 15.
         final var resultMap = new LinkedHashMap<String, Object>();
-//        final var resultMap = MapBuilder.create();
 
         // 16.
         Framing.with(state,
@@ -214,10 +194,6 @@ public final class Framer {
                 .map(Framer::removePreserve)
                 .toList();
 
-//        var xy = new JakartaMaterializer().node(filtered, NativeAdapter.instance());
-//        System.out.println(expandedInput);
-//        System.out.println(resultMap.values());
-//        System.out.println(xy);
         // 19.
         // FIXME output
         var compactedOutput = Compaction
@@ -225,7 +201,7 @@ public final class Framer {
                 .compactArrays(options.isCompactArrays())
                 .ordered(options.isOrdered())
                 .compact(filtered);
-        System.out.println("1 >>> " + compactedOutput);
+//        System.out.println("1 >>> " + compactedOutput);
         // 19.1.
         if (compactedOutput instanceof Collection<?> col) {
 
@@ -252,7 +228,7 @@ public final class Framer {
         }
 
         // 21.
-        if (!omitGraph && !((Map<String, ?>) compactedOutput).containsKey(graphKey)) {
+        if (!omitGraph && !((Map<?, ?>) compactedOutput).containsKey(graphKey)) {
             if (((Map<?, ?>) compactedOutput).isEmpty()) {
 
                 compactedOutput = Map.of(
@@ -423,11 +399,11 @@ public final class Framer {
 
         final Map<String, Map<String, Map<String, Set<String>>>> index = new HashMap<>();
 
-        for (final String graphName : graphMap.graphs()) {
+        for (final var graphName : graphMap.graphs()) {
 
-            final Map<String, Map<String, Set<String>>> graphIndex = index.computeIfAbsent(graphName, k -> new HashMap<>());
+            final var graphIndex = index.computeIfAbsent(graphName, k -> new HashMap<>());
 
-            for (final String subject : graphMap.subjects(graphName)) {
+            for (final var subject : graphMap.subjects(graphName)) {
 
                 // TODO
                 final var node = (Map<String, ?>) graphMap
@@ -446,7 +422,7 @@ public final class Framer {
                         continue;
                     }
 
-                    final Object value = propEntry.getValue();
+                    final var value = propEntry.getValue();
 
                     if (value instanceof Collection<?> items) {
 

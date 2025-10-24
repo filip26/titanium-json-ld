@@ -58,17 +58,33 @@ public final class Expander {
         if (remoteDocument != null && remoteDocument.getContent() instanceof PolyNode) {
             @SuppressWarnings("unchecked")
             final Document<PolyNode> remote = remoteDocument;
-            return expand(remote, options, false);
+            return expand(remote, options);
         }
 
         throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
     }
 
-    public static final Collection<?> expand(Document<PolyNode> input, final JsonLdOptions options, boolean frameExpansion) throws JsonLdError, IOException {
-
+    public static final Collection<?> expand(Document<PolyNode> input, final JsonLdOptions options) throws JsonLdError, IOException {
         if (input == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "RemoteDocument is null.");
         }
+
+        return expand(
+                input.getContent(),
+                input.getContextUrl(),
+                input.getDocumentUrl(),
+                options,
+                false
+                );
+    }
+    
+    public static final Collection<?> expand(
+            final PolyNode node,
+            final URI contextUrl,
+            final URI documentUrl,
+            final JsonLdOptions options, 
+            boolean frameExpansion) throws JsonLdError, IOException {
+
 
         // 5. Initialize a new empty active context. The base IRI and
         // original base URL of the active context is set to the documentUrl
@@ -78,8 +94,8 @@ public final class Expander {
         URI baseUri = null;
         URI baseUrl = null;
 
-        if (input.getDocumentUrl() != null) {
-            baseUrl = input.getDocumentUrl();
+        if (documentUrl != null) {
+            baseUrl = documentUrl;
             baseUri = baseUrl;
         }
 
@@ -111,21 +127,18 @@ public final class Expander {
         }
 
         // 7.
-        if (input.getContextUrl() != null) {
-            
+        if (contextUrl != null) {
             contextBuilder.update(
-                    input.getContextUrl().toString(),
+                    contextUrl.toString(),
                     NativeAdapter.instance(),
-                    input.getContextUrl());
+                    contextUrl);
         }
-
-        var content = input.getContent();
 
         // 8.
         var expanded = Expansion.expand(
                 contextBuilder.build(),
-                content.node(),
-                content.adapter(),
+                node.node(),
+                node.adapter(),
                 null,
                 new Params(frameExpansion, options.isOrdered(), false, baseUrl));
 
