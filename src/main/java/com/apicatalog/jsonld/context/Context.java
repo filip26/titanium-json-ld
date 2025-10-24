@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.lang.Direction;
@@ -41,6 +42,20 @@ import jakarta.json.JsonValue;
  */
 public interface Context {
 
+    default boolean isV11() {
+        return version() == null
+                ? true
+                : JsonLdVersion.V1_1 == version();
+    }
+
+    default boolean isV10() {
+        return version() == null
+                ? false
+                : JsonLdVersion.V1_0 == version();
+    }
+
+    JsonLdVersion version();
+
     Optional<TermDefinition> findTerm(final String value);
 
     Direction getDefaultBaseDirection();
@@ -53,7 +68,7 @@ public interface Context {
 
     Context getPreviousContext();
 
-    ProcessingRuntime runtime();
+//    ProcessingRuntime runtime();
 
     TermDefinitionBuilder newTerm(Object localContext, NodeAdapter adapter, Map<String, Boolean> defined);
 
@@ -61,19 +76,27 @@ public interface Context {
 
     // ---
 
+    @Deprecated
     UriExpansion uriExpansion();
 
+    @Deprecated
     Map<String, ?> expandValue(String property, Object value, NodeAdapter adapter) throws JsonLdError, IOException;
 
     /* compaction */
 //    UriCompaction uriCompaction();
 
+    @Deprecated
     String compactUri(String variable) throws JsonLdError;
 
+    @Deprecated
     String compactUriWithVocab(String variable) throws JsonLdError;
 
+    @Deprecated
     Object compactValue(Map<String, ?> value, String property) throws JsonLdError;
 
+    @Deprecated
+    ProcessingRuntime runtime();
+    
     InverseContext getInverseContext();
 
     void createInverseContext();
@@ -88,7 +111,7 @@ public interface Context {
 
     Map<String, TermDefinition> getTermsMapping();
 
-    public static PolyNode unwrapContext(PolyNode context) {
+    public static PolyNode unwrap(PolyNode context) {
 
         Object node = context.node();
         var adapter = context.adapter();
@@ -119,7 +142,7 @@ public interface Context {
                 : context;
     }
 
-    public static Context compactionContext(
+    public static Context compaction(
             PolyNode context,
             URI baseUrl,
             JsonLdOptions options) throws JsonLdError, IOException {
@@ -138,7 +161,7 @@ public interface Context {
         // 7.
         final var activeContext = new ActiveContext(ProcessingRuntime.of(options))
                 .newContext()
-                .build(unwrapContext(context), contextBase);
+                .build(unwrap(context), contextBase);
 
         // 8.
         if (activeContext.getBaseUri() == null) {
@@ -152,27 +175,6 @@ public interface Context {
         }
 
         return activeContext;
-    }
-
-    static class Bx {
-
-//        void Bx of() {
-//            
-//            
-//            PolyNode context = null;
-//
-//            if (adapter.keys(node).contains(Keywords.CONTEXT)) {
-//                var contextNode = adapter.property(Keywords.CONTEXT, node);
-//                if ((adapter.isString(contextNode)
-//                        || adapter.isCollection(contextNode)
-//                        || adapter.isMap(contextNode))
-//                        && !adapter.isEmptyCollection(contextNode)
-//                        && !adapter.isEmptyMap(contextNode)) {
-//                    context = new PolyNode(contextNode, adapter);
-//                }
-//            }
-//        }
-
     }
 
     static class Builder {
@@ -254,6 +256,27 @@ public interface Context {
         }
 
     }
+
+//
+//    static class Bx {
+//
+////        void Bx of() {
+////            
+////            
+////            PolyNode context = null;
+////
+////            if (adapter.keys(node).contains(Keywords.CONTEXT)) {
+////                var contextNode = adapter.property(Keywords.CONTEXT, node);
+////                if ((adapter.isString(contextNode)
+////                        || adapter.isCollection(contextNode)
+////                        || adapter.isMap(contextNode))
+////                        && !adapter.isEmptyCollection(contextNode)
+////                        && !adapter.isEmptyMap(contextNode)) {
+////                    context = new PolyNode(contextNode, adapter);
+////                }
+////            }
+////        }
+//    }
 
 //    PolyNode asNode();
 

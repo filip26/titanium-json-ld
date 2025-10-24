@@ -377,7 +377,7 @@ public final class TermDefinitionBuilder {
                     defined.put(term, Boolean.TRUE);
 
                     // 14.2.4.2
-                    final String expandedTerm = activeContext
+                    final var expandedTerm = activeContext
                             .uriExpansion()
                             .localContext(localContext, adapter)
                             .defined(defined)
@@ -402,7 +402,7 @@ public final class TermDefinitionBuilder {
             }
 
             // 15.
-        } else if (term.indexOf(':', 1)  != -1) {
+        } else if (term.indexOf(':', 1) != -1) {
 
             final CompactUri compactUri = CompactUri.of(term);
 
@@ -420,7 +420,7 @@ public final class TermDefinitionBuilder {
                         activeContext
                                 .findTerm(compactUri.prefix())
                                 .map(TermDefinition::getUriMapping)
-                                .map(u -> u.concat(compactUri.suffix()))
+                                .map(u -> u + compactUri.suffix())
                                 .orElse(null));
 
                 // 15.3.

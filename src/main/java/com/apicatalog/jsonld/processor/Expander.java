@@ -107,10 +107,12 @@ public final class Expander {
             baseUri = options.getBase();
         }
 
+        final var runtime = ProcessingRuntime.of(options);
+        
         var contextBuilder = new Context.Builder(
                 baseUri,
                 baseUrl,
-                ProcessingRuntime.of(options));
+                runtime);
 
         // 6. If the expandContext option in options is set, update the active context
         // using the Context Processing algorithm, passing the expandContext as
@@ -140,7 +142,7 @@ public final class Expander {
                 node.node(),
                 node.adapter(),
                 null,
-                new Params(frameExpansion, options.isOrdered(), false, baseUrl));
+                new Params(frameExpansion, options.isOrdered(), false, baseUrl, runtime));
 
         // 8.1
         if (expanded instanceof Map map

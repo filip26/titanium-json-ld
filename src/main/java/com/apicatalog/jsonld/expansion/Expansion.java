@@ -28,6 +28,7 @@ import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.processor.ProcessingRuntime;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.PolyNode;
@@ -45,7 +46,8 @@ public final class Expansion {
             boolean frameExpansion,
             boolean ordered,
             boolean fromMap,
-            URI baseUrl) {
+            URI baseUrl,
+            ProcessingRuntime runtime) {
 
         /**
          * The {@code frameExpansion} flag.
@@ -126,7 +128,8 @@ public final class Expansion {
                         params.frameExpansion && !Keywords.DEFAULT.equals(activeProperty),
                         params.ordered,
                         params.fromMap,
-                        params.baseUrl))
+                        params.baseUrl,
+                        params.runtime))
                 .expand();
     }
 
@@ -235,7 +238,7 @@ public final class Expansion {
         // 5.2.
         for (final var item : nodeAdapter.asIterable(node)) {
 
-            context.runtime().tick();
+            params.runtime().tick();
 
             // 5.2.1
             var expanded = expand(context, item, nodeAdapter, property, params);

@@ -92,7 +92,7 @@ final class ObjectExpansion1314 {
                 continue;
             }
 
-            activeContext.runtime().tick();
+            params.runtime().tick();
 
             // 13.2.
             var expandedProperty = activeContext
@@ -103,7 +103,7 @@ final class ObjectExpansion1314 {
 
             // if the term is undefined and
             if (expandedProperty == null || (!expandedProperty.contains(":") && !Keywords.contains(expandedProperty))) {
-                switch (activeContext.runtime().getUndefinedTermPolicy()) {
+                switch (params.runtime().getUndefinedTermPolicy()) {
                 case Fail:
                     throw new JsonLdError(JsonLdErrorCode.UNDEFINED_TERM,
                             "An undefined term has been found [" + key + "]. Change policy to Ignore or Warn or define the term in a context");
@@ -160,7 +160,7 @@ final class ObjectExpansion1314 {
 
                     if (!params.frameExpansion()
                             && !adapter.isString(value)
-                            && (!activeContext.runtime().isNumericId()
+                            && (!params.runtime().isNumericId()
                                     || !adapter.isNumber(value))
                             || params.frameExpansion()
                                     && !adapter.isString(value)
@@ -387,7 +387,7 @@ final class ObjectExpansion1314 {
                 else if (Keywords.INCLUDED.equals(expandedProperty)) {
 
                     // 13.4.6.1
-                    if (activeContext.runtime().isV10()) {
+                    if (params.runtime().isV10()) {
                         continue;
                     }
 
@@ -444,7 +444,7 @@ final class ObjectExpansion1314 {
                     // 13.4.7.1
                     if (Keywords.JSON.equals(inputType)) {
 
-                        if (activeContext.runtime().isV10()) {
+                        if (params.runtime().isV10()) {
                             throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
                         }
 
@@ -521,7 +521,7 @@ final class ObjectExpansion1314 {
                 if (Keywords.DIRECTION.equals(expandedProperty)) {
 
                     // 13.4.9.1.
-                    if (activeContext.runtime().isV10()) {
+                    if (params.runtime().isV10()) {
                         continue;
                     }
 
@@ -685,7 +685,7 @@ final class ObjectExpansion1314 {
                 // Extension: JSON-LD-STAR (Experimental)
                 if (Keywords.ANNOTATION.equals(expandedProperty)) {
 
-                    if (!activeContext.runtime().isRdfStar()) {
+                    if (!params.runtime().isRdfStar()) {
                         continue;
                     }
 
@@ -891,7 +891,7 @@ final class ObjectExpansion1314 {
                             indexValue,
                             adapter,
                             key,
-                            new Params(params.frameExpansion(), params.ordered(), true, params.baseUrl()));
+                            new Params(params.frameExpansion(), params.ordered(), true, params.baseUrl(), params.runtime()));
 
                     // 13.8.3.7.
                     for (final var item : indexValues) {
@@ -1111,7 +1111,7 @@ final class ObjectExpansion1314 {
 
         var activeContext = context;
 
-        activeContext.runtime().tick();
+        params.runtime().tick();
 
         // step 3
         var propertyContext = activeContext

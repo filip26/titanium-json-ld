@@ -120,11 +120,13 @@ public final class Framer {
                 ? frame.getDocumentUrl()
                 : options.getBase();
 
+        final var runtime = ProcessingRuntime.of(options);
+        
         // 10-11.
         final var activeContext = new ActiveContext(
                 inputDocument.getDocumentUrl(),
                 inputDocument.getDocumentUrl(),
-                ProcessingRuntime.of(options))
+                runtime)
                 .newContext()
                 .build(frame.context() != null
                         ? frame.context()
@@ -197,7 +199,7 @@ public final class Framer {
         // 19.
         // FIXME output
         var compactedOutput = Compaction
-                .with(activeContext)
+                .with(activeContext, runtime)
                 .compactArrays(options.isCompactArrays())
                 .ordered(options.isOrdered())
                 .compact(filtered);

@@ -144,12 +144,12 @@ public final class ActiveContextBuilder {
                 // context, and, if propagate is false, previous context in result to the
                 // previous value of result.
                 result = propagate
-                        ? new ActiveContext(activeContext.getBaseUrl(),
-                                activeContext.getBaseUrl(),
+                        ? new ActiveContext(activeContext.baseUrl,
+                                activeContext.baseUrl,
                                 activeContext.runtime())
 
-                        : new ActiveContext(activeContext.getBaseUrl(),
-                                activeContext.getBaseUrl(),
+                        : new ActiveContext(activeContext.baseUrl,
+                                activeContext.baseUrl,
                                 result.getPreviousContext(),
                                 activeContext.runtime());
 

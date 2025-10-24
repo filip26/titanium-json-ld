@@ -23,8 +23,10 @@ import java.util.Optional;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.processor.ProcessingRuntime;
 import com.apicatalog.tree.io.NodeAdapter;
 
 /**
@@ -47,6 +49,7 @@ public final class ValueExpansion {
      *                 term definition to apply.
      * @param value    The JSON value to expand.
      * @param adapter
+     * @param runtime
      * @return A {@code Map} representing the expanded value object, typically
      *         containing keys like {@code @id}, {@code @value}, {@code @type},
      *         {@code @language}, or {@code @direction}.
@@ -55,7 +58,7 @@ public final class ValueExpansion {
      * @see <a href="https://www.w3.org/TR/json-ld11-api/#value-expansion">Value
      *      Expansion Algorithm</a>
      */
-    public static Map<String, ?> expand(final Context context, final String property, final Object value, final NodeAdapter adapter) throws JsonLdError, IOException {
+    public static Map<String, ?> expand(final Context context, final String property, final Object value, final NodeAdapter adapter, final ProcessingRuntime runtime) throws JsonLdError, IOException {
 
         final Optional<TermDefinition> definition = context.findTerm(property);
 
@@ -71,7 +74,7 @@ public final class ValueExpansion {
                 idValue = adapter.stringValue(value);
 
                 // custom extension allowing to process numeric ids
-            } else if (context.runtime().isNumericId() && adapter.isNumber(value)) {
+            } else if (runtime.isNumericId() && adapter.isNumber(value)) {
                 idValue = adapter.asString(value);
             }
 

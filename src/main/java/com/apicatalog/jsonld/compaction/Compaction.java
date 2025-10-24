@@ -32,6 +32,7 @@ import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.processor.ProcessingRuntime;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
 /**
@@ -51,21 +52,23 @@ public final class Compaction {
 
     // required
     private final Context context;
+    private final ProcessingRuntime runtime;
 
     // optional
     private boolean compactArrays;
     private boolean ordered;
 
-    private Compaction(final Context context) {
+    private Compaction(final Context context, final ProcessingRuntime runtime) {
         this.context = context;
+        this.runtime = runtime;
 
         // default values
         this.compactArrays = false;
         this.ordered = false;
     }
 
-    public static Compaction with(final Context activeContext) {
-        return new Compaction(activeContext);
+    public static Compaction with(final Context activeContext, final ProcessingRuntime runtime) {
+        return new Compaction(activeContext, runtime);
     }
 
     public Compaction compactArrays(final boolean compactArrays) {
@@ -108,7 +111,7 @@ public final class Compaction {
 
             // 3.2.1.
             final var compactedItem = Compaction
-                    .with(context)
+                    .with(context, runtime)
                     .compactArrays(compactArrays)
                     .ordered(ordered)
                     .compact(activeProperty, item);
@@ -168,7 +171,7 @@ public final class Compaction {
 
         // 7.
         if ((object.containsKey(Keywords.VALUE) || object.containsKey(Keywords.ID))
-                && (!activeContext.runtime().isRdfStar() || !object.containsKey(Keywords.ANNOTATION))) {
+                && (!runtime.isRdfStar() || !object.containsKey(Keywords.ANNOTATION))) {
 
             final var result = activeContext.compactValue(object, activeProperty);
 
@@ -187,7 +190,7 @@ public final class Compaction {
                 && activePropertyDefinition.filter(d -> d.hasContainerMapping(Keywords.LIST)).isPresent()) {
 
             return Compaction
-                    .with(activeContext)
+                    .with(activeContext, runtime)
                     .compactArrays(compactArrays)
                     .ordered(ordered)
                     .compact(activeProperty, object.get(Keywords.LIST));
@@ -316,7 +319,7 @@ public final class Compaction {
 
                 // 12.2.4.
                 final boolean asArray = !compactArrays
-                        || (activeContext.runtime().isV11()
+                        || (activeContext.isV11()
                                 && activeContext.findTerm(alias).filter(t -> t.hasContainerMapping(Keywords.SET)).isPresent());
 
                 // 12.2.5.
@@ -331,7 +334,7 @@ public final class Compaction {
 
                 // 12.3.1.
                 final var compactedMap = (Map<String, ?>) Compaction
-                        .with(activeContext)
+                        .with(activeContext, runtime)
                         .compactArrays(compactArrays)
                         .ordered(ordered)
                         .compact(Keywords.REVERSE, expandedValue);
@@ -392,7 +395,7 @@ public final class Compaction {
 
                 // 12.4.1.
                 final var compactedValue = Compaction
-                        .with(activeContext)
+                        .with(activeContext, runtime)
                         .compactArrays(compactArrays)
                         .ordered(ordered)
                         .compact(activeProperty, expandedValue);
@@ -428,11 +431,10 @@ public final class Compaction {
             if (expandedValue instanceof Collection<?> array && array.isEmpty()) {
 
                 // 12.7.1.
-                final var itemActiveProperty = UriCompaction.compact(
+                final var itemActiveProperty = UriCompaction.compactWithVocab(
                         activeContext,
                         expandedProperty,
                         expandedValue,
-                        true,
                         insideReverse);
 
                 // 12.7.2.
@@ -471,11 +473,10 @@ public final class Compaction {
             for (final var expandedItem : (Collection<?>) expandedValue) {
 
                 // 12.8.1.
-                final var itemActiveProperty = UriCompaction.compact(
+                final var itemActiveProperty = UriCompaction.compactWithVocab(
                         activeContext,
                         expandedProperty,
                         expandedItem,
-                        true,
                         insideReverse);
 
                 Map<String, Object> nestResult = null;
@@ -531,7 +532,7 @@ public final class Compaction {
                 }
 
                 Object compactedItem = Compaction
-                        .with(activeContext)
+                        .with(activeContext, runtime)
                         .compactArrays(compactArrays)
                         .ordered(ordered)
                         .compact(itemActiveProperty, expandedItemValue);
@@ -764,7 +765,8 @@ public final class Compaction {
                     } else if (container.contains(Keywords.INDEX) && !Keywords.INDEX.equals(indexKey)) {
 
                         // 12.8.9.6.1.
-                        containerKey = activeContext.compactUriWithVocab(activeContext.uriExpansion().expand(indexKey));
+                        containerKey = activeContext.compactUriWithVocab(
+                                activeContext.uriExpansion().expand(indexKey));
 //                                .uriCompaction()
 //                                .vocab(true)
 //                                .compact(activeContext.uriExpansion().expand(indexKey));
@@ -917,7 +919,7 @@ public final class Compaction {
 
                             if (Keywords.ID.equals(expandedKey)) {
                                 compactedItem = Compaction
-                                        .with(activeContext)
+                                        .with(activeContext, runtime)
                                         .compact(itemActiveProperty,
                                                 Map.of(
                                                         Keywords.ID,

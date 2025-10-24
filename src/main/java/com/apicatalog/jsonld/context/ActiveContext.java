@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.compaction.UriCompaction;
 import com.apicatalog.jsonld.compaction.ValueCompaction;
 import com.apicatalog.jsonld.expansion.UriExpansion;
@@ -46,7 +47,7 @@ public final class ActiveContext implements Context {
     private URI baseUri;
 
     // the original base URL
-    private URI baseUrl;
+    protected URI baseUrl;
 
     private InverseContext inverseContext;
 
@@ -63,7 +64,7 @@ public final class ActiveContext implements Context {
     private Direction defaultBaseDirection;
 
     private final ProcessingRuntime runtime;
-    
+
     public ActiveContext(final ProcessingRuntime runtime) {
         this(null, null, null, runtime);
     }
@@ -120,10 +121,12 @@ public final class ActiveContext implements Context {
         return defaultBaseDirection;
     }
 
+    @Override
     public String getDefaultLanguage() {
         return defaultLanguage;
     }
 
+    @Override
     public URI getBaseUri() {
         return baseUri;
     }
@@ -136,9 +139,9 @@ public final class ActiveContext implements Context {
         return previousContext;
     }
 
-    public URI getBaseUrl() {
-        return baseUrl;
-    }
+//    public URI getBaseUrl() {
+//        return baseUrl;
+//    }
 
     public void setBaseUri(final URI baseUri) {
         this.baseUri = baseUri;
@@ -165,7 +168,7 @@ public final class ActiveContext implements Context {
     }
 
     public Map<String, ?> expandValue(final String activeProperty, final Object value, final NodeAdapter adapter) throws JsonLdError, IOException {
-        return ValueExpansion.expand(this, activeProperty, value, adapter);
+        return ValueExpansion.expand(this, activeProperty, value, adapter, runtime);
     }
 
     public Object compactValue(final Map<String, ?> value, final String activeProperty) throws JsonLdError {
@@ -174,7 +177,7 @@ public final class ActiveContext implements Context {
 
     @Override
     public String compactUri(String variable) throws JsonLdError {
-        return UriCompaction.compact(this, variable, null, false, false);
+        return UriCompaction.compact(this, variable);
     }
 
     @Override
@@ -231,5 +234,10 @@ public final class ActiveContext implements Context {
 
     public ProcessingRuntime runtime() {
         return runtime;
+    }
+
+    @Override
+    public JsonLdVersion version() {
+        return runtime.version();
     }
 }

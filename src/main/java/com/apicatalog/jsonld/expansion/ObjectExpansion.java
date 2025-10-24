@@ -76,7 +76,7 @@ public final class ObjectExpansion {
                 activeContext,
                 element,
                 adapter,
-                params.fromMap());
+                params);
 
         // 8. init property context
         if (propertyContext != null) {
@@ -142,7 +142,7 @@ public final class ObjectExpansion {
             final Context context,
             final Object element,
             final NodeAdapter adapter,
-            final boolean fromMap) throws JsonLdError, IOException {
+            final Params params) throws JsonLdError, IOException {
 
         // 7. If active context has a previous context, the active context is not
         // propagated.
@@ -153,7 +153,7 @@ public final class ObjectExpansion {
         // set active context to previous context from active context,
         // as the scope of a term-scoped context does not apply when processing new node
         // objects.
-        if (context.getPreviousContext() != null && !fromMap) {
+        if (context.getPreviousContext() != null && !params.fromMap()) {
 
             boolean revert = true;
 
@@ -161,7 +161,7 @@ public final class ObjectExpansion {
 
             while (it.hasNext()) {
 
-                context.runtime().tick();
+                params.runtime().tick();
 
                 var key = adapter.stringValue(it.next());
 
@@ -203,7 +203,7 @@ public final class ObjectExpansion {
 
             final var key = adapter.asString(typeKeys.next());
 
-            activeContext.runtime().tick();
+            params.runtime().tick();
 
             var expandedKey = activeContext
                     .uriExpansion()
@@ -225,7 +225,7 @@ public final class ObjectExpansion {
 
                 while (terms.hasNext()) {
 
-                    activeContext.runtime().tick();
+                    params.runtime().tick();
 
                     final var term = terms.next();
 

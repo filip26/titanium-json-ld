@@ -132,11 +132,11 @@ public final class Compactor {
 //            }
 //        }
 
-        final var ctx = Context.unwrapContext(context.getContent());
+        final var ctx = Context.unwrap(context.getContent());
 
         return compact(
                 input,
-                Context.compactionContext(ctx, input.getDocumentUrl(), options),
+                Context.compaction(ctx, input.getDocumentUrl(), options),
                 ctx,
                 options);
 
@@ -166,13 +166,14 @@ public final class Compactor {
 
         // 9.
         var compactedOutput = Compaction
-                .with(context)
+                .with(context, context.runtime())
                 .compactArrays(options.isCompactArrays())
                 .ordered(options.isOrdered())
                 .compact(expandedInput);
 
         // 9.1.
         if (compactedOutput instanceof Collection<?> col) {
+
             if (col.isEmpty()) {
                 return Map.of();
 
@@ -196,10 +197,11 @@ public final class Compactor {
         }
 
         if (compactedOutput instanceof Map map) {
+
             // 9.3.
             if (!PolyNode.isEmptyOrNull(contextNode)) {
-                var compacted = new LinkedHashMap<String, Object>(map.size() + 1);
-                compacted.put(Keywords.CONTEXT, NativeMaterializer3.node(contextNode));
+                final var compacted = new LinkedHashMap<String, Object>(map.size() + 1);
+                compacted.put(Keywords.CONTEXT, contextNode);
                 compacted.putAll(map);
                 return compacted;
 

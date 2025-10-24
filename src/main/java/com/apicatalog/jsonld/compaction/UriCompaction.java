@@ -40,41 +40,32 @@ import com.apicatalog.tree.io.java.NativeAdapter;
  */
 public final class UriCompaction {
 
-////    // required
-////    private final Context activeContext;
-////
-////    // optional
-////    private Object value;
-////    private boolean vocab;
-////    private boolean reverse;
-//
-//    private UriCompaction(final Context activeContext) {
-//        this.activeContext = activeContext;
-//
-//        // default values
-//        this.value = null;
-//        this.vocab = false;
-//        this.reverse = false;
-//    }
-//
-//    public static UriCompaction with(final Context activeContext) {
-//        return new UriCompaction(activeContext);
-//    }
+    public static String compact(
+            final Context context,
+            final String variable) throws JsonLdError {
+        return compact(context, variable, null, false, false);
+    }
 
     public static String compactWithVocab(
-            final Context activeContext,
-            final String variable
-            ) throws JsonLdError {
-        return compact(activeContext, variable, null, true, false);
+            final Context context,
+            final String variable) throws JsonLdError {
+        return compact(context, variable, null, true, false);
     }
-    
-    public static String compact(
-            final Context activeContext,
+
+    public static String compactWithVocab(
+            final Context context,
+            final String variable,
+            final Object value,
+            final boolean reverse) throws JsonLdError {
+        return compact(context, variable, value, true, reverse);
+    }
+
+    private static String compact(
+            final Context context,
             final String variable,
             final Object value,
             final boolean vocab,
-            final boolean reverse
-            ) throws JsonLdError {
+            final boolean reverse) throws JsonLdError {
 
         // 1.
         if (variable == null) {
@@ -82,31 +73,31 @@ public final class UriCompaction {
         }
 
         // 2.
-        if (activeContext.getInverseContext() == null) {
-            activeContext.createInverseContext();
+        if (context.getInverseContext() == null) {
+            context.createInverseContext();
         }
 
         // 3.
-        var inverseContext = activeContext.getInverseContext();
+        var inverseContext = context.getInverseContext();
 
         var node = value;
-        
+
         // 4.
         if (vocab && inverseContext.contains(variable)) {
 
             // 4.1.
             String defaultLanguage = Keywords.NONE;
 
-            if (activeContext.getDefaultLanguage() != null) {
+            if (context.getDefaultLanguage() != null) {
 
-                defaultLanguage = activeContext.getDefaultLanguage().toLowerCase();
+                defaultLanguage = context.getDefaultLanguage().toLowerCase();
 
-                if (activeContext.getDefaultBaseDirection() != null) {
-                    defaultLanguage += "_".concat(activeContext.getDefaultBaseDirection().name().toLowerCase());
+                if (context.getDefaultBaseDirection() != null) {
+                    defaultLanguage += "_".concat(context.getDefaultBaseDirection().name().toLowerCase());
                 }
 
-            } else if (activeContext.getDefaultBaseDirection() != null) {
-                defaultLanguage = "_".concat(activeContext.getDefaultBaseDirection().name().toLowerCase());
+            } else if (context.getDefaultBaseDirection() != null) {
+                defaultLanguage = "_".concat(context.getDefaultBaseDirection().name().toLowerCase());
             }
 
             // 4.2.
@@ -288,7 +279,7 @@ public final class UriCompaction {
             } else {
 
                 // 4.9.1.
-                if (node instanceof Map<?, ?> map && JsonLdAdapter.isValueNode(map)) {
+                if (node instanceof Map map && JsonLdAdapter.isValueNode(map)) {
 
                     // 4.9.1.1.
                     if (map.containsKey(Keywords.DIRECTION)
@@ -312,7 +303,6 @@ public final class UriCompaction {
                             && !map.containsKey(Keywords.INDEX)) {
 
                         if (map.get(Keywords.LANGUAGE) instanceof String langString) {
-
                             typeLanguageValue = langString.toLowerCase();
                         }
 
@@ -324,7 +314,6 @@ public final class UriCompaction {
 
                         typeLanguage = Keywords.TYPE;
                         typeLanguageValue = (String) map.get(Keywords.TYPE);
-
                     }
 
                     // 4.9.2.
@@ -347,19 +336,17 @@ public final class UriCompaction {
             containers.add(Keywords.NONE);
 
             // 4.11.
-            if (!activeContext.runtime().isV10()
-                    && (!(node instanceof Map)
-                            || !((Map<?, ?>) node).containsKey(Keywords.INDEX))) {
-//                    )
-//                    && (JsonUtils.isNotObject(value)
-//                            || !value.asJsonObject().containsKey(Keywords.INDEX))) {
+            if (!context.isV10()
+                    && (!(node instanceof Map map)
+                            || !map.containsKey(Keywords.INDEX))) {
+
                 containers.add(Keywords.INDEX);
                 containers.add(Keywords.INDEX.concat(Keywords.SET));
             }
 
             // 4.12.
-            if (!activeContext.runtime().isV10()
-                    && node instanceof Map<?, ?> map
+            if (!context.isV10()
+                    && node instanceof Map map
                     && map.size() == 1
                     && map.containsKey(Keywords.VALUE)) {
 
@@ -384,7 +371,6 @@ public final class UriCompaction {
             if ((Keywords.REVERSE.equals(typeLanguageValue) || Keywords.ID.equals(typeLanguageValue))
                     && node instanceof Map valueMap
                     && valueMap.containsKey(Keywords.ID)) {
-//                    && JsonUtils.containsKey(value, Keywords.ID)) {
 
                 final var idValue = valueMap.get(Keywords.ID);
 
@@ -397,9 +383,9 @@ public final class UriCompaction {
                 if (idValue instanceof String idString) {
 
                     // 4.16.1.
-                    final var compactedIdValue = activeContext.compactUriWithVocab(idString);
+                    final var compactedIdValue = context.compactUriWithVocab(idString);
 
-                    final var compactedIdValueTermDefinition = activeContext.findTerm(compactedIdValue);
+                    final var compactedIdValueTermDefinition = context.findTerm(compactedIdValue);
 
                     if (compactedIdValueTermDefinition
                             .map(TermDefinition::getUriMapping)
@@ -450,7 +436,7 @@ public final class UriCompaction {
             }
 
             // 4.20.
-            final Optional<String> term = activeContext.selectTerm(preferredValues, variable, containers, typeLanguage);
+            final Optional<String> term = context.selectTerm(preferredValues, variable, containers, typeLanguage);
 
             // 4.21.
             if (term.isPresent()) {
@@ -459,13 +445,13 @@ public final class UriCompaction {
         }
 
         // 5., 5.1.
-        if ((vocab && activeContext.getVocabularyMapping() != null)
-                && (variable.startsWith(activeContext.getVocabularyMapping())
-                        && variable.length() > activeContext.getVocabularyMapping().length())) {
+        if ((vocab && context.getVocabularyMapping() != null)
+                && (variable.startsWith(context.getVocabularyMapping())
+                        && variable.length() > context.getVocabularyMapping().length())) {
 
-            String suffix = variable.substring(activeContext.getVocabularyMapping().length());
+            String suffix = variable.substring(context.getVocabularyMapping().length());
 
-            if (!activeContext.containsTerm(suffix)) {
+            if (!context.containsTerm(suffix)) {
                 return suffix;
             }
         }
@@ -474,7 +460,7 @@ public final class UriCompaction {
         String compactUri = null;
 
         // 7.
-        for (final var termEntry : activeContext.getTermsMapping().entrySet()) {
+        for (final var termEntry : context.getTermsMapping().entrySet()) {
 
             final var termDefinition = termEntry.getValue();
 
@@ -493,8 +479,8 @@ public final class UriCompaction {
 
             // 7.3.
             if (((compactUri == null || (compactUriCandidate.compareTo(compactUri) < 0))
-                    && !activeContext.containsTerm(compactUriCandidate))
-                    || (activeContext
+                    && !context.containsTerm(compactUriCandidate))
+                    || (context
                             .findTerm(compactUriCandidate)
                             .map(TermDefinition::getUriMapping)
                             .filter(u -> u.equals(variable))
@@ -517,7 +503,7 @@ public final class UriCompaction {
                     && uri.isAbsolute()
                     && uri.getScheme() != null
                     && uri.getAuthority() == null
-                    && activeContext.findTerm(uri.getScheme()).filter(TermDefinition::isPrefix).isPresent()) {
+                    && context.findTerm(uri.getScheme()).filter(TermDefinition::isPrefix).isPresent()) {
                 throw new JsonLdError(JsonLdErrorCode.IRI_CONFUSED_WITH_PREFIX);
             }
         } catch (IllegalArgumentException e) {
@@ -525,10 +511,10 @@ public final class UriCompaction {
 
         // 10.
         if (!vocab
-                && activeContext.getBaseUri() != null
+                && context.getBaseUri() != null
                 && !BlankNode.hasPrefix(variable)) {
 
-            final var relativeUri = UriRelativizer.relativize(activeContext.getBaseUri(), variable);
+            final var relativeUri = UriRelativizer.relativize(context.getBaseUri(), variable);
 
             return Keywords.matchForm(relativeUri) ? "./".concat(relativeUri) : relativeUri;
         }
@@ -536,20 +522,4 @@ public final class UriCompaction {
         // 11.
         return variable;
     }
-//
-//    public UriCompaction value(Object value) {
-//        this.value = value;
-//        return this;
-//    }
-//
-//    public UriCompaction vocab(boolean vocab) {
-//        this.vocab = vocab;
-//        return this;
-//    }
-//
-//    public UriCompaction reverse(boolean reverse) {
-//        this.reverse = reverse;
-//        return this;
-//    }
-
 }

@@ -85,4 +85,8 @@ public class ProcessingRuntime {
     public ProcessingPolicy getUndefinedTermPolicy() {
         return options.getUndefinedTermsPolicy();
     }
+    
+    public JsonLdVersion version() {
+        return options.getProcessingMode();
+    }
 }
