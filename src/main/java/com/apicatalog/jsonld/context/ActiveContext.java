@@ -163,8 +163,8 @@ public final class ActiveContext implements Context {
     }
 
     @Override
-    public ActiveContextBuilder newContext(DocumentLoader loader) {
-        return ActiveContextBuilder.with(this, loader);
+    public ContextBuilder newContext(DocumentLoader loader) {
+        return ContextBuilder.with(this, loader);
     }
 
     @Override

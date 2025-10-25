@@ -124,7 +124,7 @@ public final class Framer {
         final var runtime = ProcessingRuntime.of(options);
 
         // 10-11.
-        final var activeContext = new ActiveContext(
+        final var context = new ActiveContext(
                 inputDocument.getDocumentUrl(),
                 inputDocument.getDocumentUrl(),
                 options.getProcessingMode())
@@ -135,7 +135,7 @@ public final class Framer {
                         : new PolyNode(Map.of(), NativeAdapter.instance()),
                         contextBase);
 
-        final var graphKey = UriCompaction.withVocab(activeContext, Keywords.GRAPH);
+        final var graphKey = UriCompaction.withVocab(context, Keywords.GRAPH);
 
         // 14.
         final var state = new FramingState();
@@ -174,7 +174,7 @@ public final class Framer {
         Stream<?> result = null;
 
         // 17. - remove blank @id
-        if (!activeContext.isV10()) {
+        if (!context.isV10()) {
 
             final var values = resultMap.values();
 
@@ -200,7 +200,7 @@ public final class Framer {
         // 19.
         // FIXME output
         var compactedOutput = Compaction
-                .with(activeContext, runtime)
+                .with(context, runtime)
                 .compactArrays(options.isCompactArrays())
                 .ordered(options.isOrdered())
                 .compact(filtered);
@@ -221,7 +221,7 @@ public final class Framer {
         compactedOutput = replaceNull(compactedOutput);
 
         final var omitGraph = options.isOmitGraph() == null
-                ? activeContext.isV11()
+                ? context.isV11()
                 : options.isOmitGraph();
 
         // 21.

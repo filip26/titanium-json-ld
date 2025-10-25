@@ -54,11 +54,11 @@ import jakarta.json.JsonObject;
  *      Processing Algorithm</a>
  *
  */
-public final class ActiveContextBuilder {
+public final class ContextBuilder {
 
     private static final int MAX_REMOTE_CONTEXTS = 256;
 
-    private static final Logger LOGGER = Logger.getLogger(ActiveContextBuilder.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ContextBuilder.class.getName());
 
     // mandatory
     private final ActiveContext activeContext;
@@ -76,7 +76,7 @@ public final class ActiveContextBuilder {
     // runtime
     private ActiveContext result;
 
-    private ActiveContextBuilder(final ActiveContext activeContext, DocumentLoader loader) {
+    private ContextBuilder(final ActiveContext activeContext, DocumentLoader loader) {
 
         this.activeContext = activeContext;
         this.loader = loader;
@@ -91,8 +91,8 @@ public final class ActiveContextBuilder {
         this.result = null;
     }
 
-    public static final ActiveContextBuilder with(final ActiveContext activeContext, final DocumentLoader loader) {
-        return new ActiveContextBuilder(activeContext, loader);
+    public static final ContextBuilder with(final ActiveContext activeContext, final DocumentLoader loader) {
+        return new ContextBuilder(activeContext, loader);
     }
 
 
@@ -474,22 +474,22 @@ public final class ActiveContextBuilder {
         return result;
     }
 
-    public ActiveContextBuilder remoteContexts(Collection<String> value) {
+    public ContextBuilder remoteContexts(Collection<String> value) {
         this.remoteContexts = value;
         return this;
     }
 
-    public ActiveContextBuilder overrideProtected(boolean value) {
+    public ContextBuilder overrideProtected(boolean value) {
         this.overrideProtected = value;
         return this;
     }
 
-    public ActiveContextBuilder propagate(boolean value) {
+    public ContextBuilder propagate(boolean value) {
         this.propagate = value;
         return this;
     }
 
-    public ActiveContextBuilder validateScopedContext(boolean value) {
+    public ContextBuilder validateScopedContext(boolean value) {
         this.validateScopedContext = value;
         return this;
     }

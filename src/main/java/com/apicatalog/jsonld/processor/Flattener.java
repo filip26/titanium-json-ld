@@ -108,9 +108,9 @@ public final class Flattener {
         if (context != null) {
 
             //FIXME
-            var y = new JakartaMaterializer().node(flattenedOutput, NativeAdapter.instance());
-
-            var document = JsonDocument.of(MediaType.JSON_LD, (JsonStructure)y);
+//            var y = new JakartaMaterializer().node(flattenedOutput, NativeAdapter.instance());
+//
+//            var document = JsonDocument.of(MediaType.JSON_LD, (JsonStructure)y);
             
 //            var document = PolyDocument.of(new PolyNode(flattenedOutput, NativeAdapter.instance()));
 
@@ -123,7 +123,11 @@ public final class Flattener {
                 compactionOptions.setBase(input.getDocumentUrl());
             }
 
-            flattenedOutput = Compactor.compact(document, context, compactionOptions);
+            flattenedOutput = Compactor.compact(
+                    flattenedOutput,
+                    input.getDocumentUrl(),
+                    context, 
+                    compactionOptions);
         }
 
         return flattenedOutput;

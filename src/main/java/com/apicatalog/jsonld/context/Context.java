@@ -73,7 +73,7 @@ public interface Context {
     TermDefinitionBuilder newTerm(Object localContext, NodeAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader);
 
     @Deprecated
-    ActiveContextBuilder newContext(DocumentLoader loader);
+    ContextBuilder newContext(DocumentLoader loader);
 
     // ---
 

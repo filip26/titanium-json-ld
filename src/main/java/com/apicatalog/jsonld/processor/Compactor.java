@@ -148,6 +148,37 @@ public final class Compactor {
                 new JsonLdOptions(options)
                         .setOrdered(false)
                         .setExtractAllScripts(false));
+        
+        return compact(expandedInput, context, contextNode, options);
+    }
+
+    static final Map<String, ?> compact(
+            final Object expanded,
+            final URI baseUrl,
+            final Document<PolyNode> context,
+            final JsonLdOptions options) throws JsonLdError, IOException {
+        
+        final var ctx = Context.unwrap(context.getContent());
+
+        return compact(
+                expanded,
+                Context.compaction(ctx, baseUrl, options),
+                ctx,
+                options);
+
+    }
+    
+    static final Map<String, ?> compact(
+            final Object expanded,
+            final Context context,
+            final PolyNode contextNode,
+            final JsonLdOptions options) throws JsonLdError, IOException {
+
+//        final var expandedInput = Expander.expand(
+//                input,
+//                new JsonLdOptions(options)
+//                        .setOrdered(false)
+//                        .setExtractAllScripts(false));
 
 //new Visitor().root(expandedInput, NativeAdapter.instance()).traverse(
 //        
@@ -166,7 +197,7 @@ public final class Compactor {
                 .with(context, runtime)
                 .compactArrays(options.isCompactArrays())
                 .ordered(options.isOrdered())
-                .compact(expandedInput);
+                .compact(expanded);
 
         // 9.1.
         if (compactedOutput instanceof Collection<?> col) {
