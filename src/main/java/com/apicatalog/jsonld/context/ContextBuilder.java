@@ -91,21 +91,27 @@ public final class ContextBuilder {
         this.result = null;
     }
 
-    public static final ContextBuilder with(final ActiveContext activeContext, final DocumentLoader loader) {
+    public static final ContextBuilder with(
+            final ActiveContext activeContext,
+            final DocumentLoader loader) {
         return new ContextBuilder(activeContext, loader);
     }
-
 
     public ActiveContext build(PolyNode context, URI baseUrl) throws JsonLdError, IOException {
         return build(context.node(), context.adapter(), baseUrl);
     }
-    
-    public ActiveContext build(final Object localContext, final NodeAdapter adapter, final URI baseUrl) throws JsonLdError, IOException {
+
+    public ActiveContext build(
+            final Object localContext,
+            final NodeAdapter adapter,
+            final URI baseUrl) throws JsonLdError, IOException {
 
         // 1. Initialize result to the result of cloning active context, with inverse
         // context set to null.
         result = new ActiveContext(activeContext);
         result.setInverseContext(null);
+        //TODO better
+        result.setSource(new PolyNode(localContext, adapter));
 //        result.setVersion(activeContext.runtime().version());
 
         // 2. If local context is an object containing the member @propagate,
@@ -148,12 +154,12 @@ public final class ContextBuilder {
                 // context, and, if propagate is false, previous context in result to the
                 // previous value of result.
                 result = propagate
-                        ? new ActiveContext(activeContext.baseUrl,
-                                activeContext.baseUrl,
+                        ? new ActiveContext(activeContext.getBaseUrl(),
+                                activeContext.getBaseUrl(),
                                 activeContext.version())
 
-                        : new ActiveContext(activeContext.baseUrl,
-                                activeContext.baseUrl,
+                        : new ActiveContext(activeContext.getBaseUrl(),
+                                activeContext.getBaseUrl(),
                                 result.getPreviousContext(),
                                 activeContext.version());
 
@@ -198,7 +204,7 @@ public final class ContextBuilder {
                 if (activeContext.isV10()) {
                     throw new JsonLdError(JsonLdErrorCode.PROCESSING_MODE_CONFLICT);
                 }
-                
+
                 result.setVersion(JsonLdVersion.V1_1);
             }
 
@@ -286,7 +292,7 @@ public final class ContextBuilder {
                 } else {
 
                 }
-                
+
 //               FIXME importedContextObject.forEach(contextDefinition::put);
                 contextDefinition = JsonUtils.merge((JsonObject) importedContext, (JsonObject) contextDefinition);
             }
@@ -494,12 +500,12 @@ public final class ContextBuilder {
         return this;
     }
 
-    private void fetch(final String context, final URI baseUrl) throws JsonLdError, IOException {
+    private void fetch(final String uri, final URI baseUrl) throws JsonLdError, IOException {
 
         URI contextUri;
 
         try {
-            contextUri = URI.create(context);
+            contextUri = URI.create(uri);
 
             // 5.2.1
             if (baseUrl != null) {
@@ -511,7 +517,7 @@ public final class ContextBuilder {
             }
 
         } catch (IllegalArgumentException e) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Context URI is not URI [" + context + "].");
+            throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Context URI is not URI [" + uri + "].");
         }
 
         final String contextKey = contextUri.toString();
@@ -528,7 +534,7 @@ public final class ContextBuilder {
 
         remoteContexts.add(contextKey);
 
-        //FIXME
+        // FIXME
 //        if (activeContext.runtime().getContextCache() != null
 //                && activeContext.runtime().getContextCache().containsKey(contextKey) && !validateScopedContext) {
 //
@@ -549,7 +555,7 @@ public final class ContextBuilder {
 
         Document<?> remoteImport = null;
 
-        //FIXME
+        // FIXME
 //        if (activeContext.runtime().getDocumentCache() != null
 //                && activeContext.runtime().getDocumentCache().containsKey(contextKey)) {
 //
@@ -585,22 +591,19 @@ public final class ContextBuilder {
             throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");
         }
 
-        var importedContext = importedNode.node();
-        var importAdapter = importedNode.adapter();
-
         // 5.2.5.2.
-        if (!importAdapter.isMap(importedContext)) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is not valid Json Object: " + importedContext + ".");
+        if (!importedNode.isMap()) {
+            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is not valid JSON-LD context: " + importedNode.node() + ".");
         }
 
         // 5.2.5.3.
-        importedContext = importAdapter.property(Keywords.CONTEXT, importedContext);
+        final var importedContext = importedNode.property(Keywords.CONTEXT);
 
         if (importedContext == null) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context does not contain @context key and is not valid JSON-LD context.");
         }
 
-        var newContext = new NativeMaterializer3().node(importedContext, importAdapter);
+        var newContext = new NativeMaterializer3().node(importedContext, importedNode.adapter());
 
         // remove @base from a remote context
         if (newContext instanceof Map map && map.containsKey(Keywords.BASE)) {
@@ -610,7 +613,7 @@ public final class ContextBuilder {
             newContext = hashMap;
         }
 
-        //FIXME
+        // FIXME
 //        if (activeContext.runtime().getDocumentCache() != null) {
 //            activeContext.runtime().getDocumentCache().put(contextKey, remoteImport);
 //        }

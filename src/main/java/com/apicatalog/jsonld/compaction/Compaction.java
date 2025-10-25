@@ -156,7 +156,8 @@ public final class Compaction {
             activeContext = activeContext.getPreviousContext();
         }
 
-        // 6.
+        // 6. 
+        
         if (activePropertyDefinition.map(TermDefinition::getLocalContext).isPresent()) {
 
             var localContext = activePropertyDefinition.get().getLocalContext();

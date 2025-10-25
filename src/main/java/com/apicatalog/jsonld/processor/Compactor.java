@@ -18,7 +18,6 @@ package com.apicatalog.jsonld.processor;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -31,7 +30,6 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.tree.io.PolyNode;
-import com.apicatalog.tree.io.java.NativeMaterializer3;
 
 /**
  *
@@ -47,19 +45,22 @@ public final class Compactor {
     public static final Map<String, ?> compact(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError, IOException {
 
         if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + context + "].");
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
 
-        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new LoaderOptions());
+        final LoaderOptions loaderOptions = new LoaderOptions();
+        loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
 
-        if (contextDocument == null) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Context[" + context + "] is null.");
+        final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
+
+        if (remoteDocument == null) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Returned document is null [" + input + "].");
         }
 
-        return compact(input, contextDocument, options);
+        return compact(remoteDocument, context, options);
     }
 
-    public static final Map<String, ?> compact(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Map<String, ?> compact(final URI input, final Document<PolyNode> context, final JsonLdOptions options) throws JsonLdError, IOException {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
@@ -79,20 +80,31 @@ public final class Compactor {
 
     public static final Map<String, ?> compact(
             final Document<PolyNode> input,
-            final URI context,
+            final URI contextUri,
             final JsonLdOptions options) throws JsonLdError, IOException {
 
-        if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + context + "].");
+        URI contextBase = input.getDocumentUrl();
+
+        if (contextBase == null) {
+            contextBase = options.getBase();
         }
 
-        final Document contextDocument = options.getDocumentLoader().loadDocument(context, new LoaderOptions());
+        // 6.
+//        final JsonValue contextValue = context.getJsonContent()
+//                .map(ctx -> JsonUtils.flatten(ctx, Keywords.CONTEXT))
+//                .orElse(JsonValue.EMPTY_JSON_OBJECT);
 
-        if (contextDocument == null) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Returned context is null [" + context + "] is null.");
-        }
+        final var expandedInput = Expander.expand(
+                input,
+                new JsonLdOptions(options)
+                        .setOrdered(false)
+                        .setExtractAllScripts(false));
 
-        return compact(input, contextDocument, options);
+        return compact(
+                expandedInput,
+                input.getDocumentUrl(),
+                Context.load(options.getDocumentLoader(), contextUri).getContent(),
+                options);
     }
 
     public static final Map<String, ?> compact(
@@ -127,74 +139,88 @@ public final class Compactor {
 //            }
 //        }
 
-        final var ctx = Context.unwrap(context.getContent());
+//        final var ctx = Context.unwrap(context.getContent());
+//        context(ctx, input.getDocumentUrl(), options)
+
+        final var expandedInput = Expander.expand(input, new JsonLdOptions(options)
+                .setOrdered(false).setExtractAllScripts(false));
 
         return compact(
-                input,
-                Context.compaction(ctx, input.getDocumentUrl(), options),
-                ctx,
+                expandedInput,
+                input.getDocumentUrl(),
+                context.getContent(),
                 options);
 
     }
 
     public static final Map<String, ?> compact(
-            final Document<PolyNode> input,
-            final Context context,
-            final PolyNode contextNode,
-            final JsonLdOptions options) throws JsonLdError, IOException {
-
-        final var expandedInput = Expander.expand(
-                input,
-                new JsonLdOptions(options)
-                        .setOrdered(false)
-                        .setExtractAllScripts(false));
-        
-        return compact(expandedInput, context, contextNode, options);
-    }
-
-    static final Map<String, ?> compact(
             final Object expanded,
             final URI baseUrl,
-            final Document<PolyNode> context,
+            final PolyNode context,
             final JsonLdOptions options) throws JsonLdError, IOException {
-        
-        final var ctx = Context.unwrap(context.getContent());
+
+        URI contextBase = baseUrl;
+
+        if (contextBase == null) {
+            contextBase = options.getBase();
+        }
+
+        final var localContext = Context.unwrap(context);
+
+        // 6.
+//        final JsonValue contextValue = context.getJsonContent()
+//                .map(ctx -> JsonUtils.flatten(ctx, Keywords.CONTEXT))
+//                .orElse(JsonValue.EMPTY_JSON_OBJECT);
+
+        // 7.
+        final var builder = new Context.Builder(options.getProcessingMode())
+                .loader(options.getDocumentLoader())
+                .update(localContext, contextBase);
+
+        // 8.
+        if (builder.baseUri() == null) {
+
+            if (options.getBase() != null) {
+                builder.baseUri(options.getBase());
+
+            } else if (options.isCompactToRelative()) {
+                builder.baseUri(baseUrl);
+            }
+        }
 
         return compact(
                 expanded,
-                Context.compaction(ctx, baseUrl, options),
-                ctx,
+                builder.build(),
                 options);
-
     }
-    
+
     static final Map<String, ?> compact(
             final Object expanded,
             final Context context,
-            final PolyNode contextNode,
             final JsonLdOptions options) throws JsonLdError, IOException {
 
-//        final var expandedInput = Expander.expand(
-//                input,
-//                new JsonLdOptions(options)
-//                        .setOrdered(false)
-//                        .setExtractAllScripts(false));
+        var activeContext = context;
 
-//new Visitor().root(expandedInput, NativeAdapter.instance()).traverse(
-//        
-//        v -> {
-//            System.out.println(v.node() + ", " + v.nodeType() + ", " + v.nodeContext() + ", " + v.node().getClass());
+//        // 8.
+//        if (builder.baseUri() == null) {
+
+//            if (options.getBase() != null) {
+//        activeContext = new Context.Builder(context)
+//                .baseUri(options.getBase())
+//                .build();
+
+//                builder.baseUri(options.getBase());
+//
+//            } else if (options.isCompactToRelative()) {
+//                builder.baseUri(baseUrl);
+//            }
 //        }
-//        
-//        );
-//        var m = new JakartaMaterializer().node(expandedInput, NativeAdapter.instance());
-//System.out.println(m);
-
+//
         final var runtime = new ProcessingRuntime(options);
-        
+
         // 9.
         var compactedOutput = Compaction
-                .with(context, runtime)
+                .with(activeContext, runtime)
                 .compactArrays(options.isCompactArrays())
                 .ordered(options.isOrdered())
                 .compact(expanded);
@@ -205,16 +231,15 @@ public final class Compactor {
             if (col.isEmpty()) {
                 return Map.of();
 
-            } else {
-                // 9.2.
-                if (PolyNode.isEmptyOrNull(contextNode)) {
-                    return Map.of(
-                            UriCompaction.withVocab(context, Keywords.GRAPH),
-                            compactedOutput);
-                }
+            } else if (!PolyNode.isEmptyOrNull(context.source())) {
                 return Map.of(
                         Keywords.CONTEXT,
-                        NativeMaterializer3.node(contextNode),
+                        context.source(),
+                        UriCompaction.withVocab(context, Keywords.GRAPH),
+                        compactedOutput);
+                
+            } else {
+                return Map.of(
                         UriCompaction.withVocab(context, Keywords.GRAPH),
                         compactedOutput);
             }
@@ -225,16 +250,14 @@ public final class Compactor {
         }
 
         if (compactedOutput instanceof Map map) {
+            @SuppressWarnings("unchecked")
+            final var typedMap = (Map<String, ?>) map;
 
-            // 9.3.
-            if (!PolyNode.isEmptyOrNull(contextNode)) {
-                final var compacted = new LinkedHashMap<String, Object>(map.size() + 1);
-                compacted.put(Keywords.CONTEXT, contextNode);
-                compacted.putAll(map);
-                return compacted;
-
+            if (context.source() != null) {
+                return Context.inject(typedMap, context.source());
             }
-            return map;
+
+            return typedMap;
         }
 
         throw new IllegalStateException();

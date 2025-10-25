@@ -64,38 +64,24 @@ public final class Expander {
         throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
     }
 
-    public static final Collection<?> expand(Document<PolyNode> input, final JsonLdOptions options) throws JsonLdError, IOException {
-        if (input == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "RemoteDocument is null.");
-        }
-
-        return expand(
-                input.getContent(),
-                input.getContextUrl(),
-                input.getDocumentUrl(),
-                options,
-                false);
+    public static final Collection<?> expand(
+            final Document<PolyNode> document,
+            final JsonLdOptions options) throws JsonLdError, IOException {
+        return expand(document, false, options);
     }
 
     public static final Collection<?> expand(
-            final PolyNode node,
-            final URI contextUrl,
-            final URI documentUrl,
-            final JsonLdOptions options,
-            boolean frameExpansion) throws JsonLdError, IOException {
+            final Document<PolyNode> document,
+            final boolean frameExpansion,
+            final JsonLdOptions options) throws JsonLdError, IOException {
 
         // 5. Initialize a new empty active context. The base IRI and
         // original base URL of the active context is set to the documentUrl
         // from remote document, if available; otherwise to the base option from
         // options.
         // If set, the base option from options overrides the base IRI.
-        URI baseUri = null;
-        URI baseUrl = null;
-
-        if (documentUrl != null) {
-            baseUrl = documentUrl;
-            baseUri = baseUrl;
-        }
+        URI baseUri = document.getDocumentUrl();
+        URI baseUrl = document.getDocumentUrl();
 
         if (baseUrl == null) {
             baseUrl = options.getBase();
@@ -105,9 +91,7 @@ public final class Expander {
             baseUri = options.getBase();
         }
 
-        final var runtime = ProcessingRuntime.of(options);
-
-        var contextBuilder = new Context.Builder(
+        var builder = new Context.Builder(
                 baseUri,
                 baseUrl,
                 options.getProcessingMode())
@@ -119,25 +103,50 @@ public final class Expander {
         // If expandContext is a map having an @context entry, pass that entry's value
         // instead for local context.
         if (options.getExpandContext() != null) {
-
+//            System.out.println("CXT URL " + options.getExpandContext());
             final var contextValue = options.getExpandContext().getJsonContent();
 
             if (contextValue.isPresent()) {
-                contextBuilder.update(contextValue.get(), JakartaAdapter.instance(), baseUrl);
+                builder.update(contextValue.get(), JakartaAdapter.instance(), baseUrl);
             }
         }
 
         // 7.
-        if (contextUrl != null) {
-            contextBuilder.update(
-                    contextUrl.toString(),
+        if (document.getContextUrl() != null) {
+            builder.update(
+                    document.getContextUrl().toString(),
                     NativeAdapter.instance(),
-                    contextUrl);
+                    document.getContextUrl());
         }
+
+        return expand(
+                document.getContent(),
+                builder.build(),
+                baseUrl,
+                frameExpansion,
+                options);
+    }
+
+    public static final Collection<?> expand(
+            final PolyNode node,
+            final Context context,
+            final URI baseUrl,
+            final JsonLdOptions options) throws JsonLdError, IOException {
+        return expand(node, context, baseUrl, false, options);
+    }
+
+    static final Collection<?> expand(
+            final PolyNode node,
+            final Context context,
+            final URI baseUrl,
+            boolean frameExpansion,
+            final JsonLdOptions options) throws JsonLdError, IOException {
+
+        final var runtime = ProcessingRuntime.of(options);
 
         // 8.
         var expanded = Expansion.expand(
-                contextBuilder.build(),
+                context,
                 node.node(),
                 node.adapter(),
                 null,

@@ -35,6 +35,7 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.compaction.UriCompaction;
 import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.PolyDocument;
 import com.apicatalog.jsonld.flattening.NodeMap;
@@ -240,14 +241,18 @@ public final class Framer {
         }
 
         // 19.3.
-        if (frame.hasContext()) {
-            var compacted = new LinkedHashMap<String, Object>();
-            compacted.put(Keywords.CONTEXT, frame.context());
-            compacted.putAll((Map<String, Object>) compactedOutput);
-            return compacted;
+        if (compactedOutput instanceof Map map) {
+            
+            @SuppressWarnings("unchecked")
+            var typedMap = (Map<String, ?>) map;
+            
+            if (frame.hasContext()) {
+                return Context.inject(typedMap, frame.context());
+            }
+            return typedMap;
         }
 
-        return (Map<String, ?>) compactedOutput;
+        throw new IllegalStateException();
     }
 
     private static Document getDocument(final URI document, final JsonLdOptions options) throws JsonLdError {

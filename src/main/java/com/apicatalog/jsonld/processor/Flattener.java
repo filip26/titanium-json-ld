@@ -21,6 +21,7 @@ import java.net.URI;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.PolyDocument;
@@ -52,30 +53,26 @@ public final class Flattener {
 
         assertDocumentLoader(options, input);
 
-        var contextDocument = options.getDocumentLoader().loadDocument(context, new LoaderOptions());
+        final LoaderOptions loaderOptions = new LoaderOptions();
+        loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
 
-        if (contextDocument == null) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Context[" + context + "] is null.");
+        var remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
+
+        if (remoteDocument == null) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
 
-        return flatten(input, contextDocument, options);
-    }
+        return flatten(remoteDocument, context, options);
 
-    public static final Object flatten(final Document<PolyNode> input, final URI context, final JsonLdOptions options) throws JsonLdError, IOException {
-
-        if (context == null) {
-            return flatten(input, (Document<PolyNode>) null, options);
-        }
-
-        assertDocumentLoader(options, context);
-
-        var contextDocument = options.getDocumentLoader().loadDocument(context, new LoaderOptions());
-
-        if (contextDocument == null) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Context[" + context + "] is null.");
-        }
-
-        return flatten(input, contextDocument, options);
+//        assertDocumentLoader(options, input);
+//
+//        var contextDocument = options.getDocumentLoader().loadDocument(context, new LoaderOptions());
+//
+//        if (contextDocument == null) {
+//            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Context[" + context + "] is null.");
+//        }
+//
+//        return flatten(input, contextDocument, options);
     }
 
     public static final Object flatten(final URI input, final Document<PolyNode> context, final JsonLdOptions options) throws JsonLdError, IOException {
@@ -94,7 +91,23 @@ public final class Flattener {
         return flatten(remoteDocument, context, options);
     }
 
-    public static final Object flatten(final Document<PolyNode> input, final Document<PolyNode> context, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Object flatten(final Document<PolyNode> input, final URI context, final JsonLdOptions options) throws JsonLdError, IOException {
+
+        if (context == null) {
+            return flatten(input, (Document<PolyNode>) null, options);
+        }
+
+        assertDocumentLoader(options, context);
+
+        final var contextDocument = Context.load(options.getDocumentLoader(), context);
+        
+        return flatten(input, contextDocument, options);
+    }
+
+    public static final Object flatten(
+            final Document<PolyNode> input,
+            final Document<PolyNode> context,
+            final JsonLdOptions options) throws JsonLdError, IOException {
 
         // 4.
         final var expansionOptions = new JsonLdOptions(options).setOrdered(false);
@@ -103,16 +116,9 @@ public final class Flattener {
 
         // 6.
         var flattenedOutput = Flattening.flatten(expandedInput, options.isOrdered());
-//System.out.println("FLOUT < " + flattenedOutput);
-        // 6.1.
-        if (context != null) {
 
-            //FIXME
-//            var y = new JakartaMaterializer().node(flattenedOutput, NativeAdapter.instance());
-//
-//            var document = JsonDocument.of(MediaType.JSON_LD, (JsonStructure)y);
-            
-//            var document = PolyDocument.of(new PolyNode(flattenedOutput, NativeAdapter.instance()));
+        // 6.1.
+        if (context != null && context.getContent() != null) {
 
             JsonLdOptions compactionOptions = new JsonLdOptions(options);
 
@@ -126,13 +132,48 @@ public final class Flattener {
             flattenedOutput = Compactor.compact(
                     flattenedOutput,
                     input.getDocumentUrl(),
-                    context, 
+                    context.getContent(),
                     compactionOptions);
         }
 
         return flattenedOutput;
     }
 
+    public static final Object flatten(
+            final Document<PolyNode> input,
+            final Context context,
+            final JsonLdOptions options) throws JsonLdError, IOException {
+
+        // 4.
+        final var expansionOptions = new JsonLdOptions(options).setOrdered(false);
+
+        var expandedInput = Expander.expand(input, expansionOptions);
+
+        // 6.
+        var flattenedOutput = Flattening.flatten(expandedInput, options.isOrdered());
+
+        // 6.1.
+        if (context != null ) {
+
+            JsonLdOptions compactionOptions = new JsonLdOptions(options);
+
+            if (options.getBase() != null) {
+                compactionOptions.setBase(options.getBase());
+
+            } else if (options.isCompactArrays()) {
+                compactionOptions.setBase(input.getDocumentUrl());
+            }
+
+            flattenedOutput = Compactor.compact(
+                    flattenedOutput,
+                    context,
+                    compactionOptions);
+        }
+
+        return flattenedOutput;
+    }
+
+    
     private static final void assertDocumentLoader(final JsonLdOptions options, final URI target) throws JsonLdError {
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + target + "].");

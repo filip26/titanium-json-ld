@@ -17,18 +17,23 @@ package com.apicatalog.jsonld.context;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.expansion.UriExpansion;
+import com.apicatalog.jsonld.http.ProfileConstants;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.java.NativeAdapter;
@@ -56,6 +61,8 @@ public interface Context {
 
     /** context version, might be null if unspecified */
     JsonLdVersion version();
+    
+    PolyNode source();
 
     Optional<TermDefinition> findTerm(final String value);
 
@@ -79,7 +86,7 @@ public interface Context {
 
     @Deprecated
     UriExpansion uriExpansion(DocumentLoader loader);
-    
+
     InverseContext getInverseContext();
 
     void createInverseContext();
@@ -125,62 +132,130 @@ public interface Context {
                 : context;
     }
 
-    public static Context compaction(
-            PolyNode context,
-            URI baseUrl,
-            JsonLdOptions options) throws JsonLdError, IOException {
+    public static Map<String, ?> inject(
+            final Map<String, ?> node,
+            final PolyNode contextNode) throws JsonLdError, IOException {
 
-        URI contextBase = baseUrl;
+        // 9.3.
+        if (!PolyNode.isEmptyOrNull(contextNode)) {
+            final var compacted = new LinkedHashMap<String, Object>(node.size() + 1);
+            compacted.put(Keywords.CONTEXT, contextNode);
+            compacted.putAll(node);
+            return compacted;
 
-        if (contextBase == null) {
-            contextBase = options.getBase();
         }
+        return node;
+    }
 
-        // 6.
-//        final JsonValue contextValue = context.getJsonContent()
-//                .map(ctx -> JsonUtils.flatten(ctx, Keywords.CONTEXT))
-//                .orElse(JsonValue.EMPTY_JSON_OBJECT);
+    public static Document<PolyNode> load(DocumentLoader loader, URI uri) throws JsonLdError, IOException {
 
-        // 7.
-        final var activeContext = new ActiveContext(options.getProcessingMode())
-                .newContext(options.getDocumentLoader())
-                .build(unwrap(context), contextBase);
+        Document<?> document = null;
 
-        // 8.
-        if (activeContext.getBaseUri() == null) {
+        if (document == null) {
 
-            if (options.getBase() != null) {
-                activeContext.setBaseUri(options.getBase());
+            final var loaderOptions = new LoaderOptions();
+            loaderOptions.setProfile(ProfileConstants.CONTEXT);
+            loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
 
-            } else if (options.isCompactToRelative()) {
-                activeContext.setBaseUri(baseUrl);
+            try {
+
+                document = loader.loadDocument(uri, loaderOptions);
+
+                // 5.2.5.1.
+            } catch (JsonLdError e) {
+                throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "There was a problem encountered loading a remote context [" + uri + "]", e);
+            }
+
+            if (document == null) {
+                throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");
             }
         }
 
-        return activeContext;
+        if (document.getContent() instanceof PolyNode node) {
+
+            // 5.2.5.2.
+            if (!node.isMap()) {
+                throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is not valid JSON-LD context: " + node + ".");
+            }
+
+            return (Document<PolyNode>) document;
+
+        }
+        throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");
+
     }
+
+//    
+//    // 5.2.5.3.
+//    final var contextNode = imported.property(Keywords.CONTEXT);
+//
+//    if(contextNode==null)
+//    {
+//        throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context does not contain @context key and is not valid JSON-LD context.");
+//    }
+//
+////        var newContext = new NativeMaterializer3().node(contextNode, imported.adapter());
+////
+////        // remove @base from a remote context
+////        if (newContext instanceof Map map && map.containsKey(Keywords.BASE)) {
+////            @SuppressWarnings("unchecked")
+////            var hashMap = new HashMap<>(map);
+////            hashMap.remove(Keywords.BASE);
+////            newContext = hashMap;
+////        }
+//
+//// 5.2.6
+//    try
+//    {
+//        ctx = ctx
+//                .newContext(loader)
+////                    .remoteContexts(new ArrayList<>(remoteContexts))
+////                    .validateScopedContext(validateScopedContext)
+//                .build(contextNode, imported.adapter(), document.getDocumentUrl());
+////            .build(newContext, NativeAdapter.instance(), document.getDocumentUrl());                
+////
+////
+//        return this;
+//
+//    }catch(
+//    JsonLdError e)
+//    {
+//        throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
+//    }
+    // FIXME
+//        return null;
+//}
 
     static class Builder {
 
-        URI baseUri;
-        URI baseUrl;
-        JsonLdVersion version;
+//        Object context;
+//        NodeAdapter adapter;
 
-        Object context;
-        NodeAdapter adapter;
+        ActiveContext ctx;
 
-        Context ctx;
-        
         DocumentLoader loader;
+
+        public Builder(JsonLdVersion version) {
+            this(null, null, version);
+        }
+
+        public Builder baseUri(URI base) {
+            ctx.setBaseUri(base);
+            return this;
+        }
+
+        public URI baseUri() {
+            return ctx.getBaseUri();
+        }
 
         public Builder(URI base, JsonLdVersion version) {
             this(base, base, version);
         }
 
         public Builder(URI baseUri, URI baseUrl, JsonLdVersion version) {
-            this.baseUri = baseUri;
-            this.baseUrl = baseUrl;
-            this.version = version;
+//            this.baseUri = baseUri;
+//            this.baseUrl = baseUrl;
+//            this.version = version;
             this.ctx = new ActiveContext(baseUri, baseUrl, version);
         }
 
@@ -194,15 +269,24 @@ public interface Context {
             return ctx;
         }
 
-        public void update(Object node, NodeAdapter adapter, URI baseUrl) throws JsonLdError, IOException {
-            // TODO merge if set
-            this.context = node;
-            this.adapter = adapter;
-            this.baseUrl = baseUrl;
-            this.ctx = ctx.newContext(loader).build(node, adapter, baseUrl);
+        public Builder update(PolyNode node, URI baseUrl) throws JsonLdError, IOException {
+            return update(node.node(), node.adapter(), baseUrl);
         }
 
-        private final ActiveContext updateContext(final ActiveContext activeContext, final Object expandedContext, final NodeAdapter adapter, final URI baseUrl)
+        public Builder update(Object node, NodeAdapter adapter, URI baseUrl) throws JsonLdError, IOException {
+            // TODO merge if set
+//            this.context = node;
+//            this.adapter = adapter;
+//            this.baseUrl = baseUrl;
+            this.ctx = ctx.newContext(loader).build(node, adapter, baseUrl);
+            return this;
+        }
+
+        private final ActiveContext updateContext(
+                final ActiveContext activeContext,
+                final Object expandedContext,
+                final NodeAdapter adapter,
+                final URI baseUrl)
                 throws JsonLdError, IOException {
 
             if (adapter.isCollection(expandedContext)) {
@@ -238,12 +322,11 @@ public interface Context {
             return activeContext.newContext(loader).build(
                     JsonProvider.instance().createArrayBuilder().add((JsonValue) expandedContext).build(), adapter, baseUrl);
         }
-        
+
         public Builder loader(DocumentLoader loader) {
             this.loader = loader;
             return this;
         }
-
     }
 
 //
@@ -269,7 +352,7 @@ public interface Context {
 
 //    PolyNode asNode();
 
-    // ---
+// ---
 //  void createInverseContext();
 
 //    URI getBaseUrl();
@@ -280,5 +363,5 @@ public interface Context {
 
 //    URI getBaseUrl();
 
-    // ---
+// ---
 }

@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.expansion;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -318,7 +319,7 @@ public final class UriExpansion {
 
         } else if (documentRelative) {
             // 8. If documentRelative is true, resolve the result against the base URI.
-            return UriResolver.resolve(activeContext.getBaseUri(), result);
+            return UriResolver.resolve(activeContext.getBaseUri(), result);            
         }
 
         // 9. Return the result as is.

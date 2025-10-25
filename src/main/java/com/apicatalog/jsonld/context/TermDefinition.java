@@ -64,10 +64,6 @@ public final class TermDefinition {
         this.localContext = new PolyNode(context, adapter);
     }
 
-    protected void setBaseUrl(URI baseUrl) {
-        this.baseUrl = baseUrl;
-    }
-
     public String getUriMapping() {
         return uriMapping;
     }
@@ -116,6 +112,12 @@ public final class TermDefinition {
         return baseUrl;
     }
 
+    protected void setBaseUrl(URI baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+
+    
     public boolean hasLocalContext() {
         return localContext != null;
     }

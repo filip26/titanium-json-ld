@@ -15,21 +15,19 @@
  */
 package com.apicatalog.jsonld.context;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.expansion.UriExpansion;
-import com.apicatalog.jsonld.expansion.ValueExpansion;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.processor.ProcessingRuntime;
 import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.PolyNode;
 
 /**
  * A context that is used to resolve terms while the processing algorithm is
@@ -48,7 +46,7 @@ public final class ActiveContext implements Context {
     private URI baseUri;
 
     // the original base URL
-    protected URI baseUrl;
+    private URI baseUrl;
 
     private InverseContext inverseContext;
 
@@ -64,6 +62,8 @@ public final class ActiveContext implements Context {
     // an optional default base direction ("ltr" or "rtl")
     private Direction defaultBaseDirection;
 
+    private PolyNode source;
+    
 //    private final ProcessingRuntime runtime;
 
     ActiveContext(final JsonLdVersion version) {
@@ -142,9 +142,9 @@ public final class ActiveContext implements Context {
         return previousContext;
     }
 
-//    public URI getBaseUrl() {
-//        return baseUrl;
-//    }
+    public URI getBaseUrl() {
+        return baseUrl;
+    }
 
     public void setBaseUri(final URI baseUri) {
         this.baseUri = baseUri;
@@ -234,5 +234,14 @@ public final class ActiveContext implements Context {
 
     public void setVersion(JsonLdVersion version) {
         this.version = version;
+    }
+    
+    public void setSource(PolyNode source) {
+        this.source = source;
+    }
+    
+    @Override
+    public PolyNode source() {
+        return source;
     }
 }

@@ -99,11 +99,9 @@ public final class Frame {
         }
 
         var expanded = Expander.expand(
-                document.getContent(),
-                document.getContextUrl(),
-                document.getDocumentUrl(),
-                new JsonLdOptions(options).setOrdered(false),
-                true);
+                document,
+                true,
+                new JsonLdOptions(options).setOrdered(false));
 
         return of(expanded, context, document.getContextUrl(), document.getDocumentUrl());
     }
