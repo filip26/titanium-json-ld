@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.rdf.out;
+package com.apicatalog.jsonld.tordf;
 
 import com.apicatalog.jsonld.lang.RdfConstants;
 import com.apicatalog.jsonld.lang.XsdConstants;

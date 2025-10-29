@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.rdf.out;
+package com.apicatalog.jsonld.tordf;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -31,7 +31,6 @@ import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -43,13 +42,8 @@ import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
-import com.apicatalog.tree.io.jakarta.JakartaAdapter;
-
-import jakarta.json.JsonArray;
-import jakarta.json.JsonNumber;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
+import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.java.NativeAdapter;
 
 public final class ToRdf {
 
@@ -131,22 +125,29 @@ public final class ToRdf {
 
                     if (Keywords.TYPE.equals(property)) {
 
-                        for (final JsonValue type : ((JsonValue) nodeMap.get(graphName, subject, property)).asJsonArray()) {
+                        for (final var type : (Collection) nodeMap.get(graphName, subject, property)) {
 
-                            if (JsonUtils.isNotString(type)) {
+                            if (type instanceof String typeString) {
+
+                                if (!BlankNode.isWellFormed(typeString) && UriUtils.isNotAbsoluteUri(typeString, uriValidation)) {
+                                    continue;
+                                }
+
+                                consumer.triple(
+                                        subject,
+                                        RdfConstants.TYPE,
+                                        typeString);
+
+                            } else {
                                 continue;
                             }
 
-                            final String typeString = ((JsonString) type).getString();
+//                            if (JsonUtils.isNotString(type)) {
+//                                continue;
+//                            }
 
-                            if (!BlankNode.isWellFormed(typeString) && UriUtils.isNotAbsoluteUri(typeString, uriValidation)) {
-                                continue;
-                            }
+//                            final String typeString = ((JsonString) type).getString();
 
-                            consumer.triple(
-                                    subject,
-                                    RdfConstants.TYPE,
-                                    typeString);
                         }
 
                     } else if (!Keywords.contains(property)) {
@@ -241,7 +242,12 @@ public final class ToRdf {
 
         // 8.
         if (Keywords.JSON.equals(datatype)) {
-            valueString = Jcs.canonize(value, JakartaAdapter.instance());
+            // TODO useJCS
+            if (value instanceof PolyNode node) {
+                valueString = Jcs.canonize(node.node(), node.adapter());
+            } else {
+                valueString = Jcs.canonize(value, NativeAdapter.instance());
+            }
             datatype = RdfConstants.JSON;
 
             // 9.
@@ -265,9 +271,30 @@ public final class ToRdf {
 //        } else if (JsonUtils.isNumber(value)) {
         } else if (value instanceof Number number) {
 
+            
+            if (NativeAdapter.instance().isIntegral(number)) {
+
+                valueString = number.toString();
+
+                if (datatype == null) {
+                    datatype = XsdConstants.INTEGER;
+                }
+
+            } else {
+                
+            }
+
+//
+//          if (datatype == null) {
+//              datatype = XsdConstants.INTEGER;
+//          }
+
+//            if (number instanceof BigDecimal decimal) {
+//                
+//            }
 //            JsonNumber number = ((JsonNumber) value);
 
-            //FIXME
+            // FIXME
             // 11.
 //            if ((!number.isIntegral() && number.doubleValue() % -1 != 0)
 //                    || XsdConstants.DOUBLE.equals(datatype)

@@ -2,4 +2,4 @@
  * Serialize RDF as JSON-LD Algorithm.
  *
  */
-package com.apicatalog.jsonld.rdf.in;
+package com.apicatalog.jsonld.fromrdf;

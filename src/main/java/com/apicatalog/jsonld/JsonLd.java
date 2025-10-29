@@ -23,7 +23,7 @@ import com.apicatalog.jsonld.api.FlatteningApi;
 import com.apicatalog.jsonld.api.FramingApi;
 import com.apicatalog.jsonld.api.ToRdfApi;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.rdf.in.QuadsToJsonld;
+import com.apicatalog.jsonld.fromrdf.QuadsToJsonld;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 

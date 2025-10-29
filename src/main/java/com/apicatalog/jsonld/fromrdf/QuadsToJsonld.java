@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.rdf.in;
+package com.apicatalog.jsonld.fromrdf;
 
 import java.io.StringReader;
 import java.math.BigDecimal;
@@ -22,12 +22,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.fromrdf.GraphMap.Reference;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
@@ -36,7 +38,6 @@ import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.lang.RdfConstants;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.lang.XsdConstants;
-import com.apicatalog.jsonld.rdf.in.GraphMap.Reference;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.api.RdfConsumerException;
@@ -84,10 +85,12 @@ public class QuadsToJsonld implements RdfQuadConsumer {
     // optional
     protected boolean ordered;
     protected RdfDirection rdfDirection;
-    protected boolean useNativeTypes;
     protected boolean useRdfType;
+    protected boolean useXsdDecimal;
     protected UriValidationPolicy uriValidation;
     protected JsonLdVersion processingMode;
+
+    protected Map<String, Function<String, JsonValue>> nativeTypes;
 
     // runtime
     protected GraphMap graphMap;
@@ -102,7 +105,8 @@ public class QuadsToJsonld implements RdfQuadConsumer {
         // default values
         this.ordered = false;
         this.rdfDirection = null;
-        this.useNativeTypes = false;
+        this.nativeTypes = Map.of();
+        this.useXsdDecimal = false;
         this.useRdfType = false;
         this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
         this.processingMode = JsonLdVersion.V1_1;
@@ -137,7 +141,23 @@ public class QuadsToJsonld implements RdfQuadConsumer {
      * @return this instance for chaining
      */
     public QuadsToJsonld useNativeTypes(boolean useNativeTypes) {
-        this.useNativeTypes = useNativeTypes;
+        this.nativeTypes = useNativeTypes
+                ? Map.of(
+                        XsdConstants.STRING, Json::createValue,
+                        XsdConstants.BOOLEAN, QuadsToJsonld::toBoolean,
+                        XsdConstants.INT, QuadsToJsonld::toLong,
+                        XsdConstants.INTEGER, QuadsToJsonld::toLong,
+                        XsdConstants.LONG, QuadsToJsonld::toLong,
+                        XsdConstants.FLOAT, QuadsToJsonld::toDouble,
+                        XsdConstants.DOUBLE, QuadsToJsonld::toDouble)
+                : Map.of();
+        return this;
+    }
+
+    public QuadsToJsonld useNativeTypes(Map<String, Function<String, JsonValue>> converters) {
+        this.nativeTypes = converters != null
+                ? converters
+                : Map.of();
         return this;
     }
 
@@ -171,7 +191,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
     public QuadsToJsonld options(JsonLdOptions options) {
         this.ordered = options.isOrdered();
         this.rdfDirection = options.getRdfDirection();
-        this.useNativeTypes = options.isUseNativeTypes();
+        this.useNativeTypes(options.isUseNativeTypes());
         this.useRdfType = options.isUseRdfType();
         this.uriValidation = options.getUriValidation();
         this.processingMode = options.getProcessingMode();
@@ -526,7 +546,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
             return new RefJsonObject(JsonProvider.instance().createObjectBuilder().add(Keywords.ID, object).build());
         }
 
-        final JsonObjectBuilder result = JsonProvider.instance().createObjectBuilder();
+        final var result = JsonProvider.instance().createObjectBuilder();
 
         // 2.2.
         JsonValue convertedValue = null;
@@ -535,66 +555,17 @@ public class QuadsToJsonld implements RdfQuadConsumer {
         String type = null;
 
         // 2.4.
-        if (useNativeTypes) {
+        if (!nativeTypes.isEmpty()) {
 
             if (datatype != null) {
 
-                // 2.4.1.
-                if (XsdConstants.STRING.equals(datatype)) {
-                    convertedValue = JsonProvider.instance().createValue(object);
+                final var convertor = nativeTypes.get(datatype);
 
-                    // 2.4.2.
-                } else if (XsdConstants.BOOLEAN.equals(datatype)) {
-
-                    if ("true".equals(object) || "1".equals(object)) {
-                        convertedValue = JsonValue.TRUE;
-
-                    } else if ("false".equals(object) || "0".equals(object)) {
-                        convertedValue = JsonValue.FALSE;
-
-                    } else {
-                        type = XsdConstants.BOOLEAN;
-                    }
-
-                    // 2.4.3.
-                } else if (XsdConstants.INTEGER.equals(datatype) || XsdConstants.INT.equals(datatype) || XsdConstants.LONG.equals(datatype)) {
-
-                    try {
-
-                        convertedValue = JsonProvider.instance().createValue(Long.parseLong(object));
-                        
-                    } catch (NumberFormatException e) {
-                        type = datatype;
-                    }
-
-                } else if (XsdConstants.DOUBLE.equals(datatype) || XsdConstants.FLOAT.equals(datatype)) {
-
-                    try {
-                        final Double number = Double.parseDouble(object);
-
-                        if (!number.isInfinite()) {
-
-                            convertedValue = JsonProvider.instance().createValue(number);
-                        } else {
-                            type = datatype;
-                        }
-
-                    } catch (NumberFormatException e) {
-                        type = datatype;
-                    }
-
-                } else if (XsdConstants.DECIMAL.equals(datatype)) {
-
-                    try {
-                        convertedValue = JsonProvider.instance().createValue(new BigDecimal(object));
-
-                    } catch (NumberFormatException e) {
-                        type = datatype;
-                    }
+                if (convertor != null) {
+                    convertedValue = convertor.apply(object);
                 }
 
-                else if (datatype != null) {
-
+                if (convertedValue == null) {
                     type = datatype;
                 }
             }
@@ -664,4 +635,53 @@ public class QuadsToJsonld implements RdfQuadConsumer {
         // 2.11.
         return result.build();
     }
+
+    public static JsonValue toBoolean(String value) {
+
+        if ("true".equals(value) || "1".equals(value)) {
+            return JsonValue.TRUE;
+
+        } else if ("false".equals(value) || "0".equals(value)) {
+            return JsonValue.FALSE;
+        }
+        return null;
+    }
+
+    public static JsonValue toLong(String value) {
+
+        try {
+
+            return JsonProvider.instance().createValue(Long.parseLong(value));
+
+        } catch (NumberFormatException e) {
+
+        }
+        return null;
+    }
+
+    public static JsonValue toDouble(String value) {
+        try {
+            final Double number = Double.parseDouble(value);
+
+            if (!number.isInfinite() && !number.isNaN()) {
+
+                return JsonProvider.instance().createValue(number);
+
+            }
+
+        } catch (NumberFormatException e) {
+        }
+        return null;
+    }
+
+    public static JsonValue toDecimal(String value) {
+
+        try {
+            return JsonProvider.instance().createValue(new BigDecimal(value));
+
+        } catch (NumberFormatException e) {
+        }
+        return null;
+    }
+
 }

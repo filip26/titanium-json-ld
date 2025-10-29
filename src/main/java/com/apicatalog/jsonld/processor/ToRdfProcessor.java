@@ -25,7 +25,7 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.loader.LoaderOptions;
-import com.apicatalog.jsonld.rdf.out.ToRdf;
+import com.apicatalog.jsonld.tordf.ToRdf;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 import com.apicatalog.tree.io.java.NativeAdapter;
