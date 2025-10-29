@@ -60,7 +60,7 @@ public final class Compactor {
         return compact(remoteDocument, context, options);
     }
 
-    public static final Map<String, ?> compact(final URI input, final Document<PolyNode> context, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Map<String, ?> compact(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError, IOException {
 
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
@@ -79,11 +79,11 @@ public final class Compactor {
     }
 
     public static final Map<String, ?> compact(
-            final Document<PolyNode> input,
+            final Document input,
             final URI contextUri,
             final JsonLdOptions options) throws JsonLdError, IOException {
 
-        URI contextBase = input.getDocumentUrl();
+        URI contextBase = input.documentUrl();
 
         if (contextBase == null) {
             contextBase = options.getBase();
@@ -102,14 +102,14 @@ public final class Compactor {
 
         return compact(
                 expandedInput,
-                input.getDocumentUrl(),
-                Context.load(options.getDocumentLoader(), contextUri).getContent(),
+                input.documentUrl(),
+                Context.load(options.getDocumentLoader(), contextUri).content(),
                 options);
     }
 
     public static final Map<String, ?> compact(
-            final Document<PolyNode> input,
-            final Document<PolyNode> context,
+            final Document input,
+            final Document context,
             final JsonLdOptions options) throws JsonLdError, IOException {
 //        
 //        URI contextBase = input.getDocumentUrl();
@@ -147,8 +147,8 @@ public final class Compactor {
 
         return compact(
                 expandedInput,
-                input.getDocumentUrl(),
-                context.getContent(),
+                input.documentUrl(),
+                context.content(),
                 options);
 
     }

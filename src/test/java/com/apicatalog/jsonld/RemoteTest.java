@@ -18,7 +18,6 @@ package com.apicatalog.jsonld;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
-import java.io.IOException;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterEach;
@@ -33,6 +32,7 @@ import com.apicatalog.jsonld.test.JsonLdManifestLoader;
 import com.apicatalog.jsonld.test.JsonLdMockServer;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
+import com.apicatalog.jsonld.test.LegacyJsonLdTestCase;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 
@@ -71,7 +71,7 @@ class RemoteTest {
 
                 expandOptions.setDocumentLoader(
                                     new UriBaseRewriter(
-                                                JsonLdTestCase.TESTS_BASE,
+                                                LegacyJsonLdTestCase.TESTS_BASE,
                                                 wireMockServer.baseUrl(),
                                                 SchemeRouter.defaultInstance()));
 

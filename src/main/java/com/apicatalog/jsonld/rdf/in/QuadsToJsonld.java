@@ -231,7 +231,13 @@ public class QuadsToJsonld implements RdfQuadConsumer {
                     final JsonArrayBuilder clArray = JsonProvider.instance().createArrayBuilder();
 
                     // 6.1.6.
-                    for (final JsonValue clReference : graphMap.get(clEntry.graphName, clEntry.subject, clEntry.property).map(JsonValue::asJsonArray).orElse(JsonValue.EMPTY_JSON_ARRAY)) {
+                    for (final JsonValue clReference : graphMap
+                            .get(
+                                    clEntry.graphName(),
+                                    clEntry.subject(),
+                                    clEntry.property())
+                            .map(JsonValue::asJsonArray)
+                            .orElse(JsonValue.EMPTY_JSON_ARRAY)) {
 
                         if (JsonUtils.isNotObject(clReference)) {
                             continue;
@@ -278,7 +284,11 @@ public class QuadsToJsonld implements RdfQuadConsumer {
 
                         clArray.add(clObject);
                     }
-                    graphMap.set(clEntry.graphName, clEntry.subject, clEntry.property, clArray.build());
+                    graphMap.set(
+                            clEntry.graphName(),
+                            clEntry.subject(),
+                            clEntry.property(),
+                            clArray.build());
                 }
             }
 
@@ -291,7 +301,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
             for (Reference usage : graphMap.getUsages(graphName, RdfConstants.NIL)) {
 
                 // 6.4.1.
-                Map<String, JsonValue> node = graphMap.get(usage.graphName, usage.subject)
+                Map<String, JsonValue> node = graphMap.get(usage.graphName(), usage.subject())
                         .orElse(Map.of());
 
                 // 6.4.2.
@@ -301,7 +311,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
                 String nodeId = ((JsonString) node.get(Keywords.ID)).getString();
 
                 // 6.4.3.
-                while (RdfConstants.REST.equals(usage.property)
+                while (RdfConstants.REST.equals(usage.property())
                         && BlankNode.isWellFormed(nodeId)
                         && referenceOnce.get(nodeId) != null
                         && node.containsKey(RdfConstants.FIRST)
@@ -323,7 +333,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
                     usage = referenceOnce.get(nodeId);
 
                     // 6.4.3.4.
-                    final Optional<Map<String, JsonValue>> nextNode = graphMap.get(usage.graphName, usage.subject);
+                    final Optional<Map<String, JsonValue>> nextNode = graphMap.get(usage.graphName(), usage.subject());
 
                     if (!nextNode.isPresent()) {
                         break;
@@ -343,7 +353,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
                     }
                 }
 
-                JsonObject head = usage.value;
+                JsonObject head = usage.value();
 
                 // 6.4.4.
                 head.remove(Keywords.ID);
@@ -484,13 +494,11 @@ public class QuadsToJsonld implements RdfQuadConsumer {
         // 5.7.9.
         if (RdfConstants.NIL.equals(object)) {
 
-            Reference reference = new Reference();
-            reference.graphName = graphName;
-            reference.subject = subject;
-            reference.property = predicate;
-            reference.value = value;
-
-            graphMap.addUsage(graphName, object, reference);
+            graphMap.addUsage(graphName, object, new Reference(
+                    graphName,
+                    subject,
+                    predicate,
+                    value));
 
             // 5.7.10.
         } else if (referenceOnce.containsKey(object)) {
@@ -500,13 +508,11 @@ public class QuadsToJsonld implements RdfQuadConsumer {
             // 5.7.11.
         } else if (RdfQuadConsumer.isBlank(object)) {
 
-            Reference reference = new Reference();
-            reference.graphName = graphName;
-            reference.subject = subject;
-            reference.property = predicate;
-            reference.value = value;
-
-            referenceOnce.put(object, reference);
+            referenceOnce.put(object, new Reference(
+                    graphName,
+                    subject,
+                    predicate,
+                    value));
         }
 
         return this;
@@ -539,11 +545,11 @@ public class QuadsToJsonld implements RdfQuadConsumer {
                     // 2.4.2.
                 } else if (XsdConstants.BOOLEAN.equals(datatype)) {
 
-                    if ("true".equalsIgnoreCase(object)) {
+                    if ("true".equals(object) || "1".equals(object)) {
 
                         convertedValue = JsonValue.TRUE;
 
-                    } else if ("false".equalsIgnoreCase(object)) {
+                    } else if ("false".equals(object) || "0".equals(object)) {
 
                         convertedValue = JsonValue.FALSE;
 

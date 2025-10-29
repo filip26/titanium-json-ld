@@ -16,7 +16,6 @@
 package com.apicatalog.jsonld.rdf.in;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +28,13 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
 final class GraphMap {
+
+    static record Reference(
+            String graphName,
+            String subject,
+            String property,
+            JsonObject value) {
+    }
 
     // graph, subject, predicate, object
     private final Map<String, Map<String, Map<String, JsonValue>>> index;
@@ -113,12 +119,5 @@ final class GraphMap {
         this.index.clear();
         this.index.put(Keywords.DEFAULT, new LinkedHashMap<>());
         this.usages.clear();
-    }
-
-    static class Reference {
-        String graphName;
-        String subject;
-        String property;
-        JsonObject value;
     }
 }

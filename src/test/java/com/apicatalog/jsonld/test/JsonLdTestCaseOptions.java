@@ -20,13 +20,11 @@ import java.net.URI;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.JsonLdVersion;
-import com.apicatalog.jsonld.uri.UriResolver;
-
-import jakarta.json.JsonObject;
+import com.apicatalog.tree.io.NodeAdapter;
 
 public class JsonLdTestCaseOptions {
 
-    public JsonLdVersion specVersion;
+    public JsonLdVersion version;
     public String base;
     public String processingMode;
     public Boolean normative;
@@ -40,64 +38,67 @@ public class JsonLdTestCaseOptions {
     public Boolean omitGraph;
     public Boolean numericId;
     public Boolean rdfStar;
+    
     public JsonLdOptions.ProcessingPolicy undefinedTerms;
 
-    public static final JsonLdTestCaseOptions of(JsonObject o, String baseUri) {
+    public static final JsonLdTestCaseOptions of(Object node, NodeAdapter adapter, String baseUri) {
 
         final JsonLdTestCaseOptions options = new JsonLdTestCaseOptions();
-
-        if (o.containsKey("specVersion")) {
-            options.specVersion = JsonLdVersion.of(o.getString("specVersion"));
-        }
-
-        options.base = o.getString("base", null);
-        options.processingMode = o.getString("processingMode", null);
-
-        if (o.containsKey("normative")) {
-            options.normative = o.getBoolean("normative");
-        }
-
-        if (o.containsKey("expandContext")) {
-            options.expandContext = UriResolver.resolve(URI.create(baseUri), o.getString("expandContext"));
-        }
-
-        if (o.containsKey("compactArrays")) {
-            options.compactArrays = o.getBoolean("compactArrays");
-        }
-
-        if (o.containsKey("compactToRelative")) {
-            options.compactToRelative = o.getBoolean("compactToRelative");
-        }
-
-        options.rdfDirection = o.getString("rdfDirection", null);
-
-        if (o.containsKey("produceGeneralizedRdf")) {
-            options.produceGeneralizedRdf = o.getBoolean("produceGeneralizedRdf");
-        }
-
-        if (o.containsKey("useNativeTypes")) {
-            options.useNativeTypes = o.getBoolean("useNativeTypes");
-        }
-
-        if (o.containsKey("useRdfType")) {
-            options.useRdfType = o.getBoolean("useRdfType");
-        }
-
-        if (o.containsKey("omitGraph")) {
-            options.omitGraph = o.getBoolean("omitGraph");
-        }
-
-        if (o.containsKey("useNumericId")) {
-            options.numericId = o.getBoolean("useNumericId");
-        }
-
-        if (o.containsKey("rdfstar")) {
-            options.rdfStar = o.getBoolean("rdfstar");
-        }
+System.out.println(node);
+        var version = adapter.property("specVersion", node);
         
-        if (o.containsKey("undefinedTermPolicy")) {
-            options.undefinedTerms = JsonLdOptions.ProcessingPolicy.valueOf(o.getString("undefinedTermPolicy"));            
+        if (adapter.isString(version)) {
+            options.version = JsonLdVersion.of(adapter.stringValue(version));
         }
+        System.out.println(options.version);
+//        options.base = node.getString("base", null);
+//        options.processingMode = node.getString("processingMode", null);
+//
+//        if (node.containsKey("normative")) {
+//            options.normative = node.getBoolean("normative");
+//        }
+//
+//        if (node.containsKey("expandContext")) {
+//            options.expandContext = UriResolver.resolve(URI.create(baseUri), node.getString("expandContext"));
+//        }
+//
+//        if (node.containsKey("compactArrays")) {
+//            options.compactArrays = node.getBoolean("compactArrays");
+//        }
+//
+//        if (node.containsKey("compactToRelative")) {
+//            options.compactToRelative = node.getBoolean("compactToRelative");
+//        }
+//
+//        options.rdfDirection = node.getString("rdfDirection", null);
+//
+//        if (node.containsKey("produceGeneralizedRdf")) {
+//            options.produceGeneralizedRdf = node.getBoolean("produceGeneralizedRdf");
+//        }
+//
+//        if (node.containsKey("useNativeTypes")) {
+//            options.useNativeTypes = node.getBoolean("useNativeTypes");
+//        }
+//
+//        if (node.containsKey("useRdfType")) {
+//            options.useRdfType = node.getBoolean("useRdfType");
+//        }
+//
+//        if (node.containsKey("omitGraph")) {
+//            options.omitGraph = node.getBoolean("omitGraph");
+//        }
+//
+//        if (node.containsKey("useNumericId")) {
+//            options.numericId = node.getBoolean("useNumericId");
+//        }
+//
+//        if (node.containsKey("rdfstar")) {
+//            options.rdfStar = node.getBoolean("rdfstar");
+//        }
+//        
+//        if (node.containsKey("undefinedTermPolicy")) {
+//            options.undefinedTerms = JsonLdOptions.ProcessingPolicy.valueOf(node.getString("undefinedTermPolicy"));            
+//        }
 
         return options;
     }

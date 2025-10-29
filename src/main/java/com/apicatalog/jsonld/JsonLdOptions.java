@@ -19,14 +19,16 @@ import java.net.URI;
 import java.time.Duration;
 
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.document.TreeDocument;
 import com.apicatalog.jsonld.document.cache.Cache;
 import com.apicatalog.jsonld.document.cache.LruCache;
-import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.SchemeRouter;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
+import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.jakarta.JakartaAdapter;
+import com.apicatalog.tree.io.java.NativeAdapter;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
@@ -363,7 +365,8 @@ public final class JsonLdOptions {
             return;
         }
 
-        this.expandContext = JsonDocument.of(JsonProvider.instance().createArrayBuilder().add(contextLocation).build());
+        this.expandContext = TreeDocument.of(
+                new PolyNode(contextLocation, NativeAdapter.instance()));
     }
 
     public void setExpandContext(URI contextUri) {
@@ -383,7 +386,7 @@ public final class JsonLdOptions {
             return;
         }
 
-        this.expandContext = JsonDocument.of(context);
+        this.expandContext = TreeDocument.of(new PolyNode(context, JakartaAdapter.instance()));
     }
 
     public void setExpandContext(Document context) {

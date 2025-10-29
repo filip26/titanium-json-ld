@@ -41,7 +41,7 @@ class FileLoaderTest {
         Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new LoaderOptions());
 
         assertNotNull(document);
-        assertTrue(MediaType.JSON.match(document.getContentType()));
+        assertTrue(MediaType.JSON.match(document.contentType()));
     }
 
     @Test
@@ -54,7 +54,7 @@ class FileLoaderTest {
         Document document = (new FileLoader()).loadDocument(fileUrl.toURI(), new LoaderOptions());
 
         assertNotNull(document);
-        assertTrue(MediaType.JSON_LD.match(document.getContentType()));
+        assertTrue(MediaType.JSON_LD.match(document.contentType()));
     }
 
     @Test

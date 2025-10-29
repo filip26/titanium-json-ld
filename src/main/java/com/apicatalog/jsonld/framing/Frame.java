@@ -25,7 +25,7 @@ import java.util.Set;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.document.PolyDocument;
+import com.apicatalog.jsonld.document.TreeDocument;
 import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -55,7 +55,7 @@ public final class Frame {
         this.documentUrl = documentUrl;
     }
 
-    public static final Frame of(final PolyDocument document, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Frame of(final TreeDocument document, final JsonLdOptions options) throws JsonLdError, IOException {
 
 //      final JsonStructure frameStructure;
 //
@@ -78,8 +78,8 @@ public final class Frame {
 //            context = frameObject.get(Keywords.CONTEXT);
 //        }
 
-        final var node = document.getContent().node();
-        final var adapter = document.getContent().adapter();
+        final var node = document.content().node();
+        final var adapter = document.content().adapter();
 
         if (!adapter.isMap(node)) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but [" + node + "].");
@@ -103,7 +103,7 @@ public final class Frame {
                 true,
                 new JsonLdOptions(options).setOrdered(false));
 
-        return of(expanded, context, document.getContextUrl(), document.getDocumentUrl());
+        return of(expanded, context, document.contextUrl(), document.documentUrl());
     }
 
     static final Frame of(final Object expanded) throws JsonLdError {

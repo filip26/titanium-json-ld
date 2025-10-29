@@ -61,7 +61,7 @@ public interface Context {
 
     /** context version, might be null if unspecified */
     JsonLdVersion version();
-    
+
     PolyNode source();
 
     Optional<TermDefinition> findTerm(final String value);
@@ -134,12 +134,12 @@ public interface Context {
 
     public static Map<String, ?> inject(
             final Map<String, ?> node,
-            final PolyNode contextNode) throws JsonLdError, IOException {
+            final PolyNode context) throws JsonLdError, IOException {
 
         // 9.3.
-        if (!PolyNode.isEmptyOrNull(contextNode)) {
+        if (!PolyNode.isEmptyOrNull(context)) {
             final var compacted = new LinkedHashMap<String, Object>(node.size() + 1);
-            compacted.put(Keywords.CONTEXT, contextNode);
+            compacted.put(Keywords.CONTEXT, context);
             compacted.putAll(node);
             return compacted;
 
@@ -147,9 +147,9 @@ public interface Context {
         return node;
     }
 
-    public static Document<PolyNode> load(DocumentLoader loader, URI uri) throws JsonLdError, IOException {
+    public static Document load(DocumentLoader loader, URI uri) throws JsonLdError, IOException {
 
-        Document<?> document = null;
+        Document document = null;
 
         if (document == null) {
 
@@ -171,18 +171,12 @@ public interface Context {
             }
         }
 
-        if (document.getContent() instanceof PolyNode node) {
-
-            // 5.2.5.2.
-            if (!node.isMap()) {
-                throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is not valid JSON-LD context: " + node + ".");
-            }
-
-            return (Document<PolyNode>) document;
-
+        // 5.2.5.2.
+        if (!PolyNode.isMap(document.content())) {
+            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is not valid JSON-LD context: " + document.content() + ".");
         }
-        throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");
 
+        return document;
     }
 
 //    

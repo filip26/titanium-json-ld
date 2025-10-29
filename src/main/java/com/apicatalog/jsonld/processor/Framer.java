@@ -37,7 +37,7 @@ import com.apicatalog.jsonld.compaction.UriCompaction;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.PolyDocument;
+import com.apicatalog.jsonld.document.TreeDocument;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.framing.Frame;
@@ -100,10 +100,10 @@ public final class Framer {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame or Frame.Document is null.");
         }
 
-        return frame(input, Frame.of((PolyDocument) frame, options), options);
+        return frame(input, Frame.of((TreeDocument) frame, options), options);
     }
 
-    public static final Map<String, ?> frame(final Document<PolyNode> inputDocument, final Frame frame, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Map<String, ?> frame(final Document inputDocument, final Frame frame, final JsonLdOptions options) throws JsonLdError, IOException {
 
         final var expandedInput = Expander.expand(
                 inputDocument,
@@ -126,8 +126,8 @@ public final class Framer {
 
         // 10-11.
         final var context = new ActiveContext(
-                inputDocument.getDocumentUrl(),
-                inputDocument.getDocumentUrl(),
+                inputDocument.documentUrl(),
+                inputDocument.documentUrl(),
                 options.getProcessingMode())
                 .newContext(options.getDocumentLoader())
                 .build(frame.context() != null

@@ -21,6 +21,7 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,12 +30,17 @@ import java.util.stream.Collectors;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.TreeDocument;
 import com.apicatalog.jsonld.http.HttpClient;
 import com.apicatalog.jsonld.http.HttpResponse;
 import com.apicatalog.jsonld.http.ProfileConstants;
 import com.apicatalog.jsonld.http.link.Link;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.uri.UriResolver;
+import com.apicatalog.tree.io.NodeReader;
+import com.apicatalog.tree.io.jakarta.JakartaReader;
+
+import jakarta.json.Json;
 
 class DefaultHttpLoader implements DocumentLoader {
 
@@ -48,7 +54,7 @@ class DefaultHttpLoader implements DocumentLoader {
 
     private final HttpClient httpClient;
 
-    private final DocumentResolver resolver;
+    private final NodeReader reader;
 
     public DefaultHttpLoader(HttpClient httpClient) {
         this(httpClient, MAX_REDIRECTIONS);
@@ -57,7 +63,9 @@ class DefaultHttpLoader implements DocumentLoader {
     public DefaultHttpLoader(HttpClient httpClient, int maxRedirections) {
         this.httpClient = httpClient;
         this.maxRedirections = maxRedirections;
-        this.resolver = new DocumentResolver();
+        this.reader = new JakartaReader(Json.createReaderFactory(Map.of()));
+        //FIXME
+                //new DocumentResolver();
     }
 
     @Override
@@ -152,7 +160,7 @@ class DefaultHttpLoader implements DocumentLoader {
                         contentType = MediaType.JSON;
                     }
 
-                    return resolve(contentType, targetUri, contextUri, response);
+                    return read(contentType, targetUri, contextUri, response);
                 }
             }
 
@@ -184,17 +192,19 @@ class DefaultHttpLoader implements DocumentLoader {
         return builder.toString();
     }
 
-    private final Document resolve(
+    private final Document read(
             final MediaType type,
             final URI targetUri,
             final URI contextUrl,
             final HttpResponse response) throws JsonLdError, IOException {
 
-        final DocumentReader<InputStream> reader = resolver.getReader(type);
+//        final DocumentReader<InputStream> reader = reader.getReader(type);
 
         try (final InputStream is = response.body()) {
 
-            final Document remoteDocument = reader.read(is);
+            final var remoteContent = reader.read(is);
+     System.out.println(remoteContent);       
+            final var remoteDocument = TreeDocument.of(type, remoteContent);
 
             remoteDocument.setDocumentUrl(targetUri);
 
@@ -214,7 +224,7 @@ class DefaultHttpLoader implements DocumentLoader {
      * @since 1.4.0
      */
     public DefaultHttpLoader fallbackContentType(MediaType fallbackContentType) {
-        resolver.setFallbackContentType(fallbackContentType);
+//FIXME        reader.setFallbackContentType(fallbackContentType);
         return this;
     }
 

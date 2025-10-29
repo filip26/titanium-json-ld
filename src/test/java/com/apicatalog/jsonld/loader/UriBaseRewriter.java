@@ -52,9 +52,9 @@ public final class UriBaseRewriter implements DocumentLoader {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
 
-        if (remoteDocument.getDocumentUrl() != null && remoteDocument.getDocumentUrl().toString().startsWith(targetBase)) {
+        if (remoteDocument.documentUrl() != null && remoteDocument.documentUrl().toString().startsWith(targetBase)) {
 
-            final String remoteRelativePath = remoteDocument.getDocumentUrl().toString().substring(targetBase.length());
+            final String remoteRelativePath = remoteDocument.documentUrl().toString().substring(targetBase.length());
             remoteDocument.setDocumentUrl(URI.create(sourceBase + remoteRelativePath));
 
         }

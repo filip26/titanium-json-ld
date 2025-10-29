@@ -34,7 +34,7 @@ import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 
 @Deprecated
-public final class JsonDocument implements Document<PolyNode> {
+public final class JsonDocument implements Document {
 
     private static final String PLUS_JSON = "+json";
 
@@ -201,12 +201,12 @@ public final class JsonDocument implements Document<PolyNode> {
     }
 
     @Override
-    public MediaType getContentType() {
+    public MediaType contentType() {
         return contentType;
     }
 
     @Override
-    public URI getContextUrl() {
+    public URI contextUrl() {
         return contextUrl;
     }
 
@@ -216,7 +216,7 @@ public final class JsonDocument implements Document<PolyNode> {
     }
 
     @Override
-    public URI getDocumentUrl() {
+    public URI documentUrl() {
         return documentUrl;
     }
 
@@ -226,12 +226,12 @@ public final class JsonDocument implements Document<PolyNode> {
     }
 
     @Override
-    public Optional<String> getProfile() {
+    public Optional<String> profile() {
         return Optional.ofNullable(profile);
     }
 
     @Override
-    public PolyNode getContent() {
+    public PolyNode content() {
         return new PolyNode(structure, JakartaAdapter.instance());
     }
 }

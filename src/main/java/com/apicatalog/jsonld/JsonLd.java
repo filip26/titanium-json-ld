@@ -446,7 +446,7 @@ public final class JsonLd {
         assertNotNull(document, param);
 
         if (!document.getJsonContent().isPresent()) {
-            throw new IllegalArgumentException("'" + param + "' is not not JSON document but [" + document.getContentType() + "].");
+            throw new IllegalArgumentException("'" + param + "' is not not JSON document but [" + document.contentType() + "].");
         }
         return document;
     }

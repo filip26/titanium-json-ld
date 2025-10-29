@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.jsonld.test.JsonLdManifestLoader;
-import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 
 class CompactBaseTest {
@@ -32,7 +31,7 @@ class CompactBaseTest {
     @Test
     void testCompactBase() {
 
-        final JsonLdTestCase testCase = JsonLdManifestLoader
+        final var testCase = JsonLdManifestLoader
                 .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld", new ZipResourceLoader())
                 .stream()
                 .filter(o -> "#t0047".equals(o.id))

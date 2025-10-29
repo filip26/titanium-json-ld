@@ -9,9 +9,10 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.document.PolyDocument;
+import com.apicatalog.jsonld.document.TreeDocument;
 import com.apicatalog.jsonld.http.media.MediaType;
 
+@Deprecated
 class DocumentResolver {
 
     private static final Logger LOGGER = Logger.getLogger(DocumentResolver.class.getName());
@@ -56,7 +57,7 @@ class DocumentResolver {
     private static final Optional<DocumentReader<InputStream>> findReader(final MediaType type) {
         if (type != null) {
             if (JsonDocument.accepts(type)) {
-                return Optional.of(is -> PolyDocument.of(type, is));
+                return Optional.of(is -> TreeDocument.of(type, is));
             }
 
         }

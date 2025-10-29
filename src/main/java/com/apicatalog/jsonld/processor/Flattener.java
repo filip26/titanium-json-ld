@@ -24,7 +24,7 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.document.PolyDocument;
+import com.apicatalog.jsonld.document.TreeDocument;
 import com.apicatalog.jsonld.flattening.Flattening;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.LoaderOptions;
@@ -48,7 +48,7 @@ public final class Flattener {
     public static final Object flatten(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError, IOException {
 
         if (context == null) {
-            return flatten(input, (Document<PolyNode>) null, options);
+            return flatten(input, (Document) null, options);
         }
 
         assertDocumentLoader(options, input);
@@ -75,7 +75,10 @@ public final class Flattener {
 //        return flatten(input, contextDocument, options);
     }
 
-    public static final Object flatten(final URI input, final Document<PolyNode> context, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Object flatten(
+            final URI input, 
+            final Document context, 
+            final JsonLdOptions options) throws JsonLdError, IOException {
 
         assertDocumentLoader(options, input);
 
@@ -91,10 +94,10 @@ public final class Flattener {
         return flatten(remoteDocument, context, options);
     }
 
-    public static final Object flatten(final Document<PolyNode> input, final URI context, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Object flatten(final Document input, final URI context, final JsonLdOptions options) throws JsonLdError, IOException {
 
         if (context == null) {
-            return flatten(input, (Document<PolyNode>) null, options);
+            return flatten(input, (Document) null, options);
         }
 
         assertDocumentLoader(options, context);
@@ -105,8 +108,8 @@ public final class Flattener {
     }
 
     public static final Object flatten(
-            final Document<PolyNode> input,
-            final Document<PolyNode> context,
+            final Document input,
+            final Document context,
             final JsonLdOptions options) throws JsonLdError, IOException {
 
         // 4.
@@ -118,7 +121,7 @@ public final class Flattener {
         var flattenedOutput = Flattening.flatten(expandedInput, options.isOrdered());
 
         // 6.1.
-        if (context != null && context.getContent() != null) {
+        if (context != null && context.content() != null) {
 
             JsonLdOptions compactionOptions = new JsonLdOptions(options);
 
@@ -126,13 +129,13 @@ public final class Flattener {
                 compactionOptions.setBase(options.getBase());
 
             } else if (options.isCompactArrays()) {
-                compactionOptions.setBase(input.getDocumentUrl());
+                compactionOptions.setBase(input.documentUrl());
             }
 
             flattenedOutput = Compactor.compact(
                     flattenedOutput,
-                    input.getDocumentUrl(),
-                    context.getContent(),
+                    input.documentUrl(),
+                    context.content(),
                     compactionOptions);
         }
 
@@ -140,7 +143,7 @@ public final class Flattener {
     }
 
     public static final Object flatten(
-            final Document<PolyNode> input,
+            final Document input,
             final Context context,
             final JsonLdOptions options) throws JsonLdError, IOException {
 
@@ -161,7 +164,7 @@ public final class Flattener {
                 compactionOptions.setBase(options.getBase());
 
             } else if (options.isCompactArrays()) {
-                compactionOptions.setBase(input.getDocumentUrl());
+                compactionOptions.setBase(input.documentUrl());
             }
 
             flattenedOutput = Compactor.compact(

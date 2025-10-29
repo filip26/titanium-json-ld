@@ -110,7 +110,7 @@ public final class ContextBuilder {
         // context set to null.
         result = new ActiveContext(activeContext);
         result.setInverseContext(null);
-        //TODO better
+        // TODO better
         result.setSource(new PolyNode(localContext, adapter));
 //        result.setVersion(activeContext.runtime().version());
 
@@ -240,22 +240,22 @@ public final class ContextBuilder {
                 loaderOptions.setProfile(ProfileConstants.CONTEXT);
                 loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
 
-                PolyNode importedTree = null;
+                PolyNode importedContent = null;
 
                 try {
 
-                    final Document<?> importedDocument = loader.loadDocument(contextImportUri, loaderOptions);
+                    final Document importedDocument = loader.loadDocument(contextImportUri, loaderOptions);
 
                     if (importedDocument == null) {
                         throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context[" + contextImportUri + "] is null.");
                     }
 
 //                    if (importedDocument instanceof JsonDocument jsonDocument) {
-                    if (importedDocument.getContent() instanceof PolyNode adaptedContent) {
-                        importedTree = adaptedContent;
-                    } else {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Invalid context " + contextImportUri + " to import.");
-                    }
+//                    if (importedDocument.content() instanceof PolyNode adaptedContent) {
+                    importedContent = importedDocument.content();
+//                    } else {
+//                        throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Invalid context " + contextImportUri + " to import.");
+//                    }
 //                    importedStructure = importedDocument
 //                            .getJsonContent()
 //                            .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE));
@@ -265,8 +265,8 @@ public final class ContextBuilder {
                     throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE, e);
                 }
 
-                var importedNode = importedTree.node();
-                var importAdapter = importedTree.adapter();
+                var importedNode = importedContent.node();
+                var importAdapter = importedContent.adapter();
 
                 // 5.6.6
                 if (!importAdapter.isMap(importedNode)) {
@@ -553,7 +553,7 @@ public final class ContextBuilder {
             throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Document loader is null. Cannot fetch [" + contextUri + "].");
         }
 
-        Document<?> remoteImport = null;
+        Document remoteDocument = null;
 
         // FIXME
 //        if (activeContext.runtime().getDocumentCache() != null
@@ -562,7 +562,7 @@ public final class ContextBuilder {
 //            remoteImport = activeContext.runtime().getDocumentCache().get(contextKey);
 //        }
 
-        if (remoteImport == null) {
+        if (remoteDocument == null) {
 
             LoaderOptions loaderOptions = new LoaderOptions();
             loaderOptions.setProfile(ProfileConstants.CONTEXT);
@@ -570,40 +570,41 @@ public final class ContextBuilder {
 
             try {
 
-                remoteImport = loader.loadDocument(contextUri, loaderOptions);
+                remoteDocument = loader.loadDocument(contextUri, loaderOptions);
 
                 // 5.2.5.1.
             } catch (JsonLdError e) {
                 throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "There was a problem encountered loading a remote context [" + contextUri + "]", e);
             }
 
-            if (remoteImport == null) {
+            if (remoteDocument == null) {
                 throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");
             }
         }
 
-        PolyNode importedNode = null;
+        final PolyNode importedContent = remoteDocument.content();
 
-        if (remoteImport.getContent() instanceof PolyNode adaptedNode) {
-            importedNode = adaptedNode;
-
-        } else {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");
-        }
+//        if (remoteImport.content() instanceof PolyNode adaptedNode) {
+//            importedNode = adaptedNode;
+//
+////        } else {
+//        if (importedNode ==)
+//            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");
+//        }
 
         // 5.2.5.2.
-        if (!importedNode.isMap()) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is not valid JSON-LD context: " + importedNode.node() + ".");
+        if (!PolyNode.isMap(importedContent)) {
+            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is not valid JSON-LD context: " + importedContent.node() + ".");
         }
 
         // 5.2.5.3.
-        final var importedContext = importedNode.property(Keywords.CONTEXT);
+        final var importedContext = importedContent.property(Keywords.CONTEXT);
 
         if (importedContext == null) {
             throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context does not contain @context key and is not valid JSON-LD context.");
         }
 
-        var newContext = new NativeMaterializer3().node(importedContext, importedNode.adapter());
+        var newContext = new NativeMaterializer3().node(importedContext, importedContent.adapter());
 
         // remove @base from a remote context
         if (newContext instanceof Map map && map.containsKey(Keywords.BASE)) {
@@ -624,7 +625,7 @@ public final class ContextBuilder {
                     .newContext(loader)
                     .remoteContexts(new ArrayList<>(remoteContexts))
                     .validateScopedContext(validateScopedContext)
-                    .build(newContext, NativeAdapter.instance(), remoteImport.getDocumentUrl());
+                    .build(newContext, NativeAdapter.instance(), remoteDocument.documentUrl());
 
 //FIXME
 //            if (result.runtime().getContextCache() != null && !validateScopedContext) {

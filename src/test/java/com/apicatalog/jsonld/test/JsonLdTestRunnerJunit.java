@@ -32,7 +32,7 @@ import com.apicatalog.jsonld.lang.JsonLdComparison;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.jsonld.loader.QuadSetDocument;
 import com.apicatalog.jsonld.rdf.in.QuadsToJsonld;
-import com.apicatalog.jsonld.test.JsonLdTestCase.Type;
+import com.apicatalog.jsonld.test.LegacyJsonLdTestCase.Type;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.model.RdfQuadSet;
@@ -92,7 +92,7 @@ public class JsonLdTestRunnerJunit {
 
                 QuadsToJsonld toLd = JsonLd.fromRdf().options(options);
 
-                QuadEmitter.create(toLd).emit(((QuadSetDocument) input).getContent());
+                QuadEmitter.create(toLd).emit(((QuadSetDocument) input).contentX());
 
                 return toLd.toJsonLd();
             });
@@ -213,14 +213,14 @@ public class JsonLdTestRunnerJunit {
 
         try {
             Document expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new LoaderOptions());
-
+            
             assertNotNull(expectedDocument);
 
             // compare expected with the result
 
             return compareRdf(testCase,
                     result,
-                    ((QuadSetDocument) expectedDocument).getContent());
+                    ((QuadSetDocument) expectedDocument).contentX());
 
         } catch (JsonLdError e) {
             fail(e.getMessage());

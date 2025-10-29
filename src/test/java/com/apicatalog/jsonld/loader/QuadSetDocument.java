@@ -12,6 +12,7 @@ import com.apicatalog.rdf.nquads.NQuadsReader;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
+import com.apicatalog.tree.io.PolyNode;
 
 public class QuadSetDocument implements Document {
 
@@ -30,12 +31,12 @@ public class QuadSetDocument implements Document {
     }
 
     @Override
-    public MediaType getContentType() {
+    public MediaType contentType() {
         return MediaType.N_QUADS;
     }
 
     @Override
-    public URI getContextUrl() {
+    public URI contextUrl() {
         return null;
     }
 
@@ -44,7 +45,7 @@ public class QuadSetDocument implements Document {
     }
 
     @Override
-    public URI getDocumentUrl() {
+    public URI documentUrl() {
         return documentUrl;
     }
 
@@ -54,12 +55,19 @@ public class QuadSetDocument implements Document {
     }
 
     @Override
-    public Optional<String> getProfile() {
+    public Optional<String> profile() {
         return Optional.empty();
     }
 
-    public RdfQuadSet getContent() {
+    //FIXME
+    public RdfQuadSet contentX() {
         return content;
+    }
+    
+    @Override
+    public PolyNode content() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     public void setContent(OrderedQuadSet content) {

@@ -19,6 +19,8 @@ import java.net.URI;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.http.media.MediaType;
+import com.apicatalog.tree.io.PolyNode;
+
 import jakarta.json.JsonStructure;
 
 /**
@@ -31,7 +33,7 @@ import jakarta.json.JsonStructure;
  * {@link DocumentParser}.
  *
  */
-public interface Document<T> {
+public interface Document {
 
     /**
      * The <a href="https://tools.ietf.org/html/rfc2045#section-5">Content-Type</a>
@@ -40,7 +42,7 @@ public interface Document<T> {
      * @return <code>Content-Type</code> of the loaded document, never
      *         <code>null</code>
      */
-    MediaType getContentType();
+    MediaType contentType();
 
     /**
      * The value of the HTTP Link header when profile attribute matches
@@ -49,7 +51,7 @@ public interface Document<T> {
      * @return attached {@link URI} referencing document context or
      *         <code>null</code> if not available
      */
-    URI getContextUrl();
+    URI contextUrl();
 
     @Deprecated
     void setContextUrl(URI contextUrl);
@@ -60,18 +62,18 @@ public interface Document<T> {
      * @return {@link URI} of the loaded document or <code>null</code> if not
      *         available
      */
-    URI getDocumentUrl();
+    URI documentUrl();
 
     @Deprecated
     void setDocumentUrl(URI documentUrl);
 
     /**
      * The value of any <code>profile</code> parameter retrieved as part of the
-     * original {@link #getContentType()}.
+     * original {@link #contentType()}.
      *
      * @return document profile or {@link Optional#empty()}
      */
-    Optional<String> getProfile();
+    Optional<String> profile();
 
     /**
      * Get the document content as parsed {@link JsonStructure}.
@@ -84,5 +86,5 @@ public interface Document<T> {
         return Optional.empty();
     }
     
-    public T getContent();
+    public PolyNode content();
 }

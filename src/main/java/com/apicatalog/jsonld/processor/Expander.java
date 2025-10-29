@@ -55,23 +55,21 @@ public final class Expander {
                 input,
                 new LoaderOptions().setExtractAllScripts(options.isExtractAllScripts()));
 
-        if (remoteDocument != null && remoteDocument.getContent() instanceof PolyNode) {
-            @SuppressWarnings("unchecked")
-            final Document<PolyNode> remote = remoteDocument;
-            return expand(remote, options);
+        if (remoteDocument != null) {
+            return expand(remoteDocument, options);
         }
 
         throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
     }
 
     public static final Collection<?> expand(
-            final Document<PolyNode> document,
+            final Document document,
             final JsonLdOptions options) throws JsonLdError, IOException {
         return expand(document, false, options);
     }
 
     public static final Collection<?> expand(
-            final Document<PolyNode> document,
+            final Document document,
             final boolean frameExpansion,
             final JsonLdOptions options) throws JsonLdError, IOException {
 
@@ -80,8 +78,8 @@ public final class Expander {
         // from remote document, if available; otherwise to the base option from
         // options.
         // If set, the base option from options overrides the base IRI.
-        URI baseUri = document.getDocumentUrl();
-        URI baseUrl = document.getDocumentUrl();
+        URI baseUri = document.documentUrl();
+        URI baseUrl = document.documentUrl();
 
         if (baseUrl == null) {
             baseUrl = options.getBase();
@@ -112,15 +110,15 @@ public final class Expander {
         }
 
         // 7.
-        if (document.getContextUrl() != null) {
+        if (document.contextUrl() != null) {
             builder.update(
-                    document.getContextUrl().toString(),
+                    document.contextUrl().toString(),
                     NativeAdapter.instance(),
-                    document.getContextUrl());
+                    document.contextUrl());
         }
 
         return expand(
-                document.getContent(),
+                document.content(),
                 builder.build(),
                 baseUrl,
                 frameExpansion,

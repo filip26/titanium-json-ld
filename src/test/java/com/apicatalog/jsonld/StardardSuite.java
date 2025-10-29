@@ -20,13 +20,14 @@ import org.junit.platform.suite.api.Suite;
 import org.junit.platform.suite.api.SuiteDisplayName;
 
 @Suite(failIfNoTests = true)
-@SuiteDisplayName("Transform")
+@SuiteDisplayName("Standard Suite")
 @SelectClasses({
         ExpanderTest.class,
         FlattenTest.class,
         CompactorTest.class,
-        FramerTest.class
+        FramerTest.class,
+        RemoteTest.class,
 })
-public class TransformSuite {
+public class StardardSuite {
 
 }

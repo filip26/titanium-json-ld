@@ -18,6 +18,7 @@ package com.apicatalog.jsonld.document;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URI;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -33,75 +34,93 @@ import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 
-public final class PolyDocument implements Document<PolyNode> {
+public final class TreeDocument implements Document {
 
     private static final String PLUS_JSON = "+json";
 
     private final MediaType contentType;
-    private final JsonStructure structure;
     private final String profile;
+    private final PolyNode content;
 
     private URI documentUrl;
     private URI contextUrl;
 
-    private PolyDocument(final MediaType type, final String profile, final JsonStructure structure) {
+    private TreeDocument(final MediaType type, final String profile, final PolyNode content) {
         this.contentType = type;
         this.profile = profile;
-        this.structure = structure;
+        this.content = content;
     }
 
     /**
-     * Create a new document from {@link JsonStructure}. Sets {@link MediaType#JSON} as the content type.
+     * Create a new document from {@link JsonStructure}. Sets {@link MediaType#JSON}
+     * as the content type.
      *
      * @param structure representing parsed JSON content
      * @return {@link Document} representing JSON content
      */
-    public static PolyDocument of(final JsonStructure structure) {
-        return of(MediaType.JSON, structure);
+    public static TreeDocument of(final PolyNode content) {
+        Objects.requireNonNull(content);
+        return of(null, content);
     }
 
     /**
      * Create a new document from {@link JsonStructure}.
      *
-     * @param contentType reflecting the provided {@link JsonStructure}, e.g. {@link MediaType#JSON_LD}, any JSON based media type is allowed
-     * @param structure representing parsed JSON content
+     * @param contentType reflecting the provided {@link JsonStructure}, e.g.
+     *                    {@link MediaType#JSON_LD}, any JSON based media type is
+     *                    allowed
+     * @param structure   representing parsed JSON content
      * @return {@link Document} representing JSON content
      */
-    public static PolyDocument of(final MediaType contentType, final JsonStructure structure) {
+    public static TreeDocument of(final MediaType contentType, final PolyNode content) {
 
-        if (contentType == null) {
-            throw new IllegalArgumentException("The provided JSON type is null.");
-        }
+        Objects.requireNonNull(content);
 
-        assertContentType(contentType);
+        // FIXME
+        return new TreeDocument(
+                new MediaType(contentType.type(), contentType.subtype()),
+                contentType.findFirstParameter("profile").orElse(null), content);
 
-        if (structure == null) {
-            throw new IllegalArgumentException("The provided JSON structure is null.");
-        }
+//        if (contentType == null) {
+//            throw new IllegalArgumentException("The provided JSON type is null.");
+//        }
+//
+//        assertContentType(contentType);
+//
+//        if (content == null) {
+//            throw new IllegalArgumentException("The provided JSON structure is null.");
+//        }
 
-        return new PolyDocument(new MediaType(contentType.type(), contentType.subtype()), contentType.findFirstParameter("profile").orElse(null), structure);
+//        return new TreeDocument(
+//                new MediaType(contentType.type(), contentType.subtype()), 
+//                contentType.findFirstParameter("profile").orElse(null), structure);
     }
 
     /**
-     * Create a new document from content provided by {@link InputStream}. Sets {@link MediaType#JSON} as the content type.
+     * Create a new document from content provided by {@link InputStream}. Sets
+     * {@link MediaType#JSON} as the content type.
      *
      * @param is representing parsed JSON content
      * @return {@link Document} representing JSON document
      */
-    public static final PolyDocument of(final InputStream is)  throws JsonLdError {
+    @Deprecated
+    public static final TreeDocument of(final InputStream is) throws JsonLdError {
         return of(MediaType.JSON, is);
     }
 
     /**
      * Create a new document from content provided by {@link InputStream}.
      *
-     * @param contentType reflecting the provided {@link InputStream} content, e.g. {@link MediaType#JSON_LD}, any JSON based media type is allowed
-     * @param is providing JSON content
+     * @param contentType reflecting the provided {@link InputStream} content, e.g.
+     *                    {@link MediaType#JSON_LD}, any JSON based media type is
+     *                    allowed
+     * @param is          providing JSON content
      * @return {@link Document} representing JSON document
      *
      * @throws JsonLdError if the document creation fails
      */
-    public static final PolyDocument of(final MediaType contentType, final InputStream is)  throws JsonLdError {
+    @Deprecated
+    public static final TreeDocument of(final MediaType contentType, final InputStream is) throws JsonLdError {
 
         assertContentType(contentType);
 
@@ -119,25 +138,30 @@ public final class PolyDocument implements Document<PolyNode> {
     }
 
     /**
-     * Create a new document from content provided by {@link Reader}. Sets {@link MediaType#JSON} as the content type.
+     * Create a new document from content provided by {@link Reader}. Sets
+     * {@link MediaType#JSON} as the content type.
      *
      * @param reader providing JSON content
      * @return {@link Document} representing JSON document
      */
-    public static final PolyDocument of(final Reader reader)  throws JsonLdError {
+    @Deprecated
+    public static final TreeDocument of(final Reader reader) throws JsonLdError {
         return of(MediaType.JSON, reader);
     }
 
     /**
      * Create a new document from content provided by {@link Reader}.
      *
-     * @param contentType reflecting the provided content, e.g. {@link MediaType#JSON_LD}, any JSON based media type is allowed
-     * @param reader providing JSON content
+     * @param contentType reflecting the provided content, e.g.
+     *                    {@link MediaType#JSON_LD}, any JSON based media type is
+     *                    allowed
+     * @param reader      providing JSON content
      * @return {@link Document} representing JSON document
      *
      * @throws JsonLdError if the document creation fails
      */
-    public static final PolyDocument of(final MediaType contentType, final Reader reader)  throws JsonLdError {
+    @Deprecated
+    public static final TreeDocument of(final MediaType contentType, final Reader reader) throws JsonLdError {
 
         assertContentType(contentType);
 
@@ -154,7 +178,10 @@ public final class PolyDocument implements Document<PolyNode> {
         }
     }
 
-    private static final PolyDocument doParse(final MediaType contentType, final JsonParser parser) throws JsonLdError {
+    @Deprecated
+    private static final TreeDocument doParse(
+            final MediaType contentType,
+            final JsonParser parser) throws JsonLdError {
 
         if (!parser.hasNext()) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Nothing to read. Provided document is empty.");
@@ -167,11 +194,14 @@ public final class PolyDocument implements Document<PolyNode> {
         final String profile = contentType.findFirstParameter("profile").orElse(null);
 
         if (JsonUtils.isArray(root)) {
-            return new PolyDocument(contentType, profile, root.asJsonArray());
+            return new TreeDocument(contentType, profile,
+                    new PolyNode(root.asJsonArray(), JakartaAdapter.instance()));
         }
 
         if (JsonUtils.isObject(root)) {
-            return new PolyDocument(new MediaType(contentType.type(), contentType.subtype()), profile, root.asJsonObject());
+            return new TreeDocument(new MediaType(contentType.type(), contentType.subtype()), profile,
+                    new PolyNode(root.asJsonObject(), JakartaAdapter.instance())
+                    );
         }
 
         throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "JSON document's top level element must be JSON array or object.");
@@ -180,32 +210,27 @@ public final class PolyDocument implements Document<PolyNode> {
     public static final boolean accepts(final MediaType contentType) {
         return contentType != null &&
                 (MediaType.JSON_LD.match(contentType)
-                || MediaType.JSON.match(contentType)
-                || contentType.subtype().toLowerCase().endsWith(PLUS_JSON));
+                        || MediaType.JSON.match(contentType)
+                        || contentType.subtype().toLowerCase().endsWith(PLUS_JSON));
     }
 
     private static final void assertContentType(final MediaType contentType) {
         if (!accepts(contentType)) {
             throw new IllegalArgumentException(
                     "Unsupported media type '" + contentType
-                    + "'. Supported content types are ["
-                    + MediaType.JSON_LD + ", "
-                    + MediaType.JSON  + ", +json]");
+                            + "'. Supported content types are ["
+                            + MediaType.JSON_LD + ", "
+                            + MediaType.JSON + ", +json]");
         }
     }
 
     @Override
-    public Optional<JsonStructure> getJsonContent() {
-        return Optional.of(structure);
-    }
-
-    @Override
-    public MediaType getContentType() {
+    public MediaType contentType() {
         return contentType;
     }
 
     @Override
-    public URI getContextUrl() {
+    public URI contextUrl() {
         return contextUrl;
     }
 
@@ -215,7 +240,7 @@ public final class PolyDocument implements Document<PolyNode> {
     }
 
     @Override
-    public URI getDocumentUrl() {
+    public URI documentUrl() {
         return documentUrl;
     }
 
@@ -225,12 +250,12 @@ public final class PolyDocument implements Document<PolyNode> {
     }
 
     @Override
-    public Optional<String> getProfile() {
+    public Optional<String> profile() {
         return Optional.ofNullable(profile);
     }
 
     @Override
-    public PolyNode getContent() {
-        return new PolyNode(structure, JakartaAdapter.instance());
+    public PolyNode content() {
+        return content;
     }
 }

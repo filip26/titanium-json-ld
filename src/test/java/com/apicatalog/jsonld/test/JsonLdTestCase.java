@@ -16,7 +16,6 @@
 package com.apicatalog.jsonld.test;
 
 import java.net.URI;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -26,20 +25,16 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.api.StringUtils;
 import com.apicatalog.jsonld.http.media.MediaType;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.UriBaseRewriter;
-
-import jakarta.json.JsonObject;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
+import com.apicatalog.tree.io.NodeAdapter;
 
 public final class JsonLdTestCase {
 
     public static final String TESTS_BASE = "https://w3c.github.io";
 
-    public static final Predicate<JsonLdTestCase> IS_NOT_V1_0 = test -> !JsonLdVersion.V1_0.equals(test.options.specVersion);
+    public static final Predicate<JsonLdTestCase> IS_NOT_V1_0 = test -> test.options != null && !JsonLdVersion.V1_0.equals(test.options.version);
 
     public String id;
 
@@ -82,91 +77,151 @@ public final class JsonLdTestCase {
         this.loader = loader;
     }
 
-    public static final JsonLdTestCase of(JsonObject o, String manifestUri, String manifestBase, String baseUri, final DocumentLoader loader) {
+    public static final JsonLdTestCase of(
+            final Object node,
+            final NodeAdapter adapter,
+            final String manifestUri,
+            final String manifestBase,
+            final String baseUri,
+            final DocumentLoader loader) {
 
-        final JsonLdTestCase testCase = new JsonLdTestCase(manifestBase, loader);
-
-        testCase.id = o.getString(Keywords.ID);
-
-        testCase.uri = baseUri + manifestUri.substring(0, manifestUri.length() - ".jsonld".length()) + testCase.id;
-
-        testCase.type = o.get(Keywords.TYPE).asJsonArray().stream()
-                .map(JsonString.class::cast)
-                .map(JsonString::getString)
-                .map(Type::of)
-                .collect(Collectors.toSet());
-
-        testCase.name = o.getString("name");
-
-        testCase.input = o.containsKey("input")
-                ? URI.create(baseUri + o.getString("input"))
-                : null;
-
-        testCase.context = o.containsKey("context")
-                ? URI.create(baseUri + o.getString("context"))
-                : null;
-
-        testCase.expect = o.containsKey("expect")
-                ? URI.create(baseUri + o.getString("expect"))
-                : null;
-
-        testCase.frame = o.containsKey("frame")
-                ? URI.create(baseUri + o.getString("frame"))
-                : null;
-
-        testCase.expectErrorCode = o.containsKey("expectErrorCode")
-                ? errorCode((o.getString("expectErrorCode")))
-                : null;
-
-        testCase.options = o.containsKey("option")
-                ? JsonLdTestCaseOptions.of(o.getJsonObject("option"), baseUri)
-                : new JsonLdTestCaseOptions();
-
+        final var testCase = new JsonLdTestCase(manifestBase, loader);
         testCase.baseUri = baseUri;
 
-        testCase.contentType = o.containsKey("option") && o.getJsonObject("option").containsKey("contentType")
-                ? MediaType.of(o.getJsonObject("option").getString("contentType"))
-                : null;
+        for (var entry : adapter.entries(node)) {
 
-        if (testCase.contentType == null && testCase.input != null) {
+            final var key = adapter.stringValue(entry.getKey());
 
-            if (testCase.input.toString().endsWith(".jsonld")) {
-                testCase.contentType = MediaType.JSON_LD;
+            switch (key) {
+            case Keywords.ID:
+                testCase.id = adapter.stringValue(entry.getValue());
+                testCase.uri = baseUri + manifestUri.substring(0, manifestUri.length() - ".jsonld".length()) + testCase.id;
+                break;
 
-            } else if (testCase.input.toString().endsWith(".json")) {
-                testCase.contentType = MediaType.JSON;
-
-            } else if (testCase.input.toString().endsWith(".html")) {
-                testCase.contentType = MediaType.HTML;
-            }
-        }
-
-        testCase.redirectTo = o.containsKey("option") && o.getJsonObject("option").containsKey("redirectTo")
-                ? URI.create(baseUri + o.getJsonObject("option").getString("redirectTo"))
-                : null;
-
-        testCase.httpStatus = o.containsKey("option")
-                ? o.getJsonObject("option").getInt("httpStatus", 301)
-                : null;
-
-        if (o.containsKey("option") && o.getJsonObject("option").containsKey("httpLink")) {
-
-            JsonValue links = o.getJsonObject("option").get("httpLink");
-
-            if (JsonUtils.isArray(links)) {
-                testCase.httpLink = links.asJsonArray().stream()
-                        .map(JsonString.class::cast)
-                        .map(JsonString::getString)
+            case Keywords.TYPE:
+                testCase.type = adapter.elementStream(entry.getValue())
+                        .map(adapter::stringValue)
+                        .map(Type::of)
                         .collect(Collectors.toSet());
-            } else {
-                testCase.httpLink = new HashSet<>();
-                testCase.httpLink.add(((JsonString) links).getString());
+                break;
+
+            case "name":
+                testCase.name = adapter.asString(entry.getValue());
+                break;
+
+            case "input":
+                testCase.input = adapter.isNull(entry.getValue())
+                        ? null
+                        : URI.create(baseUri + adapter.stringValue(entry.getValue()));
+                break;
+
+            case "context":
+                testCase.context = adapter.isNull(entry.getValue())
+                        ? null
+                        : URI.create(baseUri + adapter.stringValue(entry.getValue()));
+                break;
+
+            case "expect":
+                testCase.expect = adapter.isNull(entry.getValue())
+                        ? null
+                        : URI.create(baseUri + adapter.stringValue(entry.getValue()));
+                break;
+
+            case "frame":
+                testCase.frame = adapter.isNull(entry.getValue())
+                        ? null
+                        : URI.create(baseUri + adapter.stringValue(entry.getValue()));
+                break;
+
+            case "option":
+                testCase.options = JsonLdTestCaseOptions.of(entry.getValue(), adapter, baseUri);
+                break;
+                
+            case "purpose":
+                break;
+
+            default:
+                System.err.println("An unknown test case property = '" + key + "'.");
+
             }
         }
 
-        testCase.undefinedTermPolicy = o.containsKey("option")
-                ? JsonLdOptions.ProcessingPolicy.valueOf(o.getJsonObject("option").getString("undefinedTermPolicy", JsonLdOptions.ProcessingPolicy.Fail.name()))
-                : JsonLdOptions.ProcessingPolicy.Ignore;
+//        testCase.type = node.get(Keywords.TYPE).asJsonArray().stream()
+//                .map(JsonString.class::cast)
+//                .map(JsonString::getString)
+//                .map(Type::of)
+//                .collect(Collectors.toSet());
+
+//        testCase.name = node.getString("name");
+
+//        testCase.input = node.containsKey("input")
+//                ? URI.create(baseUri + node.getString("input"))
+//                : null;
+//
+//        testCase.context = node.containsKey("context")
+//                ? URI.create(baseUri + node.getString("context"))
+//                : null;
+//
+//        testCase.expect = node.containsKey("expect")
+//                ? URI.create(baseUri + node.getString("expect"))
+//                : null;
+//
+//        testCase.frame = node.containsKey("frame")
+//                ? URI.create(baseUri + node.getString("frame"))
+//                : null;
+//
+//        testCase.expectErrorCode = node.containsKey("expectErrorCode")
+//                ? errorCode((node.getString("expectErrorCode")))
+//                : null;
+//
+//        testCase.options = node.containsKey("option")
+//                ? JsonLdTestCaseOptions.of(node.getJsonObject("option"), baseUri)
+//                : new JsonLdTestCaseOptions();
+//
+//
+//        testCase.contentType = node.containsKey("option") && node.getJsonObject("option").containsKey("contentType")
+//                ? MediaType.of(node.getJsonObject("option").getString("contentType"))
+//                : null;
+//
+//        if (testCase.contentType == null && testCase.input != null) {
+//
+//            if (testCase.input.toString().endsWith(".jsonld")) {
+//                testCase.contentType = MediaType.JSON_LD;
+//
+//            } else if (testCase.input.toString().endsWith(".json")) {
+//                testCase.contentType = MediaType.JSON;
+//
+//            } else if (testCase.input.toString().endsWith(".html")) {
+//                testCase.contentType = MediaType.HTML;
+//            }
+//        }
+//
+//        testCase.redirectTo = node.containsKey("option") && node.getJsonObject("option").containsKey("redirectTo")
+//                ? URI.create(baseUri + node.getJsonObject("option").getString("redirectTo"))
+//                : null;
+//
+//        testCase.httpStatus = node.containsKey("option")
+//                ? node.getJsonObject("option").getInt("httpStatus", 301)
+//                : null;
+//
+//        if (node.containsKey("option") && node.getJsonObject("option").containsKey("httpLink")) {
+//
+//            JsonValue links = node.getJsonObject("option").get("httpLink");
+//
+//            if (JsonUtils.isArray(links)) {
+//                testCase.httpLink = links.asJsonArray().stream()
+//                        .map(JsonString.class::cast)
+//                        .map(JsonString::getString)
+//                        .collect(Collectors.toSet());
+//            } else {
+//                testCase.httpLink = new HashSet<>();
+//                testCase.httpLink.add(((JsonString) links).getString());
+//            }
+//        }
+//
+//        testCase.undefinedTermPolicy = node.containsKey("option")
+//                ? JsonLdOptions.ProcessingPolicy.valueOf(node.getJsonObject("option").getString("undefinedTermPolicy", JsonLdOptions.ProcessingPolicy.Fail.name()))
+//                : JsonLdOptions.ProcessingPolicy.Ignore;
 
         return testCase;
     }
@@ -182,7 +237,6 @@ public final class JsonLdTestCase {
         jsonLdOptions.setOrdered(true);
 
         options.setup(jsonLdOptions);
-        
 
         return jsonLdOptions;
     }
