@@ -58,7 +58,7 @@ class HttpLoaderTest {
                 .filter(o -> "#t0002".equals(o.id))
                 .findFirst().orElseThrow(() -> new NoSuchElementException());
 
-        testCase.contentType = null;
+        testCase.options.contentType = null;
 
         execute(testCase);
     }

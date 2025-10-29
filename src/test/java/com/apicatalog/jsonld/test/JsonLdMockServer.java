@@ -53,25 +53,25 @@ public final class JsonLdMockServer {
 
         String inputPath;
 
-        if (testCase.redirectTo != null) {
-            inputPath = testCase.redirectTo.toString();
+        if (testCase.options.redirectTo != null) {
+            inputPath = testCase.options.redirectTo.toString();
 
         } else {
             inputPath = testCase.input.toString();
         }
 
 
-        if (testCase.redirectTo != null) {
+        if (testCase.options.redirectTo != null) {
             stubFor(get(urlEqualTo(testCase.input.toString().substring(testBase.length())))
                     .willReturn(aResponse()
-                        .withStatus(testCase.httpStatus)
-                        .withHeader("Location", testCase.redirectTo.toASCIIString().substring(testBase.length()))
+                        .withStatus(testCase.options.httpStatus)
+                        .withHeader("Location", testCase.options.redirectTo.toASCIIString().substring(testBase.length()))
                             ));
         }
 
-        if (testCase.httpLink != null && testCase.httpLink.size() == 1) {
+        if (testCase.options.httpLink != null && testCase.options.httpLink.size() == 1) {
 
-            String linkValue = testCase.httpLink.iterator().next();
+            String linkValue = testCase.options.httpLink.iterator().next();
 
             Link link = Link.of(linkValue, URI.create(".")).iterator().next();
 
@@ -126,12 +126,12 @@ public final class JsonLdMockServer {
         if (content != null) {
             mockResponseBuilder.withStatus(200);
 
-            if (testCase.httpLink != null) {
-                testCase.httpLink.forEach(link -> mockResponseBuilder.withHeader("Link", link));
+            if (testCase.options.httpLink != null) {
+                testCase.options.httpLink.forEach(link -> mockResponseBuilder.withHeader("Link", link));
             }
 
-            if (testCase.contentType != null) {
-                mockResponseBuilder.withHeader("Content-Type", testCase.contentType.toString());
+            if (testCase.options.contentType != null) {
+                mockResponseBuilder.withHeader("Content-Type", testCase.options.contentType.toString());
             }
 
             mockResponseBuilder.withBody(content);
@@ -147,8 +147,8 @@ public final class JsonLdMockServer {
         verify(getRequestedFor(urlMatching(testCase.input.toString().substring(testBase.length())))
                 .withHeader("accept", equalTo(HttpLoader.getAcceptHeader())));
 
-        if (testCase.redirectTo != null) {
-            verify(getRequestedFor(urlMatching(testCase.redirectTo.toString().substring(testBase.length())))
+        if (testCase.options.redirectTo != null) {
+            verify(getRequestedFor(urlMatching(testCase.options.redirectTo.toString().substring(testBase.length())))
                 .withHeader("accept", equalTo(HttpLoader.getAcceptHeader())));
         }
     }

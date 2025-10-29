@@ -32,7 +32,7 @@ import com.apicatalog.jsonld.lang.JsonLdComparison;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.jsonld.loader.QuadSetDocument;
 import com.apicatalog.jsonld.rdf.in.QuadsToJsonld;
-import com.apicatalog.jsonld.test.LegacyJsonLdTestCase.Type;
+import com.apicatalog.jsonld.test.JsonLdTestCase.Type;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.model.RdfQuadSet;
@@ -41,6 +41,7 @@ import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.flow.QuadEmitter;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
 import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 import com.apicatalog.tree.io.java.NativeAdapter;
@@ -102,7 +103,7 @@ public class JsonLdTestRunnerJunit {
             return execute(options -> JsonLd.frame(testCase.input, testCase.frame).options(options).get());
         }
 
-        throw new IllegalStateException();
+        throw new IllegalStateException("An uknown test type to execute = " + testCase.type + ".");
     }
 
     public boolean execute(final JsonLdTestCaseMethod method) {
@@ -189,12 +190,12 @@ public class JsonLdTestRunnerJunit {
         assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
 
         try {
-            Document expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new LoaderOptions());
+            var expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new LoaderOptions());
 
             assertNotNull(expectedDocument);
 
             // compare expected with the result
-            return compareJson(testCase, result, resultAdapter, (JsonStructure) expectedDocument.getJsonContent().get());
+            return compareJson(testCase, result, resultAdapter, expectedDocument.content());
 
         } catch (JsonLdError | IOException e) {
             fail(e.getMessage());
@@ -228,19 +229,22 @@ public class JsonLdTestRunnerJunit {
         return false;
     }
 
-    public static final boolean compareJson(final JsonLdTestCase testCase, final Object result, final NodeAdapter resultAdapter, final JsonStructure expected) throws IOException {
+    public static final boolean compareJson(final JsonLdTestCase testCase, final Object result, final NodeAdapter resultAdapter, final PolyNode expected) throws IOException {
 
-        if (JsonLdComparison.equals(expected, JakartaAdapter.instance(), result, resultAdapter)) {
+        if (JsonLdComparison.equals(expected.node(), expected.adapter(), result, resultAdapter)) {
             return true;
         }
 
-        write(testCase, new JakartaMaterializer().node(result, resultAdapter), expected, null);
+        write(testCase, 
+                new JakartaMaterializer().node(result, resultAdapter), 
+                new JakartaMaterializer().node(expected), 
+                null);
 
         fail("Expected " + expected + ", but was" + result);
         return false;
     }
 
-    public static void write(final JsonLdTestCase testCase, final JsonValue result, final JsonStructure expected, JsonLdError error) {
+    public static void write(final JsonLdTestCase testCase, final JsonValue result, final JsonValue expected, JsonLdError error) {
         final StringWriter stringWriter = new StringWriter();
 
         try (final PrintWriter writer = new PrintWriter(stringWriter)) {

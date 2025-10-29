@@ -58,17 +58,7 @@ public final class JsonLdTestCase {
 
     public JsonLdTestCaseOptions options;
 
-    public MediaType contentType;
-
-    public URI redirectTo;
-
-    public Integer httpStatus;
-
-    public Set<String> httpLink;
-
     private final String testsBase;
-
-    public JsonLdOptions.ProcessingPolicy undefinedTermPolicy = JsonLdOptions.ProcessingPolicy.Ignore;
 
     private final DocumentLoader loader;
 
@@ -127,6 +117,10 @@ public final class JsonLdTestCase {
                         : URI.create(baseUri + adapter.stringValue(entry.getValue()));
                 break;
 
+            case "expectErrorCode":
+                testCase.expectErrorCode = errorCode(adapter.stringValue(entry.getValue()));
+                break;
+                
             case "frame":
                 testCase.frame = adapter.isNull(entry.getValue())
                         ? null
@@ -145,35 +139,11 @@ public final class JsonLdTestCase {
 
             }
         }
+        
+        if (testCase.options == null) {
+            testCase.options = JsonLdTestCaseOptions.of(baseUri);
+        }
 
-//        testCase.type = node.get(Keywords.TYPE).asJsonArray().stream()
-//                .map(JsonString.class::cast)
-//                .map(JsonString::getString)
-//                .map(Type::of)
-//                .collect(Collectors.toSet());
-
-//        testCase.name = node.getString("name");
-
-//        testCase.input = node.containsKey("input")
-//                ? URI.create(baseUri + node.getString("input"))
-//                : null;
-//
-//        testCase.context = node.containsKey("context")
-//                ? URI.create(baseUri + node.getString("context"))
-//                : null;
-//
-//        testCase.expect = node.containsKey("expect")
-//                ? URI.create(baseUri + node.getString("expect"))
-//                : null;
-//
-//        testCase.frame = node.containsKey("frame")
-//                ? URI.create(baseUri + node.getString("frame"))
-//                : null;
-//
-//        testCase.expectErrorCode = node.containsKey("expectErrorCode")
-//                ? errorCode((node.getString("expectErrorCode")))
-//                : null;
-//
 //        testCase.options = node.containsKey("option")
 //                ? JsonLdTestCaseOptions.of(node.getJsonObject("option"), baseUri)
 //                : new JsonLdTestCaseOptions();

@@ -16,9 +16,11 @@
 package com.apicatalog.jsonld.test;
 
 import java.net.URI;
+import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
+import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.tree.io.NodeAdapter;
 
@@ -38,10 +40,22 @@ public class JsonLdTestCaseOptions {
     public Boolean omitGraph;
     public Boolean numericId;
     public Boolean rdfStar;
-    
+    public MediaType contentType;    
     public JsonLdOptions.ProcessingPolicy undefinedTerms;
+    
+    public URI redirectTo;
 
-    public static final JsonLdTestCaseOptions of(Object node, NodeAdapter adapter, String baseUri) {
+    public Integer httpStatus;
+
+    public Set<String> httpLink;
+
+    public JsonLdOptions.ProcessingPolicy undefinedTermPolicy = JsonLdOptions.ProcessingPolicy.Ignore;
+
+    public static final JsonLdTestCaseOptions of(String baseUri) {
+        return new JsonLdTestCaseOptions();
+        
+    }
+    public static final JsonLdTestCaseOptions of(Object node, NodeAdapter adapter, String baseUri1) {
 
         final JsonLdTestCaseOptions options = new JsonLdTestCaseOptions();
 System.out.println(node);
