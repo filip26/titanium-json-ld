@@ -26,7 +26,7 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.JsonLdComparison;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.jsonld.loader.QuadSetDocument;
-import com.apicatalog.jsonld.test.LegacyJsonLdTestCase.Type;
+import com.apicatalog.jsonld.test.JsonLdTestCase.Type;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.model.RdfQuadSet;

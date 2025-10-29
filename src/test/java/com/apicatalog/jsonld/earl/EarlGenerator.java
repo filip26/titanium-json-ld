@@ -36,7 +36,6 @@ import com.apicatalog.jsonld.test.JsonLdManifestLoader;
 import com.apicatalog.jsonld.test.JsonLdMockServer;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerEarl;
-import com.apicatalog.jsonld.test.LegacyJsonLdTestCase;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.flow.QuadEmitter;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
@@ -159,7 +158,7 @@ public class EarlGenerator {
                         WireMockServer wireMockServer = new WireMockServer();
                         wireMockServer.start();
 
-                        JsonLdMockServer server = new JsonLdMockServer(testCase, LegacyJsonLdTestCase.TESTS_BASE, JsonLdManifestLoader.JSON_LD_API_BASE, new ZipResourceLoader());
+                        JsonLdMockServer server = new JsonLdMockServer(testCase, JsonLdTestCase.TESTS_BASE, JsonLdManifestLoader.JSON_LD_API_BASE, new ZipResourceLoader());
                         server.start();
 
                         result = (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
