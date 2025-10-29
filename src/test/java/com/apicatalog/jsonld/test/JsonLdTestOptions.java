@@ -122,6 +122,22 @@ public class JsonLdTestOptions {
             case "omitGraph":
                 options.omitGraph = adapter.isTrue(entry.getValue());
                 break;
+                
+            case "produceGeneralizedRdf":
+                options.produceGeneralizedRdf = adapter.isTrue(entry.getValue());
+                break;
+                
+            case "rdfDirection":
+                options.rdfDirection = adapter.stringValue(entry.getValue());
+                break;
+                
+            case "useNativeTypes":
+                options.useNativeTypes = adapter.isTrue(entry.getValue());
+                break;
+            
+            case "useRdfType":
+                options.useRdfType = adapter.isTrue(entry.getValue());
+                break;
 
             default:
                 System.err.println("An unknown test option " + key + " = " + entry.getValue() + ".");

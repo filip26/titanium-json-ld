@@ -135,7 +135,7 @@ public final class JsonLdTestCase {
                 break;
 
             default:
-                System.err.println("An unknown test case property = '" + key + "'.");
+                System.err.println("An unknown test case property " + key + " = " + entry.getValue() + ".");
 
             }
         }

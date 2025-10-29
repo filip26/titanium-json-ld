@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.rdf.in;
 
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -565,7 +566,19 @@ public class QuadsToJsonld implements RdfQuadConsumer {
 
                 } else if (XsdConstants.DOUBLE.equals(datatype) || XsdConstants.FLOAT.equals(datatype)) {
 
-                    convertedValue = JsonProvider.instance().createValue(Double.parseDouble(object));
+                    try {
+                        final Double number = Double.parseDouble(object);
+
+                        if (!number.isInfinite()) {
+
+                            convertedValue = JsonProvider.instance().createValue(number);
+                        } else {
+                            type = datatype;
+                        }
+
+                    } catch (NumberFormatException e) {
+                        type = datatype;
+                    }
 
                 } else if (datatype != null) {
 

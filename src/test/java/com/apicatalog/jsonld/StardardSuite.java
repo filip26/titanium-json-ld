@@ -27,6 +27,8 @@ import org.junit.platform.suite.api.SuiteDisplayName;
         CompactorTest.class,
         FramerTest.class,
         RemoteTest.class,
+        FromRdfTest.class,
+        ToRdfTest.class
 })
 public class StardardSuite {
 
