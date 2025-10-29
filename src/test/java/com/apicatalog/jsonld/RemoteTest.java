@@ -28,7 +28,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.apicatalog.jsonld.loader.SchemeRouter;
 import com.apicatalog.jsonld.loader.UriBaseRewriter;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
-import com.apicatalog.jsonld.test.JsonLdManifestLoader;
+import com.apicatalog.jsonld.test.JsonLdTestManifest;
 import com.apicatalog.jsonld.test.JsonLdMockServer;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
@@ -60,7 +60,7 @@ class RemoteTest {
 
         try {
 
-            JsonLdMockServer server = new JsonLdMockServer(testCase, JsonLdTestCase.TESTS_BASE, JsonLdManifestLoader.JSON_LD_API_BASE, new ZipResourceLoader());
+            JsonLdMockServer server = new JsonLdMockServer(testCase, JsonLdTestCase.TESTS_BASE, JsonLdTestManifest.JSON_LD_API_BASE, new ZipResourceLoader());
 
             server.start();
 
@@ -86,8 +86,8 @@ class RemoteTest {
     }
 
     static final Stream<JsonLdTestCase> data() throws JsonLdError {
-        return JsonLdManifestLoader
-                    .load(JsonLdManifestLoader.JSON_LD_API_BASE, "remote-doc-manifest.jsonld", new ZipResourceLoader())
+        return JsonLdTestManifest
+                    .load(JsonLdTestManifest.JSON_LD_API_BASE, "remote-doc-manifest.jsonld", new ZipResourceLoader())
                     .stream()
                     .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                     ;

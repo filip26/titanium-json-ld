@@ -18,7 +18,9 @@ package com.apicatalog.jsonld.rdf.out;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Collection;
 import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
@@ -153,10 +155,10 @@ public final class ToRdf {
                             continue;
                         }
 
-                        for (final JsonValue item : ((JsonValue) nodeMap.get(graphName, subject, property)).asJsonArray()) {
+                        for (final var item : (Collection<?>) nodeMap.get(graphName, subject, property)) {
                             fromObject(
                                     consumer,
-                                    item.asJsonObject(),
+                                    (Map) item,
                                     subject,
                                     property);
                         }
@@ -178,55 +180,59 @@ public final class ToRdf {
      */
     private void fromObject(
             final RdfTripleConsumer consumer,
-            final JsonObject item,
+            final Map<String, ?> item,
             final String subject,
             final String predicate) throws JsonLdError, RdfConsumerException {
 
         // 1. - 2.
-        if (JsonLdAdapter.isNodeJakarta(item)) {
+        if (JsonLdAdapter.isNode(item)) {
 
-            JsonValue id = item.get(Keywords.ID);
+            var id = item.get(Keywords.ID);
 
-            if (JsonUtils.isNotString(id) || JsonUtils.isNull(id)) {
-                return;
-            }
+//            JsonValue id = item.get(Keywords.ID);
 
-            String idString = ((JsonString) id).getString();
+            if (id instanceof String idString) {
 
-            if (BlankNode.isWellFormed(idString) || UriUtils.isAbsoluteUri(idString, uriValidation)) {
-                consumer.triple(subject, predicate, idString);
+                if (BlankNode.isWellFormed(idString) || UriUtils.isAbsoluteUri(idString, uriValidation)) {
+                    consumer.triple(subject, predicate, idString);
+                }
+
+//            if (JsonUtils.isNotString(id) || JsonUtils.isNull(id)) {
+//                return;
             }
 
             return;
         }
 
         // 3.
-        if (JsonLdAdapter.isListObject(item)) {
-            fromList(consumer, item.get(Keywords.LIST).asJsonArray(), subject, predicate);
+        if (JsonLdAdapter.isList(item)) {
+            fromList(consumer, (Collection) item.get(Keywords.LIST), subject, predicate);
         }
 
         // 4.
-        if (!JsonLdAdapter.isValueObject(item)) {
+        if (!JsonLdAdapter.isValueNode(item)) {
             return;
         }
 
-        final JsonValue value = item.get(Keywords.VALUE);
+        final var value = item.get(Keywords.VALUE);
 
         // 5.
-        String datatype = item.containsKey(Keywords.TYPE) && JsonUtils.isString(item.get(Keywords.TYPE))
-                ? item.getString(Keywords.TYPE)
+        String datatype = item.get(Keywords.TYPE) instanceof String type
+                ? type
                 : null;
 
         // 6.
-        if (datatype != null && !Keywords.JSON.equals(datatype) && !UriUtils.isAbsoluteUri(datatype, uriValidation)) {
+        if (datatype != null
+                && !Keywords.JSON.equals(datatype)
+                && !UriUtils.isAbsoluteUri(datatype, uriValidation)) {
             LOGGER.log(Level.WARNING, "Datatype [{0}] is not an absolute IRI nor @json and value is skipped.", datatype);
             return;
         }
 
         // 7.
         if (item.containsKey(Keywords.LANGUAGE)
-                && (JsonUtils.isNotString(item.get(Keywords.LANGUAGE))
-                        || !LanguageTag.isWellFormed(item.getString(Keywords.LANGUAGE)))) {
+                && (!(item.get(Keywords.LANGUAGE) instanceof String langString)
+                        || !LanguageTag.isWellFormed(langString))) {
             LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed string and value is skipped.", item.get(Keywords.LANGUAGE));
             return;
         }
@@ -239,7 +245,7 @@ public final class ToRdf {
             datatype = RdfConstants.JSON;
 
             // 9.
-        } else if (JsonUtils.isTrue(value)) {
+        } else if (Boolean.TRUE.equals(value)) {
 
             valueString = "true";
 
@@ -247,7 +253,7 @@ public final class ToRdf {
                 datatype = XsdConstants.BOOLEAN;
             }
 
-        } else if (JsonUtils.isFalse(value)) {
+        } else if (Boolean.FALSE.equals(value)) {
 
             valueString = "false";
 
@@ -256,32 +262,34 @@ public final class ToRdf {
             }
 
             // 10. - 11.
-        } else if (JsonUtils.isNumber(value)) {
+//        } else if (JsonUtils.isNumber(value)) {
+        } else if (value instanceof Number number) {
 
-            JsonNumber number = ((JsonNumber) value);
+//            JsonNumber number = ((JsonNumber) value);
 
+            //FIXME
             // 11.
-            if ((!number.isIntegral() && number.doubleValue() % -1 != 0)
-                    || XsdConstants.DOUBLE.equals(datatype)
-                    || XsdConstants.FLOAT.equals(datatype)
-                    || number.bigDecimalValue().compareTo(BigDecimal.ONE.movePointRight(21)) >= 0) {
-
-                valueString = toXsdDouble(number.bigDecimalValue());
-
-                if (datatype == null) {
-                    datatype = XsdConstants.DOUBLE;
-                }
-
-                // 10.
-            } else {
-
-                valueString = number.bigIntegerValue().toString();
-
-                if (datatype == null) {
-                    datatype = XsdConstants.INTEGER;
-                }
-
-            }
+//            if ((!number.isIntegral() && number.doubleValue() % -1 != 0)
+//                    || XsdConstants.DOUBLE.equals(datatype)
+//                    || XsdConstants.FLOAT.equals(datatype)
+//                    || number.bigDecimalValue().compareTo(BigDecimal.ONE.movePointRight(21)) >= 0) {
+//
+//                valueString = toXsdDouble(number.bigDecimalValue());
+//
+//                if (datatype == null) {
+//                    datatype = XsdConstants.DOUBLE;
+//                }
+//
+//                // 10.
+//            } else {
+//
+//                valueString = number.bigIntegerValue().toString();
+//
+//                if (datatype == null) {
+//                    datatype = XsdConstants.INTEGER;
+//                }
+//
+//            }
 
             // 12.
         } else if (datatype == null) {
@@ -293,26 +301,30 @@ public final class ToRdf {
 
         if (valueString == null) {
 
-            if (JsonUtils.isNotString(value)) {
+            if (value instanceof String valueAsString) {
+
+                valueString = valueAsString;
+
+            } else {
                 return;
             }
-
-            valueString = ((JsonString) value).getString();
         }
 
         // 13.
         if (item.containsKey(Keywords.DIRECTION) && rdfDirection != null) {
 
             // 13.1.
-            final String language = item.containsKey(Keywords.LANGUAGE)
-                    ? item.getString(Keywords.LANGUAGE).toLowerCase()
+            final String language = item.get(Keywords.LANGUAGE) instanceof String langString
+                    ? langString.toLowerCase()
                     : "";
             // 13.2.
             if (RdfDirection.I18N_DATATYPE == rdfDirection) {
                 consumer.triple(
                         subject,
                         predicate,
-                        valueString, language, item.getString(Keywords.DIRECTION));
+                        valueString,
+                        language,
+                        (String) item.get(Keywords.DIRECTION));
 
                 // 13.3.
             } else if (RdfDirection.COMPOUND_LITERAL == rdfDirection) {
@@ -327,11 +339,11 @@ public final class ToRdf {
                         XsdConstants.STRING);
 
                 // 13.3.3.
-                if (item.containsKey(Keywords.LANGUAGE) && JsonUtils.isString(item.get(Keywords.LANGUAGE))) {
+                if (item.get(Keywords.LANGUAGE) instanceof String langString) {
                     consumer.triple(
                             blankNodeId,
                             RdfConstants.LANGUAGE,
-                            item.getString(Keywords.LANGUAGE).toLowerCase(),
+                            langString.toLowerCase(),
                             XsdConstants.STRING);
                 }
 
@@ -339,7 +351,7 @@ public final class ToRdf {
                 consumer.triple(
                         blankNodeId,
                         RdfConstants.DIRECTION,
-                        item.getString(Keywords.DIRECTION),
+                        (String) item.get(Keywords.DIRECTION),
                         XsdConstants.STRING);
 
                 consumer.triple(subject, predicate, blankNodeId);
@@ -348,11 +360,11 @@ public final class ToRdf {
 
             // 14.
         } else {
-            if (item.containsKey(Keywords.LANGUAGE) && JsonUtils.isString(item.get(Keywords.LANGUAGE))) {
+            if (item.get(Keywords.LANGUAGE) instanceof String langString) {
                 consumer.triple(
                         subject,
                         predicate,
-                        valueString, item.getString(Keywords.LANGUAGE), null);
+                        valueString, langString, null);
 
             } else {
                 consumer.triple(
@@ -369,12 +381,12 @@ public final class ToRdf {
      */
     private void fromList(
             final RdfTripleConsumer consumer,
-            final JsonArray list,
+            final Collection<?> list,
             final String subject,
             final String predicate) throws JsonLdError, RdfConsumerException {
 
         // 1.
-        if (JsonUtils.isEmptyArray(list)) {
+        if (list.isEmpty()) {
             consumer.triple(subject, predicate, RdfConstants.NIL);
             return;
         }
@@ -388,14 +400,14 @@ public final class ToRdf {
 
         // 3.
         int index = 0;
-        for (final JsonValue item : list) {
+        for (final var item : list) {
 
             final String blankNodeSubject = bnodes[index];
             index++;
 
             fromObject(
                     consumer,
-                    item.asJsonObject(),
+                    (Map) item,
                     blankNodeSubject,
                     RdfConstants.FIRST);
 

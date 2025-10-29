@@ -32,7 +32,7 @@ import com.apicatalog.jsonld.loader.SchemeRouter;
 import com.apicatalog.jsonld.loader.UriBaseRewriter;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.jsonld.rdf.in.QuadsToJsonld;
-import com.apicatalog.jsonld.test.JsonLdManifestLoader;
+import com.apicatalog.jsonld.test.JsonLdTestManifest;
 import com.apicatalog.jsonld.test.JsonLdMockServer;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerEarl;
@@ -68,8 +68,8 @@ public class EarlGenerator {
 
     public void testExpand(PrintWriter writer) throws JsonLdError {
 
-        JsonLdManifestLoader
-                .load(JsonLdManifestLoader.JSON_LD_API_BASE, "expand-manifest.jsonld", new ZipResourceLoader())
+        JsonLdTestManifest
+                .load(JsonLdTestManifest.JSON_LD_API_BASE, "expand-manifest.jsonld", new ZipResourceLoader())
                 .stream()
                 .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
@@ -78,8 +78,8 @@ public class EarlGenerator {
 
     public void testCompact(final PrintWriter writer) throws JsonLdError {
 
-        JsonLdManifestLoader
-                .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld", new ZipResourceLoader())
+        JsonLdTestManifest
+                .load(JsonLdTestManifest.JSON_LD_API_BASE, "compact-manifest.jsonld", new ZipResourceLoader())
                 .stream()
                 .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
@@ -92,8 +92,8 @@ public class EarlGenerator {
 
     public void testFlatten(final PrintWriter writer) throws JsonLdError {
 
-        JsonLdManifestLoader
-                .load(JsonLdManifestLoader.JSON_LD_API_BASE, "flatten-manifest.jsonld", new ZipResourceLoader())
+        JsonLdTestManifest
+                .load(JsonLdTestManifest.JSON_LD_API_BASE, "flatten-manifest.jsonld", new ZipResourceLoader())
                 .stream()
                 .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
@@ -106,8 +106,8 @@ public class EarlGenerator {
 
     public void testToRdf(final PrintWriter writer) throws JsonLdError {
 
-        JsonLdManifestLoader
-                .load(JsonLdManifestLoader.JSON_LD_API_BASE, "toRdf-manifest.jsonld", new ZipResourceLoader())
+        JsonLdTestManifest
+                .load(JsonLdTestManifest.JSON_LD_API_BASE, "toRdf-manifest.jsonld", new ZipResourceLoader())
                 .stream()
                 .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
@@ -120,8 +120,8 @@ public class EarlGenerator {
 
     public void testFromRdf(PrintWriter writer) throws JsonLdError {
 
-        JsonLdManifestLoader
-                .load(JsonLdManifestLoader.JSON_LD_API_BASE, "fromRdf-manifest.jsonld", new ZipResourceLoader())
+        JsonLdTestManifest
+                .load(JsonLdTestManifest.JSON_LD_API_BASE, "fromRdf-manifest.jsonld", new ZipResourceLoader())
                 .stream()
                 .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
@@ -137,8 +137,8 @@ public class EarlGenerator {
     }
 
     public void testFrame(PrintWriter writer) throws JsonLdError {
-        JsonLdManifestLoader
-                .load(JsonLdManifestLoader.JSON_LD_FRAMING_BASE, "frame-manifest.jsonld", new ZipResourceLoader())
+        JsonLdTestManifest
+                .load(JsonLdTestManifest.JSON_LD_FRAMING_BASE, "frame-manifest.jsonld", new ZipResourceLoader())
                 .stream()
                 .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
@@ -146,8 +146,8 @@ public class EarlGenerator {
     }
 
     public void testRemote(PrintWriter writer) throws JsonLdError {
-        JsonLdManifestLoader
-                .load(JsonLdManifestLoader.JSON_LD_API_BASE, "remote-doc-manifest.jsonld", new ZipResourceLoader())
+        JsonLdTestManifest
+                .load(JsonLdTestManifest.JSON_LD_API_BASE, "remote-doc-manifest.jsonld", new ZipResourceLoader())
                 .stream()
                 .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> {
@@ -158,7 +158,7 @@ public class EarlGenerator {
                         WireMockServer wireMockServer = new WireMockServer();
                         wireMockServer.start();
 
-                        JsonLdMockServer server = new JsonLdMockServer(testCase, JsonLdTestCase.TESTS_BASE, JsonLdManifestLoader.JSON_LD_API_BASE, new ZipResourceLoader());
+                        JsonLdMockServer server = new JsonLdMockServer(testCase, JsonLdTestCase.TESTS_BASE, JsonLdTestManifest.JSON_LD_API_BASE, new ZipResourceLoader());
                         server.start();
 
                         result = (new JsonLdTestRunnerEarl(testCase)).execute(options -> {

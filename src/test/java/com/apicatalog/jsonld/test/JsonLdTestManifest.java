@@ -25,8 +25,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 
-
-public final class JsonLdManifestLoader {
+public final class JsonLdTestManifest {
 
     public static final String JSON_LD_API_BASE = "zip://json-ld-test-suite-20251009.zip/com/github/w3c/json-ld-api/tests/";
     public static final String JSON_LD_FRAMING_BASE = "zip://json-ld-framing-test-suite-20251009.zip/com/github/w3c/json-ld-framing/tests/";
@@ -39,15 +38,15 @@ public final class JsonLdManifestLoader {
 
     private final DocumentLoader loader;
 
-    private JsonLdManifestLoader(final String manifestBase, final String manifestName, final DocumentLoader loader) {
+    private JsonLdTestManifest(final String manifestBase, final String manifestName, final DocumentLoader loader) {
         this.manifestBase = manifestBase;
         this.manifestName = manifestName;
 
         this.loader = loader;
     }
 
-    public static JsonLdManifestLoader load(final String manifestBase, final String manifestName, final DocumentLoader loader) {
-        return new JsonLdManifestLoader(manifestBase, manifestName, loader);
+    public static JsonLdTestManifest load(final String manifestBase, final String manifestName, final DocumentLoader loader) {
+        return new JsonLdTestManifest(manifestBase, manifestName, loader);
     }
 
     public Stream<JsonLdTestCase> stream() {
@@ -59,16 +58,18 @@ public final class JsonLdManifestLoader {
             assertNotNull(manifest);
 
             final var node = manifest.content();
-//                                                    .getJsonContent()
-//                                                    .filter(JsonUtils::isObject)
-//                                                    .map(JsonObject.class::cast)
-//                                                    .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED));
 
-            final var baseUri = node.adapter().stringValue(node.property("baseIri"));            
-            
-            return node.adapter().elementStream(node.property("sequence"))
-//                            .map(node.adapter()::entries)
-                            .map(o -> JsonLdTestCase.of(o, node.adapter(), manifestName, manifestBase, baseUri, loader));
+            final var baseUri = node.adapter().stringValue(node.property("baseIri"));
+
+            return node.adapter()
+                    .elementStream(node.property("sequence"))
+                    .map(test -> JsonLdTestCase.of(
+                            test,
+                            node.adapter(),
+                            manifestName,
+                            manifestBase,
+                            baseUri,
+                            loader));
 
         } catch (JsonLdError e) {
             fail(e);

@@ -81,8 +81,12 @@ public class JsonLdTestRunnerJunit {
 
                 final OrderedQuadSet set = new OrderedQuadSet();
 
+                System.out.println(">>> " + testCase.input);
+                
                 JsonLd.toRdf(testCase.input).options(options).provide(new QuadAcceptor(set));
 
+                System.out.println(">>> " + set);
+                
                 return set;
             });
         }
@@ -106,7 +110,7 @@ public class JsonLdTestRunnerJunit {
         throw new IllegalStateException("An uknown test type to execute = " + testCase.type + ".");
     }
 
-    public boolean execute(final JsonLdTestCaseMethod method) {
+    public boolean execute(final JsonLdTestMethod method) {
 
         assertNotNull(testCase.baseUri);
         assertNotNull(testCase.input);

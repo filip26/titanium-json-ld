@@ -22,7 +22,7 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.rdf.api.RdfConsumerException;
 
 @FunctionalInterface
-public interface JsonLdTestCaseMethod {
+public interface JsonLdTestMethod {
 
     Object invoke(JsonLdOptions options) throws JsonLdError, RdfConsumerException, IOException;
 

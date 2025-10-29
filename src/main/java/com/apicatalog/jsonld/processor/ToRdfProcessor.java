@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.processor;
 
+import java.io.IOException;
 import java.net.URI;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -26,6 +27,8 @@ import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.jsonld.rdf.out.ToRdf;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
+import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
+import com.apicatalog.tree.io.java.NativeAdapter;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonValue;
@@ -41,7 +44,7 @@ public final class ToRdfProcessor {
     private ToRdfProcessor() {
     }
 
-    public static final void toRdf(final RdfQuadConsumer consumer, final URI input, final JsonLdOptions options) throws JsonLdError {
+    public static final void toRdf(final RdfQuadConsumer consumer, final URI input, final JsonLdOptions options) throws JsonLdError, IOException {
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
@@ -58,20 +61,19 @@ public final class ToRdfProcessor {
         toRdf(consumer, remoteDocument, options);
     }
 
-    public static final void toRdf(final RdfQuadConsumer consumer, final Document input, final JsonLdOptions options) throws JsonLdError {
+    public static final void toRdf(final RdfQuadConsumer consumer, final Document input, final JsonLdOptions options) throws JsonLdError, IOException {
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
 
         expansionOptions.setProcessingMode(options.getProcessingMode());
         expansionOptions.setBase(options.getBase());
         expansionOptions.setExpandContext(options.getExpandContext());
 
-//FIXME        final JsonArray expandedInput = ExpansionProcessor.expand(input, expansionOptions, false);
-        JsonArray expandedInput = JsonValue.EMPTY_JSON_ARRAY;
+        final var expandedInput = Expander.expand(input, false, expansionOptions);
 
         toRdf(consumer, expandedInput, options);
     }
 
-    public static final void toRdf(final RdfQuadConsumer consumer, final JsonArray expandedInput, final JsonLdOptions options) throws JsonLdError {
+    public static final void toRdf(final RdfQuadConsumer consumer, final Object expandedInput, final JsonLdOptions options) throws JsonLdError {
         ToRdf
                 .with(new NodeMapBuilder(expandedInput, new NodeMap()).build())
                 .produceGeneralizedRdf(options.isProduceGeneralizedRdf())

@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.test.JsonLdManifestLoader;
+import com.apicatalog.jsonld.test.JsonLdTestManifest;
 import com.apicatalog.jsonld.test.JsonLdMockServer;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
@@ -52,7 +52,7 @@ class HttpLoaderTest {
     @Test
     void testMissingContentType() throws URISyntaxException, JsonLdError {
 
-        final JsonLdTestCase testCase = JsonLdManifestLoader
+        final JsonLdTestCase testCase = JsonLdTestManifest
                 .load("/com/apicatalog/jsonld/test/", "manifest.json", new ClasspathLoader())
                 .stream()
                 .filter(o -> "#t0002".equals(o.id))
@@ -66,7 +66,7 @@ class HttpLoaderTest {
     @Test
     void testPlainTextContentType() throws URISyntaxException, JsonLdError {
 
-        final JsonLdTestCase testCase = JsonLdManifestLoader
+        final JsonLdTestCase testCase = JsonLdTestManifest
                 .load("/com/apicatalog/jsonld/test/", "manifest.json", new ClasspathLoader())
                 .stream()
                 .filter(o -> "#t0008".equals(o.id))

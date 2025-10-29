@@ -43,7 +43,7 @@ public class JsonLdTestRunnerEarl {
         this.testCase = testCase;
     }
 
-    public boolean execute(JsonLdTestCaseMethod method) {
+    public boolean execute(JsonLdTestMethod method) {
 
         assertNotNull(testCase.baseUri);
         assertNotNull(testCase.input);
