@@ -547,22 +547,25 @@ public class QuadsToJsonld implements RdfQuadConsumer {
                 } else if (XsdConstants.BOOLEAN.equals(datatype)) {
 
                     if ("true".equals(object) || "1".equals(object)) {
-
                         convertedValue = JsonValue.TRUE;
 
                     } else if ("false".equals(object) || "0".equals(object)) {
-
                         convertedValue = JsonValue.FALSE;
 
                     } else {
-
                         type = XsdConstants.BOOLEAN;
                     }
 
                     // 2.4.3.
                 } else if (XsdConstants.INTEGER.equals(datatype) || XsdConstants.INT.equals(datatype) || XsdConstants.LONG.equals(datatype)) {
 
-                    convertedValue = JsonProvider.instance().createValue(Long.parseLong(object));
+                    try {
+
+                        convertedValue = JsonProvider.instance().createValue(Long.parseLong(object));
+                        
+                    } catch (NumberFormatException e) {
+                        type = datatype;
+                    }
 
                 } else if (XsdConstants.DOUBLE.equals(datatype) || XsdConstants.FLOAT.equals(datatype)) {
 
@@ -580,7 +583,17 @@ public class QuadsToJsonld implements RdfQuadConsumer {
                         type = datatype;
                     }
 
-                } else if (datatype != null) {
+                } else if (XsdConstants.DECIMAL.equals(datatype)) {
+
+                    try {
+                        convertedValue = JsonProvider.instance().createValue(new BigDecimal(object));
+
+                    } catch (NumberFormatException e) {
+                        type = datatype;
+                    }
+                }
+
+                else if (datatype != null) {
 
                     type = datatype;
                 }
