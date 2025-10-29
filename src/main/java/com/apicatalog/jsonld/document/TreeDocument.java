@@ -60,7 +60,7 @@ public final class TreeDocument implements Document {
      */
     public static TreeDocument of(final PolyNode content) {
         Objects.requireNonNull(content);
-        return of(null, content);
+        return of(MediaType.JSON, content);
     }
 
     /**

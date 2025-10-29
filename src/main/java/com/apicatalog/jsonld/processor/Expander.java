@@ -31,7 +31,6 @@ import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.tree.io.PolyNode;
-import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
 /**
@@ -101,12 +100,14 @@ public final class Expander {
         // If expandContext is a map having an @context entry, pass that entry's value
         // instead for local context.
         if (options.getExpandContext() != null) {
-//            System.out.println("CXT URL " + options.getExpandContext());
-            final var contextValue = options.getExpandContext().getJsonContent();
-
-            if (contextValue.isPresent()) {
-                builder.update(contextValue.get(), JakartaAdapter.instance(), baseUrl);
-            }
+            final var expandContext = options.getExpandContext().content();
+//
+//            if (contextValue.isPresent()) {
+            builder.update(
+                    expandContext.node(),
+                    expandContext.adapter(),
+                    baseUrl);
+//            }
         }
 
         // 7.

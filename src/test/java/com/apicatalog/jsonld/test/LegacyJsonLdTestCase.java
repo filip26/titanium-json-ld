@@ -61,7 +61,7 @@ public final class LegacyJsonLdTestCase {
 
     public Set<Type> type;
 
-    public JsonLdTestCaseOptions options;
+    public JsonLdTestOptions options;
 
     public MediaType contentType;
 

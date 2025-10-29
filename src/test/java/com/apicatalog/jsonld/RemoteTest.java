@@ -32,7 +32,6 @@ import com.apicatalog.jsonld.test.JsonLdManifestLoader;
 import com.apicatalog.jsonld.test.JsonLdMockServer;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
-import com.apicatalog.jsonld.test.LegacyJsonLdTestCase;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 
@@ -71,7 +70,7 @@ class RemoteTest {
 
                 expandOptions.setDocumentLoader(
                                     new UriBaseRewriter(
-                                                LegacyJsonLdTestCase.TESTS_BASE,
+                                                JsonLdTestCase.TESTS_BASE,
                                                 wireMockServer.baseUrl(),
                                                 SchemeRouter.defaultInstance()));
 

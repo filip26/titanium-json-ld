@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.test;
 
 import java.net.URI;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -23,7 +24,6 @@ import java.util.stream.Collectors;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdVersion;
-import com.apicatalog.jsonld.api.StringUtils;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
@@ -56,7 +56,7 @@ public final class JsonLdTestCase {
 
     public Set<Type> type;
 
-    public JsonLdTestCaseOptions options;
+    public JsonLdTestOptions options;
 
     private final String testsBase;
 
@@ -78,7 +78,7 @@ public final class JsonLdTestCase {
         final var testCase = new JsonLdTestCase(manifestBase, loader);
         testCase.baseUri = baseUri;
 
-        for (var entry : adapter.entries(node)) {
+        for (final var entry : adapter.entries(node)) {
 
             final var key = adapter.stringValue(entry.getKey());
 
@@ -120,7 +120,7 @@ public final class JsonLdTestCase {
             case "expectErrorCode":
                 testCase.expectErrorCode = errorCode(adapter.stringValue(entry.getValue()));
                 break;
-                
+
             case "frame":
                 testCase.frame = adapter.isNull(entry.getValue())
                         ? null
@@ -128,9 +128,9 @@ public final class JsonLdTestCase {
                 break;
 
             case "option":
-                testCase.options = JsonLdTestCaseOptions.of(entry.getValue(), adapter, baseUri);
+                testCase.options = JsonLdTestOptions.of(entry.getValue(), adapter, baseUri);
                 break;
-                
+
             case "purpose":
                 break;
 
@@ -139,81 +139,40 @@ public final class JsonLdTestCase {
 
             }
         }
-        
+
         if (testCase.options == null) {
-            testCase.options = JsonLdTestCaseOptions.of(baseUri);
+            testCase.options = JsonLdTestOptions.of();
         }
 
-//        testCase.options = node.containsKey("option")
-//                ? JsonLdTestCaseOptions.of(node.getJsonObject("option"), baseUri)
-//                : new JsonLdTestCaseOptions();
-//
-//
-//        testCase.contentType = node.containsKey("option") && node.getJsonObject("option").containsKey("contentType")
-//                ? MediaType.of(node.getJsonObject("option").getString("contentType"))
-//                : null;
-//
-//        if (testCase.contentType == null && testCase.input != null) {
-//
-//            if (testCase.input.toString().endsWith(".jsonld")) {
-//                testCase.contentType = MediaType.JSON_LD;
-//
-//            } else if (testCase.input.toString().endsWith(".json")) {
-//                testCase.contentType = MediaType.JSON;
-//
-//            } else if (testCase.input.toString().endsWith(".html")) {
-//                testCase.contentType = MediaType.HTML;
-//            }
-//        }
-//
-//        testCase.redirectTo = node.containsKey("option") && node.getJsonObject("option").containsKey("redirectTo")
-//                ? URI.create(baseUri + node.getJsonObject("option").getString("redirectTo"))
-//                : null;
-//
-//        testCase.httpStatus = node.containsKey("option")
-//                ? node.getJsonObject("option").getInt("httpStatus", 301)
-//                : null;
-//
-//        if (node.containsKey("option") && node.getJsonObject("option").containsKey("httpLink")) {
-//
-//            JsonValue links = node.getJsonObject("option").get("httpLink");
-//
-//            if (JsonUtils.isArray(links)) {
-//                testCase.httpLink = links.asJsonArray().stream()
-//                        .map(JsonString.class::cast)
-//                        .map(JsonString::getString)
-//                        .collect(Collectors.toSet());
-//            } else {
-//                testCase.httpLink = new HashSet<>();
-//                testCase.httpLink.add(((JsonString) links).getString());
-//            }
-//        }
-//
-//        testCase.undefinedTermPolicy = node.containsKey("option")
-//                ? JsonLdOptions.ProcessingPolicy.valueOf(node.getJsonObject("option").getString("undefinedTermPolicy", JsonLdOptions.ProcessingPolicy.Fail.name()))
-//                : JsonLdOptions.ProcessingPolicy.Ignore;
+        if (testCase.options.contentType == null && testCase.input != null) {
+
+            if (testCase.input.toString().endsWith(".jsonld")) {
+                testCase.options.contentType = MediaType.JSON_LD;
+
+            } else if (testCase.input.toString().endsWith(".json")) {
+                testCase.options.contentType = MediaType.JSON;
+
+            } else if (testCase.input.toString().endsWith(".html")) {
+                testCase.options.contentType = MediaType.HTML;
+            }
+        }
 
         return testCase;
     }
 
     public JsonLdOptions getOptions() {
-
-        final DocumentLoader rewriter = new UriBaseRewriter(
-                baseUri,
-                testsBase,
-                loader);
-
-        JsonLdOptions jsonLdOptions = new JsonLdOptions(rewriter);
-        jsonLdOptions.setOrdered(true);
-
-        options.setup(jsonLdOptions);
-
-        return jsonLdOptions;
+        return options.setup(
+                new JsonLdOptions(
+                        new UriBaseRewriter(
+                                baseUri,
+                                testsBase,
+                                loader))
+                        .setOrdered(true));
     }
 
     public static final JsonLdErrorCode errorCode(String errorCode) {
 
-        if (errorCode == null || StringUtils.isBlank(errorCode)) {
+        if (errorCode == null || errorCode.isBlank()) {
             return null;
         }
 
@@ -234,49 +193,36 @@ public final class JsonLdTestCase {
             return JsonLdErrorCode.UNSPECIFIED;
         }
 
-        return JsonLdErrorCode.valueOf(StringUtils.strip(errorCode).toUpperCase().replace(" ", "_").replace("-", "_").replaceAll("\\_\\@", "_KEYWORD_"));
+        return JsonLdErrorCode.valueOf(errorCode.strip().toUpperCase().replace(" ", "_").replace("-", "_").replaceAll("\\_\\@", "_KEYWORD_"));
     }
 
     public enum Type {
 
-        EXPAND_TEST,
-        COMPACT_TEST,
-        FLATTEN_TEST,
-        TO_RDF_TEST,
-        FROM_RDF_TEST,
-        FRAME_TEST,
+        EXPAND_TEST("jld:ExpandTest"),
+        COMPACT_TEST("jld:CompactTest"),
+        FLATTEN_TEST("jld:FlattenTest"),
+        TO_RDF_TEST("jld:ToRDFTest"),
+        FROM_RDF_TEST("jld:FromRDFTest"),
+        FRAME_TEST("jld:FrameTest"),
 
-        POSITIVE_EVALUATION_TEST,
-        NEGATIVE_EVALUATION_TEST,
-        POSITIVE_SYNTAX_TEST;
+        POSITIVE_EVALUATION_TEST("jld:PositiveEvaluationTest"),
+        NEGATIVE_EVALUATION_TEST("jld:NegativeEvaluationTest"),
+        POSITIVE_SYNTAX_TEST("jld:PositiveSyntaxTest");
 
-        static Type of(String value) {
+        private String curi;
 
-            if (value == null) {
-                throw new IllegalArgumentException("Test @type cannot be null.");
-            }
+        Type(String curi) {
+            this.curi = curi;
+        }
 
-            switch (value) {
-            case "jld:ExpandTest":
-                return EXPAND_TEST;
-            case "jld:CompactTest":
-                return COMPACT_TEST;
-            case "jld:FlattenTest":
-                return FLATTEN_TEST;
-            case "jld:ToRDFTest":
-                return TO_RDF_TEST;
-            case "jld:FromRDFTest":
-                return FROM_RDF_TEST;
-            case "jld:FrameTest":
-                return FRAME_TEST;
+        static Type of(final String value) {
 
-            case "jld:PositiveEvaluationTest":
-                return POSITIVE_EVALUATION_TEST;
-            case "jld:NegativeEvaluationTest":
-                return NEGATIVE_EVALUATION_TEST;
+            Objects.requireNonNull(value);
 
-            case "jld:PositiveSyntaxTest":
-                return POSITIVE_SYNTAX_TEST;
+            for (final var type : values()) {
+                if (type.curi.equals(value)) {
+                    return type;
+                }
             }
 
             throw new IllegalArgumentException("Unknown test @type '" + value + "'");

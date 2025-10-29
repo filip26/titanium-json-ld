@@ -16,7 +16,6 @@
 package com.apicatalog.jsonld.loader;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.time.Duration;
 import java.util.Collection;
@@ -64,8 +63,8 @@ class DefaultHttpLoader implements DocumentLoader {
         this.httpClient = httpClient;
         this.maxRedirections = maxRedirections;
         this.reader = new JakartaReader(Json.createReaderFactory(Map.of()));
-        //FIXME
-                //new DocumentResolver();
+        // FIXME
+        // new DocumentResolver();
     }
 
     @Override
@@ -198,12 +197,10 @@ class DefaultHttpLoader implements DocumentLoader {
             final URI contextUrl,
             final HttpResponse response) throws JsonLdError, IOException {
 
-//        final DocumentReader<InputStream> reader = reader.getReader(type);
-
-        try (final InputStream is = response.body()) {
+        try (final var is = response.body()) {
 
             final var remoteContent = reader.read(is);
-     System.out.println(remoteContent);       
+
             final var remoteDocument = TreeDocument.of(type, remoteContent);
 
             remoteDocument.setDocumentUrl(targetUri);
@@ -211,6 +208,13 @@ class DefaultHttpLoader implements DocumentLoader {
             remoteDocument.setContextUrl(contextUrl);
 
             return remoteDocument;
+            
+        } catch (IOException e) {
+            throw e;
+            
+        } catch (Exception e) {
+            // FIXME!!!
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
 

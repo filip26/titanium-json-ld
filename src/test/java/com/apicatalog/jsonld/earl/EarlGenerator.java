@@ -168,7 +168,7 @@ public class EarlGenerator {
 
                             expandOptions.setDocumentLoader(
                                     new UriBaseRewriter(
-                                            LegacyJsonLdTestCase.TESTS_BASE,
+                                            JsonLdTestCase.TESTS_BASE,
                                             wireMockServer.baseUrl(),
                                             SchemeRouter.defaultInstance()));
 

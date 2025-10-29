@@ -1,0 +1,250 @@
+/*
+ * Copyright 2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.apicatalog.jsonld.test;
+
+import java.net.URI;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
+import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.http.media.MediaType;
+import com.apicatalog.jsonld.uri.UriResolver;
+import com.apicatalog.tree.io.NodeAdapter;
+
+public class JsonLdTestOptions {
+
+    public JsonLdVersion version;
+    public String base;
+    public String processingMode;
+    public Boolean normative;
+    public String expandContext;
+    public Boolean compactArrays;
+    public Boolean compactToRelative;
+    public Boolean ordered;
+    public String rdfDirection;
+    public Boolean produceGeneralizedRdf;
+    public Boolean useNativeTypes;
+    public Boolean useRdfType;
+    public Boolean omitGraph;
+    public Boolean numericId;
+    public Boolean rdfStar;
+    public MediaType contentType;
+    public JsonLdOptions.ProcessingPolicy undefinedTerms;
+    public URI redirectTo;
+    public Integer httpStatus;
+    public Set<String> httpLink;
+    public JsonLdOptions.ProcessingPolicy undefinedTermPolicy = JsonLdOptions.ProcessingPolicy.Ignore;
+
+    public static final JsonLdTestOptions of() {
+        return new JsonLdTestOptions();
+    }
+
+    public static final JsonLdTestOptions of(Object node, NodeAdapter adapter, String baseUri) {
+
+        final JsonLdTestOptions options = new JsonLdTestOptions();
+
+        for (final var entry : adapter.entries(node)) {
+
+            final var key = adapter.stringValue(entry.getKey());
+
+            switch (key) {
+            case "specVersion":
+                options.version = JsonLdVersion.of(adapter.stringValue(entry.getValue()));
+                break;
+
+            case "base":
+                options.base = adapter.stringValue(entry.getValue());
+                break;
+
+            case "processingMode":
+                options.processingMode = adapter.stringValue(entry.getValue());
+                break;
+
+            case "expandContext":
+                options.expandContext = UriResolver.resolve(
+                        URI.create(baseUri),
+                        adapter.stringValue(entry.getValue()));
+                break;
+
+            case "normative":
+                options.normative = adapter.isTrue(entry.getValue());
+                break;
+
+            case "compactArrays":
+                options.compactArrays = adapter.isTrue(entry.getValue());
+                break;
+
+            case "compactToRelative":
+                options.compactToRelative = adapter.isTrue(entry.getValue());
+                break;
+
+            case "contentType":
+                options.contentType = MediaType.of(adapter.stringValue(entry.getValue()));
+                break;
+
+            case "redirectTo":
+                options.redirectTo = URI.create(baseUri + adapter.stringValue(entry.getValue()));
+                break;
+
+            case "httpStatus":
+                options.httpStatus = adapter.intValue(entry.getValue());
+                break;
+
+            case "httpLink":
+                if (adapter.isCollection(entry.getValue())) {
+                    options.httpLink = adapter.elementStream(entry.getValue())
+                            .map(adapter::asString)
+                            .collect(Collectors.toSet());
+                } else {
+                    options.httpLink = Set.of(adapter.stringValue(entry.getValue()));
+                }
+                break;
+
+            case "ordered":
+                options.ordered = adapter.isTrue(entry.getValue());
+                break;
+                
+            case "omitGraph":
+                options.omitGraph = adapter.isTrue(entry.getValue());
+                break;
+
+            default:
+                System.err.println("An unknown test option " + key + " = " + entry.getValue() + ".");
+            }
+        }
+
+//        options.rdfDirection = node.getString("rdfDirection", null);
+//
+//        if (node.containsKey("produceGeneralizedRdf")) {
+//            options.produceGeneralizedRdf = node.getBoolean("produceGeneralizedRdf");
+//        }
+//
+//        if (node.containsKey("useNativeTypes")) {
+//            options.useNativeTypes = node.getBoolean("useNativeTypes");
+//        }
+//
+//        if (node.containsKey("useRdfType")) {
+//            options.useRdfType = node.getBoolean("useRdfType");
+//        }
+//
+//        if (node.containsKey("omitGraph")) {
+//            options.omitGraph = node.getBoolean("omitGraph");
+//        }
+//
+//        if (node.containsKey("useNumericId")) {
+//            options.numericId = node.getBoolean("useNumericId");
+//        }
+//
+//        if (node.containsKey("rdfstar")) {
+//            options.rdfStar = node.getBoolean("rdfstar");
+//        }
+//        
+//        if (node.containsKey("undefinedTermPolicy")) {
+//            options.undefinedTerms = JsonLdOptions.ProcessingPolicy.valueOf(node.getString("undefinedTermPolicy"));            
+//        }
+        //
+//      testCase.redirectTo = node.containsKey("option") && node.getJsonObject("option").containsKey("redirectTo")
+//              ? URI.create(baseUri + node.getJsonObject("option").getString("redirectTo"))
+//              : null;
+//
+//      testCase.httpStatus = node.containsKey("option")
+//              ? node.getJsonObject("option").getInt("httpStatus", 301)
+//              : null;
+//
+//      if (node.containsKey("option") && node.getJsonObject("option").containsKey("httpLink")) {
+//
+//          JsonValue links = node.getJsonObject("option").get("httpLink");
+//
+//          if (JsonUtils.isArray(links)) {
+//              testCase.httpLink = links.asJsonArray().stream()
+//                      .map(JsonString.class::cast)
+//                      .map(JsonString::getString)
+//                      .collect(Collectors.toSet());
+//          } else {
+//              testCase.httpLink = new HashSet<>();
+//              testCase.httpLink.add(((JsonString) links).getString());
+//          }
+//      }
+//
+//      testCase.undefinedTermPolicy = node.containsKey("option")
+//              ? JsonLdOptions.ProcessingPolicy.valueOf(node.getJsonObject("option").getString("undefinedTermPolicy", JsonLdOptions.ProcessingPolicy.Fail.name()))
+//              : JsonLdOptions.ProcessingPolicy.Ignore;        
+
+        return options;
+    }
+
+    public JsonLdOptions setup(JsonLdOptions options) {
+
+        if (processingMode != null) {
+            options.setProcessingMode(JsonLdVersion.of(processingMode));
+        }
+
+        if (base != null) {
+            options.setBase(URI.create(base));
+        }
+
+        if (expandContext != null) {
+            options.setExpandContext(URI.create(expandContext));
+        }
+
+        if (compactArrays != null) {
+            options.setCompactArrays(compactArrays);
+        }
+
+        if (compactToRelative != null) {
+            options.setCompactToRelative(compactToRelative);
+        }
+
+        if (rdfDirection != null) {
+            options.setRdfDirection(RdfDirection.valueOf(rdfDirection.toUpperCase().replace("-", "_")));
+        }
+
+        if (produceGeneralizedRdf != null) {
+            options.setProduceGeneralizedRdf(produceGeneralizedRdf);
+        }
+
+        if (useNativeTypes != null) {
+            options.setUseNativeTypes(useNativeTypes);
+        }
+
+        if (useRdfType != null) {
+            options.setUseRdfType(useRdfType);
+        }
+
+        if (omitGraph != null) {
+            options.setOmitGraph(omitGraph);
+        }
+
+        if (ordered != null) {
+            options.setOrdered(ordered);
+        }
+
+        if (numericId != null) {
+            options.setNumericId(numericId);
+        }
+
+        if (rdfStar != null) {
+            options.setRdfStar(rdfStar);
+        }
+
+        if (undefinedTerms != null) {
+            options.setUndefinedTermsPolicy(undefinedTerms);
+        }
+        return options;
+    }
+}

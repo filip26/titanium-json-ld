@@ -145,6 +145,7 @@ public class JsonLdTestRunnerJunit {
             return false;
 
         } catch (RdfConsumerException e) {
+
             if (e.getCause() instanceof JsonLdError) {
                 if (Objects.equal(((JsonLdError) e.getCause()).getCode(), testCase.expectErrorCode)) {
                     return true;
@@ -168,6 +169,8 @@ public class JsonLdTestRunnerJunit {
         if (result instanceof RdfQuadSet quads) {
             return validateQuads(testCase, options, quads);
         }
+
+        // TODO remove
         if (result instanceof JsonStructure json) {
             return validateJsonLd(testCase, options, json, JakartaAdapter.instance());
         }
@@ -214,7 +217,7 @@ public class JsonLdTestRunnerJunit {
 
         try {
             Document expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new LoaderOptions());
-            
+
             assertNotNull(expectedDocument);
 
             // compare expected with the result
@@ -235,12 +238,12 @@ public class JsonLdTestRunnerJunit {
             return true;
         }
 
-        write(testCase, 
-                new JakartaMaterializer().node(result, resultAdapter), 
-                new JakartaMaterializer().node(expected), 
+        write(testCase,
+                new JakartaMaterializer().node(result, resultAdapter),
+                new JakartaMaterializer().node(expected),
                 null);
 
-        fail("Expected " + expected + ", but was" + result);
+        fail("Expected " + expected.node() + ", but was" + result);
         return false;
     }
 
@@ -294,10 +297,11 @@ public class JsonLdTestRunnerJunit {
 
             if (!match) {
 
-                final StringWriter stringWriter = new StringWriter();
+                final var stringWriter = new StringWriter();
 
-                try (final PrintWriter writer = new PrintWriter(stringWriter)) {
-                    final QuadEmitter emitter = QuadEmitter.create(new NQuadsWriter(writer));
+                try (final var writer = new PrintWriter(stringWriter)) {
+
+                    final var emitter = QuadEmitter.create(new NQuadsWriter(writer));
 
                     writer.println("Test " + testCase.id + ": " + testCase.name);
                     writer.println("Expected:");
