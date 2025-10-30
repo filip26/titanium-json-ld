@@ -15,14 +15,14 @@
  */
 package com.apicatalog.jsonld;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 /**
- * The {@link JsonLdErrorCode} represents the collection of valid JSON-LD error
- * codes.
+ * Represents the collection of valid JSON-LD error codes.
  *
- * @see <a href=
- *      "https://www.w3.org/TR/json-ld11-api/#jsonlderrorcode">JsonLdErrorCode
- *      Specification</a>
- *
+ * @see <a href="https://www.w3.org/TR/json-ld11-api/#jsonlderrorcode">
+ *      JsonLdErrorCode Specification</a>
  */
 public enum JsonLdErrorCode {
 
@@ -343,18 +343,33 @@ public enum JsonLdErrorCode {
 
     UNSPECIFIED("An unspecified processing error");
 
-    private final String text;
+    private final String description;
 
-    private JsonLdErrorCode(String text) {
-        this.text = text;
+    private JsonLdErrorCode(String description) {
+        this.description = description;
     }
 
-    public String text() {
-        return text;
+    /**
+     * Returns a human-readable description of this error.
+     */
+    public String description() {
+        return description;
     }
-    
+
+    /**
+     * Looks up a {@link JsonLdErrorCode} by its name (case-insensitive).
+     *
+     * @param name the name of the error code
+     * @return an {@link Optional} of {@link JsonLdErrorCode}
+     */
+    public static Optional<JsonLdErrorCode> fromName(String name) {
+        return Arrays.stream(values())
+                .filter(code -> code.name().equalsIgnoreCase(name))
+                .findFirst();
+    }
+
     @Override
     public String toString() {
-        return text + " [code=" + this + "].";
+        return description + " [code=" + this + "].";
     }
 }

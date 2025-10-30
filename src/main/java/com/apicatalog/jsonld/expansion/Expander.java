@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.processor;
+package com.apicatalog.jsonld.expansion;
 
 import java.io.IOException;
 import java.net.URI;
@@ -22,16 +22,24 @@ import java.util.Map;
 import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdOptions.ProcessingPolicy;
+import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.api.CommonApi;
+import com.apicatalog.jsonld.api.ContextApi;
+import com.apicatalog.jsonld.api.LoaderApi;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.expansion.Expansion;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.loader.LoaderOptions;
+import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.processor.ProcessingRuntime;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.web.uri.UriUtils;
+
+import jakarta.json.JsonStructure;
 
 /**
  *
@@ -39,26 +47,140 @@ import com.apicatalog.tree.io.java.NativeAdapter;
  *      "https://www.w3.org/TR/json-ld11-api/#dom-jsonldprocessor-expand">JsonLdProcessor.expand()</a>
  *
  */
-public final class Expander {
+public final class Expander implements
+        CommonApi<Expander>,
+        ContextApi<Expander>,
+        LoaderApi<Expander> {
 
-    Expander() {
+    private JsonLdOptions options;
+
+    public Expander() {
+        this(new JsonLdOptions());
     }
 
-    public static final Collection<?> expand(final URI input, final JsonLdOptions options) throws JsonLdException, IOException {
+    public Expander(JsonLdOptions options) {
+        this.options = options;
+    }
 
-        if (options.getDocumentLoader() == null) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
+    @Override
+    public Expander options(JsonLdOptions options) {
+
+        if (options == null) {
+            throw new IllegalArgumentException("Parameter 'options' is null.");
         }
 
-        var remoteDocument = options.getDocumentLoader().loadDocument(
-                input,
-                new LoaderOptions().setExtractAllScripts(options.isExtractAllScripts()));
+        this.options = options;
+        return this;
+    }
 
-        if (remoteDocument != null) {
-            return expand(remoteDocument, options);
+    @Override
+    public Expander context(URI contextUri) {
+        options.setExpandContext(contextUri);
+        return this;
+    }
+
+    @Override
+    public Expander context(String contextLocation) {
+
+        URI contextUri = null;
+
+        if (contextLocation != null) {
+
+            contextUri = UriUtils.create(contextLocation);
+
+            if (contextUri == null) {
+                throw new IllegalArgumentException("Context location must be valid URI or null but is [" + contextLocation + ".");
+            }
         }
 
-        throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+        return context(contextUri);
+    }
+
+    @Override
+    public Expander context(JsonStructure context) {
+        options.setExpandContext(context != null ? JsonDocument.of(context) : null);
+        return this;
+    }
+
+    @Override
+    public Expander context(Document context) {
+        options.setExpandContext(context);
+        return this;
+    }
+
+    @Override
+    public Expander mode(JsonLdVersion processingMode) {
+        options.setProcessingMode(processingMode);
+        return this;
+    }
+
+    @Override
+    public Expander base(URI baseUri) {
+        options.setBase(baseUri);
+        return this;
+    }
+
+    @Override
+    public Expander loader(DocumentLoader loader) {
+        options.setDocumentLoader(loader);
+        return this;
+    }
+
+    @Override
+    public Expander ordered(boolean enable) {
+        options.setOrdered(enable);
+        return this;
+    }
+
+    /**
+     * Get the result of the document expansion.
+     *
+     * @return {@link JsonArray} representing expanded document
+     * @throws JsonLdException if the document expansion fails
+     * @throws IOException
+     */
+//    public Collection<?> get() throws JsonLdException, IOException {
+//        if (document != null) {
+//            return Expander.expand(document, options);
+//
+//        } else if (documentUri != null) {
+//            return Expander.expand(documentUri, options);
+//        }
+//        throw new IllegalStateException();
+//    }
+
+    /**
+     * Experimental: Accept numeric @id. Disabled by default.
+     *
+     * @return builder instance
+     */
+    public Expander numericId() {
+        options.setNumericId(true);
+        return this;
+    }
+
+    /**
+     * Experimental: Enables JSON-LD-STAR extension. Disabled by default.
+     *
+     * @see <a href="https://json-ld.github.io/json-ld-star">JSON-LD-STAR Draft</a>
+     *
+     * @return builder instance
+     */
+    public Expander rdfStar() {
+        options.setRdfStar(true);
+        return this;
+    }
+
+    /**
+     * Set a processing policy determining how to proceed when an undefined term is
+     * found during an expansion. An unknown term is ignored by default.
+     * 
+     * @param policy a processing policy
+     * @return builder instance
+     */
+    public Expander undefinedTermsPolicy(ProcessingPolicy policy) {
+        options.setUndefinedTermsPolicy(policy);
+        return this;
     }
 
     public static final Collection<?> expand(

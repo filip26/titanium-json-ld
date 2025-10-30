@@ -74,7 +74,7 @@ class RemoteTest {
                                                 wireMockServer.baseUrl(),
                                                 SchemeRouter.defaultInstance()));
 
-                return JsonLd.expand(testCase.input).options(expandOptions).get();
+                return JsonLd.expand(testCase.input, expandOptions);
             });
 
             server.stop();

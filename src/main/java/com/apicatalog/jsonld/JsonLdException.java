@@ -15,45 +15,85 @@
  */
 package com.apicatalog.jsonld;
 
+import java.util.Objects;
+
 /**
- * The {@link JsonLdException} type is used to report processing errors.
+ * Represents a JSON-LD processing error.
  *
- * @see <a href="https://www.w3.org/TR/json-ld11-api/#jsonlderror">JsonLdError
- *      Specification</a>
- *
+ * @see <a href="https://www.w3.org/TR/json-ld11-api/#jsonlderror"> JSON-LD
+ *      Error Specification</a>
  */
 public final class JsonLdException extends Exception {
 
-    private static final long serialVersionUID = -1912600269069309493L;
+    private static final long serialVersionUID = -5538619398631322707L;
 
     private final JsonLdErrorCode code;
 
+    /**
+     * Creates a new {@code JsonLdException} with the specified error code.
+     *
+     * @param code the error code (must not be {@code null})
+     */
     public JsonLdException(JsonLdErrorCode code) {
-        super(code.text());
+        super(Objects.requireNonNull(code, "code must not be null").description());
         this.code = code;
     }
 
+    /**
+     * Creates a new {@code JsonLdException} with the specified error code and
+     * message.
+     *
+     * @param code    the error code (must not be {@code null})
+     * @param message the detail message
+     */
     public JsonLdException(JsonLdErrorCode code, String message) {
         super(message);
-        this.code = code;
+        this.code = Objects.requireNonNull(code, "code must not be null");
     }
 
+    /**
+     * Creates a new {@code JsonLdException} with the specified error code and
+     * cause.
+     *
+     * @param code  the error code (must not be {@code null})
+     * @param cause the cause of the exception
+     */
     public JsonLdException(JsonLdErrorCode code, Throwable cause) {
-        super(code.text(), cause);
+        super(Objects.requireNonNull(code, "code must not be null").description(), cause);
         this.code = code;
     }
 
+    /**
+     * Creates a new {@code JsonLdException} with the specified error code, message,
+     * and cause.
+     *
+     * @param code    the error code (must not be {@code null})
+     * @param message the detail message
+     * @param cause   the cause of the exception
+     */
     public JsonLdException(JsonLdErrorCode code, String message, Throwable cause) {
         super(message, cause);
-        this.code = code;
+        this.code = Objects.requireNonNull(code, "code must not be null");
     }
 
-    public JsonLdErrorCode getCode() {
+    /**
+     * Returns the associated {@link JsonLdErrorCode}.
+     *
+     * @return the JSON-LD error code
+     */
+    public JsonLdErrorCode code() {
         return code;
     }
 
+    /**
+     * Returns a concise string representation optimized for logging.
+     *
+     * Uses simple concatenation for maximum performance — the JIT will turn this
+     * into efficient {@link java.lang.StringBuilder} bytecode.
+     */
     @Override
     public String toString() {
+        // Avoid String.format()/.formatted() overhead
         return "JsonLdException[code=" + code.name() + ", message=" + getMessage() + "]";
     }
 }

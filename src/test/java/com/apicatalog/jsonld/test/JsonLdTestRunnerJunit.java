@@ -69,7 +69,7 @@ public class JsonLdTestRunnerJunit {
         }
 
         if (testCase.type.contains(Type.EXPAND_TEST)) {
-            return execute(options -> JsonLd.expand(testCase.input).options(options).get());
+            return execute(options -> JsonLd.expand(testCase.input, options));
         }
 
         if (testCase.type.contains(Type.FLATTEN_TEST)) {
@@ -79,13 +79,9 @@ public class JsonLdTestRunnerJunit {
         if (testCase.type.contains(Type.TO_RDF_TEST)) {
             return execute(options -> {
 
-                final OrderedQuadSet set = new OrderedQuadSet();
+                final var set = new OrderedQuadSet();
 
-                System.out.println(">>> " + testCase.input);
-
-                JsonLd.toRdf(testCase.input).options(options).provide(new QuadAcceptor(set));
-
-                System.out.println(">>> " + set);
+                JsonLd.toRdf(testCase.input, new QuadAcceptor(set), options);
 
                 return set;
             });
@@ -93,9 +89,10 @@ public class JsonLdTestRunnerJunit {
 
         if (testCase.type.contains(Type.FROM_RDF_TEST)) {
             return execute(options -> {
+                //FIXME -> use custom loader, detach n-quads
                 Document input = options.getDocumentLoader().loadDocument(testCase.input, null);
 
-                QuadsToJsonLd toLd = JsonLd.fromRdf().options(options);
+                final var toLd = JsonLd.fromRdf(options);
 
                 QuadEmitter.create(toLd).emit(((QuadSetDocument) input).contentX());
 
@@ -134,16 +131,16 @@ public class JsonLdTestRunnerJunit {
 
         } catch (JsonLdException e) {
 
-            if (Objects.equal(e.getCode(), testCase.expectErrorCode)) {
+            if (Objects.equal(e.code(), testCase.expectErrorCode)) {
                 return true;
             }
 
             write(testCase, null, null, e);
 
             if (testCase.expectErrorCode != null) {
-                fail("Unexpected error " + e.getCode() + ", exptected " + testCase.expectErrorCode + ".");
+                fail("Unexpected error " + e.code() + ", exptected " + testCase.expectErrorCode + ".");
             } else {
-                fail("Unexpected error " + e.getCode() + ": " + e.getMessage() + ".");
+                fail("Unexpected error " + e.code() + ": " + e.getMessage() + ".");
             }
 
             return false;
@@ -151,12 +148,12 @@ public class JsonLdTestRunnerJunit {
         } catch (RdfConsumerException e) {
 
             if (e.getCause() instanceof JsonLdException) {
-                if (Objects.equal(((JsonLdException) e.getCause()).getCode(), testCase.expectErrorCode)) {
+                if (Objects.equal(((JsonLdException) e.getCause()).code(), testCase.expectErrorCode)) {
                     return true;
                 }
 
                 write(testCase, null, null, ((JsonLdException) e.getCause()));
-                fail("Unexpected error [" + ((JsonLdException) e.getCause()).getCode() + "]: " + e.getMessage() + ".");
+                fail("Unexpected error [" + ((JsonLdException) e.getCause()).code() + "]: " + e.getMessage() + ".");
 
             }
             return false;

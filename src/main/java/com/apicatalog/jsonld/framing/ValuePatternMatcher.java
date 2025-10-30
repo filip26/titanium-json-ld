@@ -15,9 +15,9 @@
  */
 package com.apicatalog.jsonld.framing;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import com.apicatalog.jsonld.lang.Keywords;
 
@@ -72,14 +72,16 @@ public final class ValuePatternMatcher {
 
     private static boolean matchLanguage(final Object pattern, final Map<?, ?> node) {
 
-        final String lang = node.get(Keywords.LANGUAGE) instanceof String stringValue
+        final var lang = node.get(Keywords.LANGUAGE) instanceof String stringValue
                 ? stringValue.toLowerCase()
                 : null;
 
         return ((lang != null && isWildcard(pattern)) || (lang == null && isNone(pattern)))
                 || (lang != null && pattern != null
                         && ((pattern instanceof Collection<?> col
-                                && col.stream().map(String.class::cast).anyMatch(lang::equalsIgnoreCase))
+                                && col.stream()
+                                        .map(String.class::cast)
+                                        .anyMatch(lang::equalsIgnoreCase))
                                 || pattern.equals(lang)));
     }
 
@@ -101,7 +103,7 @@ public final class ValuePatternMatcher {
             frame = map;
         }
 
-        return frame != null && (frame.isEmpty() || Arrays.asList(
+        return frame != null && (frame.isEmpty() || Set.of(
                 Keywords.DEFAULT,
                 Keywords.OMIT_DEFAULT,
                 Keywords.EMBED,

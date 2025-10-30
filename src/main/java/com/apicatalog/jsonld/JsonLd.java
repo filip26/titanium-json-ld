@@ -15,15 +15,19 @@
  */
 package com.apicatalog.jsonld;
 
+import java.io.IOException;
 import java.net.URI;
+import java.util.Collection;
 
 import com.apicatalog.jsonld.api.CompactionApi;
-import com.apicatalog.jsonld.api.ExpansionApi;
 import com.apicatalog.jsonld.api.FlatteningApi;
 import com.apicatalog.jsonld.api.FramingApi;
 import com.apicatalog.jsonld.api.ToRdfApi;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.TreeDocument;
+import com.apicatalog.jsonld.expansion.Expander;
 import com.apicatalog.jsonld.fromrdf.QuadsToJsonLd;
+import com.apicatalog.jsonld.processor.RdfEmitter;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.web.uri.UriUtils;
 
@@ -54,33 +58,34 @@ public final class JsonLd {
     }
 
     /**
-     * Expands the referenced document.
+     * Expands the referenced document. DocumentLoader must be set in order to fetch
+     * the referenced document. See JsonLdOptions.loader method.
      *
-     * @param documentLocation {@code IRI} referencing JSON-LD document to expand
-     * @return {@link ExpansionApi} allowing to set additional parameters
+     * @param document {@link URI} referencing JSON-LD document to expand
+     * @param options
+     * @return
+     * @throws JsonLdException
      */
-    public static final ExpansionApi expand(final String documentLocation) {
-        return new ExpansionApi(assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME));
-    }
-
-    /**
-     * Expands the referenced document.
-     *
-     * @param documentUri {@link URI} referencing JSON-LD document to expand
-     * @return {@link ExpansionApi} allowing to set additional parameters
-     */
-    public static final ExpansionApi expand(final URI documentUri) {
-        return new ExpansionApi(assertUri(documentUri, DOCUMENT_URI_PARAM_NAME));
+    public static final Collection<?> expand(final URI document, final JsonLdOptions options) throws JsonLdException, IOException {
+        return expand(
+                TreeDocument.load(
+                        document,
+                        options.getDocumentLoader(),
+                        options.isExtractAllScripts()),
+                options);
     }
 
     /**
      * Expands the provided remote document.
      *
      * @param document to expand
+     * @param options
      * @return {@link ExpansionApi} allowing to set additional parameters
+     * @throws JsonLdException
      */
-    public static final ExpansionApi expand(final Document document) {
-        return new ExpansionApi(assertJsonDocument(document, DOCUMENT_PARAM_NAME));
+    public static final Collection<?> expand(final Document document, final JsonLdOptions options) throws JsonLdException, IOException {
+        return Expander.expand(document, options);
+//        return new ExpansionApi(assertJsonDocument(document, DOCUMENT_PARAM_NAME));
     }
 
     /**
@@ -389,6 +394,10 @@ public final class JsonLd {
         return new ToRdfApi(assertJsonDocument(document, DOCUMENT_PARAM_NAME));
     }
 
+    public static final void toRdf(final URI document, RdfQuadConsumer consumer, JsonLdOptions options) throws JsonLdException, IOException {
+        RdfEmitter.toRdf(document, consumer, options);
+    }
+
     /**
      * Transforms an RDF quad set into a JSON-LD document in expanded form.
      * <p>
@@ -411,6 +420,10 @@ public final class JsonLd {
      */
     public static final QuadsToJsonLd fromRdf() {
         return new QuadsToJsonLd();
+    }
+
+    public static final QuadsToJsonLd fromRdf(JsonLdOptions options) {
+        return new QuadsToJsonLd().options(options);
     }
 
     private static final URI assertLocation(final String location, final String param) {

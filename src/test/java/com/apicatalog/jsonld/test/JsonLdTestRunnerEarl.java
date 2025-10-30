@@ -97,11 +97,11 @@ public class JsonLdTestRunnerEarl {
             throw new IllegalStateException(e);
 
         } catch (JsonLdException e) {
-            return Objects.equals(e.getCode(), testCase.expectErrorCode);
+            return Objects.equals(e.code(), testCase.expectErrorCode);
 
         } catch (RdfConsumerException e) {
             if (e.getCause() instanceof JsonLdException) {
-                return Objects.equals(((JsonLdException) e.getCause()).getCode(), testCase.expectErrorCode);
+                return Objects.equals(((JsonLdException) e.getCause()).code(), testCase.expectErrorCode);
             }
         }
         return false;

@@ -48,18 +48,18 @@ public record MediaType(
 
     public static final MediaType ANY = new MediaType(WILDCARD, WILDCARD);
 
-    public MediaType(String type, String subtype) {
-        this(type, subtype, Map.of());
+    public MediaType {
+        Objects.requireNonNull(type);
+        Objects.requireNonNull(subtype);
+
+        parameters = parameters == null ? Map.of() : Map.copyOf(parameters);
     }
 
-    public MediaType(String type, String subtype, Map<String, List<String>> parameters) {
-        this.type = Objects.requireNonNull(type);
-        this.subtype = Objects.requireNonNull(subtype);
-        this.parameters = parameters != null
-                ? parameters
-                : Map.of();
+    // TODO of(..)
+    public MediaType(String type, String subtype) {
+        this(type, subtype, null);
     }
-    
+
     public static final MediaType of(final String value) {
         if (Objects.requireNonNull(value).isBlank()) {
             return null;
@@ -67,11 +67,17 @@ public record MediaType(
         return MediaTypeParser.parse(value);
     }
 
-    public boolean match(MediaType mediaType) {
-        return mediaType != null
-                && (WILDCARD.equals(type) || WILDCARD.equals(mediaType.type) || Objects.equals(type, mediaType.type))
-                && (WILDCARD.equals(subtype) || WILDCARD.equals(mediaType.subtype)
-                        || Objects.equals(subtype, mediaType.subtype));
+    public boolean match(final MediaType mediaType) {
+        return mediaType != null && match(mediaType.type, mediaType.subtype);
+    }
+
+    public boolean match(final String type, final String subtype) {
+        return (WILDCARD.equals(this.type)
+                || WILDCARD.equals(type)
+                || Objects.equals(this.type, type))
+                && (WILDCARD.equals(this.subtype)
+                        || WILDCARD.equals(subtype)
+                        || Objects.equals(this.subtype, subtype));
     }
 
     @Override

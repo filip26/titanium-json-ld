@@ -73,7 +73,7 @@ public class EarlGenerator {
                 .stream()
                 .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
-                        (new JsonLdTestRunnerEarl(testCase)).execute(options -> JsonLd.expand(testCase.input).options(options).get())));
+                        (new JsonLdTestRunnerEarl(testCase)).execute(options -> JsonLd.expand(testCase.input, options))));
     }
 
     public void testCompact(final PrintWriter writer) throws JsonLdException {
@@ -171,7 +171,7 @@ public class EarlGenerator {
                                             wireMockServer.baseUrl(),
                                             SchemeRouter.defaultInstance()));
 
-                            return JsonLd.expand(testCase.input).options(expandOptions).get();
+                            return JsonLd.expand(testCase.input, expandOptions);
                         });
 
                         server.stop();

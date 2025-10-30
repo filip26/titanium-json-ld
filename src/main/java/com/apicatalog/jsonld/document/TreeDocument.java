@@ -21,10 +21,12 @@ import java.net.URI;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.web.media.MediaType;
@@ -200,8 +202,7 @@ public final class TreeDocument implements Document {
 
         if (JsonUtils.isObject(root)) {
             return new TreeDocument(new MediaType(contentType.type(), contentType.subtype()), profile,
-                    new PolyNode(root.asJsonObject(), JakartaAdapter.instance())
-                    );
+                    new PolyNode(root.asJsonObject(), JakartaAdapter.instance()));
         }
 
         throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "JSON document's top level element must be JSON array or object.");
@@ -222,6 +223,23 @@ public final class TreeDocument implements Document {
                             + MediaType.JSON_LD + ", "
                             + MediaType.JSON + ", +json]");
         }
+    }
+
+    public static final Document load(URI uri, DocumentLoader loader, boolean extractAllScripts) throws JsonLdException {
+        
+        if (loader == null) {
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + uri + "].");
+        }
+
+        final LoaderOptions loaderOptions = new LoaderOptions();
+        loaderOptions.setExtractAllScripts(extractAllScripts);
+
+        final Document remoteDocument = loader.loadDocument(uri, loaderOptions);
+
+        if (remoteDocument == null) {
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Returned document is null [" + uri + "].");
+        }
+        return remoteDocument;
     }
 
     @Override
