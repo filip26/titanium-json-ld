@@ -21,40 +21,35 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import com.apicatalog.jsonld.api.StringUtils;
-
-public final class Path {
+public record Path(
+        List<String> segments,
+        String leaf,
+        boolean relative) {
 
     public static final Path EMPTY = new Path(new ArrayList<>(), null, true);
 
     private static final Pattern SEGMENTS_DEL_RE = Pattern.compile("/");
 
-    private final List<String> segments;
-    private final String last;
-    private final boolean relative;
-
-    private Path(final List<String> segments, String last, final boolean relative) {
-        this.segments = segments;
-        this.last = last;
-        this.relative = relative;
+    public Path {
+        segments = List.copyOf(segments);
     }
 
     public static final Path of(final String path) {
 
-        final boolean relative = !path.startsWith("/");
+        final var relative = !path.startsWith("/");
 
-        final List<String> segments = new ArrayList<>(
-                Arrays.asList(
-                        SEGMENTS_DEL_RE.split(
-                                (relative
-                                        ? path
-                                        : path.substring(1)))));
-        
-        final String last = (path.length() > 1 && path.endsWith("/"))
+        //TODO better
+        final var segments = new ArrayList<String>(
+                List.of(SEGMENTS_DEL_RE.split(
+                        (relative
+                                ? path
+                                : path.substring(1)))));
+
+        final var leaf = (path.length() > 1 && path.endsWith("/"))
                 ? null
                 : segments.remove(segments.size() - 1);
 
-        return new Path(segments, (last == null || StringUtils.isBlank(last)) ? null : last, relative);
+        return new Path(segments, (leaf == null || leaf.isBlank()) ? null : leaf, relative);
     }
 
     public Path relativize(final String base) {
@@ -64,14 +59,14 @@ public final class Path {
     public Path relativize(final Path base) {
 
         if (segments.isEmpty() && base.segments.isEmpty()) {
-            if (Objects.equals(last, base.last)) {
+            if (Objects.equals(leaf, base.leaf)) {
                 return new Path(EMPTY.segments, null, !base.relative);
             }
-            return new Path(EMPTY.segments, last, !relative && !base.relative);
+            return new Path(EMPTY.segments, leaf, !relative && !base.relative);
         }
 
-        if (base.segments.isEmpty() && base.last == null) {
-            return new Path(segments, last, !base.relative && !relative);
+        if (base.segments.isEmpty() && base.leaf == null) {
+            return new Path(segments, leaf, !base.relative && !relative);
         }
 
         int leftIndex = 0;
@@ -83,19 +78,19 @@ public final class Path {
         }
 
         if (leftIndex == segments.size() && leftIndex == base.segments.size()) {
-            if (Objects.equals(last, base.last)) {
+            if (Objects.equals(leaf, base.leaf)) {
                 return EMPTY;
             }
-            return new Path(EMPTY.segments, last, !segments.isEmpty());
+            return new Path(EMPTY.segments, leaf, !segments.isEmpty());
         }
 
         if (leftIndex >= base.segments.size()) {
 
-            if ((segments.size() - leftIndex == 1) && segments.get(leftIndex).equals(base.last)) {
-                return new Path(Arrays.asList("."), last, true);
+            if ((segments.size() - leftIndex == 1) && segments.get(leftIndex).equals(base.leaf)) {
+                return new Path(Arrays.asList("."), leaf, true);
             }
 
-            return new Path(segments.subList(leftIndex, segments.size()), last, true);
+            return new Path(segments.subList(leftIndex, segments.size()), leaf, true);
         }
 
         int rightIndex = 0;
@@ -116,19 +111,19 @@ public final class Path {
             diff.add(segments.get(i + leftIndex));
         }
 
-        return new Path(diff, Objects.equals(last, base.last) ? null : last, true);
+        return new Path(diff, Objects.equals(leaf, base.leaf) ? null : leaf, true);
     }
 
     public boolean isEmpty() {
-        return segments.isEmpty() && last == null && !relative;
+        return segments.isEmpty() && leaf == null && !relative;
     }
 
     public boolean isNotEmpty() {
-        return !segments.isEmpty() || last != null || !relative;
+        return !segments.isEmpty() || leaf != null || !relative;
     }
 
-    public boolean isRelative() {
-        return relative;
+    public boolean isAbsolute() {
+        return !relative;
     }
 
     @Override
@@ -138,10 +133,7 @@ public final class Path {
                 : "/")
                 .concat(String.join("/", segments))
                 .concat(segments.isEmpty() ? "" : "/")
-                .concat(last != null ? last : "");
+                .concat(leaf != null ? leaf : "");
     }
 
-    public String getLeaf() {
-        return last;
-    }
 }

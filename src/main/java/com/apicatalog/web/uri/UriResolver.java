@@ -20,8 +20,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.apicatalog.jsonld.api.StringUtils;
-
 /**
  *
  * @see <a href="https://tools.ietf.org/html/rfc3986#section-5.2">Relative
@@ -122,7 +120,7 @@ public final class UriResolver {
         final String[] target = new String[5];
         target[4] = relative.getFragment();
 
-        if (relative.getScheme() != null && StringUtils.isNotBlank(relative.getScheme())) {
+        if (relative.getScheme() != null && !relative.getScheme().isBlank()) {
             target[0] = relative.getScheme();
             target[1] = relative.getAuthority();
             target[2] = removeDotSegments(componentPath);
@@ -130,18 +128,18 @@ public final class UriResolver {
 
         } else {
 
-            if (relative.getAuthority() != null && StringUtils.isNotBlank(relative.getAuthority())) {
+            if (relative.getAuthority() != null && !relative.getAuthority().isBlank()) {
                 target[1] = relative.getAuthority();
                 target[2] = removeDotSegments(componentPath);
                 target[3] = relative.getQuery();
 
             } else {
 
-                if (componentPath != null && StringUtils.isNotBlank(componentPath)) {
+                if (componentPath != null && !componentPath.isBlank()) {
                     if (componentPath.startsWith("/")) {
                         target[2] = removeDotSegments(componentPath);
 
-                    } else if (basePath != null && StringUtils.isNotBlank(basePath)) {
+                    } else if (basePath != null && !basePath.isBlank()) {
                         target[2] = removeDotSegments(merge(basePath, componentPath));
 
                     } else {

@@ -63,8 +63,8 @@ public final class UriRelativizer {
             return UriUtils.recompose(null, null, null , null, uri.getFragment());
         }
 
-        return uriPath.getLeaf() != null
-                    ? uriPath.getLeaf()
+        return uriPath.leaf() != null
+                    ? uriPath.leaf()
                     : "./";
     }
 }

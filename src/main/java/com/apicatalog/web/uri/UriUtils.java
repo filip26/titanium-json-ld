@@ -16,8 +16,8 @@
 package com.apicatalog.web.uri;
 
 import java.net.URI;
+import java.util.Objects;
 
-import com.apicatalog.jsonld.api.StringUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 
 public final class UriUtils {
@@ -26,20 +26,16 @@ public final class UriUtils {
     }
 
     public static final boolean isURI(final String value) {
-
         return value != null
-                && StringUtils.isNotBlank(value)
-                && !Keywords.matchForm(StringUtils.strip(value))
-                && create(StringUtils.strip(value)) != null;
+                && !value.isBlank()
+                && !Keywords.matchForm(value.strip())
+                && create(value.strip()) != null;
     }
 
     public static final URI create(final String uri) {
 
-        if (uri == null) {
-            throw new IllegalArgumentException("The uri cannot be null.");
-        }
-
-        String uriValue = StringUtils.strip(uri);
+        var uriValue = Objects.requireNonNull(
+                uri, "The paramenter 'uri' cannot be null").strip();
 
         if (uriValue.isEmpty()) {
             return null;
@@ -77,9 +73,9 @@ public final class UriUtils {
 
     public static final boolean isNotURI(final String uri) {
         return uri == null
-                || StringUtils.isBlank(uri)
-                || Keywords.matchForm(StringUtils.strip(uri))
-                || create(StringUtils.strip(uri)) == null;
+                || uri.isBlank()
+                || Keywords.matchForm(uri.strip())
+                || create(uri.strip()) == null;
     }
 
     public static final boolean isNotAbsoluteUri(final String uri, UriValidationPolicy policy) {
