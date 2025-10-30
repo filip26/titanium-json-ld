@@ -24,20 +24,17 @@ import java.util.Set;
 
 import com.apicatalog.jsonld.lang.Keywords;
 
-import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
-
 final class GraphMap {
 
     static record Reference(
             String graphName,
             String subject,
             String property,
-            JsonObject value) {
+            Object value) {
     }
 
     // graph, subject, predicate, object
-    private final Map<String, Map<String, Map<String, JsonValue>>> index;
+    private final Map<String, Map<String, Map<String, Object>>> index;
 
     private final Map<String, Map<String, List<Reference>>> usages;
 
@@ -52,16 +49,16 @@ final class GraphMap {
         return index.containsKey(graphName) && index.get(graphName).containsKey(subject);
     }
 
-    public void set(final String graphName, final String subject, final String property, final JsonValue value) {
+    public void set(final String graphName, final String subject, final String property, final Object value) {
         index
                 .computeIfAbsent(graphName, e -> new LinkedHashMap<>())
                 .computeIfAbsent(subject, e -> new LinkedHashMap<>())
                 .put(property, value);
     }
 
-    public Optional<Map<String, JsonValue>> get(final String graphName, final String subject) {
+    public Optional<Map<String, Object>> get(final String graphName, final String subject) {
 
-        final Map<String, Map<String, JsonValue>> graphMap = index.get(graphName);
+        final var graphMap = index.get(graphName);
 
         if (graphMap == null) {
             return Optional.empty();
@@ -70,15 +67,15 @@ final class GraphMap {
         return Optional.ofNullable(graphMap.get(subject));
     }
 
-    public Optional<JsonValue> get(final String graphName, final String subject, final String property) {
+    public Optional<Object> get(final String graphName, final String subject, final String property) {
 
-        final Map<String, Map<String, JsonValue>> graphMap = index.get(graphName);
+        final var graphMap = index.get(graphName);
 
         if (graphMap == null) {
             return Optional.empty();
         }
 
-        final Map<String, JsonValue> subjectMap = graphMap.get(subject);
+        final var subjectMap = graphMap.get(subject);
 
         if (subjectMap == null) {
             return Optional.empty();

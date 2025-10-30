@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.document.cache;
+package com.apicatalog.jsonld.cache;
 
 public interface Cache<K, V> {
 

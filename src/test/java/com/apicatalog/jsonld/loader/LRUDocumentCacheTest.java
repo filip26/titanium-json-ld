@@ -11,6 +11,9 @@ import org.junit.jupiter.api.Test;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.loader.CacheLoader;
+import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.LoaderOptions;
 
 import jakarta.json.JsonValue;
 
@@ -45,7 +48,7 @@ public class LRUDocumentCacheTest {
     @Test
     void testLoadDocument() throws JsonLdError {
         RecordRequestLoader loader = new RecordRequestLoader();
-        LRUDocumentCache cachedLoader = new LRUDocumentCache(loader, 2);
+        CacheLoader cachedLoader = new CacheLoader(loader, 2);
 
         LoaderOptions options = new LoaderOptions();
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
@@ -64,7 +67,7 @@ public class LRUDocumentCacheTest {
     @Test
     void testCacheSize() throws JsonLdError {
         RecordRequestLoader loader = new RecordRequestLoader();
-        LRUDocumentCache cachedLoader = new LRUDocumentCache(loader, 2);
+        CacheLoader cachedLoader = new CacheLoader(loader, 2);
 
         LoaderOptions options = new LoaderOptions();
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
@@ -88,7 +91,7 @@ public class LRUDocumentCacheTest {
     @Test
     void testLoadDocumentsWithDifferentOptions() throws JsonLdError {
         RecordRequestLoader loader = new RecordRequestLoader();
-        LRUDocumentCache cachedLoader = new LRUDocumentCache(loader, 2);
+        CacheLoader cachedLoader = new CacheLoader(loader, 2);
 
         // Using options with same inside should lead to cache hit.
         LoaderOptions options = new LoaderOptions();
@@ -107,7 +110,7 @@ public class LRUDocumentCacheTest {
     @Test
     void testCachingEqualOptions() throws JsonLdError {
         RecordRequestLoader loader = new RecordRequestLoader();
-        LRUDocumentCache cachedLoader = new LRUDocumentCache(loader, 2);
+        CacheLoader cachedLoader = new CacheLoader(loader, 2);
         LoaderOptions options = null;
 
         options = new LoaderOptions();
@@ -143,7 +146,7 @@ public class LRUDocumentCacheTest {
     @Test
     void testCachingProfilesOrderMatter() throws JsonLdError {
         RecordRequestLoader loader = new RecordRequestLoader();
-        LRUDocumentCache cachedLoader = new LRUDocumentCache(loader, 2);
+        CacheLoader cachedLoader = new CacheLoader(loader, 2);
         LoaderOptions options = null;
 
         options = new LoaderOptions();

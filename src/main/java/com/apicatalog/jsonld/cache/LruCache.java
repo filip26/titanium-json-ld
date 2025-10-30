@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.document.cache;
+package com.apicatalog.jsonld.cache;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

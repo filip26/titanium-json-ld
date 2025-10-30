@@ -19,10 +19,10 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.Set;
 
+import com.apicatalog.jsonld.cache.Cache;
+import com.apicatalog.jsonld.cache.LruCache;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.TreeDocument;
-import com.apicatalog.jsonld.document.cache.Cache;
-import com.apicatalog.jsonld.document.cache.LruCache;
 import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.SchemeRouter;

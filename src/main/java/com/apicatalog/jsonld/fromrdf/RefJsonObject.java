@@ -26,6 +26,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
+@Deprecated
 final class RefJsonObject extends AbstractMap<String, JsonValue> implements JsonObject {
 
     private JsonObject jsonObject;

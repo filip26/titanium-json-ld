@@ -18,10 +18,12 @@ package com.apicatalog.jsonld.fromrdf;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -31,7 +33,6 @@ import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.fromrdf.GraphMap.Reference;
 import com.apicatalog.jsonld.json.JsonProvider;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
@@ -42,12 +43,9 @@ import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
+import com.apicatalog.tree.io.java.NativeAdapter;
 
 import jakarta.json.Json;
-import jakarta.json.JsonArray;
-import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
@@ -90,7 +88,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
     protected UriValidationPolicy uriValidation;
     protected JsonLdVersion processingMode;
 
-    protected Map<String, Function<String, JsonValue>> nativeTypes;
+    protected Map<String, Function<String, Object>> nativeTypes;
 
     // runtime
     protected GraphMap graphMap;
@@ -154,7 +152,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
         return this;
     }
 
-    public QuadsToJsonld useNativeTypes(Map<String, Function<String, JsonValue>> converters) {
+    public QuadsToJsonld useNativeTypes(Map<String, Function<String, Object>> converters) {
         this.nativeTypes = converters != null
                 ? converters
                 : Map.of();
@@ -218,13 +216,13 @@ public class QuadsToJsonld implements RdfQuadConsumer {
      * transforms them into a JSON-LD document in expanded form.
      * </p>
      * 
-     * @return a {@link JsonArray} containing the generated JSON-LD data
+     * @return a collection containing the generated JSON-LD data
      * @throws JsonLdError if an error occurs during JSON-LD generation
      */
-    public JsonArray toJsonLd() throws JsonLdError {
+    public Collection<?> toJsonLd() throws JsonLdError {
 
         // 6.
-        for (final String graphName : graphMap.keys()) {
+        for (final var graphName : graphMap.keys()) {
 
             // 6.1.
             if (compoundLiteralSubjects.containsKey(graphName)) {
@@ -239,7 +237,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
                     }
 
                     // 6.1.5.
-                    final Optional<Map<String, JsonValue>> clNodeValue = graphMap.get(graphName, cl);
+                    final var clNodeValue = graphMap.get(graphName, cl);
 
                     graphMap.remove(graphName, cl);
 
@@ -247,60 +245,61 @@ public class QuadsToJsonld implements RdfQuadConsumer {
                         continue;
                     }
 
-                    final Map<String, JsonValue> clNode = clNodeValue.get();
+                    final var clNode = clNodeValue.get();
 
-                    final JsonArrayBuilder clArray = JsonProvider.instance().createArrayBuilder();
+                    final var clArray = new ArrayList<Object>();
 
                     // 6.1.6.
-                    for (final JsonValue clReference : graphMap
+                    for (final var clReference : graphMap
                             .get(
                                     clEntry.graphName(),
                                     clEntry.subject(),
                                     clEntry.property())
-                            .map(JsonValue::asJsonArray)
-                            .orElse(JsonValue.EMPTY_JSON_ARRAY)) {
+                            .map(NativeAdapter::asCollection)
+                            .orElse(List.of())) {
 
-                        if (JsonUtils.isNotObject(clReference)) {
+                        if (clReference == null || !(clReference instanceof Map)) {
                             continue;
                         }
 
-                        final JsonObject clReferenceObject = clReference.asJsonObject();
+                        final var clReferenceObject = (Map) clReference;
 
-                        if (!clReferenceObject.containsKey(Keywords.ID) || !cl.equals(clReference.asJsonObject().getString(Keywords.ID))) {
+                        if (!clReferenceObject.containsKey(Keywords.ID) || !cl.equals(clReferenceObject.get(Keywords.ID))) {
                             continue;
                         }
 
-                        final JsonObjectBuilder clObject = JsonProvider.instance().createObjectBuilder(clReferenceObject);
+                        final var clObject = new LinkedHashMap<String, Object>(clReferenceObject);
 
                         // 6.1.6.1.
                         clObject.remove(Keywords.ID);
 
-                        clObject.add(Keywords.VALUE, JsonUtils.flatten(clNode.get(RdfConstants.VALUE), Keywords.VALUE));
+                        clObject.put(Keywords.VALUE, flatten(clNode.get(RdfConstants.VALUE), Keywords.VALUE));
 
                         // 6.1.6.3.
                         if (clNode.containsKey(RdfConstants.LANGUAGE)) {
 
-                            final JsonValue lang = JsonUtils.flatten(clNode.get(RdfConstants.LANGUAGE), Keywords.VALUE);
+                            final var lang = flatten(clNode.get(RdfConstants.LANGUAGE), Keywords.VALUE);
 
-                            if (JsonUtils.isNotString(lang) || !LanguageTag.isWellFormed(((JsonString) lang).getString())) {
+                            if (!(lang instanceof String langString) 
+                                    || !LanguageTag.isWellFormed(langString)) {
                                 throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
                             }
 
-                            clObject.add(Keywords.LANGUAGE, lang);
+                            clObject.put(Keywords.LANGUAGE, lang);
                         }
 
                         // 6.1.6.4.
                         if (clNode.containsKey(RdfConstants.DIRECTION)) {
 
-                            final JsonValue direction = JsonUtils.flatten(clNode.get(RdfConstants.DIRECTION), Keywords.VALUE);
+                            final var direction = flatten(clNode.get(RdfConstants.DIRECTION), Keywords.VALUE);
 
-                            if (JsonUtils.isNotString(direction)
-                                    || (!"ltr".equalsIgnoreCase(((JsonString) direction).getString())
-                                            && !"rtl".equalsIgnoreCase(((JsonString) direction).getString()))) {
+                            if (!(direction instanceof String dirString)
+                                    || (!"ltr".equalsIgnoreCase(dirString)
+                                            && !"rtl".equalsIgnoreCase(dirString))) {
                                 throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
                             }
 
-                            clObject.add(Keywords.DIRECTION, direction);
+                            clObject.put(Keywords.DIRECTION, direction);
                         }
 
                         clArray.add(clObject);
@@ -309,7 +308,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
                             clEntry.graphName(),
                             clEntry.subject(),
                             clEntry.property(),
-                            clArray.build());
+                            clArray);
                 }
             }
 
@@ -319,17 +318,17 @@ public class QuadsToJsonld implements RdfQuadConsumer {
             }
 
             // 6.4.
-            for (Reference usage : graphMap.getUsages(graphName, RdfConstants.NIL)) {
+            for (var usage : graphMap.getUsages(graphName, RdfConstants.NIL)) {
 
                 // 6.4.1.
-                Map<String, JsonValue> node = graphMap.get(usage.graphName(), usage.subject())
+                var node = graphMap.get(usage.graphName(), usage.subject())
                         .orElse(Map.of());
 
                 // 6.4.2.
-                final JsonArrayBuilder list = JsonProvider.instance().createArrayBuilder();
+                final var list = new ArrayList<Object>();
                 final List<String> listNodes = new ArrayList<>();
 
-                String nodeId = ((JsonString) node.get(Keywords.ID)).getString();
+                String nodeId = ((String) node.get(Keywords.ID));
 
                 // 6.4.3.
                 while (RdfConstants.REST.equals(usage.property())
@@ -337,15 +336,17 @@ public class QuadsToJsonld implements RdfQuadConsumer {
                         && referenceOnce.get(nodeId) != null
                         && node.containsKey(RdfConstants.FIRST)
                         && node.containsKey(RdfConstants.REST)
-                        && node.get(RdfConstants.FIRST).asJsonArray().size() == 1
-                        && node.get(RdfConstants.REST).asJsonArray().size() == 1
+                        && ((Collection<?>) node.get(RdfConstants.FIRST)).size() == 1
+                        && ((Collection<?>) node.get(RdfConstants.REST)).size() == 1
                         && (node.size() == 3 /* keywords: @id, @first, @last */
                                 || (node.size() == 4 && node.containsKey(Keywords.TYPE)
-                                        && node.get(Keywords.TYPE).asJsonArray().size() == 1
-                                        && node.get(Keywords.TYPE).asJsonArray().contains(JsonProvider.instance().createValue(RdfConstants.LIST))))) {
+                                        && ((Collection<?>) node.get(Keywords.TYPE)).size() == 1
+                                        && ((Collection<?>) node.get(Keywords.TYPE)).contains(RdfConstants.LIST)))) {
 
                     // 6.4.3.1.
-                    list.add(0, node.get(RdfConstants.FIRST).asJsonArray().get(0)); // reverse order -> index = 0 see 6.4.5.
+                    // reverse order -> index = 0 see 6.4.5.
+                    list.add(0, ((Collection<?>) node.get(RdfConstants.FIRST)).iterator().next());
+//                    list.add(0, ((Collection<?>) node.get(RdfConstants.FIRST)).get(0));
 
                     // 6.4.3.2.
                     listNodes.add(nodeId);
@@ -354,7 +355,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
                     usage = referenceOnce.get(nodeId);
 
                     // 6.4.3.4.
-                    final Optional<Map<String, JsonValue>> nextNode = graphMap.get(usage.graphName(), usage.subject());
+                    final var nextNode = graphMap.get(usage.graphName(), usage.subject());
 
                     if (!nextNode.isPresent()) {
                         break;
@@ -374,13 +375,13 @@ public class QuadsToJsonld implements RdfQuadConsumer {
                     }
                 }
 
-                JsonObject head = usage.value();
+                var head = (Map)usage.value();
 
                 // 6.4.4.
                 head.remove(Keywords.ID);
 
                 // 6.4.6.
-                head.put(Keywords.LIST, list.build());
+                head.put(Keywords.LIST, list);
 
                 // 6.4.7.
                 listNodes.forEach(nid -> graphMap.remove(graphName, nid));
@@ -388,38 +389,40 @@ public class QuadsToJsonld implements RdfQuadConsumer {
         }
 
         // 7.
-        final JsonArrayBuilder result = JsonProvider.instance().createArrayBuilder();
+        final var result = new ArrayList<Object>();
 
         // 8.
         for (final String subject : Utils.index(graphMap.keys(Keywords.DEFAULT), ordered)) {
 
-            final Map<String, JsonValue> node = graphMap.get(Keywords.DEFAULT, subject).orElseGet(() -> new LinkedHashMap<>());
+            final var node = graphMap.get(Keywords.DEFAULT, subject).orElseGet(() -> new LinkedHashMap<>());
 
             // 8.1.
             if (graphMap.contains(subject)) {
 
-                final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
+                final var array = new ArrayList<Object>();
 
                 for (final String key : Utils.index(graphMap.keys(subject), ordered)) {
 
-                    final Map<String, JsonValue> entry = graphMap.get(subject, key)
+                    final var entry = (Map)graphMap.get(subject, key)
                             .orElse(Map.of());
 
                     if (entry.size() > 1 || !entry.containsKey(Keywords.ID)) {
-                        array.add(JsonUtils.toJsonObject(entry));
+                        array.add(Collections.unmodifiableMap(entry));
+//                        array.add(JsonUtils.toJsonObject(entry));
                     }
                 }
 
-                node.put(Keywords.GRAPH, array.build());
+                node.put(Keywords.GRAPH, array);
             }
 
             // 8.2.
             if (node.size() > 1 || !node.containsKey(Keywords.ID)) {
-                result.add(JsonUtils.toJsonObject(node));
+                result.add(Collections.unmodifiableMap(node));
+//                result.add(JsonUtils.toJsonObject(node));
             }
         }
         // 9.
-        return result.build();
+        return result;
     }
 
     @Override
@@ -449,7 +452,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
 
         // 5.4.
         if (!Keywords.DEFAULT.equals(graphName) && !graphMap.contains(Keywords.DEFAULT, graphName)) {
-            graphMap.set(Keywords.DEFAULT, graphName, Keywords.ID, JsonProvider.instance().createValue(graphName));
+            graphMap.set(Keywords.DEFAULT, graphName, Keywords.ID, graphName);
         }
 
         // 5.6.
@@ -457,7 +460,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
 
         // 5.7.1.
         if (!graphMap.contains(graphName, subject)) {
-            graphMap.set(graphName, subject, Keywords.ID, JsonProvider.instance().createValue(subject));
+            graphMap.set(graphName, subject, Keywords.ID, subject);
         }
 
         // 5.7.3.
@@ -471,45 +474,49 @@ public class QuadsToJsonld implements RdfQuadConsumer {
         if (!RdfQuadConsumer.isLiteral(datatype, language, direction)
                 && !graphMap.contains(graphName, object)) {
 
-            graphMap.set(graphName, object, Keywords.ID, JsonProvider.instance().createValue(object));
+            graphMap.set(graphName, object, Keywords.ID, object);
         }
 
         // 5.7.5.
         if (!useRdfType && RdfConstants.TYPE.equals(predicate) && !RdfQuadConsumer.isLiteral(datatype, language, direction)) {
 
-            final Optional<JsonValue> type = graphMap.get(graphName, subject, Keywords.TYPE);
+            final var type = graphMap.get(graphName, subject, Keywords.TYPE);
 
             if (type.isPresent()) {
 
-                JsonArray types = type.get().asJsonArray();
+                var types = new ArrayList<Object>((Collection<?>) type.get());
+                types.add(object);
 
-                graphMap.set(graphName, subject, Keywords.TYPE, JsonProvider.instance().createArrayBuilder(types).add(object).build());
+                graphMap.set(graphName, subject, Keywords.TYPE, types);
 
             } else {
 
-                graphMap.set(graphName, subject, Keywords.TYPE, JsonProvider.instance().createArrayBuilder().add(object).build());
+                graphMap.set(graphName, subject, Keywords.TYPE, Set.of(object));
             }
 
             return this;
         }
 
         // 5.7.6.
-        final JsonObject value = toObject(object, datatype, language, direction);
+        final var value = toObject(object, datatype, language, direction);
 
-        final Optional<JsonValue> predicateValue = graphMap.get(graphName, subject, predicate);
+        final var predicateValue = graphMap.get(graphName, subject, predicate);
 
         // 5.7.7.
         if (predicateValue.isPresent()) {
 
-            JsonArray array = predicateValue.get().asJsonArray();
+            var array = (Collection<?>) predicateValue.get();
 
             if (!array.contains(value)) {
-                graphMap.set(graphName, subject, predicate, JsonProvider.instance().createArrayBuilder(array).add(value).build());
+                var list = new ArrayList<Object>(array);
+                list.add(value);
+
+                graphMap.set(graphName, subject, predicate, list);
             }
 
             // 5.7.8.
         } else {
-            graphMap.set(graphName, subject, predicate, JsonProvider.instance().createArrayBuilder().add(value).build());
+            graphMap.set(graphName, subject, predicate, List.of(value));
         }
 
         // 5.7.9.
@@ -539,20 +546,16 @@ public class QuadsToJsonld implements RdfQuadConsumer {
         return this;
     }
 
-    JsonObject toObject(String object, String datatype, String langTag, String direction) throws RdfConsumerException {
+    Map<String, ?> toObject(String object, String datatype, String langTag, String direction) throws RdfConsumerException {
 
         // 1.
         if (!RdfQuadConsumer.isLiteral(datatype, langTag, direction)) {
-            return new RefJsonObject(JsonProvider.instance().createObjectBuilder().add(Keywords.ID, object).build());
+//FIXME???            return new RefJsonObject(Map.of(Keywords.ID, object));
+            return Map.of(Keywords.ID, object);
         }
 
-        final var result = JsonProvider.instance().createObjectBuilder();
-
         // 2.2.
-        JsonValue convertedValue = null;
-
-        // 2.3.
-        String type = null;
+        Object convertedValue = null;
 
         // 2.4.
         if (!nativeTypes.isEmpty()) {
@@ -563,34 +566,51 @@ public class QuadsToJsonld implements RdfQuadConsumer {
 
                 if (convertor != null) {
                     convertedValue = convertor.apply(object);
+                    if (convertedValue != null) {
+                        return Map.of(Keywords.VALUE, convertedValue);
+                    }
                 }
 
-                if (convertedValue == null) {
-                    type = datatype;
-                }
+                return Map.of(
+                        Keywords.VALUE, object,
+                        Keywords.TYPE, datatype);
             }
+            return Map.of(
+                    Keywords.VALUE, object);
+        }
 
-            // 2.5.
-        } else if (processingMode != JsonLdVersion.V1_0
+        // 2.5.
+        if (processingMode != JsonLdVersion.V1_0
                 && RdfConstants.JSON.equals(datatype)) {
 
-            try (JsonParser parser = JsonProvider.instance().createParser(new StringReader(object))) {
+            try (final JsonParser parser = JsonProvider.instance().createParser(new StringReader(object))) {
 
                 parser.next();
 
                 convertedValue = parser.getValue();
-                type = Keywords.JSON;
+//                type = Keywords.JSON;
+
+                return Map.of(
+                        Keywords.VALUE, convertedValue,
+                        Keywords.TYPE, Keywords.JSON);
 
             } catch (Exception e) {
                 throw new RdfConsumerException(new JsonLdError(JsonLdErrorCode.INVALID_JSON_LITERAL, e));
             }
 
-            // 2.6.
-        } else if (RdfDirection.I18N_DATATYPE == rdfDirection
+        }
+
+        final var result = new LinkedHashMap<String, Object>(5);
+
+        // 2.3.
+        String type = null;
+
+        // 2.6.
+        if (RdfDirection.I18N_DATATYPE == rdfDirection
                 && datatype != null
                 && datatype.startsWith(RdfConstants.I18N_BASE)) {
 
-            convertedValue = JsonProvider.instance().createValue(object);
+            convertedValue = object;
 
             String dirLang = datatype.substring(RdfConstants.I18N_BASE.length());
 
@@ -598,22 +618,22 @@ public class QuadsToJsonld implements RdfQuadConsumer {
 
             if (directionIndex > 1) {
 
-                result.add(Keywords.LANGUAGE, JsonProvider.instance().createValue(dirLang.substring(0, directionIndex)));
-                result.add(Keywords.DIRECTION, JsonProvider.instance().createValue(dirLang.substring(directionIndex + 1)));
+                result.put(Keywords.LANGUAGE, dirLang.substring(0, directionIndex));
+                result.put(Keywords.DIRECTION, dirLang.substring(directionIndex + 1));
 
             } else if (directionIndex == 0) {
 
-                result.add(Keywords.DIRECTION, JsonProvider.instance().createValue(dirLang.substring(1)));
+                result.put(Keywords.DIRECTION, dirLang.substring(1));
 
             } else if (directionIndex == -1) {
 
-                result.add(Keywords.LANGUAGE, JsonProvider.instance().createValue(dirLang));
+                result.put(Keywords.LANGUAGE, dirLang);
             }
 
             // 2.7.
         } else if (langTag != null) {
 
-            result.add(Keywords.LANGUAGE, Json.createValue(langTag));
+            result.put(Keywords.LANGUAGE, langTag);
 
             // 2.8.
         } else if (datatype != null
@@ -623,17 +643,18 @@ public class QuadsToJsonld implements RdfQuadConsumer {
         }
 
         // 2.9.
-        result.add(Keywords.VALUE, (convertedValue != null)
-                ? convertedValue
-                : JsonProvider.instance().createValue(object));
+        result.put(Keywords.VALUE,
+                (convertedValue != null)
+                        ? convertedValue
+                        : object);
 
         // 2.10.
         if (type != null) {
-            result.add(Keywords.TYPE, JsonProvider.instance().createValue(type));
+            result.put(Keywords.TYPE, type);
         }
 
         // 2.11.
-        return result.build();
+        return result;
     }
 
     public static JsonValue toBoolean(String value) {
@@ -647,11 +668,11 @@ public class QuadsToJsonld implements RdfQuadConsumer {
         return null;
     }
 
-    public static JsonValue toLong(String value) {
+    public static Long toLong(String value) {
 
         try {
 
-            return JsonProvider.instance().createValue(Long.parseLong(value));
+            return Long.parseLong(value);
 
         } catch (NumberFormatException e) {
 
@@ -659,14 +680,12 @@ public class QuadsToJsonld implements RdfQuadConsumer {
         return null;
     }
 
-    public static JsonValue toDouble(String value) {
+    public static Double toDouble(String value) {
         try {
             final Double number = Double.parseDouble(value);
 
             if (!number.isInfinite() && !number.isNaN()) {
-
-                return JsonProvider.instance().createValue(number);
-
+                return number;
             }
 
         } catch (NumberFormatException e) {
@@ -674,14 +693,27 @@ public class QuadsToJsonld implements RdfQuadConsumer {
         return null;
     }
 
-    public static JsonValue toDecimal(String value) {
+    public static BigDecimal toDecimal(String value) {
 
         try {
-            return JsonProvider.instance().createValue(new BigDecimal(value));
+            return new BigDecimal(value);
 
         } catch (NumberFormatException e) {
         }
         return null;
+    }
+
+    static Object flatten(Object value, String key) {
+
+        if (value instanceof Map map) {
+            return map.get(key);
+        }
+        
+        if (value instanceof Collection array && array.size() == 1) {
+            return array.iterator().next();
+        }
+        
+        return value;
     }
 
 }
