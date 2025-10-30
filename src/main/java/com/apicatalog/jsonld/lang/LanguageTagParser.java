@@ -124,7 +124,7 @@ final class LanguageTagParser {
     LanguageTag parse() throws IllegalArgumentException {
 
         if (tags == null || tags.length == 0) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("The language tag [" + languageTag + "] is null or blank.");
         }
 
         tagIndex = 0;

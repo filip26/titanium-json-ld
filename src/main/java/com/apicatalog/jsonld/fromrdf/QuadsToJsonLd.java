@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -280,8 +281,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
                         if (clNode.containsKey(Terms.RDF_LANGUAGE)) {
 
                             final var lang = flatten(clNode.get(Terms.RDF_LANGUAGE), Keywords.VALUE);
-                            System.out.println(clNode.get(Terms.RDF_LANGUAGE));
-                            System.out.println(lang + ", " + LanguageTag.isWellFormed((String)lang));
+
                             if (!(lang instanceof String langString)
                                     || !LanguageTag.isWellFormed(langString)) {
                                 throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
@@ -378,8 +378,8 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
                     }
                 }
 
-                var head = usage.value();
-                System.out.println("HEAD " + head);
+                final var head = usage.value();
+
                 // 6.4.4.
                 head.remove(Keywords.ID);
 
@@ -598,6 +598,13 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
 
                 // FIXME
                 convertedValue = new NativeMaterializer3().node(convertedValue, JakartaAdapter.instance());
+
+                if (convertedValue == null) {
+                    final var result = new HashMap<String, Object>(2);
+                    result.put(Keywords.TYPE, Keywords.JSON);
+                    result.put(Keywords.VALUE, null);
+                    return result;
+                }
 
                 return Map.of(
                         Keywords.VALUE, convertedValue,
