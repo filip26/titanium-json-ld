@@ -177,8 +177,13 @@ public record LanguageTag(
             char code,
             Collection<String> tags) {
 
-        protected void addTag(String tag) {
-            this.tags.add(tag);
+        public Extension {
+            Objects.requireNonNull(code, "The parameter 'code' must not be null");
+
+            // Defensive copies to preserve immutability
+            tags = List.copyOf(Objects.requireNonNull(
+                    tags,
+                    "The parameter 'tags' must not be null"));
         }
 
         @Override

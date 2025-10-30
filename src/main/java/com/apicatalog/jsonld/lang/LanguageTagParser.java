@@ -174,18 +174,20 @@ final class LanguageTagParser {
         // singleton = DIGIT | a-z !- x
         while (acceptDigit(1) || (alphaRange(0, 1) && !tags[tagIndex].equalsIgnoreCase("x") && accept(1))) {
 
-            final Extension extension = new Extension(tags[tagIndex - 1].charAt(0), new ArrayList<>());
+            final var extension = new ArrayList<String>();
 
             // 1*("-" (2*8alphanum))
-            if (!acceptAlphaNun(2, 8, extension::addTag)) {
+            if (!acceptAlphaNun(2, 8, extension::add)) {
                 tagIndex--;
                 break;
             }
 
-            while (acceptAlphaNun(2, 8, extension::addTag))
+            while (acceptAlphaNun(2, 8, extension::add))
                 ;
 
-            addExtension(extension);
+            addExtension(new Extension(
+                    tags[tagIndex - 1].charAt(0),
+                    extension));
         }
 
         acceptPrivateUse();
