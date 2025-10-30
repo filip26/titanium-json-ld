@@ -20,10 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.IOException;
 import java.util.Objects;
 
+import com.apicatalog.jsonld.JsonLdComparison;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.lang.JsonLdComparison;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.jsonld.loader.QuadSetDocument;
 import com.apicatalog.jsonld.test.JsonLdTestCase.Type;

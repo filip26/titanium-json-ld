@@ -22,12 +22,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.apicatalog.jsonld.JsonLdAdapter;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.BlankNode;
-import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.web.uri.UriRelativizer;

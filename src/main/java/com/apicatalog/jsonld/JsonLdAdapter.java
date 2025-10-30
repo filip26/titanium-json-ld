@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.lang;
+package com.apicatalog.jsonld;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +11,7 @@ import java.util.Set;
 
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.web.uri.UriUtils;
 

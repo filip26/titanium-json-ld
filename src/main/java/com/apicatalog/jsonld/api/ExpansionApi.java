@@ -32,6 +32,7 @@ import com.apicatalog.web.uri.UriUtils;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonStructure;
 
+@Deprecated
 public final class ExpansionApi implements CommonApi<ExpansionApi>, LoaderApi<ExpansionApi>, ContextApi<ExpansionApi> {
 
     // required

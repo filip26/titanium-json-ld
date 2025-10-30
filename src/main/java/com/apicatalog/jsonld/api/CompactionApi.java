@@ -28,6 +28,7 @@ import com.apicatalog.jsonld.processor.Compactor;
 
 import jakarta.json.JsonObject;
 
+@Deprecated
 public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<CompactionApi> {
 
     // required

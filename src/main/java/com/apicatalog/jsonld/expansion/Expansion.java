@@ -23,10 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.apicatalog.jsonld.JsonLdAdapter;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.processor.ProcessingRuntime;
 import com.apicatalog.tree.io.NodeAdapter;

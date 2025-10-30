@@ -31,6 +31,7 @@ import com.apicatalog.web.uri.UriUtils;
 
 import jakarta.json.JsonStructure;
 
+@Deprecated
 public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>, ContextApi<ToRdfApi> {
 
     // required

@@ -32,6 +32,7 @@ import com.apicatalog.web.uri.UriUtils;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonStructure;
 
+@Deprecated
 public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<FramingApi>, ContextApi<FramingApi> {
 
     // required

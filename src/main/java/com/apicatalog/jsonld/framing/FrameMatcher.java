@@ -20,8 +20,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.apicatalog.jsonld.JsonLdAdapter;
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.java.NativeAdapter;
 

@@ -29,6 +29,7 @@ import com.apicatalog.web.uri.UriUtils;
 
 import jakarta.json.JsonStructure;
 
+@Deprecated
 public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<FlatteningApi>, ContextApi<FlatteningApi> {
 
     // required
