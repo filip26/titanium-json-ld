@@ -27,8 +27,8 @@ import java.util.stream.IntStream;
 
 import com.apicatalog.jcs.Jcs;
 import com.apicatalog.jsonld.JsonLdAdapter;
-import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
@@ -48,10 +48,10 @@ public final class JsonLdToQuads {
 
     private static final Logger LOGGER = Logger.getLogger(JsonLdToQuads.class.getName());
 
-    private static final DecimalFormat xsdNumberFormat = new DecimalFormat("0.0##############E0", new DecimalFormatSymbols(Locale.ENGLISH));
+    private static final DecimalFormat xsdDecimalFormat = new DecimalFormat("0.0##############E0", new DecimalFormatSymbols(Locale.ENGLISH));
 
     static {
-        xsdNumberFormat.setMinimumFractionDigits(1);
+        xsdDecimalFormat.setMinimumFractionDigits(1);
     }
 
     // required
@@ -141,12 +141,6 @@ public final class JsonLdToQuads {
                                 continue;
                             }
 
-//                            if (JsonUtils.isNotString(type)) {
-//                                continue;
-//                            }
-
-//                            final String typeString = ((JsonString) type).getString();
-
                         }
 
                     } else if (!Keywords.contains(property)) {
@@ -155,10 +149,13 @@ public final class JsonLdToQuads {
                             continue;
                         }
 
-                        for (final var item : (Collection<?>) nodeMap.get(graphName, subject, property)) {
+                        @SuppressWarnings("unchecked")
+                        final var items = (Collection<Map<String, Object>>) nodeMap.get(graphName, subject, property);
+
+                        for (final var item : items) {
                             fromObject(
                                     consumer,
-                                    (Map) item,
+                                    item,
                                     subject,
                                     property);
                         }
@@ -206,7 +203,11 @@ public final class JsonLdToQuads {
 
         // 3.
         if (JsonLdAdapter.isList(item)) {
-            fromList(consumer, (Collection<?>) item.get(Keywords.LIST), subject, predicate);
+
+            @SuppressWarnings("unchecked")
+            final var list = (Collection<Map<String, Object>>) item.get(Keywords.LIST);
+
+            fromList(consumer, list, subject, predicate);
         }
 
         // 4.
@@ -217,7 +218,7 @@ public final class JsonLdToQuads {
         final var value = item.get(Keywords.VALUE);
 
         // 5.
-        String datatype = item.get(Keywords.TYPE) instanceof String type
+        var datatype = item.get(Keywords.TYPE) instanceof String type
                 ? type
                 : null;
 
@@ -267,55 +268,27 @@ public final class JsonLdToQuads {
             }
 
             // 10. - 11.
-//        } else if (JsonUtils.isNumber(value)) {
         } else if (value instanceof Number number) {
 
-            
-            if (NativeAdapter.instance().isIntegral(number)) {
+            if (Terms.XSD_DOUBLE.equals(datatype)
+                    || Terms.XSD_FLOAT.equals(datatype)
+                    || (!NativeAdapter.instance().isIntegral(number) && number.doubleValue() % -1 != 0)
+                    || (number instanceof BigDecimal decimal && decimal.compareTo(BigDecimal.ONE.movePointRight(21)) >= 0)) {
 
-                valueString = number.toString();
+                valueString = toXsdDouble(number.doubleValue());
+
+                if (datatype == null) {
+                    datatype = Terms.XSD_DOUBLE;
+                }
+
+            } else {
+                valueString = Long.toString(number.longValue());
 
                 if (datatype == null) {
                     datatype = Terms.XSD_INTEGER;
                 }
 
-            } else {
-                
             }
-
-//
-//          if (datatype == null) {
-//              datatype = XsdConstants.INTEGER;
-//          }
-
-//            if (number instanceof BigDecimal decimal) {
-//                
-//            }
-//            JsonNumber number = ((JsonNumber) value);
-
-            // FIXME
-            // 11.
-//            if ((!number.isIntegral() && number.doubleValue() % -1 != 0)
-//                    || XsdConstants.DOUBLE.equals(datatype)
-//                    || XsdConstants.FLOAT.equals(datatype)
-//                    || number.bigDecimalValue().compareTo(BigDecimal.ONE.movePointRight(21)) >= 0) {
-//
-//                valueString = toXsdDouble(number.bigDecimalValue());
-//
-//                if (datatype == null) {
-//                    datatype = XsdConstants.DOUBLE;
-//                }
-//
-//                // 10.
-//            } else {
-//
-//                valueString = number.bigIntegerValue().toString();
-//
-//                if (datatype == null) {
-//                    datatype = XsdConstants.INTEGER;
-//                }
-//
-//            }
 
             // 12.
         } else if (datatype == null) {
@@ -407,7 +380,7 @@ public final class JsonLdToQuads {
      */
     private void fromList(
             final RdfTripleConsumer consumer,
-            final Collection<?> list,
+            final Collection<Map<String, Object>> list,
             final String subject,
             final String predicate) throws JsonLdException, RdfConsumerException {
 
@@ -433,7 +406,7 @@ public final class JsonLdToQuads {
 
             fromObject(
                     consumer,
-                    (Map) item,
+                    item,
                     blankNodeSubject,
                     Terms.RDF_FIRST);
 
@@ -447,7 +420,7 @@ public final class JsonLdToQuads {
         }
     }
 
-    private static final String toXsdDouble(BigDecimal bigDecimal) {
-        return xsdNumberFormat.format(bigDecimal);
+    private static final String toXsdDouble(double number) {
+        return xsdDecimalFormat.format(number);
     }
 }
