@@ -16,6 +16,8 @@
 package com.apicatalog.jsonld.lang;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 
 public record LanguageTag(
         String language,
@@ -26,6 +28,16 @@ public record LanguageTag(
         Collection<Extension> extensions,
         Collection<String> variants,
         Collection<String> privateUse) {
+
+    public LanguageTag {
+        Objects.requireNonNull(language, "The parameter 'language' must not be null");
+
+        // Defensive copies to preserve immutability
+        languageExtensions = languageExtensions == null ? List.of() : List.copyOf(languageExtensions);
+        extensions = extensions == null ? List.of() : List.copyOf(extensions);
+        variants = variants == null ? List.of() : List.copyOf(variants);
+        privateUse = privateUse == null ? List.of() : List.copyOf(privateUse);
+    }
 
     /**
      * Language tags are used to help identify languages and are defined by
@@ -39,12 +51,10 @@ public record LanguageTag(
      *
      */
     public static boolean isWellFormed(final String languageTag) {
-
-        if (languageTag == null) {
-            throw new IllegalArgumentException("The parameter 'laguageTag' must not be null");
-        }
-
-        return LanguageTagParser.isWellFormed(languageTag);
+        return LanguageTagParser.isWellFormed(
+                Objects.requireNonNull(
+                        languageTag,
+                        "The parameter 'laguageTag' must not be null"));
     }
 
     /**
@@ -58,11 +68,11 @@ public record LanguageTag(
      *                                  language tag
      */
     public static LanguageTag of(final String languageTag) {
-        if (languageTag == null) {
-            throw new IllegalArgumentException("The parameter 'laguageTag' must not be null");
-        }
-
-        return LanguageTagParser.create(languageTag).parse();
+        return LanguageTagParser.create(
+                Objects.requireNonNull(
+                        languageTag,
+                        "The parameter 'laguageTag' must not be null"))
+                .parse();
     }
 
     /**
@@ -136,43 +146,28 @@ public record LanguageTag(
         sb.append(language);
 
         if (languageExtensions != null) {
-            languageExtensions.forEach(tag -> {
-                sb.append('-');
-                sb.append(tag);
-            });
+            languageExtensions.forEach(tag -> sb.append('-').append(tag));
         }
 
         if (script != null) {
-            sb.append('-');
-            sb.append(script);
+            sb.append('-').append(script);
         }
 
         if (region != null) {
-            sb.append('-');
-            sb.append(region);
+            sb.append('-').append(region);
         }
 
         if (variants != null) {
-            variants.forEach(tag -> {
-                sb.append('-');
-                sb.append(tag);
-            });
+            variants.forEach(tag -> sb.append('-').append(tag));
         }
 
         if (extensions != null) {
-            extensions.forEach(tag -> {
-                sb.append('-');
-                sb.append(tag);
-            });
+            extensions.forEach(tag -> sb.append('-').append(tag));
         }
 
         if (privateUse != null) {
-            sb.append('-');
-            sb.append('x');
-            privateUse.forEach(tag -> {
-                sb.append('-');
-                sb.append(tag);
-            });
+            sb.append('-').append('x');
+            privateUse.forEach(tag -> sb.append('-').append(tag));
         }
 
         return sb.toString();
@@ -188,14 +183,9 @@ public record LanguageTag(
 
         @Override
         public String toString() {
-            final StringBuilder sb = new StringBuilder();
+            final var sb = new StringBuilder().append(code);
 
-            sb.append(code);
-
-            tags.forEach(tag -> {
-                sb.append('-');
-                sb.append(tag);
-            });
+            tags.forEach(tag -> sb.append('-').append(tag));
 
             return sb.toString();
         }
