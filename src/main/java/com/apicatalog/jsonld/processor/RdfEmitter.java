@@ -25,13 +25,8 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.loader.LoaderOptions;
-import com.apicatalog.jsonld.tordf.ToRdf;
+import com.apicatalog.jsonld.tordf.JsonLdToQuads;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
-import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
-import com.apicatalog.tree.io.java.NativeAdapter;
-
-import jakarta.json.JsonArray;
-import jakarta.json.JsonValue;
 
 /**
  *
@@ -39,6 +34,7 @@ import jakarta.json.JsonValue;
  *      "https://w3c.github.io/json-ld-api/#dom-jsonldprocessor-tordf">JsonLdProcessor.toRdf()</a>
  *
  */
+@Deprecated
 public final class RdfEmitter {
 
     private RdfEmitter() {
@@ -74,7 +70,7 @@ public final class RdfEmitter {
     }
 
     public static final void toRdf(final RdfQuadConsumer consumer, final Object expandedInput, final JsonLdOptions options) throws JsonLdError {
-        ToRdf
+        JsonLdToQuads
                 .with(new NodeMapBuilder(expandedInput, new NodeMap()).build())
                 .produceGeneralizedRdf(options.isProduceGeneralizedRdf())
                 .rdfDirection(options.getRdfDirection())

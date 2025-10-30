@@ -46,7 +46,6 @@ import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.tree.io.java.NativeMaterializer3;
 
-import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 
@@ -79,6 +78,15 @@ import jakarta.json.stream.JsonParser;
  * @since 1.7.0
  */
 public class QuadsToJsonLd implements RdfQuadConsumer {
+
+    public static final Map<String, Function<String, Object>> DEFAULT_NATIVE_TYPES = Map.of(
+            Terms.XSD_STRING, s -> s,
+            Terms.XSD_BOOLEAN, QuadsToJsonLd::toBoolean,
+            Terms.XSD_INT, QuadsToJsonLd::toLong,
+            Terms.XSD_INTEGER, QuadsToJsonLd::toLong,
+            Terms.XSD_LONG, QuadsToJsonLd::toLong,
+            Terms.XSD_FLOAT, QuadsToJsonLd::toDouble,
+            Terms.XSD_DOUBLE, QuadsToJsonLd::toDouble);
 
     // optional
     protected boolean ordered;
@@ -140,14 +148,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
      */
     public QuadsToJsonLd useNativeTypes(boolean useNativeTypes) {
         this.nativeTypes = useNativeTypes
-                ? Map.of(
-                        Terms.XSD_STRING, Json::createValue,
-                        Terms.XSD_BOOLEAN, QuadsToJsonLd::toBoolean,
-                        Terms.XSD_INT, QuadsToJsonLd::toLong,
-                        Terms.XSD_INTEGER, QuadsToJsonLd::toLong,
-                        Terms.XSD_LONG, QuadsToJsonLd::toLong,
-                        Terms.XSD_FLOAT, QuadsToJsonLd::toDouble,
-                        Terms.XSD_DOUBLE, QuadsToJsonLd::toDouble)
+                ? DEFAULT_NATIVE_TYPES
                 : Map.of();
         return this;
     }
@@ -376,7 +377,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
                 }
 
                 var head = (Map) usage.value();
-
+System.out.println("HEAD " + head);
                 // 6.4.4.
                 head.remove(Keywords.ID);
 
@@ -551,7 +552,9 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
         // 1.
         if (!RdfQuadConsumer.isLiteral(datatype, langTag, direction)) {
 //FIXME???            return new RefJsonObject(Map.of(Keywords.ID, object));
-            return Map.of(Keywords.ID, object);
+            final var ref = new LinkedHashMap<String, Object>(1);
+            ref.put(Keywords.ID, object);
+            return ref;
         }
 
         // 2.2.
@@ -590,9 +593,9 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
                 convertedValue = parser.getValue();
 //                type = Keywords.JSON;
 
-                //FIXME
+                // FIXME
                 convertedValue = new NativeMaterializer3().node(convertedValue, JakartaAdapter.instance());
-                
+
                 return Map.of(
                         Keywords.VALUE, convertedValue,
                         Keywords.TYPE, Keywords.JSON);

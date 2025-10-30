@@ -196,14 +196,18 @@ final class LanguageTagParser {
             throw new IllegalArgumentException("The language tag [" + languageTag + "] is not well-formed.");
         }
 
-        return new LanguageTag(
-                language,
-                languageExtensions,
-                script,
-                region,
-                extensions,
-                variants,
-                privateUse);
+        if (language != null) {
+            return new LanguageTag(
+                    language,
+                    languageExtensions,
+                    script,
+                    region,
+                    extensions,
+                    variants,
+                    privateUse);
+        }
+        
+        return null;
     }
 
     private boolean acceptPrivateUse() {

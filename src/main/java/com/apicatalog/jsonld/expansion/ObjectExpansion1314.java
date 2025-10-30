@@ -486,7 +486,7 @@ final class ObjectExpansion1314 {
 
                         var stringValue = adapter.stringValue(value);
 
-                        if (!LanguageTag.isWellFormed(stringValue)) {
+                        if (stringValue == null || !LanguageTag.isWellFormed(stringValue)) {
                             LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", stringValue);
                         }
 

@@ -44,9 +44,9 @@ import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
-public final class ToRdf {
+public final class JsonLdToQuads {
 
-    private static final Logger LOGGER = Logger.getLogger(ToRdf.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(JsonLdToQuads.class.getName());
 
     private static final DecimalFormat xsdNumberFormat = new DecimalFormat("0.0##############E0", new DecimalFormatSymbols(Locale.ENGLISH));
 
@@ -62,7 +62,7 @@ public final class ToRdf {
     private RdfDirection rdfDirection;
     private UriValidationPolicy uriValidation;
 
-    private ToRdf(NodeMap nodeMap) {
+    private JsonLdToQuads(NodeMap nodeMap) {
         this.nodeMap = nodeMap;
 
         this.produceGeneralizedRdf = false;
@@ -70,16 +70,16 @@ public final class ToRdf {
         this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
-    public static final ToRdf with(NodeMap nodeMap) {
-        return new ToRdf(nodeMap);
+    public static final JsonLdToQuads with(NodeMap nodeMap) {
+        return new JsonLdToQuads(nodeMap);
     }
 
-    public ToRdf produceGeneralizedRdf(boolean enable) {
+    public JsonLdToQuads produceGeneralizedRdf(boolean enable) {
         this.produceGeneralizedRdf = enable;
         return this;
     }
 
-    public ToRdf rdfDirection(RdfDirection rdfDirection) {
+    public JsonLdToQuads rdfDirection(RdfDirection rdfDirection) {
         this.rdfDirection = rdfDirection;
         return this;
     }
@@ -168,7 +168,7 @@ public final class ToRdf {
         }
     }
 
-    public ToRdf uriValidation(UriValidationPolicy uriValidation) {
+    public JsonLdToQuads uriValidation(UriValidationPolicy uriValidation) {
         this.uriValidation = uriValidation;
         return this;
     }

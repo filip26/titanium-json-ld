@@ -21,16 +21,16 @@ public final class Terms {
 
     public static final String XSD_BOOLEAN = "http://www.w3.org/2001/XMLSchema#boolean";
 
-    public static final String XSD_DOUBLE = "http://www.w3.org/2001/XMLSchema#double";
-    
-    public static final String XSD_FLOAT = "http://www.w3.org/2001/XMLSchema#float";
+    public static final String XSD_INT = "http://www.w3.org/2001/XMLSchema#int";
 
     public static final String XSD_INTEGER = "http://www.w3.org/2001/XMLSchema#integer";
 
-    public static final String XSD_INT = "http://www.w3.org/2001/XMLSchema#int";
-
     public static final String XSD_LONG = "http://www.w3.org/2001/XMLSchema#long";
-    
+
+    public static final String XSD_FLOAT = "http://www.w3.org/2001/XMLSchema#float";
+
+    public static final String XSD_DOUBLE = "http://www.w3.org/2001/XMLSchema#double";
+
     public static final String XSD_DECIMAL = "http://www.w3.org/2001/XMLSchema#decimal";
 
     public static final String RDF_DIRECTION = "http://www.w3.org/1999/02/22-rdf-syntax-ns#direction";
@@ -46,7 +46,7 @@ public final class Terms {
     public static final String RDF_JSON = "http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON";
 
     public static final String RDF_LANG_STRING = "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
-    
+
     public static final String RDF_DIR_LANG_STRING = "http://www.w3.org/1999/02/22-rdf-syntax-ns#dirLangString";
 
     public static final String RDF_LIST = "http://www.w3.org/1999/02/22-rdf-syntax-ns#List";
@@ -57,7 +57,6 @@ public final class Terms {
 
     public static final String RDF_I18N_BASE = "https://www.w3.org/ns/i18n#";
 
-    
     private Terms() {
     }
 }
