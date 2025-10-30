@@ -1,7 +1,6 @@
 package com.apicatalog.jsonld.tordf;
 
-import com.apicatalog.jsonld.lang.RdfConstants;
-import com.apicatalog.jsonld.lang.XsdConstants;
+import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 
@@ -46,9 +45,9 @@ class RdfQuadEmitter implements RdfTripleConsumer {
     @Override
     public RdfTripleConsumer triple(String subject, String predicate, String literal, String language, String direction) throws RdfConsumerException {
         if (direction != null) {
-            consumer.quad(subject, predicate, literal, RdfConstants.I18N_BASE, language, direction, graph);
+            consumer.quad(subject, predicate, literal, Terms.RDF_I18N_BASE, language, direction, graph);
         } else {
-            consumer.quad(subject, predicate, literal, XsdConstants.STRING, language, direction, graph);
+            consumer.quad(subject, predicate, literal, Terms.XSD_STRING, language, direction, graph);
         }
         return this;
     }

@@ -15,9 +15,7 @@
  */
 package com.apicatalog.jsonld;
 
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.util.stream.Stream;
 
@@ -26,36 +24,43 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
-import com.apicatalog.jsonld.test.JsonLdTestManifest;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
+import com.apicatalog.jsonld.test.JsonLdTestManifest;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 
 @DisplayName(value = "Expander")
 class ExpanderTest {
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource({"jsonLdApi"/*, "jsonLdStar"*/})
+    @MethodSource({ "jsonLdApi" })
     void testExpand(final JsonLdTestCase testCase) {
-
-        // Skip JSON-LD-STAR (Experimental) negative test (an invalid annotation inside @list)
-        assumeFalse("#tst26".equals(testCase.id));
-
         assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
     }
 
+//    @ParameterizedTest(name = "{0}")
+//    @MethodSource({"jsonLdStar"})
+//    void testStar(final JsonLdTestCase testCase) {
+//        // Skip JSON-LD-STAR (Experimental) negative test (an invalid annotation inside @list)
+//        assumeFalse("#tst26".equals(testCase.id));
+//        assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
+//    }
+
     static final Stream<JsonLdTestCase> jsonLdApi() throws JsonLdError {
         return JsonLdTestManifest
-                    .load(JsonLdTestManifest.JSON_LD_API_BASE, "expand-manifest.jsonld", new ZipResourceLoader())
-                    .stream()
-                    .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
-                    ;
+                .load(
+                        JsonLdTestManifest.JSON_LD_API_BASE,
+                        JsonLdTestManifest.EXPAND,
+                        new ZipResourceLoader())
+                .stream()
+                .filter(JsonLdTestCase.IS_NOT_V1_0); // skip specVersion == 1.0
     }
 
     static final Stream<JsonLdTestCase> jsonLdStar() throws JsonLdError {
         return JsonLdTestManifest
-                    .load(JsonLdTestManifest.JSON_LD_STAR_BASE, "expand-manifest.jsonld", new ZipResourceLoader())
-                    .stream()
-                    ;
+                .load(
+                        JsonLdTestManifest.JSON_LD_STAR_BASE,
+                        JsonLdTestManifest.EXPAND,
+                        new ZipResourceLoader())
+                .stream();
     }
-
 }

@@ -35,9 +35,8 @@ import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
-import com.apicatalog.jsonld.lang.RdfConstants;
+import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.lang.Utils;
-import com.apicatalog.jsonld.lang.XsdConstants;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.api.RdfConsumerException;
@@ -125,7 +124,7 @@ public final class ToRdf {
 
                     if (Keywords.TYPE.equals(property)) {
 
-                        for (final var type : (Collection) nodeMap.get(graphName, subject, property)) {
+                        for (final var type : (Collection<?>) nodeMap.get(graphName, subject, property)) {
 
                             if (type instanceof String typeString) {
 
@@ -135,7 +134,7 @@ public final class ToRdf {
 
                                 consumer.triple(
                                         subject,
-                                        RdfConstants.TYPE,
+                                        Terms.RDF_TYPE,
                                         typeString);
 
                             } else {
@@ -207,7 +206,7 @@ public final class ToRdf {
 
         // 3.
         if (JsonLdAdapter.isList(item)) {
-            fromList(consumer, (Collection) item.get(Keywords.LIST), subject, predicate);
+            fromList(consumer, (Collection<?>) item.get(Keywords.LIST), subject, predicate);
         }
 
         // 4.
@@ -248,7 +247,7 @@ public final class ToRdf {
             } else {
                 valueString = Jcs.canonize(value, NativeAdapter.instance());
             }
-            datatype = RdfConstants.JSON;
+            datatype = Terms.RDF_JSON;
 
             // 9.
         } else if (Boolean.TRUE.equals(value)) {
@@ -256,7 +255,7 @@ public final class ToRdf {
             valueString = "true";
 
             if (datatype == null) {
-                datatype = XsdConstants.BOOLEAN;
+                datatype = Terms.XSD_BOOLEAN;
             }
 
         } else if (Boolean.FALSE.equals(value)) {
@@ -264,7 +263,7 @@ public final class ToRdf {
             valueString = "false";
 
             if (datatype == null) {
-                datatype = XsdConstants.BOOLEAN;
+                datatype = Terms.XSD_BOOLEAN;
             }
 
             // 10. - 11.
@@ -277,7 +276,7 @@ public final class ToRdf {
                 valueString = number.toString();
 
                 if (datatype == null) {
-                    datatype = XsdConstants.INTEGER;
+                    datatype = Terms.XSD_INTEGER;
                 }
 
             } else {
@@ -322,8 +321,8 @@ public final class ToRdf {
         } else if (datatype == null) {
 
             datatype = item.containsKey(Keywords.LANGUAGE)
-                    ? RdfConstants.LANG_STRING
-                    : XsdConstants.STRING;
+                    ? Terms.RDF_LANG_STRING
+                    : Terms.XSD_STRING;
         }
 
         if (valueString == null) {
@@ -361,25 +360,25 @@ public final class ToRdf {
                 // 13.3.2.
                 consumer.triple(
                         blankNodeId,
-                        RdfConstants.VALUE,
+                        Terms.RDF_VALUE,
                         valueString,
-                        XsdConstants.STRING);
+                        Terms.XSD_STRING);
 
                 // 13.3.3.
                 if (item.get(Keywords.LANGUAGE) instanceof String langString) {
                     consumer.triple(
                             blankNodeId,
-                            RdfConstants.LANGUAGE,
+                            Terms.RDF_LANGUAGE,
                             langString.toLowerCase(),
-                            XsdConstants.STRING);
+                            Terms.XSD_STRING);
                 }
 
                 // 13.3.4.
                 consumer.triple(
                         blankNodeId,
-                        RdfConstants.DIRECTION,
+                        Terms.RDF_DIRECTION,
                         (String) item.get(Keywords.DIRECTION),
-                        XsdConstants.STRING);
+                        Terms.XSD_STRING);
 
                 consumer.triple(subject, predicate, blankNodeId);
                 return;
@@ -414,7 +413,7 @@ public final class ToRdf {
 
         // 1.
         if (list.isEmpty()) {
-            consumer.triple(subject, predicate, RdfConstants.NIL);
+            consumer.triple(subject, predicate, Terms.RDF_NIL);
             return;
         }
 
@@ -436,14 +435,14 @@ public final class ToRdf {
                     consumer,
                     (Map) item,
                     blankNodeSubject,
-                    RdfConstants.FIRST);
+                    Terms.RDF_FIRST);
 
             // 3.4.
             if (index < bnodes.length) {
-                consumer.triple(blankNodeSubject, RdfConstants.REST, bnodes[index]);
+                consumer.triple(blankNodeSubject, Terms.RDF_REST, bnodes[index]);
 
             } else {
-                consumer.triple(blankNodeSubject, RdfConstants.REST, RdfConstants.NIL);
+                consumer.triple(blankNodeSubject, Terms.RDF_REST, Terms.RDF_NIL);
             }
         }
     }

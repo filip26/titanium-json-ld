@@ -33,6 +33,9 @@ public final class JsonLdTestManifest {
     // Extension: JSON-LD-STAR (Experimental)
     public static final String JSON_LD_STAR_BASE = "zip://json-ld-star-test-suite-20251009.zip/com/github/json-ld/json-ld-star/tests/";
 
+
+    public static final String EXPAND = "expand-manifest.jsonld";
+    
     private final String manifestName;
     private final String manifestBase;
 

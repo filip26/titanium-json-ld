@@ -36,17 +36,17 @@ import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
-import com.apicatalog.jsonld.lang.RdfConstants;
+import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.lang.Utils;
-import com.apicatalog.jsonld.lang.XsdConstants;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
+import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.java.NativeMaterializer3;
 
 import jakarta.json.Json;
-import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 
@@ -78,7 +78,7 @@ import jakarta.json.stream.JsonParser;
  * @see RdfQuadConsumer
  * @since 1.7.0
  */
-public class QuadsToJsonld implements RdfQuadConsumer {
+public class QuadsToJsonLd implements RdfQuadConsumer {
 
     // optional
     protected boolean ordered;
@@ -95,7 +95,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
     protected Map<String, Map<String, Boolean>> compoundLiteralSubjects;
     protected Map<String, Reference> referenceOnce;
 
-    public QuadsToJsonld() {
+    public QuadsToJsonLd() {
         this.graphMap = new GraphMap();
         this.referenceOnce = new LinkedHashMap<>();
         this.compoundLiteralSubjects = new LinkedHashMap<>();
@@ -116,7 +116,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
      * @param ordered true if ordering is required; false otherwise
      * @return this instance for chaining
      */
-    public QuadsToJsonld ordered(boolean ordered) {
+    public QuadsToJsonLd ordered(boolean ordered) {
         this.ordered = ordered;
         return this;
     }
@@ -127,7 +127,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
      * @param rdfDirection the RDF direction (e.g., COMPOUND_LITERAL)
      * @return this instance for chaining
      */
-    public QuadsToJsonld rdfDirection(RdfDirection rdfDirection) {
+    public QuadsToJsonLd rdfDirection(RdfDirection rdfDirection) {
         this.rdfDirection = rdfDirection;
         return this;
     }
@@ -138,28 +138,28 @@ public class QuadsToJsonld implements RdfQuadConsumer {
      * @param useNativeTypes true to use native types; false otherwise
      * @return this instance for chaining
      */
-    public QuadsToJsonld useNativeTypes(boolean useNativeTypes) {
+    public QuadsToJsonLd useNativeTypes(boolean useNativeTypes) {
         this.nativeTypes = useNativeTypes
                 ? Map.of(
-                        XsdConstants.STRING, Json::createValue,
-                        XsdConstants.BOOLEAN, QuadsToJsonld::toBoolean,
-                        XsdConstants.INT, QuadsToJsonld::toLong,
-                        XsdConstants.INTEGER, QuadsToJsonld::toLong,
-                        XsdConstants.LONG, QuadsToJsonld::toLong,
-                        XsdConstants.FLOAT, QuadsToJsonld::toDouble,
-                        XsdConstants.DOUBLE, QuadsToJsonld::toDouble)
+                        Terms.XSD_STRING, Json::createValue,
+                        Terms.XSD_BOOLEAN, QuadsToJsonLd::toBoolean,
+                        Terms.XSD_INT, QuadsToJsonLd::toLong,
+                        Terms.XSD_INTEGER, QuadsToJsonLd::toLong,
+                        Terms.XSD_LONG, QuadsToJsonLd::toLong,
+                        Terms.XSD_FLOAT, QuadsToJsonLd::toDouble,
+                        Terms.XSD_DOUBLE, QuadsToJsonLd::toDouble)
                 : Map.of();
         return this;
     }
 
-    public QuadsToJsonld useNativeTypes(Map<String, Function<String, Object>> converters) {
+    public QuadsToJsonLd useNativeTypes(Map<String, Function<String, Object>> converters) {
         this.nativeTypes = converters != null
                 ? converters
                 : Map.of();
         return this;
     }
 
-    public QuadsToJsonld useRdfType(boolean useRdfType) {
+    public QuadsToJsonLd useRdfType(boolean useRdfType) {
         this.useRdfType = useRdfType;
         return this;
     }
@@ -170,7 +170,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
      * @param processingMode the processing mode (e.g., V1_0, V1_1)
      * @return this instance for chaining
      */
-    public QuadsToJsonld mode(JsonLdVersion processingMode) {
+    public QuadsToJsonLd mode(JsonLdVersion processingMode) {
         this.processingMode = processingMode;
         return this;
     }
@@ -181,12 +181,12 @@ public class QuadsToJsonld implements RdfQuadConsumer {
      * @param uriValidation the URI validation policy
      * @return this instance for chaining
      */
-    public QuadsToJsonld uriValidation(UriValidationPolicy uriValidation) {
+    public QuadsToJsonLd uriValidation(UriValidationPolicy uriValidation) {
         this.uriValidation = uriValidation;
         return this;
     }
 
-    public QuadsToJsonld options(JsonLdOptions options) {
+    public QuadsToJsonLd options(JsonLdOptions options) {
         this.ordered = options.isOrdered();
         this.rdfDirection = options.getRdfDirection();
         this.useNativeTypes(options.isUseNativeTypes());
@@ -200,9 +200,9 @@ public class QuadsToJsonld implements RdfQuadConsumer {
      * Resets the consumer to an empty state, allowing the same instance to process
      * different datasets.
      * 
-     * @return the current {@link QuadsToJsonld} instance after resetting
+     * @return the current {@link QuadsToJsonLd} instance after resetting
      */
-    public QuadsToJsonld reset() {
+    public QuadsToJsonLd reset() {
         this.graphMap.clear();
         this.referenceOnce.clear();
         this.compoundLiteralSubjects.clear();
@@ -273,14 +273,14 @@ public class QuadsToJsonld implements RdfQuadConsumer {
                         // 6.1.6.1.
                         clObject.remove(Keywords.ID);
 
-                        clObject.put(Keywords.VALUE, flatten(clNode.get(RdfConstants.VALUE), Keywords.VALUE));
+                        clObject.put(Keywords.VALUE, flatten(clNode.get(Terms.RDF_VALUE), Keywords.VALUE));
 
                         // 6.1.6.3.
-                        if (clNode.containsKey(RdfConstants.LANGUAGE)) {
+                        if (clNode.containsKey(Terms.RDF_LANGUAGE)) {
 
-                            final var lang = flatten(clNode.get(RdfConstants.LANGUAGE), Keywords.VALUE);
+                            final var lang = flatten(clNode.get(Terms.RDF_LANGUAGE), Keywords.VALUE);
 
-                            if (!(lang instanceof String langString) 
+                            if (!(lang instanceof String langString)
                                     || !LanguageTag.isWellFormed(langString)) {
                                 throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
                             }
@@ -289,9 +289,9 @@ public class QuadsToJsonld implements RdfQuadConsumer {
                         }
 
                         // 6.1.6.4.
-                        if (clNode.containsKey(RdfConstants.DIRECTION)) {
+                        if (clNode.containsKey(Terms.RDF_DIRECTION)) {
 
-                            final var direction = flatten(clNode.get(RdfConstants.DIRECTION), Keywords.VALUE);
+                            final var direction = flatten(clNode.get(Terms.RDF_DIRECTION), Keywords.VALUE);
 
                             if (!(direction instanceof String dirString)
                                     || (!"ltr".equalsIgnoreCase(dirString)
@@ -313,12 +313,12 @@ public class QuadsToJsonld implements RdfQuadConsumer {
             }
 
             // 6.2.
-            if (!graphMap.contains(graphName, RdfConstants.NIL)) {
+            if (!graphMap.contains(graphName, Terms.RDF_NIL)) {
                 continue;
             }
 
             // 6.4.
-            for (var usage : graphMap.getUsages(graphName, RdfConstants.NIL)) {
+            for (var usage : graphMap.getUsages(graphName, Terms.RDF_NIL)) {
 
                 // 6.4.1.
                 var node = graphMap.get(usage.graphName(), usage.subject())
@@ -331,22 +331,22 @@ public class QuadsToJsonld implements RdfQuadConsumer {
                 String nodeId = ((String) node.get(Keywords.ID));
 
                 // 6.4.3.
-                while (RdfConstants.REST.equals(usage.property())
+                while (Terms.RDF_REST.equals(usage.property())
                         && BlankNode.isWellFormed(nodeId)
                         && referenceOnce.get(nodeId) != null
-                        && node.containsKey(RdfConstants.FIRST)
-                        && node.containsKey(RdfConstants.REST)
-                        && ((Collection<?>) node.get(RdfConstants.FIRST)).size() == 1
-                        && ((Collection<?>) node.get(RdfConstants.REST)).size() == 1
+                        && node.containsKey(Terms.RDF_FIRST)
+                        && node.containsKey(Terms.RDF_REST)
+                        && ((Collection<?>) node.get(Terms.RDF_FIRST)).size() == 1
+                        && ((Collection<?>) node.get(Terms.RDF_REST)).size() == 1
                         && (node.size() == 3 /* keywords: @id, @first, @last */
                                 || (node.size() == 4 && node.containsKey(Keywords.TYPE)
                                         && ((Collection<?>) node.get(Keywords.TYPE)).size() == 1
-                                        && ((Collection<?>) node.get(Keywords.TYPE)).contains(RdfConstants.LIST)))) {
+                                        && ((Collection<?>) node.get(Keywords.TYPE)).contains(Terms.RDF_LIST)))) {
 
                     // 6.4.3.1.
                     // reverse order -> index = 0 see 6.4.5.
-                    list.add(0, ((Collection<?>) node.get(RdfConstants.FIRST)).iterator().next());
-//                    list.add(0, ((Collection<?>) node.get(RdfConstants.FIRST)).get(0));
+                    list.add(0, ((Collection<?>) node.get(Terms.RDF_FIRST)).iterator().next());
+//                    list.add(0, ((Collection<?>) node.get(Terms.FIRST)).get(0));
 
                     // 6.4.3.2.
                     listNodes.add(nodeId);
@@ -367,7 +367,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
                         break;
                     }
 
-                    nodeId = ((JsonString) node.get(Keywords.ID)).getString();
+                    nodeId = (String) node.get(Keywords.ID);
 
                     // 6.4.3.5.
                     if (UriUtils.isAbsoluteUri(nodeId, uriValidation)) {
@@ -375,7 +375,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
                     }
                 }
 
-                var head = (Map)usage.value();
+                var head = (Map) usage.value();
 
                 // 6.4.4.
                 head.remove(Keywords.ID);
@@ -403,7 +403,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
 
                 for (final String key : Utils.index(graphMap.keys(subject), ordered)) {
 
-                    final var entry = (Map)graphMap.get(subject, key)
+                    final var entry = (Map) graphMap.get(subject, key)
                             .orElse(Map.of());
 
                     if (entry.size() > 1 || !entry.containsKey(Keywords.ID)) {
@@ -430,9 +430,9 @@ public class QuadsToJsonld implements RdfQuadConsumer {
 
         final String graphName = graph == null ? Keywords.DEFAULT : graph;
 
-        if (direction != null || datatype != null && datatype.startsWith(RdfConstants.I18N_BASE)) {
+        if (direction != null || datatype != null && datatype.startsWith(Terms.RDF_I18N_BASE)) {
 
-            datatype = RdfConstants.I18N_BASE;
+            datatype = Terms.RDF_I18N_BASE;
 
             if (language != null) {
                 datatype = datatype + language;
@@ -465,7 +465,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
 
         // 5.7.3.
         if (RdfDirection.COMPOUND_LITERAL == rdfDirection
-                && RdfConstants.DIRECTION.equals(predicate)) {
+                && Terms.RDF_DIRECTION.equals(predicate)) {
 
             compoundMap.put(subject, Boolean.TRUE);
         }
@@ -478,7 +478,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
         }
 
         // 5.7.5.
-        if (!useRdfType && RdfConstants.TYPE.equals(predicate) && !RdfQuadConsumer.isLiteral(datatype, language, direction)) {
+        if (!useRdfType && Terms.RDF_TYPE.equals(predicate) && !RdfQuadConsumer.isLiteral(datatype, language, direction)) {
 
             final var type = graphMap.get(graphName, subject, Keywords.TYPE);
 
@@ -520,7 +520,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
         }
 
         // 5.7.9.
-        if (RdfConstants.NIL.equals(object)) {
+        if (Terms.RDF_NIL.equals(object)) {
 
             graphMap.addUsage(graphName, object, new Reference(
                     graphName,
@@ -581,7 +581,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
 
         // 2.5.
         if (processingMode != JsonLdVersion.V1_0
-                && RdfConstants.JSON.equals(datatype)) {
+                && Terms.RDF_JSON.equals(datatype)) {
 
             try (final JsonParser parser = JsonProvider.instance().createParser(new StringReader(object))) {
 
@@ -590,6 +590,9 @@ public class QuadsToJsonld implements RdfQuadConsumer {
                 convertedValue = parser.getValue();
 //                type = Keywords.JSON;
 
+                //FIXME
+                convertedValue = new NativeMaterializer3().node(convertedValue, JakartaAdapter.instance());
+                
                 return Map.of(
                         Keywords.VALUE, convertedValue,
                         Keywords.TYPE, Keywords.JSON);
@@ -608,11 +611,11 @@ public class QuadsToJsonld implements RdfQuadConsumer {
         // 2.6.
         if (RdfDirection.I18N_DATATYPE == rdfDirection
                 && datatype != null
-                && datatype.startsWith(RdfConstants.I18N_BASE)) {
+                && datatype.startsWith(Terms.RDF_I18N_BASE)) {
 
             convertedValue = object;
 
-            String dirLang = datatype.substring(RdfConstants.I18N_BASE.length());
+            String dirLang = datatype.substring(Terms.RDF_I18N_BASE.length());
 
             int directionIndex = dirLang.indexOf('_');
 
@@ -637,7 +640,7 @@ public class QuadsToJsonld implements RdfQuadConsumer {
 
             // 2.8.
         } else if (datatype != null
-                && !XsdConstants.STRING.equals(datatype)) {
+                && !Terms.XSD_STRING.equals(datatype)) {
 
             type = datatype;
         }
@@ -708,11 +711,11 @@ public class QuadsToJsonld implements RdfQuadConsumer {
         if (value instanceof Map map) {
             return map.get(key);
         }
-        
+
         if (value instanceof Collection array && array.size() == 1) {
             return array.iterator().next();
         }
-        
+
         return value;
     }
 

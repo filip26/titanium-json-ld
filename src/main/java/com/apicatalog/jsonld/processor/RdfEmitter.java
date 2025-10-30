@@ -39,9 +39,9 @@ import jakarta.json.JsonValue;
  *      "https://w3c.github.io/json-ld-api/#dom-jsonldprocessor-tordf">JsonLdProcessor.toRdf()</a>
  *
  */
-public final class ToRdfProcessor {
+public final class RdfEmitter {
 
-    private ToRdfProcessor() {
+    private RdfEmitter() {
     }
 
     public static final void toRdf(final RdfQuadConsumer consumer, final URI input, final JsonLdOptions options) throws JsonLdError, IOException {

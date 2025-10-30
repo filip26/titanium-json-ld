@@ -23,7 +23,7 @@ import com.apicatalog.jsonld.api.FlatteningApi;
 import com.apicatalog.jsonld.api.FramingApi;
 import com.apicatalog.jsonld.api.ToRdfApi;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.fromrdf.QuadsToJsonld;
+import com.apicatalog.jsonld.fromrdf.QuadsToJsonLd;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 
@@ -393,24 +393,24 @@ public final class JsonLd {
      * Transforms an RDF quad set into a JSON-LD document in expanded form.
      * <p>
      * Use {@link NQuadsReader} to read quads, or manually add them to
-     * {@link QuadsToJsonld} by calling
-     * {@link QuadsToJsonld#quad(String, String, String, String, String, String, String)}.
+     * {@link QuadsToJsonLd} by calling
+     * {@link QuadsToJsonLd#quad(String, String, String, String, String, String, String)}.
      * Retrieve the expanded JSON-LD document by calling
-     * {@link QuadsToJsonld#toJsonLd()}.
+     * {@link QuadsToJsonLd#toJsonLd()}.
      * </p>
      * <p>
-     * <strong>Note:</strong> {@link QuadsToJsonld} adopts the
+     * <strong>Note:</strong> {@link QuadsToJsonLd} adopts the
      * {@link RdfQuadConsumer} interface, allowing integration with Jena, Jelly,
      * RDF4J, and other RDF libraries.
      * </p>
      * 
      * @since 1.7.0
      * 
-     * @return a {@link QuadsToJsonld} instance, allowing additional parameter
+     * @return a {@link QuadsToJsonLd} instance, allowing additional parameter
      *         configuration
      */
-    public static final QuadsToJsonld fromRdf() {
-        return new QuadsToJsonld();
+    public static final QuadsToJsonLd fromRdf() {
+        return new QuadsToJsonLd();
     }
 
     private static final URI assertLocation(final String location, final String param) {

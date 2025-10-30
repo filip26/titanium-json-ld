@@ -28,7 +28,7 @@ import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.fromrdf.QuadsToJsonld;
+import com.apicatalog.jsonld.fromrdf.QuadsToJsonLd;
 import com.apicatalog.jsonld.lang.JsonLdComparison;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.jsonld.loader.QuadSetDocument;
@@ -95,7 +95,7 @@ public class JsonLdTestRunnerJunit {
             return execute(options -> {
                 Document input = options.getDocumentLoader().loadDocument(testCase.input, null);
 
-                QuadsToJsonld toLd = JsonLd.fromRdf().options(options);
+                QuadsToJsonLd toLd = JsonLd.fromRdf().options(options);
 
                 QuadEmitter.create(toLd).emit(((QuadSetDocument) input).contentX());
 

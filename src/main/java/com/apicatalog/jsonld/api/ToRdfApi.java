@@ -25,7 +25,7 @@ import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.processor.ToRdfProcessor;
+import com.apicatalog.jsonld.processor.RdfEmitter;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 
@@ -171,10 +171,10 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
      */
     public void provide(RdfQuadConsumer consumer) throws JsonLdError, IOException {
         if (documentUri != null) {
-            ToRdfProcessor.toRdf(consumer, documentUri, options);
+            RdfEmitter.toRdf(consumer, documentUri, options);
 
         } else if (document != null) {
-            ToRdfProcessor.toRdf(consumer, document, options);
+            RdfEmitter.toRdf(consumer, document, options);
 
         } else {
             throw new IllegalArgumentException();

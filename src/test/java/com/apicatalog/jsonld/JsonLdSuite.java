@@ -20,16 +20,18 @@ import org.junit.platform.suite.api.Suite;
 import org.junit.platform.suite.api.SuiteDisplayName;
 
 @Suite(failIfNoTests = true)
-@SuiteDisplayName("Standard Suite")
+@SuiteDisplayName("JsonLd Suite")
 @SelectClasses({
         ExpanderTest.class,
         FlattenTest.class,
         CompactorTest.class,
         FramerTest.class,
-        RemoteTest.class,
         FromRdfTest.class,
-        ToRdfTest.class
+        ToRdfTest.class,
+        RemoteTest.class
 })
-public class StardardSuite {
+public class JsonLdSuite {
 
+    
+    
 }
