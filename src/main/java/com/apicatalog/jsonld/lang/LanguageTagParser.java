@@ -17,6 +17,8 @@ package com.apicatalog.jsonld.lang;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.IntPredicate;
 import java.util.regex.Pattern;
@@ -75,7 +77,10 @@ final class LanguageTagParser {
     public static final boolean isWellFormed(final String languageTag) {
 
         try {
-            return create(languageTag, true).parse() != null;
+
+            return languageTag != null
+                    && !languageTag.isBlank()
+                    && create(languageTag, true).parse() == null;
 
         } catch (IllegalArgumentException e) {
             return false;
@@ -85,10 +90,13 @@ final class LanguageTagParser {
     private static final LanguageTagParser create(final String languageTag, boolean verifierMode) {
 
         if (languageTag == null) {
-            throw new IllegalArgumentException("The parameter 'laguageTag' must not be null");
+            throw new IllegalArgumentException();
         }
 
-        final String stripped = languageTag.trim();
+        final var stripped = Objects.requireNonNull(
+                languageTag,
+                "The parameter 'laguageTag' must not be null")
+                .trim();
 
         // must start with ALPHA and ends with ALPHANUM
         if (stripped.length() == 0
@@ -116,7 +124,7 @@ final class LanguageTagParser {
     LanguageTag parse() throws IllegalArgumentException {
 
         if (tags == null || tags.length == 0) {
-            return null;
+            throw new IllegalArgumentException();
         }
 
         tagIndex = 0;
@@ -142,14 +150,16 @@ final class LanguageTagParser {
                 throw new IllegalArgumentException("The language tag [" + languageTag + "] is not well-formed.");
             }
 
-            return new LanguageTag(
-                    language,
-                    languageExtensions,
-                    script,
-                    region,
-                    extensions,
-                    variants,
-                    privateUse);
+            return verifierMode
+                    ? null
+                    : new LanguageTag(
+                            language,
+                            languageExtensions,
+                            script,
+                            region,
+                            extensions,
+                            variants,
+                            privateUse);
 
         } else {
             throw new IllegalArgumentException("The language tag [" + languageTag + "] is not well-formed.");
@@ -174,20 +184,23 @@ final class LanguageTagParser {
         // singleton = DIGIT | a-z !- x
         while (acceptDigit(1) || (alphaRange(0, 1) && !tags[tagIndex].equalsIgnoreCase("x") && accept(1))) {
 
-            final var extension = new ArrayList<String>();
+            final var extensionCode = tags[tagIndex - 1].charAt(0);
+            final List<String> extensionTags = verifierMode
+                    ? List.of()
+                    : new ArrayList<>();
 
             // 1*("-" (2*8alphanum))
-            if (!acceptAlphaNun(2, 8, extension::add)) {
+            if (!acceptAlphaNun(2, 8, extensionTags::add)) {
                 tagIndex--;
                 break;
             }
 
-            while (acceptAlphaNun(2, 8, extension::add))
+            while (acceptAlphaNun(2, 8, extensionTags::add))
                 ;
 
-            addExtension(new Extension(
-                    tags[tagIndex - 1].charAt(0),
-                    extension));
+            if (!verifierMode) {
+                addExtension(new Extension(extensionCode, extensionTags));
+            }
         }
 
         acceptPrivateUse();
@@ -196,18 +209,16 @@ final class LanguageTagParser {
             throw new IllegalArgumentException("The language tag [" + languageTag + "] is not well-formed.");
         }
 
-        if (language != null) {
-            return new LanguageTag(
-                    language,
-                    languageExtensions,
-                    script,
-                    region,
-                    extensions,
-                    variants,
-                    privateUse);
-        }
-        
-        return null;
+        return verifierMode
+                ? null
+                : new LanguageTag(
+                        language,
+                        languageExtensions,
+                        script,
+                        region,
+                        extensions,
+                        variants,
+                        privateUse);
     }
 
     private boolean acceptPrivateUse() {

@@ -30,8 +30,6 @@ public record LanguageTag(
         Collection<String> privateUse) {
 
     public LanguageTag {
-        Objects.requireNonNull(language, "The parameter 'language' must not be null");
-
         // Defensive copies to preserve immutability
         languageExtensions = languageExtensions == null ? List.of() : List.copyOf(languageExtensions);
         extensions = extensions == null ? List.of() : List.copyOf(extensions);
@@ -145,7 +143,7 @@ public record LanguageTag(
 
         sb.append(language);
 
-        if (languageExtensions != null) {
+        if (languageExtensions != null && !languageExtensions.isEmpty()) {
             languageExtensions.forEach(tag -> sb.append('-').append(tag));
         }
 
@@ -157,15 +155,15 @@ public record LanguageTag(
             sb.append('-').append(region);
         }
 
-        if (variants != null) {
+        if (variants != null && !variants.isEmpty()) {
             variants.forEach(tag -> sb.append('-').append(tag));
         }
 
-        if (extensions != null) {
+        if (extensions != null && !extensions.isEmpty()) {
             extensions.forEach(tag -> sb.append('-').append(tag));
         }
 
-        if (privateUse != null) {
+        if (privateUse != null && !privateUse.isEmpty()) {
             sb.append('-').append('x');
             privateUse.forEach(tag -> sb.append('-').append(tag));
         }

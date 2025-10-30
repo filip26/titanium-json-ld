@@ -30,7 +30,7 @@ final class GraphMap {
             String graphName,
             String subject,
             String property,
-            Object value) {
+            Map<String, Object> value) {
     }
 
     // graph, subject, predicate, object

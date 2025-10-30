@@ -22,6 +22,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,7 @@ class LanguageTagTest {
 
     @Test
     void testNull() {
-        assertThrows(IllegalArgumentException.class, () -> LanguageTag.isWellFormed(null));
+        assertThrows(NullPointerException.class, () -> LanguageTag.isWellFormed(null));
     }
 
     @ParameterizedTest(name = "isWellFormed({0}): {1}")
@@ -122,12 +123,12 @@ class LanguageTagTest {
 
     static final Stream<Arguments> validTags() {
         return Stream.of(
-                arguments("cs", "cs", null, null, null),
-                arguments("cs-CZ", "cs", null, null, "CZ"),
-                arguments("en-US", "en", null, null, "US"),
+                arguments("cs", "cs", List.of(), null, null),
+                arguments("cs-CZ", "cs", List.of(), null, "CZ"),
+                arguments("en-US", "en", List.of(), null, "US"),
 
                 arguments("en-Latn-GB-boont-r-extended-sequence-x-private-b-private2",
-                        "en", null, "Latn", "GB", Arrays.asList("boont"),
+                        "en", List.of(), "Latn", "GB", Arrays.asList("boont"),
                         Arrays.asList(new Extension('r', Arrays.asList("extended", "sequence"))),
                         Arrays.asList("private", "b", "private2")));
     }

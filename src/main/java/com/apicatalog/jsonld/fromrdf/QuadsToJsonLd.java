@@ -46,7 +46,6 @@ import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.tree.io.java.NativeMaterializer3;
 
-import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 
 /**
@@ -263,7 +262,8 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
                             continue;
                         }
 
-                        final var clReferenceObject = (Map) clReference;
+                        @SuppressWarnings({ "unchecked" })
+                        final var clReferenceObject = (Map<String, Object>) clReference;
 
                         if (!clReferenceObject.containsKey(Keywords.ID) || !cl.equals(clReferenceObject.get(Keywords.ID))) {
                             continue;
@@ -280,7 +280,8 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
                         if (clNode.containsKey(Terms.RDF_LANGUAGE)) {
 
                             final var lang = flatten(clNode.get(Terms.RDF_LANGUAGE), Keywords.VALUE);
-
+                            System.out.println(clNode.get(Terms.RDF_LANGUAGE));
+                            System.out.println(lang + ", " + LanguageTag.isWellFormed((String)lang));
                             if (!(lang instanceof String langString)
                                     || !LanguageTag.isWellFormed(langString)) {
                                 throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
@@ -322,7 +323,8 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
             for (var usage : graphMap.getUsages(graphName, Terms.RDF_NIL)) {
 
                 // 6.4.1.
-                var node = graphMap.get(usage.graphName(), usage.subject())
+                var node = graphMap
+                        .get(usage.graphName(), usage.subject())
                         .orElse(Map.of());
 
                 // 6.4.2.
@@ -376,8 +378,8 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
                     }
                 }
 
-                var head = (Map) usage.value();
-System.out.println("HEAD " + head);
+                var head = usage.value();
+                System.out.println("HEAD " + head);
                 // 6.4.4.
                 head.remove(Keywords.ID);
 
@@ -404,7 +406,8 @@ System.out.println("HEAD " + head);
 
                 for (final String key : Utils.index(graphMap.keys(subject), ordered)) {
 
-                    final var entry = (Map) graphMap.get(subject, key)
+                    final var entry = graphMap
+                            .get(subject, key)
                             .orElse(Map.of());
 
                     if (entry.size() > 1 || !entry.containsKey(Keywords.ID)) {
@@ -547,7 +550,7 @@ System.out.println("HEAD " + head);
         return this;
     }
 
-    Map<String, ?> toObject(String object, String datatype, String langTag, String direction) throws RdfConsumerException {
+    Map<String, Object> toObject(String object, String datatype, String langTag, String direction) throws RdfConsumerException {
 
         // 1.
         if (!RdfQuadConsumer.isLiteral(datatype, langTag, direction)) {
@@ -663,13 +666,13 @@ System.out.println("HEAD " + head);
         return result;
     }
 
-    public static JsonValue toBoolean(String value) {
+    public static Boolean toBoolean(String value) {
 
         if ("true".equals(value) || "1".equals(value)) {
-            return JsonValue.TRUE;
+            return true;
 
         } else if ("false".equals(value) || "0".equals(value)) {
-            return JsonValue.FALSE;
+            return false;
         }
         return null;
     }
@@ -711,15 +714,17 @@ System.out.println("HEAD " + head);
 
     static Object flatten(Object value, String key) {
 
-        if (value instanceof Map map) {
-            return map.get(key);
+        var result = value;
+
+        if (result instanceof Collection array && array.size() == 1) {
+            result = array.iterator().next();
         }
 
-        if (value instanceof Collection array && array.size() == 1) {
-            return array.iterator().next();
+        if (result instanceof Map map) {
+            result = map.get(key);
         }
 
-        return value;
+        return result;
     }
 
 }
