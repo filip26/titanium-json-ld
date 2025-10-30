@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.net.URI;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.loader.TestLoader;
 import com.apicatalog.web.link.Link;
@@ -49,7 +49,7 @@ public final class JsonLdMockServer {
         this.loader = loader;
     }
 
-    public void start() throws JsonLdError {
+    public void start() throws JsonLdException {
 
         String inputPath;
 

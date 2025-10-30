@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.Context;
@@ -44,10 +44,10 @@ public final class Expander {
     Expander() {
     }
 
-    public static final Collection<?> expand(final URI input, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Collection<?> expand(final URI input, final JsonLdOptions options) throws JsonLdException, IOException {
 
         if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
 
         var remoteDocument = options.getDocumentLoader().loadDocument(
@@ -58,19 +58,19 @@ public final class Expander {
             return expand(remoteDocument, options);
         }
 
-        throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+        throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
     }
 
     public static final Collection<?> expand(
             final Document document,
-            final JsonLdOptions options) throws JsonLdError, IOException {
+            final JsonLdOptions options) throws JsonLdException, IOException {
         return expand(document, false, options);
     }
 
     public static final Collection<?> expand(
             final Document document,
             final boolean frameExpansion,
-            final JsonLdOptions options) throws JsonLdError, IOException {
+            final JsonLdOptions options) throws JsonLdException, IOException {
 
         // 5. Initialize a new empty active context. The base IRI and
         // original base URL of the active context is set to the documentUrl
@@ -130,7 +130,7 @@ public final class Expander {
             final PolyNode node,
             final Context context,
             final URI baseUrl,
-            final JsonLdOptions options) throws JsonLdError, IOException {
+            final JsonLdOptions options) throws JsonLdException, IOException {
         return expand(node, context, baseUrl, false, options);
     }
 
@@ -139,7 +139,7 @@ public final class Expander {
             final Context context,
             final URI baseUrl,
             boolean frameExpansion,
-            final JsonLdOptions options) throws JsonLdError, IOException {
+            final JsonLdOptions options) throws JsonLdException, IOException {
 
         final var runtime = ProcessingRuntime.of(options);
 

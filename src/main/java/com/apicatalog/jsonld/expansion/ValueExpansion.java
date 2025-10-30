@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
@@ -53,12 +53,12 @@ public final class ValueExpansion {
      * @return A {@code Map} representing the expanded value object, typically
      *         containing keys like {@code @id}, {@code @value}, {@code @type},
      *         {@code @language}, or {@code @direction}.
-     * @throws JsonLdError If an error occurs during IRI expansion.
+     * @throws JsonLdException If an error occurs during IRI expansion.
      * @throws IOException 
      * @see <a href="https://www.w3.org/TR/json-ld11-api/#value-expansion">Value
      *      Expansion Algorithm</a>
      */
-    public static Map<String, ?> expand(final Context context, final String property, final Object value, final NodeAdapter adapter, final ProcessingRuntime runtime) throws JsonLdError, IOException {
+    public static Map<String, ?> expand(final Context context, final String property, final Object value, final NodeAdapter adapter, final ProcessingRuntime runtime) throws JsonLdException, IOException {
 
         final Optional<TermDefinition> definition = context.findTerm(property);
 

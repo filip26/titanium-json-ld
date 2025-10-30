@@ -18,7 +18,7 @@ package com.apicatalog.jsonld.processor;
 import java.io.IOException;
 import java.net.URI;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
@@ -40,9 +40,9 @@ public final class RdfEmitter {
     private RdfEmitter() {
     }
 
-    public static final void toRdf(final RdfQuadConsumer consumer, final URI input, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final void toRdf(final RdfQuadConsumer consumer, final URI input, final JsonLdOptions options) throws JsonLdException, IOException {
         if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
 
         final LoaderOptions loaderOptions = new LoaderOptions();
@@ -51,13 +51,13 @@ public final class RdfEmitter {
         final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
 
         if (remoteDocument == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
 
         toRdf(consumer, remoteDocument, options);
     }
 
-    public static final void toRdf(final RdfQuadConsumer consumer, final Document input, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final void toRdf(final RdfQuadConsumer consumer, final Document input, final JsonLdOptions options) throws JsonLdException, IOException {
         final JsonLdOptions expansionOptions = new JsonLdOptions(options);
 
         expansionOptions.setProcessingMode(options.getProcessingMode());
@@ -69,7 +69,7 @@ public final class RdfEmitter {
         toRdf(consumer, expandedInput, options);
     }
 
-    public static final void toRdf(final RdfQuadConsumer consumer, final Object expandedInput, final JsonLdOptions options) throws JsonLdError {
+    public static final void toRdf(final RdfQuadConsumer consumer, final Object expandedInput, final JsonLdOptions options) throws JsonLdException {
         JsonLdToQuads
                 .with(new NodeMapBuilder(expandedInput, new NodeMap()).build())
                 .produceGeneralizedRdf(options.isProduceGeneralizedRdf())

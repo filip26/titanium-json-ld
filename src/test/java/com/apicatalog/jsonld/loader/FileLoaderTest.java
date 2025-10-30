@@ -25,7 +25,7 @@ import java.net.URL;
 
 import org.junit.jupiter.api.Test;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.loader.FileLoader;
 import com.apicatalog.jsonld.loader.LoaderOptions;
@@ -34,7 +34,7 @@ import com.apicatalog.web.media.MediaType;
 class FileLoaderTest {
 
     @Test
-    void testLoadJson() throws URISyntaxException, JsonLdError {
+    void testLoadJson() throws URISyntaxException, JsonLdException {
 
         URL fileUrl = getClass().getResource("document.json");
 
@@ -47,7 +47,7 @@ class FileLoaderTest {
     }
 
     @Test
-    void testLoadJsonLd() throws URISyntaxException, JsonLdError {
+    void testLoadJsonLd() throws URISyntaxException, JsonLdException {
 
         URL fileUrl = getClass().getResource("document.jsonld");
 
@@ -66,12 +66,12 @@ class FileLoaderTest {
 
         assertNotNull(fileUrl);
 
-        assertThrows(JsonLdError.class, () -> new FileLoader().loadDocument(fileUrl.toURI(), new LoaderOptions()));
+        assertThrows(JsonLdException.class, () -> new FileLoader().loadDocument(fileUrl.toURI(), new LoaderOptions()));
     }
 
     @Test
     void testUnsupportedScheme() throws URISyntaxException {
-        assertThrows(JsonLdError.class, () -> new FileLoader().loadDocument(URI.create("https://github.com/"), new LoaderOptions()));
+        assertThrows(JsonLdException.class, () -> new FileLoader().loadDocument(URI.create("https://github.com/"), new LoaderOptions()));
     }
 
 }

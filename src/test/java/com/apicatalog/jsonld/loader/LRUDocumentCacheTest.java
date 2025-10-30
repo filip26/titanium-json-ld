@@ -8,7 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.CacheLoader;
@@ -46,7 +46,7 @@ public class LRUDocumentCacheTest {
     }
 
     @Test
-    void testLoadDocument() throws JsonLdError {
+    void testLoadDocument() throws JsonLdException {
         RecordRequestLoader loader = new RecordRequestLoader();
         CacheLoader cachedLoader = new CacheLoader(loader, 2);
 
@@ -65,7 +65,7 @@ public class LRUDocumentCacheTest {
     }
 
     @Test
-    void testCacheSize() throws JsonLdError {
+    void testCacheSize() throws JsonLdException {
         RecordRequestLoader loader = new RecordRequestLoader();
         CacheLoader cachedLoader = new CacheLoader(loader, 2);
 
@@ -89,7 +89,7 @@ public class LRUDocumentCacheTest {
     }
 
     @Test
-    void testLoadDocumentsWithDifferentOptions() throws JsonLdError {
+    void testLoadDocumentsWithDifferentOptions() throws JsonLdException {
         RecordRequestLoader loader = new RecordRequestLoader();
         CacheLoader cachedLoader = new CacheLoader(loader, 2);
 
@@ -108,7 +108,7 @@ public class LRUDocumentCacheTest {
     }
 
     @Test
-    void testCachingEqualOptions() throws JsonLdError {
+    void testCachingEqualOptions() throws JsonLdException {
         RecordRequestLoader loader = new RecordRequestLoader();
         CacheLoader cachedLoader = new CacheLoader(loader, 2);
         LoaderOptions options = null;
@@ -144,7 +144,7 @@ public class LRUDocumentCacheTest {
     }
 
     @Test
-    void testCachingProfilesOrderMatter() throws JsonLdError {
+    void testCachingProfilesOrderMatter() throws JsonLdException {
         RecordRequestLoader loader = new RecordRequestLoader();
         CacheLoader cachedLoader = new CacheLoader(loader, 2);
         LoaderOptions options = null;

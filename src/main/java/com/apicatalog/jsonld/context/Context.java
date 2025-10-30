@@ -23,7 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
@@ -134,7 +134,7 @@ public interface Context {
 
     public static Map<String, ?> inject(
             final Map<String, ?> node,
-            final PolyNode context) throws JsonLdError, IOException {
+            final PolyNode context) throws JsonLdException, IOException {
 
         // 9.3.
         if (!PolyNode.isEmptyOrNull(context)) {
@@ -147,7 +147,7 @@ public interface Context {
         return node;
     }
 
-    public static Document load(DocumentLoader loader, URI uri) throws JsonLdError, IOException {
+    public static Document load(DocumentLoader loader, URI uri) throws JsonLdException, IOException {
 
         Document document = null;
 
@@ -162,18 +162,18 @@ public interface Context {
                 document = loader.loadDocument(uri, loaderOptions);
 
                 // 5.2.5.1.
-            } catch (JsonLdError e) {
-                throw new JsonLdError(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "There was a problem encountered loading a remote context [" + uri + "]", e);
+            } catch (JsonLdException e) {
+                throw new JsonLdException(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "There was a problem encountered loading a remote context [" + uri + "]", e);
             }
 
             if (document == null) {
-                throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");
+                throw new JsonLdException(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");
             }
         }
 
         // 5.2.5.2.
         if (!PolyNode.isMap(document.content())) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is not valid JSON-LD context: " + document.content() + ".");
+            throw new JsonLdException(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is not valid JSON-LD context: " + document.content() + ".");
         }
 
         return document;
@@ -254,7 +254,7 @@ public interface Context {
         }
 
         // TODO better
-        public Context build() throws JsonLdError, IOException {
+        public Context build() throws JsonLdException, IOException {
 //            var ctx = new ActiveContext(baseUri, baseUrl, runtime);
 //            if (context != null) {
 //                ctx = ctx.newContext()
@@ -263,11 +263,11 @@ public interface Context {
             return ctx;
         }
 
-        public Builder update(PolyNode node, URI baseUrl) throws JsonLdError, IOException {
+        public Builder update(PolyNode node, URI baseUrl) throws JsonLdException, IOException {
             return update(node.node(), node.adapter(), baseUrl);
         }
 
-        public Builder update(Object node, NodeAdapter adapter, URI baseUrl) throws JsonLdError, IOException {
+        public Builder update(Object node, NodeAdapter adapter, URI baseUrl) throws JsonLdException, IOException {
             // TODO merge if set
 //            this.context = node;
 //            this.adapter = adapter;
@@ -281,7 +281,7 @@ public interface Context {
                 final Object expandedContext,
                 final NodeAdapter adapter,
                 final URI baseUrl)
-                throws JsonLdError, IOException {
+                throws JsonLdException, IOException {
 
             if (adapter.isCollection(expandedContext)) {
 

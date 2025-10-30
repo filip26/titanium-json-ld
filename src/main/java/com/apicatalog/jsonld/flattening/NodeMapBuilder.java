@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 import com.apicatalog.jsonld.JsonLdAdapter;
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -82,7 +82,7 @@ public final class NodeMapBuilder {
         return this;
     }
 
-    public NodeMap build() throws JsonLdError {
+    public NodeMap build() throws JsonLdException {
 
         // 1.
         if (element instanceof Collection<?> elements) {
@@ -357,7 +357,7 @@ public final class NodeMapBuilder {
             if (elementMap.containsKey(Keywords.INDEX)) {
 
                 if (nodeMap.contains(activeGraph, id, Keywords.INDEX)) {
-                    throw new JsonLdError(JsonLdErrorCode.CONFLICTING_INDEXES);
+                    throw new JsonLdException(JsonLdErrorCode.CONFLICTING_INDEXES);
                 }
 
                 nodeMap.set(activeGraph, id, Keywords.INDEX, elementMap.get(Keywords.INDEX));

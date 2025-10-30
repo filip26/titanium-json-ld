@@ -1,6 +1,6 @@
 package com.apicatalog.jsonld.processor;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.ProcessingPolicy;
 import com.apicatalog.jsonld.cache.Cache;
@@ -37,9 +37,9 @@ public class ProcessingRuntime {
      * When hit for the first time a timestamp is set, otherwise a duration is
      * decreased by timestamps difference.
      * 
-     * @throws JsonLdError if a processing has exceeded
+     * @throws JsonLdException if a processing has exceeded
      */
-    public void tick() throws JsonLdError {/* NOP does nothing if timeout is not set */}
+    public void tick() throws JsonLdException {/* NOP does nothing if timeout is not set */}
 
     /**
      * Resume ticker, a next ping decreases remaining time if timeout is set. Is

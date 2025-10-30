@@ -3,11 +3,11 @@ package com.apicatalog.jsonld.http;
 import java.net.URI;
 import java.time.Duration;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 
 public interface HttpClient {
 
-    HttpResponse send(URI targetUri, String requestProfile) throws JsonLdError;
+    HttpResponse send(URI targetUri, String requestProfile) throws JsonLdException;
     
     /**
      * Configure read timeout

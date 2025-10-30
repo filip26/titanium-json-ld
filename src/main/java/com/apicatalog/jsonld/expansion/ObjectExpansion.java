@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdAdapter;
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
@@ -70,7 +70,7 @@ public final class ObjectExpansion {
         this.params = params;
     }
 
-    public Object expand() throws JsonLdError, IOException {
+    public Object expand() throws JsonLdException, IOException {
 
         activeContext = initPreviousContext(
                 activeContext,
@@ -142,7 +142,7 @@ public final class ObjectExpansion {
             final Context context,
             final Object element,
             final NodeAdapter adapter,
-            final Params params) throws JsonLdError, IOException {
+            final Params params) throws JsonLdException, IOException {
 
         // 7. If active context has a previous context, the active context is not
         // propagated.
@@ -189,7 +189,7 @@ public final class ObjectExpansion {
             final Context typeContext
 //            final Object element,
 //            final NodeAdapter adapter
-    ) throws JsonLdError, IOException {
+    ) throws JsonLdException, IOException {
 
         String typeKey = null;
 
@@ -257,7 +257,7 @@ public final class ObjectExpansion {
             final Object element,
             final NodeAdapter adapter
 
-    ) throws JsonLdError, IOException {
+    ) throws JsonLdException, IOException {
 
         // Initialize input type to expansion of the last value of the first entry in
         // element
@@ -297,16 +297,16 @@ public final class ObjectExpansion {
             final String activeProperty,
             final boolean frameExpansion
 
-    ) throws JsonLdError {
+    ) throws JsonLdException {
 
         // 15.1.
         if (JsonLdAdapter.isNotValueNode(result)) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
+            throw new JsonLdException(JsonLdErrorCode.INVALID_VALUE_OBJECT);
         }
 
         if ((result.containsKey(Keywords.DIRECTION) || result.containsKey(Keywords.LANGUAGE))
                 && result.containsKey(Keywords.TYPE)) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT, "Invalid @value [" + result + "]");
+            throw new JsonLdException(JsonLdErrorCode.INVALID_VALUE_OBJECT, "Invalid @value [" + result + "]");
         }
 
         // 15.2.
@@ -325,13 +325,13 @@ public final class ObjectExpansion {
             } else if (!frameExpansion
                     && !(value instanceof String) && result.containsKey(Keywords.LANGUAGE)) {
                 // 15.4
-                throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
+                throw new JsonLdException(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
 
             } else if (!frameExpansion
                     && type != null
                     && (!(type instanceof String uri) || UriUtils.isNotURI(uri))) {
                 // 15.5
-                throw new JsonLdError(JsonLdErrorCode.INVALID_TYPED_VALUE, "Invalid @type [" + type + "].");
+                throw new JsonLdException(JsonLdErrorCode.INVALID_TYPED_VALUE, "Invalid @type [" + type + "].");
             }
         }
         return normalize(result, activeProperty, frameExpansion);
@@ -340,7 +340,7 @@ public final class ObjectExpansion {
     private Map<String, ?> normalizeType(
             final Map<String, Object> result,
             final String activeProperty,
-            final boolean frameExpansion) throws JsonLdError {
+            final boolean frameExpansion) throws JsonLdException {
 
         final var type = result.get(Keywords.TYPE);
 
@@ -354,11 +354,11 @@ public final class ObjectExpansion {
     private Object normalizeContainer(
             final Map<String, ?> result,
             final String activeProperty,
-            final boolean frameExpansion) throws JsonLdError {
+            final boolean frameExpansion) throws JsonLdException {
 
         // 17.1.
         if (result.size() > 2 || result.size() == 2 && !result.containsKey(Keywords.INDEX)) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_SET_OR_LIST_OBJECT, "Invalid object [" + result + "].");
+            throw new JsonLdException(JsonLdErrorCode.INVALID_SET_OR_LIST_OBJECT, "Invalid object [" + result + "].");
         }
 
         // 17.2.
@@ -379,7 +379,7 @@ public final class ObjectExpansion {
     private static Map<String, ?> normalize(
             final Map<String, ?> result,
             final String activeProperty,
-            final boolean frameExpansion) throws JsonLdError {
+            final boolean frameExpansion) throws JsonLdException {
 
         // Extension: JSON-LD-STAR (Experimental)
 //        if (result.containsKey(Keywords.ANNOTATION)

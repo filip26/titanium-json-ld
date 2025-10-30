@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
@@ -217,9 +217,9 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
      * </p>
      * 
      * @return a collection containing the generated JSON-LD data
-     * @throws JsonLdError if an error occurs during JSON-LD generation
+     * @throws JsonLdException if an error occurs during JSON-LD generation
      */
-    public Collection<?> toJsonLd() throws JsonLdError {
+    public Collection<?> toJsonLd() throws JsonLdException {
 
         // 6.
         for (final var graphName : graphMap.keys()) {
@@ -283,7 +283,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
 
                             if (!(lang instanceof String langString)
                                     || !LanguageTag.isWellFormed(langString)) {
-                                throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
+                                throw new JsonLdException(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
                             }
 
                             clObject.put(Keywords.LANGUAGE, lang);
@@ -297,7 +297,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
                             if (!(direction instanceof String dirString)
                                     || (!"ltr".equalsIgnoreCase(dirString)
                                             && !"rtl".equalsIgnoreCase(dirString))) {
-                                throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
+                                throw new JsonLdException(JsonLdErrorCode.INVALID_BASE_DIRECTION);
                             }
 
                             clObject.put(Keywords.DIRECTION, direction);
@@ -610,7 +610,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
                         Keywords.TYPE, Keywords.JSON);
 
             } catch (Exception e) {
-                throw new RdfConsumerException(new JsonLdError(JsonLdErrorCode.INVALID_JSON_LITERAL, e));
+                throw new RdfConsumerException(new JsonLdException(JsonLdErrorCode.INVALID_JSON_LITERAL, e));
             }
 
         }

@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdComparison;
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
@@ -55,7 +55,7 @@ class RemoteContextTest {
      *      #61</a>
      */
     @Test
-    void testToRdfMissingTriples1() throws JsonLdError, IOException, NQuadsReaderException, RdfConsumerException {
+    void testToRdfMissingTriples1() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException {
 
         final Document document = readDocument("/com/apicatalog/jsonld/test/issue61-in.json");
         final Document context = readDocument("/com/apicatalog/jsonld/test/issue61-context.json");
@@ -83,7 +83,7 @@ class RemoteContextTest {
      *      #61</a>
      */
     @Test
-    void testToRdfMissingTriples2() throws JsonLdError, IOException, NQuadsReaderException, RdfConsumerException {
+    void testToRdfMissingTriples2() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException {
 
         final Document document = readDocument("/com/apicatalog/jsonld/test/issue61-in.json");
         final Document context = readDocument("/com/apicatalog/jsonld/test/issue61-context.json");
@@ -114,7 +114,7 @@ class RemoteContextTest {
      *      #63</a>
      */
     @Test
-    void testRemoteContext() throws JsonLdError, IOException, NQuadsReaderException, RdfConsumerException {
+    void testRemoteContext() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException {
 
         final Document document = readDocument("/com/apicatalog/jsonld/test/issue63-in.json");
 
@@ -142,12 +142,12 @@ class RemoteContextTest {
      * @see <a href="https://github.com/filip26/titanium-json-ld/issues/62">Issue
      *      #62</a>
      *
-     * @throws JsonLdError
+     * @throws JsonLdException
      * @throws IOException
      */
     @Test
     @Disabled("Run manually")
-    void testPerformance() throws JsonLdError, IOException {
+    void testPerformance() throws JsonLdException, IOException {
 
         final Document document = readDocument("/com/apicatalog/jsonld/test/issue62-in.json");
         assertNotNull(document);
@@ -176,7 +176,7 @@ class RemoteContextTest {
 
     }
 
-    private final Document readDocument(final String name) throws JsonLdError, IOException {
+    private final Document readDocument(final String name) throws JsonLdException, IOException {
         try (final InputStream is = getClass().getResourceAsStream(name)) {
             return JsonDocument.of(is);
         }

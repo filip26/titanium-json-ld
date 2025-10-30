@@ -19,7 +19,7 @@ import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 
@@ -47,7 +47,7 @@ public final class SchemeRouter implements DocumentLoader {
     }
 
     @Override
-    public Document loadDocument(URI url, LoaderOptions options) throws JsonLdError {
+    public Document loadDocument(URI url, LoaderOptions options) throws JsonLdException {
 
         if (url == null) {
             throw new IllegalArgumentException("The url must not be null.");
@@ -56,7 +56,7 @@ public final class SchemeRouter implements DocumentLoader {
         final DocumentLoader loader = loaders.getOrDefault(url.getScheme().toLowerCase(), null);
 
         if (loader == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "URL scheme [" + url.getScheme() + "] is not supported.");
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "URL scheme [" + url.getScheme() + "] is not supported.");
         }
 
         return loader.loadDocument(url, options);

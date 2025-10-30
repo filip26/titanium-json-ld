@@ -25,7 +25,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 
 public final class DefaultHttpClient implements HttpClient {
@@ -44,7 +44,7 @@ public final class DefaultHttpClient implements HttpClient {
         this.timeout = null;
     }
 
-    public HttpResponse send(URI targetUri, String requestProfile) throws JsonLdError {
+    public HttpResponse send(URI targetUri, String requestProfile) throws JsonLdException {
 
         HttpRequest.Builder request = HttpRequest.newBuilder()
                 .GET()
@@ -61,11 +61,11 @@ public final class DefaultHttpClient implements HttpClient {
         } catch (InterruptedException e) {
 
             Thread.currentThread().interrupt();
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
 
         } catch (IOException e) {
 
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
 

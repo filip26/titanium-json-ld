@@ -45,7 +45,7 @@ class ExpanderTest {
 //        assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
 //    }
 
-    static final Stream<JsonLdTestCase> jsonLdApi() throws JsonLdError {
+    static final Stream<JsonLdTestCase> jsonLdApi() throws JsonLdException {
         return JsonLdTestManifest
                 .load(
                         JsonLdTestManifest.JSON_LD_API_BASE,
@@ -55,7 +55,7 @@ class ExpanderTest {
                 .filter(JsonLdTestCase.IS_NOT_V1_0); // skip specVersion == 1.0
     }
 
-    static final Stream<JsonLdTestCase> jsonLdStar() throws JsonLdError {
+    static final Stream<JsonLdTestCase> jsonLdStar() throws JsonLdException {
         return JsonLdTestManifest
                 .load(
                         JsonLdTestManifest.JSON_LD_STAR_BASE,

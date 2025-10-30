@@ -2,10 +2,10 @@ package com.apicatalog.jsonld.loader;
 
 import java.net.URI;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 
 public interface TestLoader {
 
-    byte[] fetchBytes(URI create) throws JsonLdError;
+    byte[] fetchBytes(URI create) throws JsonLdException;
 
 }

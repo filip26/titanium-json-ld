@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
@@ -24,14 +24,14 @@ class DocumentResolver {
     }
 
     /**
-     * Return a reader or throw {@link JsonLdError} if there is no reader nor
+     * Return a reader or throw {@link JsonLdException} if there is no reader nor
      * fallbackContentType.
      *
      * @param contentType content type of the requested reader
      * @return a reader allowing to transform an input into {@link Document}
-     * @throws JsonLdError
+     * @throws JsonLdException
      */
-    public DocumentReader<InputStream> getReader(MediaType contentType) throws JsonLdError {
+    public DocumentReader<InputStream> getReader(MediaType contentType) throws JsonLdException {
         return findReader(contentType)
                 .or(() -> {
 
@@ -42,7 +42,7 @@ class DocumentResolver {
 
                     return Optional.empty();
                 })
-                .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED,
+                .orElseThrow(() -> new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED,
                         "Unsupported media type '" + contentType
                                 + "'. Supported content types are ["
                                 + MediaType.JSON_LD + ", "

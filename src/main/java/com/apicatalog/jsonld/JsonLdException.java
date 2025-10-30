@@ -16,45 +16,44 @@
 package com.apicatalog.jsonld;
 
 /**
- * The {@link JsonLdError} type is used to report processing errors.
+ * The {@link JsonLdException} type is used to report processing errors.
  *
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#jsonlderror">JsonLdError
  *      Specification</a>
  *
  */
-public final class JsonLdError extends Exception {
+public final class JsonLdException extends Exception {
 
     private static final long serialVersionUID = -1912600269069309493L;
 
     private final JsonLdErrorCode code;
 
-    public JsonLdError(JsonLdErrorCode code) {
-        super(code.toMessage());
+    public JsonLdException(JsonLdErrorCode code) {
+        super(code.text());
         this.code = code;
     }
 
-    public JsonLdError(JsonLdErrorCode code, String message) {
+    public JsonLdException(JsonLdErrorCode code, String message) {
         super(message);
         this.code = code;
     }
 
-    public JsonLdError(JsonLdErrorCode code, Throwable cause) {
-        super(code.toMessage(), cause);
+    public JsonLdException(JsonLdErrorCode code, Throwable cause) {
+        super(code.text(), cause);
         this.code = code;
     }
 
-    public JsonLdError(JsonLdErrorCode code, String message, Throwable cause) {
+    public JsonLdException(JsonLdErrorCode code, String message, Throwable cause) {
         super(message, cause);
         this.code = code;
     }
 
-    
     public JsonLdErrorCode getCode() {
         return code;
     }
 
     @Override
     public String toString() {
-        return "JsonLdError[code=" + code.toMessage() + ", message=" + getMessage() + "]";
+        return "JsonLdException[code=" + code.name() + ", message=" + getMessage() + "]";
     }
 }

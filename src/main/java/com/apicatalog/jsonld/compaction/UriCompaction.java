@@ -23,7 +23,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdAdapter;
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
@@ -42,13 +42,13 @@ public final class UriCompaction {
 
     public static String compact(
             final Context context,
-            final String variable) throws JsonLdError {
+            final String variable) throws JsonLdException {
         return compact(context, variable, null, false, false);
     }
 
     public static String withVocab(
             final Context context,
-            final String variable) throws JsonLdError {
+            final String variable) throws JsonLdException {
         return compact(context, variable, null, true, false);
     }
 
@@ -56,7 +56,7 @@ public final class UriCompaction {
             final Context context,
             final String variable,
             final Object value,
-            final boolean reverse) throws JsonLdError {
+            final boolean reverse) throws JsonLdException {
         return compact(context, variable, value, true, reverse);
     }
 
@@ -65,7 +65,7 @@ public final class UriCompaction {
             final String variable,
             final Object value,
             final boolean vocab,
-            final boolean reverse) throws JsonLdError {
+            final boolean reverse) throws JsonLdException {
 
         // 1.
         if (variable == null) {
@@ -401,7 +401,7 @@ public final class UriCompaction {
                     }
 
                 } else {
-                    throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE, "An @id entry was encountered whose value was not a string but [" + idValue + "].");
+                    throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE, "An @id entry was encountered whose value was not a string but [" + idValue + "].");
                 }
 
                 preferredValues.add(Keywords.NONE);
@@ -504,7 +504,7 @@ public final class UriCompaction {
                     && uri.getScheme() != null
                     && uri.getAuthority() == null
                     && context.findTerm(uri.getScheme()).filter(TermDefinition::isPrefix).isPresent()) {
-                throw new JsonLdError(JsonLdErrorCode.IRI_CONFUSED_WITH_PREFIX);
+                throw new JsonLdException(JsonLdErrorCode.IRI_CONFUSED_WITH_PREFIX);
             }
         } catch (IllegalArgumentException e) {
             /* variable is not URI */ }

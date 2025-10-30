@@ -27,7 +27,7 @@ import java.util.stream.IntStream;
 
 import com.apicatalog.jcs.Jcs;
 import com.apicatalog.jsonld.JsonLdAdapter;
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
@@ -84,18 +84,18 @@ public final class JsonLdToQuads {
         return this;
     }
 
-    public void provide(RdfQuadConsumer consumer) throws JsonLdError {
+    public void provide(RdfQuadConsumer consumer) throws JsonLdException {
         try {
             from(RdfQuadEmitter.newInstance(consumer));
         } catch (RdfConsumerException e) {
-            if (e.getCause() instanceof JsonLdError) {
-                throw (JsonLdError) e.getCause();
+            if (e.getCause() instanceof JsonLdException) {
+                throw (JsonLdException) e.getCause();
             }
-            throw new JsonLdError(JsonLdErrorCode.UNSPECIFIED, e);
+            throw new JsonLdException(JsonLdErrorCode.UNSPECIFIED, e);
         }
     }
 
-    protected void from(RdfTripleConsumer consumer) throws JsonLdError, RdfConsumerException {
+    protected void from(RdfTripleConsumer consumer) throws JsonLdException, RdfConsumerException {
 
         for (final String graphName : Utils.index(nodeMap.graphs(), true)) {
 
@@ -182,7 +182,7 @@ public final class JsonLdToQuads {
             final RdfTripleConsumer consumer,
             final Map<String, ?> item,
             final String subject,
-            final String predicate) throws JsonLdError, RdfConsumerException {
+            final String predicate) throws JsonLdException, RdfConsumerException {
 
         // 1. - 2.
         if (JsonLdAdapter.isNode(item)) {
@@ -409,7 +409,7 @@ public final class JsonLdToQuads {
             final RdfTripleConsumer consumer,
             final Collection<?> list,
             final String subject,
-            final String predicate) throws JsonLdError, RdfConsumerException {
+            final String predicate) throws JsonLdException, RdfConsumerException {
 
         // 1.
         if (list.isEmpty()) {

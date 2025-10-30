@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.web.media.MediaType;
 
 import jakarta.json.JsonStructure;
@@ -61,7 +61,7 @@ class JsonDocumentTest {
     }
 
     @Test
-    void test3() throws JsonLdError {
+    void test3() throws JsonLdException {
         Document document = JsonDocument.of(new ByteArrayInputStream(JsonValue.EMPTY_JSON_ARRAY.toString().getBytes()));
         assertNotNull(document);
         assertTrue(MediaType.JSON.match(document.contentType()));
@@ -71,7 +71,7 @@ class JsonDocumentTest {
     }
 
     @Test
-    void test4() throws JsonLdError {
+    void test4() throws JsonLdException {
         Document document = JsonDocument.of(new InputStreamReader(new ByteArrayInputStream(JsonValue.EMPTY_JSON_ARRAY.toString().getBytes())));
         assertNotNull(document);
         assertTrue(MediaType.JSON.match(document.contentType()));
@@ -92,7 +92,7 @@ class JsonDocumentTest {
     }
 
     @Test
-    void testi1() throws JsonLdError {
+    void testi1() throws JsonLdException {
         assertThrows(IllegalArgumentException.class, () -> JsonDocument.of((InputStream)null));
     }
 
@@ -102,12 +102,12 @@ class JsonDocumentTest {
     }
 
     @Test
-    void testi3() throws JsonLdError {
+    void testi3() throws JsonLdException {
         assertThrows(IllegalArgumentException.class, () -> JsonDocument.of((Reader)null));
     }
 
     @Test
-    void testi4() throws JsonLdError {
+    void testi4() throws JsonLdException {
         final InputStream is = new ByteArrayInputStream(JsonValue.EMPTY_JSON_ARRAY.toString().getBytes());
         assertThrows(IllegalArgumentException.class, () -> JsonDocument.of(null, is));
     }
@@ -118,21 +118,21 @@ class JsonDocumentTest {
     }
 
     @Test
-    void testi6() throws JsonLdError {
+    void testi6() throws JsonLdException {
         final Reader reader = new InputStreamReader(new ByteArrayInputStream(JsonValue.EMPTY_JSON_ARRAY.toString().getBytes()));
         assertThrows(IllegalArgumentException.class, () -> JsonDocument.of(null, reader));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"{ bad json", "   ", "true"})
-    void testi7(String content) throws JsonLdError {
+    void testi7(String content) throws JsonLdException {
         final InputStream is = new ByteArrayInputStream(content.getBytes());
-        assertThrows(JsonLdError.class, () -> JsonDocument.of(is));
+        assertThrows(JsonLdException.class, () -> JsonDocument.of(is));
     }
 
     @Test
-    void testi8() throws JsonLdError {
+    void testi8() throws JsonLdException {
         final Reader reader = new InputStreamReader(new ByteArrayInputStream("n".getBytes()));
-        assertThrows(JsonLdError.class, () -> JsonDocument.of(reader));
+        assertThrows(JsonLdException.class, () -> JsonDocument.of(reader));
     }
 }

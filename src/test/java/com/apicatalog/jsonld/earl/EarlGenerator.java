@@ -24,7 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.fromrdf.QuadsToJsonLd;
@@ -47,11 +47,11 @@ public class EarlGenerator {
     public static final String VERSION = "2.0";
     public static final String RELEASE_DATE = "2025-10-19";
 
-    public static void main(String[] args) throws JsonLdError, IOException {
+    public static void main(String[] args) throws JsonLdException, IOException {
         (new EarlGenerator()).generate(Paths.get(FILE_NAME));
     }
 
-    public void generate(final Path path) throws JsonLdError, IOException {
+    public void generate(final Path path) throws JsonLdException, IOException {
 
         try (PrintWriter writer = new PrintWriter(path.toFile())) {
 
@@ -66,7 +66,7 @@ public class EarlGenerator {
         }
     }
 
-    public void testExpand(PrintWriter writer) throws JsonLdError {
+    public void testExpand(PrintWriter writer) throws JsonLdException {
 
         JsonLdTestManifest
                 .load(JsonLdTestManifest.JSON_LD_API_BASE, "expand-manifest.jsonld", new ZipResourceLoader())
@@ -76,7 +76,7 @@ public class EarlGenerator {
                         (new JsonLdTestRunnerEarl(testCase)).execute(options -> JsonLd.expand(testCase.input).options(options).get())));
     }
 
-    public void testCompact(final PrintWriter writer) throws JsonLdError {
+    public void testCompact(final PrintWriter writer) throws JsonLdException {
 
         JsonLdTestManifest
                 .load(JsonLdTestManifest.JSON_LD_API_BASE, "compact-manifest.jsonld", new ZipResourceLoader())
@@ -90,7 +90,7 @@ public class EarlGenerator {
                                 .get())));
     }
 
-    public void testFlatten(final PrintWriter writer) throws JsonLdError {
+    public void testFlatten(final PrintWriter writer) throws JsonLdException {
 
         JsonLdTestManifest
                 .load(JsonLdTestManifest.JSON_LD_API_BASE, "flatten-manifest.jsonld", new ZipResourceLoader())
@@ -104,7 +104,7 @@ public class EarlGenerator {
                                 .get())));
     }
 
-    public void testToRdf(final PrintWriter writer) throws JsonLdError {
+    public void testToRdf(final PrintWriter writer) throws JsonLdException {
 
         JsonLdTestManifest
                 .load(JsonLdTestManifest.JSON_LD_API_BASE, "toRdf-manifest.jsonld", new ZipResourceLoader())
@@ -118,7 +118,7 @@ public class EarlGenerator {
                         })));
     }
 
-    public void testFromRdf(PrintWriter writer) throws JsonLdError {
+    public void testFromRdf(PrintWriter writer) throws JsonLdException {
 
         JsonLdTestManifest
                 .load(JsonLdTestManifest.JSON_LD_API_BASE, "fromRdf-manifest.jsonld", new ZipResourceLoader())
@@ -136,7 +136,7 @@ public class EarlGenerator {
                         })));
     }
 
-    public void testFrame(PrintWriter writer) throws JsonLdError {
+    public void testFrame(PrintWriter writer) throws JsonLdException {
         JsonLdTestManifest
                 .load(JsonLdTestManifest.JSON_LD_FRAMING_BASE, "frame-manifest.jsonld", new ZipResourceLoader())
                 .stream()
@@ -145,7 +145,7 @@ public class EarlGenerator {
                         (new JsonLdTestRunnerEarl(testCase)).execute(options -> JsonLd.frame(testCase.input, testCase.frame).options(options).get())));
     }
 
-    public void testRemote(PrintWriter writer) throws JsonLdError {
+    public void testRemote(PrintWriter writer) throws JsonLdException {
         JsonLdTestManifest
                 .load(JsonLdTestManifest.JSON_LD_API_BASE, "remote-doc-manifest.jsonld", new ZipResourceLoader())
                 .stream()
@@ -177,7 +177,7 @@ public class EarlGenerator {
                         server.stop();
                         wireMockServer.stop();
 
-                    } catch (JsonLdError e) {
+                    } catch (JsonLdException e) {
                         e.printStackTrace();
                         result = false;
                     }

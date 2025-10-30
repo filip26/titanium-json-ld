@@ -17,7 +17,7 @@ package com.apicatalog.jsonld.api;
 
 import java.net.URI;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.DocumentLoader;
@@ -42,7 +42,7 @@ public class MockLoader implements DocumentLoader {
     }
 
     @Override
-    public Document loadDocument(URI url, LoaderOptions options) throws JsonLdError {
+    public Document loadDocument(URI url, LoaderOptions options) throws JsonLdException {
 
         if (structure != null) {
             final Document remoteDocument = JsonDocument.of(structure);

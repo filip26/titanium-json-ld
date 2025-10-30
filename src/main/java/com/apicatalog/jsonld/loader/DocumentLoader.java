@@ -17,7 +17,7 @@ package com.apicatalog.jsonld.loader;
 
 import java.net.URI;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.document.Document;
 
 /**
@@ -37,7 +37,7 @@ public interface DocumentLoader {
      * @param url     of the remote document to fetch
      * @param options to set the behavior of the loader
      * @return {@link Document} representing a remote document
-     * @throws JsonLdError if the document loading fails
+     * @throws JsonLdException if the document loading fails
      */
-    Document loadDocument(URI url, LoaderOptions options) throws JsonLdError;
+    Document loadDocument(URI url, LoaderOptions options) throws JsonLdException;
 }

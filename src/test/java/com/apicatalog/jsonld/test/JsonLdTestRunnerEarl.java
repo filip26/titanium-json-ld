@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 import com.apicatalog.jsonld.JsonLdComparison;
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.loader.LoaderOptions;
@@ -96,12 +96,12 @@ public class JsonLdTestRunnerEarl {
         } catch (IOException e) {
             throw new IllegalStateException(e);
 
-        } catch (JsonLdError e) {
+        } catch (JsonLdException e) {
             return Objects.equals(e.getCode(), testCase.expectErrorCode);
 
         } catch (RdfConsumerException e) {
-            if (e.getCause() instanceof JsonLdError) {
-                return Objects.equals(((JsonLdError) e.getCause()).getCode(), testCase.expectErrorCode);
+            if (e.getCause() instanceof JsonLdException) {
+                return Objects.equals(((JsonLdException) e.getCause()).getCode(), testCase.expectErrorCode);
             }
         }
         return false;

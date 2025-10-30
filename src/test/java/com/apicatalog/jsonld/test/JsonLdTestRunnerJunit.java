@@ -26,7 +26,7 @@ import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdComparison;
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.fromrdf.QuadsToJsonLd;
@@ -132,7 +132,7 @@ public class JsonLdTestRunnerJunit {
             fail(e);
             return false;
 
-        } catch (JsonLdError e) {
+        } catch (JsonLdException e) {
 
             if (Objects.equal(e.getCode(), testCase.expectErrorCode)) {
                 return true;
@@ -150,13 +150,13 @@ public class JsonLdTestRunnerJunit {
 
         } catch (RdfConsumerException e) {
 
-            if (e.getCause() instanceof JsonLdError) {
-                if (Objects.equal(((JsonLdError) e.getCause()).getCode(), testCase.expectErrorCode)) {
+            if (e.getCause() instanceof JsonLdException) {
+                if (Objects.equal(((JsonLdException) e.getCause()).getCode(), testCase.expectErrorCode)) {
                     return true;
                 }
 
-                write(testCase, null, null, ((JsonLdError) e.getCause()));
-                fail("Unexpected error [" + ((JsonLdError) e.getCause()).getCode() + "]: " + e.getMessage() + ".");
+                write(testCase, null, null, ((JsonLdException) e.getCause()));
+                fail("Unexpected error [" + ((JsonLdException) e.getCause()).getCode() + "]: " + e.getMessage() + ".");
 
             }
             return false;
@@ -204,7 +204,7 @@ public class JsonLdTestRunnerJunit {
             // compare expected with the result
             return compareJson(testCase, result, resultAdapter, expectedDocument.content());
 
-        } catch (JsonLdError | IOException e) {
+        } catch (JsonLdException | IOException e) {
             fail(e.getMessage());
         }
         return false;
@@ -230,7 +230,7 @@ public class JsonLdTestRunnerJunit {
                     result,
                     ((QuadSetDocument) expectedDocument).contentX());
 
-        } catch (JsonLdError e) {
+        } catch (JsonLdException e) {
             fail(e.getMessage());
         }
         return false;
@@ -251,7 +251,7 @@ public class JsonLdTestRunnerJunit {
         return false;
     }
 
-    public static void write(final JsonLdTestCase testCase, final JsonValue result, final JsonValue expected, JsonLdError error) {
+    public static void write(final JsonLdTestCase testCase, final JsonValue result, final JsonValue expected, JsonLdException error) {
         final StringWriter stringWriter = new StringWriter();
 
         try (final var writer = new PrintWriter(stringWriter)) {

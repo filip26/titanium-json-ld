@@ -18,7 +18,7 @@ package com.apicatalog.jsonld.api;
 import java.io.IOException;
 import java.net.URI;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.JsonLdVersion;
@@ -167,10 +167,10 @@ public final class ToRdfApi implements CommonApi<ToRdfApi>, LoaderApi<ToRdfApi>,
      * @since 1.6.0
      * 
      * @param consumer that accepts emitted RDF statements
-     * @throws JsonLdError if the document transformation fails
+     * @throws JsonLdException if the document transformation fails
      * @throws IOException 
      */
-    public void provide(RdfQuadConsumer consumer) throws JsonLdError, IOException {
+    public void provide(RdfQuadConsumer consumer) throws JsonLdException, IOException {
         if (documentUri != null) {
             RdfEmitter.toRdf(consumer, documentUri, options);
 

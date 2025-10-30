@@ -26,7 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.TreeDocument;
@@ -68,7 +68,7 @@ class DefaultHttpLoader implements DocumentLoader {
     }
 
     @Override
-    public Document loadDocument(final URI uri, final LoaderOptions options) throws JsonLdError {
+    public Document loadDocument(final URI uri, final LoaderOptions options) throws JsonLdException {
 
         try {
             URI targetUri = uri;
@@ -95,11 +95,11 @@ class DefaultHttpLoader implements DocumentLoader {
                             continue;
                         }
 
-                        throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Header location is required for code [" + response.statusCode() + "].");
+                        throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Header location is required for code [" + response.statusCode() + "].");
                     }
 
                     if (response.statusCode() != 200) {
-                        throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unexpected response code [" + response.statusCode() + "]");
+                        throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unexpected response code [" + response.statusCode() + "]");
                     }
 
                     final Optional<String> contentTypeValue = response.contentType();
@@ -146,7 +146,7 @@ class DefaultHttpLoader implements DocumentLoader {
                                     .collect(Collectors.toList());
 
                             if (contextUris.size() > 1) {
-                                throw new JsonLdError(JsonLdErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS);
+                                throw new JsonLdException(JsonLdErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS);
 
                             } else if (contextUris.size() == 1) {
                                 contextUri = contextUris.get(0).target();
@@ -163,10 +163,10 @@ class DefaultHttpLoader implements DocumentLoader {
                 }
             }
 
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections");
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections");
 
         } catch (IOException e) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
 
@@ -195,7 +195,7 @@ class DefaultHttpLoader implements DocumentLoader {
             final MediaType type,
             final URI targetUri,
             final URI contextUrl,
-            final HttpResponse response) throws JsonLdError, IOException {
+            final HttpResponse response) throws JsonLdException, IOException {
 
         try (final var is = response.body()) {
 
@@ -214,7 +214,7 @@ class DefaultHttpLoader implements DocumentLoader {
             
         } catch (Exception e) {
             // FIXME!!!
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
 

@@ -35,7 +35,7 @@ class CustomTest {
         assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
     }
 
-    static final Stream<JsonLdTestCase> data() throws JsonLdError {
+    static final Stream<JsonLdTestCase> data() throws JsonLdException {
         return JsonLdTestManifest
                     .load("/com/apicatalog/jsonld/test/", "manifest.json", new ClasspathLoader())
                     .stream()

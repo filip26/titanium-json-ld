@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
@@ -166,10 +166,10 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
      * Get the result of compaction.
      *
      * @return {@link JsonObject} representing compacted document
-     * @throws JsonLdError if the document compaction fails
+     * @throws JsonLdException if the document compaction fails
      * @throws IOException 
      */
-    public Map<String, ?> get() throws JsonLdError, IOException {
+    public Map<String, ?> get() throws JsonLdException, IOException {
 
         if (document != null) {
             if (context != null)  {

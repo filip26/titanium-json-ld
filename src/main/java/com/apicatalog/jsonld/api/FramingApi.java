@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
@@ -191,10 +191,10 @@ public final class FramingApi implements CommonApi<FramingApi>, LoaderApi<Framin
      * Get the result of framing.
      *
      * @return {@link JsonObject} representing framed document
-     * @throws JsonLdError if the document framing fails
+     * @throws JsonLdException if the document framing fails
      * @throws IOException 
      */
-    public Map<String, ?> get() throws JsonLdError, IOException {
+    public Map<String, ?> get() throws JsonLdException, IOException {
         if (document != null) {
             if (frame != null) {
                 return Framer.frame(document, frame, options);

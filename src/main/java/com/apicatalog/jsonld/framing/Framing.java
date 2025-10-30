@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdAdapter;
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.java.NativeAdapter;
@@ -70,7 +70,7 @@ public final class Framing {
         return this;
     }
 
-    public void frame() throws JsonLdError {
+    public void frame() throws JsonLdException {
 
         // 2.
         final Embed embed = frame.getEmbed(state.getEmbed());

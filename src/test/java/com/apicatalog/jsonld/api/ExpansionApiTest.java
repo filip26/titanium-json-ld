@@ -25,7 +25,7 @@ import java.net.URI;
 import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.web.media.MediaType;
@@ -94,13 +94,13 @@ class ExpansionApiTest {
 //    }
 
     @Test
-    void test9() throws JsonLdError {
+    void test9() throws JsonLdException {
         ExpansionApi api = JsonLd.expand("file:/example.org").context("file:/example.org");
         assertNotNull(api);
     }
 
     @Test
-    void test10() throws JsonLdError {
+    void test10() throws JsonLdException {
         ExpansionApi api = JsonLd.expand("file:///example.org").context("file:///example.org");
         assertNotNull(api);
     }

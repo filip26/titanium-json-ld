@@ -21,7 +21,7 @@ import java.net.URI;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -104,7 +104,7 @@ public final class TreeDocument implements Document {
      * @return {@link Document} representing JSON document
      */
     @Deprecated
-    public static final TreeDocument of(final InputStream is) throws JsonLdError {
+    public static final TreeDocument of(final InputStream is) throws JsonLdException {
         return of(MediaType.JSON, is);
     }
 
@@ -117,10 +117,10 @@ public final class TreeDocument implements Document {
      * @param is          providing JSON content
      * @return {@link Document} representing JSON document
      *
-     * @throws JsonLdError if the document creation fails
+     * @throws JsonLdException if the document creation fails
      */
     @Deprecated
-    public static final TreeDocument of(final MediaType contentType, final InputStream is) throws JsonLdError {
+    public static final TreeDocument of(final MediaType contentType, final InputStream is) throws JsonLdException {
 
         assertContentType(contentType);
 
@@ -133,7 +133,7 @@ public final class TreeDocument implements Document {
             return doParse(contentType, parser);
 
         } catch (JsonException e) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
 
@@ -145,7 +145,7 @@ public final class TreeDocument implements Document {
      * @return {@link Document} representing JSON document
      */
     @Deprecated
-    public static final TreeDocument of(final Reader reader) throws JsonLdError {
+    public static final TreeDocument of(final Reader reader) throws JsonLdException {
         return of(MediaType.JSON, reader);
     }
 
@@ -158,10 +158,10 @@ public final class TreeDocument implements Document {
      * @param reader      providing JSON content
      * @return {@link Document} representing JSON document
      *
-     * @throws JsonLdError if the document creation fails
+     * @throws JsonLdException if the document creation fails
      */
     @Deprecated
-    public static final TreeDocument of(final MediaType contentType, final Reader reader) throws JsonLdError {
+    public static final TreeDocument of(final MediaType contentType, final Reader reader) throws JsonLdException {
 
         assertContentType(contentType);
 
@@ -174,17 +174,17 @@ public final class TreeDocument implements Document {
             return doParse(contentType, parser);
 
         } catch (JsonException e) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
 
     @Deprecated
     private static final TreeDocument doParse(
             final MediaType contentType,
-            final JsonParser parser) throws JsonLdError {
+            final JsonParser parser) throws JsonLdException {
 
         if (!parser.hasNext()) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Nothing to read. Provided document is empty.");
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Nothing to read. Provided document is empty.");
         }
 
         parser.next();
@@ -204,7 +204,7 @@ public final class TreeDocument implements Document {
                     );
         }
 
-        throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "JSON document's top level element must be JSON array or object.");
+        throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "JSON document's top level element must be JSON array or object.");
     }
 
     public static final boolean accepts(final MediaType contentType) {

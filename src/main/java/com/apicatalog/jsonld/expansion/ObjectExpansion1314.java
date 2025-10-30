@@ -29,7 +29,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.JsonLdAdapter;
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
@@ -76,7 +76,7 @@ final class ObjectExpansion1314 {
             final Context activeContext,
             final Object element,
             final NodeAdapter adapter,
-            final String activeProperty) throws JsonLdError, IOException {
+            final String activeProperty) throws JsonLdException, IOException {
 
         var keys = params.ordered()
                 ? adapter.keyStream(element).sorted(PolyNode.comparingElement(adapter::asString)).iterator()
@@ -105,7 +105,7 @@ final class ObjectExpansion1314 {
             if (expandedProperty == null || (!expandedProperty.contains(":") && !Keywords.contains(expandedProperty))) {
                 switch (params.runtime().getUndefinedTermPolicy()) {
                 case Fail:
-                    throw new JsonLdError(JsonLdErrorCode.UNDEFINED_TERM,
+                    throw new JsonLdException(JsonLdErrorCode.UNDEFINED_TERM,
                             "An undefined term has been found [" + key + "]. Change policy to Ignore or Warn or define the term in a context");
                 case Warn:
                     LOGGER.log(Level.WARNING, "An undefined term has been found [{0}]", key);
@@ -122,13 +122,13 @@ final class ObjectExpansion1314 {
 
                 // 13.4.1
                 if (Keywords.REVERSE.equals(activeProperty)) {
-                    throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_MAP);
+                    throw new JsonLdException(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_MAP);
                 }
 
                 // 13.4.2
                 if (result.containsKey(expandedProperty)
                         && Keywords.noneMatch(expandedProperty, Keywords.INCLUDED, Keywords.TYPE)) {
-                    throw new JsonLdError(JsonLdErrorCode.COLLIDING_KEYWORDS,
+                    throw new JsonLdException(JsonLdErrorCode.COLLIDING_KEYWORDS,
                             "Two properties which expand to the same keyword have been detected. A property '" + key + "'"
                                     + " expands to '" + expandedProperty + "'"
                                     + " but the '" + expandedProperty + "' property is already present.");
@@ -168,7 +168,7 @@ final class ObjectExpansion1314 {
                                     && (!adapter.isCollection(value)
                                             || adapter.elementStream(value)
                                                     .anyMatch(Predicate.not(adapter::isString)))) {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE, "An @id entry was encountered whose value [" + value + "] was not a string.");
+                        throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE, "An @id entry was encountered whose value [" + value + "] was not a string.");
 
                     } else if (adapter.isString(value)) {
                         // 13.4.3.2
@@ -278,7 +278,7 @@ final class ObjectExpansion1314 {
                                             .map(UriUtils::isNotURI)
                                             .orElse(true)) {
 
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_VALUE, "@type value is not valid [" + value + "].");
+                        throw new JsonLdException(JsonLdErrorCode.INVALID_TYPE_VALUE, "@type value is not valid [" + value + "].");
                     }
 
                     // 13.4.4.2
@@ -434,7 +434,7 @@ final class ObjectExpansion1314 {
                             expandedValue = included;
                         }
                     } else {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_INCLUDED_VALUE);
+                        throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_INCLUDED_VALUE);
                     }
                 }
 
@@ -445,7 +445,7 @@ final class ObjectExpansion1314 {
                     if (Keywords.JSON.equals(inputType)) {
 
                         if (activeContext.isV10()) {
-                            throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
+                            throw new JsonLdException(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
                         }
 
                         expandedValue = NativeMaterializer3.node(value, adapter); // FIXMEnew PolyNode(value, adapter);
@@ -468,7 +468,7 @@ final class ObjectExpansion1314 {
                         }
 
                     } else {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
+                        throw new JsonLdException(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
                     }
 
                     // 13.4.7.4
@@ -513,7 +513,7 @@ final class ObjectExpansion1314 {
                         expandedValue = adapter.elementStream(value).map(adapter::stringValue).toList();
 
                     } else {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
+                        throw new JsonLdException(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
                     }
                 }
 
@@ -553,7 +553,7 @@ final class ObjectExpansion1314 {
                         expandedValue = adapter.elementStream(value).map(adapter::stringValue).toList();
 
                     } else {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_BASE_DIRECTION);
+                        throw new JsonLdException(JsonLdErrorCode.INVALID_BASE_DIRECTION);
                     }
                 }
 
@@ -566,7 +566,7 @@ final class ObjectExpansion1314 {
                         expandedValue = adapter.stringValue(value);
 
                     } else {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_INDEX_VALUE);
+                        throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_INDEX_VALUE);
                     }
                 }
 
@@ -602,7 +602,7 @@ final class ObjectExpansion1314 {
 
                     // 13.4.13.1.
                     if (!adapter.isMap(value)) {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_REVERSE_VALUE);
+                        throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_REVERSE_VALUE);
                     }
 
                     // 13.4.13.2.
@@ -649,7 +649,7 @@ final class ObjectExpansion1314 {
                                         if (item instanceof Map<?, ?> map
                                                 && (JsonLdAdapter.isList(map)
                                                         || JsonLdAdapter.isValueNode(map))) {
-                                            throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
+                                            throw new JsonLdException(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
                                         }
 
                                         // 13.4.13.4.2.1.1
@@ -788,7 +788,7 @@ final class ObjectExpansion1314 {
 
                         // 13.7.4.2.2.
                         if (!adapter.isString(item)) {
-                            throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_MAP_VALUE);
+                            throw new JsonLdException(JsonLdErrorCode.INVALID_LANGUAGE_MAP_VALUE);
                         }
 
                         final var langMap = new LinkedHashMap<>();
@@ -949,7 +949,7 @@ final class ObjectExpansion1314 {
                             if (item instanceof Map map
                                     && JsonLdAdapter.isValueNode(map)
                                     && indexMap.size() > 1) {
-                                throw new JsonLdError(JsonLdErrorCode.INVALID_VALUE_OBJECT);
+                                throw new JsonLdException(JsonLdErrorCode.INVALID_VALUE_OBJECT);
                             }
 
                         } else if (containerMapping.contains(Keywords.INDEX)
@@ -1052,7 +1052,7 @@ final class ObjectExpansion1314 {
                     if (item instanceof Map map &&
                             (JsonLdAdapter.isList(map)
                                     || JsonLdAdapter.isValueNode(map))) {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
+                        throw new JsonLdException(JsonLdErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
                     }
 
                     // 13.13.4.3.
@@ -1109,7 +1109,7 @@ final class ObjectExpansion1314 {
             final Context context,
             final Object element,
             final NodeAdapter adapter,
-            final String activeProperty) throws JsonLdError, IOException {
+            final String activeProperty) throws JsonLdException, IOException {
 
         var activeContext = context;
 
@@ -1142,7 +1142,7 @@ final class ObjectExpansion1314 {
     private void processNest(
             final Context activeContext,
             final Object element,
-            final NodeAdapter adapter) throws JsonLdError, IOException {
+            final NodeAdapter adapter) throws JsonLdException, IOException {
 
         final var nestedKeys = params.ordered()
                 ? nest.keySet().stream().sorted().iterator()
@@ -1157,7 +1157,7 @@ final class ObjectExpansion1314 {
 
                 // 14.2.1
                 if (!adapter.isMap(nestValue)) {
-                    throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
+                    throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                 }
 
                 for (final var nestedValueKey : adapter.keys(nestValue)) {
@@ -1165,7 +1165,7 @@ final class ObjectExpansion1314 {
                             typeContext.uriExpansion(params.runtime().getDocumentLoader())
                                     .vocab(true)
                                     .expand(adapter.asString(nestedValueKey)))) {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
+                        throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
                 }
 

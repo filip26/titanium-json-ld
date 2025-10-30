@@ -18,7 +18,7 @@ package com.apicatalog.jsonld.api;
 import java.io.IOException;
 import java.net.URI;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
@@ -140,10 +140,10 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
      * Get the result of flattening.
      *
      * @return {@link JsonStructure} representing flattened document
-     * @throws JsonLdError if the document flattening fails
+     * @throws JsonLdException if the document flattening fails
      * @throws IOException 
      */
-    public Object get() throws JsonLdError, IOException {
+    public Object get() throws JsonLdException, IOException {
 
         if (document != null && context != null) {
             return Flattener.flatten(document, context, options);

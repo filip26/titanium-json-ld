@@ -29,7 +29,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.Compaction;
@@ -60,9 +60,9 @@ public final class Framer {
     private Framer() {
     }
 
-    public static final Map<String, ?> frame(final URI input, final Document frame, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Map<String, ?> frame(final URI input, final Document frame, final JsonLdOptions options) throws JsonLdException, IOException {
         if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
 
         final LoaderOptions loaderOptions = new LoaderOptions();
@@ -71,39 +71,39 @@ public final class Framer {
         final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
 
         if (remoteDocument == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Returned document is null [" + input + "].");
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Returned document is null [" + input + "].");
         }
 
         return frame(remoteDocument, frame, options);
     }
 
-    public static final Map<String, ?> frame(final Document input, final URI frameUri, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Map<String, ?> frame(final Document input, final URI frameUri, final JsonLdOptions options) throws JsonLdException, IOException {
         if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + frameUri + "].");
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + frameUri + "].");
         }
 
         final Document frameDocument = options.getDocumentLoader().loadDocument(frameUri, new LoaderOptions());
 
         if (frameDocument == null) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Returned frame is null [" + frameUri + "] is null.");
+            throw new JsonLdException(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Returned frame is null [" + frameUri + "] is null.");
         }
 
         return frame(input, frameDocument, options);
     }
 
-    public static final Map<String, ?> frame(final URI input, final URI frame, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Map<String, ?> frame(final URI input, final URI frame, final JsonLdOptions options) throws JsonLdException, IOException {
         return frame(getDocument(input, options), getDocument(frame, options), options);
     }
 
-    public static final Map<String, ?> frame(final Document input, final Document frame, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Map<String, ?> frame(final Document input, final Document frame, final JsonLdOptions options) throws JsonLdException, IOException {
         if (frame == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame or Frame.Document is null.");
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame or Frame.Document is null.");
         }
 
         return frame(input, Frame.of((TreeDocument) frame, options), options);
     }
 
-    public static final Map<String, ?> frame(final Document inputDocument, final Frame frame, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Map<String, ?> frame(final Document inputDocument, final Frame frame, final JsonLdOptions options) throws JsonLdException, IOException {
 
         final var expandedInput = Expander.expand(
                 inputDocument,
@@ -255,10 +255,10 @@ public final class Framer {
         throw new IllegalStateException();
     }
 
-    private static Document getDocument(final URI document, final JsonLdOptions options) throws JsonLdError {
+    private static Document getDocument(final URI document, final JsonLdOptions options) throws JsonLdException {
 
         if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + document + "].");
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + document + "].");
         }
 
         final LoaderOptions loaderOptions = new LoaderOptions();
@@ -267,7 +267,7 @@ public final class Framer {
         final Document remoteDocument = options.getDocumentLoader().loadDocument(document, loaderOptions);
 
         if (remoteDocument == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Cannot load document [" + document + "].");
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Cannot load document [" + document + "].");
         }
 
         return remoteDocument;

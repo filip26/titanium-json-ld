@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdAdapter;
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
@@ -42,7 +42,7 @@ public final class FrameMatcher {
         return new FrameMatcher(state, frame, requireAll);
     }
 
-    public List<String> match(final Collection<String> subjects) throws JsonLdError {
+    public List<String> match(final Collection<String> subjects) throws JsonLdException {
 
         // 1. if frame is empty then all subject match
         if (frame.isWildCard()) {
@@ -63,7 +63,7 @@ public final class FrameMatcher {
         return result;
     }
 
-    public boolean match(final Map<?, ?> node) throws JsonLdError {
+    public boolean match(final Map<?, ?> node) throws JsonLdException {
 
         int count = 0;
 

@@ -21,12 +21,12 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.lang.Keywords;
 
 public final class Flattening {
 
-    public static Object flatten(final Collection<?> elements, boolean ordered) throws JsonLdError {
+    public static Object flatten(final Collection<?> elements, boolean ordered) throws JsonLdException {
 
         // 1.
         final var nodeMap = new NodeMap();

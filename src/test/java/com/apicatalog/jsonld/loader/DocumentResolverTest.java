@@ -22,7 +22,7 @@ import java.io.InputStream;
 
 import org.junit.jupiter.api.Test;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.loader.DocumentReader;
 import com.apicatalog.jsonld.loader.DocumentResolver;
 import com.apicatalog.web.media.MediaType;
@@ -30,30 +30,30 @@ import com.apicatalog.web.media.MediaType;
 class DocumentResolverTest {
 
     @Test
-    void test2() throws JsonLdError {
+    void test2() throws JsonLdException {
         DocumentReader<InputStream> reader = (new DocumentResolver()).getReader(MediaType.JSON_LD);
         assertNotNull(reader);
     }
 
     @Test
-    void test3() throws JsonLdError {
+    void test3() throws JsonLdException {
         DocumentReader<InputStream> reader = (new DocumentResolver()).getReader(MediaType.JSON);
         assertNotNull(reader);
     }
 
     @Test
-    void test4() throws JsonLdError {
+    void test4() throws JsonLdException {
         DocumentReader<InputStream> reader = (new DocumentResolver()).getReader(new MediaType("application", "test+json"));
         assertNotNull(reader);
     }
 
     @Test
-    void test5() throws JsonLdError {
-        assertThrows(JsonLdError.class, () -> (new DocumentResolver()).getReader(MediaType.HTML));
+    void test5() throws JsonLdException {
+        assertThrows(JsonLdException.class, () -> (new DocumentResolver()).getReader(MediaType.HTML));
     }
 
     @Test
-    void test6() throws JsonLdError {
+    void test6() throws JsonLdException {
         DocumentResolver resolver = new DocumentResolver();
         resolver.setFallbackContentType(MediaType.JSON);
         DocumentReader<InputStream> reader = resolver.getReader(MediaType.of("text/plain"));
@@ -61,14 +61,14 @@ class DocumentResolverTest {
     }
 
     @Test
-    void test7() throws JsonLdError {
+    void test7() throws JsonLdException {
         DocumentResolver resolver = new DocumentResolver();
         resolver.setFallbackContentType(MediaType.XHTML);
-        assertThrows(JsonLdError.class, () -> resolver.getReader(MediaType.of("text/plain")));
+        assertThrows(JsonLdException.class, () -> resolver.getReader(MediaType.of("text/plain")));
     }
 
     @Test
-    void test8() throws JsonLdError {
+    void test8() throws JsonLdException {
         DocumentResolver resolver = new DocumentResolver();
         resolver.setFallbackContentType(MediaType.ANY);
         DocumentReader<InputStream> reader = resolver.getReader(MediaType.of("text/plain"));
@@ -76,7 +76,7 @@ class DocumentResolverTest {
     }
 
     @Test
-    void test9() throws JsonLdError {
+    void test9() throws JsonLdException {
         DocumentResolver resolver = new DocumentResolver();
         resolver.setFallbackContentType(MediaType.XHTML);
         DocumentReader<InputStream> reader = resolver.getReader(MediaType.of("text/plain+json; charset=utf-8"));

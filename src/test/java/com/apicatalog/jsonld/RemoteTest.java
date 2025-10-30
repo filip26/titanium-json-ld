@@ -79,13 +79,13 @@ class RemoteTest {
 
             server.stop();
 
-        } catch (JsonLdError e) {
+        } catch (JsonLdException e) {
             fail(e.getMessage());
 
         }
     }
 
-    static final Stream<JsonLdTestCase> data() throws JsonLdError {
+    static final Stream<JsonLdTestCase> data() throws JsonLdException {
         return JsonLdTestManifest
                     .load(JsonLdTestManifest.JSON_LD_API_BASE, "remote-doc-manifest.jsonld", new ZipResourceLoader())
                     .stream()

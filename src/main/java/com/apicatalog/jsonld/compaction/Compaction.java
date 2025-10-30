@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdAdapter;
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
@@ -81,11 +81,11 @@ public final class Compaction {
         return this;
     }
 
-    public Object compact(final Object element) throws JsonLdError, IOException {
+    public Object compact(final Object element) throws JsonLdException, IOException {
         return compact(null, element);
     }
 
-    public Object compact(final String activeProperty, final Object element) throws JsonLdError, IOException {
+    public Object compact(final String activeProperty, final Object element) throws JsonLdException, IOException {
 
         if (element instanceof Collection<?> array) {
             return compactArray(activeProperty, array);
@@ -99,7 +99,7 @@ public final class Compaction {
         return element;
     }
 
-    public Object compactArray(final String activeProperty, final Collection<?> array) throws JsonLdError, IOException {
+    public Object compactArray(final String activeProperty, final Collection<?> array) throws JsonLdException, IOException {
 
         final var activePropertyDefinition = context.findTerm(activeProperty);
 
@@ -140,7 +140,7 @@ public final class Compaction {
         return result.get(0);
     }
 
-    public Object compactObject(final String activeProperty, final Map<String, ?> object) throws JsonLdError, IOException {
+    public Object compactObject(final String activeProperty, final Map<String, ?> object) throws JsonLdException, IOException {
 
         // 1.
         Context typeContext = context;
@@ -295,7 +295,7 @@ public final class Compaction {
                     compactedValue = compactedArray;
 
                 } else {
-                    throw new JsonLdError(JsonLdErrorCode.INVALID_TYPE_VALUE, "@type value is not valid [" + expandedValue + "].");
+                    throw new JsonLdException(JsonLdErrorCode.INVALID_TYPE_VALUE, "@type value is not valid [" + expandedValue + "].");
                 }
 
                 // 12.2.3.
@@ -426,7 +426,7 @@ public final class Compaction {
                             .uriExpansion(runtime.getDocumentLoader())
                             .vocab(true)
                             .expand(nestTerm))) {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
+                        throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
 
                     // 12.7.2.3.
@@ -472,7 +472,7 @@ public final class Compaction {
                                     .uriExpansion(runtime.getDocumentLoader())
                                     .vocab(true)
                                     .expand(nestTerm))) {
-                        throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
+                        throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
 
                     // 12.8.2.3.

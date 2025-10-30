@@ -3,7 +3,7 @@ package com.apicatalog.jsonld.processor;
 import java.time.Duration;
 import java.time.Instant;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 
@@ -18,14 +18,14 @@ class Ticker extends ProcessingRuntime {
     }
 
     @Override
-    public void tick() throws JsonLdError {
+    public void tick() throws JsonLdException {
 
         final Instant now = Instant.now();
 
         ttl = ttl.minus(Duration.between(now, ticker).abs());
 
         if (ttl.isNegative()) {
-            throw new JsonLdError(JsonLdErrorCode.PROCESSING_TIMEOUT_EXCEEDED);
+            throw new JsonLdException(JsonLdErrorCode.PROCESSING_TIMEOUT_EXCEEDED);
         }
         ticker = now;
     }

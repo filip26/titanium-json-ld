@@ -24,7 +24,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.loader.SchemeRouter;
 import com.apicatalog.jsonld.test.JsonLdTestManifest;
@@ -51,7 +51,7 @@ class HttpLoaderTest {
     }
 
     @Test
-    void testMissingContentType() throws URISyntaxException, JsonLdError {
+    void testMissingContentType() throws URISyntaxException, JsonLdException {
 
         final JsonLdTestCase testCase = JsonLdTestManifest
                 .load("/com/apicatalog/jsonld/test/", "manifest.json", new ClasspathLoader())
@@ -65,7 +65,7 @@ class HttpLoaderTest {
     }
 
     @Test
-    void testPlainTextContentType() throws URISyntaxException, JsonLdError {
+    void testPlainTextContentType() throws URISyntaxException, JsonLdException {
 
         final JsonLdTestCase testCase = JsonLdTestManifest
                 .load("/com/apicatalog/jsonld/test/", "manifest.json", new ClasspathLoader())

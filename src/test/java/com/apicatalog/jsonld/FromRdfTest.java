@@ -38,7 +38,7 @@ class FromRdfTest {
         assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
     }
 
-    static final Stream<JsonLdTestCase> jsonLdApi() throws JsonLdError {
+    static final Stream<JsonLdTestCase> jsonLdApi() throws JsonLdException {
         return JsonLdTestManifest
                     .load(JsonLdTestManifest.JSON_LD_API_BASE, "fromRdf-manifest.jsonld", new ZipResourceLoader())
                     .stream()

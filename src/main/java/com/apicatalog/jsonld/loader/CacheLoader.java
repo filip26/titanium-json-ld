@@ -2,7 +2,7 @@ package com.apicatalog.jsonld.loader;
 
 import java.net.URI;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.cache.Cache;
 import com.apicatalog.jsonld.cache.LruCache;
 import com.apicatalog.jsonld.document.Document;
@@ -26,7 +26,7 @@ public class CacheLoader implements DocumentLoader {
     }
 
     @Override
-    public Document loadDocument(URI url, LoaderOptions options) throws JsonLdError {
+    public Document loadDocument(URI url, LoaderOptions options) throws JsonLdException {
         var key = createCacheKey(url, options);
         var result = cache.get(key);
         

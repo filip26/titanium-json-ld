@@ -22,7 +22,7 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
@@ -32,7 +32,7 @@ import jakarta.json.JsonObjectBuilder;
 class FramingReversePerformanceTest {
 
     @Test
-    void testFramingPerformance1000Elements() throws JsonLdError, IOException {
+    void testFramingPerformance1000Elements() throws JsonLdException, IOException {
 
         final long executionTime = measureFramingPerformance(1_000);
 
@@ -43,7 +43,7 @@ class FramingReversePerformanceTest {
     }
 
     @Test
-    void testFramingPerformance10000Elements() throws JsonLdError, IOException {
+    void testFramingPerformance10000Elements() throws JsonLdException, IOException {
 
         final long executionTime = measureFramingPerformance(10_000);
 
@@ -53,7 +53,7 @@ class FramingReversePerformanceTest {
                 "Framing 10_000 elements took too long: " + executionTime + " ms");
     }
 
-    private long measureFramingPerformance(final int elementCount) throws JsonLdError, IOException {
+    private long measureFramingPerformance(final int elementCount) throws JsonLdException, IOException {
 
         final JsonObject document = buildTestDocument(elementCount);
         final JsonObject frame = buildTestFrame();

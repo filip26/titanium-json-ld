@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdAdapter;
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.TreeDocument;
@@ -55,7 +55,7 @@ public final class Frame {
         this.documentUrl = documentUrl;
     }
 
-    public static final Frame of(final TreeDocument document, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Frame of(final TreeDocument document, final JsonLdOptions options) throws JsonLdException, IOException {
 
 //      final JsonStructure frameStructure;
 //
@@ -82,7 +82,7 @@ public final class Frame {
         final var adapter = document.content().adapter();
 
         if (!adapter.isMap(node)) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but [" + node + "].");
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but [" + node + "].");
         }
 
         PolyNode context = null;
@@ -106,7 +106,7 @@ public final class Frame {
         return of(expanded, context, document.contextUrl(), document.documentUrl());
     }
 
-    static final Frame of(final Object expanded) throws JsonLdError {
+    static final Frame of(final Object expanded) throws JsonLdException {
         // TODO
         return of(expanded, null, null, null);
     }
@@ -115,7 +115,7 @@ public final class Frame {
             final Object expanded,
             final PolyNode context,
             final URI contextUrl,
-            final URI documentUrl) throws JsonLdError {
+            final URI documentUrl) throws JsonLdException {
 
         final Map<String, ?> frameMap;
 
@@ -126,7 +126,7 @@ public final class Frame {
                 frameMap = map;
 
             } else {
-                throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame is not JSON object nor an array containing JSON object [" + expanded + "]");
+                throw new JsonLdException(JsonLdErrorCode.INVALID_FRAME, "Frame is not JSON object nor an array containing JSON object [" + expanded + "]");
             }
 
         } else if ((expanded instanceof Map map)) {
@@ -136,23 +136,23 @@ public final class Frame {
             return EMPTY;
 
         } else {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame is not JSON object. [" + expanded + "]");
+            throw new JsonLdException(JsonLdErrorCode.INVALID_FRAME, "Frame is not JSON object. [" + expanded + "]");
         }
 
         // 1.2.
         if (frameMap.containsKey(Keywords.ID) && !validateFrameId(frameMap)) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @id value is not valid [@id = " + frameMap.get(Keywords.ID) + "].");
+            throw new JsonLdException(JsonLdErrorCode.INVALID_FRAME, "Frame @id value is not valid [@id = " + frameMap.get(Keywords.ID) + "].");
         }
 
         // 1.3.
         if (frameMap.containsKey(Keywords.TYPE) && !validateFrameType(frameMap)) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @type value is not valid [@type = " + frameMap.get(Keywords.TYPE) + "].");
+            throw new JsonLdException(JsonLdErrorCode.INVALID_FRAME, "Frame @type value is not valid [@type = " + frameMap.get(Keywords.TYPE) + "].");
         }
 
         return new Frame(frameMap, context, contextUrl, documentUrl);
     }
 
-    public Embed getEmbed(final Embed defaultValue) throws JsonLdError {
+    public Embed getEmbed(final Embed defaultValue) throws JsonLdException {
 
         if (frameNode.containsKey(Keywords.EMBED)) {
 
@@ -163,13 +163,13 @@ public final class Frame {
             }
 
             if (embed instanceof Map map && JsonLdAdapter.isValueNode(map)) {
-                embed = JsonLdAdapter.findValue(embed).orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE));
+                embed = JsonLdAdapter.findValue(embed).orElseThrow(() -> new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE));
             }
 
             if (embed instanceof String stringValue) {
 
                 if (Keywords.noneMatch(stringValue, Keywords.ALWAYS, Keywords.ONCE, Keywords.NEVER)) {
-                    throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag [@embed = " + stringValue + "].");
+                    throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag [@embed = " + stringValue + "].");
                 }
 
                 return Embed.valueOf(stringValue.substring(1).toUpperCase());
@@ -181,21 +181,21 @@ public final class Frame {
                 return Embed.ONCE;
             }
 
-            throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag [@embed = " + embed + "].");
+            throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag [@embed = " + embed + "].");
         }
 
         return defaultValue;
     }
 
-    public boolean getExplicit(boolean defaultValue) throws JsonLdError {
+    public boolean getExplicit(boolean defaultValue) throws JsonLdException {
         return getBoolean(frameNode, Keywords.EXPLICIT, defaultValue);
     }
 
-    public boolean getRequireAll(boolean defaultValue) throws JsonLdError {
+    public boolean getRequireAll(boolean defaultValue) throws JsonLdException {
         return getBoolean(frameNode, Keywords.REQUIRE_ALL, defaultValue);
     }
 
-    public static final boolean getBoolean(Map<?, ?> frame, String key, boolean defaultValue) throws JsonLdError {
+    public static final boolean getBoolean(Map<?, ?> frame, String key, boolean defaultValue) throws JsonLdException {
 
         if (frame.containsKey(key)) {
 
@@ -206,7 +206,7 @@ public final class Frame {
             }
 
             if (value instanceof Map map && JsonLdAdapter.isValueNode(map)) {
-                value = JsonLdAdapter.findValue(value).orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_FRAME));
+                value = JsonLdAdapter.findValue(value).orElseThrow(() -> new JsonLdException(JsonLdErrorCode.INVALID_FRAME));
             }
 
             if (value instanceof String bool) {
@@ -221,7 +221,7 @@ public final class Frame {
             if (value instanceof Boolean bool) {
                 return bool;
             }
-            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
+            throw new JsonLdException(JsonLdErrorCode.INVALID_FRAME);
         }
         return defaultValue;
     }
@@ -334,7 +334,7 @@ public final class Frame {
         return JsonLdAdapter.isReference(frameNode);
     }
 
-    public boolean matchNode(FramingState state, Object value, boolean requireAll) throws JsonLdError {
+    public boolean matchNode(FramingState state, Object value, boolean requireAll) throws JsonLdException {
 
         if (value instanceof Map map && map.containsKey(Keywords.ID)) {
 

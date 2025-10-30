@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Direction;
@@ -35,7 +35,7 @@ import com.apicatalog.tree.io.java.NativeAdapter;
  */
 public final class ValueCompaction {
 
-    public static Object compact(final Context context, final Map<String, ?> value, final String activeProperty) throws JsonLdError {
+    public static Object compact(final Context context, final Map<String, ?> value, final String activeProperty) throws JsonLdException {
 
         // 1.
         Object result = value;

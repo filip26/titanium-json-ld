@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
@@ -112,10 +112,10 @@ public final class UriExpansion {
      *              IRI)
      * @return the fully expanded IRI as a {@link String}, or {@code null} if the
      *         value has an invalid keyword-like form
-     * @throws JsonLdError if an error occurs during context processing
+     * @throws JsonLdException if an error occurs during context processing
      * @throws IOException
      */
-    public String expand(final String value) throws JsonLdError, IOException {
+    public String expand(final String value) throws JsonLdException, IOException {
 
         // 1. If value is a keyword or null, return value as is.
         if (value == null || Keywords.contains(value)) {
@@ -243,10 +243,10 @@ public final class UriExpansion {
      * defined in that context.
      *
      * @param value the term to potentially define
-     * @throws JsonLdError if an error occurs during term creation
+     * @throws JsonLdException if an error occurs during term creation
      * @throws IOException
      */
-    private void initLocalContext(final String value) throws JsonLdError, IOException {
+    private void initLocalContext(final String value) throws JsonLdException, IOException {
         /*
          * 3. If local context is not null, it contains an entry with a key that equals
          * value, and the value of the entry for value in defined is not true, invoke
@@ -282,10 +282,10 @@ public final class UriExpansion {
      * @param suffix the suffix part of the compact IRI
      * @param result the original value, to be returned if expansion fails
      * @return the expanded IRI or the original result
-     * @throws JsonLdError if an error occurs during term creation
+     * @throws JsonLdException if an error occurs during term creation
      * @throws IOException
      */
-    private String initPropertyContext(final String prefix, final String suffix, final String result) throws JsonLdError, IOException {
+    private String initPropertyContext(final String prefix, final String suffix, final String result) throws JsonLdException, IOException {
 
         // 6.3. Create term definition for the prefix if it exists in the local context.
         if (localContext != null

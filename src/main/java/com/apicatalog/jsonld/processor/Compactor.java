@@ -20,7 +20,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.Compaction;
@@ -42,10 +42,10 @@ public final class Compactor {
     private Compactor() {
     }
 
-    public static final Map<String, ?> compact(final URI input, final URI context, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Map<String, ?> compact(final URI input, final URI context, final JsonLdOptions options) throws JsonLdException, IOException {
 
         if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
 
         final LoaderOptions loaderOptions = new LoaderOptions();
@@ -54,16 +54,16 @@ public final class Compactor {
         final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
 
         if (remoteDocument == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Returned document is null [" + input + "].");
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Returned document is null [" + input + "].");
         }
 
         return compact(remoteDocument, context, options);
     }
 
-    public static final Map<String, ?> compact(final URI input, final Document context, final JsonLdOptions options) throws JsonLdError, IOException {
+    public static final Map<String, ?> compact(final URI input, final Document context, final JsonLdOptions options) throws JsonLdException, IOException {
 
         if (options.getDocumentLoader() == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
 
         final LoaderOptions loaderOptions = new LoaderOptions();
@@ -72,7 +72,7 @@ public final class Compactor {
         final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
 
         if (remoteDocument == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Returned document is null [" + input + "].");
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Returned document is null [" + input + "].");
         }
 
         return compact(remoteDocument, context, options);
@@ -81,7 +81,7 @@ public final class Compactor {
     public static final Map<String, ?> compact(
             final Document input,
             final URI contextUri,
-            final JsonLdOptions options) throws JsonLdError, IOException {
+            final JsonLdOptions options) throws JsonLdException, IOException {
 
         URI contextBase = input.documentUrl();
 
@@ -110,7 +110,7 @@ public final class Compactor {
     public static final Map<String, ?> compact(
             final Document input,
             final Document context,
-            final JsonLdOptions options) throws JsonLdError, IOException {
+            final JsonLdOptions options) throws JsonLdException, IOException {
 //        
 //        URI contextBase = input.getDocumentUrl();
 //
@@ -157,7 +157,7 @@ public final class Compactor {
             final Object expanded,
             final URI baseUrl,
             final PolyNode context,
-            final JsonLdOptions options) throws JsonLdError, IOException {
+            final JsonLdOptions options) throws JsonLdException, IOException {
 
         URI contextBase = baseUrl;
 
@@ -197,7 +197,7 @@ public final class Compactor {
     static final Map<String, ?> compact(
             final Object expanded,
             final Context context,
-            final JsonLdOptions options) throws JsonLdError, IOException {
+            final JsonLdOptions options) throws JsonLdException, IOException {
 
         var activeContext = context;
 

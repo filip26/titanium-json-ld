@@ -42,7 +42,7 @@ class FramerTest {
         assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
     }
 
-    static final Stream<JsonLdTestCase> data() throws JsonLdError {
+    static final Stream<JsonLdTestCase> data() throws JsonLdException {
         return JsonLdTestManifest
                     .load(JsonLdTestManifest.JSON_LD_FRAMING_BASE, "frame-manifest.jsonld", new ZipResourceLoader())
                     .stream()

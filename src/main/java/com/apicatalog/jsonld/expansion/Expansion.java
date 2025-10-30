@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.apicatalog.jsonld.JsonLdAdapter;
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -92,7 +92,7 @@ public final class Expansion {
             final String activeProperty,
             final Params params
 
-    ) throws JsonLdError, IOException {
+    ) throws JsonLdException, IOException {
 
         // 1. If element is null, return null
         if (nodeAdapter.isNull(node)) {
@@ -162,7 +162,7 @@ public final class Expansion {
      * @param node            the scalar to expand
      * @return a {@link Map} representing the expanded value object, or {@code null}
      *         if the scalar is dropped
-     * @throws JsonLdError if an error occurs during expansion
+     * @throws JsonLdException if an error occurs during expansion
      * @throws IOException
      */
     static final Map<String, ?> scalar(
@@ -171,7 +171,7 @@ public final class Expansion {
             final PolyNode propertyContext,
             final Object node,
             final NodeAdapter nodeAdapter,
-            final Params params) throws JsonLdError, IOException {
+            final Params params) throws JsonLdException, IOException {
 
         /*
          * 4.1. If active property is null or @graph, drop the free-floating scalar by
@@ -228,7 +228,7 @@ public final class Expansion {
      * @return a {@link Collection} containing the expanded values, which may
      *         include {@link java.util.Map}s, {@link String}s, or other JSON-LD
      *         node representations.
-     * @throws JsonLdError if an error occurs during the recursive expansion of an
+     * @throws JsonLdException if an error occurs during the recursive expansion of an
      *                     item
      * @throws IOException
      */
@@ -236,7 +236,7 @@ public final class Expansion {
             final Object node,
             final NodeAdapter nodeAdapter,
             final String property,
-            final Params params) throws JsonLdError, IOException {
+            final Params params) throws JsonLdException, IOException {
 
         if (nodeAdapter.isEmptyCollection(node)) {
             return List.of();

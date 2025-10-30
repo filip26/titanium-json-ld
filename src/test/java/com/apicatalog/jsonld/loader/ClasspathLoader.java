@@ -20,7 +20,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
@@ -32,7 +32,7 @@ import com.apicatalog.rdf.nquads.NQuadsReaderException;
 public class ClasspathLoader implements DocumentLoader, TestLoader {
 
     @Override
-    public Document loadDocument(URI url, LoaderOptions options) throws JsonLdError {
+    public Document loadDocument(URI url, LoaderOptions options) throws JsonLdException {
 
         try (final InputStream is = getClass().getResourceAsStream(url.getPath())) {
 
@@ -42,23 +42,23 @@ public class ClasspathLoader implements DocumentLoader, TestLoader {
             return document;
 
         } catch (IOException | NQuadsReaderException | RdfConsumerException e) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
     }
 
     @Override
-    public byte[] fetchBytes(URI url) throws JsonLdError {
+    public byte[] fetchBytes(URI url) throws JsonLdException {
 
         try (final InputStream is = getClass().getResourceAsStream(url.getPath())) {
 
             return ZipResourceLoader.readAsByteArray(is);
 
         } catch (IOException e) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
     }
 
-    private static final Document toDocument(URI url, InputStream is) throws JsonLdError, NQuadsReaderException, RdfConsumerException {
+    private static final Document toDocument(URI url, InputStream is) throws JsonLdException, NQuadsReaderException, RdfConsumerException {
 
         if (url.toString().endsWith(".nq")) {
             return QuadSetDocument.readNQuads(new InputStreamReader(is));
