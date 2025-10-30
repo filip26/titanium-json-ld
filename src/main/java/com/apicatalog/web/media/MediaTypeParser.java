@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.http.media;
+package com.apicatalog.web.media;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

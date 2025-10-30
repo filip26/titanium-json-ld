@@ -34,15 +34,15 @@ import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.lang.Utils;
-import com.apicatalog.jsonld.uri.UriUtils;
-import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.web.lang.LanguageTag;
+import com.apicatalog.web.uri.UriUtils;
+import com.apicatalog.web.uri.UriValidationPolicy;
 
 public final class JsonLdToQuads {
 

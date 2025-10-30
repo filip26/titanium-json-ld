@@ -22,11 +22,11 @@ import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
+import com.apicatalog.web.media.MediaType;
 
 import jakarta.json.JsonException;
 import jakarta.json.JsonStructure;

@@ -28,11 +28,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.net.URI;
 
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.http.link.Link;
-import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.loader.TestLoader;
-import com.apicatalog.jsonld.uri.UriResolver;
+import com.apicatalog.web.link.Link;
+import com.apicatalog.web.media.MediaType;
+import com.apicatalog.web.uri.UriResolver;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 
 public final class JsonLdMockServer {

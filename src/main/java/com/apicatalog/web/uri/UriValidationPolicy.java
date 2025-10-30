@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld.uri;
+package com.apicatalog.web.uri;
 
 /**
  * Represents different URI validation policies. These policies determine the

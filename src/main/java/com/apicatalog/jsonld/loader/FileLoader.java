@@ -29,7 +29,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.api.StringUtils;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.http.media.MediaType;
+import com.apicatalog.web.media.MediaType;
 
 public final class FileLoader implements DocumentLoader {
 

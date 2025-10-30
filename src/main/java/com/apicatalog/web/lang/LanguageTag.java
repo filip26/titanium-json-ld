@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.lang;
+package com.apicatalog.web.lang;
 
 import java.util.Collection;
 import java.util.List;
@@ -143,7 +143,7 @@ public record LanguageTag(
 
         sb.append(language);
 
-        if (languageExtensions != null && !languageExtensions.isEmpty()) {
+        if (!languageExtensions.isEmpty()) {
             languageExtensions.forEach(tag -> sb.append('-').append(tag));
         }
 
@@ -155,15 +155,15 @@ public record LanguageTag(
             sb.append('-').append(region);
         }
 
-        if (variants != null && !variants.isEmpty()) {
+        if (!variants.isEmpty()) {
             variants.forEach(tag -> sb.append('-').append(tag));
         }
 
-        if (extensions != null && !extensions.isEmpty()) {
+        if (!extensions.isEmpty()) {
             extensions.forEach(tag -> sb.append('-').append(tag));
         }
 
-        if (privateUse != null && !privateUse.isEmpty()) {
+        if (!privateUse.isEmpty()) {
             sb.append('-').append('x');
             privateUse.forEach(tag -> sb.append('-').append(tag));
         }

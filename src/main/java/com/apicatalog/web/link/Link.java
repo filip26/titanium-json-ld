@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.http.link;
+package com.apicatalog.web.link;
 
 import java.net.URI;
 import java.nio.charset.Charset;
@@ -26,7 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.apicatalog.jsonld.http.media.MediaType;
+import com.apicatalog.web.media.MediaType;
 
 /**
  *

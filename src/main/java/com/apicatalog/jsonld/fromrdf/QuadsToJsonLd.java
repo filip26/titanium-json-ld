@@ -19,7 +19,6 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -36,16 +35,16 @@ import com.apicatalog.jsonld.fromrdf.GraphMap.Reference;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.lang.Utils;
-import com.apicatalog.jsonld.uri.UriUtils;
-import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.tree.io.java.NativeMaterializer3;
+import com.apicatalog.web.lang.LanguageTag;
+import com.apicatalog.web.uri.UriUtils;
+import com.apicatalog.web.uri.UriValidationPolicy;
 
 import jakarta.json.stream.JsonParser;
 
@@ -411,7 +410,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
                             .orElse(Map.of());
 
                     if (entry.size() > 1 || !entry.containsKey(Keywords.ID)) {
-                        array.add(Collections.unmodifiableMap(entry));
+                        array.add(Map.copyOf(entry));
 //                        array.add(JsonUtils.toJsonObject(entry));
                     }
                 }
@@ -421,7 +420,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
 
             // 8.2.
             if (node.size() > 1 || !node.containsKey(Keywords.ID)) {
-                result.add(Collections.unmodifiableMap(node));
+                result.add(Map.copyOf(node));
 //                result.add(JsonUtils.toJsonObject(node));
             }
         }

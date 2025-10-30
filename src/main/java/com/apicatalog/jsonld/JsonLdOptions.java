@@ -26,9 +26,9 @@ import com.apicatalog.jsonld.document.TreeDocument;
 import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.SchemeRouter;
-import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.web.uri.UriValidationPolicy;
 
 import jakarta.json.JsonValue;
 

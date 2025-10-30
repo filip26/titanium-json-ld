@@ -22,9 +22,9 @@ import java.util.stream.Collectors;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.JsonLdVersion;
-import com.apicatalog.jsonld.http.media.MediaType;
-import com.apicatalog.jsonld.uri.UriResolver;
 import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.web.media.MediaType;
+import com.apicatalog.web.uri.UriResolver;
 
 public class JsonLdTestOptions {
 

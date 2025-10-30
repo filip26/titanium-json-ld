@@ -7,7 +7,7 @@ import com.apicatalog.jsonld.cache.Cache;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.uri.UriValidationPolicy;
+import com.apicatalog.web.uri.UriValidationPolicy;
 
 import jakarta.json.JsonValue;
 

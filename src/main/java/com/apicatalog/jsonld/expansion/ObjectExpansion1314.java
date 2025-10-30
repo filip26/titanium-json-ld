@@ -36,14 +36,14 @@ import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.LanguageTag;
-import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.tree.io.java.NativeMaterializer3;
+import com.apicatalog.web.lang.LanguageTag;
+import com.apicatalog.web.uri.UriUtils;
 
 /**
  *

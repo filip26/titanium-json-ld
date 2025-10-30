@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.lang;
+package com.apicatalog.web.lang;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 import java.util.function.IntPredicate;
 import java.util.regex.Pattern;
 
-import com.apicatalog.jsonld.lang.LanguageTag.Extension;
+import com.apicatalog.web.lang.LanguageTag.Extension;
 
 /**
  * Language tags are used to help identify languages and are defined by

@@ -28,7 +28,7 @@ import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.http.media.MediaType;
+import com.apicatalog.web.media.MediaType;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;

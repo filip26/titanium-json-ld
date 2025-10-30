@@ -10,7 +10,7 @@ import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.TreeDocument;
-import com.apicatalog.jsonld.http.media.MediaType;
+import com.apicatalog.web.media.MediaType;
 
 @Deprecated
 class DocumentResolver {

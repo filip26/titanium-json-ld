@@ -5,7 +5,6 @@ import java.net.URI;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.model.RdfQuadSet;
 import com.apicatalog.rdf.nquads.NQuadsReader;
@@ -13,6 +12,7 @@ import com.apicatalog.rdf.nquads.NQuadsReaderException;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
 import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.web.media.MediaType;
 
 public class QuadSetDocument implements Document {
 

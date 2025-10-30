@@ -29,8 +29,8 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.uri.UriRelativizer;
 import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.web.uri.UriRelativizer;
 
 /**
  *

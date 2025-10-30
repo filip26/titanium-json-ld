@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.http.link;
+package com.apicatalog.web.link;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -25,14 +25,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import com.apicatalog.jsonld.http.media.MediaType;
+import com.apicatalog.web.link.Link;
+import com.apicatalog.web.media.MediaType;
 
 class LinkTest {
 
@@ -76,7 +77,7 @@ class LinkTest {
         Link l1 = result.iterator().next();
 
         assertEquals(URI.create("/"), l1.target());
-        assertEquals(Collections.emptySet(), l1.attributeNames());
+        assertEquals(Set.of(), l1.attributeNames());
 
         assertEquals(new HashSet<>(Arrays.asList("http://example.net/foo")), l1.relations());
 
@@ -94,7 +95,7 @@ class LinkTest {
 
         assertEquals(URI.create("/terms"), l1.target());
         assertEquals(URI.create("#foo"), l1.context());
-        assertEquals(Collections.emptySet(), l1.attributeNames());
+        assertEquals(Set.of(), l1.attributeNames());
 
         assertEquals(new HashSet<>(Arrays.asList("copyright")), l1.relations());
 
@@ -111,7 +112,7 @@ class LinkTest {
 
         assertEquals(URI.create("http://example.org/"), l1.target());
         assertTrue(l1.attributeMap().isEmpty());
-        assertEquals(Collections.emptySet(), l1.attributeNames());
+        assertEquals(Set.of(), l1.attributeNames());
 
         assertEquals(new HashSet<>(Arrays.asList("start", "http://example.net/relation/other")), l1.relations());
 
@@ -130,7 +131,7 @@ class LinkTest {
         Link l1 = it.next();
 
         assertEquals(URI.create("https://example.org/"), l1.target());
-        assertEquals(Collections.emptySet(), l1.attributeNames());
+        assertEquals(Set.of(), l1.attributeNames());
         assertTrue(l1.attributeMap().isEmpty());
 
         assertEquals(new HashSet<>(Arrays.asList("st\\art")), l1.relations());
@@ -142,7 +143,7 @@ class LinkTest {
 
         assertEquals(URI.create("https://example.org/index"), l2.target());
         assertTrue(l2.attributeMap().isEmpty());
-        assertEquals(Collections.emptySet(), l2.attributeNames());
+        assertEquals(Set.of(), l2.attributeNames());
 
         assertEquals(new HashSet<>(Arrays.asList("iαn", "dex")), l2.relations());
 
@@ -159,7 +160,7 @@ class LinkTest {
         Link l1 = result.iterator().next();
 
         assertNull(l1.target());
-        assertEquals(Collections.emptySet(), l1.attributeNames());
+        assertEquals(Set.of(), l1.attributeNames());
 
         assertEquals(new HashSet<>(Arrays.asList("123")), l1.relations());
 
@@ -189,9 +190,9 @@ class LinkTest {
 
         assertEquals(URI.create("/"), l2.target());
 
-        assertEquals(Collections.emptySet(), l2.attributeNames());
+        assertEquals(Set.of(), l2.attributeNames());
 
-        assertEquals(Collections.emptySet(), l2.relations());
+        assertEquals(Set.of(), l2.relations());
 
         assertNull(l1.type());
         assertNull(l1.context());
@@ -233,8 +234,8 @@ class LinkTest {
         Link l1 = it.next();
 
         assertEquals(URI.create("/"), l1.target());
-        assertEquals(Collections.emptySet(), l1.attributeNames());
-        assertEquals(Collections.emptySet(), l1.relations());
+        assertEquals(Set.of(), l1.attributeNames());
+        assertEquals(Set.of(), l1.relations());
         assertTrue(MediaType.HTML.match(l1.type()));
         assertNull(l1.context());
     }
@@ -250,8 +251,8 @@ class LinkTest {
         Link l1 = it.next();
 
         assertEquals(URI.create("https://a/x"), l1.target());
-        assertEquals(Collections.emptySet(), l1.attributeNames());
-        assertEquals(Collections.emptySet(), l1.relations());
+        assertEquals(Set.of(), l1.attributeNames());
+        assertEquals(Set.of(), l1.relations());
         assertNull(l1.type());
         assertNull(l1.context());
     }
@@ -268,7 +269,7 @@ class LinkTest {
 
         assertEquals(URI.create("https://a/b/x"), l1.target());
         assertEquals(new HashSet<>(Arrays.asList("abc")), l1.attributeNames());
-        assertEquals(Collections.emptySet(), l1.relations());
+        assertEquals(Set.of(), l1.relations());
         assertNull(l1.type());
         assertNull(l1.context());
     }
@@ -284,8 +285,8 @@ class LinkTest {
         Link l1 = it.next();
 
         assertEquals(URI.create("//a/b/x"), l1.target());
-        assertEquals(Collections.emptySet(), l1.attributeNames());
-        assertEquals(Collections.emptySet(), l1.relations());
+        assertEquals(Set.of(), l1.attributeNames());
+        assertEquals(Set.of(), l1.relations());
         assertNull(l1.type());
         assertEquals(URI.create("//a/anchor"), l1.context());
     }
@@ -307,7 +308,7 @@ class LinkTest {
         assertEquals(Arrays.asList(new Link.Attribute("x", "123"), new Link.Attribute("x", "x")), l1.attributes("x"));
         assertEquals(Arrays.asList(new Link.Attribute("y", "y")), l1.attributes("y"));
 
-        assertEquals(Collections.emptySet(), l1.relations());
+        assertEquals(Set.of(), l1.relations());
         assertNull(l1.type());
         assertNull(l1.context());
     }
@@ -324,7 +325,7 @@ class LinkTest {
 
         assertEquals(Arrays.asList(new Link.Attribute("1", "2")), l1.attributes());
 
-        assertEquals(Collections.emptySet(), l1.relations());
+        assertEquals(Set.of(), l1.relations());
         assertNull(l1.type());
         assertNull(l1.context());
     }
@@ -341,7 +342,7 @@ class LinkTest {
 
         assertEquals(Arrays.asList(new Link.Attribute("1", "23")), l1.attributes());
 
-        assertEquals(Collections.emptySet(), l1.relations());
+        assertEquals(Set.of(), l1.relations());
         assertNull(l1.type());
         assertNull(l1.context());
     }
@@ -403,7 +404,7 @@ class LinkTest {
         assertEquals(Arrays.asList(new Link.Attribute("x")), l1.attributes("x"));
         assertEquals(Arrays.asList(new Link.Attribute("y")), l1.attributes("y"));
 
-        assertEquals(Collections.emptySet(), l1.relations());
+        assertEquals(Set.of(), l1.relations());
 
         assertNull(l1.type());
         assertNull(l1.context());
@@ -424,7 +425,7 @@ class LinkTest {
         assertTrue(l1.findFirstAttribute("type").isPresent());
         assertEquals("text", l1.findFirstAttribute("type").get().value());
 
-        assertEquals(Collections.emptySet(), l1.relations());
+        assertEquals(Set.of(), l1.relations());
         assertNull(l1.type());
         assertNull(l1.context());
     }

@@ -11,8 +11,8 @@ import java.util.Set;
 
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.web.uri.UriUtils;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;

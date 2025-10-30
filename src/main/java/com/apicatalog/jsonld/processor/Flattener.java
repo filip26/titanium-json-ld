@@ -26,11 +26,11 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.TreeDocument;
 import com.apicatalog.jsonld.flattening.Flattening;
-import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.web.media.MediaType;
 
 import jakarta.json.JsonStructure;
 

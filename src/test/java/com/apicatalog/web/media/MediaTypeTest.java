@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.http;
+package com.apicatalog.web.media;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -23,15 +23,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import com.apicatalog.jsonld.http.media.MediaType;
+import com.apicatalog.web.media.MediaType;
 
 class MediaTypeTest {
 
@@ -113,7 +113,7 @@ class MediaTypeTest {
         assertEquals("a", type.type());
         assertEquals("b", type.subtype());
         assertTrue(type.parameters().isEmpty());
-        assertEquals(Collections.emptySet(), type.parameterNames());
+        assertEquals(Set.of(), type.parameterNames());
     }
 
     @Test

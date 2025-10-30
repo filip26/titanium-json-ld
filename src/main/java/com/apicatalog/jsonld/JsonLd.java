@@ -24,8 +24,8 @@ import com.apicatalog.jsonld.api.FramingApi;
 import com.apicatalog.jsonld.api.ToRdfApi;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.fromrdf.QuadsToJsonLd;
-import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
+import com.apicatalog.web.uri.UriUtils;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;

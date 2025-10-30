@@ -32,12 +32,12 @@ import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.CompactUri;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.uri.UriUtils;
-import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.NodeType;
+import com.apicatalog.web.lang.LanguageTag;
+import com.apicatalog.web.uri.UriUtils;
+import com.apicatalog.web.uri.UriValidationPolicy;
 
 /**
  *

@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Collections;
+import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdError;
@@ -82,11 +82,11 @@ public class JsonLdTestRunnerJunit {
                 final OrderedQuadSet set = new OrderedQuadSet();
 
                 System.out.println(">>> " + testCase.input);
-                
+
                 JsonLd.toRdf(testCase.input).options(options).provide(new QuadAcceptor(set));
 
                 System.out.println(">>> " + set);
-                
+
                 return set;
             });
         }
@@ -254,10 +254,13 @@ public class JsonLdTestRunnerJunit {
     public static void write(final JsonLdTestCase testCase, final JsonValue result, final JsonValue expected, JsonLdError error) {
         final StringWriter stringWriter = new StringWriter();
 
-        try (final PrintWriter writer = new PrintWriter(stringWriter)) {
+        try (final var writer = new PrintWriter(stringWriter)) {
             writer.println("Test " + testCase.id + ": " + testCase.name);
 
-            final JsonWriterFactory writerFactory = Json.createWriterFactory(Collections.singletonMap(JsonGenerator.PRETTY_PRINTING, true));
+            final var writerFactory = Json.createWriterFactory(
+                    Map.of(
+                            JsonGenerator.PRETTY_PRINTING,
+                            true));
 
             if (expected != null) {
                 write(writer, writerFactory, "Expected", expected);

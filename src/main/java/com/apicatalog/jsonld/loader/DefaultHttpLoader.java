@@ -33,11 +33,11 @@ import com.apicatalog.jsonld.document.TreeDocument;
 import com.apicatalog.jsonld.http.HttpClient;
 import com.apicatalog.jsonld.http.HttpResponse;
 import com.apicatalog.jsonld.http.ProfileConstants;
-import com.apicatalog.jsonld.http.link.Link;
-import com.apicatalog.jsonld.http.media.MediaType;
-import com.apicatalog.jsonld.uri.UriResolver;
 import com.apicatalog.tree.io.NodeReader;
 import com.apicatalog.tree.io.jakarta.JakartaReader;
+import com.apicatalog.web.link.Link;
+import com.apicatalog.web.media.MediaType;
+import com.apicatalog.web.uri.UriResolver;
 
 import jakarta.json.Json;
 

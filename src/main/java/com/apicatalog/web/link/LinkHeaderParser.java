@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.http.link;
+package com.apicatalog.web.link;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -27,8 +27,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.apicatalog.jsonld.http.HttpAlphabet;
-import com.apicatalog.jsonld.http.media.MediaType;
-import com.apicatalog.jsonld.uri.UriResolver;
+import com.apicatalog.web.media.MediaType;
+import com.apicatalog.web.uri.UriResolver;
 
 /**
  *

@@ -23,9 +23,9 @@ import java.io.InputStream;
 import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.DocumentReader;
 import com.apicatalog.jsonld.loader.DocumentResolver;
+import com.apicatalog.web.media.MediaType;
 
 class DocumentResolverTest {
 

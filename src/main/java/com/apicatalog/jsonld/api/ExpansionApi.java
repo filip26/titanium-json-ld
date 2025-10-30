@@ -27,7 +27,7 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.Expander;
-import com.apicatalog.jsonld.uri.UriUtils;
+import com.apicatalog.web.uri.UriUtils;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonStructure;

@@ -28,9 +28,9 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.web.uri.UriUtils;
 
 /**
  * O

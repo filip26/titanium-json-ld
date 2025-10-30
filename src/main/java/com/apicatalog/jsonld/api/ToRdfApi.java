@@ -26,8 +26,8 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.RdfEmitter;
-import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
+import com.apicatalog.web.uri.UriUtils;
 
 import jakarta.json.JsonStructure;
 

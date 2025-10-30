@@ -30,9 +30,9 @@ import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.processor.Expander;
-import com.apicatalog.jsonld.uri.UriUtils;
-import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.web.uri.UriUtils;
+import com.apicatalog.web.uri.UriValidationPolicy;
 
 public final class Frame {
 

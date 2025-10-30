@@ -24,11 +24,11 @@ import java.util.stream.Collectors;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdVersion;
-import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.UriBaseRewriter;
 import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.web.media.MediaType;
 
 public final class JsonLdTestCase {
 

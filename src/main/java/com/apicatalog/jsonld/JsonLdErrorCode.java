@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld;
 
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -362,7 +361,7 @@ public enum JsonLdErrorCode {
         messages.put(PROCESSING_TIMEOUT_EXCEEDED, "A processing has exceeded a defined timeout");
         messages.put(UNDEFINED_TERM, "An undefined term has been found. Set policy to ignore to pass");
 
-        CODE_TO_MESSAGE = Collections.unmodifiableMap(messages);
+        CODE_TO_MESSAGE = Map.copyOf(messages);
     }
 
     public String toMessage() {

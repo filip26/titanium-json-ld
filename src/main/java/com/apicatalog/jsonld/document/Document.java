@@ -18,8 +18,8 @@ package com.apicatalog.jsonld.document;
 import java.net.URI;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.web.media.MediaType;
 
 import jakarta.json.JsonStructure;
 

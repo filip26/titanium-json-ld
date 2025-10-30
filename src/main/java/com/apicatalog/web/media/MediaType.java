@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.http.media;
+package com.apicatalog.web.media;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -86,7 +85,7 @@ public record MediaType(
 
     public List<String> parameters(final String name) {
         return parameters.containsKey(name)
-                ? Collections.unmodifiableList(parameters.get(name))
+                ? List.copyOf(parameters.get(name))
                 : List.of();
     }
 

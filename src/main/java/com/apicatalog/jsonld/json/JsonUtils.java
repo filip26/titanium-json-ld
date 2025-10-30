@@ -175,7 +175,7 @@ public final class JsonUtils {
             return value.asJsonArray();
         }
 
-        return Collections.singletonList(value);
+        return List.of(value);
     }
 
     public static Stream<JsonValue> toStream(JsonValue value) {
