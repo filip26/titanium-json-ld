@@ -31,13 +31,8 @@ import java.util.stream.Stream;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.JsonLdVersion;
-import com.apicatalog.jsonld.api.CommonApi;
-import com.apicatalog.jsonld.api.ContextApi;
-import com.apicatalog.jsonld.api.LoaderApi;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.compaction.UriCompaction;
-import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.flattening.NodeMap;
@@ -46,12 +41,8 @@ import com.apicatalog.jsonld.framing.Frame;
 import com.apicatalog.jsonld.framing.Framing;
 import com.apicatalog.jsonld.framing.FramingState;
 import com.apicatalog.jsonld.lang.BlankNode;
-import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.PolyNode;
-
-import jakarta.json.JsonObject;
 
 /**
  *
@@ -59,200 +50,24 @@ import jakarta.json.JsonObject;
  *      "https://www.w3.org/TR/json-ld11-framing/#dom-jsonldprocessor-frame">JsonLdProcessor.frame()</a>
  *
  */
-public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, ContextApi<Framer> {
+public final class Framer {
 
-    private JsonLdOptions options;
+    public static Map<String, ?> frame(Document document, Document frame, JsonLdOptions options) throws JsonLdException, IOException {
 
-    public Framer() {
-        this(new JsonLdOptions());
+        final var contextNode = Context.extract(frame.content());
+
+        return Context.inject(
+                Framer.frame(
+                        Framer.expand(document, options),
+                        Frame.of(frame, options),
+                        Framer.context(
+                                document.documentUrl(),
+                                contextNode,
+                                Frame.contextBase(frame, options),
+                                options),
+                        options),
+                contextNode);
     }
-
-    public Framer(JsonLdOptions options) {
-        this.options = options;
-    }
-
-    @Override
-    public Framer options(JsonLdOptions options) {
-
-        if (options == null) {
-            throw new IllegalArgumentException("Parameter 'options' is null.");
-        }
-
-        this.options = options;
-        return this;
-    }
-
-    @Override
-    public Framer context(URI contextUri) {
-        options.setExpandContext(contextUri);
-        return this;
-    }
-
-//    @Override
-//    public Framer context(String contextLocation) {
-//
-//        URI contextUri = null;
-//
-//        if (contextLocation != null) {
-//
-//            contextUri = UriUtils.create(contextLocation);
-//
-//            if (contextUri == null) {
-//                throw new IllegalArgumentException("Context location must be valid URI or null but is [" + contextLocation + ".");
-//            }
-//        }
-//
-//        return context(contextUri);
-//    }
-
-//    @Override
-//    public Framer context(JsonStructure context) {
-//        options.expandContext(context != null ?  JsonDocument.of(context) : null);
-//        return this;
-//    }
-
-    @Override
-    public Framer context(Document context) {
-        options.expandContext(context);
-        return this;
-    }
-
-    @Override
-    public Framer mode(JsonLdVersion processingMode) {
-        options.setProcessingMode(processingMode);
-        return this;
-    }
-
-    @Override
-    public Framer base(URI baseUri) {
-        options.base(baseUri);
-        return this;
-    }
-
-    @Override
-    public Framer loader(DocumentLoader loader) {
-        options.loader(loader);
-        return this;
-    }
-
-    @Override
-    public Framer ordered(boolean enable) {
-        options.setOrdered(enable);
-        return this;
-    }
-
-    public Framer embed(Embed value) {
-        options.setEmbed(value);
-        return this;
-    }
-
-    public Framer explicit(boolean enable) {
-        options.setExplicit(enable);
-        return this;
-    }
-
-    public Framer explicit() {
-        return explicit(true);
-    }
-
-    public Framer omitDefault(boolean enable) {
-        options.setOmitDefault(enable);
-        return this;
-    }
-
-    public Framer omitDefault() {
-        return omitDefault(true);
-    }
-
-    public Framer omitGraph(boolean enable) {
-        options.setOmitGraph(enable);
-        return this;
-    }
-
-    public Framer omitGraph() {
-        return omitGraph(true);
-    }
-
-    public Framer requiredAll(boolean enable) {
-        options.setRequiredAll(enable);
-        return this;
-    }
-
-    public Framer requiredAll() {
-        return requiredAll(true);
-    }
-
-    /**
-     * Get the result of framing.
-     *
-     * @return {@link JsonObject} representing framed document
-     * @throws JsonLdException if the document framing fails
-     * @throws IOException
-     */
-//    public Map<String, ?> get() throws JsonLdException, IOException {
-//        if (document != null) {
-//            if (frame != null) {
-//                return Framer.frame(document, frame, options);
-//            }
-//            if (frameUri != null) {
-//                return Framer.frame(document, frameUri, options);
-//            }
-//        }
-//
-//        if (documentUri != null) {
-//            if (frame != null) {
-//                return Framer.frame(documentUri, frame, options);
-//            }
-//            if (frameUri != null) {
-//                return Framer.frame(documentUri, frameUri, options);
-//            }
-//        }
-//
-//        throw new IllegalStateException();
-//    }
-
-//    public static final Map<String, ?> frame(final URI input, final Document frame, final JsonLdOptions options) throws JsonLdException, IOException {
-//        if (options.loader() == null) {
-//            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
-//        }
-//
-//        final LoaderOptions loaderOptions = new LoaderOptions();
-//        loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
-//
-//        final Document remoteDocument = options.loader().loadDocument(input, loaderOptions);
-//
-//        if (remoteDocument == null) {
-//            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Returned document is null [" + input + "].");
-//        }
-//
-//        return frame(remoteDocument, frame, options);
-//    }
-
-//    public static final Map<String, ?> frame(final Document input, final URI frameUri, final JsonLdOptions options) throws JsonLdException, IOException {
-//        if (options.loader() == null) {
-//            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + frameUri + "].");
-//        }
-//
-//        final Document frameDocument = options.loader().loadDocument(frameUri, new LoaderOptions());
-//
-//        if (frameDocument == null) {
-//            throw new JsonLdException(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Returned frame is null [" + frameUri + "] is null.");
-//        }
-//
-//        return frame(input, frameDocument, options);
-//    }
-
-//    public static final Map<String, ?> frame(final URI input, final URI frame, final JsonLdOptions options) throws JsonLdException, IOException {
-//        return frame(getDocument(input, options),  getDocument(frame, options), options);
-//    }
-
-//    public static final Map<String, ?> frame(final Document input, final Document frame, final JsonLdOptions options) throws JsonLdException, IOException {
-//        if (frame == null) {
-//            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame or Frame.Document is null.");
-//        }
-//
-//        return frame(input, Frame.of(frame, options), options);
-//    }
 
     public static final Context context(
             final URI baseUrl,
@@ -260,45 +75,29 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
             final URI localContextBase,
             final JsonLdOptions options) throws JsonLdException, IOException {
 
-//        var builder = new Context.Builder(
-//                document.documentUrl(),
-//                document.documentUrl(),
-//                options.getProcessingMode())
-//                .loader(options.loader());
-
-//        var contextNode = Frame.context(frame);
-//        System.out.println("CN = " + contextNode.node());
-//        builder.update(contextNode
-//                contextBase);
-
         // 10-11.
-        return new ActiveContext(
+        return new Context.Builder(
                 baseUrl,
                 baseUrl,
                 options.getProcessingMode())
-                .newContext(options.loader())
-                .build(localContext, localContextBase);
+                .loader(options.loader())
+                .update(localContext, localContextBase)
+                .build();
+    }
+
+    public static final Collection<?> expand(Document document, final JsonLdOptions options) throws JsonLdException, IOException {
+        return Expander.expand(
+                document,
+                new JsonLdOptions(options).setOrdered(false));
     }
 
     public static final Map<String, ?> frame(
-            final Document document,
+            final Collection<?> expanded,
             final Frame frame,
             final Context context,
             final JsonLdOptions options) throws JsonLdException, IOException {
 
         final var runtime = ProcessingRuntime.of(options);
-
-        final var expandedInput = Expander.expand(
-                document,
-                new JsonLdOptions(options).setOrdered(false));
-
-//      new Visitor().root(expandedFrame, NativeAdapter.instance()).traverse(
-//      
-//      v -> {
-//          System.out.println(v.node() + ", " + v.nodeType() + ", " + v.nodeContext() + ", " + v.node().getClass());
-//      }
-//      
-//      );
 
         // 14.
         final var state = new FramingState();
@@ -308,7 +107,7 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
         state.setExplicitInclusion(options.isExplicit()); // 14.3.
         state.setRequireAll(options.isRequiredAll()); // 14.4.
         state.setOmitDefault(options.isOmitDefault()); // 14.5.
-        state.setGraphMap(new NodeMapBuilder(expandedInput, new NodeMap()).build()); // 14.7.
+        state.setGraphMap(new NodeMapBuilder(expanded, new NodeMap()).build()); // 14.7.
 
         final String graphKey = UriCompaction.withVocab(context, Keywords.GRAPH);
 
@@ -362,7 +161,6 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
                 .toList();
 
         // 19.
-        // FIXME output
         var compactedOutput = Compaction
                 .with(context, runtime)
                 .compactArrays(options.isCompactArrays())
@@ -464,11 +262,6 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
             }
 
             return result;
-//            return map.entrySet().stream()
-//                    .filter(Objects::nonNull)
-//                    .collect(Collectors.toMap(
-//                            Map.Entry::getKey,
-//                            e -> replaceNull(e.getValue())));
         }
 
         return node;
@@ -478,11 +271,6 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
 
         if (value instanceof Collection<?> array) {
             return array.stream().map(item -> removeBlankIdKey(item, blankNodes)).toList();
-//            final JsonArrayBuilder array = JsonProvider.instance().createArrayBuilder();
-//
-//            value.asJsonArray().forEach(item -> array.add(removeBlankIdKey(item, blankNodes)));
-//
-//            return array.build();
         }
 
         if (value instanceof Map<?, ?> map) {
@@ -494,7 +282,6 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
                 if (Keywords.ID.equals(entry.getKey())
                         && entry.getValue() instanceof String stringValue
                         && blankNodes.contains(stringValue)) {
-
                     continue;
                 }
 
@@ -547,7 +334,6 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
 
             for (final var subject : graphMap.subjects(graphName)) {
 
-                // TODO
                 final var node = (Map<String, ?>) graphMap
                         .find(graphName, subject)
                         .orElse(Map.of());
@@ -570,9 +356,8 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
 
                         for (final var item : items) {
 
-                            if (item instanceof Map map && map.containsKey(Keywords.ID)) {
-
-                                final var targetId = map.get(Keywords.ID).toString(); // TODO ?!
+                            if (item instanceof Map map
+                                    && map.get(Keywords.ID) instanceof String targetId) {
 
                                 graphIndex
                                         .computeIfAbsent(property, k -> new HashMap<>())
@@ -593,7 +378,6 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
                 }
             }
         }
-
         return index;
     }
 }

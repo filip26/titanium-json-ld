@@ -101,6 +101,34 @@ public interface Context {
 
     Map<String, TermDefinition> getTermsMapping();
 
+    public static PolyNode extract(PolyNode document) throws JsonLdException {
+
+        final var node = document.node();
+        final var adapter = document.adapter();
+
+        if (!adapter.isMap(node)) {
+            throw new JsonLdException(JsonLdErrorCode.INVALID_CONTEXT_ENTRY, "Document is not map but [" + node + "].");
+        }
+
+        final var context = adapter.property(Keywords.CONTEXT, node);
+
+        if (context != null) {
+            return new PolyNode(context, adapter);
+        }
+
+//        if (context != null
+//                && (adapter.isString(context)
+//                        || adapter.isCollection(context)
+//                        || adapter.isMap(context))
+//                && !adapter.isEmptyCollection(context)
+//                && !adapter.isEmptyMap(context)) {
+//            return new PolyNode(context, adapter);
+//        }
+
+        return new PolyNode(Map.of(), NativeAdapter.instance());
+
+    }
+
     public static PolyNode unwrap(PolyNode context) {
 
         Object node = context.node();

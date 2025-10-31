@@ -30,8 +30,6 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.processor.Expander;
-import com.apicatalog.tree.io.PolyNode;
-import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.web.uri.UriUtils;
 import com.apicatalog.web.uri.UriValidationPolicy;
 
@@ -48,27 +46,6 @@ public final class Frame {
     }
 
     public static final Frame of(final Document frame, final JsonLdOptions options) throws JsonLdException, IOException {
-
-//      final JsonStructure frameStructure;
-//
-//      if (frameDocument instanceof JsonDocument x) {
-//          frameStructure = x.getJsonContent()
-//                  .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but null."));
-//      } else {
-//          throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but null.");
-//      }
-
-//      if (JsonUtils.isNotObject(frameStructure)) {
-//          throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but [" + frameStructure + "].");
-//      }
-//
-//      final JsonObject frameObject = frameStructure.asJsonObject();
-
-//        JsonValue context = JsonValue.EMPTY_JSON_OBJECT;
-//
-//        if (frameObject.containsKey(Keywords.CONTEXT)) {
-//            context = frameObject.get(Keywords.CONTEXT);
-//        }
 
         @SuppressWarnings("unchecked")
         Set<String> keys = (frame.content().node() instanceof Map map)
@@ -87,33 +64,6 @@ public final class Frame {
                 ? frame.documentUrl()
                 : options.getBase();
 
-    }
-
-    public static final PolyNode contextNode(final PolyNode frame) throws JsonLdException {
-
-        final var node = frame.node();
-        final var adapter = frame.adapter();
-
-        if (!adapter.isMap(node)) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but [" + node + "].");
-        }
-
-        final var context = adapter.property(Keywords.CONTEXT, node);
-
-        if (context != null) {
-            return new PolyNode(context, adapter);
-        }
-
-//        if (context != null
-//                && (adapter.isString(context)
-//                        || adapter.isCollection(context)
-//                        || adapter.isMap(context))
-//                && !adapter.isEmptyCollection(context)
-//                && !adapter.isEmptyMap(context)) {
-//            return new PolyNode(context, adapter);
-//        }
-
-        return new PolyNode(Map.of(), NativeAdapter.instance());
     }
 
     static final Frame of(final Object expanded) throws JsonLdException {

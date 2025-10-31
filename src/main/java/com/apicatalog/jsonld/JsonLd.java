@@ -221,20 +221,7 @@ public final class JsonLd {
      * @throws JsonLdException
      */
     public static final Map<String, ?> frame(final Document document, final Document frame, final JsonLdOptions options) throws JsonLdException, IOException {
-
-        final var contextNode = Frame.contextNode(frame.content());
-
-        return Context.inject(
-                Framer.frame(
-                        document,
-                        Frame.of(frame, options),
-                        Framer.context(
-                                document.documentUrl(),
-                                contextNode,
-                                Frame.contextBase(frame, options),
-                                options),
-                        options),
-                contextNode);
+        return Framer.frame(document, frame, options);
     }
 
     /**
