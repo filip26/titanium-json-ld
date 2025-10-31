@@ -28,11 +28,12 @@ import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdAdapter;
 import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.processor.ProcessingRuntime;
+import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
 /**
@@ -52,14 +53,16 @@ public final class Compaction {
 
     // required
     private final Context context;
-    private final ProcessingRuntime runtime;
+    private final JsonLdOptions options;
+    private final Execution runtime;
 
     // optional
     private boolean compactArrays;
     private boolean ordered;
 
-    private Compaction(final Context context, final ProcessingRuntime runtime) {
+    private Compaction(final Context context, final JsonLdOptions options, final Execution runtime) {
         this.context = context;
+        this.options = options;
         this.runtime = runtime;
 
         // default values
@@ -67,8 +70,8 @@ public final class Compaction {
         this.ordered = false;
     }
 
-    public static Compaction with(final Context activeContext, final ProcessingRuntime runtime) {
-        return new Compaction(activeContext, runtime);
+    public static Compaction with(final Context activeContext, final JsonLdOptions options, final Execution runtime) {
+        return new Compaction(activeContext, options, runtime);
     }
 
     public Compaction compactArrays(final boolean compactArrays) {
@@ -111,7 +114,7 @@ public final class Compaction {
 
             // 3.2.1.
             final var compactedItem = Compaction
-                    .with(context, runtime)
+                    .with(context, options, runtime)
                     .compactArrays(compactArrays)
                     .ordered(ordered)
                     .compact(activeProperty, item);
@@ -156,14 +159,14 @@ public final class Compaction {
             activeContext = activeContext.getPreviousContext();
         }
 
-        // 6. 
-        
+        // 6.
+
         if (activePropertyDefinition.map(TermDefinition::getLocalContext).isPresent()) {
 
             var localContext = activePropertyDefinition.get().getLocalContext();
 
             activeContext = activeContext
-                    .newContext(runtime.getDocumentLoader())
+                    .newContext(options.loader())
                     .overrideProtected(true)
                     .build(localContext.node(),
                             localContext.adapter(),
@@ -172,7 +175,7 @@ public final class Compaction {
 
         // 7.
         if ((object.containsKey(Keywords.VALUE) || object.containsKey(Keywords.ID))
-                && (!runtime.isRdfStar() || !object.containsKey(Keywords.ANNOTATION))) {
+                && (!options.isRdfStar() || !object.containsKey(Keywords.ANNOTATION))) {
 
             final var result = ValueCompaction.compact(activeContext, object, activeProperty);
 
@@ -191,7 +194,7 @@ public final class Compaction {
                 && activePropertyDefinition.filter(d -> d.hasContainerMapping(Keywords.LIST)).isPresent()) {
 
             return Compaction
-                    .with(activeContext, runtime)
+                    .with(activeContext, options, runtime)
                     .compactArrays(compactArrays)
                     .ordered(ordered)
                     .compact(activeProperty, object.get(Keywords.LIST));
@@ -224,7 +227,7 @@ public final class Compaction {
                     final var localContext = termDefinition.getLocalContext();
 
                     activeContext = activeContext
-                            .newContext(runtime.getDocumentLoader())
+                            .newContext(options.loader())
                             .propagate(false)
                             .build(
                                     localContext.node(),
@@ -318,7 +321,7 @@ public final class Compaction {
 
                 // 12.3.1.
                 final var compactedMap = (Map<String, ?>) Compaction
-                        .with(activeContext, runtime)
+                        .with(activeContext, options, runtime)
                         .compactArrays(compactArrays)
                         .ordered(ordered)
                         .compact(Keywords.REVERSE, expandedValue);
@@ -373,7 +376,7 @@ public final class Compaction {
 
                 // 12.4.1.
                 final var compactedValue = Compaction
-                        .with(activeContext, runtime)
+                        .with(activeContext, options, runtime)
                         .compactArrays(compactArrays)
                         .ordered(ordered)
                         .compact(activeProperty, expandedValue);
@@ -423,7 +426,7 @@ public final class Compaction {
 
                     // 12.7.2.1.
                     if (!Keywords.NEST.equals(nestTerm) && !Keywords.NEST.equals(activeContext
-                            .uriExpansion(runtime.getDocumentLoader())
+                            .uriExpansion(options.loader())
                             .vocab(true)
                             .expand(nestTerm))) {
                         throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
@@ -467,9 +470,9 @@ public final class Compaction {
                     final String nestTerm = nestProperty.get();
 
                     // 12.8.2.1.
-                    if (!Keywords.NEST.equals(nestTerm) 
+                    if (!Keywords.NEST.equals(nestTerm)
                             && !Keywords.NEST.equals(activeContext
-                                    .uriExpansion(runtime.getDocumentLoader())
+                                    .uriExpansion(options.loader())
                                     .vocab(true)
                                     .expand(nestTerm))) {
                         throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
@@ -511,7 +514,7 @@ public final class Compaction {
                 }
 
                 Object compactedItem = Compaction
-                        .with(activeContext, runtime)
+                        .with(activeContext, options, runtime)
                         .compactArrays(compactArrays)
                         .ordered(ordered)
                         .compact(itemActiveProperty, expandedItemValue);
@@ -733,7 +736,7 @@ public final class Compaction {
 
                         // 12.8.9.6.1.
                         containerKey = UriCompaction.withVocab(activeContext,
-                                activeContext.uriExpansion(runtime.getDocumentLoader()).expand(indexKey));
+                                activeContext.uriExpansion(options.loader()).expand(indexKey));
 
                         // 12.8.9.6.2.
                         if (compactedItem instanceof Map<?, ?> compactedItemMap
@@ -877,13 +880,13 @@ public final class Compaction {
 //                        if (JsonUtils.isObject(compactedItem) && compactedItem.asJsonObject().size() == 1) {
 
                             final var expandedKey = activeContext
-                                    .uriExpansion(runtime.getDocumentLoader())
+                                    .uriExpansion(options.loader())
                                     .vocab(true)
                                     .expand((String) map.keySet().iterator().next());
 
                             if (Keywords.ID.equals(expandedKey)) {
                                 compactedItem = Compaction
-                                        .with(activeContext, runtime)
+                                        .with(activeContext, options, runtime)
                                         .compact(itemActiveProperty,
                                                 Map.of(
                                                         Keywords.ID,

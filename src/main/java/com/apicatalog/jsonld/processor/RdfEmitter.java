@@ -191,7 +191,12 @@ public final class RdfEmitter implements
         expansionOptions.base(options.getBase());
         expansionOptions.expandContext(options.getExpandContext());
 
-        final var expanded = Expander.expand(input, expansionOptions);
+        //FIXME
+        final Execution runtime = Execution.of(options);
+        runtime.tick();
+
+        
+        final var expanded = Expander.expand(input, expansionOptions, runtime);
 
         toRdf(expanded, consumer, options);
     }

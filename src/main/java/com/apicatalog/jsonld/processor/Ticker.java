@@ -7,32 +7,32 @@ import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 
-class Ticker extends ProcessingRuntime {
+class Ticker extends Execution {
 
+    final Duration ttl;
+    
     Instant ticker;
-    Duration ttl;
 
     Ticker(JsonLdOptions options) {
-        super(options);
-        resetTicker();
+        this.ttl = options.getTimeout();
+        this.ticker = null;
     }
 
     @Override
     public void tick() throws JsonLdException {
 
+        if (ticker == null) {
+            ticker = Instant.now();
+            return;
+        }
+        
         final Instant now = Instant.now();
 
-        ttl = ttl.minus(Duration.between(now, ticker).abs());
+        var elapsed = ttl.minus(Duration.between(now, ticker).abs());
 
-        if (ttl.isNegative()) {
+        if (elapsed.isNegative()) {
+            ticker = null;
             throw new JsonLdException(JsonLdErrorCode.PROCESSING_TIMEOUT_EXCEEDED);
         }
-        ticker = now;
-    }
-
-    @Override
-    public void resetTicker() {
-        ttl = options.getTimeout();
-        ticker = Instant.now();
     }
 }

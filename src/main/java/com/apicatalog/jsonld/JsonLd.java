@@ -26,6 +26,7 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.fromrdf.QuadsToJsonLd;
 import com.apicatalog.jsonld.processor.Compactor;
+import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.processor.Framer;
 import com.apicatalog.jsonld.processor.RdfEmitter;
@@ -85,8 +86,11 @@ public final class JsonLd {
      * @throws JsonLdException
      */
     public static final Collection<?> expand(final Document document, final JsonLdOptions options) throws JsonLdException, IOException {
-        return Expander.expand(document, options);
-//        return new ExpansionApi(assertJsonDocument(document, DOCUMENT_PARAM_NAME));
+
+        var runtime = Execution.of(options);
+        runtime.tick();
+
+        return Expander.expand(document, options, runtime);
     }
 
     /**
@@ -98,11 +102,19 @@ public final class JsonLd {
      * @param options
      * @return {@link CompactionApi} allowing to set additional parameters
      */
-    public static final Map<String, ?> compact(final URI document, final URI context, final JsonLdOptions options) throws JsonLdException, IOException {
+    public static final Map<String, ?> compact(
+            final URI document,
+            final URI context,
+            final JsonLdOptions options) throws JsonLdException, IOException {
+
+        final Execution runtime = Execution.of(options);
+        runtime.tick();
+
         return Compactor.compact(
                 RemoteDocument.fetch(document, options.loader(), options.isExtractAllScripts()),
                 RemoteDocument.fetch(context, options.loader(), options.isExtractAllScripts()),
-                options);
+                options,
+                runtime);
     }
 
     /**
@@ -220,7 +232,11 @@ public final class JsonLd {
      * @throws JsonLdException
      */
     public static final Map<String, ?> frame(final Document document, final Document frame, final JsonLdOptions options) throws JsonLdException, IOException {
-        return Framer.frame(document, frame, options);
+
+        final Execution runtime = Execution.of(options);
+        runtime.tick();
+
+        return Framer.frame(document, frame, options, runtime);
     }
 
     /**
@@ -274,7 +290,7 @@ public final class JsonLd {
     }
 
     public static final QuadsToJsonLd fromRdf(JsonLdOptions options) {
-        //FIXMe
+        // FIXMe
         return new QuadsToJsonLd().options(options).jsonParser(new JakartaReader());
     }
 

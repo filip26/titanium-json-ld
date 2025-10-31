@@ -81,7 +81,7 @@ public final class ObjectExpansion {
         // 8. init property context
         if (propertyContext != null) {
             activeContext = activeContext
-                    .newContext(params.runtime().getDocumentLoader())
+                    .newContext(params.options().loader())
                     .overrideProtected(true)
                     .build(
                             propertyContext.node(),
@@ -97,7 +97,7 @@ public final class ObjectExpansion {
 
         if (contextValue != null) {
             activeContext = activeContext
-                    .newContext(params.runtime().getDocumentLoader())
+                    .newContext(params.options().loader())
                     .build(contextValue, adapter, params.baseUrl());
         }
 
@@ -166,7 +166,7 @@ public final class ObjectExpansion {
                 var key = adapter.stringValue(it.next());
 
                 final String expandedKey = context
-                        .uriExpansion(params.runtime().getDocumentLoader())
+                        .uriExpansion(params.options().loader())
                         .vocab(true)
                         .expand(key);
 
@@ -206,7 +206,7 @@ public final class ObjectExpansion {
             params.runtime().tick();
 
             var expandedKey = activeContext
-                    .uriExpansion(params.runtime().getDocumentLoader())
+                    .uriExpansion(params.options().loader())
                     .vocab(true)
                     .expand(key);
 
@@ -236,7 +236,7 @@ public final class ObjectExpansion {
 
                     if (localContext != null) {
                         activeContext = activeContext
-                                .newContext(params.runtime().getDocumentLoader())
+                                .newContext(params.options().loader())
                                 .propagate(false)
                                 .build(localContext.node(),
                                         localContext.adapter(),
@@ -277,13 +277,13 @@ public final class ObjectExpansion {
                         .reduce((first, second) -> second);
 
                 if (lastValue.isPresent()) {
-                    return context.uriExpansion(params.runtime().getDocumentLoader())
+                    return context.uriExpansion(params.options().loader())
                             .vocab(true)
                             .expand(lastValue.get());
                 }
 
             } else if (adapter.isString(type)) {
-                return context.uriExpansion(params.runtime().getDocumentLoader())
+                return context.uriExpansion(params.options().loader())
                         .vocab(true)
                         .expand(adapter.stringValue(type));
             }

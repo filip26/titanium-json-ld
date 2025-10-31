@@ -52,14 +52,18 @@ import com.apicatalog.tree.io.PolyNode;
  */
 public final class Framer {
 
-    public static Map<String, ?> frame(Document document, Document frame, JsonLdOptions options) throws JsonLdException, IOException {
+    public static Map<String, ?> frame(
+            final Document document, 
+            final Document frame, 
+            final JsonLdOptions options,
+            final Execution runtime) throws JsonLdException, IOException {
 
         final var contextNode = Context.extract(frame.content());
 
         return Context.inject(
                 Framer.frame(
-                        Framer.expand(document, options),
-                        Frame.of(frame, options),
+                        Framer.expand(document, options, runtime),
+                        Frame.of(frame, options, runtime),
                         Framer.context(
                                 document.documentUrl(),
                                 contextNode,
@@ -85,10 +89,14 @@ public final class Framer {
                 .build();
     }
 
-    public static final Collection<?> expand(Document document, final JsonLdOptions options) throws JsonLdException, IOException {
+    public static final Collection<?> expand(
+            Document document, 
+            final JsonLdOptions options,
+            final Execution runtime) throws JsonLdException, IOException {
         return Expander.expand(
                 document,
-                new JsonLdOptions(options).setOrdered(false));
+                new JsonLdOptions(options).setOrdered(false),
+                runtime);
     }
 
     public static final Map<String, ?> frame(
@@ -97,7 +105,7 @@ public final class Framer {
             final Context context,
             final JsonLdOptions options) throws JsonLdException, IOException {
 
-        final var runtime = ProcessingRuntime.of(options);
+        final var runtime = Execution.of(options);
 
         // 14.
         final var state = new FramingState();
@@ -162,7 +170,7 @@ public final class Framer {
 
         // 19.
         var compactedOutput = Compaction
-                .with(context, runtime)
+                .with(context, options, runtime)
                 .compactArrays(options.isCompactArrays())
                 .ordered(options.isOrdered())
                 .compact(filtered);

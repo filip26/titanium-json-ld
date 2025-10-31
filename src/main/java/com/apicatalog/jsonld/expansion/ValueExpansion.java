@@ -21,13 +21,13 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.processor.Expander;
-import com.apicatalog.jsonld.processor.ProcessingRuntime;
+import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.tree.io.NodeAdapter;
 
 /**
@@ -50,6 +50,7 @@ public final class ValueExpansion {
      *                 term definition to apply.
      * @param value    The JSON value to expand.
      * @param adapter
+     * @param options
      * @param runtime
      * @return A {@code Map} representing the expanded value object, typically
      *         containing keys like {@code @id}, {@code @value}, {@code @type},
@@ -59,7 +60,12 @@ public final class ValueExpansion {
      * @see <a href="https://www.w3.org/TR/json-ld11-api/#value-expansion">Value
      *      Expansion Algorithm</a>
      */
-    public static Map<String, ?> expand(final Context context, final String property, final Object value, final NodeAdapter adapter, final ProcessingRuntime runtime) throws JsonLdException, IOException {
+    public static Map<String, ?> expand(
+            final Context context, 
+            final String property, 
+            final Object value, 
+            final NodeAdapter adapter, 
+            final JsonLdOptions options) throws JsonLdException, IOException {
 
         final Optional<TermDefinition> definition = context.findTerm(property);
 
@@ -75,12 +81,12 @@ public final class ValueExpansion {
                 idValue = adapter.stringValue(value);
 
                 // custom extension allowing to process numeric ids
-            } else if (runtime.isNumericId() && adapter.isNumber(value)) {
+            } else if (options.isNumericId() && adapter.isNumber(value)) {
                 idValue = adapter.asString(value);
             }
 
             if (idValue != null) {
-                return Map.of(Keywords.ID, context.uriExpansion(runtime.getDocumentLoader())
+                return Map.of(Keywords.ID, context.uriExpansion(options.loader())
                         .documentRelative(true)
                         .vocab(false)
                         .expand(idValue));
@@ -89,7 +95,7 @@ public final class ValueExpansion {
 
         case Keywords.VOCAB:
             if (adapter.isString(value)) {
-                return Map.of(Keywords.ID, context.uriExpansion(runtime.getDocumentLoader())
+                return Map.of(Keywords.ID, context.uriExpansion(options.loader())
                         .documentRelative(true)
                         .vocab(true)
                         .expand(adapter.stringValue(value)));

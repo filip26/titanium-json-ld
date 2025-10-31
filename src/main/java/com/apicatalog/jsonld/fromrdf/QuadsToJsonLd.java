@@ -351,7 +351,6 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
                     // 6.4.3.1.
                     // reverse order -> index = 0 see 6.4.5.
                     list.add(0, ((Collection<?>) node.get(Terms.RDF_FIRST)).iterator().next());
-//                    list.add(0, ((Collection<?>) node.get(Terms.FIRST)).get(0));
 
                     // 6.4.3.2.
                     listNodes.add(nodeId);
@@ -397,7 +396,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
         final var result = new ArrayList<Object>();
 
         // 8.
-        for (final String subject : Utils.index(graphMap.keys(Keywords.DEFAULT), ordered)) {
+        for (final var subject : Utils.index(graphMap.keys(Keywords.DEFAULT), ordered)) {
 
             final var node = graphMap.get(Keywords.DEFAULT, subject).orElseGet(() -> new LinkedHashMap<>());
 

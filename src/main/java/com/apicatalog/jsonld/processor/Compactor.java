@@ -21,14 +21,12 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.compaction.UriCompaction;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.tree.io.PolyNode;
 
 /**
@@ -42,46 +40,11 @@ public final class Compactor {
     private Compactor() {
     }
 
-    public static final Map<String, ?> compact(final URI input, final URI context, final JsonLdOptions options) throws JsonLdException, IOException {
-
-        if (options.loader() == null) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
-        }
-
-        final LoaderOptions loaderOptions = new LoaderOptions();
-        loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
-
-        final Document remoteDocument = options.loader().loadDocument(input, loaderOptions);
-
-        if (remoteDocument == null) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Returned document is null [" + input + "].");
-        }
-
-        return compact(remoteDocument, context, options);
-    }
-
-    public static final Map<String, ?> compact(final URI input, final Document context, final JsonLdOptions options) throws JsonLdException, IOException {
-
-        if (options.loader() == null) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
-        }
-
-        final LoaderOptions loaderOptions = new LoaderOptions();
-        loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
-
-        final Document remoteDocument = options.loader().loadDocument(input, loaderOptions);
-
-        if (remoteDocument == null) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Returned document is null [" + input + "].");
-        }
-
-        return compact(remoteDocument, context, options);
-    }
-
     public static final Map<String, ?> compact(
             final Document input,
             final URI contextUri,
-            final JsonLdOptions options) throws JsonLdException, IOException {
+            final JsonLdOptions options,
+            final Execution runtime) throws JsonLdException, IOException {
 
         URI contextBase = input.documentUrl();
 
@@ -98,19 +61,22 @@ public final class Compactor {
                 input,
                 new JsonLdOptions(options)
                         .setOrdered(false)
-                        .setExtractAllScripts(false));
+                        .setExtractAllScripts(false),
+                        runtime);
 
         return compact(
                 expandedInput,
                 input.documentUrl(),
                 Context.load(options.loader(), contextUri).content(),
-                options);
+                options,
+                runtime);
     }
 
     public static final Map<String, ?> compact(
             final Document input,
             final Document context,
-            final JsonLdOptions options) throws JsonLdException, IOException {
+            final JsonLdOptions options,
+            final Execution runtime) throws JsonLdException, IOException {
 //        
 //        URI contextBase = input.getDocumentUrl();
 //
@@ -143,21 +109,23 @@ public final class Compactor {
 //        context(ctx, input.getDocumentUrl(), options)
 
         final var expandedInput = Expander.expand(input, new JsonLdOptions(options)
-                .setOrdered(false).setExtractAllScripts(false));
+                .setOrdered(false).setExtractAllScripts(false),
+                runtime);
 
         return compact(
                 expandedInput,
                 input.documentUrl(),
                 context.content(),
-                options);
-
+                options,
+                runtime);
     }
 
     public static final Map<String, ?> compact(
             final Object expanded,
             final URI baseUrl,
             final PolyNode context,
-            final JsonLdOptions options) throws JsonLdException, IOException {
+            final JsonLdOptions options,
+            final Execution runtime) throws JsonLdException, IOException {
 
         URI contextBase = baseUrl;
 
@@ -191,13 +159,15 @@ public final class Compactor {
         return compact(
                 expanded,
                 builder.build(),
-                options);
+                options,
+                runtime);
     }
 
     static final Map<String, ?> compact(
             final Object expanded,
             final Context context,
-            final JsonLdOptions options) throws JsonLdException, IOException {
+            final JsonLdOptions options, 
+            final Execution runtime) throws JsonLdException, IOException {
 
         var activeContext = context;
 
@@ -216,11 +186,9 @@ public final class Compactor {
 //            }
 //        }
 //
-        final var runtime = new ProcessingRuntime(options);
-
         // 9.
         var compactedOutput = Compaction
-                .with(activeContext, runtime)
+                .with(activeContext, options, runtime)
                 .compactArrays(options.isCompactArrays())
                 .ordered(options.isOrdered())
                 .compact(expanded);

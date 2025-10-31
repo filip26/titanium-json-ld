@@ -18,21 +18,13 @@ package com.apicatalog.jsonld.processor;
 import java.io.IOException;
 import java.net.URI;
 
-import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.flattening.Flattening;
 import com.apicatalog.jsonld.loader.LoaderOptions;
-import com.apicatalog.tree.io.PolyNode;
-import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
-import com.apicatalog.tree.io.java.NativeAdapter;
-import com.apicatalog.web.media.MediaType;
-
-import jakarta.json.JsonStructure;
 
 /**
  *
@@ -45,10 +37,10 @@ public final class Flattener {
     private Flattener() {
     }
 
-    public static final Object flatten(final URI input, final URI context, final JsonLdOptions options) throws JsonLdException, IOException {
+    public static final Object flatten(final URI input, final URI context, final JsonLdOptions options, final Execution runtime) throws JsonLdException, IOException {
 
         if (context == null) {
-            return flatten(input, (Document) null, options);
+            return flatten(input, (Document) null, options, runtime);
         }
 
         assertDocumentLoader(options, input);
@@ -62,7 +54,7 @@ public final class Flattener {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
 
-        return flatten(remoteDocument, context, options);
+        return flatten(remoteDocument, context, options, runtime);
 
 //        assertDocumentLoader(options, input);
 //
@@ -76,9 +68,10 @@ public final class Flattener {
     }
 
     public static final Object flatten(
-            final URI input, 
-            final Document context, 
-            final JsonLdOptions options) throws JsonLdException, IOException {
+            final URI input,
+            final Document context,
+            final JsonLdOptions options,
+            final Execution runtime) throws JsonLdException, IOException {
 
         assertDocumentLoader(options, input);
 
@@ -91,31 +84,36 @@ public final class Flattener {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
 
-        return flatten(remoteDocument, context, options);
+        return flatten(remoteDocument, context, options, runtime);
     }
 
-    public static final Object flatten(final Document input, final URI context, final JsonLdOptions options) throws JsonLdException, IOException {
+    public static final Object flatten(
+            final Document input,
+            final URI context,
+            final JsonLdOptions options,
+            final Execution runtime) throws JsonLdException, IOException {
 
         if (context == null) {
-            return flatten(input, (Document) null, options);
+            return flatten(input, (Document) null, options, runtime);
         }
 
         assertDocumentLoader(options, context);
 
         final var contextDocument = Context.load(options.loader(), context);
-        
-        return flatten(input, contextDocument, options);
+
+        return flatten(input, contextDocument, options, runtime);
     }
 
     public static final Object flatten(
             final Document input,
             final Document context,
-            final JsonLdOptions options) throws JsonLdException, IOException {
+            final JsonLdOptions options,
+            final Execution runtime) throws JsonLdException, IOException {
 
         // 4.
         final var expansionOptions = new JsonLdOptions(options).setOrdered(false);
 
-        var expandedInput = Expander.expand(input, expansionOptions);
+        var expandedInput = Expander.expand(input, expansionOptions, runtime);
 
         // 6.
         var flattenedOutput = Flattening.flatten(expandedInput, options.isOrdered());
@@ -136,7 +134,8 @@ public final class Flattener {
                     flattenedOutput,
                     input.documentUrl(),
                     context.content(),
-                    compactionOptions);
+                    compactionOptions,
+                    runtime);
         }
 
         return flattenedOutput;
@@ -145,18 +144,19 @@ public final class Flattener {
     public static final Object flatten(
             final Document input,
             final Context context,
-            final JsonLdOptions options) throws JsonLdException, IOException {
+            final JsonLdOptions options,
+            final Execution runtime) throws JsonLdException, IOException {
 
         // 4.
         final var expansionOptions = new JsonLdOptions(options).setOrdered(false);
 
-        var expandedInput = Expander.expand(input, expansionOptions);
+        var expandedInput = Expander.expand(input, expansionOptions, runtime);
 
         // 6.
         var flattenedOutput = Flattening.flatten(expandedInput, options.isOrdered());
 
         // 6.1.
-        if (context != null ) {
+        if (context != null) {
 
             JsonLdOptions compactionOptions = new JsonLdOptions(options);
 
@@ -170,13 +170,13 @@ public final class Flattener {
             flattenedOutput = Compactor.compact(
                     flattenedOutput,
                     context,
-                    compactionOptions);
+                    compactionOptions,
+                    runtime);
         }
 
         return flattenedOutput;
     }
 
-    
     private static final void assertDocumentLoader(final JsonLdOptions options, final URI target) throws JsonLdException {
         if (options.loader() == null) {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + target + "].");

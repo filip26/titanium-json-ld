@@ -25,11 +25,11 @@ import java.util.Objects;
 
 import com.apicatalog.jsonld.JsonLdAdapter;
 import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.processor.Expander;
-import com.apicatalog.jsonld.processor.ProcessingRuntime;
+import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.PolyNode;
@@ -47,7 +47,8 @@ public final class Expansion {
             boolean frameExpansion,
             boolean fromMap,
             URI baseUrl,
-            ProcessingRuntime runtime) {
+            JsonLdOptions options,
+            Execution runtime) {
 
         /**
          * The {@code frameExpansion} flag.
@@ -133,6 +134,7 @@ public final class Expansion {
                         params.frameExpansion && !Keywords.DEFAULT.equals(activeProperty),
                         params.fromMap,
                         params.baseUrl,
+                        params.options,
                         params.runtime))
                 .expand();
     }
@@ -188,7 +190,7 @@ public final class Expansion {
          */
         if (propertyContext != null) {
             return ValueExpansion.expand(context
-                    .newContext(params.runtime().getDocumentLoader())
+                    .newContext(params.options().loader())
                     .build(propertyContext.node(),
                             propertyContext.adapter(),
                             context.findTerm(property)
@@ -197,14 +199,14 @@ public final class Expansion {
                     property,
                     node,
                     nodeAdapter,
-                    params.runtime());
+                    params.options());
         }
 
         /*
          * 4.3. Return the result of the Value Expansion algorithm, passing the active
          * context, active property, and element as value.
          */
-        return ValueExpansion.expand(context, property, node, nodeAdapter, params.runtime());
+        return ValueExpansion.expand(context, property, node, nodeAdapter, params.options());
     }
 
     /**

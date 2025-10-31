@@ -78,7 +78,7 @@ final class ObjectExpansion1314 {
             final NodeAdapter adapter,
             final String activeProperty) throws JsonLdException, IOException {
 
-        var keys = params.runtime().ordered()
+        var keys = params.options().isOrdered()
                 ? adapter.keyStream(element).sorted(PolyNode.comparingElement(adapter::asString)).iterator()
                 : adapter.keyStream(element).iterator();
 
@@ -96,14 +96,14 @@ final class ObjectExpansion1314 {
 
             // 13.2.
             var expandedProperty = activeContext
-                    .uriExpansion(params.runtime().getDocumentLoader())
+                    .uriExpansion(params.options().loader())
                     .documentRelative(false)
                     .vocab(true)
                     .expand(key);
 
             // if the term is undefined and
             if (expandedProperty == null || (!expandedProperty.contains(":") && !Keywords.contains(expandedProperty))) {
-                switch (params.runtime().getUndefinedTermPolicy()) {
+                switch (params.options().undefinedTermsPolicy()) {
                 case Fail:
                     throw new JsonLdException(JsonLdErrorCode.UNDEFINED_TERM,
                             "An undefined term has been found [" + key + "]. Change policy to Ignore or Warn or define the term in a context");
@@ -160,7 +160,7 @@ final class ObjectExpansion1314 {
 
                     if (!params.frameExpansion()
                             && !adapter.isString(value)
-                            && (!params.runtime().isNumericId()
+                            && (!params.options().isNumericId()
                                     || !adapter.isNumber(value))
                             || params.frameExpansion()
                                     && !adapter.isString(value)
@@ -173,7 +173,7 @@ final class ObjectExpansion1314 {
                     } else if (adapter.isString(value)) {
                         // 13.4.3.2
                         expandedValue = activeContext
-                                .uriExpansion(params.runtime().getDocumentLoader())
+                                .uriExpansion(params.options().loader())
                                 .documentRelative(true)
                                 .vocab(false)
                                 .expand(adapter.stringValue(value));
@@ -201,7 +201,7 @@ final class ObjectExpansion1314 {
 
 //                        final String expandedStringValue = activeContext
                         expandedValue = activeContext
-                                .uriExpansion(params.runtime().getDocumentLoader())
+                                .uriExpansion(params.options().loader())
                                 .documentRelative(true)
                                 .vocab(false)
                                 .expand(adapter.asString(value));
@@ -240,7 +240,7 @@ final class ObjectExpansion1314 {
                         for (var item : adapter.asIterable(value)) {
 
                             String expandedStringValue = activeContext
-                                    .uriExpansion(params.runtime().getDocumentLoader())
+                                    .uriExpansion(params.options().loader())
                                     .documentRelative(true)
                                     .vocab(false)
                                     .expand(adapter.stringValue(item));
@@ -294,7 +294,7 @@ final class ObjectExpansion1314 {
                             expandedValue = Map.of(
                                     Keywords.DEFAULT,
                                     typeContext
-                                            .uriExpansion(params.runtime().getDocumentLoader())
+                                            .uriExpansion(params.options().loader())
                                             .vocab(true)
                                             .documentRelative(true)
                                             // deepcode ignore checkIsPresent~Optional: false positive
@@ -308,7 +308,7 @@ final class ObjectExpansion1314 {
                         if (adapter.isString(value)) {
 
                             expandedValue = typeContext
-                                    .uriExpansion(params.runtime().getDocumentLoader())
+                                    .uriExpansion(params.options().loader())
                                     .vocab(true)
                                     .documentRelative(true)
                                     .expand(adapter.stringValue(value));
@@ -332,7 +332,7 @@ final class ObjectExpansion1314 {
                                 final var item = items.next();
 
                                 final String expandedStringValue = typeContext
-                                        .uriExpansion(params.runtime().getDocumentLoader())
+                                        .uriExpansion(params.options().loader())
                                         .vocab(true)
                                         .documentRelative(true)
                                         .expand(item);
@@ -685,7 +685,7 @@ final class ObjectExpansion1314 {
                 // Extension: JSON-LD-STAR (Experimental)
                 if (Keywords.ANNOTATION.equals(expandedProperty)) {
 
-                    if (!params.runtime().isRdfStar()) {
+                    if (!params.options().isRdfStar()) {
                         continue;
                     }
 
@@ -769,7 +769,7 @@ final class ObjectExpansion1314 {
                         .orElseGet(() -> activeContext.getDefaultBaseDirection());
 
                 // 13.7.4.
-                final var langCodes = params.runtime().ordered()
+                final var langCodes = params.options().isOrdered()
                         ? adapter.keyStream(value).sorted().iterator()
                         : adapter.keyStream(value).iterator();
 
@@ -798,7 +798,7 @@ final class ObjectExpansion1314 {
                         if (!Keywords.NONE.equals(langCode)) {
 
                             final String expandedLangCode = activeContext
-                                    .uriExpansion(params.runtime().getDocumentLoader())
+                                    .uriExpansion(params.options().loader())
                                     .vocab(true)
                                     .expand((String) langCode);
 
@@ -838,7 +838,7 @@ final class ObjectExpansion1314 {
                         .map(TermDefinition::getIndexMapping)
                         .orElse(Keywords.INDEX);
 
-                final var valueKeys = params.runtime().ordered()
+                final var valueKeys = params.options().isOrdered()
                         ? adapter.keyStream(value).sorted().iterator()
                         : adapter.keys(value).iterator();
 
@@ -867,7 +867,7 @@ final class ObjectExpansion1314 {
                             && indexTermDefinition.getLocalContext() != null) {
 
                         mapContext = mapContext
-                                .newContext(params.runtime().getDocumentLoader())
+                                .newContext(params.options().loader())
                                 .build(
                                         indexTermDefinition.getLocalContext().node(),
                                         indexTermDefinition.getLocalContext().adapter(),
@@ -881,7 +881,7 @@ final class ObjectExpansion1314 {
 
                     // 13.8.3.4.
                     final var expandedIndex = activeContext
-                            .uriExpansion(params.runtime().getDocumentLoader())
+                            .uriExpansion(params.options().loader())
                             .vocab(true)
                             .expand(index);
 
@@ -891,7 +891,12 @@ final class ObjectExpansion1314 {
                             indexValue,
                             adapter,
                             key,
-                            new Params(params.frameExpansion(), true, params.baseUrl(), params.runtime()));
+                            new Params(
+                                    params.frameExpansion(), 
+                                    true, 
+                                    params.baseUrl(),
+                                    params.options(),
+                                    params.runtime()));
 
                     // 13.8.3.7.
                     for (final var item : indexValues) {
@@ -917,11 +922,11 @@ final class ObjectExpansion1314 {
                                     indexKey,
                                     index,
                                     NativeAdapter.instance(),
-                                    params.runtime());
+                                    params.options());
 
                             // 13.8.3.7.2.2.
                             var expandedIndexKey = activeContext
-                                    .uriExpansion(params.runtime().getDocumentLoader())
+                                    .uriExpansion(params.options().loader())
                                     .vocab(true)
                                     .expand(indexKey);
 
@@ -965,7 +970,7 @@ final class ObjectExpansion1314 {
 
                             // 13.8.3.7.4.
                             indexMap.put(Keywords.ID, activeContext
-                                    .uriExpansion(params.runtime().getDocumentLoader())
+                                    .uriExpansion(params.options().loader())
                                     .vocab(false)
                                     .documentRelative(true)
                                     .expand(index));
@@ -1124,7 +1129,7 @@ final class ObjectExpansion1314 {
         // step 8
         if (propertyContext != null) {
             activeContext = activeContext
-                    .newContext(params.runtime().getDocumentLoader())
+                    .newContext(params.options().loader())
                     .overrideProtected(true)
                     .build(
                             propertyContext.node(),
@@ -1144,7 +1149,7 @@ final class ObjectExpansion1314 {
             final Object element,
             final NodeAdapter adapter) throws JsonLdException, IOException {
 
-        final var nestedKeys = params.runtime().ordered()
+        final var nestedKeys = params.options().isOrdered()
                 ? nest.keySet().stream().sorted().iterator()
                 : nest.keySet().iterator();
 
@@ -1162,7 +1167,7 @@ final class ObjectExpansion1314 {
 
                 for (final var nestedValueKey : adapter.keys(nestValue)) {
                     if (Keywords.VALUE.equals(
-                            typeContext.uriExpansion(params.runtime().getDocumentLoader())
+                            typeContext.uriExpansion(params.options().loader())
                                     .vocab(true)
                                     .expand(adapter.asString(nestedValueKey)))) {
                         throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);

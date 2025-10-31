@@ -25,6 +25,7 @@ import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.Compactor;
+import com.apicatalog.jsonld.processor.Execution;
 
 import jakarta.json.JsonObject;
 
@@ -171,23 +172,27 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
      */
     public Map<String, ?> get() throws JsonLdException, IOException {
 
+        final Execution runtime = Execution.of(options);
+        runtime.tick();
+
+        
         if (document != null) {
             if (context != null)  {
-                return Compactor.compact(document, context, options);
+                return Compactor.compact(document, context, options, runtime);
             }
             if (contextUri != null) {
-                return Compactor.compact(document, contextUri, options);
+                return Compactor.compact(document, contextUri, options, runtime);
             }
         }
 
-        if (documentUri != null) {
-            if (context != null)  {
-                return Compactor.compact(documentUri, context, options);
-            }
-            if (contextUri != null)  {
-                return Compactor.compact(documentUri, contextUri, options);
-            }
-        }
+//        if (documentUri != null) {
+//            if (context != null)  {
+//                return Compactor.compact(documentUri, context, options, runtime);
+//            }
+//            if (contextUri != null)  {
+//                return Compactor.compact(documentUri, contextUri, options, runtime);
+//            }
+//        }
 
         throw new IllegalStateException();
     }

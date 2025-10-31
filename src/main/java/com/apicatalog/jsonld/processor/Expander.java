@@ -23,23 +23,13 @@ import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.JsonLdOptions.ProcessingPolicy;
-import com.apicatalog.jsonld.JsonLdVersion;
-import com.apicatalog.jsonld.api.CommonApi;
-import com.apicatalog.jsonld.api.ContextApi;
-import com.apicatalog.jsonld.api.LoaderApi;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.expansion.Expansion;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.java.NativeAdapter;
-import com.apicatalog.web.uri.UriUtils;
-
-import jakarta.json.JsonStructure;
 
 /**
  *
@@ -47,160 +37,29 @@ import jakarta.json.JsonStructure;
  *      "https://www.w3.org/TR/json-ld11-api/#dom-jsonldprocessor-expand">JsonLdProcessor.expand()</a>
  *
  */
-public final class Expander implements
-        CommonApi<Expander>,
-        ContextApi<Expander>,
-        LoaderApi<Expander> {
-
-    private JsonLdOptions options;
-
-    public Expander() {
-        this(new JsonLdOptions());
-    }
-
-    public Expander(JsonLdOptions options) {
-        this.options = options;
-    }
-
-    @Override
-    public Expander options(JsonLdOptions options) {
-
-        if (options == null) {
-            throw new IllegalArgumentException("Parameter 'options' is null.");
-        }
-
-        this.options = options;
-        return this;
-    }
-
-    @Override
-    public Expander context(URI contextUri) {
-        options.setExpandContext(contextUri);
-        return this;
-    }
-
-//    @Override
-//    public Expander context(String contextLocation) {
-//
-//        URI contextUri = null;
-//
-//        if (contextLocation != null) {
-//
-//            contextUri = UriUtils.create(contextLocation);
-//
-//            if (contextUri == null) {
-//                throw new IllegalArgumentException("Context location must be valid URI or null but is [" + contextLocation + ".");
-//            }
-//        }
-//
-//        return context(contextUri);
-//    }
-
-//    @Override
-//    public Expander context(JsonStructure context) {
-//        options.expandContext(context != null ? JsonDocument.of(context) : null);
-//        return this;
-//    }
-
-    @Override
-    public Expander context(Document context) {
-        options.expandContext(context);
-        return this;
-    }
-
-    @Override
-    public Expander mode(JsonLdVersion processingMode) {
-        options.setProcessingMode(processingMode);
-        return this;
-    }
-
-    @Override
-    public Expander base(URI baseUri) {
-        options.base(baseUri);
-        return this;
-    }
-
-    @Override
-    public Expander loader(DocumentLoader loader) {
-        options.loader(loader);
-        return this;
-    }
-
-    @Override
-    public Expander ordered(boolean enable) {
-        options.setOrdered(enable);
-        return this;
-    }
-
-    /**
-     * Get the result of the document expansion.
-     *
-     * @return {@link JsonArray} representing expanded document
-     * @throws JsonLdException if the document expansion fails
-     * @throws IOException
-     */
-//    public Collection<?> get() throws JsonLdException, IOException {
-//        if (document != null) {
-//            return Expander.expand(document, options);
-//
-//        } else if (documentUri != null) {
-//            return Expander.expand(documentUri, options);
-//        }
-//        throw new IllegalStateException();
-//    }
-
-    /**
-     * Experimental: Accept numeric @id. Disabled by default.
-     *
-     * @return builder instance
-     */
-    public Expander numericId() {
-        options.setNumericId(true);
-        return this;
-    }
-
-    /**
-     * Experimental: Enables JSON-LD-STAR extension. Disabled by default.
-     *
-     * @see <a href="https://json-ld.github.io/json-ld-star">JSON-LD-STAR Draft</a>
-     *
-     * @return builder instance
-     */
-    public Expander rdfStar() {
-        options.setRdfStar(true);
-        return this;
-    }
-
-    /**
-     * Set a processing policy determining how to proceed when an undefined term is
-     * found during an expansion. An unknown term is ignored by default.
-     * 
-     * @param policy a processing policy
-     * @return builder instance
-     */
-    public Expander undefinedTermsPolicy(ProcessingPolicy policy) {
-        options.setUndefinedTermsPolicy(policy);
-        return this;
-    }
+public final class Expander {
 
     public static final Collection<?> expand(
             final Document document,
-            final JsonLdOptions options) throws JsonLdException, IOException {
-        return expand(document, false, options);
+            final JsonLdOptions options,
+            final Execution runtime) throws JsonLdException, IOException {
+        return expand(document, false, options, runtime);
+    }
+
+    public static final Collection<?> expandFrame(
+            final Document document,
+            final JsonLdOptions options,
+            final Execution runtime) throws JsonLdException, IOException {
+        return expand(document, true, options, runtime);
     }
 
     public static final Collection<?> expand(
             final PolyNode node,
             final Context context,
             final URI baseUrl,
-            final JsonLdOptions options) throws JsonLdException, IOException {
-        return expand(node, context, baseUrl, false, options);
-    }
-    
-    public static final Collection<?> expandFrame(
-            final Document document,
-            final JsonLdOptions options) throws JsonLdException, IOException {
-        return expand(document, true, options);
+            final JsonLdOptions options,
+            final Execution runtime) throws JsonLdException, IOException {
+        return expand(node, context, baseUrl, false, options, runtime);
     }
 
     static final Context context(
@@ -254,13 +113,14 @@ public final class Expander implements
 //                    document.contextUrl());
 //        }
 
-        return  builder.build();
+        return builder.build();
     }
-    
+
     static final Collection<?> expand(
             final Document document,
             final boolean frameExpansion,
-            final JsonLdOptions options) throws JsonLdException, IOException {
+            final JsonLdOptions options,
+            final Execution runtime) throws JsonLdException, IOException {
 
         // 5. Initialize a new empty active context. The base IRI and
         // original base URL of the active context is set to the documentUrl
@@ -291,13 +151,10 @@ public final class Expander implements
         // instead for local context.
         if (options.getExpandContext() != null) {
             final var expandContext = options.getExpandContext().content();
-//
-//            if (contextValue.isPresent()) {
             builder.update(
                     expandContext.node(),
                     expandContext.adapter(),
                     baseUrl);
-//            }
         }
 
         // 7.
@@ -313,7 +170,8 @@ public final class Expander implements
                 builder.build(),
                 baseUrl,
                 frameExpansion,
-                options);
+                options,
+                runtime);
     }
 
     static final Collection<?> expand(
@@ -321,9 +179,8 @@ public final class Expander implements
             final Context context,
             final URI baseUrl,
             boolean frameExpansion,
-            final JsonLdOptions options) throws JsonLdException, IOException {
-
-        final var runtime = ProcessingRuntime.of(options);
+            final JsonLdOptions options,
+            final Execution runtime) throws JsonLdException, IOException {
 
         // 8.
         var expanded = Expansion.expand(
@@ -331,7 +188,7 @@ public final class Expander implements
                 node.node(),
                 node.adapter(),
                 null,
-                new Params(frameExpansion, false, baseUrl, runtime));
+                new Params(frameExpansion, false, baseUrl, options, runtime));
 
         // 8.1
         if (expanded instanceof Map map
@@ -351,26 +208,5 @@ public final class Expander implements
 
         // 8.3
         return Set.of(expanded);
-    }
-
-    public boolean ordered() {
-        return options.isOrdered();
-    }
-
-    public void tick() {
-        // TODO Auto-generated method stub
-
-    }
-
-    public DocumentLoader loader() {
-        return options.loader();
-    }
-
-    public ProcessingPolicy undefinedTermPolicy() {
-        return options.undefinedTermsPolicy();
-    }
-
-    public boolean isNumericId() {
-        return options.isNumericId();
     }
 }

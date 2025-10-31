@@ -29,6 +29,7 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.web.uri.UriUtils;
 import com.apicatalog.web.uri.UriValidationPolicy;
@@ -45,7 +46,7 @@ public final class Frame {
         this.frameGraphs = frameGraphs;
     }
 
-    public static final Frame of(final Document frame, final JsonLdOptions options) throws JsonLdException, IOException {
+    public static final Frame of(final Document frame, final JsonLdOptions options, final Execution runtime) throws JsonLdException, IOException {
 
         @SuppressWarnings("unchecked")
         Set<String> keys = (frame.content().node() instanceof Map map)
@@ -54,7 +55,8 @@ public final class Frame {
 
         var expanded = Expander.expandFrame(
                 frame,
-                new JsonLdOptions(options).setOrdered(false));
+                new JsonLdOptions(options).setOrdered(false),
+                runtime);
 
         return of(expanded, keys);
     }
