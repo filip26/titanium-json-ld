@@ -27,7 +27,6 @@ import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.compaction.UriCompaction;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.expansion.Expander;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.tree.io.PolyNode;
@@ -45,14 +44,14 @@ public final class Compactor {
 
     public static final Map<String, ?> compact(final URI input, final URI context, final JsonLdOptions options) throws JsonLdException, IOException {
 
-        if (options.getDocumentLoader() == null) {
+        if (options.loader() == null) {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
 
         final LoaderOptions loaderOptions = new LoaderOptions();
         loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
 
-        final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
+        final Document remoteDocument = options.loader().loadDocument(input, loaderOptions);
 
         if (remoteDocument == null) {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Returned document is null [" + input + "].");
@@ -63,14 +62,14 @@ public final class Compactor {
 
     public static final Map<String, ?> compact(final URI input, final Document context, final JsonLdOptions options) throws JsonLdException, IOException {
 
-        if (options.getDocumentLoader() == null) {
+        if (options.loader() == null) {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
 
         final LoaderOptions loaderOptions = new LoaderOptions();
         loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
 
-        final Document remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
+        final Document remoteDocument = options.loader().loadDocument(input, loaderOptions);
 
         if (remoteDocument == null) {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Returned document is null [" + input + "].");
@@ -104,7 +103,7 @@ public final class Compactor {
         return compact(
                 expandedInput,
                 input.documentUrl(),
-                Context.load(options.getDocumentLoader(), contextUri).content(),
+                Context.load(options.loader(), contextUri).content(),
                 options);
     }
 
@@ -175,7 +174,7 @@ public final class Compactor {
 
         // 7.
         final var builder = new Context.Builder(options.getProcessingMode())
-                .loader(options.getDocumentLoader())
+                .loader(options.loader())
                 .update(localContext, contextBase);
 
         // 8.

@@ -29,7 +29,6 @@ import com.apicatalog.jsonld.JsonLdComparison;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.fromrdf.QuadsToJsonLd;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.jsonld.loader.QuadSetDocument;
 import com.apicatalog.jsonld.test.JsonLdTestCase.Type;
@@ -65,7 +64,7 @@ public class JsonLdTestRunnerJunit {
     public boolean execute() {
 
         if (testCase.type.contains(Type.COMPACT_TEST)) {
-            return execute(options -> JsonLd.compact(testCase.input, testCase.context).options(options).get());
+            return execute(options -> JsonLd.compact(testCase.input, testCase.context, options));
         }
 
         if (testCase.type.contains(Type.EXPAND_TEST)) {
@@ -89,8 +88,8 @@ public class JsonLdTestRunnerJunit {
 
         if (testCase.type.contains(Type.FROM_RDF_TEST)) {
             return execute(options -> {
-                //FIXME -> use custom loader, detach n-quads
-                Document input = options.getDocumentLoader().loadDocument(testCase.input, null);
+                // FIXME -> use custom loader, detach n-quads
+                Document input = options.loader().loadDocument(testCase.input, null);
 
                 final var toLd = JsonLd.fromRdf(options);
 
@@ -101,7 +100,7 @@ public class JsonLdTestRunnerJunit {
         }
 
         if (testCase.type.contains(Type.FRAME_TEST)) {
-            return execute(options -> JsonLd.frame(testCase.input, testCase.frame).options(options).get());
+            return execute(options -> JsonLd.frame(testCase.input, testCase.frame, options));
         }
 
         throw new IllegalStateException("An uknown test type to execute = " + testCase.type + ".");
@@ -115,7 +114,7 @@ public class JsonLdTestRunnerJunit {
         final JsonLdOptions options = testCase.getOptions();
 
         assertNotNull(options);
-        assertNotNull(options.getDocumentLoader());
+        assertNotNull(options.loader());
 
         Object result = null;
 
@@ -194,7 +193,7 @@ public class JsonLdTestRunnerJunit {
         assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
 
         try {
-            var expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new LoaderOptions());
+            var expectedDocument = options.loader().loadDocument(testCase.expect, new LoaderOptions());
 
             assertNotNull(expectedDocument);
 
@@ -217,7 +216,7 @@ public class JsonLdTestRunnerJunit {
         assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
 
         try {
-            Document expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new LoaderOptions());
+            Document expectedDocument = options.loader().loadDocument(testCase.expect, new LoaderOptions());
 
             assertNotNull(expectedDocument);
 

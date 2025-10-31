@@ -225,7 +225,7 @@ public final class TreeDocument implements Document {
         }
     }
 
-    public static final Document load(URI uri, DocumentLoader loader, boolean extractAllScripts) throws JsonLdException {
+    public static final Document fetch(URI uri, DocumentLoader loader, boolean extractAllScripts) throws JsonLdException {
         
         if (loader == null) {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + uri + "].");

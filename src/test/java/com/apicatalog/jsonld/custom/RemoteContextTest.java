@@ -35,6 +35,7 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.loader.ClasspathLoader;
+import com.apicatalog.jsonld.processor.RdfEmitter;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.model.RdfQuadSet;
@@ -62,7 +63,7 @@ class RemoteContextTest {
 
         final OrderedQuadDataset result = new OrderedQuadDataset();
 
-        JsonLd.toRdf(document).context(context).provide(new QuadAcceptor(result));
+        JsonLd.toRdf(document, new QuadAcceptor(result), new JsonLdOptions().expandContext(context));
 
         try (final InputStream is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue61-out.nq")) {
 
@@ -89,11 +90,11 @@ class RemoteContextTest {
         final Document context = readDocument("/com/apicatalog/jsonld/test/issue61-context.json");
 
         final JsonLdOptions options = new JsonLdOptions();
-        options.setExpandContext(context);
+        options.expandContext(context);
 
         final OrderedQuadSet result = new OrderedQuadSet();
 
-        JsonLd.toRdf(document).options(options).provide(new QuadAcceptor(result));
+        JsonLd.toRdf(document, new QuadAcceptor(result), options);
 
         try (final InputStream is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue61-out.nq")) {
 
@@ -120,7 +121,7 @@ class RemoteContextTest {
 
         final OrderedQuadSet result = new OrderedQuadSet();
 
-        JsonLd.toRdf(document).loader(new ClasspathLoader()).provide(new QuadAcceptor(result));
+        JsonLd.toRdf(document, new QuadAcceptor(result), new JsonLdOptions().loader(new ClasspathLoader()));
 
         assertNotNull(result);
 

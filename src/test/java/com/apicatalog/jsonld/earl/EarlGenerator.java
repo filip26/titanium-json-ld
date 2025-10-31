@@ -32,9 +32,9 @@ import com.apicatalog.jsonld.loader.QuadSetDocument;
 import com.apicatalog.jsonld.loader.SchemeRouter;
 import com.apicatalog.jsonld.loader.UriBaseRewriter;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
-import com.apicatalog.jsonld.test.JsonLdTestManifest;
 import com.apicatalog.jsonld.test.JsonLdMockServer;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
+import com.apicatalog.jsonld.test.JsonLdTestManifest;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerEarl;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.flow.QuadEmitter;
@@ -85,9 +85,8 @@ public class EarlGenerator {
                 .forEach(testCase -> printResult(writer, testCase.uri,
                         new JsonLdTestRunnerEarl(testCase).execute(options -> JsonLd.compact(
                                 testCase.input,
-                                testCase.context)
-                                .options(options)
-                                .get())));
+                                testCase.context,
+                                options))));
     }
 
     public void testFlatten(final PrintWriter writer) throws JsonLdException {
@@ -112,8 +111,8 @@ public class EarlGenerator {
                 .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
                         (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
-                            final OrderedQuadSet set = new OrderedQuadSet();
-                            JsonLd.toRdf(testCase.input).options(options).provide(new QuadAcceptor(set));
+                            final var set = new OrderedQuadSet();
+                            JsonLd.toRdf(testCase.input, new QuadAcceptor(set), options);
                             return set;
                         })));
     }
@@ -126,7 +125,7 @@ public class EarlGenerator {
                 .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
                         (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
-                            Document input = options.getDocumentLoader().loadDocument(testCase.input, null);
+                            Document input = options.loader().loadDocument(testCase.input, null);
 
                             QuadsToJsonLd toLd = JsonLd.fromRdf().options(options);
 
@@ -142,7 +141,7 @@ public class EarlGenerator {
                 .stream()
                 .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
-                        (new JsonLdTestRunnerEarl(testCase)).execute(options -> JsonLd.frame(testCase.input, testCase.frame).options(options).get())));
+                        (new JsonLdTestRunnerEarl(testCase)).execute(options -> JsonLd.frame(testCase.input, testCase.frame, options))));
     }
 
     public void testRemote(PrintWriter writer) throws JsonLdException {
@@ -165,7 +164,7 @@ public class EarlGenerator {
 
                             JsonLdOptions expandOptions = new JsonLdOptions(options);
 
-                            expandOptions.setDocumentLoader(
+                            expandOptions.loader(
                                     new UriBaseRewriter(
                                             JsonLdTestCase.TESTS_BASE,
                                             wireMockServer.baseUrl(),

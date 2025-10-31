@@ -28,6 +28,7 @@ import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.processor.ProcessingRuntime;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.NodeType;
@@ -44,7 +45,6 @@ public final class Expansion {
 
     public record Params(
             boolean frameExpansion,
-            boolean ordered,
             boolean fromMap,
             URI baseUrl,
             ProcessingRuntime runtime) {
@@ -131,7 +131,6 @@ public final class Expansion {
                 activeProperty,
                 new Params(
                         params.frameExpansion && !Keywords.DEFAULT.equals(activeProperty),
-                        params.ordered,
                         params.fromMap,
                         params.baseUrl,
                         params.runtime))

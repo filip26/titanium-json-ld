@@ -23,13 +23,13 @@ import java.util.Map;
 import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdAdapter;
-import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.document.TreeDocument;
-import com.apicatalog.jsonld.expansion.Expander;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.web.uri.UriUtils;
 import com.apicatalog.web.uri.UriValidationPolicy;
@@ -55,7 +55,7 @@ public final class Frame {
         this.documentUrl = documentUrl;
     }
 
-    public static final Frame of(final TreeDocument document, final JsonLdOptions options) throws JsonLdException, IOException {
+    public static final Frame of(final Document document, final JsonLdOptions options) throws JsonLdException, IOException {
 
 //      final JsonStructure frameStructure;
 //
@@ -98,9 +98,8 @@ public final class Frame {
             }
         }
 
-        var expanded = Expander.expand(
+        var expanded = Expander.expandFrame(
                 document,
-                true,
                 new JsonLdOptions(options).setOrdered(false));
 
         return of(expanded, context, document.contextUrl(), document.documentUrl());

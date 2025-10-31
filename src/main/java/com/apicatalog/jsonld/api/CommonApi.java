@@ -77,12 +77,12 @@ public interface CommonApi<R> {
      */
     R ordered(boolean enable);
 
-    /**
-     * Certain algorithm processing steps are ordered lexicographically.
-     *
-     * @return builder instance
-     */
-    default R ordered() {
-        return ordered(true);
-    }
+//    /**
+//     * Certain algorithm processing steps are ordered lexicographically.
+//     *
+//     * @return builder instance
+//     */
+//    default R ordered() {
+//        return ordered(true);
+//    }
 }

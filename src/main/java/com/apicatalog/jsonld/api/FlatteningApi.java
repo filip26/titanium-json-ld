@@ -76,7 +76,7 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
 
     @Override
     public FlatteningApi base(URI baseUri) {
-        options.setBase(baseUri);
+        options.base(baseUri);
         return this;
     }
 
@@ -91,7 +91,7 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
 
     @Override
     public FlatteningApi loader(DocumentLoader loader) {
-        options.setDocumentLoader(loader);
+        options.loader(loader);
         return this;
     }
 
@@ -107,28 +107,28 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
         return this;
     }
 
-    @Override
-    public FlatteningApi context(final String contextLocation) {
-
-        URI contextUri = null;
-
-        if (contextLocation != null) {
-
-            contextUri = UriUtils.create(contextLocation);
-
-            if (contextUri == null) {
-                throw new IllegalArgumentException("Context location must be valid URI or null but is [" + contextLocation + ".");
-            }
-        }
-
-        return context(contextUri);
-    }
-
-    @Override
-    public FlatteningApi context(JsonStructure context) {
-        this.context = context != null ?  JsonDocument.of(context) : null;
-        return this;
-    }
+//    @Override
+//    public FlatteningApi context(final String contextLocation) {
+//
+//        URI contextUri = null;
+//
+//        if (contextLocation != null) {
+//
+//            contextUri = UriUtils.create(contextLocation);
+//
+//            if (contextUri == null) {
+//                throw new IllegalArgumentException("Context location must be valid URI or null but is [" + contextLocation + ".");
+//            }
+//        }
+//
+//        return context(contextUri);
+//    }
+//
+//    @Override
+//    public FlatteningApi context(JsonStructure context) {
+//        this.context = context != null ?  JsonDocument.of(context) : null;
+//        return this;
+//    }
 
     @Override
     public FlatteningApi context(Document context) {

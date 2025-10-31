@@ -87,7 +87,7 @@ class HttpLoaderTest {
 
                 JsonLdOptions expandOptions = new JsonLdOptions(options);
 
-                expandOptions.setDocumentLoader(
+                expandOptions.loader(
                                     new UriBaseRewriter(
                                                 testCase.baseUri,
                                                 wireMockServer.baseUrl() + "/",

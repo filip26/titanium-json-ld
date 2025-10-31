@@ -18,15 +18,17 @@ package com.apicatalog.jsonld;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
+import java.util.Map;
 
 import com.apicatalog.jsonld.api.CompactionApi;
 import com.apicatalog.jsonld.api.FlatteningApi;
-import com.apicatalog.jsonld.api.FramingApi;
-import com.apicatalog.jsonld.api.ToRdfApi;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.TreeDocument;
-import com.apicatalog.jsonld.expansion.Expander;
+import com.apicatalog.jsonld.framing.Frame;
 import com.apicatalog.jsonld.fromrdf.QuadsToJsonLd;
+import com.apicatalog.jsonld.processor.Compactor;
+import com.apicatalog.jsonld.processor.Expander;
+import com.apicatalog.jsonld.processor.Framer;
 import com.apicatalog.jsonld.processor.RdfEmitter;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.web.uri.UriUtils;
@@ -68,9 +70,9 @@ public final class JsonLd {
      */
     public static final Collection<?> expand(final URI document, final JsonLdOptions options) throws JsonLdException, IOException {
         return expand(
-                TreeDocument.load(
+                TreeDocument.fetch(
                         document,
-                        options.getDocumentLoader(),
+                        options.loader(),
                         options.isExtractAllScripts()),
                 options);
     }
@@ -91,60 +93,32 @@ public final class JsonLd {
     /**
      * Compacts the referenced document using the context.
      *
-     * @param documentLocation {@code IRI} referencing JSON-LD document to compact
-     * @param contextLocation  {@code IRI} referencing the context to use when
-     *                         compacting the document
+     * @param document {@link URI} referencing JSON-LD document to compact
+     * @param context  {@link URI} referencing the context to use when compacting
+     *                 the document
+     * @param options
      * @return {@link CompactionApi} allowing to set additional parameters
      */
-    public static final CompactionApi compact(final String documentLocation, final String contextLocation) {
-        return compact(
-                assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME),
-                assertLocation(contextLocation, CONTEXT_LOCATION_PARAM_NAME));
+    public static final Map<String, ?> compact(final URI document, final URI context, final JsonLdOptions options) throws JsonLdException, IOException {
+        return Compactor.compact(
+                TreeDocument.fetch(document, options.loader(), options.isExtractAllScripts()),
+                TreeDocument.fetch(context, options.loader(), options.isExtractAllScripts()),
+                options);
     }
 
     /**
      * Compacts the referenced document using the context.
      *
-     * @param documentUri {@link URI} referencing JSON-LD document to compact
-     * @param contextUri  {@link URI} referencing the context to use when compacting
-     *                    the document
+     * @param document {@code URI} referencing JSON-LD document to compact
+     * @param context  {@link Document} representing the context or
+     *                 {@link JsonArray} consisting of one or many
+     *                 {@link JsonObject} and {@link JsonString} referencing the
+     *                 context to use when compacting the document
      * @return {@link CompactionApi} allowing to set additional parameters
      */
-    public static final CompactionApi compact(final URI documentUri, final URI contextUri) {
+    public static final CompactionApi compact(final URI document, final Document context) {
         return new CompactionApi(
-                assertUri(documentUri, DOCUMENT_URI_PARAM_NAME),
-                assertUri(contextUri, CONTEXT_URI_PARAM_NAME));
-    }
-
-    /**
-     * Compacts the referenced document using the context.
-     *
-     * @param documentLocation {@code IRI} referencing JSON-LD document to compact
-     * @param context          {@link Document} representing the context or
-     *                         {@link JsonArray} consisting of {@link JsonObject}
-     *                         and {@link JsonString} referencing the context to use
-     *                         when compacting the document
-     * @return {@link CompactionApi} allowing to set additional parameters
-     */
-    public static final CompactionApi compact(final String documentLocation, final Document context) {
-        return new CompactionApi(
-                assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME),
-                assertJsonDocument(context, CONTEXT_PARAM_NAME));
-    }
-
-    /**
-     * Compacts the referenced document using the context.
-     *
-     * @param documentUri {@code URI} referencing JSON-LD document to compact
-     * @param context     {@link Document} representing the context or
-     *                    {@link JsonArray} consisting of one or many
-     *                    {@link JsonObject} and {@link JsonString} referencing the
-     *                    context to use when compacting the document
-     * @return {@link CompactionApi} allowing to set additional parameters
-     */
-    public static final CompactionApi compact(final URI documentUri, final Document context) {
-        return new CompactionApi(
-                assertUri(documentUri, DOCUMENT_URI_PARAM_NAME),
+                assertUri(document, DOCUMENT_URI_PARAM_NAME),
                 assertJsonDocument(context, CONTEXT_PARAM_NAME));
     }
 
@@ -164,20 +138,6 @@ public final class JsonLd {
     /**
      * Compacts {@link Document} document using the context.
      *
-     * @param document        to compact
-     * @param contextLocation {@code IRI} referencing the context to use when
-     *                        compacting the document
-     * @return {@link CompactionApi} allowing to set additional parameters
-     */
-    public static final CompactionApi compact(final Document document, final String contextLocation) {
-        return compact(
-                assertJsonDocument(document, DOCUMENT_PARAM_NAME),
-                assertLocation(contextLocation, CONTEXT_LOCATION_PARAM_NAME));
-    }
-
-    /**
-     * Compacts {@link Document} document using the context.
-     *
      * @param document   to compact
      * @param contextUri {@link URI} referencing the context to use when compacting
      *                   the document
@@ -187,44 +147,6 @@ public final class JsonLd {
         return new CompactionApi(
                 assertJsonDocument(document, DOCUMENT_PARAM_NAME),
                 assertUri(contextUri, CONTEXT_URI_PARAM_NAME));
-    }
-
-    /**
-     * Compacts {@link Document} document using the context.
-     *
-     * @param documentLocation {@code IRI} referencing JSON-LD document to compact
-     * @param contextUri       {@link URI} referencing the context to use when
-     *                         compacting the document
-     * @return {@link CompactionApi} allowing to set additional parameters
-     */
-    public static final CompactionApi compact(final String documentLocation, final URI contextUri) {
-        return new CompactionApi(
-                assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME),
-                assertUri(contextUri, CONTEXT_URI_PARAM_NAME));
-    }
-
-    /**
-     * Compacts {@link Document} document using the context.
-     *
-     * @param documentUri     {@code URI} referencing JSON-LD document to compact
-     * @param contextLocation {@code IRI} referencing the context to use when
-     *                        compacting the document
-     * @return {@link CompactionApi} allowing to set additional parameters
-     */
-    public static final CompactionApi compact(final URI documentUri, final String contextLocation) {
-        return new CompactionApi(
-                assertUri(documentUri, DOCUMENT_URI_PARAM_NAME),
-                assertLocation(contextLocation, CONTEXT_LOCATION_PARAM_NAME));
-    }
-
-    /**
-     * Flattens the given input and optionally compacts it using context.
-     *
-     * @param documentLocation {@code IRI} referencing JSON-LD document to flatten
-     * @return {@link FlatteningApi} allowing to set additional parameters
-     */
-    public static final FlatteningApi flatten(final String documentLocation) {
-        return new FlatteningApi(assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME));
     }
 
     /**
@@ -250,27 +172,15 @@ public final class JsonLd {
     /**
      * Frames the given remote input using remote frame.
      *
-     * @param documentUri {@code URI} referencing JSON-LD document to frame
-     * @param frameUri    {@code URI} referencing JSON-LD frame
+     * @param document {@code URI} referencing JSON-LD document to frame
+     * @param frame    {@code URI} referencing JSON-LD frame
      * @return {@link FramingApi} allowing to set additional parameters
      */
-    public static final FramingApi frame(final URI documentUri, final URI frameUri) {
-        return new FramingApi(
-                assertUri(documentUri, DOCUMENT_URI_PARAM_NAME),
-                assertUri(frameUri, FRAME_URI_PARAM_NAME));
-    }
-
-    /**
-     * Frames the given remote input using remote frame.
-     *
-     * @param documentLocation {@code IRI} referencing JSON-LD document to frame
-     * @param frameLocation    {@code IRI} referencing JSON-LD frame
-     * @return {@link FramingApi} allowing to set additional parameters
-     */
-    public static final FramingApi frame(final String documentLocation, final String frameLocation) {
-        return new FramingApi(
-                assertLocation(documentLocation, DOCUMENT_URI_PARAM_NAME),
-                assertLocation(frameLocation, FRAME_LOCATION_PARAM_NAME));
+    public static final Map<String, ?> frame(final URI document, final URI frame, final JsonLdOptions options) throws JsonLdException, IOException {
+        return Framer.frame(
+                TreeDocument.fetch(document, options.loader(), options.isExtractAllScripts()),
+                Frame.of(TreeDocument.fetch(frame, options.loader(), options.isExtractAllScripts()), options),
+                options);
     }
 
     /**
@@ -279,99 +189,42 @@ public final class JsonLd {
      * @param document to frame
      * @param frame    JSON-LD definition
      * @return {@link FramingApi} allowing to set additional parameters
+     * @throws IOException
+     * @throws JsonLdException
      */
-    public static final FramingApi frame(final Document document, final Document frame) {
-        return new FramingApi(
-                assertJsonDocument(document, DOCUMENT_PARAM_NAME),
-                assertJsonDocument(frame, FRAME_PARAM_NAME));
-    }
-
-    /**
-     * Frames the local document using given remote frame.
-     *
-     * @param document      to frame
-     * @param frameLocation {@code IRI} referencing JSON-LD frame
-     * @return {@link FramingApi} allowing to set additional parameters
-     */
-    public static final FramingApi frame(final Document document, final String frameLocation) {
-        return new FramingApi(
-                assertJsonDocument(document, DOCUMENT_PARAM_NAME),
-                assertLocation(frameLocation, FRAME_LOCATION_PARAM_NAME));
-    }
-
-    /**
-     * Frames the local document using given remote frame.
-     *
-     * @param document to frame
-     * @param frameUri {@code URI} referencing JSON-LD frame
-     * @return {@link FramingApi} allowing to set additional parameters
-     */
-    public static final FramingApi frame(final Document document, final URI frameUri) {
-        return new FramingApi(
-                assertJsonDocument(document, DOCUMENT_PARAM_NAME),
-                assertUri(frameUri, FRAME_URI_PARAM_NAME));
-    }
-
-    /**
-     * Frames the remote input using given local frame.
-     *
-     * @param documentLocation {@code IRI} referencing JSON-LD document to frame
-     * @param frame            JSON-LD definition
-     * @return {@link FramingApi} allowing to set additional parameters
-     */
-    public static final FramingApi frame(final String documentLocation, final Document frame) {
-        return new FramingApi(
-                assertLocation(documentLocation, DOCUMENT_URI_PARAM_NAME),
-                assertJsonDocument(frame, FRAME_PARAM_NAME));
+    public static final Map<String, ?> frame(final Document document, final Document frame, final JsonLdOptions options) throws JsonLdException, IOException {
+        return Framer.frame(document, Frame.of(document, options), options);
+//        return new FramingApi(
+//                assertJsonDocument(document, DOCUMENT_PARAM_NAME),
+//                assertJsonDocument(frame, FRAME_PARAM_NAME));
     }
 
     /**
      * Frames the remote input using given remote frame.
      *
-     * @param documentLocation {@code IRI} referencing JSON-LD document to frame
-     * @param frameUri         {@code URI} referencing JSON-LD frame
+     * @param document {@code IRI} referencing JSON-LD document to frame
+     * @param frame    {@code URI} referencing JSON-LD frame
      * @return {@link FramingApi} allowing to set additional parameters
      */
-    public static final FramingApi frame(final String documentLocation, final URI frameUri) {
-        return new FramingApi(
-                assertLocation(documentLocation, DOCUMENT_URI_PARAM_NAME),
-                assertUri(frameUri, FRAME_URI_PARAM_NAME));
+    public static final Map<String, ?> frame(final Document document, final URI frame, final JsonLdOptions options) throws JsonLdException, IOException {
+        return Framer.frame(
+                document,
+                Frame.of(TreeDocument.fetch(frame, options.loader(), options.isExtractAllScripts()), options),
+                options);
     }
 
     /**
      * Frames the remote input using given local frame.
      *
-     * @param documentUri {@code URI} referencing JSON-LD document to frame
-     * @param frame       JSON-LD definition
+     * @param document {@code URI} referencing JSON-LD document to frame
+     * @param frame    JSON-LD definition
      * @return {@link FramingApi} allowing to set additional parameters
      */
-    public static final FramingApi frame(final URI documentUri, final Document frame) {
-        return new FramingApi(
-                assertUri(documentUri, DOCUMENT_URI_PARAM_NAME),
-                assertJsonDocument(frame, FRAME_PARAM_NAME));
-    }
-
-    /**
-     * Frames the remote input using given remote frame.
-     *
-     * @param documentUri   {@code URI} referencing JSON-LD document to frame
-     * @param frameLocation {@code IRI} referencing JSON-LD frame
-     * @return {@link FramingApi} allowing to set additional parameters
-     */
-    public static final FramingApi frame(final URI documentUri, final String frameLocation) {
-        return new FramingApi(
-                assertUri(documentUri, DOCUMENT_URI_PARAM_NAME),
-                assertLocation(frameLocation, FRAME_LOCATION_PARAM_NAME));
-    }
-
-    /**
-     * Transforms the given input into {@link RdfDataset}.
-     *
-     * @param documentLocation {@code IRI} referencing JSON-LD document to transform
-     * @return {@link ToRdfApi} allowing to set additional parameters
-     */
-    public static final ToRdfApi toRdf(final String documentLocation) {
-        return new ToRdfApi(assertLocation(documentLocation, DOCUMENT_LOCATION_PARAM_NAME));
+    public static final Map<String, ?> frame(final URI document, final Document frame, final JsonLdOptions options) throws JsonLdException, IOException {
+        return Framer.frame(
+                TreeDocument.fetch(document, options.loader(), options.isExtractAllScripts()),
+                Frame.of(frame, options),
+                options);
     }
 
     /**
@@ -380,8 +233,14 @@ public final class JsonLd {
      * @param documentUri {@code URI} referencing JSON-LD document to transform
      * @return {@link ToRdfApi} allowing to set additional parameters
      */
-    public static final ToRdfApi toRdf(final URI documentUri) {
-        return new ToRdfApi(assertUri(documentUri, DOCUMENT_URI_PARAM_NAME));
+    public static final void toRdf(final URI document, RdfQuadConsumer consumer, JsonLdOptions options) throws JsonLdException, IOException {
+        toRdf(TreeDocument
+                .fetch(
+                        document,
+                        options.loader(),
+                        options.isExtractAllScripts()),
+                consumer,
+                options);
     }
 
     /**
@@ -390,11 +249,7 @@ public final class JsonLd {
      * @param document to transform
      * @return {@link ToRdfApi} allowing to set additional parameters
      */
-    public static final ToRdfApi toRdf(final Document document) {
-        return new ToRdfApi(assertJsonDocument(document, DOCUMENT_PARAM_NAME));
-    }
-
-    public static final void toRdf(final URI document, RdfQuadConsumer consumer, JsonLdOptions options) throws JsonLdException, IOException {
+    public static final void toRdf(final Document document, RdfQuadConsumer consumer, JsonLdOptions options) throws JsonLdException, IOException {
         RdfEmitter.toRdf(document, consumer, options);
     }
 

@@ -91,7 +91,7 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
 
     @Override
     public CompactionApi base(URI baseUri) {
-        options.setBase(baseUri);
+        options.base(baseUri);
         return this;
     }
 
@@ -140,7 +140,7 @@ public final class CompactionApi implements CommonApi<CompactionApi>, LoaderApi<
 
     @Override
     public CompactionApi loader(DocumentLoader loader) {
-        options.setDocumentLoader(loader);
+        options.loader(loader);
         return this;
     }
 

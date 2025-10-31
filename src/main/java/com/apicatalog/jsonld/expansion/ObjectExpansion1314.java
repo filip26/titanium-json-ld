@@ -78,7 +78,7 @@ final class ObjectExpansion1314 {
             final NodeAdapter adapter,
             final String activeProperty) throws JsonLdException, IOException {
 
-        var keys = params.ordered()
+        var keys = params.runtime().ordered()
                 ? adapter.keyStream(element).sorted(PolyNode.comparingElement(adapter::asString)).iterator()
                 : adapter.keyStream(element).iterator();
 
@@ -769,7 +769,7 @@ final class ObjectExpansion1314 {
                         .orElseGet(() -> activeContext.getDefaultBaseDirection());
 
                 // 13.7.4.
-                final var langCodes = params.ordered()
+                final var langCodes = params.runtime().ordered()
                         ? adapter.keyStream(value).sorted().iterator()
                         : adapter.keyStream(value).iterator();
 
@@ -838,7 +838,7 @@ final class ObjectExpansion1314 {
                         .map(TermDefinition::getIndexMapping)
                         .orElse(Keywords.INDEX);
 
-                final var valueKeys = params.ordered()
+                final var valueKeys = params.runtime().ordered()
                         ? adapter.keyStream(value).sorted().iterator()
                         : adapter.keys(value).iterator();
 
@@ -891,7 +891,7 @@ final class ObjectExpansion1314 {
                             indexValue,
                             adapter,
                             key,
-                            new Params(params.frameExpansion(), params.ordered(), true, params.baseUrl(), params.runtime()));
+                            new Params(params.frameExpansion(), true, params.baseUrl(), params.runtime()));
 
                     // 13.8.3.7.
                     for (final var item : indexValues) {
@@ -1144,7 +1144,7 @@ final class ObjectExpansion1314 {
             final Object element,
             final NodeAdapter adapter) throws JsonLdException, IOException {
 
-        final var nestedKeys = params.ordered()
+        final var nestedKeys = params.runtime().ordered()
                 ? nest.keySet().stream().sorted().iterator()
                 : nest.keySet().iterator();
 

@@ -15,7 +15,8 @@
  */
 package com.apicatalog.jsonld.fromrdf;
 
-import java.io.StringReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,27 +27,23 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
-import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.fromrdf.GraphMap.Reference;
-import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
-import com.apicatalog.tree.io.jakarta.JakartaAdapter;
+import com.apicatalog.tree.io.NodeParser;
 import com.apicatalog.tree.io.java.NativeAdapter;
-import com.apicatalog.tree.io.java.NativeMaterializer3;
 import com.apicatalog.web.lang.LanguageTag;
 import com.apicatalog.web.uri.UriUtils;
 import com.apicatalog.web.uri.UriValidationPolicy;
-
-import jakarta.json.stream.JsonParser;
 
 /**
  * QuadsToJsonld implements {@link RdfQuadConsumer} and provides functionality
@@ -78,7 +75,7 @@ import jakarta.json.stream.JsonParser;
  */
 public class QuadsToJsonLd implements RdfQuadConsumer {
 
-    public static final Map<String, Function<String, Object>> DEFAULT_NATIVE_TYPES = Map.of(
+    public static final Map<String, Function<String, Object>> DEFAULT_NATIVE_ADAPTERS = Map.of(
             Terms.XSD_STRING, s -> s,
             Terms.XSD_BOOLEAN, QuadsToJsonLd::toBoolean,
             Terms.XSD_INT, QuadsToJsonLd::toLong,
@@ -94,7 +91,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
     protected boolean useXsdDecimal;
     protected UriValidationPolicy uriValidation;
     protected JsonLdVersion processingMode;
-
+    protected NodeParser jsonParser;
     protected Map<String, Function<String, Object>> nativeTypes;
 
     // runtime
@@ -110,6 +107,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
         // default values
         this.ordered = false;
         this.rdfDirection = null;
+        this.jsonParser = null;
         this.nativeTypes = Map.of();
         this.useXsdDecimal = false;
         this.useRdfType = false;
@@ -147,7 +145,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
      */
     public QuadsToJsonLd useNativeTypes(boolean useNativeTypes) {
         this.nativeTypes = useNativeTypes
-                ? DEFAULT_NATIVE_TYPES
+                ? DEFAULT_NATIVE_ADAPTERS
                 : Map.of();
         return this;
     }
@@ -183,6 +181,11 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
      */
     public QuadsToJsonLd uriValidation(UriValidationPolicy uriValidation) {
         this.uriValidation = uriValidation;
+        return this;
+    }
+
+    public QuadsToJsonLd jsonParser(NodeParser jsonParser) {
+        this.jsonParser = jsonParser;
         return this;
     }
 
@@ -585,33 +588,55 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
         }
 
         // 2.5.
-        if (processingMode != JsonLdVersion.V1_0
+        if (jsonParser != null
+                && processingMode != JsonLdVersion.V1_0
                 && Terms.RDF_JSON.equals(datatype)) {
 
-            try (final JsonParser parser = JsonProvider.instance().createParser(new StringReader(object))) {
+            try {
 
-                parser.next();
-
-                convertedValue = parser.getValue();
-//                type = Keywords.JSON;
-
-                // FIXME
-                convertedValue = new NativeMaterializer3().node(convertedValue, JakartaAdapter.instance());
+                convertedValue = jsonParser.read(new ByteArrayInputStream(object.getBytes()));
 
                 if (convertedValue == null) {
                     final var result = new HashMap<String, Object>(2);
                     result.put(Keywords.TYPE, Keywords.JSON);
                     result.put(Keywords.VALUE, null);
-                    return result;
+                    return Map.copyOf(result);
                 }
 
                 return Map.of(
                         Keywords.VALUE, convertedValue,
                         Keywords.TYPE, Keywords.JSON);
 
-            } catch (Exception e) {
+            } catch (IOException e) {
                 throw new RdfConsumerException(new JsonLdException(JsonLdErrorCode.INVALID_JSON_LITERAL, e));
             }
+
+//            try (final JsonParser parser = JsonProvider.instance().createParser(new StringReader(object))) {
+//
+////            try (final )
+//
+//                parser.next();
+//
+//                convertedValue = parser.getValue();
+////                type = Keywords.JSON;
+//
+//                // FIXME
+//                convertedValue = new NativeMaterializer3().node(convertedValue, JakartaAdapter.instance());
+//
+//                if (convertedValue == null) {
+//                    final var result = new HashMap<String, Object>(2);
+//                    result.put(Keywords.TYPE, Keywords.JSON);
+//                    result.put(Keywords.VALUE, null);
+//                    return result;
+//                }
+//
+//                return Map.of(
+//                        Keywords.VALUE, convertedValue,
+//                        Keywords.TYPE, Keywords.JSON);
+//
+//            } catch (Exception e) {
+//                throw new RdfConsumerException(new JsonLdException(JsonLdErrorCode.INVALID_JSON_LITERAL, e));
+//            }
 
         }
 

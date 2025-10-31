@@ -26,6 +26,7 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.processor.ProcessingRuntime;
 import com.apicatalog.tree.io.NodeAdapter;
 

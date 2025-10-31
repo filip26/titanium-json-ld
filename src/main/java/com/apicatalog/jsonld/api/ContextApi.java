@@ -33,21 +33,21 @@ public interface ContextApi<R> {
      */
     R context(URI contextUri);
 
-    /**
-     * A context that is used to initialize the active context.
-     *
-     * @param contextLocation <code>IRI</code> referring to a context
-     * @return builder instance
-     */
-    R context(String contextLocation);
+//    /**
+//     * A context that is used to initialize the active context.
+//     *
+//     * @param contextLocation <code>IRI</code> referring to a context
+//     * @return builder instance
+//     */
+//    R context(String contextLocation);
 
-    /**
-     * A context that is used to initialize the active context.
-     *
-     * @param context {@link JsonObject}, a sequence of {@link JsonObject}, or a {@link JsonString} representing an <code>IRI</code>
-     * @return builder instance
-     */
-    R context(JsonStructure context);
+//    /**
+//     * A context that is used to initialize the active context.
+//     *
+//     * @param context {@link JsonObject}, a sequence of {@link JsonObject}, or a {@link JsonString} representing an <code>IRI</code>
+//     * @return builder instance
+//     */
+//    R context(JsonStructure context);
 
     /**
      * A context that is used to initialize the active context.

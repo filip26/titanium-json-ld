@@ -63,7 +63,7 @@ public class ProcessingRuntime {
 //    }
 
     public DocumentLoader getDocumentLoader() {
-        return options.getDocumentLoader();
+        return options.loader();
     }
 
     public Cache<String, JsonValue> getContextCache() {
@@ -83,11 +83,15 @@ public class ProcessingRuntime {
     }
 
     public ProcessingPolicy getUndefinedTermPolicy() {
-        return options.getUndefinedTermsPolicy();
+        return options.undefinedTermsPolicy();
     }
     
     @Deprecated
     public JsonLdVersion version() {
         return options.getProcessingMode();
+    }
+
+    public boolean ordered() {
+        return options.isOrdered();
     }
 }

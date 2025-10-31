@@ -257,7 +257,7 @@ public final class JsonLdOptions {
      *
      * @return the loader or <code>null</code> is is not set
      */
-    public DocumentLoader getDocumentLoader() {
+    public DocumentLoader loader() {
         return documentLoader;
     }
 
@@ -311,8 +311,9 @@ public final class JsonLdOptions {
         return expandContext;
     }
 
-    public void setBase(URI baseUri) {
+    public JsonLdOptions base(URI baseUri) {
         this.base = baseUri;
+        return this;
     }
 
     public void setCompactArrays(boolean compactArrays) {
@@ -323,8 +324,9 @@ public final class JsonLdOptions {
         this.compactToRelative = compactToRelative;
     }
 
-    public void setDocumentLoader(DocumentLoader documentLoader) {
+    public JsonLdOptions loader(DocumentLoader documentLoader) {
         this.documentLoader = documentLoader;
+        return this;
     }
 
     public JsonLdOptions setExtractAllScripts(boolean extractAllScripts) {
@@ -386,8 +388,9 @@ public final class JsonLdOptions {
         this.expandContext = TreeDocument.of(node);
     }
 
-    public void setExpandContext(Document context) {
+    public JsonLdOptions expandContext(Document context) {
         this.expandContext = context;
+        return this;
     }
 
     // Framing
@@ -534,7 +537,7 @@ public final class JsonLdOptions {
      * 
      * @return the processing policy, never <code>null</code>
      */
-    public ProcessingPolicy getUndefinedTermsPolicy() {
+    public ProcessingPolicy undefinedTermsPolicy() {
         return undefinedTerms;
     }
 

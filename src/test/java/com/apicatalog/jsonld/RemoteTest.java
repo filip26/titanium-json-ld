@@ -68,7 +68,7 @@ class RemoteTest {
 
                 JsonLdOptions expandOptions = new JsonLdOptions(options);
 
-                expandOptions.setDocumentLoader(
+                expandOptions.loader(
                                     new UriBaseRewriter(
                                                 JsonLdTestCase.TESTS_BASE,
                                                 wireMockServer.baseUrl(),

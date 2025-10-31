@@ -51,7 +51,7 @@ public class JsonLdTestRunnerEarl {
         final JsonLdOptions options = testCase.getOptions();
 
         assertNotNull(options);
-        assertNotNull(options.getDocumentLoader());
+        assertNotNull(options.loader());
 
         Object result = null;
 
@@ -70,7 +70,7 @@ public class JsonLdTestRunnerEarl {
                 return false;
             }
 
-            Document expectedDocument = options.getDocumentLoader().loadDocument(testCase.expect, new LoaderOptions());
+            Document expectedDocument = options.loader().loadDocument(testCase.expect, new LoaderOptions());
 
             if (expectedDocument == null) {
                 return false;

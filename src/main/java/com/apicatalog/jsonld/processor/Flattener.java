@@ -25,7 +25,6 @@ import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.TreeDocument;
-import com.apicatalog.jsonld.expansion.Expander;
 import com.apicatalog.jsonld.flattening.Flattening;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.tree.io.PolyNode;
@@ -57,7 +56,7 @@ public final class Flattener {
         final LoaderOptions loaderOptions = new LoaderOptions();
         loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
 
-        var remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
+        var remoteDocument = options.loader().loadDocument(input, loaderOptions);
 
         if (remoteDocument == null) {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
@@ -86,7 +85,7 @@ public final class Flattener {
         final LoaderOptions loaderOptions = new LoaderOptions();
         loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
 
-        var remoteDocument = options.getDocumentLoader().loadDocument(input, loaderOptions);
+        var remoteDocument = options.loader().loadDocument(input, loaderOptions);
 
         if (remoteDocument == null) {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
@@ -103,7 +102,7 @@ public final class Flattener {
 
         assertDocumentLoader(options, context);
 
-        final var contextDocument = Context.load(options.getDocumentLoader(), context);
+        final var contextDocument = Context.load(options.loader(), context);
         
         return flatten(input, contextDocument, options);
     }
@@ -127,10 +126,10 @@ public final class Flattener {
             JsonLdOptions compactionOptions = new JsonLdOptions(options);
 
             if (options.getBase() != null) {
-                compactionOptions.setBase(options.getBase());
+                compactionOptions.base(options.getBase());
 
             } else if (options.isCompactArrays()) {
-                compactionOptions.setBase(input.documentUrl());
+                compactionOptions.base(input.documentUrl());
             }
 
             flattenedOutput = Compactor.compact(
@@ -162,10 +161,10 @@ public final class Flattener {
             JsonLdOptions compactionOptions = new JsonLdOptions(options);
 
             if (options.getBase() != null) {
-                compactionOptions.setBase(options.getBase());
+                compactionOptions.base(options.getBase());
 
             } else if (options.isCompactArrays()) {
-                compactionOptions.setBase(input.documentUrl());
+                compactionOptions.base(input.documentUrl());
             }
 
             flattenedOutput = Compactor.compact(
@@ -179,7 +178,7 @@ public final class Flattener {
 
     
     private static final void assertDocumentLoader(final JsonLdOptions options, final URI target) throws JsonLdException {
-        if (options.getDocumentLoader() == null) {
+        if (options.loader() == null) {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + target + "].");
         }
     }

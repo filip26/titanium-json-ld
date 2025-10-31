@@ -17,11 +17,13 @@ package com.apicatalog.jsonld.custom;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.net.URI;
 import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLd;
+import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.jsonld.test.JsonLdTestManifest;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
@@ -37,6 +39,6 @@ class CompactBaseTest {
                 .filter(o -> "#t0047".equals(o.id))
                 .findFirst().orElseThrow(() -> new NoSuchElementException());
 
-        assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options -> JsonLd.compact(testCase.input, testCase.context).options(options).base("http://fake.com").get()));
+        assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options -> JsonLd.compact(testCase.input, testCase.context, new JsonLdOptions(options).base(URI.create("http://fake.com")))));
     }
 }

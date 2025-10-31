@@ -211,7 +211,7 @@ public class JsonLdTestOptions {
         }
 
         if (base != null) {
-            options.setBase(URI.create(base));
+            options.base(URI.create(base));
         }
 
         if (expandContext != null) {
