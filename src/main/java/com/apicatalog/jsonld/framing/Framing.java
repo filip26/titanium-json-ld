@@ -215,7 +215,7 @@ public final class Framing {
                 final var property = properties.next();
 
                 final var objects = state.getGraphMap().get(state.getGraphName(), id, property);
-System.out.println("OBJ > " + objects);
+
                 // 4.7.1.
                 if (Keywords.contains(property)) {
                     output.put(property, objects);

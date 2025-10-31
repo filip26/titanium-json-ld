@@ -320,6 +320,8 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
             state.getGraphMap().merge();
         }
 
+        System.out.println("MERGED " + state.getGraphMap());
+        
         // Build reverse property index for efficient lookups
         state.setReversePropertyIndex(buildReversePropertyIndex(state.getGraphMap()));
 
