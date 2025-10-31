@@ -57,10 +57,16 @@ public final class NodeMap {
     }
 
     public Object get(String graphName, String subject, String property) {
-        return Optional.ofNullable(index.get(graphName))
-                .map(g -> g.get(subject))
-                .map(s -> s.get(property))
-                .orElse(null);
+        
+        System.out.println(">: " + graphName + ", " + subject + ", " + property);
+        
+        var x = Optional.ofNullable(index.get(graphName))
+        .map(g -> g.get(subject))
+        .map(s -> s.get(property))
+        .orElse(null);
+        
+        System.out.println("<: " + x);
+        return x;
     }
 
     public boolean contains(String graphName, String subject, String property) {
@@ -92,12 +98,79 @@ public final class NodeMap {
                 .keySet();
     }
 
+    public void merge() {
+
+        final NodeMap result = new NodeMap();
+
+        for (final var graphEntry : index.entrySet()) {
+
+            final String graphName = graphEntry.getKey();
+
+            for (final var subjectEntry : graphEntry.getValue().entrySet()) {
+                final String subjectId = subjectEntry.getKey();
+
+                // Create merged entry if missing
+                if (result.find(Keywords.MERGED, subjectId).isEmpty()) {
+                    result.set(Keywords.MERGED, subjectId, Keywords.ID, subjectId);
+                }
+
+                // If this is a blank-node graph (e.g. _:b0), do NOT merge by subject ID
+                // Use a scoped key to avoid merging distinct nodes from blank graphs
+                final boolean isBlankGraph = graphName.startsWith("_:");
+
+                final String targetSubjectKey = isBlankGraph
+                        ? graphName + "::" + subjectId
+                        : subjectId;
+
+                if (result.find(Keywords.MERGED, targetSubjectKey).isEmpty()) {
+                    result.set(Keywords.MERGED, targetSubjectKey, Keywords.ID, subjectId);
+                }
+
+                for (final var property : subjectEntry.getValue().entrySet()) {
+
+                    final String prop = property.getKey();
+
+                    // For blank graphs, isolate them in their scoped key
+                    final String target = isBlankGraph ? targetSubjectKey : subjectId;
+
+                    if (!Keywords.TYPE.equals(prop) && Keywords.matchForm(prop)) {
+                        result.set(Keywords.MERGED, target, prop, property.getValue());
+                        continue;
+                    }
+
+                    final List<Object> mergedValues;
+                    Object existing = result.get(Keywords.MERGED, target, prop);
+
+                    if (existing instanceof Collection<?> col) {
+                        mergedValues = (col instanceof ArrayList)
+                                ? (ArrayList<Object>) col
+                                : new ArrayList<>(col);
+                    } else {
+                        mergedValues = new ArrayList<>();
+                        result.set(Keywords.MERGED, target, prop, mergedValues);
+                    }
+
+                    if (property.getValue() instanceof Collection<?> col) {
+                        mergedValues.addAll(col);
+                    } else {
+                        mergedValues.add(property.getValue());
+                    }
+                }
+            }
+        }
+
+        if (result.index.get(Keywords.MERGED) != null) {
+            index.put(Keywords.MERGED, result.index.get(Keywords.MERGED));
+        }
+    }
+
+    
     /**
      *
      * @see <a href="https://www.w3.org/TR/json-ld11-api/#merge-node-maps">Merge
      *      Node Maps</a>
      */
-    public void merge() {
+    public void merge1() {
 
         // 1.
         final NodeMap result = new NodeMap();
@@ -145,7 +218,7 @@ public final class NodeMap {
                             mergedValues.addAll(properties);
 
                         } else {
-                            mergedValues.add(property.getValue());
+                            mergedValues.add(cloneValue(property.getValue()));
                         }
                     }
                 }
@@ -157,6 +230,12 @@ public final class NodeMap {
         }
     }
 
+    private static Object cloneValue(Object v) {
+        if (v instanceof Map<?, ?> m) return new LinkedHashMap<>(m);
+        if (v instanceof Collection<?> c) return new ArrayList<>(c);
+        return v;
+    }
+    
     public boolean contains(String id) {
         return index.containsKey(id);
     }
@@ -165,4 +244,13 @@ public final class NodeMap {
     public String toString() {
         return Objects.toString(index);
     }
+    
+    public static void main(String[] args) {
+        NodeMap nm = new NodeMap();
+        nm.set("@default", "ex:Subject", "ex:name", List.of(Map.of("@value", "the subject")));
+        nm.set("_:b0", "ex:Subject", "ex:name", List.of(Map.of("@value", "something different")));
+        nm.merge();
+        System.out.println(nm.get("@merged", "ex:Subject", "ex:name"));
+    }
+    
 }

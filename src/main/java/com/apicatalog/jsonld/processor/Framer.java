@@ -255,9 +255,9 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
 //    }
 
     public static final Context context(
-            final Document document,
-            final PolyNode frame,
-            final URI contextBase,
+            final URI baseUrl,
+            final PolyNode localContext,
+            final URI localContextBase,
             final JsonLdOptions options) throws JsonLdException, IOException {
 
 //        var builder = new Context.Builder(
@@ -273,11 +273,11 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
 
         // 10-11.
         return new ActiveContext(
-                document.documentUrl(),
-                document.documentUrl(),
+                baseUrl,
+                baseUrl,
                 options.getProcessingMode())
                 .newContext(options.loader())
-                .build(frame, contextBase);
+                .build(localContext, localContextBase);
     }
 
     public static final Map<String, ?> frame(

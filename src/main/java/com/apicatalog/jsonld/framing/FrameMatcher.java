@@ -43,8 +43,7 @@ public final class FrameMatcher {
     }
 
     public List<String> match(final Collection<String> subjects) throws JsonLdException {
-System.out.println("MATCH " + subjects);
-System.out.println("      " + frame);
+
         // 1. if frame is empty then all subject match
         if (frame.isWildCard()) {
             return new ArrayList<>(subjects);

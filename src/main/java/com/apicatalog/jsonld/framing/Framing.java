@@ -88,11 +88,11 @@ public final class Framing {
         final var ids = ordered
                 ? matchedSubjects.stream().sorted().iterator()
                 : matchedSubjects.iterator();
-System.out.println("F1 = " + matchedSubjects);
+
         while (ids.hasNext()) {
 
             final var id = ids.next();
-            System.out.println("F2 = "  + id);
+
             final var node = (Map<String, ?>) state.getGraphMap()
                     .find(state.getGraphName(), id)
                     .orElse(Map.of());
@@ -170,7 +170,15 @@ System.out.println("F1 = " + matchedSubjects);
 
                     Framing.with(
                             graphState,
-                            new ArrayList<>(state.getGraphMap().find(id).map(Map::keySet).orElse(Set.of())),
+                            
+//                            new ArrayList<>(state.getGraphMap().find(id).map(Map::keySet).orElse(Set.of())),
+                            
+                            new ArrayList<>(
+                                    state.getGraphMap().find(id)
+                                        .or(() -> state.getGraphMap().find(state.getGraphName())) // <— fallback to current graph
+                                        .map(Map::keySet)
+                                        .orElse(Set.of())
+                                ),
                             subframe,
                             output,
                             Keywords.GRAPH)
@@ -207,7 +215,7 @@ System.out.println("F1 = " + matchedSubjects);
                 final var property = properties.next();
 
                 final var objects = state.getGraphMap().get(state.getGraphName(), id, property);
-
+System.out.println("OBJ > " + objects);
                 // 4.7.1.
                 if (Keywords.contains(property)) {
                     output.put(property, objects);
@@ -297,7 +305,7 @@ System.out.println("F1 = " + matchedSubjects);
 
                         FramingState clonedState = new FramingState(state);
                         clonedState.setEmbedded(true);
-
+ 
                         Framing.with(
                                 clonedState,
                                 Arrays.asList(((Map<String, String>) item).get(Keywords.ID)),
@@ -399,13 +407,12 @@ System.out.println("F1 = " + matchedSubjects);
             state.removeLastParent();
 
             // 4.8.
+
             addToResult(parent, activeProperty, output);
         }
     }
 
     private static void addToResult(Map<String, Object> result, String property, Object value) {
-        System.out.println("ADD 1  = " + result);
-        System.out.println("ADD 0  = " + property + " -> " + value);
         
         if (property == null) {
             result.put(Integer.toHexString(result.size()), value);

@@ -87,7 +87,7 @@ public final class Frame {
 
     }
 
-    public static final PolyNode context(final PolyNode frame) throws JsonLdException {
+    public static final PolyNode contextNode(final PolyNode frame) throws JsonLdException {
 
         final var node = frame.node();
         final var adapter = frame.adapter();
@@ -121,7 +121,7 @@ public final class Frame {
 //            final URI documentUrl
 //            
     ) throws JsonLdException {
-System.out.println("EXF " + expanded);
+
         final Map<String, Object> frameMap;
 
         // 1.

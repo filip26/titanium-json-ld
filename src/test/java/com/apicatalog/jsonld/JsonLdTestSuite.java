@@ -30,7 +30,7 @@ import org.junit.platform.suite.api.SuiteDisplayName;
         ToRdfTest.class,
         RemoteTest.class
 })
-public class JsonLdSuite {
+public class JsonLdTestSuite {
 
     
     

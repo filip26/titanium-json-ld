@@ -194,28 +194,77 @@ public class JsonLdAdapter {
 //        return result;
 //    }
 
-    public static void setOrAdd(Map<String, Object> result, String key, Object value, boolean asArray) {
+    public static void setOrAdd(
+            final Map<String, Object> source,
+            final String key, Object value,
+            final boolean asArray) {
+//
+//        // 1. If as array is true and the value of key in object does not exist or is
+//        // not an array,
+//        // set it to a new array containing any original value.
+//        if (asArray) {
+//
+//            var original = source.get(key);
+//
+//            if (original == null) {
+//                source.put(key, new ArrayList<>());
+//
+//            } else if (!(original instanceof Collection)) {
+//                var x = new ArrayList<>();
+//                x.add(original);
+//                source.put(key, x);
+//            }
+//        }
+//
+//        // 2. If value is an array, then for each element v in value, use add value
+//        // recursively to add v to key in entry.
+//        if (value instanceof Collection<?> array) {
+//            array.forEach(v -> setOrAdd(source, key, v, asArray));
+//
+//            // 3.
+//        } else {
+//
+//            final var original = source.get(key);
+//
+//            // 3.1
+//            if (original != null) {
+//
+//                if (original instanceof Collection array) {
+//                    array.add(value);
+//
+//                } else {
+//                    var x = new ArrayList<>();
+//                    x.add(original);
+//                    x.add(value);
+//                    source.put(key, x);
+//                }
+//
+//                // 3.2
+//            } else {
+//                source.put(key, value);
+//            }
+//        }
 
-        var previous = result.get(key);
+        var previous = source.get(key);
 
         if (previous == null) {
             if (value instanceof Collection<?> array) {
                 if (!asArray && array.size() == 1) {
-                    result.put(key, array.iterator().next());
+                    source.put(key, array.iterator().next());
                     return;
                 }
-                result.put(key, value);
+                source.put(key, value);
                 return;
             }
             if (asArray) {
                 if (value == null) {
-                    result.put(key, List.of());
+                    source.put(key, List.of());
                     return;
                 }
-                result.put(key, List.of(value));
+                source.put(key, List.of(value));
                 return;
             }
-            result.put(key, value);
+            source.put(key, value);
             return;
         }
 
@@ -225,11 +274,11 @@ public class JsonLdAdapter {
 
             if (!asArray && list.isEmpty()) {
                 if (value instanceof Collection<?> single && single.size() == 1) {
-                    result.put(key, single.iterator().next());
+                    source.put(key, single.iterator().next());
                     return;
                 }
 
-                result.put(key, value);
+                source.put(key, value);
                 return;
             }
 
@@ -239,21 +288,21 @@ public class JsonLdAdapter {
 
             if (!asArray && col.isEmpty()) {
                 if (value instanceof Collection<?> single && single.size() == 1) {
-                    result.put(key, single.iterator().next());
+                    source.put(key, single.iterator().next());
                     return;
                 }
 
-                result.put(key, value);
+                source.put(key, value);
                 return;
             }
 
             array = new ArrayList<Object>(col);
-            result.put(key, array);
+            source.put(key, array);
 
         } else {
             array = new ArrayList<>();
             array.add(previous);
-            result.put(key, array);
+            source.put(key, array);
         }
 
         if (value instanceof Collection<?> col) {            
