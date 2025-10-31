@@ -223,8 +223,7 @@ public final class JsonLd {
     public static final Map<String, ?> frame(final Document document, final Document frame, final JsonLdOptions options) throws JsonLdException, IOException {
 
         final var contextNode = Frame.contextNode(frame.content());
-System.out.println(">I " + document.content().node());
-System.out.println(">F " + frame.content().node());
+
         return Context.inject(
                 Framer.frame(
                         document,

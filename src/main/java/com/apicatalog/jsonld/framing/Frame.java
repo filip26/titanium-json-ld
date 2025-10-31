@@ -37,12 +37,14 @@ import com.apicatalog.web.uri.UriValidationPolicy;
 
 public final class Frame {
 
-    public static final Frame EMPTY = new Frame(Map.of());
+    public static final Frame EMPTY = new Frame(Map.of(), Set.of());
 
     private final Map<String, ?> expanded;
+    private final Collection<String> frameGraphs;
 
-    private Frame(final Map<String, ?> expanded) {
+    private Frame(final Map<String, ?> expanded, Collection<String> frameGraphs) {
         this.expanded = expanded;
+        this.frameGraphs = frameGraphs;
     }
 
     public static final Frame of(final Document frame, final JsonLdOptions options) throws JsonLdException, IOException {
@@ -68,18 +70,18 @@ public final class Frame {
 //            context = frameObject.get(Keywords.CONTEXT);
 //        }
 
+        @SuppressWarnings("unchecked")
+        Set<String> keys = (frame.content().node() instanceof Map map)
+                ? map.keySet()
+                : Set.of();
+
         var expanded = Expander.expandFrame(
                 frame,
                 new JsonLdOptions(options).setOrdered(false));
 
-        return of(expanded);// , context, document.contextUrl(), document.documentUrl());
+        return of(expanded, keys);
     }
 
-//    static final Frame of(final Object expanded) throws JsonLdException {
-//        // TODO
-//        return of(expanded, null, null, null);
-//    }
-    
     public static final URI contextBase(final Document frame, final JsonLdOptions options) {
         return (frame.contextUrl() != null)
                 ? frame.documentUrl()
@@ -101,7 +103,7 @@ public final class Frame {
         if (context != null) {
             return new PolyNode(context, adapter);
         }
-        
+
 //        if (context != null
 //                && (adapter.isString(context)
 //                        || adapter.isCollection(context)
@@ -114,13 +116,11 @@ public final class Frame {
         return new PolyNode(Map.of(), NativeAdapter.instance());
     }
 
-    static final Frame of(
-            final Object expanded
-//            final PolyNode context
-//            final URI contextUrl,
-//            final URI documentUrl
-//            
-    ) throws JsonLdException {
+    static final Frame of(final Object expanded) throws JsonLdException {
+        return of(expanded, Set.of());
+    }
+
+    static final Frame of(final Object expanded, Collection<String> frameGraphs) throws JsonLdException {
 
         final Map<String, Object> frameMap;
 
@@ -160,7 +160,7 @@ public final class Frame {
             throw new JsonLdException(JsonLdErrorCode.INVALID_FRAME, "Frame @type value is not valid [@type = " + frameMap.get(Keywords.TYPE) + "].");
         }
 
-        return new Frame(frameMap);// , context, contextUrl, documentUrl);
+        return new Frame(frameMap, frameGraphs);// , context, contextUrl, documentUrl);
     }
 
     public Embed getEmbed(final Embed defaultValue) throws JsonLdException {
@@ -368,7 +368,7 @@ public final class Frame {
     public boolean isDefault(String graphKey) {
 //        if (context != null) {
         // FIXME frameObject
-        for (final String key : expanded.keySet()) {
+        for (final String key : frameGraphs) {
             if (key.equals(graphKey)) {
                 return true;
             }
