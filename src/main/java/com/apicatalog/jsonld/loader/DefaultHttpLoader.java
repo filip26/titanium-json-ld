@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.TreeDocument;
+import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.http.HttpClient;
 import com.apicatalog.jsonld.http.HttpResponse;
 import com.apicatalog.jsonld.http.ProfileConstants;
@@ -201,7 +201,7 @@ class DefaultHttpLoader implements DocumentLoader {
 
             final var remoteContent = reader.read(is);
 
-            final var remoteDocument = TreeDocument.of(type, remoteContent);
+            final var remoteDocument = RemoteDocument.of(type, remoteContent);
 
             remoteDocument.setDocumentUrl(targetUri);
 

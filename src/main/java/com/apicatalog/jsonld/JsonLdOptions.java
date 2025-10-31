@@ -22,7 +22,7 @@ import java.util.Set;
 import com.apicatalog.jsonld.cache.Cache;
 import com.apicatalog.jsonld.cache.LruCache;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.TreeDocument;
+import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.SchemeRouter;
@@ -365,7 +365,7 @@ public final class JsonLdOptions {
             this.expandContext = null;
             return;
         }
-        this.expandContext = TreeDocument.of(
+        this.expandContext = RemoteDocument.of(
                 new PolyNode(Set.of(contextLocation), NativeAdapter.instance()));
     }
 
@@ -385,7 +385,7 @@ public final class JsonLdOptions {
             this.expandContext = null;
             return;
         }
-        this.expandContext = TreeDocument.of(node);
+        this.expandContext = RemoteDocument.of(node);
     }
 
     public JsonLdOptions expandContext(Document context) {

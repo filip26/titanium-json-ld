@@ -50,7 +50,6 @@ import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.PolyNode;
-import com.apicatalog.tree.io.java.NativeAdapter;
 
 import jakarta.json.JsonObject;
 
@@ -188,7 +187,7 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
      *
      * @return {@link JsonObject} representing framed document
      * @throws JsonLdException if the document framing fails
-     * @throws IOException 
+     * @throws IOException
      */
 //    public Map<String, ?> get() throws JsonLdException, IOException {
 //        if (document != null) {
@@ -255,10 +254,42 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
 //        return frame(input, Frame.of(frame, options), options);
 //    }
 
-    public static final Map<String, ?> frame(final Document inputDocument, final Frame frame, final JsonLdOptions options) throws JsonLdException, IOException {
+    public static final Context context(
+            final Document document,
+            final PolyNode frame,
+            final URI contextBase,
+            final JsonLdOptions options) throws JsonLdException, IOException {
 
+//        var builder = new Context.Builder(
+//                document.documentUrl(),
+//                document.documentUrl(),
+//                options.getProcessingMode())
+//                .loader(options.loader());
+
+//        var contextNode = Frame.context(frame);
+//        System.out.println("CN = " + contextNode.node());
+//        builder.update(contextNode
+//                contextBase);
+
+        // 10-11.
+        return new ActiveContext(
+                document.documentUrl(),
+                document.documentUrl(),
+                options.getProcessingMode())
+                .newContext(options.loader())
+                .build(frame, contextBase);
+    }
+
+    public static final Map<String, ?> frame(
+            final Document document,
+            final Frame frame,
+            final Context context,
+            final JsonLdOptions options) throws JsonLdException, IOException {
+
+        final var runtime = ProcessingRuntime.of(options);
+        
         final var expandedInput = Expander.expand(
-                inputDocument,
+                document,
                 new JsonLdOptions(options).setOrdered(false));
 
 //      new Visitor().root(expandedFrame, NativeAdapter.instance()).traverse(
@@ -269,27 +300,6 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
 //      
 //      );
 
-        // 9.
-        final var contextBase = (frame.getContextUrl() != null)
-                ? frame.getDocumentUrl()
-                : options.getBase();
-
-        final var runtime = ProcessingRuntime.of(options);
-
-        // 10-11.
-        final var context = new ActiveContext(
-                inputDocument.documentUrl(),
-                inputDocument.documentUrl(),
-                options.getProcessingMode())
-                .newContext(options.loader())
-                .build(frame.context() != null
-                        ? frame.context()
-                        // TODO
-                        : new PolyNode(Map.of(), NativeAdapter.instance()),
-                        contextBase);
-
-        final var graphKey = UriCompaction.withVocab(context, Keywords.GRAPH);
-
         // 14.
         final var state = new FramingState();
 
@@ -299,7 +309,9 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
         state.setRequireAll(options.isRequiredAll()); // 14.4.
         state.setOmitDefault(options.isOmitDefault()); // 14.5.
         state.setGraphMap(new NodeMapBuilder(expandedInput, new NodeMap()).build()); // 14.7.
-
+        
+        final String graphKey = UriCompaction.withVocab(context, Keywords.GRAPH);
+                
         if (frame.isDefault(graphKey)) {
             state.setGraphName(Keywords.DEFAULT); // 14.6.
 
@@ -314,6 +326,7 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
         // 15.
         final var resultMap = new LinkedHashMap<String, Object>();
 
+        
         // 16.
         Framing.with(state,
                 new ArrayList<>(state.getGraphMap().subjects(state.getGraphName())),
@@ -349,6 +362,10 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
                 .map(Framer::removePreserve)
                 .toList();
 
+        
+//        var filtered = result.toList();
+        
+
         // 19.
         // FIXME output
         var compactedOutput = Compaction
@@ -356,7 +373,7 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
                 .compactArrays(options.isCompactArrays())
                 .ordered(options.isOrdered())
                 .compact(filtered);
-//        System.out.println("1 >>> " + compactedOutput);
+
         // 19.1.
         if (compactedOutput instanceof Collection<?> col) {
 
@@ -393,13 +410,16 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
 
         // 19.3.
         if (compactedOutput instanceof Map map) {
-            
+
             @SuppressWarnings("unchecked")
-            var typedMap = (Map<String, ?>) map;
-            
-            if (frame.hasContext()) {
-                return Context.inject(typedMap, frame.context());
-            }
+            final var typedMap = (Map<String, ?>) map;
+
+//            final var contextNode = frame.context();
+//
+//            if (frame.hasContext()) {
+//                return Context.inject(typedMap, frame.context());
+//            }
+
             return typedMap;
         }
 

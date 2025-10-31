@@ -22,8 +22,9 @@ import java.util.Map;
 
 import com.apicatalog.jsonld.api.CompactionApi;
 import com.apicatalog.jsonld.api.FlatteningApi;
+import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.TreeDocument;
+import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.framing.Frame;
 import com.apicatalog.jsonld.fromrdf.QuadsToJsonLd;
 import com.apicatalog.jsonld.processor.Compactor;
@@ -31,7 +32,6 @@ import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.processor.Framer;
 import com.apicatalog.jsonld.processor.RdfEmitter;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
-import com.apicatalog.web.uri.UriUtils;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
@@ -70,7 +70,7 @@ public final class JsonLd {
      */
     public static final Collection<?> expand(final URI document, final JsonLdOptions options) throws JsonLdException, IOException {
         return expand(
-                TreeDocument.fetch(
+                RemoteDocument.fetch(
                         document,
                         options.loader(),
                         options.isExtractAllScripts()),
@@ -101,8 +101,8 @@ public final class JsonLd {
      */
     public static final Map<String, ?> compact(final URI document, final URI context, final JsonLdOptions options) throws JsonLdException, IOException {
         return Compactor.compact(
-                TreeDocument.fetch(document, options.loader(), options.isExtractAllScripts()),
-                TreeDocument.fetch(context, options.loader(), options.isExtractAllScripts()),
+                RemoteDocument.fetch(document, options.loader(), options.isExtractAllScripts()),
+                RemoteDocument.fetch(context, options.loader(), options.isExtractAllScripts()),
                 options);
     }
 
@@ -177,9 +177,37 @@ public final class JsonLd {
      * @return {@link FramingApi} allowing to set additional parameters
      */
     public static final Map<String, ?> frame(final URI document, final URI frame, final JsonLdOptions options) throws JsonLdException, IOException {
-        return Framer.frame(
-                TreeDocument.fetch(document, options.loader(), options.isExtractAllScripts()),
-                Frame.of(TreeDocument.fetch(frame, options.loader(), options.isExtractAllScripts()), options),
+        return frame(
+                RemoteDocument.fetch(document, options.loader(), options.isExtractAllScripts()),
+                frame,
+                options);
+    }
+
+    /**
+     * Frames the remote input using given remote frame.
+     *
+     * @param document {@code IRI} referencing JSON-LD document to frame
+     * @param frame    {@code URI} referencing JSON-LD frame
+     * @return {@link FramingApi} allowing to set additional parameters
+     */
+    public static final Map<String, ?> frame(final Document document, final URI frame, final JsonLdOptions options) throws JsonLdException, IOException {
+        return frame(
+                document,
+                RemoteDocument.fetch(frame, options.loader(), options.isExtractAllScripts()),
+                options);
+    }
+
+    /**
+     * Frames the remote input using given local frame.
+     *
+     * @param document {@code URI} referencing JSON-LD document to frame
+     * @param frame    JSON-LD definition
+     * @return {@link FramingApi} allowing to set additional parameters
+     */
+    public static final Map<String, ?> frame(final URI document, final Document frame, final JsonLdOptions options) throws JsonLdException, IOException {
+        return frame(
+                RemoteDocument.fetch(document, options.loader(), options.isExtractAllScripts()),
+                frame,
                 options);
     }
 
@@ -193,38 +221,21 @@ public final class JsonLd {
      * @throws JsonLdException
      */
     public static final Map<String, ?> frame(final Document document, final Document frame, final JsonLdOptions options) throws JsonLdException, IOException {
-        return Framer.frame(document, Frame.of(document, options), options);
-//        return new FramingApi(
-//                assertJsonDocument(document, DOCUMENT_PARAM_NAME),
-//                assertJsonDocument(frame, FRAME_PARAM_NAME));
-    }
 
-    /**
-     * Frames the remote input using given remote frame.
-     *
-     * @param document {@code IRI} referencing JSON-LD document to frame
-     * @param frame    {@code URI} referencing JSON-LD frame
-     * @return {@link FramingApi} allowing to set additional parameters
-     */
-    public static final Map<String, ?> frame(final Document document, final URI frame, final JsonLdOptions options) throws JsonLdException, IOException {
-        return Framer.frame(
+        final var context = Frame.context(frame.content());
+
+        final var result = Framer.frame(
                 document,
-                Frame.of(TreeDocument.fetch(frame, options.loader(), options.isExtractAllScripts()), options),
-                options);
-    }
-
-    /**
-     * Frames the remote input using given local frame.
-     *
-     * @param document {@code URI} referencing JSON-LD document to frame
-     * @param frame    JSON-LD definition
-     * @return {@link FramingApi} allowing to set additional parameters
-     */
-    public static final Map<String, ?> frame(final URI document, final Document frame, final JsonLdOptions options) throws JsonLdException, IOException {
-        return Framer.frame(
-                TreeDocument.fetch(document, options.loader(), options.isExtractAllScripts()),
                 Frame.of(frame, options),
+                Framer.context(document,
+                        context,
+                        Frame.contextBase(frame, options),
+                        options),
                 options);
+        
+//FIXME
+            return Context.inject(result, context);
+
     }
 
     /**
@@ -234,7 +245,7 @@ public final class JsonLd {
      * @return {@link ToRdfApi} allowing to set additional parameters
      */
     public static final void toRdf(final URI document, RdfQuadConsumer consumer, JsonLdOptions options) throws JsonLdException, IOException {
-        toRdf(TreeDocument
+        toRdf(RemoteDocument
                 .fetch(
                         document,
                         options.loader(),
@@ -279,23 +290,6 @@ public final class JsonLd {
 
     public static final QuadsToJsonLd fromRdf(JsonLdOptions options) {
         return new QuadsToJsonLd().options(options);
-    }
-
-    private static final URI assertLocation(final String location, final String param) {
-
-        assertNotNull(location, param);
-
-        if (location == null || location.isBlank()) {
-            throw new IllegalArgumentException("'" + param + "' is blank string.");
-        }
-
-        final URI uri = UriUtils.create(location.strip());
-
-        if (uri == null || !uri.isAbsolute()) {
-            throw new IllegalArgumentException("'" + param + "' is not an absolute URI [" + location + "].");
-        }
-
-        return uri;
     }
 
     private static final URI assertUri(final URI uri, final String param) {

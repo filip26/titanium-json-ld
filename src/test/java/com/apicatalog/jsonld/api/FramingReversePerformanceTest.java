@@ -146,7 +146,6 @@ class FramingReversePerformanceTest {
     }
 
     private JsonObject buildTestFrame() {
-
         return Json.createObjectBuilder()
                 .add("@context", Json.createObjectBuilder()
                         .add("@vocab", "http://example.com/vocab#"))

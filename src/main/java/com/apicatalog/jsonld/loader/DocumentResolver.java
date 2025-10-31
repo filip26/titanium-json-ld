@@ -9,7 +9,7 @@ import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.document.TreeDocument;
+import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.web.media.MediaType;
 
 @Deprecated
@@ -57,7 +57,7 @@ class DocumentResolver {
     private static final Optional<DocumentReader<InputStream>> findReader(final MediaType type) {
         if (type != null) {
             if (JsonDocument.accepts(type)) {
-                return Optional.of(is -> TreeDocument.of(type, is));
+                return Optional.of(is -> RemoteDocument.of(type, is));
             }
 
         }

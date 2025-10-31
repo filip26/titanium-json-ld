@@ -24,7 +24,7 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.document.TreeDocument;
+import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.flattening.Flattening;
 import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.tree.io.PolyNode;

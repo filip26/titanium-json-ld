@@ -36,7 +36,7 @@ import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 
-public final class TreeDocument implements Document {
+public final class RemoteDocument implements Document {
 
     private static final String PLUS_JSON = "+json";
 
@@ -47,7 +47,7 @@ public final class TreeDocument implements Document {
     private URI documentUrl;
     private URI contextUrl;
 
-    private TreeDocument(final MediaType type, final String profile, final PolyNode content) {
+    private RemoteDocument(final MediaType type, final String profile, final PolyNode content) {
         this.contentType = type;
         this.profile = profile;
         this.content = content;
@@ -60,7 +60,7 @@ public final class TreeDocument implements Document {
      * @param structure representing parsed JSON content
      * @return {@link Document} representing JSON content
      */
-    public static TreeDocument of(final PolyNode content) {
+    public static RemoteDocument of(final PolyNode content) {
         Objects.requireNonNull(content);
         return of(MediaType.JSON, content);
     }
@@ -74,12 +74,12 @@ public final class TreeDocument implements Document {
      * @param structure   representing parsed JSON content
      * @return {@link Document} representing JSON content
      */
-    public static TreeDocument of(final MediaType contentType, final PolyNode content) {
+    public static RemoteDocument of(final MediaType contentType, final PolyNode content) {
 
         Objects.requireNonNull(content);
 
         // FIXME
-        return new TreeDocument(
+        return new RemoteDocument(
                 new MediaType(contentType.type(), contentType.subtype()),
                 contentType.findFirstParameter("profile").orElse(null), content);
 
@@ -106,7 +106,7 @@ public final class TreeDocument implements Document {
      * @return {@link Document} representing JSON document
      */
     @Deprecated
-    public static final TreeDocument of(final InputStream is) throws JsonLdException {
+    public static final RemoteDocument of(final InputStream is) throws JsonLdException {
         return of(MediaType.JSON, is);
     }
 
@@ -122,7 +122,7 @@ public final class TreeDocument implements Document {
      * @throws JsonLdException if the document creation fails
      */
     @Deprecated
-    public static final TreeDocument of(final MediaType contentType, final InputStream is) throws JsonLdException {
+    public static final RemoteDocument of(final MediaType contentType, final InputStream is) throws JsonLdException {
 
         assertContentType(contentType);
 
@@ -147,7 +147,7 @@ public final class TreeDocument implements Document {
      * @return {@link Document} representing JSON document
      */
     @Deprecated
-    public static final TreeDocument of(final Reader reader) throws JsonLdException {
+    public static final RemoteDocument of(final Reader reader) throws JsonLdException {
         return of(MediaType.JSON, reader);
     }
 
@@ -163,7 +163,7 @@ public final class TreeDocument implements Document {
      * @throws JsonLdException if the document creation fails
      */
     @Deprecated
-    public static final TreeDocument of(final MediaType contentType, final Reader reader) throws JsonLdException {
+    public static final RemoteDocument of(final MediaType contentType, final Reader reader) throws JsonLdException {
 
         assertContentType(contentType);
 
@@ -181,7 +181,7 @@ public final class TreeDocument implements Document {
     }
 
     @Deprecated
-    private static final TreeDocument doParse(
+    private static final RemoteDocument doParse(
             final MediaType contentType,
             final JsonParser parser) throws JsonLdException {
 
@@ -196,12 +196,12 @@ public final class TreeDocument implements Document {
         final String profile = contentType.findFirstParameter("profile").orElse(null);
 
         if (JsonUtils.isArray(root)) {
-            return new TreeDocument(contentType, profile,
+            return new RemoteDocument(contentType, profile,
                     new PolyNode(root.asJsonArray(), JakartaAdapter.instance()));
         }
 
         if (JsonUtils.isObject(root)) {
-            return new TreeDocument(new MediaType(contentType.type(), contentType.subtype()), profile,
+            return new RemoteDocument(new MediaType(contentType.type(), contentType.subtype()), profile,
                     new PolyNode(root.asJsonObject(), JakartaAdapter.instance()));
         }
 

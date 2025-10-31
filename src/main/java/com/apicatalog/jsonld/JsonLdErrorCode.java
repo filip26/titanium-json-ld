@@ -370,6 +370,6 @@ public enum JsonLdErrorCode {
 
     @Override
     public String toString() {
-        return description + " [code=" + this + "].";
+        return description + " [code=" + this.name() + "].";
     }
 }

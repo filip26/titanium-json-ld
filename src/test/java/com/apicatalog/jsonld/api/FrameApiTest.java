@@ -29,6 +29,7 @@ import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.loader.MockLoader;
 import com.apicatalog.web.media.MediaType;
 
 import jakarta.json.Json;

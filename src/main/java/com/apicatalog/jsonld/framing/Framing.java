@@ -75,9 +75,9 @@ public final class Framing {
         // 2.
         final Embed embed = frame.getEmbed(state.getEmbed());
 
-        final boolean explicit = frame.getExplicit(state.isExplicitInclusion());
+        final boolean explicit = frame.isExplicit(state.isExplicitInclusion());
 
-        final boolean requireAll = frame.getRequireAll(state.isRequireAll());
+        final boolean requireAll = frame.isRequireAll(state.isRequireAll());
 
         // 3.
         final List<String> matchedSubjects = FrameMatcher
@@ -88,17 +88,17 @@ public final class Framing {
         final var ids = ordered
                 ? matchedSubjects.stream().sorted().iterator()
                 : matchedSubjects.iterator();
-
+System.out.println("F1 = " + matchedSubjects);
         while (ids.hasNext()) {
 
             final var id = ids.next();
-
+            System.out.println("F2 = "  + id);
             final var node = (Map<String, ?>) state.getGraphMap()
                     .find(state.getGraphName(), id)
                     .orElse(Map.of());
 
-            final String nodeId = node.get(Keywords.ID) instanceof String stringId
-                    ? stringId
+            final var nodeId = node.get(Keywords.ID) instanceof String stringNodeId
+                    ? stringNodeId
                     : null;
 
             // 4.1.
@@ -404,6 +404,9 @@ public final class Framing {
     }
 
     private static void addToResult(Map<String, Object> result, String property, Object value) {
+        System.out.println("ADD 1  = " + result);
+        System.out.println("ADD 0  = " + property + " -> " + value);
+        
         if (property == null) {
             result.put(Integer.toHexString(result.size()), value);
             return;
