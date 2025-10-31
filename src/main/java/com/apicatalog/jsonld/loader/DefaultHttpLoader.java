@@ -33,7 +33,7 @@ import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.http.HttpClient;
 import com.apicatalog.jsonld.http.HttpResponse;
 import com.apicatalog.jsonld.http.ProfileConstants;
-import com.apicatalog.tree.io.NodeParser;
+import com.apicatalog.tree.io.NodeReader;
 import com.apicatalog.tree.io.jakarta.JakartaReader;
 import com.apicatalog.web.link.Link;
 import com.apicatalog.web.media.MediaType;
@@ -53,7 +53,7 @@ class DefaultHttpLoader implements DocumentLoader {
 
     private final HttpClient httpClient;
 
-    private final NodeParser reader;
+    private final NodeReader reader;
 
     public DefaultHttpLoader(HttpClient httpClient) {
         this(httpClient, MAX_REDIRECTIONS);

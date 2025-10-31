@@ -27,15 +27,11 @@ import com.apicatalog.jsonld.api.CommonApi;
 import com.apicatalog.jsonld.api.ContextApi;
 import com.apicatalog.jsonld.api.LoaderApi;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.tordf.JsonLdToQuads;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
-import com.apicatalog.web.uri.UriUtils;
-
-import jakarta.json.JsonStructure;
 
 /**
  *
@@ -195,7 +191,7 @@ public final class RdfEmitter implements
         expansionOptions.base(options.getBase());
         expansionOptions.expandContext(options.getExpandContext());
 
-        final var expanded = Expander.expand(input, false, expansionOptions);
+        final var expanded = Expander.expand(input, expansionOptions);
 
         toRdf(expanded, consumer, options);
     }

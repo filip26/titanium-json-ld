@@ -16,7 +16,6 @@
 package com.apicatalog.jsonld.fromrdf;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,7 +38,7 @@ import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
-import com.apicatalog.tree.io.NodeParser;
+import com.apicatalog.tree.io.NodeReader;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.web.lang.LanguageTag;
 import com.apicatalog.web.uri.UriUtils;
@@ -91,7 +90,8 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
     protected boolean useXsdDecimal;
     protected UriValidationPolicy uriValidation;
     protected JsonLdVersion processingMode;
-    protected NodeParser jsonParser;
+
+    protected NodeReader jsonParser;
     protected Map<String, Function<String, Object>> nativeTypes;
 
     // runtime
@@ -184,7 +184,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
         return this;
     }
 
-    public QuadsToJsonLd jsonParser(NodeParser jsonParser) {
+    public QuadsToJsonLd jsonParser(NodeReader jsonParser) {
         this.jsonParser = jsonParser;
         return this;
     }
@@ -414,7 +414,6 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
 
                     if (entry.size() > 1 || !entry.containsKey(Keywords.ID)) {
                         array.add(Map.copyOf(entry));
-//                        array.add(JsonUtils.toJsonObject(entry));
                     }
                 }
 
@@ -424,7 +423,6 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
             // 8.2.
             if (node.size() > 1 || !node.containsKey(Keywords.ID)) {
                 result.add(Map.copyOf(node));
-//                result.add(JsonUtils.toJsonObject(node));
             }
         }
         // 9.
@@ -556,7 +554,6 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
 
         // 1.
         if (!RdfQuadConsumer.isLiteral(datatype, langTag, direction)) {
-//FIXME???            return new RefJsonObject(Map.of(Keywords.ID, object));
             final var ref = new LinkedHashMap<String, Object>(1);
             ref.put(Keywords.ID, object);
             return ref;
@@ -607,37 +604,9 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
                         Keywords.VALUE, convertedValue,
                         Keywords.TYPE, Keywords.JSON);
 
-            } catch (IOException e) {
+            } catch (Exception e) {
                 throw new RdfConsumerException(new JsonLdException(JsonLdErrorCode.INVALID_JSON_LITERAL, e));
             }
-
-//            try (final JsonParser parser = JsonProvider.instance().createParser(new StringReader(object))) {
-//
-////            try (final )
-//
-//                parser.next();
-//
-//                convertedValue = parser.getValue();
-////                type = Keywords.JSON;
-//
-//                // FIXME
-//                convertedValue = new NativeMaterializer3().node(convertedValue, JakartaAdapter.instance());
-//
-//                if (convertedValue == null) {
-//                    final var result = new HashMap<String, Object>(2);
-//                    result.put(Keywords.TYPE, Keywords.JSON);
-//                    result.put(Keywords.VALUE, null);
-//                    return result;
-//                }
-//
-//                return Map.of(
-//                        Keywords.VALUE, convertedValue,
-//                        Keywords.TYPE, Keywords.JSON);
-//
-//            } catch (Exception e) {
-//                throw new RdfConsumerException(new JsonLdException(JsonLdErrorCode.INVALID_JSON_LITERAL, e));
-//            }
-
         }
 
         final var result = new LinkedHashMap<String, Object>(5);

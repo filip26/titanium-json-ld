@@ -326,7 +326,7 @@ public final class Framer {
 
     private static Map<String, Map<String, Map<String, Set<String>>>> buildReversePropertyIndex(final NodeMap graphMap) {
 
-        final Map<String, Map<String, Map<String, Set<String>>>> index = new HashMap<>();
+        final var index = new HashMap<String, Map<String, Map<String, Set<String>>>>();
 
         for (final var graphName : graphMap.graphs()) {
 
@@ -344,7 +344,7 @@ public final class Framer {
 
                 for (final var propEntry : node.entrySet()) {
 
-                    final String property = propEntry.getKey();
+                    final var property = propEntry.getKey();
 
                     if (Keywords.contains(property)) {
                         continue;
@@ -366,9 +366,8 @@ public final class Framer {
                             }
                         }
 
-                    } else if (value instanceof Map map && map.containsKey(Keywords.ID)) {
-
-                        final var targetId = (String) map.get(Keywords.ID);
+                    } else if (value instanceof Map map
+                            && map.get(Keywords.ID) instanceof String targetId) {
 
                         graphIndex
                                 .computeIfAbsent(property, k -> new HashMap<>())

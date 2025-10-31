@@ -152,7 +152,7 @@ public class JsonLdTestRunnerJunit {
                 }
 
                 write(testCase, null, null, ((JsonLdException) e.getCause()));
-                fail("Unexpected error [" + ((JsonLdException) e.getCause()).code() + "]: " + e.getMessage() + ".");
+                fail("Unexpected error: " + ((JsonLdException) e.getCause()) + ".");
 
             }
             return false;

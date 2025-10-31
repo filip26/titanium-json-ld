@@ -22,16 +22,15 @@ import java.util.Map;
 
 import com.apicatalog.jsonld.api.CompactionApi;
 import com.apicatalog.jsonld.api.FlatteningApi;
-import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.framing.Frame;
 import com.apicatalog.jsonld.fromrdf.QuadsToJsonLd;
 import com.apicatalog.jsonld.processor.Compactor;
 import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.processor.Framer;
 import com.apicatalog.jsonld.processor.RdfEmitter;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
+import com.apicatalog.tree.io.jakarta.JakartaReader;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
@@ -275,7 +274,8 @@ public final class JsonLd {
     }
 
     public static final QuadsToJsonLd fromRdf(JsonLdOptions options) {
-        return new QuadsToJsonLd().options(options);
+        //FIXMe
+        return new QuadsToJsonLd().options(options).jsonParser(new JakartaReader());
     }
 
     private static final URI assertUri(final URI uri, final String param) {

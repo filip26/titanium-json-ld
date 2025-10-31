@@ -87,13 +87,10 @@ public final class JsonLdException extends Exception {
 
     /**
      * Returns a concise string representation optimized for logging.
-     *
-     * Uses simple concatenation for maximum performance — the JIT will turn this
-     * into efficient {@link java.lang.StringBuilder} bytecode.
      */
     @Override
     public String toString() {
         // Avoid String.format()/.formatted() overhead
-        return "JsonLdException[code=" + code.name() + ", message=" + getMessage() + "]";
+        return "JsonLdException[" + code.name() + ", message=" + getMessage() + "]";
     }
 }
