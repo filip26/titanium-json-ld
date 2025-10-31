@@ -287,7 +287,7 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
             final JsonLdOptions options) throws JsonLdException, IOException {
 
         final var runtime = ProcessingRuntime.of(options);
-        
+
         final var expandedInput = Expander.expand(
                 document,
                 new JsonLdOptions(options).setOrdered(false));
@@ -309,9 +309,9 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
         state.setRequireAll(options.isRequiredAll()); // 14.4.
         state.setOmitDefault(options.isOmitDefault()); // 14.5.
         state.setGraphMap(new NodeMapBuilder(expandedInput, new NodeMap()).build()); // 14.7.
-        
+
         final String graphKey = UriCompaction.withVocab(context, Keywords.GRAPH);
-                
+
         if (frame.isDefault(graphKey)) {
             state.setGraphName(Keywords.DEFAULT); // 14.6.
 
@@ -320,15 +320,12 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
             state.getGraphMap().merge();
         }
 
-        System.out.println("MERGED " + state.getGraphMap());
-        
         // Build reverse property index for efficient lookups
         state.setReversePropertyIndex(buildReversePropertyIndex(state.getGraphMap()));
 
         // 15.
         final var resultMap = new LinkedHashMap<String, Object>();
 
-        
         // 16.
         Framing.with(state,
                 new ArrayList<>(state.getGraphMap().subjects(state.getGraphName())),
@@ -363,10 +360,6 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
         final var filtered = result
                 .map(Framer::removePreserve)
                 .toList();
-
-        
-//        var filtered = result.toList();
-        
 
         // 19.
         // FIXME output
@@ -412,16 +405,8 @@ public final class Framer implements CommonApi<Framer>, LoaderApi<Framer>, Conte
 
         // 19.3.
         if (compactedOutput instanceof Map map) {
-
             @SuppressWarnings("unchecked")
             final var typedMap = (Map<String, ?>) map;
-
-//            final var contextNode = frame.context();
-//
-//            if (frame.hasContext()) {
-//                return Context.inject(typedMap, frame.context());
-//            }
-
             return typedMap;
         }
 
