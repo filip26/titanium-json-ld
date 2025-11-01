@@ -1,5 +1,7 @@
 package com.apicatalog.jsonld.processor;
 
+import java.util.Optional;
+
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
 
@@ -31,7 +33,12 @@ public class Execution {
      * 
      * @throws JsonLdException if a processing has exceeded
      */
-    public void tick() throws JsonLdException {/* NOP does nothing if timeout is not set */}
+    public void tick() throws JsonLdException {
+        /* NOP does nothing if timeout is not set */}
+
+    public Optional<TypeMapCollector> typeMapper() {
+        return Optional.empty();
+    }
 
 //    /**
 //     * Resume ticker, a next ping decreases remaining time if timeout is set. Is
