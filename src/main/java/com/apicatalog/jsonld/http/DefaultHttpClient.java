@@ -30,6 +30,7 @@ import java.util.Optional;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.loader.LoaderClient;
+import com.apicatalog.web.media.MediaType;
 
 public final class DefaultHttpClient implements LoaderClient {
 
@@ -47,12 +48,12 @@ public final class DefaultHttpClient implements LoaderClient {
         this.timeout = null;
     }
 
-    public LoaderClient.Response send(URI targetUri, String requestProfile) throws JsonLdException {
+    public LoaderClient.Response send(URI targetUri, Collection<String> requestProfiles) throws JsonLdException {
 
         HttpRequest.Builder request = HttpRequest.newBuilder()
                 .GET()
                 .uri(targetUri)
-                .header("Accept", requestProfile);
+                .header("Accept", getAcceptHeader(requestProfiles));
 
         if (timeout != null && !timeout.isNegative() && !timeout.isZero()) {
             request = request.timeout(timeout);
@@ -82,7 +83,27 @@ public final class DefaultHttpClient implements LoaderClient {
         this.timeout = timeout;
         return this;
     }
+    
+    public static final String getAcceptHeader() {
+        return getAcceptHeader(null);
+    }
 
+    public static final String getAcceptHeader(final Collection<String> profiles) {
+        final StringBuilder builder = new StringBuilder();
+
+        builder.append(MediaType.JSON_LD.toString());
+
+        if (profiles != null && !profiles.isEmpty()) {
+            builder.append(";profile=\"");
+            builder.append(String.join(" ", profiles));
+            builder.append("\"");
+        }
+
+        builder.append(',');
+        builder.append(MediaType.JSON.toString());
+        builder.append(";q=0.9,*/*;q=0.1");
+        return builder.toString();
+    }
     public static class HttpResponseImpl implements LoaderClient.Response {
 
         private final HttpResponse<InputStream> response;

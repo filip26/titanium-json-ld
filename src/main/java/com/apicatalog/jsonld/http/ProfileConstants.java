@@ -15,6 +15,10 @@
  */
 package com.apicatalog.jsonld.http;
 
+import java.util.Collection;
+
+import com.apicatalog.web.media.MediaType;
+
 /**
  * @see <a href="https://www.w3.org/TR/json-ld11/#iana-considerations">IANA Considerations</a>
  */

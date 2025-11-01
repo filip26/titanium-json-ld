@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.net.URI;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.loader.HttpLoader;
+import com.apicatalog.jsonld.http.DefaultHttpClient;
 import com.apicatalog.jsonld.loader.TestLoader;
 import com.apicatalog.web.link.Link;
 import com.apicatalog.web.media.MediaType;
@@ -145,11 +145,11 @@ public final class JsonLdMockServer {
 
     public void stop() {
         verify(getRequestedFor(urlMatching(testCase.input.toString().substring(testBase.length())))
-                .withHeader("accept", equalTo(HttpLoader.getAcceptHeader())));
+                .withHeader("accept", equalTo(DefaultHttpClient.getAcceptHeader())));
 
         if (testCase.options.redirectTo != null) {
             verify(getRequestedFor(urlMatching(testCase.options.redirectTo.toString().substring(testBase.length())))
-                .withHeader("accept", equalTo(HttpLoader.getAcceptHeader())));
+                .withHeader("accept", equalTo(DefaultHttpClient.getAcceptHeader())));
         }
     }
 }

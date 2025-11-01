@@ -11,7 +11,7 @@ import com.apicatalog.jsonld.JsonLdException;
 
 public interface LoaderClient {
 
-    Response send(URI targetUri, String requestProfile) throws JsonLdException;
+    Response send(URI targetUri, Collection<String> requestProfiles) throws JsonLdException;
     
     /**
      * Configure read timeout

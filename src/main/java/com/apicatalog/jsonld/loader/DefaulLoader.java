@@ -78,7 +78,7 @@ public class DefaulLoader implements DocumentLoader {
             for (int redirection = 0; redirection < maxRedirections; redirection++) {
 
                 // 2.
-                try (LoaderClient.Response response = client.send(targetUri, getAcceptHeader(options.getRequestProfile()))) {
+                try (LoaderClient.Response response = client.send(targetUri, options.getRequestProfile())) {
 
                     // 3.
                     if (response.isRedirect()) {
@@ -97,11 +97,13 @@ public class DefaulLoader implements DocumentLoader {
                         throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unexpected response code [" + response + "]");
                     }
 
-                    final Optional<String> contentTypeValue = response.contentType();
+                    contentType = response.contentType()
+                            .map(MediaType::of)
+                            .orElse(null);
 
-                    if (contentTypeValue.isPresent()) {
-                        contentType = MediaType.of(contentTypeValue.get());
-                    }
+//                    if (contentTypeValue.isPresent()) {
+//                        contentType = MediaType.of(contentTypeValue.get());
+//                    }
 
                     final Collection<String> linkValues = response.links();
 
@@ -165,26 +167,6 @@ public class DefaulLoader implements DocumentLoader {
         }
     }
 
-    public static final String getAcceptHeader() {
-        return getAcceptHeader(null);
-    }
-
-    public static final String getAcceptHeader(final Collection<String> profiles) {
-        final StringBuilder builder = new StringBuilder();
-
-        builder.append(MediaType.JSON_LD.toString());
-
-        if (profiles != null && !profiles.isEmpty()) {
-            builder.append(";profile=\"");
-            builder.append(String.join(" ", profiles));
-            builder.append("\"");
-        }
-
-        builder.append(',');
-        builder.append(MediaType.JSON.toString());
-        builder.append(";q=0.9,*/*;q=0.1");
-        return builder.toString();
-    }
 
     private final Document read(
             final MediaType type,
@@ -222,6 +204,7 @@ public class DefaulLoader implements DocumentLoader {
      * @return {@link DefaulLoader} instance
      * @since 1.4.0
      */
+    @Deprecated
     public DefaulLoader fallbackContentType(MediaType fallbackContentType) {
 //FIXME        reader.setFallbackContentType(fallbackContentType);
         return this;
