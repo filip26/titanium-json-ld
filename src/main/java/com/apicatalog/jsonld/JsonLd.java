@@ -20,7 +20,6 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
 
-import com.apicatalog.jsonld.api.CompactionApi;
 import com.apicatalog.jsonld.api.FlatteningApi;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
@@ -46,15 +45,8 @@ import jakarta.json.JsonString;
  */
 public final class JsonLd {
 
-    private static final String DOCUMENT_LOCATION_PARAM_NAME = "documentLocation";
     private static final String DOCUMENT_URI_PARAM_NAME = "documentUri";
     private static final String DOCUMENT_PARAM_NAME = "document";
-    private static final String CONTEXT_PARAM_NAME = "context";
-    private static final String CONTEXT_LOCATION_PARAM_NAME = "contextLocation";
-    private static final String CONTEXT_URI_PARAM_NAME = "contextUri";
-    private static final String FRAME_LOCATION_PARAM_NAME = "frameLocation";
-    private static final String FRAME_URI_PARAM_NAME = "frameUri";
-    private static final String FRAME_PARAM_NAME = "frame";
 
     private JsonLd() {
     }
@@ -106,15 +98,10 @@ public final class JsonLd {
             final URI document,
             final URI context,
             final JsonLdOptions options) throws JsonLdException, IOException {
-
-        final Execution runtime = Execution.of(options);
-        runtime.tick();
-
-        return Compactor.compact(
+        return compact(
                 RemoteDocument.fetch(document, options.loader(), options.isExtractAllScripts()),
                 RemoteDocument.fetch(context, options.loader(), options.isExtractAllScripts()),
-                options,
-                runtime);
+                options);
     }
 
     /**
@@ -125,12 +112,34 @@ public final class JsonLd {
      *                 {@link JsonArray} consisting of one or many
      *                 {@link JsonObject} and {@link JsonString} referencing the
      *                 context to use when compacting the document
+     * @param options
      * @return {@link CompactionApi} allowing to set additional parameters
+     * @throws IOException
+     * @throws JsonLdException
      */
-    public static final CompactionApi compact(final URI document, final Document context) {
-        return new CompactionApi(
-                assertUri(document, DOCUMENT_URI_PARAM_NAME),
-                assertJsonDocument(context, CONTEXT_PARAM_NAME));
+    public static final Map<String, ?> compact(final URI document, final Document context,
+            final JsonLdOptions options) throws JsonLdException, IOException {
+        return compact(
+                RemoteDocument.fetch(document, options.loader(), options.isExtractAllScripts()),
+                context,
+                options);
+    }
+
+    /**
+     * Compacts {@link Document} document using the context.
+     *
+     * @param document to compact
+     * @param context  {@link URI} referencing the context to use when compacting
+     *                 the document
+     * @return {@link CompactionApi} allowing to set additional parameters
+     * @throws IOException
+     * @throws JsonLdException
+     */
+    public static final Map<String, ?> compact(final Document document, final URI context, JsonLdOptions options) throws JsonLdException, IOException {
+        return compact(
+                document,
+                RemoteDocument.fetch(context, options.loader(), options.isExtractAllScripts()),
+                options);
     }
 
     /**
@@ -138,26 +147,24 @@ public final class JsonLd {
      *
      * @param document to compact
      * @param context  JSON-LD document
+     * @param options
      * @return {@link CompactionApi} allowing to set additional parameters
+     * @throws IOException
+     * @throws JsonLdException
      */
-    public static final CompactionApi compact(final Document document, final Document context) {
-        return new CompactionApi(
-                assertJsonDocument(document, DOCUMENT_PARAM_NAME),
-                assertJsonDocument(context, CONTEXT_PARAM_NAME));
-    }
+    public static final Map<String, ?> compact(
+            final Document document,
+            final Document context,
+            final JsonLdOptions options) throws JsonLdException, IOException {
 
-    /**
-     * Compacts {@link Document} document using the context.
-     *
-     * @param document   to compact
-     * @param contextUri {@link URI} referencing the context to use when compacting
-     *                   the document
-     * @return {@link CompactionApi} allowing to set additional parameters
-     */
-    public static final CompactionApi compact(final Document document, final URI contextUri) {
-        return new CompactionApi(
-                assertJsonDocument(document, DOCUMENT_PARAM_NAME),
-                assertUri(contextUri, CONTEXT_URI_PARAM_NAME));
+        final Execution runtime = Execution.of(options);
+        runtime.tick();
+
+        return Compactor.compact(
+                document,
+                context,
+                options,
+                runtime);
     }
 
     /**
