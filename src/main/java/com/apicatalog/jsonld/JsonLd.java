@@ -33,10 +33,8 @@ import com.apicatalog.jsonld.processor.RdfEmitter;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaReader;
-import com.apicatalog.tree.io.jakarta.JakartaWriter;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
@@ -66,12 +64,17 @@ public final class JsonLd {
      * @throws JsonLdException
      */
     public static final Collection<?> expand(final URI document, final JsonLdOptions options) throws JsonLdException, IOException {
-        return expand(
+
+        var runtime = Execution.of(options);
+        runtime.tick();
+
+        return Expander.expand(
                 RemoteDocument.fetch(
                         document,
                         options.loader(),
                         options.isExtractAllScripts()),
-                options);
+                options,
+                runtime);
     }
 
     /**
@@ -91,14 +94,18 @@ public final class JsonLd {
     }
 
     public static final Collection<?> expand(final Map<String, ?> document, final JsonLdOptions options) throws JsonLdException, IOException {
+        return expand(new PolyNode(document, NativeAdapter.instance()), options);
+    }
+
+    public static final Collection<?> expand(final PolyNode document, final JsonLdOptions options) throws JsonLdException, IOException {
 
         var runtime = Execution.of(options);
         runtime.tick();
 
         return Expander.expand(
-                new PolyNode(document, NativeAdapter.instance()),
+                document,
                 Expander.context(null, null, options),
-                options.base(),
+                Expander.base(null, options),
                 options,
                 runtime);
     }

@@ -44,14 +44,16 @@ public final class Expander {
             final Document document,
             final JsonLdOptions options,
             final Execution runtime) throws JsonLdException, IOException {
-        return expand(document, false, options, runtime);
-    }
 
-    public static final Collection<?> expandFrame(
-            final Document document,
-            final JsonLdOptions options,
-            final Execution runtime) throws JsonLdException, IOException {
-        return expand(document, true, options, runtime);
+        return Expander.expand(
+                document.content(),
+                Expander.context(
+                        document.documentUrl(),
+                        document.contextUrl(),
+                        options),
+                Expander.base(document.documentUrl(), options),
+                options,
+                runtime);
     }
 
     public static final Collection<?> expand(
@@ -61,6 +63,31 @@ public final class Expander {
             final JsonLdOptions options,
             final Execution runtime) throws JsonLdException, IOException {
         return expand(node, context, baseUrl, false, options, runtime);
+    }
+
+    public static final Collection<?> expandFrame(
+            final Document document,
+            final JsonLdOptions options,
+            final Execution runtime) throws JsonLdException, IOException {
+        
+        return Expander.expandFrame(
+                document.content(),
+                Expander.context(
+                        document.documentUrl(),
+                        document.contextUrl(),
+                        options),
+                Expander.base(document.documentUrl(), options),
+                options,
+                runtime);
+    }
+    
+    public static final Collection<?> expandFrame(
+            final PolyNode node,
+            final Context context,
+            final URI baseUrl,
+            final JsonLdOptions options,
+            final Execution runtime) throws JsonLdException, IOException {
+        return expand(node, context, baseUrl, true, options, runtime);
     }
 
     public static final Context context(
@@ -114,63 +141,72 @@ public final class Expander {
         return builder.build();
     }
 
-    static final Collection<?> expand(
-            final Document document,
-            final boolean frameExpansion,
-            final JsonLdOptions options,
-            final Execution runtime) throws JsonLdException, IOException {
-
-        // 5. Initialize a new empty active context. The base IRI and
-        // original base URL of the active context is set to the documentUrl
-        // from remote document, if available; otherwise to the base option from
-        // options.
-        // If set, the base option from options overrides the base IRI.
-        URI baseUri = document.documentUrl();
-        URI baseUrl = document.documentUrl();
+    public static final URI base(URI document, JsonLdOptions options) {
+        URI baseUrl = document;
 
         if (baseUrl == null) {
             baseUrl = options.base();
         }
-
-        if (options.base() != null) {
-            baseUri = options.base();
-        }
-
-        var builder = new Context.Builder(
-                baseUri,
-                baseUrl,
-                options.mode())
-                .loader(options.loader());
-
-        // 6. If the expandContext option in options is set, update the active context
-        // using the Context Processing algorithm, passing the expandContext as
-        // local context and the original base URL from active context as base URL.
-        // If expandContext is a map having an @context entry, pass that entry's value
-        // instead for local context.
-        if (options.expandContext() != null) {
-            final var expandContext = options.expandContext().content();
-            builder.update(
-                    expandContext.node(),
-                    expandContext.adapter(),
-                    baseUrl);
-        }
-
-        // 7.
-        if (document.contextUrl() != null) {
-            builder.update(
-                    document.contextUrl().toString(),
-                    NativeAdapter.instance(),
-                    document.contextUrl());
-        }
-
-        return expand(
-                document.content(),
-                builder.build(),
-                baseUrl,
-                frameExpansion,
-                options,
-                runtime);
+        return baseUrl;
     }
+
+//    static final Collection<?> expand(
+//            final Document document,
+//            final boolean frameExpansion,
+//            final JsonLdOptions options,
+//            final Execution runtime) throws JsonLdException, IOException {
+//
+//        // 5. Initialize a new empty active context. The base IRI and
+//        // original base URL of the active context is set to the documentUrl
+//        // from remote document, if available; otherwise to the base option from
+//        // options.
+//        // If set, the base option from options overrides the base IRI.
+//        URI baseUri = document.documentUrl();
+//        URI baseUrl = document.documentUrl();
+//
+//        if (baseUrl == null) {
+//            baseUrl = options.base();
+//        }
+//
+//        if (options.base() != null) {
+//            baseUri = options.base();
+//        }
+//
+//        var builder = new Context.Builder(
+//                baseUri,
+//                baseUrl,
+//                options.mode())
+//                .loader(options.loader());
+//
+//        // 6. If the expandContext option in options is set, update the active context
+//        // using the Context Processing algorithm, passing the expandContext as
+//        // local context and the original base URL from active context as base URL.
+//        // If expandContext is a map having an @context entry, pass that entry's value
+//        // instead for local context.
+//        if (options.expandContext() != null) {
+//            final var expandContext = options.expandContext().content();
+//            builder.update(
+//                    expandContext.node(),
+//                    expandContext.adapter(),
+//                    baseUrl);
+//        }
+//
+//        // 7.
+//        if (document.contextUrl() != null) {
+//            builder.update(
+//                    document.contextUrl().toString(),
+//                    NativeAdapter.instance(),
+//                    document.contextUrl());
+//        }
+//
+//        return expand(
+//                document.content(),
+//                builder.build(),
+//                baseUrl,
+//                frameExpansion,
+//                options,
+//                runtime);
+//    }
 
     static final Collection<?> expand(
             final PolyNode node,
