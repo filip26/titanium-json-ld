@@ -19,7 +19,7 @@ public class Execution {
 //    }
 
     public static Execution of(JsonLdOptions options) {
-        return options.getTimeout() != null
+        return options.timeout() != null
                 ? new Ticker(options)
                 : new Execution();
     }

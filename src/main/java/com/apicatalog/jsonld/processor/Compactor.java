@@ -49,7 +49,7 @@ public final class Compactor {
         URI contextBase = input.documentUrl();
 
         if (contextBase == null) {
-            contextBase = options.getBase();
+            contextBase = options.base();
         }
 
         // 6.
@@ -59,9 +59,9 @@ public final class Compactor {
 
         final var expandedInput = Expander.expand(
                 input,
-                new JsonLdOptions(options)
-                        .setOrdered(false)
-                        .setExtractAllScripts(false),
+                JsonLdOptions.copyOf(options)
+                        .ordered(false)
+                        .extractAllScripts(false),
                         runtime);
 
         return compact(
@@ -108,8 +108,8 @@ public final class Compactor {
 //        final var ctx = Context.unwrap(context.getContent());
 //        context(ctx, input.getDocumentUrl(), options)
 
-        final var expandedInput = Expander.expand(input, new JsonLdOptions(options)
-                .setOrdered(false).setExtractAllScripts(false),
+        final var expandedInput = Expander.expand(input, JsonLdOptions.copyOf(options)
+                .ordered(false).extractAllScripts(false),
                 runtime);
 
         return compact(
@@ -130,7 +130,7 @@ public final class Compactor {
         URI contextBase = baseUrl;
 
         if (contextBase == null) {
-            contextBase = options.getBase();
+            contextBase = options.base();
         }
 
         final var localContext = Context.unwrap(context);
@@ -141,15 +141,15 @@ public final class Compactor {
 //                .orElse(JsonValue.EMPTY_JSON_OBJECT);
 
         // 7.
-        final var builder = new Context.Builder(options.getProcessingMode())
+        final var builder = new Context.Builder(options.mode())
                 .loader(options.loader())
                 .update(localContext, contextBase);
 
         // 8.
         if (builder.baseUri() == null) {
 
-            if (options.getBase() != null) {
-                builder.baseUri(options.getBase());
+            if (options.base() != null) {
+                builder.baseUri(options.base());
 
             } else if (options.isCompactToRelative()) {
                 builder.baseUri(baseUrl);

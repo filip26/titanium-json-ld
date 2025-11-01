@@ -76,17 +76,17 @@ public final class Expander {
         URI baseUrl = document;
 
         if (baseUrl == null) {
-            baseUrl = options.getBase();
+            baseUrl = options.base();
         }
 
-        if (options.getBase() != null) {
-            baseUri = options.getBase();
+        if (options.base() != null) {
+            baseUri = options.base();
         }
 
         var builder = new Context.Builder(
                 baseUri,
                 baseUrl,
-                options.getProcessingMode())
+                options.mode())
                 .loader(options.loader());
 
         // 6. If the expandContext option in options is set, update the active context
@@ -94,8 +94,8 @@ public final class Expander {
         // local context and the original base URL from active context as base URL.
         // If expandContext is a map having an @context entry, pass that entry's value
         // instead for local context.
-        if (options.getExpandContext() != null) {
-            final var expandContext = options.getExpandContext().content();
+        if (options.expandContext() != null) {
+            final var expandContext = options.expandContext().content();
 //
 //            if (contextValue.isPresent()) {
             builder.update(
@@ -131,17 +131,17 @@ public final class Expander {
         URI baseUrl = document.documentUrl();
 
         if (baseUrl == null) {
-            baseUrl = options.getBase();
+            baseUrl = options.base();
         }
 
-        if (options.getBase() != null) {
-            baseUri = options.getBase();
+        if (options.base() != null) {
+            baseUri = options.base();
         }
 
         var builder = new Context.Builder(
                 baseUri,
                 baseUrl,
-                options.getProcessingMode())
+                options.mode())
                 .loader(options.loader());
 
         // 6. If the expandContext option in options is set, update the active context
@@ -149,8 +149,8 @@ public final class Expander {
         // local context and the original base URL from active context as base URL.
         // If expandContext is a map having an @context entry, pass that entry's value
         // instead for local context.
-        if (options.getExpandContext() != null) {
-            final var expandContext = options.getExpandContext().content();
+        if (options.expandContext() != null) {
+            final var expandContext = options.expandContext().content();
             builder.update(
                     expandContext.node(),
                     expandContext.adapter(),

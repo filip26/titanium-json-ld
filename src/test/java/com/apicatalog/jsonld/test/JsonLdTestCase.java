@@ -162,12 +162,12 @@ public final class JsonLdTestCase {
 
     public JsonLdOptions getOptions() {
         return options.setup(
-                new JsonLdOptions(
+                JsonLdOptions.of(
                         new UriBaseRewriter(
                                 baseUri,
                                 testsBase,
                                 loader))
-                        .setOrdered(true));
+                        .ordered(true));
     }
 
     public static final JsonLdErrorCode errorCode(String errorCode) {

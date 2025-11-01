@@ -111,7 +111,7 @@ public final class Flattener {
             final Execution runtime) throws JsonLdException, IOException {
 
         // 4.
-        final var expansionOptions = new JsonLdOptions(options).setOrdered(false);
+        final var expansionOptions = JsonLdOptions.copyOf(options).ordered(false);
 
         var expandedInput = Expander.expand(input, expansionOptions, runtime);
 
@@ -121,10 +121,10 @@ public final class Flattener {
         // 6.1.
         if (context != null && context.content() != null) {
 
-            JsonLdOptions compactionOptions = new JsonLdOptions(options);
+            JsonLdOptions compactionOptions = JsonLdOptions.copyOf(options);
 
-            if (options.getBase() != null) {
-                compactionOptions.base(options.getBase());
+            if (options.base() != null) {
+                compactionOptions.base(options.base());
 
             } else if (options.isCompactArrays()) {
                 compactionOptions.base(input.documentUrl());
@@ -148,7 +148,7 @@ public final class Flattener {
             final Execution runtime) throws JsonLdException, IOException {
 
         // 4.
-        final var expansionOptions = new JsonLdOptions(options).setOrdered(false);
+        final var expansionOptions = JsonLdOptions.copyOf(options).ordered(false);
 
         var expandedInput = Expander.expand(input, expansionOptions, runtime);
 
@@ -158,10 +158,10 @@ public final class Flattener {
         // 6.1.
         if (context != null) {
 
-            JsonLdOptions compactionOptions = new JsonLdOptions(options);
+            JsonLdOptions compactionOptions = JsonLdOptions.copyOf(options);
 
-            if (options.getBase() != null) {
-                compactionOptions.base(options.getBase());
+            if (options.base() != null) {
+                compactionOptions.base(options.base());
 
             } else if (options.isCompactArrays()) {
                 compactionOptions.base(input.documentUrl());

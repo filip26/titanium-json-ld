@@ -83,7 +83,7 @@ public final class Framer {
         return new Context.Builder(
                 baseUrl,
                 baseUrl,
-                options.getProcessingMode())
+                options.mode())
                 .loader(options.loader())
                 .update(localContext, localContextBase)
                 .build();
@@ -95,7 +95,7 @@ public final class Framer {
             final Execution runtime) throws JsonLdException, IOException {
         return Expander.expand(
                 document,
-                new JsonLdOptions(options).setOrdered(false),
+                JsonLdOptions.copyOf(options).ordered(false),
                 runtime);
     }
 
@@ -110,7 +110,7 @@ public final class Framer {
         // 14.
         final var state = new FramingState();
 
-        state.setEmbed(options.getEmbed()); // 14.1.
+        state.setEmbed(options.embed()); // 14.1.
         state.setEmbedded(false); // 14.2.
         state.setExplicitInclusion(options.isExplicit()); // 14.3.
         state.setRequireAll(options.isRequiredAll()); // 14.4.

@@ -162,7 +162,7 @@ public class EarlGenerator {
 
                         result = (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
 
-                            JsonLdOptions expandOptions = new JsonLdOptions(options);
+                            final var expandOptions = JsonLdOptions.copyOf(options);
 
                             expandOptions.loader(
                                     new UriBaseRewriter(

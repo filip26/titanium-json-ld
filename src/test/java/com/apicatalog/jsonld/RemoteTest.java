@@ -66,7 +66,7 @@ class RemoteTest {
 
             (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
 
-                JsonLdOptions expandOptions = new JsonLdOptions(options);
+                JsonLdOptions expandOptions = JsonLdOptions.copyOf(options);
 
                 expandOptions.loader(
                                     new UriBaseRewriter(

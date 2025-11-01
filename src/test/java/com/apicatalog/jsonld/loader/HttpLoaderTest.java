@@ -26,10 +26,9 @@ import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.loader.SchemeRouter;
-import com.apicatalog.jsonld.test.JsonLdTestManifest;
 import com.apicatalog.jsonld.test.JsonLdMockServer;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
+import com.apicatalog.jsonld.test.JsonLdTestManifest;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
@@ -85,7 +84,7 @@ class HttpLoaderTest {
 
             (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
 
-                JsonLdOptions expandOptions = new JsonLdOptions(options);
+                JsonLdOptions expandOptions = JsonLdOptions.copyOf(options);
 
                 expandOptions.loader(
                                     new UriBaseRewriter(

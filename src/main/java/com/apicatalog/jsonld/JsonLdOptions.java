@@ -146,7 +146,7 @@ public final class JsonLdOptions {
         this(SchemeRouter.defaultInstance());
     }
 
-    public JsonLdOptions(DocumentLoader loader) {
+    private JsonLdOptions(DocumentLoader loader) {
 
         // default values
         this.base = null;
@@ -181,7 +181,7 @@ public final class JsonLdOptions {
         this.undefinedTerms = ProcessingPolicy.Ignore;
     }
 
-    public JsonLdOptions(JsonLdOptions options) {
+    private JsonLdOptions(JsonLdOptions options) {
         this.base = options.base;
         this.compactArrays = options.compactArrays;
         this.compactToRelative = options.compactToRelative;
@@ -213,6 +213,14 @@ public final class JsonLdOptions {
         this.timeout = options.timeout;
         this.undefinedTerms = options.undefinedTerms;
     }
+    
+    public static final JsonLdOptions of(DocumentLoader loader) {
+        return new JsonLdOptions();
+    }
+
+    public static final JsonLdOptions copyOf(JsonLdOptions options) {
+        return new JsonLdOptions(options);
+    }
 
     /**
      * The base IRI to use when expanding or
@@ -221,7 +229,7 @@ public final class JsonLdOptions {
      *
      * @return the base URI or <code>null</code>
      */
-    public URI getBase() {
+    public URI base() {
         return base;
     }
 
@@ -239,7 +247,7 @@ public final class JsonLdOptions {
     }
 
     /**
-     * Determines if IRIs are compacted relative to the {@link #getBase()} option or
+     * Determines if IRIs are compacted relative to the {@link #base()} option or
      * document location when
      * <a href="https://www.w3.org/TR/json-ld11-api/#dfn-compact">compacting</a>.
      *
@@ -287,7 +295,7 @@ public final class JsonLdOptions {
         return ordered;
     }
 
-    public JsonLdVersion getProcessingMode() {
+    public JsonLdVersion mode() {
         return processingMode;
     }
 
@@ -295,7 +303,7 @@ public final class JsonLdOptions {
         return produceGeneralizedRdf;
     }
 
-    public RdfDirection getRdfDirection() {
+    public RdfDirection rdfDirection() {
         return rdfDirection;
     }
 
@@ -307,7 +315,7 @@ public final class JsonLdOptions {
         return useRdfType;
     }
 
-    public Document getExpandContext() {
+    public Document expandContext() {
         return expandContext;
     }
 
@@ -316,12 +324,14 @@ public final class JsonLdOptions {
         return this;
     }
 
-    public void setCompactArrays(boolean compactArrays) {
+    public JsonLdOptions compactArrays(boolean compactArrays) {
         this.compactArrays = compactArrays;
+        return this;
     }
 
-    public void setCompactToRelative(boolean compactToRelative) {
+    public JsonLdOptions compactToRelative(boolean compactToRelative) {
         this.compactToRelative = compactToRelative;
+        return this;
     }
 
     public JsonLdOptions loader(DocumentLoader documentLoader) {
@@ -329,63 +339,70 @@ public final class JsonLdOptions {
         return this;
     }
 
-    public JsonLdOptions setExtractAllScripts(boolean extractAllScripts) {
+    public JsonLdOptions extractAllScripts(boolean extractAllScripts) {
         this.extractAllScripts = extractAllScripts;
         return this;
     }
 
-    public JsonLdOptions setOrdered(boolean ordered) {
+    public JsonLdOptions ordered(boolean ordered) {
         this.ordered = ordered;
         return this;
     }
 
-    public void setProcessingMode(JsonLdVersion processingMode) {
+    public JsonLdOptions mode(JsonLdVersion processingMode) {
         this.processingMode = processingMode;
+        return this;
     }
 
-    public void setProduceGeneralizedRdf(boolean produceGeneralizedRdf) {
+    public JsonLdOptions generalizedRdf(boolean produceGeneralizedRdf) {
         this.produceGeneralizedRdf = produceGeneralizedRdf;
+        return this;
     }
 
-    public void setRdfDirection(RdfDirection rdfDirection) {
+    public JsonLdOptions rdfDirection(RdfDirection rdfDirection) {
         this.rdfDirection = rdfDirection;
+        return this;
     }
 
-    public void setUseNativeTypes(boolean useNativeTypes) {
+    public JsonLdOptions useNativeTypes(boolean useNativeTypes) {
         this.useNativeTypes = useNativeTypes;
+        return this;
     }
 
-    public void setUseRdfType(boolean useRdfType) {
+    public JsonLdOptions useRdfType(boolean useRdfType) {
         this.useRdfType = useRdfType;
+        return this;
     }
 
-    public void setExpandContext(final String contextLocation) {
+    public JsonLdOptions expandContext(final String contextLocation) {
 
         if (contextLocation == null) {
             this.expandContext = null;
-            return;
+            return this;
         }
         this.expandContext = RemoteDocument.of(
                 new PolyNode(Set.of(contextLocation), NativeAdapter.instance()));
+        return this;
     }
 
-    public void setExpandContext(URI contextUri) {
+    public JsonLdOptions expandContext(URI contextUri) {
 
         if (contextUri == null) {
             this.expandContext = null;
-            return;
+            return this;
         }
 
-        setExpandContext(contextUri.toString());
+        return expandContext(contextUri.toString());
     }
 
-    public void setExpandContext(PolyNode node) {
+    public JsonLdOptions expandContext(PolyNode node) {
 
         if (node == null) {
             this.expandContext = null;
-            return;
+            return this;
         }
         this.expandContext = RemoteDocument.of(node);
+        return this;
     }
 
     public JsonLdOptions expandContext(Document context) {
@@ -395,44 +412,49 @@ public final class JsonLdOptions {
 
     // Framing
 
-    public Embed getEmbed() {
+    public Embed embed() {
         return embed;
     }
 
-    public void setEmbed(Embed embed) {
+    public JsonLdOptions embed(Embed embed) {
         this.embed = embed;
+        return this;
     }
 
     public boolean isExplicit() {
         return explicit;
     }
 
-    public void setExplicit(boolean explicit) {
+    public JsonLdOptions explicit(boolean explicit) {
         this.explicit = explicit;
+        return this;
     }
 
     public boolean isOmitDefault() {
         return omitDefault;
     }
 
-    public void setOmitDefault(boolean omitDefault) {
+    public JsonLdOptions omitDefault(boolean omitDefault) {
         this.omitDefault = omitDefault;
+        return this;
     }
 
     public Boolean isOmitGraph() {
         return omitGraph;
     }
 
-    public void setOmitGraph(Boolean omitGraph) {
+    public JsonLdOptions omitGraph(Boolean omitGraph) {
         this.omitGraph = omitGraph;
+        return this;
     }
 
     public boolean isRequiredAll() {
         return requiredAll;
     }
 
-    public void setRequiredAll(boolean requiredAll) {
+    public JsonLdOptions requiredAll(boolean requiredAll) {
         this.requiredAll = requiredAll;
+        return this;
     }
 
     /**
@@ -440,8 +462,9 @@ public final class JsonLdOptions {
      *
      * @param enable numeric @id support
      */
-    public void setNumericId(boolean enable) {
+    public JsonLdOptions numericId(boolean enable) {
         this.numericId = enable;
+        return this;
     }
 
     /**
@@ -465,8 +488,9 @@ public final class JsonLdOptions {
         return documentCache;
     }
 
-    public void setDocumentCache(Cache<String, Document> documentCache) {
+    public JsonLdOptions setDocumentCache(Cache<String, Document> documentCache) {
         this.documentCache = documentCache;
+        return this;
     }
 
     public boolean isRdfStar() {
@@ -480,11 +504,12 @@ public final class JsonLdOptions {
      * @see <a href="https://json-ld.github.io/json-ld-star">JSON-LD-STAR Draft</a>
      *
      */
-    public void setRdfStar(boolean rdfStar) {
+    public JsonLdOptions rdfStar(boolean rdfStar) {
         this.rdfStar = rdfStar;
+        return this;
     }
 
-    public UriValidationPolicy getUriValidation() {
+    public UriValidationPolicy uriValidation() {
         return uriValidation;
     }
 
@@ -501,8 +526,9 @@ public final class JsonLdOptions {
      * 
      * @since 1.5.0
      */
-    public void setUriValidation(UriValidationPolicy uriValidation) {
+    public JsonLdOptions uriValidation(UriValidationPolicy uriValidation) {
         this.uriValidation = uriValidation;
+        return this;
     }
 
     /**
@@ -515,7 +541,7 @@ public final class JsonLdOptions {
      * 
      * @return a duration after which a processing is prematurely terminated.
      */
-    public Duration getTimeout() {
+    public Duration timeout() {
         return timeout;
     }
 
@@ -528,8 +554,9 @@ public final class JsonLdOptions {
      * 
      * @param timeout to limit processing time
      */
-    public void setTimeout(Duration timeout) {
+    public JsonLdOptions timeout(Duration timeout) {
         this.timeout = timeout;
+        return this;
     }
 
     /**
@@ -548,7 +575,8 @@ public final class JsonLdOptions {
      * @param undefinedTerms the processing policy, never <code>null</code>
      * 
      */
-    public void setUndefinedTermsPolicy(ProcessingPolicy undefinedTerms) {
+    public JsonLdOptions undefinedTermsPolicy(ProcessingPolicy undefinedTerms) {
         this.undefinedTerms = undefinedTerms;
+        return this;
     }
 }

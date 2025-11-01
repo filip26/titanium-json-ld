@@ -67,7 +67,7 @@ public final class RdfEmitter implements
 
     @Override
     public RdfEmitter context(URI contextUri) {
-        options.setExpandContext(contextUri);
+        options.expandContext(contextUri);
         return this;
     }
 
@@ -108,7 +108,7 @@ public final class RdfEmitter implements
      * @return builder instance
      */
     public RdfEmitter produceGeneralizedRdf(boolean enable) {
-        options.setProduceGeneralizedRdf(enable);
+        options.generalizedRdf(enable);
         return this;
     }
 
@@ -129,13 +129,13 @@ public final class RdfEmitter implements
      * @return builder instance
      */
     public RdfEmitter rdfDirection(RdfDirection direction) {
-        options.setRdfDirection(direction);
+        options.rdfDirection(direction);
         return this;
     }
 
     @Override
     public RdfEmitter mode(JsonLdVersion processingMode) {
-        options.setProcessingMode(processingMode);
+        options.mode(processingMode);
         return this;
     }
 
@@ -153,7 +153,7 @@ public final class RdfEmitter implements
 
     @Override
     public RdfEmitter ordered(boolean enable) {
-        options.setOrdered(enable);
+        options.ordered(enable);
         return this;
     }
 
@@ -163,7 +163,7 @@ public final class RdfEmitter implements
      * @return builder instance
      */
     public RdfEmitter numericId() {
-        options.setNumericId(true);
+        options.numericId(true);
         return this;
     }
 
@@ -185,11 +185,11 @@ public final class RdfEmitter implements
     }
 
     public static final void toRdf(final Document input, final RdfQuadConsumer consumer, final JsonLdOptions options) throws JsonLdException, IOException {
-        final JsonLdOptions expansionOptions = new JsonLdOptions(options);
+        final JsonLdOptions expansionOptions = JsonLdOptions.copyOf(options);
 
-        expansionOptions.setProcessingMode(options.getProcessingMode());
-        expansionOptions.base(options.getBase());
-        expansionOptions.expandContext(options.getExpandContext());
+        expansionOptions.mode(options.mode());
+        expansionOptions.base(options.base());
+        expansionOptions.expandContext(options.expandContext());
 
         //FIXME
         final Execution runtime = Execution.of(options);
@@ -205,8 +205,8 @@ public final class RdfEmitter implements
         JsonLdToQuads
                 .with(new NodeMapBuilder(expanded, new NodeMap()).build())
                 .produceGeneralizedRdf(options.isProduceGeneralizedRdf())
-                .rdfDirection(options.getRdfDirection())
-                .uriValidation(options.getUriValidation())
+                .rdfDirection(options.rdfDirection())
+                .uriValidation(options.uriValidation())
                 .provide(consumer);
     }
 }

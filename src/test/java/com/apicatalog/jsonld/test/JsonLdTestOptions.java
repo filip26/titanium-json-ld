@@ -207,7 +207,7 @@ public class JsonLdTestOptions {
     public JsonLdOptions setup(JsonLdOptions options) {
 
         if (processingMode != null) {
-            options.setProcessingMode(JsonLdVersion.of(processingMode));
+            options.mode(JsonLdVersion.of(processingMode));
         }
 
         if (base != null) {
@@ -215,51 +215,51 @@ public class JsonLdTestOptions {
         }
 
         if (expandContext != null) {
-            options.setExpandContext(URI.create(expandContext));
+            options.expandContext(URI.create(expandContext));
         }
 
         if (compactArrays != null) {
-            options.setCompactArrays(compactArrays);
+            options.compactArrays(compactArrays);
         }
 
         if (compactToRelative != null) {
-            options.setCompactToRelative(compactToRelative);
+            options.compactToRelative(compactToRelative);
         }
 
         if (rdfDirection != null) {
-            options.setRdfDirection(RdfDirection.valueOf(rdfDirection.toUpperCase().replace("-", "_")));
+            options.rdfDirection(RdfDirection.valueOf(rdfDirection.toUpperCase().replace("-", "_")));
         }
 
         if (produceGeneralizedRdf != null) {
-            options.setProduceGeneralizedRdf(produceGeneralizedRdf);
+            options.generalizedRdf(produceGeneralizedRdf);
         }
 
         if (useNativeTypes != null) {
-            options.setUseNativeTypes(useNativeTypes);
+            options.useNativeTypes(useNativeTypes);
         }
 
         if (useRdfType != null) {
-            options.setUseRdfType(useRdfType);
+            options.useRdfType(useRdfType);
         }
 
         if (omitGraph != null) {
-            options.setOmitGraph(omitGraph);
+            options.omitGraph(omitGraph);
         }
 
         if (ordered != null) {
-            options.setOrdered(ordered);
+            options.ordered(ordered);
         }
 
         if (numericId != null) {
-            options.setNumericId(numericId);
+            options.numericId(numericId);
         }
 
         if (rdfStar != null) {
-            options.setRdfStar(rdfStar);
+            options.rdfStar(rdfStar);
         }
 
         if (undefinedTerms != null) {
-            options.setUndefinedTermsPolicy(undefinedTerms);
+            options.undefinedTermsPolicy(undefinedTerms);
         }
         return options;
     }

@@ -14,7 +14,7 @@ class Ticker extends Execution {
     Instant ticker;
 
     Ticker(JsonLdOptions options) {
-        this.ttl = options.getTimeout();
+        this.ttl = options.timeout();
         this.ticker = null;
     }
 

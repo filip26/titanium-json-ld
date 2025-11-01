@@ -71,7 +71,7 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
 
     @Override
     public FlatteningApi mode(JsonLdVersion processingMode) {
-        options.setProcessingMode(processingMode);
+        options.mode(processingMode);
         return this;
     }
 
@@ -82,7 +82,7 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
     }
 
     public FlatteningApi compactArrays(boolean enable) {
-        options.setCompactArrays(enable);
+        options.compactArrays(enable);
         return this;
     }
 
@@ -98,7 +98,7 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
 
     @Override
     public FlatteningApi ordered(boolean enable) {
-        options.setOrdered(enable);
+        options.ordered(enable);
         return this;
     }
 

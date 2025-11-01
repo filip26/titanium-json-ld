@@ -55,7 +55,7 @@ public final class Frame {
 
         var expanded = Expander.expandFrame(
                 frame,
-                new JsonLdOptions(options).setOrdered(false),
+                JsonLdOptions.copyOf(options).ordered(false),
                 runtime);
 
         return of(expanded, keys);
@@ -64,7 +64,7 @@ public final class Frame {
     public static final URI contextBase(final Document frame, final JsonLdOptions options) {
         return (frame.contextUrl() != null)
                 ? frame.documentUrl()
-                : options.getBase();
+                : options.base();
 
     }
 
