@@ -101,7 +101,7 @@ public final class JsonLdOptions {
 
     private JsonLdVersion processingMode;
 
-    private boolean produceGeneralizedRdf;
+    private boolean generalizedRdf;
 
     private RdfDirection rdfDirection;
 
@@ -148,16 +148,17 @@ public final class JsonLdOptions {
 
     private JsonLdOptions(DocumentLoader loader) {
 
+        this.loader = loader;
+        
         // default values
         this.base = null;
         this.compactArrays = true;
         this.compactToRelative = true;
-        this.loader = loader;
         this.expandContext = null;
         this.extractAllScripts = false;
         this.ordered = false;
         this.processingMode = JsonLdVersion.V1_1;
-        this.produceGeneralizedRdf = true;
+        this.generalizedRdf = true;
         this.rdfDirection = null;
         this.useNativeTypes = false;
         this.useRdfType = false;
@@ -182,15 +183,15 @@ public final class JsonLdOptions {
     }
 
     private JsonLdOptions(JsonLdOptions options) {
+        this.loader = options.loader;
         this.base = options.base;
         this.compactArrays = options.compactArrays;
         this.compactToRelative = options.compactToRelative;
-        this.loader = options.loader;
         this.expandContext = options.expandContext;
         this.extractAllScripts = options.extractAllScripts;
         this.ordered = options.ordered;
         this.processingMode = options.processingMode;
-        this.produceGeneralizedRdf = options.produceGeneralizedRdf;
+        this.generalizedRdf = options.generalizedRdf;
         this.rdfDirection = options.rdfDirection;
         this.useNativeTypes = options.useNativeTypes;
         this.useRdfType = options.useRdfType;
@@ -323,7 +324,7 @@ public final class JsonLdOptions {
     }
 
     public boolean isProduceGeneralizedRdf() {
-        return produceGeneralizedRdf;
+        return generalizedRdf;
     }
 
     public RdfDirection rdfDirection() {
@@ -378,7 +379,7 @@ public final class JsonLdOptions {
     }
 
     public JsonLdOptions generalizedRdf(boolean produceGeneralizedRdf) {
-        this.produceGeneralizedRdf = produceGeneralizedRdf;
+        this.generalizedRdf = produceGeneralizedRdf;
         return this;
     }
 

@@ -26,12 +26,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.http.HttpClient;
-import com.apicatalog.jsonld.http.HttpResponse;
 import com.apicatalog.jsonld.http.ProfileConstants;
 import com.apicatalog.tree.io.NodeReader;
 import com.apicatalog.tree.io.jakarta.JakartaReader;
@@ -41,9 +39,9 @@ import com.apicatalog.web.uri.UriResolver;
 
 import jakarta.json.Json;
 
-class DefaultHttpLoader implements DocumentLoader {
+public class DefaulLoader implements DocumentLoader {
 
-    private static final Logger LOGGER = Logger.getLogger(DefaultHttpLoader.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(DefaulLoader.class.getName());
 
     public static final int MAX_REDIRECTIONS = 10;
 
@@ -51,16 +49,16 @@ class DefaultHttpLoader implements DocumentLoader {
 
     private final int maxRedirections;
 
-    private final HttpClient httpClient;
+    private final LoaderClient client;
 
     private final NodeReader reader;
 
-    public DefaultHttpLoader(HttpClient httpClient) {
-        this(httpClient, MAX_REDIRECTIONS);
+    public DefaulLoader(LoaderClient client) {
+        this(client, MAX_REDIRECTIONS);
     }
 
-    public DefaultHttpLoader(HttpClient httpClient, int maxRedirections) {
-        this.httpClient = httpClient;
+    public DefaulLoader(LoaderClient httpClient, int maxRedirections) {
+        this.client = httpClient;
         this.maxRedirections = maxRedirections;
         this.reader = new JakartaReader(Json.createReaderFactory(Map.of()));
         // FIXME
@@ -80,13 +78,10 @@ class DefaultHttpLoader implements DocumentLoader {
             for (int redirection = 0; redirection < maxRedirections; redirection++) {
 
                 // 2.
-                try (HttpResponse response = httpClient.send(targetUri, getAcceptHeader(options.getRequestProfile()))) {
+                try (LoaderClient.Response response = client.send(targetUri, getAcceptHeader(options.getRequestProfile()))) {
 
                     // 3.
-                    if (response.statusCode() == 301
-                            || response.statusCode() == 302
-                            || response.statusCode() == 303
-                            || response.statusCode() == 307) {
+                    if (response.isRedirect()) {
 
                         final Optional<String> location = response.location();
 
@@ -95,11 +90,11 @@ class DefaultHttpLoader implements DocumentLoader {
                             continue;
                         }
 
-                        throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Header location is required for code [" + response.statusCode() + "].");
+                        throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Header location is required for code [" + response + "].");
                     }
 
-                    if (response.statusCode() != 200) {
-                        throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unexpected response code [" + response.statusCode() + "]");
+                    if (!response.isSuccess()) {
+                        throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unexpected response code [" + response + "]");
                     }
 
                     final Optional<String> contentTypeValue = response.contentType();
@@ -195,7 +190,7 @@ class DefaultHttpLoader implements DocumentLoader {
             final MediaType type,
             final URI targetUri,
             final URI contextUrl,
-            final HttpResponse response) throws JsonLdException, IOException {
+            final LoaderClient.Response response) throws JsonLdException, IOException {
 
         try (final var is = response.body()) {
 
@@ -224,10 +219,10 @@ class DefaultHttpLoader implements DocumentLoader {
      *
      * @param fallbackContentType a content type that overrides unsupported received
      *                            content-type
-     * @return {@link DefaultHttpLoader} instance
+     * @return {@link DefaulLoader} instance
      * @since 1.4.0
      */
-    public DefaultHttpLoader fallbackContentType(MediaType fallbackContentType) {
+    public DefaulLoader fallbackContentType(MediaType fallbackContentType) {
 //FIXME        reader.setFallbackContentType(fallbackContentType);
         return this;
     }
@@ -236,11 +231,11 @@ class DefaultHttpLoader implements DocumentLoader {
      * Set read timeout
      *
      * @param timeout to set or <code>null</code> for no timeout
-     * @return {@link DefaultHttpLoader} instance
+     * @return {@link DefaulLoader} instance
      * @since 1.6.1
      */
-    public DefaultHttpLoader timeout(Duration timeout) {
-        httpClient.timeout(timeout);
+    public DefaulLoader timeout(Duration timeout) {
+        client.timeout(timeout);
         return this;
     }
 }

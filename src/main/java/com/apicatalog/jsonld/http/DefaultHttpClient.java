@@ -18,33 +18,36 @@ package com.apicatalog.jsonld.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.loader.LoaderClient;
 
-public final class DefaultHttpClient implements HttpClient {
+public final class DefaultHttpClient implements LoaderClient {
 
     @Deprecated
-    private static final java.net.http.HttpClient CLIENT = java.net.http.HttpClient.newBuilder().followRedirects(Redirect.NEVER).build();
+    private static final java.net.http.HttpClient CLIENT = HttpClient.newBuilder().followRedirects(Redirect.NEVER).build();
 
     @Deprecated
     private static final DefaultHttpClient INSTANCE = new DefaultHttpClient(CLIENT);
 
-    private final java.net.http.HttpClient httpClient;
+    private final HttpClient httpClient;
     private Duration timeout;
 
-    public DefaultHttpClient(final java.net.http.HttpClient httpClient) {
+    public DefaultHttpClient(final HttpClient httpClient) {
         this.httpClient = httpClient;
         this.timeout = null;
     }
 
-    public HttpResponse send(URI targetUri, String requestProfile) throws JsonLdException {
+    public LoaderClient.Response send(URI targetUri, String requestProfile) throws JsonLdException {
 
         HttpRequest.Builder request = HttpRequest.newBuilder()
                 .GET()
@@ -70,27 +73,35 @@ public final class DefaultHttpClient implements HttpClient {
     }
 
     @Deprecated
-    public static final HttpClient defaultInstance() {
+    public static final LoaderClient defaultInstance() {
         return INSTANCE;
     }
 
     @Override
-    public HttpClient timeout(Duration timeout) {
+    public LoaderClient timeout(Duration timeout) {
         this.timeout = timeout;
         return this;
     }
 
-    public static class HttpResponseImpl implements HttpResponse {
+    public static class HttpResponseImpl implements LoaderClient.Response {
 
-        private final java.net.http.HttpResponse<InputStream> response;
+        private final HttpResponse<InputStream> response;
 
-        HttpResponseImpl(java.net.http.HttpResponse<InputStream> response) {
+        HttpResponseImpl(HttpResponse<InputStream> response) {
             this.response = response;
         }
 
         @Override
-        public int statusCode() {
-            return response.statusCode();
+        public boolean isRedirect() {
+            return response.statusCode() == 301
+                    || response.statusCode() == 302
+                    || response.statusCode() == 303
+                    || response.statusCode() == 307;
+        }
+
+        @Override
+        public boolean isSuccess() {
+            return response.statusCode() == 200;
         }
 
         @Override

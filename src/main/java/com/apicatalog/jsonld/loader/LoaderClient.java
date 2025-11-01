@@ -1,0 +1,44 @@
+package com.apicatalog.jsonld.loader;
+
+import java.io.Closeable;
+import java.io.InputStream;
+import java.net.URI;
+import java.time.Duration;
+import java.util.Collection;
+import java.util.Optional;
+
+import com.apicatalog.jsonld.JsonLdException;
+
+public interface LoaderClient {
+
+    Response send(URI targetUri, String requestProfile) throws JsonLdException;
+    
+    /**
+     * Configure read timeout
+     * 
+     * @param timeout to set or <code>null</code> for no timeout
+     * 
+     * @return {@link LoaderClient} instance,
+     * 
+     * @since 1.4.0
+     */
+    default LoaderClient timeout(Duration timeout) {
+        throw new UnsupportedOperationException();
+    }
+
+    public interface Response extends Closeable {
+
+        InputStream body();
+
+        Collection<String> links();
+
+        Optional<String> contentType();
+
+        Optional<String> location();
+
+        boolean isRedirect();
+
+        boolean isSuccess();
+
+    }
+}

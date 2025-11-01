@@ -25,25 +25,28 @@ import com.apicatalog.jsonld.document.Document;
 
 public final class SchemeRouter implements DocumentLoader {
 
-    private static final DocumentLoader INSTANCE =
-                                new SchemeRouter()
-                                        .set("http", HttpLoader.defaultInstance())
-                                        .set("https", HttpLoader.defaultInstance())
-                                        .set("file", new FileLoader());
-    
-    private final Map<String, DocumentLoader> loaders;
+    private static final DocumentLoader INSTANCE = SchemeRouter.newBuilder()
+            .route("http", HttpLoader.defaultInstance())
+            .route("https", HttpLoader.defaultInstance())
+            .route("file", new FileLoader())
+            .build();
 
-    public SchemeRouter() {
-        this.loaders = new LinkedHashMap<>();
+    private final Map<String, DocumentLoader> loaders;
+    private final DocumentLoader fallback;
+
+    private SchemeRouter(final Map<String, DocumentLoader> loaders, DocumentLoader fallback) {
+        this.loaders = loaders;
+        this.fallback = fallback;
     }
 
+    /** Creates a new builder for {@code SchemeRouter}. */
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
+    @Deprecated
     public static final DocumentLoader defaultInstance() {
         return INSTANCE;
-    }
-
-    public SchemeRouter set(final String scheme, final DocumentLoader loader) {
-        loaders.put(scheme, loader);
-        return this;
     }
 
     @Override
@@ -55,11 +58,40 @@ public final class SchemeRouter implements DocumentLoader {
 
         final DocumentLoader loader = loaders.getOrDefault(url.getScheme().toLowerCase(), null);
 
-        if (loader == null) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "URL scheme [" + url.getScheme() + "] is not supported.");
+        if (loader != null) {
+            return loader.loadDocument(url, options);
         }
 
-        return loader.loadDocument(url, options);
+        if (fallback != null) {
+            return fallback.loadDocument(url, options);
+        }
+
+        throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "URL scheme [" + url.getScheme() + "] is not supported.");
+
     }
 
+    // ---------- Builder ----------
+
+    public static final class Builder {
+
+        private final Map<String, DocumentLoader> routes = new LinkedHashMap<>();
+        private DocumentLoader fallback;
+
+        /** Routes the given URI scheme to the supplied loader. */
+        public Builder route(String scheme, DocumentLoader loader) {
+            routes.put(scheme, loader);
+            return this;
+        }
+
+        /** Sets a fallback loader used when no scheme matches. */
+        public Builder fallback(DocumentLoader loader) {
+            this.fallback = loader;
+            return this;
+        }
+
+        /** Builds the router. */
+        public DocumentLoader build() {
+            return new SchemeRouter(Map.copyOf(routes), fallback);
+        }
+    }
 }
