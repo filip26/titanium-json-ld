@@ -30,10 +30,10 @@ import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.loader.LoaderClient;
+import com.apicatalog.jsonld.loader.HttpLoaderClient;
 import com.apicatalog.web.media.MediaType;
 
-public final class DefaultHttpClient implements LoaderClient {
+public final class DefaultHttpClient implements HttpLoaderClient {
 
     @Deprecated
     private static final java.net.http.HttpClient CLIENT = HttpClient
@@ -52,7 +52,7 @@ public final class DefaultHttpClient implements LoaderClient {
         this.timeout = null;
     }
 
-    public LoaderClient.Response send(URI targetUri, Collection<String> requestProfiles) throws JsonLdException {
+    public HttpLoaderClient.Response send(URI targetUri, Collection<String> requestProfiles) throws JsonLdException {
 
         HttpRequest.Builder request = HttpRequest.newBuilder()
                 .GET()
@@ -82,12 +82,12 @@ public final class DefaultHttpClient implements LoaderClient {
     }
 
     @Deprecated
-    public static final LoaderClient defaultInstance() {
+    public static final HttpLoaderClient defaultInstance() {
         return INSTANCE;
     }
 
     @Override
-    public LoaderClient timeout(Duration timeout) {
+    public HttpLoaderClient timeout(Duration timeout) {
         this.timeout = timeout;
         return this;
     }
@@ -113,7 +113,7 @@ public final class DefaultHttpClient implements LoaderClient {
         return builder.toString();
     }
 
-    public static class HttpResponseImpl implements LoaderClient.Response {
+    public static class HttpResponseImpl implements HttpLoaderClient.Response {
 
         private final HttpResponse<InputStream> response;
 

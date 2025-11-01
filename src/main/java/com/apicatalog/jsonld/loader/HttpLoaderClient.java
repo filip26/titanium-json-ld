@@ -9,7 +9,7 @@ import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdException;
 
-public interface LoaderClient {
+public interface HttpLoaderClient {
 
     Response send(URI targetUri, Collection<String> requestProfiles) throws JsonLdException;
     
@@ -18,11 +18,11 @@ public interface LoaderClient {
      * 
      * @param timeout to set or <code>null</code> for no timeout
      * 
-     * @return {@link LoaderClient} instance,
+     * @return {@link HttpLoaderClient} instance,
      * 
      * @since 1.4.0
      */
-    default LoaderClient timeout(Duration timeout) {
+    default HttpLoaderClient timeout(Duration timeout) {
         throw new UnsupportedOperationException();
     }
 

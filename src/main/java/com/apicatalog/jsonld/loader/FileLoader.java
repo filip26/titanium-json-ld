@@ -25,21 +25,22 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.api.StringUtils;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.tree.io.NodeReader;
 import com.apicatalog.web.media.MediaType;
 
 public final class FileLoader implements DocumentLoader {
 
     private static final Logger LOGGER = Logger.getLogger(FileLoader.class.getName());
 
-    private final DocumentResolver resolver;
+    private final NodeReader reader;
 
-    public FileLoader() {
-        this.resolver = new DocumentResolver();
-        this.resolver.setFallbackContentType(MediaType.JSON);
+    public FileLoader(NodeReader reader) {
+        this.reader = reader;
     }
 
     @Override
@@ -62,12 +63,13 @@ public final class FileLoader implements DocumentLoader {
                                     return MediaType.JSON;
                                 });
 
-        final DocumentReader<InputStream> reader = resolver.getReader(contentType);
+//        final DocumentReader<InputStream> reader = resolver.getReader(contentType);
 
         try (final InputStream is = new FileInputStream(file)) {
-            final Document document = reader.read(is);
-            document.setDocumentUrl(url);
-            return document;
+            var node = reader.read(is);
+            
+            return RemoteDocument.of(node, url);                
+
 
         } catch (FileNotFoundException e) {
 

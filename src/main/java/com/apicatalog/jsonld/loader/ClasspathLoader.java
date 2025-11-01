@@ -18,52 +18,29 @@ package com.apicatalog.jsonld.loader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
 
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.rdf.api.RdfConsumerException;
-import com.apicatalog.rdf.nquads.NQuadsReaderException;
 
-public class ClasspathLoader implements DocumentLoader, TestLoader {
+public class ClasspathLoader implements DocumentLoader {
 
     @Override
     public Document loadDocument(URI url, Options options) throws JsonLdException {
 
         try (final InputStream is = getClass().getResourceAsStream(url.getPath())) {
 
-            final Document document = toDocument(url, is);
+            final Document document = JsonDocument.of(is);
+ 
             document.setDocumentUrl(url);
 
             return document;
 
-        } catch (IOException | NQuadsReaderException | RdfConsumerException e) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
-        }
-    }
-
-    @Override
-    public byte[] fetchBytes(URI url) throws JsonLdException {
-
-        try (final InputStream is = getClass().getResourceAsStream(url.getPath())) {
-
-            return readAsByteArray(is);
-
         } catch (IOException e) {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
-    }
-
-    private static final Document toDocument(URI url, InputStream is) throws JsonLdException, NQuadsReaderException, RdfConsumerException {
-
-        if (url.toString().endsWith(".nq")) {
-            return QuadSetDocument.readNQuads(new InputStreamReader(is));
-        }
-
-        return JsonDocument.of(is);
     }
     
     public static final byte[] readAsByteArray(InputStream is) throws IOException {

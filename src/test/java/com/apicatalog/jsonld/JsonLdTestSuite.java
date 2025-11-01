@@ -21,6 +21,7 @@ import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
 import org.junit.platform.suite.api.SuiteDisplayName;
 
+import com.apicatalog.jsonld.loader.FileLoader;
 import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.tree.io.jakarta.JakartaReader;
@@ -45,6 +46,8 @@ public class JsonLdTestSuite {
     public static final JakartaReader JAKARTA_READER = new JakartaReader(Json.createReaderFactory(Map.of())); 
     
     public static final ZipResourceLoader ZIP_RESOURCE_LOADER = new ZipResourceLoader(JAKARTA_READER);
+    
+    public static final FileLoader FILE_LOADER = new FileLoader(JAKARTA_READER);
     
 //    public static final DocumentLoader LOADER = SchemeRouter.newBuilder()
 //          .route("http", HTTP_LOADER)
