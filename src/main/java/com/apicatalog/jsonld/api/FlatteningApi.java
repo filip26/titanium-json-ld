@@ -47,7 +47,7 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
         this.documentUri = documentUri;
         this.context = null;
         this.contextUri = null;
-        this.options = new JsonLdOptions();
+        this.options = JsonLdOptions.defaults();
     }
 
     public FlatteningApi(Document document) {
@@ -55,7 +55,7 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
         this.documentUri = null;
         this.context = null;
         this.contextUri = null;
-        this.options = new JsonLdOptions();
+        this.options = JsonLdOptions.defaults();
     }
 
     @Override

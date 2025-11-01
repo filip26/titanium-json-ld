@@ -162,7 +162,7 @@ public final class JsonLdTestCase {
 
     public JsonLdOptions getOptions() {
         return options.setup(
-                JsonLdOptions.of(
+                JsonLdOptions.with(
                         new UriBaseRewriter(
                                 baseUri,
                                 testsBase,

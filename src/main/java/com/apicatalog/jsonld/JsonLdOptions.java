@@ -63,6 +63,14 @@ public final class JsonLdOptions {
     public static final UriValidationPolicy DEFAULT_URI_VALIDATION = UriValidationPolicy.Full;
 
     /**
+     * The callback of the loader to be used to retrieve remote documents and
+     * contexts, implementing the LoadDocumentCallback. If specified, it is used to
+     * retrieve remote documents and contexts; otherwise, if not specified, the
+     * processor's built-in loader is used.
+     */
+    private DocumentLoader loader;
+
+    /**
      * The base IRI to use when expanding or compacting the document. If set, this
      * overrides the input document's IRI.
      */
@@ -80,14 +88,6 @@ public final class JsonLdOptions {
      * location when compacting.
      */
     private boolean compactToRelative;
-
-    /**
-     * The callback of the loader to be used to retrieve remote documents and
-     * contexts, implementing the LoadDocumentCallback. If specified, it is used to
-     * retrieve remote documents and contexts; otherwise, if not specified, the
-     * processor's built-in loader is used.
-     */
-    private DocumentLoader documentLoader;
 
     /**
      * A context that is used to initialize the active context when expanding a
@@ -142,7 +142,7 @@ public final class JsonLdOptions {
     // a policy on how proceed with undefined terms during expansion
     private ProcessingPolicy undefinedTerms;
 
-    public JsonLdOptions() {
+    private JsonLdOptions() {
         this(SchemeRouter.defaultInstance());
     }
 
@@ -152,7 +152,7 @@ public final class JsonLdOptions {
         this.base = null;
         this.compactArrays = true;
         this.compactToRelative = true;
-        this.documentLoader = loader;
+        this.loader = loader;
         this.expandContext = null;
         this.extractAllScripts = false;
         this.ordered = false;
@@ -185,7 +185,7 @@ public final class JsonLdOptions {
         this.base = options.base;
         this.compactArrays = options.compactArrays;
         this.compactToRelative = options.compactToRelative;
-        this.documentLoader = options.documentLoader;
+        this.loader = options.loader;
         this.expandContext = options.expandContext;
         this.extractAllScripts = options.extractAllScripts;
         this.ordered = options.ordered;
@@ -213,11 +213,34 @@ public final class JsonLdOptions {
         this.timeout = options.timeout;
         this.undefinedTerms = options.undefinedTerms;
     }
-    
-    public static final JsonLdOptions of(DocumentLoader loader) {
+
+    /**
+     * Returns a new {@code JsonLdOptions} instance with default configuration.
+     *
+     * @return a new {@code JsonLdOptions} instance using standard defaults
+     */    
+    public static final JsonLdOptions defaults() {
         return new JsonLdOptions();
     }
 
+    /**
+     * Returns a new {@code JsonLdOptions} instance using the specified
+     * {@link DocumentLoader}.
+     * <p>
+     *
+     * @param loader the document loader to use; must not be {@code null}
+     * @return a new {@code JsonLdOptions} instance configured with the given loader
+     */
+    public static final JsonLdOptions with(DocumentLoader loader) {
+        return new JsonLdOptions(loader);
+    }
+
+    /**
+     * Returns a new {@code JsonLdOptions} instance copied from the given options.
+     *
+     * @param options the options to copy; must not be {@code null}
+     * @return a new {@code JsonLdOptions} instance with the same configuration
+     */
     public static final JsonLdOptions copyOf(JsonLdOptions options) {
         return new JsonLdOptions(options);
     }
@@ -266,7 +289,7 @@ public final class JsonLdOptions {
      * @return the loader or <code>null</code> is is not set
      */
     public DocumentLoader loader() {
-        return documentLoader;
+        return loader;
     }
 
     /**
@@ -335,7 +358,7 @@ public final class JsonLdOptions {
     }
 
     public JsonLdOptions loader(DocumentLoader documentLoader) {
-        this.documentLoader = documentLoader;
+        this.loader = documentLoader;
         return this;
     }
 

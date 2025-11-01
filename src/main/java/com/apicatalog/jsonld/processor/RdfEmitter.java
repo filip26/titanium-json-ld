@@ -46,9 +46,9 @@ public final class RdfEmitter implements
 
     private JsonLdOptions options;
 
-    public RdfEmitter() {
-        this(new JsonLdOptions());
-    }
+//    public RdfEmitter() {
+//        this(new JsonLdOptions());
+//    }
 
     public RdfEmitter(JsonLdOptions options) {
         this.options = options;
