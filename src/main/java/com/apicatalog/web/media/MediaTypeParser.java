@@ -20,7 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.IntPredicate;
 
-import com.apicatalog.jsonld.http.HttpAlphabet;
+import com.apicatalog.web.http.HttpAlphabet;
 
 /**
  *

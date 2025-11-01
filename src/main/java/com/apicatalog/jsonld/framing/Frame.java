@@ -31,6 +31,7 @@ import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.jsonld.processor.Expander;
+import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.web.uri.UriUtils;
 import com.apicatalog.web.uri.UriValidationPolicy;
 
@@ -59,6 +60,17 @@ public final class Frame {
                 runtime);
 
         return of(expanded, keys);
+    }
+
+    public static final Frame of(final Map<String, ?> frame, final JsonLdOptions options, final Execution runtime) throws JsonLdException, IOException {
+//TODO
+//        var expanded = Expander.expandFrame(
+//                frame,
+//                JsonLdOptions.copyOf(options).ordered(false),
+//                runtime);
+//
+//        return of(expanded, frame.keySet());
+        return null;
     }
 
     public static final URI contextBase(final Document frame, final JsonLdOptions options) {

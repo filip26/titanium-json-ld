@@ -25,11 +25,11 @@ import com.apicatalog.jsonld.document.Document;
 
 public final class SchemeRouter implements DocumentLoader {
 
-    private static final DocumentLoader INSTANCE = SchemeRouter.newBuilder()
-            .route("http", HttpLoader.defaultInstance())
-            .route("https", HttpLoader.defaultInstance())
-            .route("file", new FileLoader())
-            .build();
+//    private static final DocumentLoader INSTANCE = SchemeRouter.newBuilder()
+//            .route("http", HttpLoader.defaultInstance())
+//            .route("https", HttpLoader.defaultInstance())
+//            .route("file", new FileLoader())
+//            .build();
 
     private final Map<String, DocumentLoader> loaders;
     private final DocumentLoader fallback;
@@ -44,10 +44,10 @@ public final class SchemeRouter implements DocumentLoader {
         return new Builder();
     }
 
-    @Deprecated
-    public static final DocumentLoader defaultInstance() {
-        return INSTANCE;
-    }
+//    @Deprecated
+//    public static final DocumentLoader defaultInstance() {
+//        return INSTANCE;
+//    }
 
     @Override
     public Document loadDocument(URI url, LoaderOptions options) throws JsonLdException {

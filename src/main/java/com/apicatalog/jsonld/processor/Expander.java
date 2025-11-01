@@ -18,6 +18,7 @@ package com.apicatalog.jsonld.processor;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -62,9 +63,9 @@ public final class Expander {
         return expand(node, context, baseUrl, false, options, runtime);
     }
 
-    static final Context context(
+    public static final Context context(
             final URI document,
-            final boolean frameExpansion,
+            final URI context,
             final JsonLdOptions options) throws JsonLdException, IOException {
 
         // 5. Initialize a new empty active context. The base IRI and
@@ -96,22 +97,19 @@ public final class Expander {
         // instead for local context.
         if (options.expandContext() != null) {
             final var expandContext = options.expandContext().content();
-//
-//            if (contextValue.isPresent()) {
             builder.update(
                     expandContext.node(),
                     expandContext.adapter(),
                     baseUrl);
-//            }
         }
-//
-//        // 7.
-//        if (document.contextUrl() != null) {
-//            builder.update(
-//                    document.contextUrl().toString(),
-//                    NativeAdapter.instance(),
-//                    document.contextUrl());
-//        }
+
+        // 7.
+        if (context != null) {
+            builder.update(
+                    context.toString(),
+                    NativeAdapter.instance(),
+                    context);
+        }
 
         return builder.build();
     }
@@ -203,7 +201,7 @@ public final class Expander {
         }
 
         if (expanded instanceof Collection<?> collection) {
-            return collection;
+            return List.copyOf(collection);
         }
 
         // 8.3

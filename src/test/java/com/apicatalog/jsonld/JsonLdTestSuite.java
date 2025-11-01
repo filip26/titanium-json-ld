@@ -19,6 +19,11 @@ import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
 import org.junit.platform.suite.api.SuiteDisplayName;
 
+import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.FileLoader;
+import com.apicatalog.jsonld.loader.HttpLoader;
+import com.apicatalog.jsonld.loader.SchemeRouter;
+
 @Suite(failIfNoTests = true)
 @SuiteDisplayName("JsonLd Suite")
 @SelectClasses({
@@ -32,6 +37,11 @@ import org.junit.platform.suite.api.SuiteDisplayName;
 })
 public class JsonLdTestSuite {
 
+    public static final DocumentLoader LOADER = SchemeRouter.newBuilder()
+          .route("http", HttpLoader.defaultInstance())
+          .route("https", HttpLoader.defaultInstance())
+          .route("file", new FileLoader())
+          .build();
     
     
 }

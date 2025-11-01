@@ -28,9 +28,9 @@ import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.JsonLdProfile;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.http.ProfileConstants;
 import com.apicatalog.tree.io.NodeReader;
 import com.apicatalog.tree.io.jakarta.JakartaReader;
 import com.apicatalog.web.link.Link;
@@ -139,7 +139,7 @@ public class DefaulLoader implements DocumentLoader {
 
                             final List<Link> contextUris = linkValues.stream()
                                     .flatMap(l -> Link.of(l, baseUri).stream())
-                                    .filter(l -> l.relations().contains(ProfileConstants.CONTEXT))
+                                    .filter(l -> l.relations().contains(JsonLdProfile.CONTEXT))
                                     .collect(Collectors.toList());
 
                             if (contextUris.size() > 1) {

@@ -26,10 +26,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.JsonLdProfile;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.http.ProfileConstants;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Direction;
@@ -237,7 +237,7 @@ public final class ContextBuilder {
                 }
 
                 final LoaderOptions loaderOptions = new LoaderOptions();
-                loaderOptions.setProfile(ProfileConstants.CONTEXT);
+                loaderOptions.setProfile(JsonLdProfile.CONTEXT);
                 loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
 
                 PolyNode importedContent = null;
@@ -565,7 +565,7 @@ public final class ContextBuilder {
         if (remoteDocument == null) {
 
             LoaderOptions loaderOptions = new LoaderOptions();
-            loaderOptions.setProfile(ProfileConstants.CONTEXT);
+            loaderOptions.setProfile(JsonLdProfile.CONTEXT);
             loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
 
             try {

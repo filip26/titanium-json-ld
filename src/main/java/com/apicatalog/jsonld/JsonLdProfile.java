@@ -13,16 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.http;
-
-import java.util.Collection;
-
-import com.apicatalog.web.media.MediaType;
+package com.apicatalog.jsonld;
 
 /**
  * @see <a href="https://www.w3.org/TR/json-ld11/#iana-considerations">IANA Considerations</a>
  */
-public final class ProfileConstants {
+public final class JsonLdProfile {
 
     public static final String EXPANDED = "http://www.w3.org/ns/json-ld#expanded";
 
@@ -36,6 +32,6 @@ public final class ProfileConstants {
 
     public static final String FRAMED = "http://www.w3.org/ns/json-ld#framed";
 
-    private ProfileConstants() {
+    private JsonLdProfile() {
     }
 }

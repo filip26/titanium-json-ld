@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdTestSuite;
 import com.apicatalog.jsonld.test.JsonLdMockServer;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestManifest;
@@ -90,7 +91,7 @@ class HttpLoaderTest {
                                     new UriBaseRewriter(
                                                 testCase.baseUri,
                                                 wireMockServer.baseUrl() + "/",
-                                                SchemeRouter.defaultInstance()));
+                                                JsonLdTestSuite.LOADER));
 
                 return null;
                 //FIXME

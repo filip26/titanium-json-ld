@@ -26,6 +26,7 @@ import java.time.temporal.ChronoUnit;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdTestSuite;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.fromrdf.QuadsToJsonLd;
 import com.apicatalog.jsonld.loader.QuadSetDocument;
@@ -168,7 +169,7 @@ public class EarlGenerator {
                                     new UriBaseRewriter(
                                             JsonLdTestCase.TESTS_BASE,
                                             wireMockServer.baseUrl(),
-                                            SchemeRouter.defaultInstance()));
+                                            JsonLdTestSuite.LOADER));
 
                             return JsonLd.expand(testCase.input, expandOptions);
                         });

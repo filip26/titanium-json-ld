@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
@@ -30,8 +31,12 @@ import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.processor.Framer;
 import com.apicatalog.jsonld.processor.RdfEmitter;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
+import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaReader;
+import com.apicatalog.tree.io.jakarta.JakartaWriter;
+import com.apicatalog.tree.io.java.NativeAdapter;
 
+import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
@@ -83,6 +88,39 @@ public final class JsonLd {
         runtime.tick();
 
         return Expander.expand(document, options, runtime);
+    }
+
+    public static final Collection<?> expand(final Map<String, ?> document, final JsonLdOptions options) throws JsonLdException, IOException {
+
+        var runtime = Execution.of(options);
+        runtime.tick();
+
+        return Expander.expand(
+                new PolyNode(document, NativeAdapter.instance()),
+                Expander.context(null, null, options),
+                options.base(),
+                options,
+                runtime);
+    }
+
+    public static void main(String[] args) throws JsonLdException, IOException {
+
+        var x = expand(Map.of(
+                "@context", Map.of(
+                        "ical", "http://www.w3.org/2002/12/cal/ical#",
+                        "xsd", "http://www.w3.org/2001/XMLSchema#",
+                        "ical:dtstart", Map.of("@type", "xsd:dateTime")),
+                "ical:summary", "Lady Gaga Concert",
+                "ical:location", "New Orleans Arena, New Orleans, Louisiana, USA",
+                "ical:dtstart", "2011-04-09T20:00:00Z"), JsonLdOptions.defaults());
+
+        System.out.println(x);
+        var b = new ByteArrayOutputStream();
+
+//        var y = new JakartaWriter(Json.createGeneratorFactory(Map.of()).createGenerator(b)).node(x, NativeAdapter.instance());
+
+//        System.out.println(y);
+
     }
 
     /**
@@ -244,6 +282,20 @@ public final class JsonLd {
         runtime.tick();
 
         return Framer.frame(document, frame, options, runtime);
+    }
+
+    public static final Map<String, ?> frame(final Map<String, ?> document, final Map<String, ?> frame, final JsonLdOptions options) throws JsonLdException, IOException {
+
+        final Execution runtime = Execution.of(options);
+        runtime.tick();
+
+        return null;
+        // TODO
+//        return Framer.frame(
+//                document, 
+//                Frame.of(frame, options, runtime), 
+//                options, 
+//                runtime);
     }
 
     /**

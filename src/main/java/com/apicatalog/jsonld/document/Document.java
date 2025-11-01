@@ -24,10 +24,10 @@ import com.apicatalog.web.media.MediaType;
 import jakarta.json.JsonStructure;
 
 /**
- * A document that can be processed by the processor.
+ * A JSON-LD document that can be processed by the processor.
  *
  * This can either be {@link JsonStructure}, representing JSON-LD or JSON
- * document, or {@link RdfDataset}
+ * document.
  *
  * Implemented by {@link JsonDocument}, {@link RdfDocument}, and provided by
  * {@link DocumentParser}.

@@ -24,11 +24,11 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.JsonLdProfile;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.expansion.UriExpansion;
-import com.apicatalog.jsonld.http.ProfileConstants;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -182,7 +182,7 @@ public interface Context {
         if (document == null) {
 
             final var loaderOptions = new LoaderOptions();
-            loaderOptions.setProfile(ProfileConstants.CONTEXT);
+            loaderOptions.setProfile(JsonLdProfile.CONTEXT);
             loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
 
             try {

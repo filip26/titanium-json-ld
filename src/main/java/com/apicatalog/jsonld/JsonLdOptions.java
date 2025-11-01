@@ -25,7 +25,6 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.loader.SchemeRouter;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.web.uri.UriValidationPolicy;
@@ -143,7 +142,7 @@ public final class JsonLdOptions {
     private ProcessingPolicy undefinedTerms;
 
     private JsonLdOptions() {
-        this(SchemeRouter.defaultInstance());
+        this((DocumentLoader)null);
     }
 
     private JsonLdOptions(DocumentLoader loader) {
