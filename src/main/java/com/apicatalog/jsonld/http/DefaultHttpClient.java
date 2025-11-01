@@ -23,6 +23,7 @@ import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.net.http.HttpTimeoutException;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Optional;
@@ -35,7 +36,10 @@ import com.apicatalog.web.media.MediaType;
 public final class DefaultHttpClient implements LoaderClient {
 
     @Deprecated
-    private static final java.net.http.HttpClient CLIENT = HttpClient.newBuilder().followRedirects(Redirect.NEVER).build();
+    private static final java.net.http.HttpClient CLIENT = HttpClient
+            .newBuilder()
+            .followRedirects(Redirect.NEVER)
+            .build();
 
     @Deprecated
     private static final DefaultHttpClient INSTANCE = new DefaultHttpClient(CLIENT);
@@ -62,11 +66,15 @@ public final class DefaultHttpClient implements LoaderClient {
         try {
             return new HttpResponseImpl(httpClient.send(request.build(), BodyHandlers.ofInputStream()));
 
+            
         } catch (InterruptedException e) {
 
             Thread.currentThread().interrupt();
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
 
+        } catch (HttpTimeoutException e) {
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_TIMEOUT, e);
+            
         } catch (IOException e) {
 
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
@@ -83,7 +91,7 @@ public final class DefaultHttpClient implements LoaderClient {
         this.timeout = timeout;
         return this;
     }
-    
+
     public static final String getAcceptHeader() {
         return getAcceptHeader(null);
     }
@@ -104,6 +112,7 @@ public final class DefaultHttpClient implements LoaderClient {
         builder.append(";q=0.9,*/*;q=0.1");
         return builder.toString();
     }
+
     public static class HttpResponseImpl implements LoaderClient.Response {
 
         private final HttpResponse<InputStream> response;

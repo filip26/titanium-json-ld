@@ -50,7 +50,7 @@ public final class SchemeRouter implements DocumentLoader {
 //    }
 
     @Override
-    public Document loadDocument(URI url, LoaderOptions options) throws JsonLdException {
+    public Document loadDocument(URI url, Options options) throws JsonLdException {
 
         if (url == null) {
             throw new IllegalArgumentException("The url must not be null.");

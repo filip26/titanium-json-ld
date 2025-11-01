@@ -333,6 +333,7 @@ public enum JsonLdErrorCode {
     INVALID_ANNOTATION("An invalid annotation has been detected"),
 
     // Custom
+    LOADING_DOCUMENT_TIMEOUT("A response has not been received within a specified time period"),
 
     PROCESSING_TIMEOUT_EXCEEDED("A processing has exceeded a defined timeout"),
 

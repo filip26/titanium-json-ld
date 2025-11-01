@@ -25,11 +25,20 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
+import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
-import com.apicatalog.jsonld.loader.TestLoader;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.web.link.Link;
 import com.apicatalog.web.media.MediaType;
 import com.apicatalog.web.uri.UriResolver;
@@ -40,9 +49,9 @@ public final class JsonLdMockServer {
     private final JsonLdTestCase testCase;
     private final String testBase;
     private final String resourceBase;
-    private final TestLoader loader;
+    private final DocumentLoader loader;
 
-    public JsonLdMockServer(JsonLdTestCase testCase, String testBase, String resourceBase, TestLoader loader) {
+    public JsonLdMockServer(JsonLdTestCase testCase, String testBase, String resourceBase, DocumentLoader loader) {
         this.testCase = testCase;
         this.testBase = testBase;
         this.resourceBase = resourceBase;
@@ -101,7 +110,7 @@ public final class JsonLdMockServer {
 
             String linkUri = UriResolver.resolve(testCase.input, link.target().toString());
 
-            byte[] content  = loader.fetchBytes(URI.create(resourceBase +  linkUri.substring(testCase.baseUri.length())));
+            byte[] content  = fetchBytes(URI.create(resourceBase +  linkUri.substring(testCase.baseUri.length())));
 
             if (content != null) {
 //                    Assert.assertNotNull(linkedDocument);
@@ -121,7 +130,7 @@ public final class JsonLdMockServer {
 
         ResponseDefinitionBuilder mockResponseBuilder = aResponse();
 
-        byte[] content = loader.fetchBytes(URI.create(resourceBase + inputPath.substring(testCase.baseUri.length())));
+        byte[] content = fetchBytes(URI.create(resourceBase + inputPath.substring(testCase.baseUri.length())));
 
         if (content != null) {
             mockResponseBuilder.withStatus(200);
@@ -151,5 +160,59 @@ public final class JsonLdMockServer {
             verify(getRequestedFor(urlMatching(testCase.options.redirectTo.toString().substring(testBase.length())))
                 .withHeader("accept", equalTo(DefaultHttpClient.getAcceptHeader())));
         }
+    }
+    
+    public byte[] fetchBytes(URI url) throws JsonLdException {
+
+        if (!"zip".equals(url.getScheme())) {
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+        }
+
+        URL zipFileUrl = getClass().getResource("/" + url.getAuthority());
+
+        if (zipFileUrl == null) {
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+        }
+
+        File zipFile = null;
+
+        try {
+            zipFile = new File(zipFileUrl.toURI());
+
+        } catch (URISyntaxException e) {
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+        }
+
+        try (ZipFile zip = new ZipFile(zipFile)) {
+
+            ZipEntry zipEntry = zip.getEntry(url.getPath().substring(1));
+
+            if (zipEntry == null) {
+                return null;
+            }
+
+            try (InputStream is = zip.getInputStream(zipEntry)) {
+
+                return readAsByteArray(is);
+            }
+
+
+        } catch (IOException e) {
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+        }
+    }
+
+    static final byte[] readAsByteArray(InputStream is) throws IOException {
+
+        final ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
+
+        byte[] buffer = new byte[16384];
+        int readed;
+
+        while ((readed = is.read(buffer, 0, buffer.length)) != -1) {
+            byteArrayStream.write(buffer, 0, readed);
+        }
+
+        return byteArrayStream.toByteArray();
     }
 }

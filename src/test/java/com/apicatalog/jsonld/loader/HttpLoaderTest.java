@@ -91,7 +91,7 @@ class HttpLoaderTest {
                                     new UriBaseRewriter(
                                                 testCase.baseUri,
                                                 wireMockServer.baseUrl() + "/",
-                                                JsonLdTestSuite.LOADER));
+                                                JsonLdTestSuite.HTTP_LOADER));
 
                 return null;
                 //FIXME

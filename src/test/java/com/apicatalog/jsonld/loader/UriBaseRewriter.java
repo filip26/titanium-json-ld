@@ -17,11 +17,9 @@ package com.apicatalog.jsonld.loader;
 
 import java.net.URI;
 
-import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.loader.LoaderOptions;
 
 public final class UriBaseRewriter implements DocumentLoader {
 
@@ -38,7 +36,7 @@ public final class UriBaseRewriter implements DocumentLoader {
     }
 
     @Override
-    public Document loadDocument(final URI url, final LoaderOptions options) throws JsonLdException {
+    public Document loadDocument(final URI url, final Options options) throws JsonLdException {
 
         final String sourceUrl = url.toString();
 

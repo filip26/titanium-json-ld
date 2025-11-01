@@ -24,9 +24,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.apicatalog.jsonld.loader.ZipResourceLoader;
-import com.apicatalog.jsonld.test.JsonLdTestManifest;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
+import com.apicatalog.jsonld.test.JsonLdTestManifest;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 
 @DisplayName(value = "Framer")
@@ -44,7 +43,10 @@ class FramerTest {
 
     static final Stream<JsonLdTestCase> data() throws JsonLdException {
         return JsonLdTestManifest
-                    .load(JsonLdTestManifest.JSON_LD_FRAMING_BASE, "frame-manifest.jsonld", new ZipResourceLoader())
+                    .load(
+                            JsonLdTestManifest.JSON_LD_FRAMING_BASE, 
+                            "frame-manifest.jsonld", 
+                            JsonLdTestSuite.ZIP_RESOURCE_LOADER)
                     .stream()
                     .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                     ;

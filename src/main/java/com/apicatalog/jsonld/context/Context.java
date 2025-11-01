@@ -17,15 +17,15 @@ package com.apicatalog.jsonld.context;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdProfile;
-import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.expansion.UriExpansion;
@@ -33,7 +33,6 @@ import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.java.NativeAdapter;
@@ -181,9 +180,10 @@ public interface Context {
 
         if (document == null) {
 
-            final var loaderOptions = new LoaderOptions();
-            loaderOptions.setProfile(JsonLdProfile.CONTEXT);
-            loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
+            final var loaderOptions = new DocumentLoader.Options(
+                    false,
+                    JsonLdProfile.CONTEXT,
+                    List.of(JsonLdProfile.CONTEXT));
 
             try {
 

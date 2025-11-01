@@ -43,7 +43,7 @@ public final class FileLoader implements DocumentLoader {
     }
 
     @Override
-    public Document loadDocument(final URI url, final LoaderOptions options) throws JsonLdException {
+    public Document loadDocument(final URI url, final Options options) throws JsonLdException {
 
         if (!"file".equalsIgnoreCase(url.getScheme())) {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unsupported URL scheme [" + url.getScheme() + "]. FileLoader accepts only file scheme.");

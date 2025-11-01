@@ -15,14 +15,17 @@
  */
 package com.apicatalog.jsonld;
 
+import java.util.Map;
+
 import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
 import org.junit.platform.suite.api.SuiteDisplayName;
 
-import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.loader.FileLoader;
 import com.apicatalog.jsonld.loader.HttpLoader;
-import com.apicatalog.jsonld.loader.SchemeRouter;
+import com.apicatalog.jsonld.loader.ZipResourceLoader;
+import com.apicatalog.tree.io.jakarta.JakartaReader;
+
+import jakarta.json.Json;
 
 @Suite(failIfNoTests = true)
 @SuiteDisplayName("JsonLd Suite")
@@ -36,12 +39,17 @@ import com.apicatalog.jsonld.loader.SchemeRouter;
         RemoteTest.class
 })
 public class JsonLdTestSuite {
-
-    public static final DocumentLoader LOADER = SchemeRouter.newBuilder()
-          .route("http", HttpLoader.defaultInstance())
-          .route("https", HttpLoader.defaultInstance())
-          .route("file", new FileLoader())
-          .build();
     
+    public static final HttpLoader HTTP_LOADER = HttpLoader.newHttpLoader();
+    
+    public static final JakartaReader JAKARTA_READER = new JakartaReader(Json.createReaderFactory(Map.of())); 
+    
+    public static final ZipResourceLoader ZIP_RESOURCE_LOADER = new ZipResourceLoader(JAKARTA_READER);
+    
+//    public static final DocumentLoader LOADER = SchemeRouter.newBuilder()
+//          .route("http", HTTP_LOADER)
+////          .route("https", HttpLoader.defaultInstance())
+////          .route("file", new FileLoader())
+//          .build();
     
 }

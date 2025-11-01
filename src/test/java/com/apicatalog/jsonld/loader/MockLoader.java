@@ -20,8 +20,6 @@ import java.net.URI;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.rdf.model.RdfDataset;
 
 import jakarta.json.JsonStructure;
@@ -42,7 +40,7 @@ public class MockLoader implements DocumentLoader {
     }
 
     @Override
-    public Document loadDocument(URI url, LoaderOptions options) throws JsonLdException {
+    public Document loadDocument(URI url, Options options) throws JsonLdException {
 
         if (structure != null) {
             final Document remoteDocument = JsonDocument.of(structure);

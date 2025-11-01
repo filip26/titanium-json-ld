@@ -24,7 +24,7 @@ import com.apicatalog.jsonld.JsonLdComparison;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.loader.LoaderOptions;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.QuadSetDocument;
 import com.apicatalog.jsonld.test.JsonLdTestCase.Type;
 import com.apicatalog.rdf.RdfComparison;
@@ -70,7 +70,7 @@ public class JsonLdTestRunnerEarl {
                 return false;
             }
 
-            Document expectedDocument = options.loader().loadDocument(testCase.expect, new LoaderOptions());
+            Document expectedDocument = options.loader().loadDocument(testCase.expect, DocumentLoader.defaultOptions());
 
             if (expectedDocument == null) {
                 return false;

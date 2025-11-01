@@ -16,6 +16,8 @@
 package com.apicatalog.jsonld.loader;
 
 import java.net.URI;
+import java.util.Collection;
+import java.util.List;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.document.Document;
@@ -39,5 +41,32 @@ public interface DocumentLoader {
      * @return {@link Document} representing a remote document
      * @throws JsonLdException if the document loading fails
      */
-    Document loadDocument(URI url, LoaderOptions options) throws JsonLdException;
+    Document loadDocument(URI url, Options options) throws JsonLdException;
+
+    public static Options defaultOptions() {
+        return Options.DEFAULT;
+    }
+
+    /**
+     * The {@link LoaderOptions} is used to pass various options to the
+     * {@link DocumentLoader}.
+     *
+     * @see <a href=
+     *      "https://www.w3.org/TR/json-ld11-api/#loaddocumentoptions">LoadDocumentOptions
+     *      Specification</a>
+     *
+     */
+    public record Options(
+            boolean extractAllScripts,
+            String profile,
+            Collection<String> requestProfile) {
+
+        static final Options DEFAULT = new Options(false, null, null);
+
+        public Options {
+            extractAllScripts = false;
+            profile = null;
+            requestProfile = requestProfile == null ? List.of() : List.copyOf(requestProfile);
+        }
+    }
 }

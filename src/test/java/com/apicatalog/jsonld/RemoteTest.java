@@ -26,7 +26,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.apicatalog.jsonld.loader.UriBaseRewriter;
-import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.jsonld.test.JsonLdMockServer;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestManifest;
@@ -58,8 +57,11 @@ class RemoteTest {
         assumeFalse("#t0013".equals(testCase.id));
 
         try {
-
-            JsonLdMockServer server = new JsonLdMockServer(testCase, JsonLdTestCase.TESTS_BASE, JsonLdTestManifest.JSON_LD_API_BASE, new ZipResourceLoader());
+            final var server = new JsonLdMockServer(
+                    testCase,
+                    JsonLdTestCase.TESTS_BASE,
+                    JsonLdTestManifest.JSON_LD_API_BASE,
+                    JsonLdTestSuite.ZIP_RESOURCE_LOADER);
 
             server.start();
 
@@ -68,10 +70,10 @@ class RemoteTest {
                 JsonLdOptions expandOptions = JsonLdOptions.copyOf(options);
 
                 expandOptions.loader(
-                                    new UriBaseRewriter(
-                                                JsonLdTestCase.TESTS_BASE,
-                                                wireMockServer.baseUrl(),
-                                                JsonLdTestSuite.LOADER));
+                        new UriBaseRewriter(
+                                JsonLdTestCase.TESTS_BASE,
+                                wireMockServer.baseUrl(),
+                                JsonLdTestSuite.HTTP_LOADER));
 
                 return JsonLd.expand(testCase.input, expandOptions);
             });
@@ -86,9 +88,12 @@ class RemoteTest {
 
     static final Stream<JsonLdTestCase> data() throws JsonLdException {
         return JsonLdTestManifest
-                    .load(JsonLdTestManifest.JSON_LD_API_BASE, "remote-doc-manifest.jsonld", new ZipResourceLoader())
-                    .stream()
-                    .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
-                    ;
+                .load(
+                        JsonLdTestManifest.JSON_LD_API_BASE,
+                        "remote-doc-manifest.jsonld",
+                        JsonLdTestSuite.ZIP_RESOURCE_LOADER)
+                .stream()
+                .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
+        ;
     }
 }

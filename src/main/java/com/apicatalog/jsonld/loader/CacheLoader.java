@@ -13,7 +13,7 @@ public class CacheLoader implements DocumentLoader {
 
     private final Cache<Key, Document> cache;
 
-    protected static record Key(URI url, LoaderOptions options) {
+    protected static record Key(URI url, Options options) {
     }
 
     public CacheLoader(DocumentLoader loader, int cacheSize) {
@@ -26,7 +26,7 @@ public class CacheLoader implements DocumentLoader {
     }
 
     @Override
-    public Document loadDocument(URI url, LoaderOptions options) throws JsonLdException {
+    public Document loadDocument(URI url, Options options) throws JsonLdException {
         var key = createCacheKey(url, options);
         var result = cache.get(key);
         
@@ -37,7 +37,7 @@ public class CacheLoader implements DocumentLoader {
         return result;
     }
 
-    protected Key createCacheKey(URI url, LoaderOptions options){
+    protected Key createCacheKey(URI url, Options options){
         return new Key(url, options);
     }
 

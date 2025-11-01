@@ -15,24 +15,23 @@
  */
 package com.apicatalog.jsonld.loader;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 
-import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
 
 public class ClasspathLoader implements DocumentLoader, TestLoader {
 
     @Override
-    public Document loadDocument(URI url, LoaderOptions options) throws JsonLdException {
+    public Document loadDocument(URI url, Options options) throws JsonLdException {
 
         try (final InputStream is = getClass().getResourceAsStream(url.getPath())) {
 
@@ -51,7 +50,7 @@ public class ClasspathLoader implements DocumentLoader, TestLoader {
 
         try (final InputStream is = getClass().getResourceAsStream(url.getPath())) {
 
-            return ZipResourceLoader.readAsByteArray(is);
+            return readAsByteArray(is);
 
         } catch (IOException e) {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
@@ -66,5 +65,20 @@ public class ClasspathLoader implements DocumentLoader, TestLoader {
 
         return JsonDocument.of(is);
     }
+    
+    public static final byte[] readAsByteArray(InputStream is) throws IOException {
+
+        final ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
+
+        byte[] buffer = new byte[16384];
+        int readed;
+
+        while ((readed = is.read(buffer, 0, buffer.length)) != -1) {
+            byteArrayStream.write(buffer, 0, readed);
+        }
+
+        return byteArrayStream.toByteArray();
+    }
+
 
 }

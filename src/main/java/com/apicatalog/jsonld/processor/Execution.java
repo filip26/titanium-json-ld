@@ -12,16 +12,12 @@ import com.apicatalog.jsonld.JsonLdOptions;
  */
 public class Execution {
 
-//    protected final JsonLdOptions options;
-//
-//    protected Execution(JsonLdOptions options) {
-//        this.options = options;
-//    }
-
+    //TODO builder, to set collectors, like type map
+    
     public static Execution of(JsonLdOptions options) {
         return options.timeout() != null
                 ? new Ticker(options)
-                : new Execution();
+                : new Execution();  //TODO set empty instance
     }
 
     /**

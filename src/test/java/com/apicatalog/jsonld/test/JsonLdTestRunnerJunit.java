@@ -29,7 +29,7 @@ import com.apicatalog.jsonld.JsonLdComparison;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.loader.LoaderOptions;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.QuadSetDocument;
 import com.apicatalog.jsonld.test.JsonLdTestCase.Type;
 import com.apicatalog.rdf.RdfComparison;
@@ -193,7 +193,7 @@ public class JsonLdTestRunnerJunit {
         assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
 
         try {
-            var expectedDocument = options.loader().loadDocument(testCase.expect, new LoaderOptions());
+            var expectedDocument = options.loader().loadDocument(testCase.expect, DocumentLoader.defaultOptions());
 
             assertNotNull(expectedDocument);
 
@@ -216,7 +216,7 @@ public class JsonLdTestRunnerJunit {
         assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
 
         try {
-            Document expectedDocument = options.loader().loadDocument(testCase.expect, new LoaderOptions());
+            Document expectedDocument = options.loader().loadDocument(testCase.expect, DocumentLoader.defaultOptions());
 
             assertNotNull(expectedDocument);
 

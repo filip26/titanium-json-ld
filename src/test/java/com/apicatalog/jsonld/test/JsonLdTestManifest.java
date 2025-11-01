@@ -23,7 +23,6 @@ import java.util.stream.Stream;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.loader.LoaderOptions;
 
 public final class JsonLdTestManifest {
 
@@ -56,7 +55,7 @@ public final class JsonLdTestManifest {
 
         try {
 
-            final var manifest = loader.loadDocument(URI.create(manifestBase + manifestName), new LoaderOptions());
+            final var manifest = loader.loadDocument(URI.create(manifestBase + manifestName), DocumentLoader.defaultOptions());
 
             assertNotNull(manifest);
 

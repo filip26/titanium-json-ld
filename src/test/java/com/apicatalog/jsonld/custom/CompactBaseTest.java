@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.loader.ZipResourceLoader;
+import com.apicatalog.jsonld.JsonLdTestSuite;
 import com.apicatalog.jsonld.test.JsonLdTestManifest;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 
@@ -34,7 +34,10 @@ class CompactBaseTest {
     void testCompactBase() {
 
         final var testCase = JsonLdTestManifest
-                .load(JsonLdTestManifest.JSON_LD_API_BASE, "compact-manifest.jsonld", new ZipResourceLoader())
+                .load(
+                        JsonLdTestManifest.JSON_LD_API_BASE, 
+                        "compact-manifest.jsonld", 
+                        JsonLdTestSuite.ZIP_RESOURCE_LOADER)
                 .stream()
                 .filter(o -> "#t0047".equals(o.id))
                 .findFirst().orElseThrow(() -> new NoSuchElementException());

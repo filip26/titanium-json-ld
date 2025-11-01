@@ -26,7 +26,6 @@ import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.loader.LoaderOptions;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.web.media.MediaType;
@@ -52,6 +51,14 @@ public final class RemoteDocument implements Document {
         this.profile = profile;
         this.content = content;
     }
+
+    public static RemoteDocument of(final PolyNode content, final URI documentUrl) {
+        var document = new RemoteDocument(null, null, Objects.requireNonNull(content));
+        document.documentUrl = documentUrl;
+        return document;
+    }
+
+    /* ----------------- */
 
     /**
      * Create a new document from {@link JsonStructure}. Sets {@link MediaType#JSON}
@@ -226,13 +233,15 @@ public final class RemoteDocument implements Document {
     }
 
     public static final Document fetch(URI uri, DocumentLoader loader, boolean extractAllScripts) throws JsonLdException {
-        
+
         if (loader == null) {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + uri + "].");
         }
 
-        final LoaderOptions loaderOptions = new LoaderOptions();
-        loaderOptions.setExtractAllScripts(extractAllScripts);
+        final var loaderOptions = new DocumentLoader.Options(
+                extractAllScripts,
+                null,
+                null);
 
         final Document remoteDocument = loader.loadDocument(uri, loaderOptions);
 

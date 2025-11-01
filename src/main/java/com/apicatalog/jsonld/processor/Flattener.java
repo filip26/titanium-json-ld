@@ -24,7 +24,7 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.flattening.Flattening;
-import com.apicatalog.jsonld.loader.LoaderOptions;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 
 /**
  *
@@ -45,8 +45,10 @@ public final class Flattener {
 
         assertDocumentLoader(options, input);
 
-        final LoaderOptions loaderOptions = new LoaderOptions();
-        loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
+        final var loaderOptions = new DocumentLoader.Options(
+                options.isExtractAllScripts(),
+                null,
+                null);
 
         var remoteDocument = options.loader().loadDocument(input, loaderOptions);
 
@@ -75,9 +77,10 @@ public final class Flattener {
 
         assertDocumentLoader(options, input);
 
-        final LoaderOptions loaderOptions = new LoaderOptions();
-        loaderOptions.setExtractAllScripts(options.isExtractAllScripts());
-
+        final var loaderOptions = new DocumentLoader.Options(
+                options.isExtractAllScripts(),
+                null,
+                null);
         var remoteDocument = options.loader().loadDocument(input, loaderOptions);
 
         if (remoteDocument == null) {

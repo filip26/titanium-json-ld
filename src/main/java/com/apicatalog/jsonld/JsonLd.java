@@ -105,7 +105,7 @@ public final class JsonLd {
         return Expander.expand(
                 document,
                 Expander.context(null, null, options),
-                Expander.base(null, options),
+                Expander.baseUrl(null, options),
                 options,
                 runtime);
     }

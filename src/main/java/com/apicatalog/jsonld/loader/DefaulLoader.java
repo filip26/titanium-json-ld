@@ -20,7 +20,6 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,12 +31,9 @@ import com.apicatalog.jsonld.JsonLdProfile;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.tree.io.NodeReader;
-import com.apicatalog.tree.io.jakarta.JakartaReader;
 import com.apicatalog.web.link.Link;
 import com.apicatalog.web.media.MediaType;
 import com.apicatalog.web.uri.UriResolver;
-
-import jakarta.json.Json;
 
 public class DefaulLoader implements DocumentLoader {
 
@@ -53,20 +49,18 @@ public class DefaulLoader implements DocumentLoader {
 
     private final NodeReader reader;
 
-    public DefaulLoader(LoaderClient client) {
-        this(client, MAX_REDIRECTIONS);
+    public DefaulLoader(LoaderClient client, NodeReader reader) {
+        this(client, reader, MAX_REDIRECTIONS);
     }
 
-    public DefaulLoader(LoaderClient httpClient, int maxRedirections) {
+    public DefaulLoader(LoaderClient httpClient, NodeReader reader, int maxRedirections) {
         this.client = httpClient;
         this.maxRedirections = maxRedirections;
-        this.reader = new JakartaReader(Json.createReaderFactory(Map.of()));
-        // FIXME
-        // new DocumentResolver();
+        this.reader = reader;
     }
 
     @Override
-    public Document loadDocument(final URI uri, final LoaderOptions options) throws JsonLdException {
+    public Document loadDocument(final URI uri, final Options options) throws JsonLdException {
 
         try {
             URI targetUri = uri;
@@ -78,7 +72,7 @@ public class DefaulLoader implements DocumentLoader {
             for (int redirection = 0; redirection < maxRedirections; redirection++) {
 
                 // 2.
-                try (LoaderClient.Response response = client.send(targetUri, options.getRequestProfile())) {
+                try (LoaderClient.Response response = client.send(targetUri, options.requestProfile())) {
 
                     // 3.
                     if (response.isRedirect()) {
@@ -167,7 +161,6 @@ public class DefaulLoader implements DocumentLoader {
         }
     }
 
-
     private final Document read(
             final MediaType type,
             final URI targetUri,
@@ -185,33 +178,35 @@ public class DefaulLoader implements DocumentLoader {
             remoteDocument.setContextUrl(contextUrl);
 
             return remoteDocument;
-            
+
         } catch (IOException e) {
             throw e;
-            
+
         } catch (Exception e) {
             // FIXME!!!
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
 
-    /**
-     * Set fallback content-type used when received content-type is not supported.
-     * e.g. <code>setFallbackContentType(MediaType.JSON_LD)</code>
-     *
-     * @param fallbackContentType a content type that overrides unsupported received
-     *                            content-type
-     * @return {@link DefaulLoader} instance
-     * @since 1.4.0
-     */
-    @Deprecated
-    public DefaulLoader fallbackContentType(MediaType fallbackContentType) {
-//FIXME        reader.setFallbackContentType(fallbackContentType);
-        return this;
-    }
+//    /**
+//     * Set fallback content-type used when received content-type is not supported.
+//     * e.g. <code>setFallbackContentType(MediaType.JSON_LD)</code>
+//     *
+//     * @param fallbackContentType a content type that overrides unsupported received
+//     *                            content-type
+//     * @return {@link DefaulLoader} instance
+//     * @since 1.4.0
+//     */
+//    @Deprecated
+//    public DefaulLoader fallbackContentType(MediaType fallbackContentType) {
+////FIXME        reader.setFallbackContentType(fallbackContentType);
+//        return this;
+//    }
 
     /**
-     * Set read timeout
+     * Sets a timeout for a request. If the response is not received within the
+     * specified timeout then an {@link JsonLdException}, code =
+     * <code>LOADING_DOCUMENT_TIMEOUT</code> is thrown.
      *
      * @param timeout to set or <code>null</code> for no timeout
      * @return {@link DefaulLoader} instance
