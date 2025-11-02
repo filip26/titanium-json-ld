@@ -590,7 +590,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
 
             try {
 
-                convertedValue = jsonParser.read(new ByteArrayInputStream(object.getBytes()));
+                convertedValue = jsonParser.parse(new ByteArrayInputStream(object.getBytes()));
 
                 if (convertedValue == null) {
                     final var result = new HashMap<String, Object>(2);

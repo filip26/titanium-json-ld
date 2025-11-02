@@ -53,8 +53,8 @@ import com.apicatalog.tree.io.PolyNode;
 public final class Framer {
 
     public static Map<String, ?> frame(
-            final Document document, 
-            final Document frame, 
+            final Document document,
+            final Document frame,
             final JsonLdOptions options,
             final Execution runtime) throws JsonLdException, IOException {
 
@@ -90,11 +90,26 @@ public final class Framer {
     }
 
     public static final Collection<?> expand(
-            Document document, 
+            Document document,
             final JsonLdOptions options,
             final Execution runtime) throws JsonLdException, IOException {
         return Expander.expand(
                 document,
+                JsonLdOptions.copyOf(options).ordered(false),
+                runtime);
+    }
+
+    public static final Collection<?> expand(
+            PolyNode document,
+            final JsonLdOptions options,
+            final Execution runtime) throws JsonLdException, IOException {
+        return Expander.expand(
+                document,
+                Expander.context(
+                        null,
+                        null,
+                        options),
+                options.base(),
                 JsonLdOptions.copyOf(options).ordered(false),
                 runtime);
     }

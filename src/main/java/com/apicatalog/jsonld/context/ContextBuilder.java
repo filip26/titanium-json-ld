@@ -282,32 +282,26 @@ public final class ContextBuilder {
                 }
 
                 // 5.6.8
-                Map<?, ?> merged;
-                
-                if (importedContent instanceof Map<?, ?> map) {
+                final Map<Object, Object> merged;
+
+                if (importAdapter.isCompatibleWith(NativeAdapter.instance())
+                        && importedContext instanceof Map<?, ?> map) {
                     merged = new LinkedHashMap<>(map);
+
                 } else {
-                    merged = new LinkedHashMap<>((Map<?, ?>)NativeMaterializer.node(importedContext, importAdapter));
+                    merged = new LinkedHashMap<>((Map<?, ?>) NativeMaterializer.node(importedContext, importAdapter));
                 }
-                
-                if (contextDefinition instanceof Map map) {
+
+                if (importAdapter.isCompatibleWith(NativeAdapter.instance())
+                        && contextDefinition instanceof Map<?, ?> map) {
                     merged.putAll(map);
+
                 } else {
-                    merged.putAll((Map)NativeMaterializer.node(contextDefinition, adapter));
+                    merged.putAll((Map<?, ?>) NativeMaterializer.node(contextDefinition, adapter));
                 }
-                
+
                 contextAdapter = NativeAdapter.instance();
                 contextDefinition = merged;
-//                if (importAdapter.isCompatibleWith(contextAdapter)) {
-////TODO                    System.out.println("CCCCC");
-////                    contextDefinition
-//                } else {
-//
-//                }
-
-//               FIXME importedContextObject.forEach(contextDefinition::put);
-//                contextDefinition = adapter.merge(contextDefinition, importedContext, importAdapter);
-//                contextDefinition = JsonUtils.merge((JsonObject) importedContext, (JsonObject) contextDefinition);
             }
 
             // 5.7. If context has an @base entry and remote contexts is empty,
@@ -465,7 +459,9 @@ public final class ContextBuilder {
                 }
                 // 5.11.2.
                 if (!contextAdapter.isBoolean(propagateValue)) {
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_PROPAGATE_VALUE);
+                    throw new JsonLdException(
+                            JsonLdErrorCode.INVALID_KEYWORD_PROPAGATE_VALUE,
+                            "Expected boolean but got %s".formatted(propagateValue));
                 }
             }
 

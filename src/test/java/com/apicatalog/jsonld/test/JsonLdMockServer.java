@@ -29,13 +29,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -55,25 +53,19 @@ public class JsonLdMockServer implements AutoCloseable {
     final String resourceBase;
     final int port;
 
-    ServerSocket server;
-
     final ExecutorService pool = Executors.newSingleThreadExecutor();
 
     final Map<String, Stub> stubs = new ConcurrentHashMap<>();
-    final Collection<Request> requests = new ConcurrentLinkedDeque<>();
+
+    ServerSocket server;
 
     volatile boolean running = true;
-
-//    JsonLdTestCase testCase;
 
     private record Stub(
             String acceptHeader,
             int statusCode,
             List<Entry<String, String>> responseHeaders,
             byte[] responseBody) {
-    }
-
-    private record Request(String url, String accept) {
     }
 
     public JsonLdMockServer(int port, String testBase, String resourceBase) {

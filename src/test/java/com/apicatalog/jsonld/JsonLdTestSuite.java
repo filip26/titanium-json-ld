@@ -46,7 +46,7 @@ import jakarta.json.Json;
 })
 public class JsonLdTestSuite {
 
-    public static final NodeParser JAKARTA_READER = 
+    public static final NodeParser JAKARTA_PARSER =
 //            new Jackson2Parser(new ObjectMapper());
             new JakartaParser(Json.createReaderFactory(Map.of()));
 
@@ -56,13 +56,13 @@ public class JsonLdTestSuite {
                     .followRedirects(Redirect.NEVER)
                     .connectTimeout(Duration.ofSeconds(5))
                     .build(),
-            JAKARTA_READER);
+            JAKARTA_PARSER);
 
-    public static final ZipResourceLoader ZIP_RESOURCE_LOADER = new ZipResourceLoader(JAKARTA_READER);
+    public static final ZipResourceLoader ZIP_RESOURCE_LOADER = new ZipResourceLoader(JAKARTA_PARSER);
 
-    public static final FileLoader FILE_LOADER = new FileLoader(JAKARTA_READER);
+    public static final FileLoader FILE_LOADER = new FileLoader(JAKARTA_PARSER);
 
-    public static final ClasspathLoader CLASSPATH_LOADER = new ClasspathLoader(JAKARTA_READER);
+    public static final ClasspathLoader CLASSPATH_LOADER = new ClasspathLoader(JAKARTA_PARSER);
 
 //    public static final DocumentLoader LOADER = SchemeRouter.newBuilder()
 //          .route("http", HTTP_LOADER)

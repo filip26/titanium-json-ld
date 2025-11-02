@@ -37,7 +37,7 @@ public class ClasspathLoader implements DocumentLoader {
 
         try (final var is = getClass().getResourceAsStream(url.getPath())) {
 
-            var node = parser.read(is);
+            var node = parser.parse(is);
 
             return RemoteDocument.of(node, url);                
 

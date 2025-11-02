@@ -33,8 +33,6 @@ import com.apicatalog.jsonld.JsonLdComparison;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdTestSuite;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.model.RdfQuadSet;
@@ -43,10 +41,9 @@ import com.apicatalog.rdf.nquads.NQuadsReaderException;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.set.OrderedQuadDataset;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
+import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
-
-import jakarta.json.JsonArray;
-import jakarta.json.JsonValue;
+import com.apicatalog.tree.io.java.NativeAdapter;
 
 class RemoteContextTest {
 
@@ -57,15 +54,17 @@ class RemoteContextTest {
     @Test
     void testToRdfMissingTriples1() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException {
 
-        final Document document = readDocument("/com/apicatalog/jsonld/test/issue61-in.json");
-        final Document context = readDocument("/com/apicatalog/jsonld/test/issue61-context.json");
+        final var document = read("/com/apicatalog/jsonld/test/issue61-in.json");
+        final var context = read("/com/apicatalog/jsonld/test/issue61-context.json");
 
         final OrderedQuadDataset result = new OrderedQuadDataset();
 
-        JsonLd.toRdf(document, new QuadAcceptor(result), JsonLdOptions.defaults().expandContext(context));
-//        JsonLd.toRdf(document, new QuadAcceptor(result), new JsonLdOptions().expandContext(context));
+        JsonLd.toRdf(
+                document,
+                new QuadAcceptor(result),
+                JsonLdOptions.newOptions().expandContext(context));
 
-        try (final InputStream is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue61-out.nq")) {
+        try (final var is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue61-out.nq")) {
 
             assertNotNull(is);
 
@@ -86,17 +85,17 @@ class RemoteContextTest {
     @Test
     void testToRdfMissingTriples2() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException {
 
-        final Document document = readDocument("/com/apicatalog/jsonld/test/issue61-in.json");
-        final Document context = readDocument("/com/apicatalog/jsonld/test/issue61-context.json");
-
-        final JsonLdOptions options = JsonLdOptions.defaults();
-        options.expandContext(context);
+        final var document = read("/com/apicatalog/jsonld/test/issue61-in.json");
+        final var context = read("/com/apicatalog/jsonld/test/issue61-context.json");
 
         final OrderedQuadSet result = new OrderedQuadSet();
 
-        JsonLd.toRdf(document, new QuadAcceptor(result), options);
+        JsonLd.toRdf(
+                document,
+                new QuadAcceptor(result),
+                JsonLdOptions.newOptions().expandContext(context));
 
-        try (final InputStream is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue61-out.nq")) {
+        try (final var is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue61-out.nq")) {
 
             assertNotNull(is);
 
@@ -117,11 +116,14 @@ class RemoteContextTest {
     @Test
     void testRemoteContext() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException {
 
-        final Document document = readDocument("/com/apicatalog/jsonld/test/issue63-in.json");
+        final var document = read("/com/apicatalog/jsonld/test/issue63-in.json");
 
         final OrderedQuadSet result = new OrderedQuadSet();
 
-        JsonLd.toRdf(document, new QuadAcceptor(result), JsonLdOptions.with(JsonLdTestSuite.CLASSPATH_LOADER));
+        JsonLd.toRdf(
+                document,
+                new QuadAcceptor(result),
+                JsonLdOptions.with(JsonLdTestSuite.CLASSPATH_LOADER));
 
         assertNotNull(result);
 
@@ -150,37 +152,33 @@ class RemoteContextTest {
     @Disabled("Run manually")
     void testPerformance() throws JsonLdException, IOException {
 
-        final var document = readDocument("/com/apicatalog/jsonld/test/issue62-in.json");
+        final var document = read("/com/apicatalog/jsonld/test/issue62-in.json");
         assertNotNull(document);
 
-        final var expected = readDocument("/com/apicatalog/jsonld/test/issue62-out.json");
+        final var expected = read("/com/apicatalog/jsonld/test/issue62-out.json");
         assertNotNull(expected);
 
         assertTimeout(ofMinutes(1), () -> {
 
             long start = System.nanoTime();
 
-//FIXME            final JsonArray result = JsonLd.expand(document).get();
-            JsonArray result = JsonValue.EMPTY_JSON_ARRAY;
+            final var result = JsonLd.expand(document, JsonLdOptions.with(JsonLdTestSuite.HTTP_LOADER));
 
             System.out.println("Time elapsed: " + Duration.ofNanos(System.nanoTime() - start));
 
             assertNotNull(result);
 
             boolean match = JsonLdComparison.equals(
-                    result, JakartaAdapter.instance(),
-                    (JsonValue) expected.getJsonContent().orElse(null), JakartaAdapter.instance()
-
-            );
+                    result, NativeAdapter.instance(),
+                    expected, JakartaAdapter.instance());
 
             assertTrue(match);
         });
-
     }
 
-    private final JsonDocument readDocument(final String name) throws JsonLdException, IOException {
-        try (final InputStream is = getClass().getResourceAsStream(name)) {
-            return JsonDocument.of(is);
+    private final PolyNode read(final String name) throws JsonLdException, IOException {
+        try (final var is = getClass().getResourceAsStream(name)) {
+            return JsonLdTestSuite.JAKARTA_PARSER.parse(is);
         }
     }
 }

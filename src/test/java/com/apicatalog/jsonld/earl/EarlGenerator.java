@@ -181,9 +181,6 @@ public class EarlGenerator {
                         boolean result = false;
 
                         try {
-//                        WireMockServer wireMockServer = new WireMockServer();
-//                        wireMockServer.start();
-//
                             server.setup(testCase);
 
                             result = (new JsonLdTestRunnerEarl(testCase)).execute(options -> {

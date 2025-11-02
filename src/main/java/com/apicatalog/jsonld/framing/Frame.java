@@ -62,15 +62,23 @@ public final class Frame {
         return of(expanded, keys);
     }
 
-    public static final Frame of(final Map<String, ?> frame, final JsonLdOptions options, final Execution runtime) throws JsonLdException, IOException {
-//TODO
-//        var expanded = Expander.expandFrame(
-//                frame,
-//                JsonLdOptions.copyOf(options).ordered(false),
-//                runtime);
-//
-//        return of(expanded, frame.keySet());
-        return null;
+    public static final Frame of(final PolyNode frame, final JsonLdOptions options, final Execution runtime) throws JsonLdException, IOException {
+        @SuppressWarnings("unchecked")
+        Set<String> keys = (frame.node() instanceof Map map)
+                ? map.keySet()
+                : Set.of();
+
+        var expanded = Expander.expandFrame(
+                frame,
+                Expander.context(
+                        null,
+                        null,
+                        options),
+                Expander.baseUrl(null, options),
+                JsonLdOptions.copyOf(options).ordered(false),
+                runtime);
+
+        return of(expanded, keys);
     }
 
     public static final URI contextBase(final Document frame, final JsonLdOptions options) {

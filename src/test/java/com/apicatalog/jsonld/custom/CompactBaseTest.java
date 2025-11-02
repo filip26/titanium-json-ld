@@ -18,7 +18,6 @@ package com.apicatalog.jsonld.custom;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
-import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 
@@ -35,14 +34,18 @@ class CompactBaseTest {
 
         final var testCase = JsonLdTestManifest
                 .load(
-                        JsonLdTestManifest.JSON_LD_API_BASE, 
-                        "compact-manifest.jsonld", 
+                        JsonLdTestManifest.JSON_LD_API_BASE,
+                        "compact-manifest.jsonld",
                         JsonLdTestSuite.ZIP_RESOURCE_LOADER)
                 .stream()
                 .filter(o -> "#t0047".equals(o.id))
-                .findFirst().orElseThrow(() -> new NoSuchElementException());
+                .findFirst().orElseThrow(() -> new IllegalStateException());
 
-        assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options -> JsonLd.compact(testCase.input, testCase.context,
-                 JsonLdOptions.copyOf(options).base(URI.create("http://fake.com")))));
+        assertTrue(new JsonLdTestRunnerJunit(testCase)
+                .execute(options -> JsonLd.compact(
+                        testCase.input,
+                        testCase.context,
+                        JsonLdOptions.copyOf(options)
+                                .base(URI.create("http://fake.com")))));
     }
 }

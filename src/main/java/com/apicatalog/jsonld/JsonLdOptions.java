@@ -216,7 +216,7 @@ public final class JsonLdOptions {
      *
      * @return a new {@code JsonLdOptions} instance using standard defaults
      */    
-    public static final JsonLdOptions defaults() {
+    public static final JsonLdOptions newOptions() {
         return new JsonLdOptions();
     }
 

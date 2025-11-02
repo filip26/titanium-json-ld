@@ -51,7 +51,7 @@ public final class FileLoader implements DocumentLoader {
 
 
         try (final InputStream is = new FileInputStream(file)) {
-            var node = reader.read(is);
+            var node = reader.parse(is);
             
             return RemoteDocument.of(node, url);                
 

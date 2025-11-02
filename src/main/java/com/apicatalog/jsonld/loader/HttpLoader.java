@@ -170,7 +170,7 @@ public class HttpLoader implements DocumentLoader {
 
         try (final var is = response.body()) {
 
-            final var remoteContent = reader.read(is);
+            final var remoteContent = reader.parse(is);
 
             final var remoteDocument = RemoteDocument.of(type, remoteContent);
 

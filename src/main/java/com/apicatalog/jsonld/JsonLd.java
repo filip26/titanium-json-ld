@@ -22,8 +22,10 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.apicatalog.jsonld.api.FlatteningApi;
+import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.framing.Frame;
 import com.apicatalog.jsonld.fromrdf.QuadsToJsonLd;
 import com.apicatalog.jsonld.processor.Compactor;
 import com.apicatalog.jsonld.processor.Execution;
@@ -115,7 +117,7 @@ public final class JsonLd {
                         "ical:dtstart", Map.of("@type", "xsd:dateTime")),
                 "ical:summary", "Lady Gaga Concert",
                 "ical:location", "New Orleans Arena, New Orleans, Louisiana, USA",
-                "ical:dtstart", "2011-04-09T20:00:00Z"), JsonLdOptions.defaults());
+                "ical:dtstart", "2011-04-09T20:00:00Z"), JsonLdOptions.newOptions());
 
         System.out.println(x);
         var b = new ByteArrayOutputStream();
@@ -287,6 +289,25 @@ public final class JsonLd {
         return Framer.frame(document, frame, options, runtime);
     }
 
+    public static final Map<String, ?> frame(final PolyNode document, final PolyNode frame, final JsonLdOptions options) throws JsonLdException, IOException {
+        final Execution runtime = Execution.of(options);
+        runtime.tick();
+        
+        final var contextNode = Context.extract(frame);
+
+        return Context.inject(
+                Framer.frame(
+                        Framer.expand(document, options, runtime),
+                        Frame.of(frame, options, runtime),
+                        Framer.context(
+                                null,
+                                contextNode,
+                                options.base(),
+                                options),
+                        options),
+                contextNode);
+    }
+    
     public static final Map<String, ?> frame(final Map<String, ?> document, final Map<String, ?> frame, final JsonLdOptions options) throws JsonLdException, IOException {
 
         final Execution runtime = Execution.of(options);
@@ -327,6 +348,11 @@ public final class JsonLd {
         RdfEmitter.toRdf(document, consumer, options);
     }
 
+    public static final void toRdf(final PolyNode document, RdfQuadConsumer consumer, JsonLdOptions options) throws JsonLdException, IOException {
+        RdfEmitter.toRdf(document, consumer, options);
+    }
+
+    
     /**
      * Transforms an RDF quad set into a JSON-LD document in expanded form.
      * <p>

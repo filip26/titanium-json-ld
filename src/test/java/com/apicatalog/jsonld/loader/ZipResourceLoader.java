@@ -93,7 +93,7 @@ public class ZipResourceLoader implements DocumentLoader {
 
             try (final InputStream is = zip.getInputStream(zipEntry)) {
 
-                var node = reader.read(is);
+                var node = reader.parse(is);
                 
                 return RemoteDocument.of(node, url);                
             }

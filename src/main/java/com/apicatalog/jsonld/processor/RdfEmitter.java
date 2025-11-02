@@ -32,6 +32,7 @@ import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.tordf.JsonLdToQuads;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
+import com.apicatalog.tree.io.PolyNode;
 
 /**
  *
@@ -191,12 +192,27 @@ public final class RdfEmitter implements
         expansionOptions.base(options.base());
         expansionOptions.expandContext(options.expandContext());
 
-        //FIXME
+        // FIXME
         final Execution runtime = Execution.of(options);
         runtime.tick();
 
-        
         final var expanded = Expander.expand(input, expansionOptions, runtime);
+
+        toRdf(expanded, consumer, options);
+    }
+
+    public static final void toRdf(final PolyNode input, final RdfQuadConsumer consumer, final JsonLdOptions options) throws JsonLdException, IOException {
+        final JsonLdOptions expansionOptions = JsonLdOptions.copyOf(options);
+
+        expansionOptions.mode(options.mode());
+        expansionOptions.base(options.base());
+        expansionOptions.expandContext(options.expandContext());
+
+        // FIXME
+        final Execution runtime = Execution.of(options);
+        runtime.tick();
+
+        final var expanded = Expander.expand(input, Expander.context(null, null, options), options.base(), expansionOptions, runtime);
 
         toRdf(expanded, consumer, options);
     }

@@ -15,28 +15,10 @@
  */
 package com.apicatalog.jsonld.api;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.net.URI;
-
-import org.junit.jupiter.api.Test;
-
-import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdVersion;
-import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.loader.MockLoader;
-import com.apicatalog.web.media.MediaType;
-
-import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
-
+@Deprecated
 class CompactionApiTest {
 
-    public static final MockLoader MOCK_LOADER = new MockLoader(JsonValue.EMPTY_JSON_ARRAY);
+//    public static final MockLoader MOCK_LOADER = new MockLoader(JsonValue.EMPTY_JSON_ARRAY);
 
 //    @Test
 //    void test1() throws JsonLdError, IOException {
