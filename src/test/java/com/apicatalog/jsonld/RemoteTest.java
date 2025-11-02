@@ -18,35 +18,35 @@ package com.apicatalog.jsonld;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
+import java.io.IOException;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.apicatalog.jsonld.http.SimpleMockServer;
 import com.apicatalog.jsonld.loader.UriBaseRewriter;
 import com.apicatalog.jsonld.test.JsonLdMockServer;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestManifest;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 
 class RemoteTest {
 
-    WireMockServer wireMockServer;
+    static SimpleMockServer mockServer;
 
-    @BeforeEach
-    public void proxyToWireMock() {
-        wireMockServer = new WireMockServer(WireMockConfiguration.options());
-        wireMockServer.start();
+    @BeforeAll
+    static void proxyToWireMock() throws IOException {
+        mockServer = new SimpleMockServer(8080);
+        mockServer.start();
     }
 
-    @AfterEach
-    public void noMoreWireMock() {
-        wireMockServer.stop();
-        wireMockServer = null;
+    @AfterAll
+    static void noMoreWireMock() {
+        mockServer.stop();
+        mockServer = null;
     }
 
     @ParameterizedTest(name = "{0}")
@@ -62,8 +62,8 @@ class RemoteTest {
                     JsonLdTestCase.TESTS_BASE,
                     JsonLdTestManifest.JSON_LD_API_BASE,
                     JsonLdTestSuite.ZIP_RESOURCE_LOADER);
-
-            server.start();
+System.out.println("XXXXXXXX");
+            server.start(mockServer);
 
             (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
 
@@ -72,7 +72,7 @@ class RemoteTest {
                 expandOptions.loader(
                         new UriBaseRewriter(
                                 JsonLdTestCase.TESTS_BASE,
-                                wireMockServer.baseUrl(),
+                                mockServer.baseUrl(),
                                 JsonLdTestSuite.HTTP_LOADER));
 
                 return JsonLd.expand(testCase.input, expandOptions);

@@ -32,9 +32,9 @@ import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdComparison;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdTestSuite;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.model.RdfQuadSet;
@@ -121,7 +121,7 @@ class RemoteContextTest {
 
         final OrderedQuadSet result = new OrderedQuadSet();
 
-        JsonLd.toRdf(document, new QuadAcceptor(result), JsonLdOptions.with(new ClasspathLoader()));
+        JsonLd.toRdf(document, new QuadAcceptor(result), JsonLdOptions.with(JsonLdTestSuite.CLASSPATH_LOADER));
 
         assertNotNull(result);
 
@@ -150,10 +150,10 @@ class RemoteContextTest {
     @Disabled("Run manually")
     void testPerformance() throws JsonLdException, IOException {
 
-        final Document document = readDocument("/com/apicatalog/jsonld/test/issue62-in.json");
+        final var document = readDocument("/com/apicatalog/jsonld/test/issue62-in.json");
         assertNotNull(document);
 
-        final Document expected = readDocument("/com/apicatalog/jsonld/test/issue62-out.json");
+        final var expected = readDocument("/com/apicatalog/jsonld/test/issue62-out.json");
         assertNotNull(expected);
 
         assertTimeout(ofMinutes(1), () -> {
@@ -167,7 +167,8 @@ class RemoteContextTest {
 
             assertNotNull(result);
 
-            boolean match = JsonLdComparison.equals(result, JakartaAdapter.instance(),
+            boolean match = JsonLdComparison.equals(
+                    result, JakartaAdapter.instance(),
                     (JsonValue) expected.getJsonContent().orElse(null), JakartaAdapter.instance()
 
             );
@@ -177,7 +178,7 @@ class RemoteContextTest {
 
     }
 
-    private final Document readDocument(final String name) throws JsonLdException, IOException {
+    private final JsonDocument readDocument(final String name) throws JsonLdException, IOException {
         try (final InputStream is = getClass().getResourceAsStream(name)) {
             return JsonDocument.of(is);
         }

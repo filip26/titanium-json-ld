@@ -80,35 +80,23 @@
             <version>${tree-io.version}</version>
         </dependency>                
         <dependency>
-            <groupId>com.apicatalog</groupId>
-            <artifactId>tree-io-jakarta</artifactId>
-            <version>${tree-io.version}</version>
-        </dependency>        
-        <dependency>
           <groupId>com.apicatalog</groupId>
           <artifactId>titanium-rdf-api</artifactId>
           <version>${titanium.rdf.api.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>jakarta.json</groupId>
-          <artifactId>jakarta.json-api</artifactId>
-          <version>${jakarta.json.version}</version>
-          <scope>provided</scope>
         </dependency>        
         <!-- Tests-->
+        <dependency>
+            <groupId>com.apicatalog</groupId>
+            <artifactId>tree-io-jakarta</artifactId>
+            <version>${tree-io.version}</version>
+            <scope>test</scope>
+        </dependency>                
         <dependency>
             <groupId>com.apicatalog</groupId>
             <artifactId>tree-io-jackson2</artifactId>
             <version>${tree-io.version}</version>
             <scope>test</scope>
-        </dependency>          
-        
-        <dependency>
-    <groupId>com.fasterxml.jackson.core</groupId>
-    <artifactId>jackson-core</artifactId>
-    <version>2.20.0</version>
-    <scope>test</scope>
-</dependency>      
+        </dependency>      
         <dependency>
           <groupId>com.apicatalog</groupId>
           <artifactId>titanium-rdf-n-quads</artifactId>
@@ -127,6 +115,12 @@
           <version>2.0.0</version>
           <scope>test</scope>       
         </dependency>
+<!--        <dependency>
+          <groupId>jakarta.json</groupId>
+          <artifactId>jakarta.json-api</artifactId>
+          <version>${jakarta.json.version}</version>
+          <scope>test</scope>
+        </dependency>   -->     
         <dependency>
           <groupId>org.glassfish</groupId>
           <artifactId>jakarta.json</artifactId>
@@ -145,12 +139,12 @@
           <version>${junit.version}</version>
           <scope>test</scope>
         </dependency>
-        <dependency>
+<!--        <dependency>
           <groupId>com.github.tomakehurst</groupId>
           <artifactId>wiremock-jre8</artifactId>
           <version>${wiremock.version}</version>
           <scope>test</scope>
-        </dependency>        
+        </dependency>-->        
     </dependencies>
     <build>
         <plugins>

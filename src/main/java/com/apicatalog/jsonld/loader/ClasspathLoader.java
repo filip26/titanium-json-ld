@@ -15,47 +15,35 @@
  */
 package com.apicatalog.jsonld.loader;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.tree.io.NodeParser;
 
 public class ClasspathLoader implements DocumentLoader {
 
+    private final NodeParser parser;
+
+    public ClasspathLoader(final NodeParser parser) {
+        this.parser = parser;
+    }
+    
     @Override
     public Document loadDocument(URI url, Options options) throws JsonLdException {
 
-        try (final InputStream is = getClass().getResourceAsStream(url.getPath())) {
+        try (final var is = getClass().getResourceAsStream(url.getPath())) {
 
-            final Document document = JsonDocument.of(is);
- 
-            document.setDocumentUrl(url);
+            var node = parser.read(is);
 
-            return document;
+            return RemoteDocument.of(node, url);                
+
 
         } catch (IOException e) {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
         }
     }
-    
-    public static final byte[] readAsByteArray(InputStream is) throws IOException {
-
-        final ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
-
-        byte[] buffer = new byte[16384];
-        int readed;
-
-        while ((readed = is.read(buffer, 0, buffer.length)) != -1) {
-            byteArrayStream.write(buffer, 0, readed);
-        }
-
-        return byteArrayStream.toByteArray();
-    }
-
-
 }

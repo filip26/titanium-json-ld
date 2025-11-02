@@ -20,7 +20,6 @@ import java.time.Duration;
 import java.util.Set;
 
 import com.apicatalog.jsonld.cache.Cache;
-import com.apicatalog.jsonld.cache.LruCache;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.lang.Embed;
@@ -28,8 +27,6 @@ import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.web.uri.UriValidationPolicy;
-
-import jakarta.json.JsonValue;
 
 /**
  * The {@link JsonLdOptions} type is used to pass various options to the
@@ -129,7 +126,7 @@ public final class JsonLdOptions {
     private boolean numericId;
 
     // context cache
-    private Cache<String, JsonValue> contextCache;
+//    private Cache<String, JsonValue> contextCache;
 
     // document cache
     private Cache<String, Document> documentCache;
@@ -174,7 +171,7 @@ public final class JsonLdOptions {
 
         // custom
         this.numericId = DEFAULT_NUMERIC_ID;
-        this.contextCache = new LruCache<>(256);
+//        this.contextCache = new LruCache<>(256);
         this.documentCache = null;
         this.uriValidation = DEFAULT_URI_VALIDATION;
         this.timeout = null;
@@ -207,7 +204,7 @@ public final class JsonLdOptions {
 
         // custom
         this.numericId = options.numericId;
-        this.contextCache = options.contextCache;
+//        this.contextCache = options.contextCache;
         this.documentCache = options.documentCache;
         this.uriValidation = options.uriValidation;
         this.timeout = options.timeout;
@@ -499,14 +496,14 @@ public final class JsonLdOptions {
         return numericId;
     }
 
-    public Cache<String, JsonValue> getContextCache() {
-        return contextCache;
-    }
-
-    public void setContextCache(Cache<String, JsonValue> contextCache) {
-        this.contextCache = contextCache;
-    }
-
+//    public Cache<String, JsonValue> getContextCache() {
+//        return contextCache;
+//    }
+//
+//    public void setContextCache(Cache<String, JsonValue> contextCache) {
+//        this.contextCache = contextCache;
+//    }
+//
     public Cache<String, Document> getDocumentCache() {
         return documentCache;
     }

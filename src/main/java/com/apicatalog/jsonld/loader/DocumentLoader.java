@@ -48,7 +48,7 @@ public interface DocumentLoader {
     }
 
     /**
-     * The {@link LoaderOptions} is used to pass various options to the
+     * The {@link Options} is used to pass various options to the
      * {@link DocumentLoader}.
      *
      * @see <a href=

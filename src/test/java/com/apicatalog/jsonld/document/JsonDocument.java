@@ -20,15 +20,16 @@ import java.io.Reader;
 import java.net.URI;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.json.JsonProvider;
-import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.web.media.MediaType;
 
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonException;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
@@ -110,7 +111,7 @@ public final class JsonDocument implements Document {
             throw new IllegalArgumentException("The input stream parameter cannot be null.");
         }
 
-        try (final JsonParser parser = JsonProvider.instance().createParser(is)) {
+        try (final JsonParser parser = Json.createParser(is)) {
 
             return doParse(contentType, parser);
 
@@ -146,7 +147,7 @@ public final class JsonDocument implements Document {
             throw new IllegalArgumentException("The reader parameter cannot be null.");
         }
 
-        try (final JsonParser parser = JsonProvider.instance().createParser(reader)) {
+        try (final JsonParser parser = Json.createParser(reader)) {
 
             return doParse(contentType, parser);
 
@@ -167,11 +168,11 @@ public final class JsonDocument implements Document {
 
         final String profile = contentType.findFirstParameter("profile").orElse(null);
 
-        if (JsonUtils.isArray(root)) {
+        if (root instanceof JsonArray) {
             return new JsonDocument(contentType, profile, root.asJsonArray());
         }
 
-        if (JsonUtils.isObject(root)) {
+        if (root instanceof JsonObject) {
             return new JsonDocument(new MediaType(contentType.type(), contentType.subtype()), profile, root.asJsonObject());
         }
 
@@ -195,7 +196,6 @@ public final class JsonDocument implements Document {
         }
     }
 
-    @Override
     public Optional<JsonStructure> getJsonContent() {
         return Optional.of(structure);
     }

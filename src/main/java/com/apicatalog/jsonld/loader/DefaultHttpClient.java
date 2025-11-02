@@ -1,25 +1,9 @@
-/*
- * Copyright 2020 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.apicatalog.jsonld.loader;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
-import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
@@ -30,20 +14,19 @@ import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.web.media.MediaType;
 
-public final class DefaultHttpClient implements HttpLoaderClient {
+final class DefaultHttpClient implements HttpLoaderClient {
 
-//    @Deprecated
-//    private static final java.net.http.HttpClient CLIENT = HttpClient
-//            .newBuilder()
-//            .followRedirects(Redirect.NEVER)
-//            .build();
+//  @Deprecated
+//  private static final java.net.http.HttpClient CLIENT = HttpClient
+//          .newBuilder()
+//          .followRedirects(Redirect.NEVER)
+//          .build();
 
     private final HttpClient httpClient;
     private Duration timeout;
 
-    public DefaultHttpClient(final HttpClient httpClient) {
+    DefaultHttpClient(final HttpClient httpClient) {
         this.httpClient = httpClient;
         this.timeout = null;
     }
@@ -53,7 +36,7 @@ public final class DefaultHttpClient implements HttpLoaderClient {
         HttpRequest.Builder request = HttpRequest.newBuilder()
                 .GET()
                 .uri(targetUri)
-                .header("Accept", getAcceptHeader(requestProfiles));
+                .header("Accept", HttpLoader.acceptHeader(requestProfiles));
 
         if (timeout != null && !timeout.isNegative() && !timeout.isZero()) {
             request = request.timeout(timeout);
@@ -62,7 +45,6 @@ public final class DefaultHttpClient implements HttpLoaderClient {
         try {
             return new HttpResponseImpl(httpClient.send(request.build(), BodyHandlers.ofInputStream()));
 
-            
         } catch (InterruptedException e) {
 
             Thread.currentThread().interrupt();
@@ -70,7 +52,7 @@ public final class DefaultHttpClient implements HttpLoaderClient {
 
         } catch (HttpTimeoutException e) {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_TIMEOUT, e);
-            
+
         } catch (IOException e) {
 
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
@@ -83,28 +65,7 @@ public final class DefaultHttpClient implements HttpLoaderClient {
         return this;
     }
 
-    public static final String getAcceptHeader() {
-        return getAcceptHeader(null);
-    }
-
-    public static final String getAcceptHeader(final Collection<String> profiles) {
-        final StringBuilder builder = new StringBuilder();
-
-        builder.append(MediaType.JSON_LD.toString());
-
-        if (profiles != null && !profiles.isEmpty()) {
-            builder.append(";profile=\"");
-            builder.append(String.join(" ", profiles));
-            builder.append("\"");
-        }
-
-        builder.append(',');
-        builder.append(MediaType.JSON.toString());
-        builder.append(";q=0.9,*/*;q=0.1");
-        return builder.toString();
-    }
-
-    public static class HttpResponseImpl implements HttpLoaderClient.Response {
+    private static class HttpResponseImpl implements HttpLoaderClient.Response {
 
         private final HttpResponse<InputStream> response;
 
@@ -146,7 +107,13 @@ public final class DefaultHttpClient implements HttpLoaderClient {
         }
 
         @Override
+        public int statusCode() {
+            return response.statusCode();
+        }
+
+        @Override
         public void close() {
             /* unused */ }
+
     }
 }

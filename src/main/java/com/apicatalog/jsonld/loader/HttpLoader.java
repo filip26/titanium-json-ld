@@ -17,6 +17,7 @@ package com.apicatalog.jsonld.loader;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -49,16 +50,20 @@ public class HttpLoader implements DocumentLoader {
 
     private final NodeParser reader;
 
-    public HttpLoader(HttpLoaderClient client, NodeParser reader) {
-        this(client, reader, MAX_REDIRECTIONS);
-    }
-
-    public HttpLoader(HttpLoaderClient httpClient, NodeParser reader, int maxRedirections) {
+    HttpLoader(HttpLoaderClient httpClient, NodeParser reader, int maxRedirections) {
         this.client = httpClient;
         this.maxRedirections = maxRedirections;
         this.reader = reader;
     }
-    
+
+    public static HttpLoader newLoader(final HttpClient httpClient, NodeParser reader) {
+        return new HttpLoader(new DefaultHttpClient(httpClient), reader, MAX_REDIRECTIONS);
+    }
+
+    public static HttpLoader newLoader(final HttpClient httpClient, NodeParser reader, int maxRedirections) {
+        return new HttpLoader(new DefaultHttpClient(httpClient), reader, maxRedirections);
+    }
+
     @Override
     public Document loadDocument(final URI uri, final Options options) throws JsonLdException {
 
@@ -84,20 +89,16 @@ public class HttpLoader implements DocumentLoader {
                             continue;
                         }
 
-                        throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Header location is required for code [" + response + "].");
+                        throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Header location is required for code [" + response.statusCode() + "].");
                     }
 
                     if (!response.isSuccess()) {
-                        throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unexpected response code [" + response + "]");
+                        throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unexpected response code [" + response.statusCode() + "]");
                     }
 
                     contentType = response.contentType()
                             .map(MediaType::of)
                             .orElse(null);
-
-//                    if (contentTypeValue.isPresent()) {
-//                        contentType = MediaType.of(contentTypeValue.get());
-//                    }
 
                     final Collection<String> linkValues = response.links();
 
@@ -216,10 +217,26 @@ public class HttpLoader implements DocumentLoader {
         client.timeout(timeout);
         return this;
     }
-    
-//    public Builder newBuilder();
-//    
-//    public static class Builder {
-//        
-//    }
+
+    public static final String acceptHeader() {
+        return acceptHeader(null);
+    }
+
+    public static final String acceptHeader(final Collection<String> profiles) {
+        final StringBuilder builder = new StringBuilder();
+
+        builder.append(MediaType.JSON_LD.toString());
+
+        if (profiles != null && !profiles.isEmpty()) {
+            builder.append(";profile=\"");
+            builder.append(String.join(" ", profiles));
+            builder.append("\"");
+        }
+
+        builder.append(',');
+        builder.append(MediaType.JSON.toString());
+        builder.append(";q=0.9,*/*;q=0.1");
+        return builder.toString();
+    }
+
 }

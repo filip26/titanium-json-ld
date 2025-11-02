@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -30,7 +31,6 @@ import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdProfile;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -38,14 +38,10 @@ import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.java.NativeAdapter;
-import com.apicatalog.tree.io.java.NativeMaterializer3;
+import com.apicatalog.tree.io.java.NativeMaterializer;
 import com.apicatalog.web.lang.LanguageTag;
 import com.apicatalog.web.uri.UriResolver;
 import com.apicatalog.web.uri.UriUtils;
-
-import jakarta.json.JsonObject;
-
-//import jakarta.json.JsonObject;
 
 /**
  * @see <a href=
@@ -286,30 +282,47 @@ public final class ContextBuilder {
                 }
 
                 // 5.6.8
-                if (importAdapter.isCompatibleWith(contextAdapter)) {
-//TODO                    System.out.println("CCCCC");
-//                    contextDefinition
+                Map<?, ?> merged;
+                
+                if (importedContent instanceof Map<?, ?> map) {
+                    merged = new LinkedHashMap<>(map);
                 } else {
-
+                    merged = new LinkedHashMap<>((Map<?, ?>)NativeMaterializer.node(importedContext, importAdapter));
                 }
+                
+                if (contextDefinition instanceof Map map) {
+                    merged.putAll(map);
+                } else {
+                    merged.putAll((Map)NativeMaterializer.node(contextDefinition, adapter));
+                }
+                
+                contextAdapter = NativeAdapter.instance();
+                contextDefinition = merged;
+//                if (importAdapter.isCompatibleWith(contextAdapter)) {
+////TODO                    System.out.println("CCCCC");
+////                    contextDefinition
+//                } else {
+//
+//                }
 
 //               FIXME importedContextObject.forEach(contextDefinition::put);
-                contextDefinition = JsonUtils.merge((JsonObject) importedContext, (JsonObject) contextDefinition);
+//                contextDefinition = adapter.merge(contextDefinition, importedContext, importAdapter);
+//                contextDefinition = JsonUtils.merge((JsonObject) importedContext, (JsonObject) contextDefinition);
             }
 
             // 5.7. If context has an @base entry and remote contexts is empty,
             // i.e., the currently being processed context is not a remote context:
-            var baseValue = adapter.property(Keywords.BASE, contextDefinition);
+            var baseValue = contextAdapter.property(Keywords.BASE, contextDefinition);
 
             if (baseValue != null /* && remoteContexts.isEmpty() */) {
 
                 // 5.7.2.
-                if (adapter.isNull(baseValue)) {
+                if (contextAdapter.isNull(baseValue)) {
                     result.setBaseUri(null);
 
-                } else if (adapter.isString(baseValue)) {
+                } else if (contextAdapter.isString(baseValue)) {
 
-                    final String valueString = adapter.stringValue(baseValue);
+                    final String valueString = contextAdapter.stringValue(baseValue);
 
                     final URI valueUri = valueString != null && !valueString.isBlank() ? UriUtils.create(valueString) : null;
 
@@ -345,18 +358,18 @@ public final class ContextBuilder {
             }
 
             // 5.8.
-            var vocabValue = adapter.property(Keywords.VOCAB, contextDefinition);
+            var vocabValue = contextAdapter.property(Keywords.VOCAB, contextDefinition);
 
             if (vocabValue != null) {
 
                 // 5.8.2.
-                if (adapter.isNull(vocabValue)) {
+                if (contextAdapter.isNull(vocabValue)) {
                     result.setVocabularyMapping(null);
 
                     // 5.8.3
-                } else if (adapter.isString(vocabValue)) {
+                } else if (contextAdapter.isString(vocabValue)) {
 
-                    final String valueString = adapter.stringValue(vocabValue);
+                    final String valueString = contextAdapter.stringValue(vocabValue);
 
                     if (valueString == null
                             || valueString.isBlank()
@@ -386,18 +399,18 @@ public final class ContextBuilder {
             }
 
             // 5.9.
-            var langValue = adapter.property(Keywords.LANGUAGE, contextDefinition);
+            var langValue = contextAdapter.property(Keywords.LANGUAGE, contextDefinition);
 
             if (langValue != null) {
 
                 // 5.9.2.
-                if (adapter.isNull(langValue)) {
+                if (contextAdapter.isNull(langValue)) {
                     result.setDefaultLanguage(null);
 
                     // 5.9.3
-                } else if (adapter.isString(langValue)) {
+                } else if (contextAdapter.isString(langValue)) {
 
-                    result.setDefaultLanguage(adapter.stringValue(langValue));
+                    result.setDefaultLanguage(contextAdapter.stringValue(langValue));
 
                     if (!LanguageTag.isWellFormed(result.getDefaultLanguage())) {
                         LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", result.getDefaultLanguage());
@@ -409,7 +422,7 @@ public final class ContextBuilder {
             }
 
             // 5.10.
-            final var dirValue = adapter.property(Keywords.DIRECTION, contextDefinition);
+            final var dirValue = contextAdapter.property(Keywords.DIRECTION, contextDefinition);
 
             if (dirValue != null) {
 
@@ -419,13 +432,13 @@ public final class ContextBuilder {
                 }
 
                 // 5.10.3.
-                if (adapter.isNull(dirValue)) {
+                if (contextAdapter.isNull(dirValue)) {
                     result.setDefaultBaseDirection(Direction.NULL);
 
                     // 5.10.4.
-                } else if (adapter.isString(dirValue)) {
+                } else if (contextAdapter.isString(dirValue)) {
 
-                    final String direction = adapter.stringValue(dirValue);
+                    final String direction = contextAdapter.stringValue(dirValue);
 
                     if ("ltr".equalsIgnoreCase(direction)) {
                         result.setDefaultBaseDirection(Direction.LTR);
@@ -443,7 +456,7 @@ public final class ContextBuilder {
             }
 
             // 5.11.
-            var propagateValue = adapter.property(Keywords.PROPAGATE, contextDefinition);
+            var propagateValue = contextAdapter.property(Keywords.PROPAGATE, contextDefinition);
 
             if (propagateValue != null) {
                 // 5.11.1.
@@ -451,18 +464,18 @@ public final class ContextBuilder {
                     throw new JsonLdException(JsonLdErrorCode.INVALID_CONTEXT_ENTRY);
                 }
                 // 5.11.2.
-                if (!adapter.isBoolean(propagateValue)) {
+                if (!contextAdapter.isBoolean(propagateValue)) {
                     throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_PROPAGATE_VALUE);
                 }
             }
 
             final TermDefinitionBuilder termBuilder = result
-                    .newTerm(contextDefinition, adapter, new HashMap<>(), loader)
+                    .newTerm(contextDefinition, contextAdapter, new HashMap<>(), loader)
                     .baseUrl(baseUrl)
                     .overrideProtectedFlag(overrideProtected);
 
             // 5.13
-            for (var keyValue : adapter.keys(contextDefinition)) {
+            for (var keyValue : contextAdapter.keys(contextDefinition)) {
 
                 if (keyValue instanceof String key
                         && Keywords.noneMatch((String) key,
@@ -470,7 +483,7 @@ public final class ContextBuilder {
                                 Keywords.PROPAGATE, Keywords.PROTECTED, Keywords.VERSION, Keywords.VOCAB)) {
 
                     termBuilder
-                            .protectedFlag(adapter.isTrue(adapter.property(Keywords.PROTECTED, contextDefinition)))
+                            .protectedFlag(contextAdapter.isTrue(contextAdapter.property(Keywords.PROTECTED, contextDefinition)))
                             .remoteContexts(new ArrayList<>(remoteContexts))
                             .create(key);
                 }
@@ -605,7 +618,7 @@ public final class ContextBuilder {
             throw new JsonLdException(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context does not contain @context key and is not valid JSON-LD context.");
         }
 
-        var newContext = new NativeMaterializer3().node(importedContext, importedContent.adapter());
+        var newContext = new NativeMaterializer().node(importedContext, importedContent.adapter());
 
         // remove @base from a remote context
         if (newContext instanceof Map map && map.containsKey(Keywords.BASE)) {

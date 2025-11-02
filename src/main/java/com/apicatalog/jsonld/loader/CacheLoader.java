@@ -7,13 +7,13 @@ import com.apicatalog.jsonld.cache.Cache;
 import com.apicatalog.jsonld.cache.LruCache;
 import com.apicatalog.jsonld.document.Document;
 
-public class CacheLoader implements DocumentLoader {
+public final class CacheLoader implements DocumentLoader {
 
     private final DocumentLoader loader;
 
     private final Cache<Key, Document> cache;
 
-    protected static record Key(URI url, Options options) {
+    private static record Key(URI url, Options options) {
     }
 
     public CacheLoader(DocumentLoader loader, int cacheSize) {
@@ -27,18 +27,13 @@ public class CacheLoader implements DocumentLoader {
 
     @Override
     public Document loadDocument(URI url, Options options) throws JsonLdException {
-        var key = createCacheKey(url, options);
+        var key = new Key(url, options);
         var result = cache.get(key);
-        
+
         if (result == null) {
             result = loader.loadDocument(url, options);
             cache.put(key, result);
         }
         return result;
     }
-
-    protected Key createCacheKey(URI url, Options options){
-        return new Key(url, options);
-    }
-
 }

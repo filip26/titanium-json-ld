@@ -18,10 +18,11 @@ package com.apicatalog.jsonld.document;
 import java.net.URI;
 import java.util.Optional;
 
+import javax.swing.text.html.parser.DocumentParser;
+
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.web.media.MediaType;
 
-import jakarta.json.JsonStructure;
 
 /**
  * A JSON-LD document that can be processed by the processor.
@@ -76,15 +77,9 @@ public interface Document {
     Optional<String> profile();
 
     /**
-     * Get the document content as parsed {@link JsonStructure}.
+     * Get the document parsed content.
      *
-     * @return {@link JsonStructure} or {@link Optional#empty()} if document content
-     *         is not JSON based
+     * @return {@link PolyNode} representing materialized document content
      */
-    @Deprecated
-    public default Optional<JsonStructure> getJsonContent() {
-        return Optional.empty();
-    }
-    
     public PolyNode content();
 }

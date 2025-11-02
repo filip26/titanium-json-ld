@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
+import java.util.Objects;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdComparison;
@@ -43,10 +44,7 @@ import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
-import com.apicatalog.tree.io.jakcson.Jackson2Adapter;
 import com.apicatalog.tree.io.java.NativeAdapter;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.base.Objects;
 
 import jakarta.json.Json;
 import jakarta.json.JsonStructure;
@@ -132,7 +130,7 @@ public class JsonLdTestRunnerJunit {
 
         } catch (JsonLdException e) {
 
-            if (Objects.equal(e.code(), testCase.expectErrorCode)) {
+            if (Objects.equals(e.code(), testCase.expectErrorCode)) {
                 return true;
             }
 
@@ -141,7 +139,7 @@ public class JsonLdTestRunnerJunit {
             if (testCase.expectErrorCode != null) {
                 fail("Unexpected error " + e.code() + ", exptected " + testCase.expectErrorCode + ".");
             } else {
-                fail("Unexpected error " + e.code() + ": " + e.getMessage() + ".");
+                fail("Unexpected error " + e + ".");
             }
 
             return false;
@@ -149,7 +147,7 @@ public class JsonLdTestRunnerJunit {
         } catch (RdfConsumerException e) {
 
             if (e.getCause() instanceof JsonLdException) {
-                if (Objects.equal(((JsonLdException) e.getCause()).code(), testCase.expectErrorCode)) {
+                if (Objects.equals(((JsonLdException) e.getCause()).code(), testCase.expectErrorCode)) {
                     return true;
                 }
 
@@ -176,9 +174,9 @@ public class JsonLdTestRunnerJunit {
         if (result instanceof JsonStructure json) {
             return validateJsonLd(testCase, options, json, JakartaAdapter.instance());
         }
-        if (result instanceof JsonNode json) {
-            return validateJsonLd(testCase, options, json, Jackson2Adapter.instance());
-        }
+//        if (result instanceof JsonNode json) {
+//            return validateJsonLd(testCase, options, json, Jackson2Adapter.instance());
+//        }
         
 //System.out.println(" >>>> " + result);
 //        if (result instanceof Collection<?> collection) {

@@ -40,5 +40,6 @@ public interface HttpLoaderClient {
 
         boolean isSuccess();
 
+        int statusCode();
     }
 }

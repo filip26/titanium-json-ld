@@ -29,15 +29,13 @@ import com.apicatalog.jsonld.JsonLdProfile;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.expansion.UriExpansion;
-import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.java.NativeAdapter;
-
-import jakarta.json.JsonValue;
+import com.apicatalog.tree.io.java.NativeMaterializer;
 
 /**
  * A context that is used to resolve terms while the processing algorithm is
@@ -342,7 +340,9 @@ public interface Context {
                 }
             }
             return activeContext.newContext(loader).build(
-                    JsonProvider.instance().createArrayBuilder().add((JsonValue) expandedContext).build(), adapter, baseUrl);
+                    List.of(NativeMaterializer.node(expandedContext, adapter)),
+                    NativeAdapter.instance(), 
+                    baseUrl);
         }
 
         public Builder loader(DocumentLoader loader) {

@@ -17,19 +17,20 @@ package com.apicatalog.jsonld;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
+import java.util.Map;
 
 import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
 import org.junit.platform.suite.api.SuiteDisplayName;
 
-import com.apicatalog.jsonld.loader.DefaultHttpClient;
+import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.jsonld.loader.FileLoader;
 import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.tree.io.NodeParser;
 import com.apicatalog.tree.io.jakarta.JakartaParser;
-import com.apicatalog.tree.io.jakcson.Jackson2Parser;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.json.Json;
 
 @Suite(failIfNoTests = true)
 @SuiteDisplayName("JsonLd Suite")
@@ -44,19 +45,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 })
 public class JsonLdTestSuite {
 
-    public static final NodeParser JAKARTA_READER = new Jackson2Parser(new ObjectMapper());
-//            new JakartaParser(Json.createReaderFactory(Map.of()));
+    public static final NodeParser JAKARTA_READER = 
+//            new Jackson2Parser(new ObjectMapper());
+            new JakartaParser(Json.createReaderFactory(Map.of()));
 
-    public static final HttpLoader HTTP_LOADER = new HttpLoader(
-            new DefaultHttpClient(HttpClient
+    public static final HttpLoader HTTP_LOADER = HttpLoader.newLoader(
+            HttpClient
                     .newBuilder()
                     .followRedirects(Redirect.NEVER)
-                    .build()),
+                    .build(),
             JAKARTA_READER);
 
     public static final ZipResourceLoader ZIP_RESOURCE_LOADER = new ZipResourceLoader(JAKARTA_READER);
 
     public static final FileLoader FILE_LOADER = new FileLoader(JAKARTA_READER);
+
+    public static final ClasspathLoader CLASSPATH_LOADER = new ClasspathLoader(JAKARTA_READER);
 
 //    public static final DocumentLoader LOADER = SchemeRouter.newBuilder()
 //          .route("http", HTTP_LOADER)

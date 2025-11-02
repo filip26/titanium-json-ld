@@ -39,9 +39,8 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.PolyNode;
-import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.java.NativeAdapter;
-import com.apicatalog.tree.io.java.NativeMaterializer3;
+import com.apicatalog.tree.io.java.NativeMaterializer;
 import com.apicatalog.web.lang.LanguageTag;
 import com.apicatalog.web.uri.UriUtils;
 
@@ -448,7 +447,7 @@ final class ObjectExpansion1314 {
                             throw new JsonLdException(JsonLdErrorCode.INVALID_VALUE_OBJECT_VALUE);
                         }
 
-                        expandedValue = NativeMaterializer3.node(value, adapter); // FIXMEnew PolyNode(value, adapter);
+                        expandedValue = NativeMaterializer.node(value, adapter); // FIXMEnew PolyNode(value, adapter);
 
                         // 13.4.7.2
                     } else if (adapter.isNull(value)
@@ -461,7 +460,7 @@ final class ObjectExpansion1314 {
                                                             .map(adapter::type)
                                                             .allMatch(NodeType::isScalar))) {
 
-                        expandedValue = NativeMaterializer3.node(value, adapter);
+                        expandedValue = NativeMaterializer.node(value, adapter);
 
                         if (params.frameExpansion()) {
                             expandedValue = asList(expandedValue);
@@ -739,7 +738,7 @@ final class ObjectExpansion1314 {
 //                (JsonStructure) new JakartaMaterializer().node(collection, new JsonLdAdapter())
 
 //                expandedValue = new NativeMaterializer().node(value, JakartaAdapter.instance());
-                expandedValue = new PolyNode(value, JakartaAdapter.instance());
+                expandedValue = new PolyNode(value, adapter); //TODO verify
 
 //                if (expandedValue != null) {
                 expandedValue = Map.of(

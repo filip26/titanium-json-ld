@@ -30,7 +30,6 @@ import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.NodeAdapter;
-import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.web.uri.UriResolver;
 import com.apicatalog.web.uri.UriUtils;
 import com.apicatalog.web.uri.UriValidationPolicy;
@@ -266,7 +265,7 @@ public final class UriExpansion {
                     // FIXME
                     activeContext.newTerm(
                             localContext,
-                            JakartaAdapter.instance(),
+                            adapter,    //TODO verify
                             defined,
                             loader).create(value);
                 }

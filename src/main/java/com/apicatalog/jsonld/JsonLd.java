@@ -32,12 +32,8 @@ import com.apicatalog.jsonld.processor.Framer;
 import com.apicatalog.jsonld.processor.RdfEmitter;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.tree.io.PolyNode;
-import com.apicatalog.tree.io.jakarta.JakartaParser;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
-import jakarta.json.JsonArray;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonString;
 
 /**
  * The {@link JsonLd} interface is the high-level programming structure that
@@ -357,7 +353,7 @@ public final class JsonLd {
 
     public static final QuadsToJsonLd fromRdf(JsonLdOptions options) {
         // FIXMe
-        return new QuadsToJsonLd().options(options).jsonParser(new JakartaParser());
+        return new QuadsToJsonLd().options(options); //FIXME.jsonParser(new JakartaParser());
     }
 
     private static final URI assertUri(final URI uri, final String param) {
@@ -375,9 +371,9 @@ public final class JsonLd {
 
         assertNotNull(document, param);
 
-        if (!document.getJsonContent().isPresent()) {
-            throw new IllegalArgumentException("'" + param + "' is not not JSON document but [" + document.contentType() + "].");
-        }
+//        if (!document.getJsonContent().isPresent()) {
+//            throw new IllegalArgumentException("'" + param + "' is not not JSON document but [" + document.contentType() + "].");
+//        }
         return document;
     }
 

@@ -38,7 +38,6 @@ import com.apicatalog.jsonld.test.JsonLdTestRunnerEarl;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.flow.QuadEmitter;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
-import com.github.tomakehurst.wiremock.WireMockServer;
 
 public class EarlGenerator {
 
@@ -173,16 +172,16 @@ public class EarlGenerator {
 
                     boolean result = false;
 
-                    try {
-                        WireMockServer wireMockServer = new WireMockServer();
-                        wireMockServer.start();
-
+//                    try {
+//                        WireMockServer wireMockServer = new WireMockServer();
+//                        wireMockServer.start();
+//
                         JsonLdMockServer server = new JsonLdMockServer(
                                 testCase, 
                                 JsonLdTestCase.TESTS_BASE,
                                 JsonLdTestManifest.JSON_LD_API_BASE,
                                 JsonLdTestSuite.ZIP_RESOURCE_LOADER);
-                        server.start();
+//                        server.start();
 
                         result = (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
 
@@ -191,19 +190,20 @@ public class EarlGenerator {
                             expandOptions.loader(
                                     new UriBaseRewriter(
                                             JsonLdTestCase.TESTS_BASE,
-                                            wireMockServer.baseUrl(),
+                                            null,
+//FIXME                                            wireMockServer.baseUrl(),
                                             JsonLdTestSuite.HTTP_LOADER));
 
                             return JsonLd.expand(testCase.input, expandOptions);
                         });
 
                         server.stop();
-                        wireMockServer.stop();
+//                        wireMockServer.stop();
 
-                    } catch (JsonLdException e) {
-                        e.printStackTrace();
-                        result = false;
-                    }
+//                    } catch (JsonLdException e) {
+//                        e.printStackTrace();
+//                        result = false;
+//                    }
 
                     printResult(writer, testCase.uri, result);
                 });

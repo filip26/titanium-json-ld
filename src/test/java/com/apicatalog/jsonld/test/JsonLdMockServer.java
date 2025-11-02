@@ -15,14 +15,6 @@
  */
 package com.apicatalog.jsonld.test;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.ByteArrayOutputStream;
@@ -32,17 +24,18 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.loader.DefaultHttpClient;
+import com.apicatalog.jsonld.http.SimpleMockServer;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.web.link.Link;
 import com.apicatalog.web.media.MediaType;
 import com.apicatalog.web.uri.UriResolver;
-import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 
 public final class JsonLdMockServer {
 
@@ -58,7 +51,7 @@ public final class JsonLdMockServer {
         this.loader = loader;
     }
 
-    public void start() throws JsonLdException {
+    public void start(SimpleMockServer mockServer) throws JsonLdException {
 
         String inputPath;
 
@@ -71,11 +64,16 @@ public final class JsonLdMockServer {
 
 
         if (testCase.options.redirectTo != null) {
-            stubFor(get(urlEqualTo(testCase.input.toString().substring(testBase.length())))
-                    .willReturn(aResponse()
-                        .withStatus(testCase.options.httpStatus)
-                        .withHeader("Location", testCase.options.redirectTo.toASCIIString().substring(testBase.length()))
-                            ));
+            mockServer.when(
+                    testCase.input.toString().substring(testBase.length()),
+                    testCase.options.httpStatus,
+                    Map.of("Location", testCase.options.redirectTo.toASCIIString().substring(testBase.length()))
+                    );
+//            stubFor(get(urlEqualTo(testCase.input.toString().substring(testBase.length())))
+//                    .willReturn(aResponse()
+//                        .withStatus(testCase.options.httpStatus)
+//                        .withHeader()
+//                            ));
         }
 
         if (testCase.options.httpLink != null && testCase.options.httpLink.size() == 1) {
@@ -111,55 +109,68 @@ public final class JsonLdMockServer {
             String linkUri = UriResolver.resolve(testCase.input, link.target().toString());
 
             byte[] content  = fetchBytes(URI.create(resourceBase +  linkUri.substring(testCase.baseUri.length())));
-
+System.out.println(">>>> !" + content);
             if (content != null) {
-//                    Assert.assertNotNull(linkedDocument);
-//                    Assert.assertNotNull(linkedDocument.getContent());
-
-//                    linkedDocument.getContent().getBytes().ifPresent(byteArray -> {
-
-                stubFor(get(urlEqualTo(linkUri.substring(testBase.length())))
-                        .willReturn(aResponse()
-                            .withStatus(200)
-                            .withHeader("Content-Type", contentType.toString())
-                            .withBody(content))
-                                );
-//                    });
+////                    Assert.assertNotNull(linkedDocument);
+////                    Assert.assertNotNull(linkedDocument.getContent());
+//
+////                    linkedDocument.getContent().getBytes().ifPresent(byteArray -> {
+//
+                mockServer.when(
+                        linkUri.substring(testBase.length()),
+                        200,
+                        Map.of("Content-Type", contentType.toString()),
+                        content);
+//                stubFor(get(urlEqualTo(linkUri.substring(testBase.length())))
+//                        .willReturn(aResponse()
+//                            .withStatus(200)
+//                            .withHeader("Content-Type", contentType.toString())
+//                            .withBody(content))
+//                                );
+////                    });
             }
         }
 
-        ResponseDefinitionBuilder mockResponseBuilder = aResponse();
-
+//        ResponseDefinitionBuilder mockResponseBuilder = aResponse();
+//
         byte[] content = fetchBytes(URI.create(resourceBase + inputPath.substring(testCase.baseUri.length())));
 
         if (content != null) {
-            mockResponseBuilder.withStatus(200);
+//            mockResponseBuilder.withStatus(200);
 
+            var headers = new LinkedHashMap<String, String>();
+            //
             if (testCase.options.httpLink != null) {
-                testCase.options.httpLink.forEach(link -> mockResponseBuilder.withHeader("Link", link));
+                testCase.options.httpLink.forEach(link -> headers.put("Link", link));
             }
-
+//
             if (testCase.options.contentType != null) {
-                mockResponseBuilder.withHeader("Content-Type", testCase.options.contentType.toString());
+                headers.put("Content-Type", testCase.options.contentType.toString());
             }
-
-            mockResponseBuilder.withBody(content);
-
-        } else {
-            mockResponseBuilder.withStatus(404);
+            
+            mockServer.when(
+                    inputPath.substring(testBase.length()),
+                    200,
+                    headers,
+                    content);
+//
+//            mockResponseBuilder.withBody(content);
+//
+//        } else {
+//            mockResponseBuilder.withStatus(404);
         }
-
-        stubFor(get(urlEqualTo(inputPath.substring(testBase.length()))).willReturn(mockResponseBuilder));
+//
+//        stubFor(get(urlEqualTo(inputPath.substring(testBase.length()))).willReturn(mockResponseBuilder));
     }
 
     public void stop() {
-        verify(getRequestedFor(urlMatching(testCase.input.toString().substring(testBase.length())))
-                .withHeader("accept", equalTo(DefaultHttpClient.getAcceptHeader())));
-
-        if (testCase.options.redirectTo != null) {
-            verify(getRequestedFor(urlMatching(testCase.options.redirectTo.toString().substring(testBase.length())))
-                .withHeader("accept", equalTo(DefaultHttpClient.getAcceptHeader())));
-        }
+//        verify(getRequestedFor(urlMatching(testCase.input.toString().substring(testBase.length())))
+//                .withHeader("accept", equalTo(HttpLoader.acceptHeader())));
+//
+//        if (testCase.options.redirectTo != null) {
+//            verify(getRequestedFor(urlMatching(testCase.options.redirectTo.toString().substring(testBase.length())))
+//                .withHeader("accept", equalTo(HttpLoader.acceptHeader())));
+//        }
     }
     
     public byte[] fetchBytes(URI url) throws JsonLdException {

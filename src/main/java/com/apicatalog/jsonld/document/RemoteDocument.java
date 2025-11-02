@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld.document;
 
-import java.io.InputStream;
 import java.io.Reader;
 import java.net.URI;
 import java.util.Objects;
@@ -23,17 +22,9 @@ import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.json.JsonProvider;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.PolyNode;
-import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.web.media.MediaType;
-
-import jakarta.json.JsonException;
-import jakarta.json.JsonStructure;
-import jakarta.json.JsonValue;
-import jakarta.json.stream.JsonParser;
 
 public final class RemoteDocument implements Document {
 
@@ -112,10 +103,10 @@ public final class RemoteDocument implements Document {
      * @param is representing parsed JSON content
      * @return {@link Document} representing JSON document
      */
-    @Deprecated
-    public static final RemoteDocument of(final InputStream is) throws JsonLdException {
-        return of(MediaType.JSON, is);
-    }
+//    @Deprecated
+//    public static final RemoteDocument of(final InputStream is) throws JsonLdException {
+//        return of(MediaType.JSON, is);
+//    }
 
     /**
      * Create a new document from content provided by {@link InputStream}.
@@ -128,23 +119,23 @@ public final class RemoteDocument implements Document {
      *
      * @throws JsonLdException if the document creation fails
      */
-    @Deprecated
-    public static final RemoteDocument of(final MediaType contentType, final InputStream is) throws JsonLdException {
-
-        assertContentType(contentType);
-
-        if (is == null) {
-            throw new IllegalArgumentException("The input stream parameter cannot be null.");
-        }
-
-        try (final JsonParser parser = JsonProvider.instance().createParser(is)) {
-
-            return doParse(contentType, parser);
-
-        } catch (JsonException e) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
-        }
-    }
+//    @Deprecated
+//    public static final RemoteDocument of(final MediaType contentType, final InputStream is) throws JsonLdException {
+//
+//        assertContentType(contentType);
+//
+//        if (is == null) {
+//            throw new IllegalArgumentException("The input stream parameter cannot be null.");
+//        }
+//
+//        try (final JsonParser parser = JsonProvider.instance().createParser(is)) {
+//
+//            return doParse(contentType, parser);
+//
+//        } catch (JsonException e) {
+//            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+//        }
+//    }
 
     /**
      * Create a new document from content provided by {@link Reader}. Sets
@@ -153,10 +144,10 @@ public final class RemoteDocument implements Document {
      * @param reader providing JSON content
      * @return {@link Document} representing JSON document
      */
-    @Deprecated
-    public static final RemoteDocument of(final Reader reader) throws JsonLdException {
-        return of(MediaType.JSON, reader);
-    }
+//    @Deprecated
+//    public static final RemoteDocument of(final Reader reader) throws JsonLdException {
+//        return of(MediaType.JSON, reader);
+//    }
 
     /**
      * Create a new document from content provided by {@link Reader}.
@@ -169,51 +160,51 @@ public final class RemoteDocument implements Document {
      *
      * @throws JsonLdException if the document creation fails
      */
-    @Deprecated
-    public static final RemoteDocument of(final MediaType contentType, final Reader reader) throws JsonLdException {
+//    @Deprecated
+//    public static final RemoteDocument of(final MediaType contentType, final Reader reader) throws JsonLdException {
+//
+//        assertContentType(contentType);
+//
+//        if (reader == null) {
+//            throw new IllegalArgumentException("The reader parameter cannot be null.");
+//        }
+//
+//        try (final JsonParser parser = JsonProvider.instance().createParser(reader)) {
+//
+//            return doParse(contentType, parser);
+//
+//        } catch (JsonException e) {
+//            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+//        }
+//    }
 
-        assertContentType(contentType);
-
-        if (reader == null) {
-            throw new IllegalArgumentException("The reader parameter cannot be null.");
-        }
-
-        try (final JsonParser parser = JsonProvider.instance().createParser(reader)) {
-
-            return doParse(contentType, parser);
-
-        } catch (JsonException e) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
-        }
-    }
-
-    @Deprecated
-    private static final RemoteDocument doParse(
-            final MediaType contentType,
-            final JsonParser parser) throws JsonLdException {
-
-        if (!parser.hasNext()) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Nothing to read. Provided document is empty.");
-        }
-
-        parser.next();
-
-        final JsonValue root = parser.getValue();
-
-        final String profile = contentType.findFirstParameter("profile").orElse(null);
-
-        if (JsonUtils.isArray(root)) {
-            return new RemoteDocument(contentType, profile,
-                    new PolyNode(root.asJsonArray(), JakartaAdapter.instance()));
-        }
-
-        if (JsonUtils.isObject(root)) {
-            return new RemoteDocument(new MediaType(contentType.type(), contentType.subtype()), profile,
-                    new PolyNode(root.asJsonObject(), JakartaAdapter.instance()));
-        }
-
-        throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "JSON document's top level element must be JSON array or object.");
-    }
+//    @Deprecated
+//    private static final RemoteDocument doParse(
+//            final MediaType contentType,
+//            final JsonParser parser) throws JsonLdException {
+//
+//        if (!parser.hasNext()) {
+//            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Nothing to read. Provided document is empty.");
+//        }
+//
+//        parser.next();
+//
+//        final JsonValue root = parser.getValue();
+//
+//        final String profile = contentType.findFirstParameter("profile").orElse(null);
+//
+//        if (JsonUtils.isArray(root)) {
+//            return new RemoteDocument(contentType, profile,
+//                    new PolyNode(root.asJsonArray(), JakartaAdapter.instance()));
+//        }
+//
+//        if (JsonUtils.isObject(root)) {
+//            return new RemoteDocument(new MediaType(contentType.type(), contentType.subtype()), profile,
+//                    new PolyNode(root.asJsonObject(), JakartaAdapter.instance()));
+//        }
+//
+//        throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "JSON document's top level element must be JSON array or object.");
+//    }
 
     public static final boolean accepts(final MediaType contentType) {
         return contentType != null &&

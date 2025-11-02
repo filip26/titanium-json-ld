@@ -5,18 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
-import com.apicatalog.jsonld.json.JsonProvider;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.NodeAdapter;
-import com.apicatalog.web.uri.UriUtils;
-
-import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
 
 public class JsonLdAdapter {
 
@@ -313,150 +306,150 @@ public class JsonLdAdapter {
     }
 
     /* ---- TODO ---- */
-    @Deprecated
-    public static final boolean isNodeJakarta(JsonValue value) {
-        return JsonUtils.isObject(value)
-                && ((!value.asJsonObject().containsKey(Keywords.VALUE)
-                        && !value.asJsonObject().containsKey(Keywords.LIST)
-                        && !value.asJsonObject().containsKey(Keywords.SET))
-
-                        || Arrays.asList(Keywords.CONTEXT, Keywords.GRAPH).containsAll(value.asJsonObject().keySet()));
-    }
-
-    @Deprecated
-    public static final boolean isNotNodeJakarta(JsonValue value) {
-        return !isNodeJakarta(value);
-    }
-
-    @Deprecated
-    public static final boolean isReferenceJakarta(JsonValue value) {
-        return JsonUtils.containsKey(value, Keywords.ID) && value.asJsonObject().size() == 1;
-    }
-
-    // Extension: JSON-LD-STAR (Experimental)
-    @Deprecated
-    public static final boolean isEmbedded(JsonValue value) {
-
-        if (JsonUtils.isNotObject(value)) {
-            return false;
-        }
-
-        final JsonObject node = value.asJsonObject();
-
-        boolean found = false;
-
-        for (Entry<String, JsonValue> property : node.entrySet()) {
-
-            if (property.getKey().equals(Keywords.INDEX)
-                    || property.getKey().equals(Keywords.CONTEXT)
-                    || property.getKey().equals(Keywords.REVERSE)) {
-                return false;
-            }
-
-            if (!Keywords.TYPE.equals(property.getKey()) && Keywords.matchForm(property.getKey())) {
-                continue;
-            }
-
-            // validate property name
-            if (!found && (Keywords.TYPE.equals(property.getKey()) || UriUtils.isURI(property.getKey()))) {
-
-                // validate property value
-                JsonValue propertyValue = property.getValue();
-
-                if (JsonUtils.isArray(propertyValue)) {
-
-                    if (propertyValue.asJsonArray().size() != 1) {
-                        return false;
-                    }
-
-                    propertyValue = propertyValue.asJsonArray().get(0);
-                }
-
-                if (isValueObject(propertyValue)) {
-                    propertyValue = getValueObject(propertyValue).orElse(null);
-                }
-
-                if (JsonUtils.isString(propertyValue)
-                        || (JsonUtils.isObject(propertyValue) && isEmbedded(propertyValue.asJsonObject()))) {
-                    found = true;
-                    continue;
-                }
-            }
-            return false;
-        }
-
-        return true;
-    }
+//    @Deprecated
+//    public static final boolean isNodeJakarta(JsonValue value) {
+//        return JsonUtils.isObject(value)
+//                && ((!value.asJsonObject().containsKey(Keywords.VALUE)
+//                        && !value.asJsonObject().containsKey(Keywords.LIST)
+//                        && !value.asJsonObject().containsKey(Keywords.SET))
+//
+//                        || Arrays.asList(Keywords.CONTEXT, Keywords.GRAPH).containsAll(value.asJsonObject().keySet()));
+//    }
+//
+//    @Deprecated
+//    public static final boolean isNotNodeJakarta(JsonValue value) {
+//        return !isNodeJakarta(value);
+//    }
+//
+//    @Deprecated
+//    public static final boolean isReferenceJakarta(JsonValue value) {
+//        return JsonUtils.containsKey(value, Keywords.ID) && value.asJsonObject().size() == 1;
+//    }
 
     // Extension: JSON-LD-STAR (Experimental)
-    @Deprecated
-    public static final boolean isNotAnnotation(final JsonValue annotation) {
-        return !isAnnotation(annotation);
-    }
-
-    @Deprecated
-    public static final boolean isAnnotation(final JsonValue annotation) {
-
-        JsonValue value = annotation;
-
-        if (JsonUtils.isArray(value)) {
-            return value.asJsonArray().stream().allMatch(JsonLdAdapter::isAnnotation);
-        }
-
-        if (JsonUtils.isNotObject(value)) {
-            return false;
-        }
-
-        for (Entry<String, JsonValue> property : value.asJsonObject().entrySet()) {
-
-            if (Keywords.ANNOTATION.equals(property.getKey()) && !isAnnotation(property.getValue())) {
-                return false;
-            }
-
-            if (Keywords.matchForm(property.getKey()) && !Keywords.TYPE.equals(property.getKey()) && !Keywords.REVERSE.equals(property.getKey())) {
-                return false;
-            }
-
-        }
-
-        return true;
-    }
-
-    @Deprecated
-    public static final boolean isListObject(JsonValue value) {
-        return JsonUtils.containsKey(value, Keywords.LIST)
-                && (value.asJsonObject().size() == 1
-                        || (value.asJsonObject().size() == 2
-                                && value.asJsonObject().containsKey(Keywords.INDEX)));
-    }
-
-    /**
-     * Convert expanded value to a list object by first setting it to an array
-     * containing only expanded value if it is not already an array, and then by
-     * setting it to a map containing the key-value pair @list-expanded value.
-     *
-     * @param value to convert
-     * @return list object containing the provided value
-     */
-    @Deprecated
-    public static final JsonObject toListObject(JsonValue value) {
-        if (JsonUtils.isArray(value)) {
-            return JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, value).build();
-        }
-
-        return JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, JsonProvider.instance().createArrayBuilder().add(value)).build();
-    }
-
-    @Deprecated
-    public static final boolean isValueObject(JsonValue value) {
-        return JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.VALUE);
-    }
-
-    @Deprecated
-    public static Optional<JsonValue> getValueObject(JsonValue value) {
-        return isValueObject(value)
-                ? Optional.ofNullable(value.asJsonObject().get(Keywords.VALUE))
-                : Optional.empty();
-    }
+//    @Deprecated
+//    public static final boolean isEmbedded(JsonValue value) {
+//
+//        if (JsonUtils.isNotObject(value)) {
+//            return false;
+//        }
+//
+//        final JsonObject node = value.asJsonObject();
+//
+//        boolean found = false;
+//
+//        for (Entry<String, JsonValue> property : node.entrySet()) {
+//
+//            if (property.getKey().equals(Keywords.INDEX)
+//                    || property.getKey().equals(Keywords.CONTEXT)
+//                    || property.getKey().equals(Keywords.REVERSE)) {
+//                return false;
+//            }
+//
+//            if (!Keywords.TYPE.equals(property.getKey()) && Keywords.matchForm(property.getKey())) {
+//                continue;
+//            }
+//
+//            // validate property name
+//            if (!found && (Keywords.TYPE.equals(property.getKey()) || UriUtils.isURI(property.getKey()))) {
+//
+//                // validate property value
+//                JsonValue propertyValue = property.getValue();
+//
+//                if (JsonUtils.isArray(propertyValue)) {
+//
+//                    if (propertyValue.asJsonArray().size() != 1) {
+//                        return false;
+//                    }
+//
+//                    propertyValue = propertyValue.asJsonArray().get(0);
+//                }
+//
+//                if (isValueObject(propertyValue)) {
+//                    propertyValue = getValueObject(propertyValue).orElse(null);
+//                }
+//
+//                if (JsonUtils.isString(propertyValue)
+//                        || (JsonUtils.isObject(propertyValue) && isEmbedded(propertyValue.asJsonObject()))) {
+//                    found = true;
+//                    continue;
+//                }
+//            }
+//            return false;
+//        }
+//
+//        return true;
+//    }
+//
+//    // Extension: JSON-LD-STAR (Experimental)
+//    @Deprecated
+//    public static final boolean isNotAnnotation(final JsonValue annotation) {
+//        return !isAnnotation(annotation);
+//    }
+//
+//    @Deprecated
+//    public static final boolean isAnnotation(final JsonValue annotation) {
+//
+//        JsonValue value = annotation;
+//
+//        if (JsonUtils.isArray(value)) {
+//            return value.asJsonArray().stream().allMatch(JsonLdAdapter::isAnnotation);
+//        }
+//
+//        if (JsonUtils.isNotObject(value)) {
+//            return false;
+//        }
+//
+//        for (Entry<String, JsonValue> property : value.asJsonObject().entrySet()) {
+//
+//            if (Keywords.ANNOTATION.equals(property.getKey()) && !isAnnotation(property.getValue())) {
+//                return false;
+//            }
+//
+//            if (Keywords.matchForm(property.getKey()) && !Keywords.TYPE.equals(property.getKey()) && !Keywords.REVERSE.equals(property.getKey())) {
+//                return false;
+//            }
+//
+//        }
+//
+//        return true;
+//    }
+//
+//    @Deprecated
+//    public static final boolean isListObject(JsonValue value) {
+//        return JsonUtils.containsKey(value, Keywords.LIST)
+//                && (value.asJsonObject().size() == 1
+//                        || (value.asJsonObject().size() == 2
+//                                && value.asJsonObject().containsKey(Keywords.INDEX)));
+//    }
+//
+//    /**
+//     * Convert expanded value to a list object by first setting it to an array
+//     * containing only expanded value if it is not already an array, and then by
+//     * setting it to a map containing the key-value pair @list-expanded value.
+//     *
+//     * @param value to convert
+//     * @return list object containing the provided value
+//     */
+//    @Deprecated
+//    public static final JsonObject toListObject(JsonValue value) {
+//        if (JsonUtils.isArray(value)) {
+//            return JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, value).build();
+//        }
+//
+//        return JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, JsonProvider.instance().createArrayBuilder().add(value)).build();
+//    }
+//
+//    @Deprecated
+//    public static final boolean isValueObject(JsonValue value) {
+//        return JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.VALUE);
+//    }
+//
+//    @Deprecated
+//    public static Optional<JsonValue> getValueObject(JsonValue value) {
+//        return isValueObject(value)
+//                ? Optional.ofNullable(value.asJsonObject().get(Keywords.VALUE))
+//                : Optional.empty();
+//    }
 
 }

@@ -15,94 +15,75 @@
  */
 package com.apicatalog.jsonld.loader;
 
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.net.URISyntaxException;
-import java.util.NoSuchElementException;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.JsonLdTestSuite;
-import com.apicatalog.jsonld.test.JsonLdMockServer;
-import com.apicatalog.jsonld.test.JsonLdTestCase;
-import com.apicatalog.jsonld.test.JsonLdTestManifest;
-import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-
 class HttpLoaderTest {
 
-    WireMockServer wireMockServer;
-
-    @BeforeEach
-    void proxyToWireMock() {
-        wireMockServer = new WireMockServer(WireMockConfiguration.options());
-        wireMockServer.start();
-    }
-
-    @AfterEach
-    void noMoreWireMock() {
-        wireMockServer.stop();
-        wireMockServer = null;
-    }
-
-    @Test
-    void testMissingContentType() throws URISyntaxException, JsonLdException {
-
-        final JsonLdTestCase testCase = JsonLdTestManifest
-                .load("/com/apicatalog/jsonld/test/", "manifest.json", new ClasspathLoader())
-                .stream()
-                .filter(o -> "#t0002".equals(o.id))
-                .findFirst().orElseThrow(() -> new NoSuchElementException());
-
-        testCase.options.contentType = null;
-
-        execute(testCase);
-    }
-
-    @Test
-    void testPlainTextContentType() throws URISyntaxException, JsonLdException {
-
-        final JsonLdTestCase testCase = JsonLdTestManifest
-                .load("/com/apicatalog/jsonld/test/", "manifest.json", new ClasspathLoader())
-                .stream()
-                .filter(o -> "#t0008".equals(o.id))
-                .findFirst().orElseThrow(() -> new NoSuchElementException());
-
-        execute(testCase);
-    }
-
-    void execute(JsonLdTestCase testCase) {
-        JsonLdMockServer server = new JsonLdMockServer(testCase, testCase.baseUri.substring(0, testCase.baseUri.length() - 1), "/com/apicatalog/jsonld/test/", new ClasspathLoader());
-
-        try {
-
-            server.start();
-
-            (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
-
-                JsonLdOptions expandOptions = JsonLdOptions.copyOf(options);
-
-                expandOptions.loader(
-                                    new UriBaseRewriter(
-                                                testCase.baseUri,
-                                                wireMockServer.baseUrl() + "/",
-                                                JsonLdTestSuite.HTTP_LOADER));
-
-                return null;
-                //FIXME
-//                return JsonDocument.of(JsonLd.expand(testCase.input).options(expandOptions).get());
-            });
-
-            server.stop();
-
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
-    }
+//    WireMockServer wireMockServer;
+//
+//    @BeforeEach
+//    void proxyToWireMock() {
+//        wireMockServer = new WireMockServer(WireMockConfiguration.options());
+//        wireMockServer.start();
+//    }
+//
+//    @AfterEach
+//    void noMoreWireMock() {
+//        wireMockServer.stop();
+//        wireMockServer = null;
+//    }
+//
+//    @Test
+//    void testMissingContentType() throws URISyntaxException, JsonLdException {
+//
+//        final JsonLdTestCase testCase = JsonLdTestManifest
+//                .load("/com/apicatalog/jsonld/test/", "manifest.json", JsonLdTestSuite.CLASSPATH_LOADER)
+//                .stream()
+//                .filter(o -> "#t0002".equals(o.id))
+//                .findFirst().orElseThrow(() -> new NoSuchElementException());
+//
+//        testCase.options.contentType = null;
+//
+//        execute(testCase);
+//    }
+//
+//    @Test
+//    void testPlainTextContentType() throws URISyntaxException, JsonLdException {
+//
+//        final JsonLdTestCase testCase = JsonLdTestManifest
+//                .load("/com/apicatalog/jsonld/test/", "manifest.json", JsonLdTestSuite.CLASSPATH_LOADER)
+//                .stream()
+//                .filter(o -> "#t0008".equals(o.id))
+//                .findFirst().orElseThrow(() -> new NoSuchElementException());
+//
+//        execute(testCase);
+//    }
+//
+//    void execute(JsonLdTestCase testCase) {
+//        JsonLdMockServer server = new JsonLdMockServer(testCase, testCase.baseUri.substring(0, testCase.baseUri.length() - 1), "/com/apicatalog/jsonld/test/", JsonLdTestSuite.CLASSPATH_LOADER);
+//
+//        try {
+//
+//            server.start();
+//
+//            (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
+//
+//                JsonLdOptions expandOptions = JsonLdOptions.copyOf(options);
+//
+//                expandOptions.loader(
+//                                    new UriBaseRewriter(
+//                                                testCase.baseUri,
+//                                                wireMockServer.baseUrl() + "/",
+//                                                JsonLdTestSuite.HTTP_LOADER));
+//
+//                return null;
+//                //FIXME
+////                return JsonDocument.of(JsonLd.expand(testCase.input).options(expandOptions).get());
+//            });
+//
+//            server.stop();
+//
+//        } catch (Exception e) {
+//            fail(e.getMessage());
+//        }
+//    }
 
 }

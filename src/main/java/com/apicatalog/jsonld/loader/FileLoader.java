@@ -21,21 +21,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.api.StringUtils;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.tree.io.NodeParser;
-import com.apicatalog.web.media.MediaType;
 
 public final class FileLoader implements DocumentLoader {
-
-    private static final Logger LOGGER = Logger.getLogger(FileLoader.class.getName());
 
     private final NodeParser reader;
 
@@ -56,20 +49,11 @@ public final class FileLoader implements DocumentLoader {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "File [" + url + "] is not accessible to read.");
         }
 
-        final MediaType contentType =
-                                detectedContentType(url.getPath().toLowerCase())
-                                .orElseGet(() -> {
-                                    LOGGER.log(Level.WARNING, "Cannot detect file [{0}] content type. Trying application/json.", url);
-                                    return MediaType.JSON;
-                                });
-
-//        final DocumentReader<InputStream> reader = resolver.getReader(contentType);
 
         try (final InputStream is = new FileInputStream(file)) {
             var node = reader.read(is);
             
             return RemoteDocument.of(node, url);                
-
 
         } catch (FileNotFoundException e) {
 
@@ -78,27 +62,5 @@ public final class FileLoader implements DocumentLoader {
         } catch (IOException e) {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
-    }
-
-    private static final Optional<MediaType> detectedContentType(String name) {
-
-        if (name == null || StringUtils.isBlank(name)) {
-            return Optional.empty();
-        }
-
-        if (name.endsWith(".nq")) {
-            return Optional.of(MediaType.N_QUADS);
-        }
-        if (name.endsWith(".json")) {
-            return Optional.of(MediaType.JSON);
-        }
-        if (name.endsWith(".jsonld")) {
-            return Optional.of(MediaType.JSON_LD);
-        }
-        if (name.endsWith(".html")) {
-            return Optional.of(MediaType.HTML);
-        }
-
-        return Optional.empty();
     }
 }
