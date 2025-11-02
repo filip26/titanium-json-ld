@@ -13,16 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.api;
+package com.apicatalog.jsonld.custom;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTimeout;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.util.Collection;
+import java.util.List;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
@@ -31,44 +39,45 @@ import jakarta.json.JsonObjectBuilder;
 
 class FramingReversePerformanceTest {
 
-    @Test
-    void testFramingPerformance1000Elements() throws JsonLdException, IOException {
+    @ParameterizedTest(name = "{0} elemets, {1}")
+    @MethodSource("data")
+    void testFramingPerformance(int elements, Duration timeout) throws JsonLdException, IOException {
 
-        final long executionTime = measureFramingPerformance(1_000);
+        var data = buildTestData(elements);
 
-        System.out.println("Framing 1_000 elements took: " + executionTime + " ms");
-
-        assertTrue(executionTime < 1_000L,
-                "Framing 1_000 elements took too long: " + executionTime + " ms");
+        assertTimeout(
+                timeout,
+                () -> {
+                    final long executionTime = measureFramingPerformance(data);
+                    System.out.println("Framing %d elements took: %d ms.".formatted(elements, executionTime));
+                });
     }
 
-    @Test
-    void testFramingPerformance10000Elements() throws JsonLdException, IOException {
-
-        final long executionTime = measureFramingPerformance(10_000);
-
-        System.out.println("Framing 10_000 elements took: " + executionTime + " ms");
-
-        assertTrue(executionTime < 5_000L,
-                "Framing 10_000 elements took too long: " + executionTime + " ms");
+    static final Collection<Object[]> data() {
+        return List.of(
+                new Object[] { 1_000, Duration.ofSeconds(1) },
+                new Object[] { 10_000, Duration.ofSeconds(2) });
     }
 
-    private long measureFramingPerformance(final int elementCount) throws JsonLdException, IOException {
+    private PolyNode[] buildTestData(final int elementCount) throws JsonLdException, IOException {
 
-        final JsonObject document = buildTestDocument(elementCount);
-        final JsonObject frame = buildTestFrame();
+        final var document = new PolyNode(buildTestDocument(elementCount), JakartaAdapter.instance());
+        final var frame = new PolyNode(buildTestFrame(), JakartaAdapter.instance());
+
+        return new PolyNode[] { document, frame };
+    }
+
+    private long measureFramingPerformance(PolyNode[] data) throws JsonLdException, IOException {
 
         final long startTime = System.currentTimeMillis();
-//FIXME
-        fail("FIXME");
-        return 0;
-//        final JsonObject framed = JsonLd.frame(JsonDocument.of(document), JsonDocument.of(frame)).get();
 
-//        final long endTime = System.currentTimeMillis();
-//
-//        assertNotNull(framed);
-//
-//        return endTime - startTime;
+        final var framed = JsonLd.frame(data[0], data[1], JsonLdOptions.newOptions());
+
+        final long endTime = System.currentTimeMillis();
+
+        assertNotNull(framed);
+
+        return endTime - startTime;
     }
 
     private JsonObject buildTestDocument(final int elementCount) {
