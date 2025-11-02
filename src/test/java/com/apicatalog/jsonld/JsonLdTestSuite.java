@@ -46,8 +46,16 @@ import jakarta.json.Json;
 })
 public class JsonLdTestSuite {
 
+//    public static final ObjectMapper om  = new ObjectMapper();
+//    
+//    static {
+//    om.configure(DeserializationFeature.NUL SerializationFeature.NUL,false);
+//    om.configure(SerializationFeature.INDENT_OUTPUT,true);
+//    om.setSerializationInclusion(Include.ALWAYS);
+//    }
+    
     public static final NodeParser JAKARTA_PARSER =
-//            new Jackson2Parser(new ObjectMapper());
+//            new Jackson2Parser(om);
             new JakartaParser(Json.createReaderFactory(Map.of()));
 
     public static final HttpLoader HTTP_LOADER = HttpLoader.newLoader(

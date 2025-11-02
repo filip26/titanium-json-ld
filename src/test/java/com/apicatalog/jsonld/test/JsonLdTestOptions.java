@@ -50,7 +50,7 @@ public class JsonLdTestOptions {
     public Set<String> httpLink;
     public JsonLdOptions.ProcessingPolicy undefinedTermPolicy = JsonLdOptions.ProcessingPolicy.Ignore;
 
-    public static final JsonLdTestOptions of() {
+    public static final JsonLdTestOptions newOptions() {
         return new JsonLdTestOptions();
     }
 
@@ -118,23 +118,23 @@ public class JsonLdTestOptions {
             case "ordered":
                 options.ordered = adapter.isTrue(entry.getValue());
                 break;
-                
+
             case "omitGraph":
                 options.omitGraph = adapter.isTrue(entry.getValue());
                 break;
-                
+
             case "produceGeneralizedRdf":
                 options.produceGeneralizedRdf = adapter.isTrue(entry.getValue());
                 break;
-                
+
             case "rdfDirection":
                 options.rdfDirection = adapter.stringValue(entry.getValue());
                 break;
-                
+
             case "useNativeTypes":
                 options.useNativeTypes = adapter.isTrue(entry.getValue());
                 break;
-            
+
             case "useRdfType":
                 options.useRdfType = adapter.isTrue(entry.getValue());
                 break;
@@ -143,63 +143,6 @@ public class JsonLdTestOptions {
                 System.err.println("An unknown test option " + key + " = " + entry.getValue() + ".");
             }
         }
-
-//        options.rdfDirection = node.getString("rdfDirection", null);
-//
-//        if (node.containsKey("produceGeneralizedRdf")) {
-//            options.produceGeneralizedRdf = node.getBoolean("produceGeneralizedRdf");
-//        }
-//
-//        if (node.containsKey("useNativeTypes")) {
-//            options.useNativeTypes = node.getBoolean("useNativeTypes");
-//        }
-//
-//        if (node.containsKey("useRdfType")) {
-//            options.useRdfType = node.getBoolean("useRdfType");
-//        }
-//
-//        if (node.containsKey("omitGraph")) {
-//            options.omitGraph = node.getBoolean("omitGraph");
-//        }
-//
-//        if (node.containsKey("useNumericId")) {
-//            options.numericId = node.getBoolean("useNumericId");
-//        }
-//
-//        if (node.containsKey("rdfstar")) {
-//            options.rdfStar = node.getBoolean("rdfstar");
-//        }
-//        
-//        if (node.containsKey("undefinedTermPolicy")) {
-//            options.undefinedTerms = JsonLdOptions.ProcessingPolicy.valueOf(node.getString("undefinedTermPolicy"));            
-//        }
-        //
-//      testCase.redirectTo = node.containsKey("option") && node.getJsonObject("option").containsKey("redirectTo")
-//              ? URI.create(baseUri + node.getJsonObject("option").getString("redirectTo"))
-//              : null;
-//
-//      testCase.httpStatus = node.containsKey("option")
-//              ? node.getJsonObject("option").getInt("httpStatus", 301)
-//              : null;
-//
-//      if (node.containsKey("option") && node.getJsonObject("option").containsKey("httpLink")) {
-//
-//          JsonValue links = node.getJsonObject("option").get("httpLink");
-//
-//          if (JsonUtils.isArray(links)) {
-//              testCase.httpLink = links.asJsonArray().stream()
-//                      .map(JsonString.class::cast)
-//                      .map(JsonString::getString)
-//                      .collect(Collectors.toSet());
-//          } else {
-//              testCase.httpLink = new HashSet<>();
-//              testCase.httpLink.add(((JsonString) links).getString());
-//          }
-//      }
-//
-//      testCase.undefinedTermPolicy = node.containsKey("option")
-//              ? JsonLdOptions.ProcessingPolicy.valueOf(node.getJsonObject("option").getString("undefinedTermPolicy", JsonLdOptions.ProcessingPolicy.Fail.name()))
-//              : JsonLdOptions.ProcessingPolicy.Ignore;        
 
         return options;
     }

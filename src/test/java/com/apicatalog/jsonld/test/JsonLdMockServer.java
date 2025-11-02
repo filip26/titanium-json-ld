@@ -18,15 +18,11 @@ package com.apicatalog.jsonld.test;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -37,12 +33,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.loader.HttpLoader;
+import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.web.link.Link;
 import com.apicatalog.web.media.MediaType;
 import com.apicatalog.web.uri.UriResolver;
@@ -244,7 +239,7 @@ public class JsonLdMockServer implements AutoCloseable {
 
             String linkUri = UriResolver.resolve(testCase.input, link.target().toString());
 
-            byte[] content = fetchBytes(URI.create(resourceBase + linkUri.substring(testCase.baseUri.length())));
+            byte[] content = ZipResourceLoader.fetchBytes(URI.create(resourceBase + linkUri.substring(testCase.baseUri.length())));
 
             if (content != null) {
                 when(
@@ -256,7 +251,7 @@ public class JsonLdMockServer implements AutoCloseable {
             }
         }
 
-        byte[] content = fetchBytes(URI.create(resourceBase + inputPath.substring(testCase.baseUri.length())));
+        byte[] content = ZipResourceLoader.fetchBytes(URI.create(resourceBase + inputPath.substring(testCase.baseUri.length())));
 
         if (content != null) {
 
@@ -276,45 +271,6 @@ public class JsonLdMockServer implements AutoCloseable {
                     200,
                     headers,
                     content);
-        }
-    }
-
-    public byte[] fetchBytes(URI url) throws JsonLdException {
-
-        if (!"zip".equals(url.getScheme())) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
-        }
-
-        URL zipFileUrl = getClass().getResource("/" + url.getAuthority());
-
-        if (zipFileUrl == null) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
-        }
-
-        File zipFile = null;
-
-        try {
-            zipFile = new File(zipFileUrl.toURI());
-
-        } catch (URISyntaxException e) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
-        }
-
-        try (ZipFile zip = new ZipFile(zipFile)) {
-
-            ZipEntry zipEntry = zip.getEntry(url.getPath().substring(1));
-
-            if (zipEntry == null) {
-                return null;
-            }
-
-            try (InputStream is = zip.getInputStream(zipEntry)) {
-
-                return is.readAllBytes();
-            }
-
-        } catch (IOException e) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
 }

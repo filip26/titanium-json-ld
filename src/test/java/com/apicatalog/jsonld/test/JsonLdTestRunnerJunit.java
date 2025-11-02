@@ -29,13 +29,14 @@ import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdComparison;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.JsonLdTestSuite;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.loader.QuadSetDocument;
+import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.jsonld.test.JsonLdTestCase.Type;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.model.RdfQuadSet;
+import com.apicatalog.rdf.nquads.NQuadsReaderException;
 import com.apicatalog.rdf.nquads.NQuadsWriter;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.flow.QuadEmitter;
@@ -88,12 +89,16 @@ public class JsonLdTestRunnerJunit {
 
         if (testCase.type.contains(Type.FROM_RDF_TEST)) {
             return execute(options -> {
-                // FIXME -> use custom loader, detach n-quads
-                Document input = options.loader().loadDocument(testCase.input, null);
 
-                final var toLd = JsonLd.fromRdf(options);
+                final var toLd = JsonLd.fromRdf(options).jsonParser(JsonLdTestSuite.JAKARTA_PARSER);
 
-                QuadEmitter.create(toLd).emit(((QuadSetDocument) input).contentX());
+                try {
+
+                    QuadEmitter.create(toLd).emit(ZipResourceLoader.readNQuads(testCase.input, testCase.baseUri, testCase.testsBase));
+
+                } catch (NQuadsReaderException e) {
+                    fail(e);
+                }
 
                 return toLd.toJsonLd();
             });
@@ -123,6 +128,39 @@ public class JsonLdTestRunnerJunit {
             result = method.invoke(options);
 
             assertNotNull(result, "A result is expected but got null");
+
+            if (testCase.expectErrorCode != null) {
+                if (result instanceof JsonStructure) {
+                    write(testCase, (JsonStructure) result, null, null);
+                }
+                fail("Expected error [" + testCase.expectErrorCode + "] but got " + result + "");
+                return false;
+            }
+
+            if (result instanceof RdfQuadSet quads) {
+                return validateQuads(testCase, options, quads);
+            }
+
+            // TODO remove
+            if (result instanceof JsonStructure json) {
+                return validateJsonLd(testCase, options, json, JakartaAdapter.instance());
+            }
+//            if (result instanceof JsonNode json) {
+//                return validateJsonLd(testCase, options, json, Jackson2Adapter.instance());
+//            }
+
+            // System.out.println(" >>>> " + result);
+//            if (result instanceof Collection<?> collection) {
+            return validateJsonLd(
+                    testCase,
+                    options,
+                    result,
+                    NativeAdapter.instance());
+//            }
+
+//            fail("Unexpected result type [" + result.getClass() + "]");
+
+//            return false;
 
         } catch (IOException e) {
             fail(e);
@@ -156,40 +194,10 @@ public class JsonLdTestRunnerJunit {
 
             }
             return false;
-        }
-
-        if (testCase.expectErrorCode != null) {
-            if (result instanceof JsonStructure) {
-                write(testCase, (JsonStructure) result, null, null);
-            }
-            fail("Expected error [" + testCase.expectErrorCode + "] but got " + result + "");
+        } catch (NQuadsReaderException e) {
+            fail(e);
             return false;
         }
-
-        if (result instanceof RdfQuadSet quads) {
-            return validateQuads(testCase, options, quads);
-        }
-
-        // TODO remove
-        if (result instanceof JsonStructure json) {
-            return validateJsonLd(testCase, options, json, JakartaAdapter.instance());
-        }
-//        if (result instanceof JsonNode json) {
-//            return validateJsonLd(testCase, options, json, Jackson2Adapter.instance());
-//        }
-        
-//System.out.println(" >>>> " + result);
-//        if (result instanceof Collection<?> collection) {
-        return validateJsonLd(
-                testCase,
-                options,
-                result,
-                NativeAdapter.instance());
-//        }
-
-//        fail("Unexpected result type [" + result.getClass() + "]");
-
-//        return false;
     }
 
     private boolean validateJsonLd(final JsonLdTestCase testCase, final JsonLdOptions options, final Object result, final NodeAdapter resultAdapter) {
@@ -210,7 +218,7 @@ public class JsonLdTestRunnerJunit {
         return false;
     }
 
-    private boolean validateQuads(final JsonLdTestCase testCase, final JsonLdOptions options, final RdfQuadSet result) {
+    private boolean validateQuads(final JsonLdTestCase testCase, final JsonLdOptions options, final RdfQuadSet result) throws NQuadsReaderException, RdfConsumerException {
 
         // A PositiveSyntaxTest succeeds when no error is found when processing.
         if (testCase.expect == null && testCase.type.contains(Type.POSITIVE_SYNTAX_TEST)) {
@@ -220,15 +228,10 @@ public class JsonLdTestRunnerJunit {
         assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
 
         try {
-            Document expectedDocument = options.loader().loadDocument(testCase.expect, DocumentLoader.defaultOptions());
-
-            assertNotNull(expectedDocument);
-
             // compare expected with the result
-
             return compareRdf(testCase,
                     result,
-                    ((QuadSetDocument) expectedDocument).contentX());
+                    ZipResourceLoader.readNQuads(testCase.expect, testCase.baseUri, testCase.testsBase));
 
         } catch (JsonLdException e) {
             fail(e.getMessage());
@@ -332,5 +335,4 @@ public class JsonLdTestRunnerJunit {
         }
         return false;
     }
-
 }

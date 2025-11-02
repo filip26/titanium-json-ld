@@ -58,7 +58,7 @@ public final class JsonLdTestCase {
 
     public JsonLdTestOptions options;
 
-    private final String testsBase;
+    public final String testsBase;
 
     private final DocumentLoader loader;
 
@@ -141,7 +141,7 @@ public final class JsonLdTestCase {
         }
 
         if (testCase.options == null) {
-            testCase.options = JsonLdTestOptions.of();
+            testCase.options = JsonLdTestOptions.newOptions();
         }
 
         if (testCase.options.contentType == null && testCase.input != null) {

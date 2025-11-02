@@ -27,14 +27,14 @@ import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdTestSuite;
-import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.fromrdf.QuadsToJsonLd;
-import com.apicatalog.jsonld.loader.QuadSetDocument;
 import com.apicatalog.jsonld.loader.UriBaseRewriter;
+import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.jsonld.test.JsonLdMockServer;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
 import com.apicatalog.jsonld.test.JsonLdTestManifest;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerEarl;
+import com.apicatalog.rdf.nquads.NQuadsReaderException;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.flow.QuadEmitter;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
@@ -138,11 +138,14 @@ public class EarlGenerator {
                 .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
                         (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
-                            Document input = options.loader().loadDocument(testCase.input, null);
 
                             QuadsToJsonLd toLd = JsonLd.fromRdf().options(options);
 
-                            QuadEmitter.create(toLd).emit(((QuadSetDocument) input).contentX());
+                            try {
+                                QuadEmitter.create(toLd).emit(ZipResourceLoader.readNQuads(testCase.input, testCase.baseUri, testCase.testsBase));
+                            } catch (NQuadsReaderException e) {
+                                throw new IllegalStateException(e);
+                            }
 
                             return toLd.toJsonLd();
                         })));

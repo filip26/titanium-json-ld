@@ -27,11 +27,11 @@ class NativeObjectsTest {
         System.out.println(x);
         var b = new ByteArrayOutputStream();
 
-        //TODO
+        // TODO
 //        var y = new JakartaWriter(Json.createGeneratorFactory(Map.of()).createGenerator(b)).node(x, NativeAdapter.instance());
 
 //        System.out.println(y);
 
     }
-    
+
 }

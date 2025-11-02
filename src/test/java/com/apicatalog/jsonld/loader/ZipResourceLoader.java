@@ -15,9 +15,11 @@
  */
 package com.apicatalog.jsonld.loader;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -28,6 +30,12 @@ import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.rdf.api.RdfConsumerException;
+import com.apicatalog.rdf.model.RdfQuadSet;
+import com.apicatalog.rdf.nquads.NQuadsReader;
+import com.apicatalog.rdf.nquads.NQuadsReaderException;
+import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
+import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
 import com.apicatalog.tree.io.NodeParser;
 
 public class ZipResourceLoader implements DocumentLoader {
@@ -68,34 +76,66 @@ public class ZipResourceLoader implements DocumentLoader {
                 return null;
             }
 
-//            
-//            
-//            final DocumentReader<InputStream> reader;
-//
-//            if (zipEntry.getName().endsWith(".nq")) {
-//                try (final InputStream is = zip.getInputStream(zipEntry)) {
-//
-//                    final Document document = QuadSetDocument.readNQuads(new InputStreamReader(is));
-//                    document.setDocumentUrl(url);
-//
-//                    return document;
-//                }
-//
-//            } else if (zipEntry.getName().endsWith(".json")) {
-//                reader = resolver.getReader(MediaType.JSON);
-//
-//            } else if (zipEntry.getName().endsWith(".jsonld")) {
-//                reader = resolver.getReader(MediaType.JSON_LD);
-//
-//            } else {
-//                return null;
-//            }
-
             try (final InputStream is = zip.getInputStream(zipEntry)) {
 
                 var node = reader.parse(is);
-                
-                return RemoteDocument.of(node, url);                
+
+                return RemoteDocument.of(node, url);
+            }
+
+        } catch (IOException e) {
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+        }
+    }
+
+    public static RdfQuadSet readNQuads(URI url, String base, String rebase) throws NQuadsReaderException, RdfConsumerException, JsonLdException {
+
+        final var target = url.toString();
+
+        final var relativePath = target.substring(base.length());
+
+        var content = new OrderedQuadSet();
+
+        new NQuadsReader(
+                new InputStreamReader(
+                        new ByteArrayInputStream(fetchBytes(URI.create(rebase + relativePath)))))
+                .provide(new QuadAcceptor(content));
+
+        return content;
+    }
+
+    public static byte[] fetchBytes(URI url) throws JsonLdException {
+
+        if (!"zip".equals(url.getScheme())) {
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+        }
+
+        URL zipFileUrl = ZipResourceLoader.class.getResource("/" + url.getAuthority());
+
+        if (zipFileUrl == null) {
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+        }
+
+        File zipFile = null;
+
+        try {
+            zipFile = new File(zipFileUrl.toURI());
+
+        } catch (URISyntaxException e) {
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+        }
+
+        try (ZipFile zip = new ZipFile(zipFile)) {
+
+            ZipEntry zipEntry = zip.getEntry(url.getPath().substring(1));
+
+            if (zipEntry == null) {
+                return null;
+            }
+
+            try (InputStream is = zip.getInputStream(zipEntry)) {
+
+                return is.readAllBytes();
             }
 
         } catch (IOException e) {
