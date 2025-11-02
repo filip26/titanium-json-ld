@@ -37,7 +37,7 @@ import java.util.zip.ZipFile;
 
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.http.DefaultHttpClient;
+import com.apicatalog.jsonld.loader.DefaultHttpClient;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.web.link.Link;
 import com.apicatalog.web.media.MediaType;

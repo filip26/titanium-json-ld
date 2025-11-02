@@ -20,7 +20,6 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,14 +30,10 @@ import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdProfile;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.jsonld.http.DefaultHttpClient;
-import com.apicatalog.tree.io.NodeReader;
-import com.apicatalog.tree.io.jakarta.JakartaReader;
+import com.apicatalog.tree.io.NodeParser;
 import com.apicatalog.web.link.Link;
 import com.apicatalog.web.media.MediaType;
 import com.apicatalog.web.uri.UriResolver;
-
-import jakarta.json.Json;
 
 public class HttpLoader implements DocumentLoader {
 
@@ -52,26 +47,18 @@ public class HttpLoader implements DocumentLoader {
 
     private final HttpLoaderClient client;
 
-    private final NodeReader reader;
+    private final NodeParser reader;
 
-    public HttpLoader(HttpLoaderClient client, NodeReader reader) {
+    public HttpLoader(HttpLoaderClient client, NodeParser reader) {
         this(client, reader, MAX_REDIRECTIONS);
     }
 
-    public HttpLoader(HttpLoaderClient httpClient, NodeReader reader, int maxRedirections) {
+    public HttpLoader(HttpLoaderClient httpClient, NodeParser reader, int maxRedirections) {
         this.client = httpClient;
         this.maxRedirections = maxRedirections;
         this.reader = reader;
     }
     
-    public static final HttpLoader newHttpLoader() {
-        //FIXME
-        return new HttpLoader(
-                DefaultHttpClient.defaultInstance(),
-                new JakartaReader(Json.createReaderFactory(Map.of()))          
-                );
-    }
-
     @Override
     public Document loadDocument(final URI uri, final Options options) throws JsonLdException {
 
@@ -229,4 +216,10 @@ public class HttpLoader implements DocumentLoader {
         client.timeout(timeout);
         return this;
     }
+    
+//    public Builder newBuilder();
+//    
+//    public static class Builder {
+//        
+//    }
 }

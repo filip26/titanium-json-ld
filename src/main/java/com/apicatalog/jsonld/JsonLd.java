@@ -32,7 +32,7 @@ import com.apicatalog.jsonld.processor.Framer;
 import com.apicatalog.jsonld.processor.RdfEmitter;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.tree.io.PolyNode;
-import com.apicatalog.tree.io.jakarta.JakartaReader;
+import com.apicatalog.tree.io.jakarta.JakartaParser;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
 import jakarta.json.JsonArray;
@@ -357,7 +357,7 @@ public final class JsonLd {
 
     public static final QuadsToJsonLd fromRdf(JsonLdOptions options) {
         // FIXMe
-        return new QuadsToJsonLd().options(options).jsonParser(new JakartaReader());
+        return new QuadsToJsonLd().options(options).jsonParser(new JakartaParser());
     }
 
     private static final URI assertUri(final URI uri, final String param) {

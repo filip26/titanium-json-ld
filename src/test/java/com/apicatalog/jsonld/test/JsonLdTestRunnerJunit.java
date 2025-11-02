@@ -43,7 +43,9 @@ import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
+import com.apicatalog.tree.io.jakcson.Jackson2Adapter;
 import com.apicatalog.tree.io.java.NativeAdapter;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Objects;
 
 import jakarta.json.Json;
@@ -174,6 +176,10 @@ public class JsonLdTestRunnerJunit {
         if (result instanceof JsonStructure json) {
             return validateJsonLd(testCase, options, json, JakartaAdapter.instance());
         }
+        if (result instanceof JsonNode json) {
+            return validateJsonLd(testCase, options, json, Jackson2Adapter.instance());
+        }
+        
 //System.out.println(" >>>> " + result);
 //        if (result instanceof Collection<?> collection) {
         return validateJsonLd(

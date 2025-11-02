@@ -30,16 +30,16 @@ import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.api.StringUtils;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.tree.io.NodeReader;
+import com.apicatalog.tree.io.NodeParser;
 import com.apicatalog.web.media.MediaType;
 
 public final class FileLoader implements DocumentLoader {
 
     private static final Logger LOGGER = Logger.getLogger(FileLoader.class.getName());
 
-    private final NodeReader reader;
+    private final NodeParser reader;
 
-    public FileLoader(NodeReader reader) {
+    public FileLoader(NodeParser reader) {
         this.reader = reader;
     }
 

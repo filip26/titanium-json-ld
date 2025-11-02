@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.http;
+package com.apicatalog.jsonld.loader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,19 +30,15 @@ import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.loader.HttpLoaderClient;
 import com.apicatalog.web.media.MediaType;
 
 public final class DefaultHttpClient implements HttpLoaderClient {
 
-    @Deprecated
-    private static final java.net.http.HttpClient CLIENT = HttpClient
-            .newBuilder()
-            .followRedirects(Redirect.NEVER)
-            .build();
-
-    @Deprecated
-    private static final DefaultHttpClient INSTANCE = new DefaultHttpClient(CLIENT);
+//    @Deprecated
+//    private static final java.net.http.HttpClient CLIENT = HttpClient
+//            .newBuilder()
+//            .followRedirects(Redirect.NEVER)
+//            .build();
 
     private final HttpClient httpClient;
     private Duration timeout;
@@ -79,11 +75,6 @@ public final class DefaultHttpClient implements HttpLoaderClient {
 
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
-    }
-
-    @Deprecated
-    public static final HttpLoaderClient defaultInstance() {
-        return INSTANCE;
     }
 
     @Override

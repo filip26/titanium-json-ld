@@ -28,13 +28,13 @@ import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
-import com.apicatalog.tree.io.NodeReader;
+import com.apicatalog.tree.io.NodeParser;
 
 public class ZipResourceLoader implements DocumentLoader {
 
-    private final NodeReader reader;
+    private final NodeParser reader;
 
-    public ZipResourceLoader(NodeReader reader) {
+    public ZipResourceLoader(NodeParser reader) {
         this.reader = reader;
     }
 

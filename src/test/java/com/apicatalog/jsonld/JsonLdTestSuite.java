@@ -15,18 +15,21 @@
  */
 package com.apicatalog.jsonld;
 
-import java.util.Map;
+import java.net.http.HttpClient;
+import java.net.http.HttpClient.Redirect;
 
 import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
 import org.junit.platform.suite.api.SuiteDisplayName;
 
+import com.apicatalog.jsonld.loader.DefaultHttpClient;
 import com.apicatalog.jsonld.loader.FileLoader;
 import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
-import com.apicatalog.tree.io.jakarta.JakartaReader;
-
-import jakarta.json.Json;
+import com.apicatalog.tree.io.NodeParser;
+import com.apicatalog.tree.io.jakarta.JakartaParser;
+import com.apicatalog.tree.io.jakcson.Jackson2Parser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Suite(failIfNoTests = true)
 @SuiteDisplayName("JsonLd Suite")
@@ -40,19 +43,25 @@ import jakarta.json.Json;
         RemoteTest.class
 })
 public class JsonLdTestSuite {
-    
-    public static final HttpLoader HTTP_LOADER = HttpLoader.newHttpLoader();
-    
-    public static final JakartaReader JAKARTA_READER = new JakartaReader(Json.createReaderFactory(Map.of())); 
-    
+
+    public static final NodeParser JAKARTA_READER = new Jackson2Parser(new ObjectMapper());
+//            new JakartaParser(Json.createReaderFactory(Map.of()));
+
+    public static final HttpLoader HTTP_LOADER = new HttpLoader(
+            new DefaultHttpClient(HttpClient
+                    .newBuilder()
+                    .followRedirects(Redirect.NEVER)
+                    .build()),
+            JAKARTA_READER);
+
     public static final ZipResourceLoader ZIP_RESOURCE_LOADER = new ZipResourceLoader(JAKARTA_READER);
-    
+
     public static final FileLoader FILE_LOADER = new FileLoader(JAKARTA_READER);
-    
+
 //    public static final DocumentLoader LOADER = SchemeRouter.newBuilder()
 //          .route("http", HTTP_LOADER)
 ////          .route("https", HttpLoader.defaultInstance())
 ////          .route("file", new FileLoader())
 //          .build();
-    
+
 }
