@@ -18,7 +18,6 @@ package com.apicatalog.jsonld;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
-import java.io.IOException;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterAll;
@@ -26,7 +25,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.apicatalog.jsonld.http.SimpleMockServer;
 import com.apicatalog.jsonld.loader.UriBaseRewriter;
 import com.apicatalog.jsonld.test.JsonLdMockServer;
 import com.apicatalog.jsonld.test.JsonLdTestCase;
@@ -35,18 +33,21 @@ import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 
 class RemoteTest {
 
-    static SimpleMockServer mockServer;
+    static JsonLdMockServer server;
 
     @BeforeAll
-    static void proxyToWireMock() throws IOException {
-        mockServer = new SimpleMockServer(8080);
-        mockServer.start();
+    static void startMockServer() throws JsonLdException {
+        server = new JsonLdMockServer(
+                8080,
+                JsonLdTestCase.TESTS_BASE,
+                JsonLdTestManifest.JSON_LD_API_BASE);
+        server.start();
     }
 
     @AfterAll
-    static void noMoreWireMock() {
-        mockServer.stop();
-        mockServer = null;
+    static void stopMockServer() throws JsonLdException {
+        server.close();
+        server = null;
     }
 
     @ParameterizedTest(name = "{0}")
@@ -57,13 +58,7 @@ class RemoteTest {
         assumeFalse("#t0013".equals(testCase.id));
 
         try {
-            final var server = new JsonLdMockServer(
-                    testCase,
-                    JsonLdTestCase.TESTS_BASE,
-                    JsonLdTestManifest.JSON_LD_API_BASE,
-                    JsonLdTestSuite.ZIP_RESOURCE_LOADER);
-
-            server.start(mockServer);
+            server.setup(testCase);
 
             (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
 
@@ -72,17 +67,14 @@ class RemoteTest {
                 expandOptions.loader(
                         new UriBaseRewriter(
                                 JsonLdTestCase.TESTS_BASE,
-                                mockServer.baseUrl(),
+                                server.baseUrl(),
                                 JsonLdTestSuite.HTTP_LOADER));
 
                 return JsonLd.expand(testCase.input, expandOptions);
             });
 
-            server.stop();
-
         } catch (JsonLdException e) {
             fail(e.getMessage());
-
         }
     }
 
