@@ -6,7 +6,9 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,18 +26,18 @@ public class SimpleMockServer implements AutoCloseable {
 
     private final int port;
 
-    private record Stub(int status, Map<String, String> headers, byte[] body) {
+    private record Stub(int status, List<Entry<String, String>> headers, byte[] body) {
     }
 
     public SimpleMockServer(int port) {
         this.port = port;
     }
 
-    public void when(String path, int status, Map<String, String> headers, byte[] body) {
+    public void when(String path, int status, List<Entry<String, String>> headers, byte[] body) {
         stubs.put(path, new Stub(status, headers, body));
     }
 
-    public void when(String path, int status, Map<String, String> headers) {
+    public void when(String path, int status, List<Entry<String, String>> headers) {
         stubs.put(path, new Stub(status, headers, null));
     }
 
@@ -60,11 +62,12 @@ public class SimpleMockServer implements AutoCloseable {
         }
 
         var path = line.split(" ")[1];
-        System.out.println("2 " + path);
-        System.out.println("3 " + stubs.keySet());
+        System.out.println("> " + path);
+        
         var stub = stubs.get(path);
 
         if (stub == null) {
+            System.out.println("! " + stubs.keySet());    
             var notFoundResponse = """
                     HTTP/1.1 404 Not Found\r
                     \r
@@ -74,12 +77,13 @@ public class SimpleMockServer implements AutoCloseable {
             out.flush();
             return;
         }
-        System.out.println("3 " + new String(stub.body));
 
-        var headersString = stub.headers().entrySet().stream()
+        var headersString = stub.headers().stream()
                 .map(e -> String.format("%s: %s", e.getKey(), e.getValue()))
                 .collect(Collectors.joining("\r\n"));
 
+        System.out.println("< " + stub.status);
+        System.out.println("< " + headersString);
         out.write("""
                 HTTP/1.1 %d OK\r
                 %s\r
@@ -87,8 +91,12 @@ public class SimpleMockServer implements AutoCloseable {
                 """.formatted(stub.status(), headersString)
                 .getBytes(StandardCharsets.UTF_8));
 
-        out.write(stub.body);
+        if (stub.body != null) {
+            System.out.println("< " + new String(stub.body));
+            out.write(stub.body);
+        }
         out.flush();
+        System.out.println("END");
     }
 
     @Override

@@ -17,6 +17,7 @@ package com.apicatalog.jsonld;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
+import java.time.Duration;
 import java.util.Map;
 
 import org.junit.platform.suite.api.SelectClasses;
@@ -53,6 +54,7 @@ public class JsonLdTestSuite {
             HttpClient
                     .newBuilder()
                     .followRedirects(Redirect.NEVER)
+                    .connectTimeout(Duration.ofSeconds(5))
                     .build(),
             JAKARTA_READER);
 

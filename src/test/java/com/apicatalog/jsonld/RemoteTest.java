@@ -62,7 +62,7 @@ class RemoteTest {
                     JsonLdTestCase.TESTS_BASE,
                     JsonLdTestManifest.JSON_LD_API_BASE,
                     JsonLdTestSuite.ZIP_RESOURCE_LOADER);
-System.out.println("XXXXXXXX");
+
             server.start(mockServer);
 
             (new JsonLdTestRunnerJunit(testCase)).execute(options -> {

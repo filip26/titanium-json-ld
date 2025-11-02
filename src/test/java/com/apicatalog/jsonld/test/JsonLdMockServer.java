@@ -24,8 +24,10 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -67,7 +69,7 @@ public final class JsonLdMockServer {
             mockServer.when(
                     testCase.input.toString().substring(testBase.length()),
                     testCase.options.httpStatus,
-                    Map.of("Location", testCase.options.redirectTo.toASCIIString().substring(testBase.length()))
+                    List.of(Map.entry("Location", testCase.options.redirectTo.toASCIIString().substring(testBase.length())))
                     );
 //            stubFor(get(urlEqualTo(testCase.input.toString().substring(testBase.length())))
 //                    .willReturn(aResponse()
@@ -109,7 +111,8 @@ public final class JsonLdMockServer {
             String linkUri = UriResolver.resolve(testCase.input, link.target().toString());
 
             byte[] content  = fetchBytes(URI.create(resourceBase +  linkUri.substring(testCase.baseUri.length())));
-System.out.println(">>>> !" + content);
+System.out.println(">>>>>>>>>>>>>>> " + linkUri);
+System.out.println(">>>>>>>>>>>>>>> " + linkUri.substring(testBase.length()));
             if (content != null) {
 ////                    Assert.assertNotNull(linkedDocument);
 ////                    Assert.assertNotNull(linkedDocument.getContent());
@@ -119,7 +122,7 @@ System.out.println(">>>> !" + content);
                 mockServer.when(
                         linkUri.substring(testBase.length()),
                         200,
-                        Map.of("Content-Type", contentType.toString()),
+                        List.of(Map.entry("Content-Type", contentType.toString())),
                         content);
 //                stubFor(get(urlEqualTo(linkUri.substring(testBase.length())))
 //                        .willReturn(aResponse()
@@ -138,14 +141,14 @@ System.out.println(">>>> !" + content);
         if (content != null) {
 //            mockResponseBuilder.withStatus(200);
 
-            var headers = new LinkedHashMap<String, String>();
+            var headers = new ArrayList<Entry<String, String>>();
             //
             if (testCase.options.httpLink != null) {
-                testCase.options.httpLink.forEach(link -> headers.put("Link", link));
+                testCase.options.httpLink.forEach(link -> headers.add(Map.entry("Link", link)));
             }
 //
             if (testCase.options.contentType != null) {
-                headers.put("Content-Type", testCase.options.contentType.toString());
+                headers.add(Map.entry("Content-Type", testCase.options.contentType.toString()));
             }
             
             mockServer.when(
