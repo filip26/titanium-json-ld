@@ -36,7 +36,6 @@ import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
-
 /**
  * The {@link JsonLd} interface is the high-level programming structure that
  * developers use to access the JSON-LD transformation methods. This class
@@ -92,6 +91,11 @@ public final class JsonLd {
     }
 
     public static final Collection<?> expand(final Map<String, ?> document, final JsonLdOptions options) throws JsonLdException, IOException {
+
+        if (!NativeAdapter.instance().isNode(document)) {
+            throw new IllegalArgumentException();
+        }
+
         return expand(new PolyNode(document, NativeAdapter.instance()), options);
     }
 
@@ -108,25 +112,6 @@ public final class JsonLd {
                 runtime);
     }
 
-    public static void main(String[] args) throws JsonLdException, IOException {
-
-        var x = expand(Map.of(
-                "@context", Map.of(
-                        "ical", "http://www.w3.org/2002/12/cal/ical#",
-                        "xsd", "http://www.w3.org/2001/XMLSchema#",
-                        "ical:dtstart", Map.of("@type", "xsd:dateTime")),
-                "ical:summary", "Lady Gaga Concert",
-                "ical:location", "New Orleans Arena, New Orleans, Louisiana, USA",
-                "ical:dtstart", "2011-04-09T20:00:00Z"), JsonLdOptions.newOptions());
-
-        System.out.println(x);
-        var b = new ByteArrayOutputStream();
-
-//        var y = new JakartaWriter(Json.createGeneratorFactory(Map.of()).createGenerator(b)).node(x, NativeAdapter.instance());
-
-//        System.out.println(y);
-
-    }
 
     /**
      * Compacts the referenced document using the context.
@@ -292,7 +277,7 @@ public final class JsonLd {
     public static final Map<String, ?> frame(final PolyNode document, final PolyNode frame, final JsonLdOptions options) throws JsonLdException, IOException {
         final Execution runtime = Execution.of(options);
         runtime.tick();
-        
+
         final var contextNode = Context.extract(frame);
 
         return Context.inject(
@@ -307,8 +292,15 @@ public final class JsonLd {
                         options),
                 contextNode);
     }
-    
+
     public static final Map<String, ?> frame(final Map<String, ?> document, final Map<String, ?> frame, final JsonLdOptions options) throws JsonLdException, IOException {
+
+        if (!NativeAdapter.instance().isNode(document)) {
+            throw new IllegalArgumentException();
+        }
+        if (!NativeAdapter.instance().isNode(frame)) {
+            throw new IllegalArgumentException();
+        }
 
         final Execution runtime = Execution.of(options);
         runtime.tick();
@@ -352,7 +344,6 @@ public final class JsonLd {
         RdfEmitter.toRdf(document, consumer, options);
     }
 
-    
     /**
      * Transforms an RDF quad set into a JSON-LD document in expanded form.
      * <p>
@@ -379,7 +370,7 @@ public final class JsonLd {
 
     public static final QuadsToJsonLd fromRdf(JsonLdOptions options) {
         // FIXMe
-        return new QuadsToJsonLd().options(options); //FIXME.jsonParser(new JakartaParser());
+        return new QuadsToJsonLd().options(options); // FIXME.jsonParser(new JakartaParser());
     }
 
     private static final URI assertUri(final URI uri, final String param) {
