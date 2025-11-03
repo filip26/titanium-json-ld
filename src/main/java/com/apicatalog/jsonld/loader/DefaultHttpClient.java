@@ -10,6 +10,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.net.http.HttpTimeoutException;
 import java.time.Duration;
 import java.util.Collection;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -18,11 +19,14 @@ import com.apicatalog.jsonld.JsonLdException;
 final class DefaultHttpClient implements HttpLoaderClient {
 
     private final HttpClient httpClient;
+
     private Duration timeout;
+    private Collection<Entry<String, String>> headers;
 
     DefaultHttpClient(final HttpClient httpClient) {
         this.httpClient = httpClient;
         this.timeout = null;
+        this.headers = null;
     }
 
     public HttpLoaderClient.Response send(URI targetUri, Collection<String> requestProfiles) throws JsonLdException {
@@ -32,15 +36,18 @@ final class DefaultHttpClient implements HttpLoaderClient {
                 .uri(targetUri)
                 .header("Accept", HttpLoader.acceptHeader(requestProfiles));
 
+        if (headers != null && !headers.isEmpty()) {
+            headers.forEach(h -> request.header(h.getKey(), h.getValue()));
+        }
+
         if (timeout != null && !timeout.isNegative() && !timeout.isZero()) {
-            request = request.timeout(timeout);
+            request.timeout(timeout);
         }
 
         try {
             return new HttpResponseImpl(httpClient.send(request.build(), BodyHandlers.ofInputStream()));
 
         } catch (InterruptedException e) {
-
             Thread.currentThread().interrupt();
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
 
@@ -48,7 +55,6 @@ final class DefaultHttpClient implements HttpLoaderClient {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_TIMEOUT, e);
 
         } catch (IOException e) {
-
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
@@ -58,6 +64,12 @@ final class DefaultHttpClient implements HttpLoaderClient {
         this.timeout = timeout;
         return this;
     }
+    
+    @Override
+    public HttpLoaderClient headers(Collection<Entry<String, String>> headers) {
+        this.headers = headers;
+        return this;
+    }
 
     private static class HttpResponseImpl implements HttpLoaderClient.Response {
 
@@ -65,19 +77,6 @@ final class DefaultHttpClient implements HttpLoaderClient {
 
         HttpResponseImpl(HttpResponse<InputStream> response) {
             this.response = response;
-        }
-
-        @Override
-        public boolean isRedirect() {
-            return response.statusCode() == 301
-                    || response.statusCode() == 302
-                    || response.statusCode() == 303
-                    || response.statusCode() == 307;
-        }
-
-        @Override
-        public boolean isSuccess() {
-            return response.statusCode() == 200;
         }
 
         @Override

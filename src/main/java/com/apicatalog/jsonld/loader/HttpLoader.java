@@ -22,6 +22,8 @@ import java.net.http.HttpClient.Redirect;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,6 +41,11 @@ import com.apicatalog.web.uri.UriResolver;
 
 public class HttpLoader implements DocumentLoader {
 
+    public static final Collection<Entry<String, String>> VENDOR_HEADERS = List.of(
+            Map.entry(
+                    "User-Agent",
+                    "titanium-json-ld/2.0 (+https://github.com/filip26/titanium-json-ld)"));
+
     private static final Logger LOGGER = Logger.getLogger(HttpLoader.class.getName());
 
     public static final int MAX_REDIRECTIONS = 10;
@@ -51,7 +58,7 @@ public class HttpLoader implements DocumentLoader {
 
     private final NodeParser reader;
 
-    HttpLoader(HttpLoaderClient httpClient, NodeParser reader, int maxRedirections) {
+    protected HttpLoader(HttpLoaderClient httpClient, NodeParser reader, int maxRedirections) {
         this.client = httpClient;
         this.maxRedirections = maxRedirections;
         this.reader = reader;
@@ -63,15 +70,18 @@ public class HttpLoader implements DocumentLoader {
                         .newBuilder()
                         .followRedirects(Redirect.NEVER)
                         .build(),
-                parser);
+                parser)
+                .headers(VENDOR_HEADERS);
     }
 
     public static HttpLoader newLoader(final HttpClient httpClient, NodeParser reader) {
-        return new HttpLoader(new DefaultHttpClient(httpClient), reader, MAX_REDIRECTIONS);
+        return new HttpLoader(new DefaultHttpClient(httpClient), reader, MAX_REDIRECTIONS)
+                .headers(VENDOR_HEADERS);
     }
 
     public static HttpLoader newLoader(final HttpClient httpClient, NodeParser reader, int maxRedirections) {
-        return new HttpLoader(new DefaultHttpClient(httpClient), reader, maxRedirections);
+        return new HttpLoader(new DefaultHttpClient(httpClient), reader, maxRedirections)
+                .headers(VENDOR_HEADERS);
     }
 
     @Override
@@ -90,7 +100,10 @@ public class HttpLoader implements DocumentLoader {
                 try (HttpLoaderClient.Response response = client.send(targetUri, options.requestProfile())) {
 
                     // 3.
-                    if (response.isRedirect()) {
+                    if (response.statusCode() == 301
+                            || response.statusCode() == 302
+                            || response.statusCode() == 303
+                            || response.statusCode() == 307) {
 
                         final Optional<String> location = response.location();
 
@@ -102,7 +115,7 @@ public class HttpLoader implements DocumentLoader {
                         throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Header location is required for code [" + response.statusCode() + "].");
                     }
 
-                    if (!response.isSuccess()) {
+                    if (response.statusCode() != 200) {
                         throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unexpected response code [" + response.statusCode() + "]");
                     }
 
@@ -199,21 +212,6 @@ public class HttpLoader implements DocumentLoader {
         }
     }
 
-//    /**
-//     * Set fallback content-type used when received content-type is not supported.
-//     * e.g. <code>setFallbackContentType(MediaType.JSON_LD)</code>
-//     *
-//     * @param fallbackContentType a content type that overrides unsupported received
-//     *                            content-type
-//     * @return {@link DefaulLoader} instance
-//     * @since 1.4.0
-//     */
-//    @Deprecated
-//    public DefaulLoader fallbackContentType(MediaType fallbackContentType) {
-////FIXME        reader.setFallbackContentType(fallbackContentType);
-//        return this;
-//    }
-
     /**
      * Sets a timeout for a request. If the response is not received within the
      * specified timeout then an {@link JsonLdException}, code =
@@ -228,25 +226,38 @@ public class HttpLoader implements DocumentLoader {
         return this;
     }
 
+    /**
+     * Sets additional headers added to each request.
+     * 
+     * @param headers
+     * @return {@link HttpLoader} instance
+     * 
+     * @since 2.0.0
+     * 
+     */
+    public HttpLoader headers(Collection<Entry<String, String>> headers) {
+        client.headers(headers);
+        return this;
+    }
+
     public static final String acceptHeader() {
-        return acceptHeader(null);
+        return acceptHeader(List.of());
     }
 
     public static final String acceptHeader(final Collection<String> profiles) {
-        final StringBuilder builder = new StringBuilder();
 
-        builder.append(MediaType.JSON_LD.toString());
+        final var builder = new StringBuilder().append(MediaType.JSON_LD.toString());
 
         if (profiles != null && !profiles.isEmpty()) {
-            builder.append(";profile=\"");
-            builder.append(String.join(" ", profiles));
-            builder.append("\"");
+            builder
+                    .append(";profile=\"")
+                    .append(String.join(" ", profiles))
+                    .append("\"");
         }
 
-        builder.append(',');
-        builder.append(MediaType.JSON.toString());
-        builder.append(";q=0.9,*/*;q=0.1");
-        return builder.toString();
+        return builder.append(',')
+                .append(MediaType.JSON.toString())
+                .append(";q=0.9,*/*;q=0.1")
+                .toString();
     }
-
 }

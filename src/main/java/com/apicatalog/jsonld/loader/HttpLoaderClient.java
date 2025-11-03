@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.time.Duration;
 import java.util.Collection;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdException;
@@ -12,7 +13,7 @@ import com.apicatalog.jsonld.JsonLdException;
 public interface HttpLoaderClient {
 
     Response send(URI targetUri, Collection<String> requestProfiles) throws JsonLdException;
-    
+
     /**
      * Configure read timeout
      * 
@@ -26,6 +27,19 @@ public interface HttpLoaderClient {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Sets additional headers added to each request.
+     * 
+     * @param headers
+     * @return {@link HttpLoaderClient} instance,
+     * 
+     * @since 2.0.0
+     * 
+     */
+    default HttpLoaderClient headers(Collection<Entry<String, String>> headers) {
+        throw new UnsupportedOperationException();
+    }
+
     public interface Response extends Closeable {
 
         InputStream body();
@@ -36,10 +50,7 @@ public interface HttpLoaderClient {
 
         Optional<String> location();
 
-        boolean isRedirect();
-
-        boolean isSuccess();
-
         int statusCode();
     }
+
 }
