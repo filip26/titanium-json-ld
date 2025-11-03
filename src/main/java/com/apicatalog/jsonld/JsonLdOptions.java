@@ -344,6 +344,11 @@ public final class JsonLdOptions {
         return this;
     }
 
+    public JsonLdOptions base(String baseUri) {
+        this.base = URI.create(baseUri);
+        return this;
+    }
+
     public JsonLdOptions compactArrays(boolean compactArrays) {
         this.compactArrays = compactArrays;
         return this;

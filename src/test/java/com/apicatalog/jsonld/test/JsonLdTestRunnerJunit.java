@@ -94,7 +94,10 @@ public class JsonLdTestRunnerJunit {
 
                 try {
 
-                    QuadEmitter.create(toLd).emit(ZipResourceLoader.readNQuads(testCase.input, testCase.baseUri, testCase.testsBase));
+                    QuadEmitter.create(toLd).emit(ZipResourceLoader.readNQuads(
+                            testCase.input, 
+                            testCase.baseUri, 
+                            testCase.testsBase));
 
                 } catch (NQuadsReaderException e) {
                     fail(e);

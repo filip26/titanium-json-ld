@@ -53,18 +53,20 @@ public class JsonLdTestSuite {
 //    om.configure(SerializationFeature.INDENT_OUTPUT,true);
 //    om.setSerializationInclusion(Include.ALWAYS);
 //    }
-    
+
     public static final NodeParser JAKARTA_PARSER =
 //            new Jackson2Parser(om);
             new JakartaParser(Json.createReaderFactory(Map.of()));
 
-    public static final HttpLoader HTTP_LOADER = HttpLoader.newLoader(
-            HttpClient
-                    .newBuilder()
-                    .followRedirects(Redirect.NEVER)
-                    .connectTimeout(Duration.ofSeconds(5))
-                    .build(),
-            JAKARTA_PARSER);
+    public static final HttpLoader HTTP_LOADER = HttpLoader
+            .newLoader(
+                    HttpClient
+                            .newBuilder()
+                            .followRedirects(Redirect.NEVER)
+                            .connectTimeout(Duration.ofSeconds(5))
+                            .build(),
+                    JAKARTA_PARSER)
+            .timeout(Duration.ofSeconds(5));
 
     public static final ZipResourceLoader ZIP_RESOURCE_LOADER = new ZipResourceLoader(JAKARTA_PARSER);
 

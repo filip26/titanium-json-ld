@@ -17,12 +17,6 @@ import com.apicatalog.jsonld.JsonLdException;
 
 final class DefaultHttpClient implements HttpLoaderClient {
 
-//  @Deprecated
-//  private static final java.net.http.HttpClient CLIENT = HttpClient
-//          .newBuilder()
-//          .followRedirects(Redirect.NEVER)
-//          .build();
-
     private final HttpClient httpClient;
     private Duration timeout;
 

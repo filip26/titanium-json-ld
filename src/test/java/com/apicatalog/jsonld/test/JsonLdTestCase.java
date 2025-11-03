@@ -58,7 +58,7 @@ public final class JsonLdTestCase {
 
     public JsonLdTestOptions options;
 
-    public final String testsBase;
+    public String testsBase;
 
     private final DocumentLoader loader;
 

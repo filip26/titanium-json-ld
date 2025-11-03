@@ -36,10 +36,16 @@ class CustomTest {
 
     static final Stream<JsonLdTestCase> data() throws JsonLdException {
         return JsonLdTestManifest
-                    .load("/com/apicatalog/jsonld/test/", "manifest.json", JsonLdTestSuite.CLASSPATH_LOADER)
-                    .stream()
-                    .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
-                    .filter(test -> !"#t0008".equals(test.id))  // requires mock server
-                    ;
+                .load("classpath:/com/apicatalog/jsonld/test/", "manifest.json", JsonLdTestSuite.CLASSPATH_LOADER)
+                .stream()
+                .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
+                .filter(test -> !"#t0008".equals(test.id)) // requires mock server
+                .map(test -> {
+                    System.out.println("1> " + test.input);
+                    System.out.println(" > " + test.expect);
+                    System.out.println(" > " + test.baseUri);
+                    System.out.println(" > " + test.testsBase);
+                    return test;
+                });
     }
 }

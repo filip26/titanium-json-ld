@@ -62,7 +62,8 @@ class RemoteContextTest {
         JsonLd.toRdf(
                 document,
                 new QuadAcceptor(result),
-                JsonLdOptions.newOptions().expandContext(context));
+                JsonLdOptions.newOptions()
+                        .expandContext(context));
 
         try (final var is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue61-out.nq")) {
 

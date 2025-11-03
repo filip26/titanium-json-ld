@@ -18,6 +18,7 @@ package com.apicatalog.jsonld.loader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.HttpClient.Redirect;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -54,6 +55,15 @@ public class HttpLoader implements DocumentLoader {
         this.client = httpClient;
         this.maxRedirections = maxRedirections;
         this.reader = reader;
+    }
+
+    public static HttpLoader newLoader(final NodeParser parser) {
+        return newLoader(
+                HttpClient
+                        .newBuilder()
+                        .followRedirects(Redirect.NEVER)
+                        .build(),
+                parser);
     }
 
     public static HttpLoader newLoader(final HttpClient httpClient, NodeParser reader) {

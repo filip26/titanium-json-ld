@@ -107,7 +107,7 @@ public class ZipResourceLoader implements DocumentLoader {
     public static byte[] fetchBytes(URI url) throws JsonLdException {
 
         if (!"zip".equals(url.getScheme())) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "url = %s".formatted(url));
         }
 
         URL zipFileUrl = ZipResourceLoader.class.getResource("/" + url.getAuthority());
