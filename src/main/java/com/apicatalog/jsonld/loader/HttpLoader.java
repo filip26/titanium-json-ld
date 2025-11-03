@@ -39,16 +39,44 @@ import com.apicatalog.web.link.Link;
 import com.apicatalog.web.media.MediaType;
 import com.apicatalog.web.uri.UriResolver;
 
+/**
+ * Implementation of a {@link DocumentLoader} that retrieves JSON-LD documents
+ * over HTTP.
+ * <p>
+ * This loader follows the JSON-LD 1.1 specification for remote context and
+ * document loading. It supports content negotiation, media type checking, link
+ * headers (for alternate or context URLs), and redirection up to a configurable
+ * limit.
+ * </p>
+ *
+ * <p>
+ * The loader uses a configurable {@link HttpLoaderClient} to send HTTP requests
+ * and a {@link NodeParser} to parse the retrieved content into {@link Document}
+ * instances.
+ * </p>
+ *
+ * @see DocumentLoader
+ * @see HttpLoaderClient
+ * @see NodeParser
+ */
 public class HttpLoader implements DocumentLoader {
 
+    /**
+     * Default vendor headers added to every HTTP request.
+     * 
+     * @see {@link HttpLoader#headers(Collection)}
+     */
     public static final Collection<Entry<String, String>> VENDOR_HEADERS = List.of(
             Map.entry(
                     "User-Agent",
-                    "titanium-json-ld/2.0 (+https://github.com/filip26/titanium-json-ld)"));
+                    "titanium-json-ld/2 (+https://github.com/filip26/titanium-json-ld)"));
+
+    /**
+     * Default maximum number of allowed HTTP redirections.
+     */
+    public static final int MAX_REDIRECTIONS = 10;
 
     private static final Logger LOGGER = Logger.getLogger(HttpLoader.class.getName());
-
-    public static final int MAX_REDIRECTIONS = 10;
 
     private static final String PLUS_JSON = "+json";
 
@@ -58,12 +86,25 @@ public class HttpLoader implements DocumentLoader {
 
     private final NodeParser reader;
 
+    /**
+     * Constructs a new {@link HttpLoader}.
+     *
+     * @param httpClient      the HTTP client used for network requests
+     * @param reader          the parser for decoding JSON documents
+     * @param maxRedirections the maximum number of HTTP redirects to follow
+     */
     protected HttpLoader(HttpLoaderClient httpClient, NodeParser reader, int maxRedirections) {
         this.client = httpClient;
         this.maxRedirections = maxRedirections;
         this.reader = reader;
     }
 
+    /**
+     * Creates a new {@link HttpLoader} with a default {@link HttpClient}.
+     *
+     * @param parser the {@link NodeParser} used to parse retrieved content
+     * @return a new configured {@link HttpLoader}
+     */
     public static HttpLoader newLoader(final NodeParser parser) {
         return newLoader(
                 HttpClient
@@ -74,16 +115,51 @@ public class HttpLoader implements DocumentLoader {
                 .headers(VENDOR_HEADERS);
     }
 
-    public static HttpLoader newLoader(final HttpClient httpClient, NodeParser reader) {
-        return new HttpLoader(new DefaultHttpClient(httpClient), reader, MAX_REDIRECTIONS)
+    /**
+     * Creates a new {@link HttpLoader} using the given {@link HttpClient} and
+     * parser.
+     *
+     * @param client the HTTP client to use for network calls
+     * @param reader the JSON parser used to parse responses
+     * @return a configured {@link HttpLoader} instance
+     */
+    public static HttpLoader newLoader(final HttpClient client, NodeParser reader) {
+        return new HttpLoader(new DefaultHttpClient(client), reader, MAX_REDIRECTIONS)
                 .headers(VENDOR_HEADERS);
     }
 
-    public static HttpLoader newLoader(final HttpClient httpClient, NodeParser reader, int maxRedirections) {
-        return new HttpLoader(new DefaultHttpClient(httpClient), reader, maxRedirections)
+    /**
+     * Creates a new {@link HttpLoader} with a custom maximum number of
+     * redirections.
+     *
+     * @param client          the HTTP client to use
+     * @param reader          the parser to use for JSON parsing
+     * @param maxRedirections the maximum number of redirects to follow
+     * @return a configured {@link HttpLoader}
+     */
+    public static HttpLoader newLoader(final HttpClient client, NodeParser reader, int maxRedirections) {
+        return new HttpLoader(new DefaultHttpClient(client), reader, maxRedirections)
                 .headers(VENDOR_HEADERS);
     }
 
+    /**
+     * Loads a remote JSON-LD document from the given URI according to the JSON-LD
+     * specification.
+     * <p>
+     * This method handles:
+     * <ul>
+     * <li>Redirections (301, 302, 303, 307) up to {@link #maxRedirections}</li>
+     * <li>Content type negotiation and validation</li>
+     * <li>Processing of HTTP Link headers for alternate or context URLs</li>
+     * </ul>
+     * </p>
+     *
+     * @param uri     the URI of the document to load
+     * @param options loader options such as requested profiles
+     * @return the loaded {@link Document}
+     * @throws JsonLdException if the document cannot be loaded, parsed, or
+     *                         validated
+     */
     @Override
     public Document loadDocument(final URI uri, final Options options) throws JsonLdException {
 
@@ -134,14 +210,13 @@ public class HttpLoader implements DocumentLoader {
 
                             final URI baseUri = targetUri;
 
-                            Optional<Link> alternate = linkValues.stream()
+                            final var alternate = linkValues.stream()
                                     .flatMap(l -> Link.of(l, baseUri).stream())
                                     .filter(l -> l.relations().contains("alternate")
                                             && MediaType.JSON_LD.match(l.type()))
                                     .findFirst();
 
                             if (alternate.isPresent()) {
-
                                 targetUri = alternate.get().target();
                                 continue;
                             }
@@ -170,9 +245,10 @@ public class HttpLoader implements DocumentLoader {
                     }
 
                     if (contentType == null) {
-                        LOGGER.log(Level.WARNING, "GET on URL [{0}] does not return content-type header. Trying application/json.", uri);
-                        contentType = MediaType.JSON;
+                        LOGGER.log(Level.WARNING, "GET on URL [{0}] does not return content-type header.", uri);
                     }
+
+                    System.out.println(">>>> " + contentType);
 
                     return read(contentType, targetUri, contextUri, response);
                 }
@@ -186,7 +262,7 @@ public class HttpLoader implements DocumentLoader {
     }
 
     private final Document read(
-            final MediaType type,
+            final MediaType mediaType,
             final URI targetUri,
             final URI contextUrl,
             final HttpLoaderClient.Response response) throws JsonLdException, IOException {
@@ -195,7 +271,7 @@ public class HttpLoader implements DocumentLoader {
 
             final var remoteContent = reader.parse(is);
 
-            final var remoteDocument = RemoteDocument.of(type, remoteContent);
+            final var remoteDocument = RemoteDocument.of(mediaType, remoteContent);
 
             remoteDocument.setDocumentUrl(targetUri);
 
@@ -205,20 +281,16 @@ public class HttpLoader implements DocumentLoader {
 
         } catch (IOException e) {
             throw e;
-
-        } catch (Exception e) {
-            // FIXME!!!
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
 
     /**
-     * Sets a timeout for a request. If the response is not received within the
-     * specified timeout then an {@link JsonLdException}, code =
-     * <code>LOADING_DOCUMENT_TIMEOUT</code> is thrown.
+     * Sets a timeout for HTTP requests. If the response is not received within the
+     * specified duration, a {@link JsonLdException} with code
+     * {@code LOADING_DOCUMENT_TIMEOUT} is thrown.
      *
-     * @param timeout to set or <code>null</code> for no timeout
-     * @return {@link HttpLoader} instance
+     * @param timeout the timeout duration, or {@code null} for no timeout
+     * @return this {@link HttpLoader} instance for chaining
      * @since 1.6.1
      */
     public HttpLoader timeout(Duration timeout) {
@@ -227,23 +299,34 @@ public class HttpLoader implements DocumentLoader {
     }
 
     /**
-     * Sets additional headers added to each request.
-     * 
-     * @param headers
-     * @return {@link HttpLoader} instance
-     * 
+     * Adds or replaces HTTP headers to be included in every request.
+     *
+     * @param headers a collection of header name/value pairs
+     * @return this {@link HttpLoader} instance for chaining
      * @since 2.0.0
-     * 
      */
     public HttpLoader headers(Collection<Entry<String, String>> headers) {
         client.headers(headers);
         return this;
     }
 
+    /**
+     * Builds a default HTTP {@code Accept} header string for JSON-LD requests.
+     *
+     * @return a string suitable for use as an HTTP {@code Accept} header
+     */
     public static final String acceptHeader() {
         return acceptHeader(List.of());
     }
 
+    /**
+     * Builds an HTTP {@code Accept} header that includes JSON-LD and JSON types,
+     * optionally with profiles.
+     *
+     * @param profiles a collection of profile URIs to include in the header, may be
+     *                 empty
+     * @return a string suitable for use as an HTTP {@code Accept} header
+     */
     public static final String acceptHeader(final Collection<String> profiles) {
 
         final var builder = new StringBuilder().append(MediaType.JSON_LD.toString());
