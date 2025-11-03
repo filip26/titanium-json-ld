@@ -34,7 +34,7 @@ public final class RdfComparison {
         }
     }
 
-    static final String canon(RdfQuadSet set) throws RdfConsumerException {
+    private static final String canon(RdfQuadSet set) throws RdfConsumerException {
 
         var canon = RdfCanon.create("SHA-256", new RdfCanonTimeTicker(5 * 1000));
 

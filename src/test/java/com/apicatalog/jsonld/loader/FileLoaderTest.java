@@ -42,6 +42,7 @@ class FileLoaderTest {
         Document document = JsonLdTestSuite.FILE_LOADER.loadDocument(fileUrl.toURI(), DocumentLoader.defaultOptions());
 
         assertNotNull(document);
+        assertNotNull(document.content());
         assertTrue(MediaType.JSON.match(document.contentType()));
     }
 

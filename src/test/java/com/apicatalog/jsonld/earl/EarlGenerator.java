@@ -27,7 +27,6 @@ import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdTestSuite;
-import com.apicatalog.jsonld.fromrdf.QuadsToJsonLd;
 import com.apicatalog.jsonld.loader.UriBaseRewriter;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.jsonld.test.JsonLdMockServer;
@@ -139,15 +138,15 @@ public class EarlGenerator {
                 .forEach(testCase -> printResult(writer, testCase.uri,
                         (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
 
-                            QuadsToJsonLd toLd = JsonLd.fromRdf().options(options);
+                            final var toLd = JsonLd.fromRdf().options(options);
 
                             try {
                                 QuadEmitter.create(toLd).emit(ZipResourceLoader.readNQuads(testCase.input, testCase.baseUri, testCase.testsBase));
+                                return toLd.toJsonLd();
+
                             } catch (NQuadsReaderException e) {
                                 throw new IllegalStateException(e);
                             }
-
-                            return toLd.toJsonLd();
                         })));
     }
 

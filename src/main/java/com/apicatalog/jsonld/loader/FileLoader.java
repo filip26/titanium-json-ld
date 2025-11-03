@@ -28,14 +28,45 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.tree.io.NodeParser;
 
+/**
+ * Loads JSON-LD documents directly from the local file system.
+ *
+ * <p>
+ * This loader only supports {@code file:} URIs. It reads the referenced file,
+ * parses it with the provided {@link NodeParser}, and wraps the result in a
+ * {@link RemoteDocument}. Files must exist and be readable by the current
+ * process.
+ * </p>
+ *
+ * @see DocumentLoader
+ * @see HttpLoader
+ */
 public final class FileLoader implements DocumentLoader {
 
     private final NodeParser reader;
 
+    /**
+     * Creates a loader that parses local files using the given {@link NodeParser}.
+     *
+     * @param reader parser used to decode the file content
+     */
     public FileLoader(NodeParser reader) {
         this.reader = reader;
     }
 
+    /**
+     * Resolves and loads a JSON-LD document from a local {@code file:} URI.
+     *
+     * <p>
+     * Only {@code file:} URIs are supported. Other schemes will cause a
+     * {@link JsonLdException} to be thrown.
+     * </p>
+     *
+     * @param url     the {@code file:} URI of the document
+     * @param options loading options (ignored for file resources)
+     * @return the loaded {@link RemoteDocument}
+     * @throws JsonLdException if the file cannot be accessed or parsed
+     */
     @Override
     public Document loadDocument(final URI url, final Options options) throws JsonLdException {
 
@@ -49,11 +80,10 @@ public final class FileLoader implements DocumentLoader {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "File [" + url + "] is not accessible to read.");
         }
 
-
         try (final InputStream is = new FileInputStream(file)) {
             var node = reader.parse(is);
-            
-            return RemoteDocument.of(node, url);                
+
+            return RemoteDocument.of(node, url);
 
         } catch (FileNotFoundException e) {
 

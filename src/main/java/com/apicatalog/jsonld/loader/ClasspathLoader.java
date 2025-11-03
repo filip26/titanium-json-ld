@@ -24,23 +24,65 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.tree.io.NodeParser;
 
-public class ClasspathLoader implements DocumentLoader {
+/**
+ * A {@link DocumentLoader} that retrieves JSON-LD documents from the
+ * application classpath.
+ *
+ * <p>
+ * This loader resolves URIs using the {@code classpath:} scheme and loads
+ * corresponding resources available on the application's classpath. It is
+ * useful for packaging JSON-LD contexts or frames directly within a JAR or
+ * classpath resource bundle.
+ * </p>
+ *
+ * <p>
+ * Example URI:
+ * 
+ * <pre>{@code classpath:/contexts/example.jsonld}</pre>
+ * </p>
+ */
+public final class ClasspathLoader implements DocumentLoader {
 
     private final NodeParser parser;
 
+    /**
+     * Creates a new loader that parses classpath resources using the given parser.
+     *
+     * @param parser the {@link NodeParser} used to parse the loaded resource (must
+     *               not be {@code null})
+     */
     public ClasspathLoader(final NodeParser parser) {
         this.parser = parser;
     }
-    
+
+    /**
+     * Loads a JSON-LD document from the classpath.
+     *
+     * <p>
+     * The supplied URI must use the {@code classpath:} scheme and refer to a
+     * readable resource. If the resource cannot be found or read, a
+     * {@link JsonLdException} is thrown.
+     * </p>
+     *
+     * @param url     the {@code classpath:} URI of the resource to load
+     * @param options ignored in this implementation
+     * @return a {@link RemoteDocument} representing the loaded resource
+     * @throws JsonLdException if the scheme is unsupported or the resource cannot
+     *                         be loaded
+     */
     @Override
     public Document loadDocument(URI url, Options options) throws JsonLdException {
 
-        try (final var is = getClass().getResourceAsStream(url.getPath())) {
+        if (!"classpath".equalsIgnoreCase(url.getScheme())) {
+            throw new JsonLdException(
+                    JsonLdErrorCode.LOADING_DOCUMENT_FAILED,
+                    "Unsupported URL scheme [" + url.getScheme() + "]. ClasspathLoader accepts only classpath: scheme.");
+        }
+        try (final var is = ClasspathLoader.class.getResourceAsStream(url.getPath())) {
 
             var node = parser.parse(is);
 
-            return RemoteDocument.of(node, url);                
-
+            return RemoteDocument.of(node, url);
 
         } catch (IOException e) {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);

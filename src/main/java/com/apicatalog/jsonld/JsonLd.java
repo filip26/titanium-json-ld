@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
@@ -111,7 +110,6 @@ public final class JsonLd {
                 options,
                 runtime);
     }
-
 
     /**
      * Compacts the referenced document using the context.
@@ -342,6 +340,10 @@ public final class JsonLd {
 
     public static final void toRdf(final PolyNode document, RdfQuadConsumer consumer, JsonLdOptions options) throws JsonLdException, IOException {
         RdfEmitter.toRdf(document, consumer, options);
+    }
+
+    public static final void toRdf(final Map<String, ?> document, RdfQuadConsumer consumer, JsonLdOptions options) throws JsonLdException, IOException {
+        RdfEmitter.toRdf(new PolyNode(document, NativeAdapter.instance()), consumer, options);
     }
 
     /**

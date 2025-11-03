@@ -23,38 +23,74 @@ import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.document.Document;
 
 /**
- * The {@link DocumentLoader} defines an interface that custom loaders have to
- * implement to be used to retrieve remote JSON-LD documents and contexts.
+ * Loads JSON-LD documents identified by a URI.
  *
- * @see <a href=
- *      "https://www.w3.org/TR/json-ld11-api/#loaddocumentcallback">LoadDocumentCallback
- *      Specification</a>
+ * <p>
+ * Used by JSON-LD processors to obtain input documents, contexts, or frames
+ * from various sources such as HTTP endpoints, local files, classpath
+ * resources, or preloaded mappings. Implementations may handle specific URI
+ * schemes or apply custom resolution strategies.
+ * </p>
  *
+ * <p>
+ * Common implementations include:
+ * <ul>
+ * <li>{@link HttpLoader} — retrieves documents over HTTP or HTTPS</li>
+ * <li>{@link FileLoader} — reads documents from the local file system</li>
+ * <li>{@link ClasspathLoader} — loads documents from the application
+ * classpath</li>
+ * <li>{@link StaticLoader} — resolves documents from in-memory mappings</li>
+ * <li>{@link SchemeRouter} — delegates to loaders based on URI scheme</li>
+ * <li>{@link CacheLoader} — caches results of document retrieval</li>
+ * </ul>
+ * </p>
+ *
+ * @see <a href="https://www.w3.org/TR/json-ld11-api/#loaddocumentcallback">
+ *      JSON-LD 1.1 API — LoadDocumentCallback</a>
  */
 public interface DocumentLoader {
 
     /**
-     * Retrieve a remote document.
+     * Loads the JSON-LD document identified by the given URI.
      *
-     * @param url     of the remote document to fetch
-     * @param options to set the behavior of the loader
-     * @return {@link Document} representing a remote document
-     * @throws JsonLdException if the document loading fails
+     * <p>
+     * This method resolves and retrieves a document that can be used as input,
+     * context, or frame in JSON-LD processing. The behavior may depend on the
+     * implementation and options provided — for example, whether to request
+     * specific profiles or extract script elements.
+     * </p>
+     *
+     * @param url     the absolute URI of the document to load (must not be
+     *                {@code null})
+     * @param options loader configuration options controlling retrieval behavior
+     * @return the loaded {@link Document} representation
+     * @throws JsonLdException if the document cannot be retrieved, parsed, or
+     *                         resolved
      */
     Document loadDocument(URI url, Options options) throws JsonLdException;
 
+    /**
+     * Returns the default {@link Options} instance used by loaders that do not
+     * require custom configuration.
+     *
+     * @return immutable default loader options
+     */
     public static Options defaultOptions() {
         return Options.DEFAULT;
     }
 
     /**
-     * The {@link Options} is used to pass various options to the
-     * {@link DocumentLoader}.
+     * Loader configuration options controlling how documents are retrieved and
+     * interpreted.
      *
-     * @see <a href=
-     *      "https://www.w3.org/TR/json-ld11-api/#loaddocumentoptions">LoadDocumentOptions
-     *      Specification</a>
+     * <p>
+     * Options may specify behavior such as whether to extract JSON-LD from embedded
+     * scripts, request particular profiles, or influence how linked contexts are
+     * processed.
+     * </p>
      *
+     * @see <a href="https://www.w3.org/TR/json-ld11-api/#loaddocumentoptions">
+     *      JSON-LD 1.1 API — LoadDocumentOptions</a>
      */
     public record Options(
             boolean extractAllScripts,
