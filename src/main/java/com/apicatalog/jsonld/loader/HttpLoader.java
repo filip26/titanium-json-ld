@@ -124,7 +124,7 @@ public class HttpLoader implements DocumentLoader {
      * @return a configured {@link HttpLoader} instance
      */
     public static HttpLoader newLoader(final HttpClient client, NodeParser reader) {
-        return new HttpLoader(new DefaultHttpClient(client), reader, MAX_REDIRECTIONS)
+        return new HttpLoader(new NativeHttpClient(client), reader, MAX_REDIRECTIONS)
                 .headers(VENDOR_HEADERS);
     }
 
@@ -138,7 +138,7 @@ public class HttpLoader implements DocumentLoader {
      * @return a configured {@link HttpLoader}
      */
     public static HttpLoader newLoader(final HttpClient client, NodeParser reader, int maxRedirections) {
-        return new HttpLoader(new DefaultHttpClient(client), reader, maxRedirections)
+        return new HttpLoader(new NativeHttpClient(client), reader, maxRedirections)
                 .headers(VENDOR_HEADERS);
     }
 

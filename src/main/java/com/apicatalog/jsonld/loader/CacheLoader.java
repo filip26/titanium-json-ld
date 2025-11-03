@@ -3,8 +3,6 @@ package com.apicatalog.jsonld.loader;
 import java.net.URI;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.cache.Cache;
-import com.apicatalog.jsonld.cache.LruCache;
 import com.apicatalog.jsonld.document.Document;
 
 /**
@@ -70,5 +68,40 @@ public final class CacheLoader implements DocumentLoader {
             cache.put(key, result);
         }
         return result;
+    }
+
+    /**
+     * Simple in-memory cache interface used by {@link CacheLoader} and related
+     * components.
+     *
+     * @param <K> key type
+     * @param <V> value type
+     */
+    public interface Cache<K, V> {
+
+        /**
+         * Returns {@code true} if this cache contains a value for the specified key.
+         *
+         * @param key the key to check
+         * @return {@code true} if a value is cached, otherwise {@code false}
+         */
+        boolean containsKey(final K key);
+
+        /**
+         * Returns the cached value associated with the given key, or {@code null} if no
+         * value is present.
+         *
+         * @param key the key to look up
+         * @return the cached value, or {@code null}
+         */
+        V get(final K key);
+
+        /**
+         * Stores the given key–value pair in the cache.
+         *
+         * @param key   the key to store
+         * @param value the value to cache
+         */
+        void put(final K key, V value);
     }
 }

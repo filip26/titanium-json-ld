@@ -28,7 +28,6 @@ import com.apicatalog.web.media.MediaType;
 
 public final class RemoteDocument implements Document {
 
-    private static final String PLUS_JSON = "+json";
 
     private final MediaType contentType;
     private final String profile;
@@ -206,23 +205,23 @@ public final class RemoteDocument implements Document {
 //        throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "JSON document's top level element must be JSON array or object.");
 //    }
 
-    public static final boolean accepts(final MediaType contentType) {
-        return contentType != null &&
-                (MediaType.JSON_LD.match(contentType)
-                        || MediaType.JSON.match(contentType)
-                        || contentType.subtype().toLowerCase().endsWith(PLUS_JSON));
-    }
-
-    private static final void assertContentType(final MediaType contentType) {
-        if (!accepts(contentType)) {
-            throw new IllegalArgumentException(
-                    "Unsupported media type '" + contentType
-                            + "'. Supported content types are ["
-                            + MediaType.JSON_LD + ", "
-                            + MediaType.JSON + ", +json]");
-        }
-    }
-
+//    public static final boolean accepts(final MediaType contentType) {
+//        return contentType != null &&
+//                (MediaType.JSON_LD.match(contentType)
+//                        || MediaType.JSON.match(contentType)
+//                        || contentType.subtype().toLowerCase().endsWith(PLUS_JSON));
+//    }
+//
+//    private static final void assertContentType(final MediaType contentType) {
+//        if (!accepts(contentType)) {
+//            throw new IllegalArgumentException(
+//                    "Unsupported media type '" + contentType
+//                            + "'. Supported content types are ["
+//                            + MediaType.JSON_LD + ", "
+//                            + MediaType.JSON + ", +json]");
+//        }
+//    }
+//
     public static final Document fetch(URI uri, DocumentLoader loader, boolean extractAllScripts) throws JsonLdException {
 
         if (loader == null) {

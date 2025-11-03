@@ -193,6 +193,8 @@ public final class JsonLd {
                 runtime);
     }
 
+    /* --- FLATTENING -- */
+    
     /**
      * Flattens the given input and optionally compacts it using context.
      *
@@ -213,6 +215,18 @@ public final class JsonLd {
         return new FlatteningApi(assertJsonDocument(document, DOCUMENT_PARAM_NAME));
     }
 
+    public static final Map<String, ?> flatten(final Map<String, ?> document, JsonLdOptions options) {
+//        return new FlatteningApi(assertUri(documentUri, DOCUMENT_URI_PARAM_NAME));
+        return null;
+    }
+
+    public static final Map<String, ?> flatten(final Collection<?> document, JsonLdOptions options) {
+//      return new FlatteningApi(assertUri(documentUri, DOCUMENT_URI_PARAM_NAME));
+      return null;
+  }
+
+    /* --- FRAMING -- */
+    
     /**
      * Frames the given remote input using remote frame.
      *

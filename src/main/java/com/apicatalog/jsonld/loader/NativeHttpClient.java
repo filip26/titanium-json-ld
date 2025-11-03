@@ -16,14 +16,14 @@ import java.util.Optional;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
 
-final class DefaultHttpClient implements HttpLoaderClient {
+final class NativeHttpClient implements HttpLoaderClient {
 
     private final HttpClient httpClient;
 
     private Duration timeout;
     private Collection<Entry<String, String>> headers;
 
-    DefaultHttpClient(final HttpClient httpClient) {
+    NativeHttpClient(final HttpClient httpClient) {
         this.httpClient = httpClient;
         this.timeout = null;
         this.headers = null;
