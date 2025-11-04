@@ -24,7 +24,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -61,6 +63,34 @@ import com.apicatalog.web.uri.UriResolver;
  */
 public class HttpLoader implements DocumentLoader {
 
+    private static final Logger LOGGER = Logger.getLogger(HttpLoader.class.getName());
+
+    private static final String PLUS_JSON = "+json";
+
+    /**
+     * The default predicate used to determine whether a {@link MediaType}
+     * represents a JSON-LD compatible content type.
+     * <p>
+     * This predicate returns {@code true} if the provided media type is:
+     * <ul>
+     * <li>{@code application/ld+json}</li>
+     * <li>{@code application/json}</li>
+     * <li>or any media type whose subtype ends with {@code +json}</li>
+     * </ul>
+     * A {@code null} input always results in {@code false}.
+     * </p>
+     *
+     * <p>
+     * Used by default when no custom predicate is supplied through
+     * {@link HttpLoader#acceptContent(java.util.function.Predicate)}.
+     * </p>
+     *
+     * @since 2.0.0
+     */
+    public static final Predicate<MediaType> DEFAULT_JSON_LD_CONTENT = contentType -> contentType != null
+            && (MediaType.JSON_LD.match(contentType)
+                    || MediaType.JSON.match(contentType)
+                    || contentType.subtype().toLowerCase().endsWith(PLUS_JSON));
     /**
      * Default vendor headers added to every HTTP request.
      * 
@@ -76,15 +106,13 @@ public class HttpLoader implements DocumentLoader {
      */
     public static final int MAX_REDIRECTIONS = 10;
 
-    private static final Logger LOGGER = Logger.getLogger(HttpLoader.class.getName());
-
-    private static final String PLUS_JSON = "+json";
-
     private final int maxRedirections;
 
     private final HttpLoaderClient client;
 
     private final NodeParser reader;
+
+    private Predicate<MediaType> acceptContent;
 
     /**
      * Constructs a new {@link HttpLoader}.
@@ -97,6 +125,7 @@ public class HttpLoader implements DocumentLoader {
         this.client = httpClient;
         this.maxRedirections = maxRedirections;
         this.reader = reader;
+        this.acceptContent = DEFAULT_JSON_LD_CONTENT;
     }
 
     /**
@@ -246,9 +275,10 @@ public class HttpLoader implements DocumentLoader {
 
                     if (contentType == null) {
                         LOGGER.log(Level.WARNING, "GET on URL [{0}] does not return content-type header.", uri);
-                    }
 
-                    System.out.println(contentType);
+                    } else if (!acceptContent.test(contentType)) {
+                        throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unsupported content-type '" + contentType + "'.");
+                    }
 
                     return read(contentType, targetUri, contextUri, response);
                 }
@@ -265,7 +295,7 @@ public class HttpLoader implements DocumentLoader {
             final MediaType mediaType,
             final URI targetUri,
             final URI contextUrl,
-            final HttpLoaderClient.Response response) throws JsonLdException, IOException {
+            final HttpLoaderClient.Response response) throws JsonLdException {
 
         try (final var is = response.body()) {
 
@@ -279,8 +309,8 @@ public class HttpLoader implements DocumentLoader {
 
             return remoteDocument;
 
-        } catch (IOException e) {
-            throw e;
+        } catch (Exception e) {
+            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
 
@@ -311,22 +341,29 @@ public class HttpLoader implements DocumentLoader {
     }
 
     /**
-     * Defines which media types are accepted as valid response content types.
+     * Defines which response content types are accepted by this loader.
      * <p>
-     * By default, only {@code application/json}, {@code application/ld+json}, and
-     * other {@code +json} types are accepted. Passing an empty collection removes
-     * this restriction, allowing any content type to be accepted.
      * <p>
-     * Regardless of the declared content type, the response body must still be
-     * parseable by {@link NodeParser}.
+     * The provided predicate is evaluated against each response's
+     * {@code Content-Type} header. If it returns {@code true}, the response is
+     * considered acceptable. By default, the loader accepts
+     * {@code application/json}, {@code application/ld+json}, and other
+     * {@code +json} media types.
+     * </p>
      *
-     * @param mediaTypes the accepted media types, or an empty collection to allow
-     *                   any content type
-     * @return this {@link HttpLoader} instance for chaining
+     * <p>
+     * The predicate must not be {@code null}. Regardless of the accepted content
+     * type, the response body must still be parseable by {@link NodeParser}.
+     * </p>
+     *
+     * @param predicate a non-{@code null} predicate that returns {@code true} for
+     *                  accepted media types
+     * @return this {@link HttpLoader} instance for method chaining
+     * @throws NullPointerException if {@code predicate} is {@code null}
      * @since 2.0.0
      */
-    public HttpLoader acceptedContent(Collection<String> mediaTypes) {
-        client.acceptedContent(mediaTypes);
+    public HttpLoader acceptContent(Predicate<MediaType> predicate) {
+        this.acceptContent = Objects.requireNonNull(predicate, "predicate must not be null");
         return this;
     }
 

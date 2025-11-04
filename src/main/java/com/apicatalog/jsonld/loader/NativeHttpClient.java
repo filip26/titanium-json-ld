@@ -22,7 +22,6 @@ final class NativeHttpClient implements HttpLoaderClient {
 
     private Duration timeout;
     private Collection<Entry<String, String>> headers;
-    private Collection<String> contentTypes;
 
     NativeHttpClient(final HttpClient httpClient) {
         this.httpClient = httpClient;
@@ -70,11 +69,6 @@ final class NativeHttpClient implements HttpLoaderClient {
     public HttpLoaderClient headers(Collection<Entry<String, String>> headers) {
         this.headers = headers;
         return this;
-    }
-
-    @Override
-    public void acceptedContent(Collection<String> contentTypes) {
-        this.contentTypes = contentTypes;
     }
 
     private static class HttpResponseImpl implements HttpLoaderClient.Response {

@@ -94,30 +94,6 @@ public interface HttpLoaderClient {
     }
 
     /**
-     * Specifies which response media types are accepted by this client.
-     * <p>
-     * When defined, only responses whose {@code Content-Type} header matches one of
-     * the provided media types will be accepted and processed by the loader. By
-     * default, JSON and JSON-LD types (such as {@code application/json},
-     * {@code application/ld+json}, and other {@code +json} variants) are accepted.
-     * </p>
-     *
-     * <p>
-     * Passing an empty collection removes this restriction, allowing responses with
-     * any content type to be accepted. Regardless of content type, the response
-     * body must still be parseable by the
-     * {@link com.apicatalog.jsonld.document.NodeParser}.
-     * </p>
-     *
-     * @param mediaTypes a collection of accepted media type strings, or an empty
-     *                   collection to allow all content types
-     * @throws UnsupportedOperationException if the implementation does not support
-     *                                       media type restrictions
-     * @since 2.0.0
-     */
-    void acceptedContent(Collection<String> mediaTypes);
-
-    /**
      * Represents an HTTP response returned by
      * {@link HttpLoaderClient#send(URI, Collection)}.
      * <p>
