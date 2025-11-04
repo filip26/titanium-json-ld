@@ -60,7 +60,9 @@ public final class CacheLoader implements DocumentLoader {
      */
     @Override
     public Document loadDocument(URI url, Options options) throws JsonLdException {
+        
         var key = new Key(url, options);
+        
         var result = cache.get(key);
 
         if (result == null) {

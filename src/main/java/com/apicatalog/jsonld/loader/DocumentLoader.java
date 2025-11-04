@@ -100,8 +100,6 @@ public interface DocumentLoader {
         static final Options DEFAULT = new Options(false, null, null);
 
         public Options {
-            extractAllScripts = false;
-            profile = null;
             requestProfile = requestProfile == null ? List.of() : List.copyOf(requestProfile);
         }
     }

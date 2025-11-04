@@ -341,7 +341,7 @@ public class HttpLoader implements DocumentLoader {
     }
 
     /**
-     * Defines which response content types are accepted by this loader.
+     * Defines which HTTP response content types are accepted by this loader.
      * <p>
      * <p>
      * The provided predicate is evaluated against each response's
