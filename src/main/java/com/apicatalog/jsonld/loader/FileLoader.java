@@ -18,15 +18,16 @@ package com.apicatalog.jsonld.loader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.tree.io.NodeParser;
+import com.apicatalog.web.media.MediaType;
 
 /**
  * Loads JSON-LD documents directly from the local file system.
@@ -42,6 +43,13 @@ import com.apicatalog.tree.io.NodeParser;
  * @see HttpLoader
  */
 public final class FileLoader implements DocumentLoader {
+
+    private static final Map<String, MediaType> EXTENSIONS = Map.of(
+            ".jsonld", MediaType.JSON_LD,
+            ".json", MediaType.JSON,
+            ".html", MediaType.HTML,
+            ".xhtml", MediaType.XHTML,
+            ".nq", MediaType.N_QUADS);
 
     private final NodeParser reader;
 
@@ -80,17 +88,33 @@ public final class FileLoader implements DocumentLoader {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "File [" + url + "] is not accessible to read.");
         }
 
+        var contentType = fromFileExtension(file.getName());
+
         try (final InputStream is = new FileInputStream(file)) {
             var node = reader.parse(is);
 
-            return RemoteDocument.of(node, url);
+            return RemoteDocument.of(node, url, contentType);
 
         } catch (FileNotFoundException e) {
 
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "File not found [" + url + "].");
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
+    }
+
+    static final MediaType fromFileExtension(String name) {
+        if (name == null || name.isBlank()) {
+            return null;
+        }
+
+        final String lower = name.toLowerCase();
+
+        return EXTENSIONS.entrySet().stream()
+                .filter(e -> lower.endsWith(e.getKey()))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(null);
     }
 }

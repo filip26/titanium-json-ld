@@ -28,7 +28,6 @@ import com.apicatalog.web.media.MediaType;
 
 public final class RemoteDocument implements Document {
 
-
     private final MediaType contentType;
     private final String profile;
     private final PolyNode content;
@@ -40,6 +39,12 @@ public final class RemoteDocument implements Document {
         this.contentType = type;
         this.profile = profile;
         this.content = content;
+    }
+
+    public static RemoteDocument of(final PolyNode content, final URI documentUrl, MediaType type) {
+        var document = new RemoteDocument(type, null, Objects.requireNonNull(content));
+        document.documentUrl = documentUrl;
+        return document;
     }
 
     public static RemoteDocument of(final PolyNode content, final URI documentUrl) {
