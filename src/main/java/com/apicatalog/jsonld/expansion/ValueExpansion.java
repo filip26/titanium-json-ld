@@ -81,7 +81,7 @@ public final class ValueExpansion {
                 idValue = adapter.stringValue(value);
 
                 // custom extension allowing to process numeric ids
-            } else if (options.isNumericId() && adapter.isNumber(value)) {
+            } else if (options.useNumericId() && adapter.isNumber(value)) {
                 idValue = adapter.asString(value);
             }
 

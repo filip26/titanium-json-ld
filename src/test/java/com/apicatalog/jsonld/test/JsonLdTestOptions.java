@@ -41,7 +41,7 @@ public class JsonLdTestOptions {
     public Boolean useNativeTypes;
     public Boolean useRdfType;
     public Boolean omitGraph;
-    public Boolean numericId;
+    public Boolean useNumericId;
     public Boolean rdfStar;
     public MediaType contentType;
     public JsonLdOptions.ProcessingPolicy undefinedTerms;
@@ -139,6 +139,10 @@ public class JsonLdTestOptions {
                 options.useRdfType = adapter.isTrue(entry.getValue());
                 break;
 
+            case "useNumericId":
+                options.useNumericId = adapter.isTrue(entry.getValue());
+                break;
+                
             default:
                 System.err.println("An unknown test option " + key + " = " + entry.getValue() + ".");
             }
@@ -193,8 +197,8 @@ public class JsonLdTestOptions {
             options.ordered(ordered);
         }
 
-        if (numericId != null) {
-            options.numericId(numericId);
+        if (useNumericId != null) {
+            options.useNumericId(useNumericId);
         }
 
         if (rdfStar != null) {

@@ -123,7 +123,7 @@ public final class JsonLdOptions {
     // custom
 
     // allow numeric @id
-    private boolean numericId;
+    private boolean useNumericId;
 
     // context cache
 //    private Cache<String, JsonValue> contextCache;
@@ -170,7 +170,7 @@ public final class JsonLdOptions {
         this.rdfStar = DEFAULT_RDF_STAR;
 
         // custom
-        this.numericId = DEFAULT_NUMERIC_ID;
+        this.useNumericId = DEFAULT_NUMERIC_ID;
 //        this.contextCache = new LruCache<>(256);
         this.documentCache = null;
         this.uriValidation = DEFAULT_URI_VALIDATION;
@@ -203,7 +203,7 @@ public final class JsonLdOptions {
         this.rdfStar = options.rdfStar;
 
         // custom
-        this.numericId = options.numericId;
+        this.useNumericId = options.useNumericId;
 //        this.contextCache = options.contextCache;
         this.documentCache = options.documentCache;
         this.uriValidation = options.uriValidation;
@@ -487,8 +487,8 @@ public final class JsonLdOptions {
      *
      * @param enable numeric @id support
      */
-    public JsonLdOptions numericId(boolean enable) {
-        this.numericId = enable;
+    public JsonLdOptions useNumericId(boolean enable) {
+        this.useNumericId = enable;
         return this;
     }
 
@@ -497,8 +497,8 @@ public final class JsonLdOptions {
      *
      * @return <code>true</code> if numeric @id support is enabled
      */
-    public boolean isNumericId() {
-        return numericId;
+    public boolean useNumericId() {
+        return useNumericId;
     }
 
 //    public Cache<String, JsonValue> getContextCache() {

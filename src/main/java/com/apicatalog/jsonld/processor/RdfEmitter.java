@@ -164,7 +164,7 @@ public final class RdfEmitter implements
      * @return builder instance
      */
     public RdfEmitter numericId() {
-        options.numericId(true);
+        options.useNumericId(true);
         return this;
     }
 

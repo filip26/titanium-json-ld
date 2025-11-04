@@ -159,7 +159,7 @@ final class ObjectExpansion1314 {
 
                     if (!params.frameExpansion()
                             && !adapter.isString(value)
-                            && (!params.options().isNumericId()
+                            && (!params.options().useNumericId()
                                     || !adapter.isNumber(value))
                             || params.frameExpansion()
                                     && !adapter.isString(value)

@@ -192,9 +192,18 @@ public final class JsonLd {
                 options,
                 runtime);
     }
-
-    /* --- FLATTENING -- */
     
+    public static final Map<String, ?> compact(
+            final Collection<?> document,
+            final Map<String, ?> context,
+            final JsonLdOptions options) throws JsonLdException, IOException {
+
+        //TODO
+        return null;
+    }
+
+    /* --- FLATTEN -- */
+
     /**
      * Flattens the given input and optionally compacts it using context.
      *
@@ -222,11 +231,11 @@ public final class JsonLd {
 
     public static final Map<String, ?> flatten(final Collection<?> document, JsonLdOptions options) {
 //      return new FlatteningApi(assertUri(documentUri, DOCUMENT_URI_PARAM_NAME));
-      return null;
-  }
+        return null;
+    }
 
-    /* --- FRAMING -- */
-    
+    /* --- FRAME -- */
+
     /**
      * Frames the given remote input using remote frame.
      *
@@ -326,6 +335,8 @@ public final class JsonLd {
 //                runtime);
     }
 
+    /* --- TO RDF -- */
+    
     /**
      * Transforms the given input into {@link RdfDataset}.
      *
@@ -360,6 +371,8 @@ public final class JsonLd {
         RdfEmitter.toRdf(new PolyNode(document, NativeAdapter.instance()), consumer, options);
     }
 
+    /* --- FROM RDF -- */
+    
     /**
      * Transforms an RDF quad set into a JSON-LD document in expanded form.
      * <p>
@@ -385,8 +398,7 @@ public final class JsonLd {
     }
 
     public static final QuadsToJsonLd fromRdf(JsonLdOptions options) {
-        // FIXMe
-        return new QuadsToJsonLd().options(options); // FIXME.jsonParser(new JakartaParser());
+        return new QuadsToJsonLd().options(options);
     }
 
     private static final URI assertUri(final URI uri, final String param) {
