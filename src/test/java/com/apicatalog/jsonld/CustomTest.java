@@ -40,12 +40,6 @@ class CustomTest {
                 .stream()
                 .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .filter(test -> !"#t0008".equals(test.id)) // requires mock server
-                .map(test -> {
-                    System.out.println("1> " + test.input);
-                    System.out.println(" > " + test.expect);
-                    System.out.println(" > " + test.baseUri);
-                    System.out.println(" > " + test.testsBase);
-                    return test;
-                });
+        ;
     }
 }

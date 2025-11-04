@@ -248,7 +248,7 @@ public class HttpLoader implements DocumentLoader {
                         LOGGER.log(Level.WARNING, "GET on URL [{0}] does not return content-type header.", uri);
                     }
 
-                    System.out.println(">>>> " + contentType);
+                    System.out.println(contentType);
 
                     return read(contentType, targetUri, contextUri, response);
                 }
@@ -307,6 +307,26 @@ public class HttpLoader implements DocumentLoader {
      */
     public HttpLoader headers(Collection<Entry<String, String>> headers) {
         client.headers(headers);
+        return this;
+    }
+
+    /**
+     * Defines which media types are accepted as valid response content types.
+     * <p>
+     * By default, only {@code application/json}, {@code application/ld+json}, and
+     * other {@code +json} types are accepted. Passing an empty collection removes
+     * this restriction, allowing any content type to be accepted.
+     * <p>
+     * Regardless of the declared content type, the response body must still be
+     * parseable by {@link NodeParser}.
+     *
+     * @param mediaTypes the accepted media types, or an empty collection to allow
+     *                   any content type
+     * @return this {@link HttpLoader} instance for chaining
+     * @since 2.0.0
+     */
+    public HttpLoader acceptedContent(Collection<String> mediaTypes) {
+        client.acceptedContent(mediaTypes);
         return this;
     }
 

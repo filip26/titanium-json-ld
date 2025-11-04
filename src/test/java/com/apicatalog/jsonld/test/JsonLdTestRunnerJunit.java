@@ -125,7 +125,7 @@ public class JsonLdTestRunnerJunit {
         Object result = null;
 
         try {
-            System.out.println("### " + method);
+
             result = method.invoke(options);
 
             assertNotNull(result, "A result is expected but got null");

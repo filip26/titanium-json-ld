@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdOptions.ProcessingPolicy;
 import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.tree.io.NodeAdapter;
@@ -141,6 +142,11 @@ public class JsonLdTestOptions {
 
             case "useNumericId":
                 options.useNumericId = adapter.isTrue(entry.getValue());
+                break;
+                
+            case "undefinedTermPolicy":
+                options.undefinedTermPolicy = ProcessingPolicy.valueOf(adapter.stringValue(entry.getValue()));
+                System.out.println("## " + options.undefinedTermPolicy);
                 break;
                 
             default:

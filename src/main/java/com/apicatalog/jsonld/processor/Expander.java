@@ -120,7 +120,7 @@ public final class Expander {
         // instead for local context.
         if (options.expandContext() != null) {
             final var expandContext = options.expandContext().content();
-            System.out.println("XXX           " + expandContext.node());
+
             builder.update(
                     expandContext.node(),
                     expandContext.adapter(),
