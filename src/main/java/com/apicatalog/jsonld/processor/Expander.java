@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdException;
@@ -31,6 +32,7 @@ import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.java.NativeMaterializer;
 
 /**
  *
@@ -122,7 +124,7 @@ public final class Expander {
             final var expandContext = options.expandContext().content();
 
             builder.update(
-                    expandContext.node(),
+                    extractExpansionContext(expandContext),
                     expandContext.adapter(),
                     baseUrl);
         }
@@ -178,5 +180,38 @@ public final class Expander {
 
         // 8.3
         return Set.of(expanded);
+    }
+
+    private static Object extractExpansionContext(final PolyNode context) throws IOException {
+        // Defensive null check — optional, but safer in utility code
+        Objects.requireNonNull(context, "context must not be null");
+
+        // Case 1: Collection
+        if (context.isCollection()) {
+            // Single-element collection: check if it’s a map with @context key
+            if (context.isSingleElement()) {
+                final var element = context.singleElement();
+                final var adapter = context.adapter();
+
+                if (adapter.isMap(element) && adapter.keys(element).contains(Keywords.CONTEXT)) {
+                    return adapter.property(Keywords.CONTEXT, element);
+                }
+            }
+            // Otherwise return the raw node
+            return context.node();
+        }
+
+        // Case 2: Map with @context key
+        if (context.isMap() && context.keys().contains(Keywords.CONTEXT)) {
+            return context.property(Keywords.CONTEXT);
+        }
+
+        // Case 3: Native adapter — wrap as list
+        if (NativeAdapter.instance().isCompatibleWith(context.adapter())) {
+            return List.of(context.node());
+        }
+
+        // Case 4: Fallback — materialize node and wrap
+        return List.of(NativeMaterializer.node(context));
     }
 }
