@@ -18,7 +18,6 @@ package com.apicatalog.web.link;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,14 +39,12 @@ public record Link(
         MediaType type,
         Map<String, List<Attribute>> attributeMap) {
 
-    public Link(URI context, URI target, Set<String> relations, MediaType type, Map<String, List<Attribute>> attributeMap) {
-        this.context = context;
-        this.target = target;
-        this.relations = relations != null
+    public Link {
+        relations = relations != null
                 ? relations
                 : Set.of();
-        this.type = type;
-        this.attributeMap = attributeMap != null
+
+        attributeMap = attributeMap != null
                 ? attributeMap
                 : Map.of();
     }
@@ -92,10 +89,9 @@ public record Link(
             this(name, value, null);
         }
 
-        public Attribute(final String name, final String value, final String languageTag) {
-            this.name = Objects.requireNonNull(name);
-            this.value = Objects.requireNonNull(value);
-            this.languageTag = languageTag;
+        public Attribute {
+            Objects.requireNonNull(name);
+            Objects.requireNonNull(value);
         }
 
         @Override
