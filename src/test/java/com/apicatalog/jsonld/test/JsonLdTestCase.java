@@ -15,6 +15,9 @@
  */
 package com.apicatalog.jsonld.test;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.Objects;
 import java.util.Set;
@@ -22,11 +25,18 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.UriBaseRewriter;
+import com.apicatalog.rdf.api.RdfConsumerException;
+import com.apicatalog.rdf.model.RdfQuadSet;
+import com.apicatalog.rdf.nquads.NQuadsReader;
+import com.apicatalog.rdf.nquads.NQuadsReaderException;
+import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
+import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.web.media.MediaType;
 
@@ -233,4 +243,28 @@ public final class JsonLdTestCase {
     public String toString() {
         return id + ": " + name;
     }
+
+    public RdfQuadSet readQuads(byte[] bytes) throws NQuadsReaderException, RdfConsumerException, JsonLdException {
+        return readQuads(new ByteArrayInputStream(bytes));
+    }
+
+    public RdfQuadSet readQuads(InputStream is) throws NQuadsReaderException, RdfConsumerException, JsonLdException {
+
+        var content = new OrderedQuadSet();
+
+        new NQuadsReader(new InputStreamReader(is))
+                .provide(new QuadAcceptor(content));
+
+        return content;
+    }
+
+    public URI rebase(URI url) throws NQuadsReaderException, RdfConsumerException, JsonLdException {
+
+        final var target = url.toString();
+
+        final var relativePath = target.substring(baseUri.length());
+
+        return URI.create(testsBase + relativePath);
+    }
+
 }

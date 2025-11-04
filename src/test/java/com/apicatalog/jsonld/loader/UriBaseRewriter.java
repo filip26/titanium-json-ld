@@ -37,7 +37,7 @@ public final class UriBaseRewriter implements DocumentLoader {
 
     @Override
     public Document loadDocument(final URI url, final Options options) throws JsonLdException {
-
+System.out.println("URIBRW " + url + ", " + loader);
         final String sourceUrl = url.toString();
 
         if (!sourceUrl.startsWith(sourceBase)) {

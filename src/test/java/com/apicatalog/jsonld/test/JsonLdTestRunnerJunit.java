@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
 
@@ -94,10 +95,7 @@ public class JsonLdTestRunnerJunit {
 
                 try {
 
-                    QuadEmitter.create(toLd).emit(ZipResourceLoader.readNQuads(
-                            testCase.input, 
-                            testCase.baseUri, 
-                            testCase.testsBase));
+                    QuadEmitter.create(toLd).emit(readQuads(testCase.input));
 
                 } catch (NQuadsReaderException e) {
                     fail(e);
@@ -127,7 +125,7 @@ public class JsonLdTestRunnerJunit {
         Object result = null;
 
         try {
-
+            System.out.println("### " + method);
             result = method.invoke(options);
 
             assertNotNull(result, "A result is expected but got null");
@@ -234,9 +232,9 @@ public class JsonLdTestRunnerJunit {
             // compare expected with the result
             return compareRdf(testCase,
                     result,
-                    ZipResourceLoader.readNQuads(testCase.expect, testCase.baseUri, testCase.testsBase));
+                    readQuads(testCase.expect));
 
-        } catch (JsonLdException e) {
+        } catch (JsonLdException | IOException e) {
             fail(e.getMessage());
         }
         return false;
@@ -337,5 +335,23 @@ public class JsonLdTestRunnerJunit {
             fail(e.getMessage());
         }
         return false;
+    }
+
+    RdfQuadSet readQuads(URI uri) throws NQuadsReaderException, RdfConsumerException, JsonLdException, IOException {
+        RdfQuadSet set = null;
+
+        final var rebased = testCase.rebase(uri);
+
+        if ("classpath".equals(rebased.getScheme())) {
+            try (var is = getClass().getResourceAsStream(rebased.getPath())) {
+                set = testCase.readQuads(is);
+            }
+
+        } else if ("zip".equals(rebased.getScheme())) {
+            set = testCase.readQuads(ZipResourceLoader.fetchBytes(rebased));
+        }
+
+        assertNotNull(set);
+        return set;
     }
 }

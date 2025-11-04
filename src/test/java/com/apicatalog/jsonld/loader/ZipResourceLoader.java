@@ -88,22 +88,6 @@ public class ZipResourceLoader implements DocumentLoader {
         }
     }
 
-    public static RdfQuadSet readNQuads(URI url, String base, String rebase) throws NQuadsReaderException, RdfConsumerException, JsonLdException {
-
-        final var target = url.toString();
-
-        final var relativePath = target.substring(base.length());
-
-        var content = new OrderedQuadSet();
-
-        new NQuadsReader(
-                new InputStreamReader(
-                        new ByteArrayInputStream(fetchBytes(URI.create(rebase + relativePath)))))
-                .provide(new QuadAcceptor(content));
-
-        return content;
-    }
-
     public static byte[] fetchBytes(URI url) throws JsonLdException {
 
         if (!"zip".equals(url.getScheme())) {

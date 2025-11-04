@@ -25,8 +25,10 @@ import org.junit.platform.suite.api.Suite;
 import org.junit.platform.suite.api.SuiteDisplayName;
 
 import com.apicatalog.jsonld.loader.ClasspathLoader;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.FileLoader;
 import com.apicatalog.jsonld.loader.HttpLoader;
+import com.apicatalog.jsonld.loader.SchemeRouter;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.tree.io.NodeParser;
 import com.apicatalog.tree.io.jakarta.JakartaParser;
@@ -74,10 +76,9 @@ public class JsonLdTestSuite {
 
     public static final ClasspathLoader CLASSPATH_LOADER = new ClasspathLoader(JAKARTA_PARSER);
 
-//    public static final DocumentLoader LOADER = SchemeRouter.newBuilder()
-//          .route("http", HTTP_LOADER)
-////          .route("https", HttpLoader.defaultInstance())
-////          .route("file", new FileLoader())
-//          .build();
+    public static final DocumentLoader RESOURCE_LOADER = SchemeRouter.newBuilder()
+          .route("zip", ZIP_RESOURCE_LOADER)
+          .route("classpath", CLASSPATH_LOADER)
+          .build();
 
 }

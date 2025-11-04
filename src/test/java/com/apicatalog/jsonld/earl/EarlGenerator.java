@@ -141,7 +141,10 @@ public class EarlGenerator {
                             final var toLd = JsonLd.fromRdf().options(options);
 
                             try {
-                                QuadEmitter.create(toLd).emit(ZipResourceLoader.readNQuads(testCase.input, testCase.baseUri, testCase.testsBase));
+                                QuadEmitter.create(toLd).emit(
+                                        testCase.readQuads(
+                                                ZipResourceLoader
+                                                        .fetchBytes(testCase.rebase(testCase.input))));
                                 return toLd.toJsonLd();
 
                             } catch (NQuadsReaderException e) {
