@@ -219,27 +219,32 @@ public record MediaType(
     }
 
     /**
-     * Returns all values of a given parameter.
+     * Returns all values associated with the specified parameter name.
+     * <p>
+     * If the parameter is not present, this method returns an empty list. The
+     * returned list is unmodifiable and safe for reuse.
+     * </p>
      *
-     * @param name the parameter name
-     * @return an unmodifiable list of values, or an empty list if not present
+     * @param name the parameter name to look up, must not be {@code null}
+     * @return an unmodifiable list of parameter values, or an empty list if none
+     *         exist
      */
     public List<String> parameters(final String name) {
-        return parameters.containsKey(name)
-                ? List.copyOf(parameters.get(name))
-                : List.of();
+        return Optional.ofNullable(parameters.get(name)).map(List::copyOf).orElse(List.of());
     }
 
     /**
-     * Returns the first value of a given parameter, if present.
+     * Returns the first value associated with the specified parameter name, if any.
+     * <p>
+     * This is a convenience method for retrieving the first element of
+     * {@link #parameters(String)} when multiple values are possible.
+     * </p>
      *
-     * @param name the parameter name
-     * @return an {@link Optional} containing the first parameter value, or empty if
-     *         not found
+     * @param name the parameter name to look up, must not be {@code null}
+     * @return an {@link Optional} containing the first parameter value, or an empty
+     *         {@code Optional} if no value is present
      */
     public Optional<String> findFirstParameter(final String name) {
-        return parameters.containsKey(name)
-                ? Optional.of(parameters.get(name).get(0))
-                : Optional.empty();
+        return Optional.ofNullable(parameters.get(name)).map(p -> p.get(0));
     }
 }
