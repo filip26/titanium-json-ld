@@ -3,7 +3,7 @@ package com.apicatalog.jsonld.processor;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.Options;
 
 /**
  * A runtime context used during a transformation processing.
@@ -14,7 +14,7 @@ public class Execution {
 
     //TODO builder, to set collectors, like type map
     
-    public static Execution of(JsonLdOptions options) {
+    public static Execution of(Options options) {
         return options.timeout() != null
                 ? new Ticker(options)
                 : new Execution();  //TODO set empty instance

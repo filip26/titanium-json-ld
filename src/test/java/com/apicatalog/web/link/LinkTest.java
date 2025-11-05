@@ -32,7 +32,6 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import com.apicatalog.web.link.Link;
 import com.apicatalog.web.media.MediaType;
 
 class LinkTest {

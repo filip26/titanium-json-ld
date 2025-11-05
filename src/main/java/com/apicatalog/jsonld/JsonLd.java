@@ -59,7 +59,7 @@ public final class JsonLd {
      * @return
      * @throws JsonLdException
      */
-    public static final Collection<?> expand(final URI document, final JsonLdOptions options) throws JsonLdException, IOException {
+    public static final Collection<?> expand(final URI document, final Options options) throws JsonLdException, IOException {
 
         var runtime = Execution.of(options);
         runtime.tick();
@@ -81,7 +81,7 @@ public final class JsonLd {
      * @return {@link ExpansionApi} allowing to set additional parameters
      * @throws JsonLdException
      */
-    public static final Collection<?> expand(final Document document, final JsonLdOptions options) throws JsonLdException, IOException {
+    public static final Collection<?> expand(final Document document, final Options options) throws JsonLdException, IOException {
 
         var runtime = Execution.of(options);
         runtime.tick();
@@ -89,7 +89,7 @@ public final class JsonLd {
         return Expander.expand(document, options, runtime);
     }
 
-    public static final Collection<?> expand(final Map<String, ?> document, final JsonLdOptions options) throws JsonLdException, IOException {
+    public static final Collection<?> expand(final Map<String, ?> document, final Options options) throws JsonLdException, IOException {
 
         if (!NativeAdapter.instance().isNode(document)) {
             throw new IllegalArgumentException();
@@ -98,7 +98,7 @@ public final class JsonLd {
         return expand(new PolyNode(document, NativeAdapter.instance()), options);
     }
 
-    public static final Collection<?> expand(final PolyNode document, final JsonLdOptions options) throws JsonLdException, IOException {
+    public static final Collection<?> expand(final PolyNode document, final Options options) throws JsonLdException, IOException {
 
         var runtime = Execution.of(options);
         runtime.tick();
@@ -123,7 +123,7 @@ public final class JsonLd {
     public static final Map<String, ?> compact(
             final URI document,
             final URI context,
-            final JsonLdOptions options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException, IOException {
         return compact(
                 RemoteDocument.fetch(document, options.loader(), options.isExtractAllScripts()),
                 RemoteDocument.fetch(context, options.loader(), options.isExtractAllScripts()),
@@ -144,7 +144,7 @@ public final class JsonLd {
      * @throws JsonLdException
      */
     public static final Map<String, ?> compact(final URI document, final Document context,
-            final JsonLdOptions options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException, IOException {
         return compact(
                 RemoteDocument.fetch(document, options.loader(), options.isExtractAllScripts()),
                 context,
@@ -161,7 +161,7 @@ public final class JsonLd {
      * @throws IOException
      * @throws JsonLdException
      */
-    public static final Map<String, ?> compact(final Document document, final URI context, JsonLdOptions options) throws JsonLdException, IOException {
+    public static final Map<String, ?> compact(final Document document, final URI context, Options options) throws JsonLdException, IOException {
         return compact(
                 document,
                 RemoteDocument.fetch(context, options.loader(), options.isExtractAllScripts()),
@@ -181,7 +181,7 @@ public final class JsonLd {
     public static final Map<String, ?> compact(
             final Document document,
             final Document context,
-            final JsonLdOptions options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException, IOException {
 
         final Execution runtime = Execution.of(options);
         runtime.tick();
@@ -192,13 +192,13 @@ public final class JsonLd {
                 options,
                 runtime);
     }
-    
+
     public static final Map<String, ?> compact(
             final Collection<?> document,
             final Map<String, ?> context,
-            final JsonLdOptions options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException, IOException {
 
-        //TODO
+        // TODO
         return null;
     }
 
@@ -224,12 +224,12 @@ public final class JsonLd {
         return new FlatteningApi(assertJsonDocument(document, DOCUMENT_PARAM_NAME));
     }
 
-    public static final Map<String, ?> flatten(final Map<String, ?> document, JsonLdOptions options) {
+    public static final Map<String, ?> flatten(final Map<String, ?> document, Options options) {
 //        return new FlatteningApi(assertUri(documentUri, DOCUMENT_URI_PARAM_NAME));
         return null;
     }
 
-    public static final Map<String, ?> flatten(final Collection<?> document, JsonLdOptions options) {
+    public static final Map<String, ?> flatten(final Collection<?> document, Options options) {
 //      return new FlatteningApi(assertUri(documentUri, DOCUMENT_URI_PARAM_NAME));
         return null;
     }
@@ -243,7 +243,7 @@ public final class JsonLd {
      * @param frame    {@code URI} referencing JSON-LD frame
      * @return {@link FramingApi} allowing to set additional parameters
      */
-    public static final Map<String, ?> frame(final URI document, final URI frame, final JsonLdOptions options) throws JsonLdException, IOException {
+    public static final Map<String, ?> frame(final URI document, final URI frame, final Options options) throws JsonLdException, IOException {
         return frame(
                 RemoteDocument.fetch(document, options.loader(), options.isExtractAllScripts()),
                 frame,
@@ -257,7 +257,7 @@ public final class JsonLd {
      * @param frame    {@code URI} referencing JSON-LD frame
      * @return {@link FramingApi} allowing to set additional parameters
      */
-    public static final Map<String, ?> frame(final Document document, final URI frame, final JsonLdOptions options) throws JsonLdException, IOException {
+    public static final Map<String, ?> frame(final Document document, final URI frame, final Options options) throws JsonLdException, IOException {
         return frame(
                 document,
                 RemoteDocument.fetch(frame, options.loader(), options.isExtractAllScripts()),
@@ -271,7 +271,7 @@ public final class JsonLd {
      * @param frame    JSON-LD definition
      * @return {@link FramingApi} allowing to set additional parameters
      */
-    public static final Map<String, ?> frame(final URI document, final Document frame, final JsonLdOptions options) throws JsonLdException, IOException {
+    public static final Map<String, ?> frame(final URI document, final Document frame, final Options options) throws JsonLdException, IOException {
         return frame(
                 RemoteDocument.fetch(document, options.loader(), options.isExtractAllScripts()),
                 frame,
@@ -287,7 +287,7 @@ public final class JsonLd {
      * @throws IOException
      * @throws JsonLdException
      */
-    public static final Map<String, ?> frame(final Document document, final Document frame, final JsonLdOptions options) throws JsonLdException, IOException {
+    public static final Map<String, ?> frame(final Document document, final Document frame, final Options options) throws JsonLdException, IOException {
 
         final Execution runtime = Execution.of(options);
         runtime.tick();
@@ -295,7 +295,7 @@ public final class JsonLd {
         return Framer.frame(document, frame, options, runtime);
     }
 
-    public static final Map<String, ?> frame(final PolyNode document, final PolyNode frame, final JsonLdOptions options) throws JsonLdException, IOException {
+    public static final Map<String, ?> frame(final PolyNode document, final PolyNode frame, final Options options) throws JsonLdException, IOException {
         final Execution runtime = Execution.of(options);
         runtime.tick();
 
@@ -314,7 +314,7 @@ public final class JsonLd {
                 contextNode);
     }
 
-    public static final Map<String, ?> frame(final Map<String, ?> document, final Map<String, ?> frame, final JsonLdOptions options) throws JsonLdException, IOException {
+    public static final Map<String, ?> frame(final Map<String, ?> document, final Map<String, ?> frame, final Options options) throws JsonLdException, IOException {
 
         if (!NativeAdapter.instance().isNode(document)) {
             throw new IllegalArgumentException();
@@ -336,14 +336,14 @@ public final class JsonLd {
     }
 
     /* --- TO RDF -- */
-    
+
     /**
      * Transforms the given input into {@link RdfDataset}.
      *
      * @param documentUri {@code URI} referencing JSON-LD document to transform
      * @return {@link ToRdfApi} allowing to set additional parameters
      */
-    public static final void toRdf(final URI document, RdfQuadConsumer consumer, JsonLdOptions options) throws JsonLdException, IOException {
+    public static final void toRdf(final URI document, RdfQuadConsumer consumer, Options options) throws JsonLdException, IOException {
         toRdf(RemoteDocument
                 .fetch(
                         document,
@@ -359,20 +359,20 @@ public final class JsonLd {
      * @param document to transform
      * @return {@link ToRdfApi} allowing to set additional parameters
      */
-    public static final void toRdf(final Document document, RdfQuadConsumer consumer, JsonLdOptions options) throws JsonLdException, IOException {
+    public static final void toRdf(final Document document, RdfQuadConsumer consumer, Options options) throws JsonLdException, IOException {
         RdfEmitter.toRdf(document, consumer, options);
     }
 
-    public static final void toRdf(final PolyNode document, RdfQuadConsumer consumer, JsonLdOptions options) throws JsonLdException, IOException {
+    public static final void toRdf(final PolyNode document, RdfQuadConsumer consumer, Options options) throws JsonLdException, IOException {
         RdfEmitter.toRdf(document, consumer, options);
     }
 
-    public static final void toRdf(final Map<String, ?> document, RdfQuadConsumer consumer, JsonLdOptions options) throws JsonLdException, IOException {
+    public static final void toRdf(final Map<String, ?> document, RdfQuadConsumer consumer, Options options) throws JsonLdException, IOException {
         RdfEmitter.toRdf(new PolyNode(document, NativeAdapter.instance()), consumer, options);
     }
 
     /* --- FROM RDF -- */
-    
+
     /**
      * Transforms an RDF quad set into a JSON-LD document in expanded form.
      * <p>
@@ -397,7 +397,7 @@ public final class JsonLd {
         return new QuadsToJsonLd();
     }
 
-    public static final QuadsToJsonLd fromRdf(JsonLdOptions options) {
+    public static final QuadsToJsonLd fromRdf(Options options) {
         return new QuadsToJsonLd().options(options);
     }
 

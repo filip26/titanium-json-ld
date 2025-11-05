@@ -22,8 +22,8 @@ import java.net.URI;
 import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdTestSuite;
+import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.test.JsonLdTestManifest;
 import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
 
@@ -45,7 +45,7 @@ class CompactBaseTest {
                 .execute(options -> JsonLd.compact(
                         testCase.input,
                         testCase.context,
-                        JsonLdOptions.copyOf(options)
+                        Options.copyOf(options)
                                 .base(URI.create("http://fake.com")))));
     }
 }

@@ -25,8 +25,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.apicatalog.web.uri.UriResolver;
-
 class UriResolverTest {
 
     @ParameterizedTest(name = "resolve({0}, {1}) to {2}")

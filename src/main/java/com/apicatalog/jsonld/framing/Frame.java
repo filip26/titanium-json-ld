@@ -22,12 +22,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.apicatalog.jsonld.JsonLdAdapter;
-import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.Embed;
+import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.jsonld.processor.Expander;
@@ -47,7 +47,7 @@ public final class Frame {
         this.frameGraphs = frameGraphs;
     }
 
-    public static final Frame of(final Document frame, final JsonLdOptions options, final Execution runtime) throws JsonLdException, IOException {
+    public static final Frame of(final Document frame, final Options options, final Execution runtime) throws JsonLdException, IOException {
 
         @SuppressWarnings("unchecked")
         Set<String> keys = (frame.content().node() instanceof Map map)
@@ -56,13 +56,13 @@ public final class Frame {
 
         var expanded = Expander.expandFrame(
                 frame,
-                JsonLdOptions.copyOf(options).ordered(false),
+                Options.copyOf(options).ordered(false),
                 runtime);
 
         return of(expanded, keys);
     }
 
-    public static final Frame of(final PolyNode frame, final JsonLdOptions options, final Execution runtime) throws JsonLdException, IOException {
+    public static final Frame of(final PolyNode frame, final Options options, final Execution runtime) throws JsonLdException, IOException {
         @SuppressWarnings("unchecked")
         Set<String> keys = (frame.node() instanceof Map map)
                 ? map.keySet()
@@ -75,13 +75,13 @@ public final class Frame {
                         null,
                         options),
                 Expander.baseUrl(null, options),
-                JsonLdOptions.copyOf(options).ordered(false),
+                Options.copyOf(options).ordered(false),
                 runtime);
 
         return of(expanded, keys);
     }
 
-    public static final URI contextBase(final Document frame, final JsonLdOptions options) {
+    public static final URI contextBase(final Document frame, final Options options) {
         return (frame.contextUrl() != null)
                 ? frame.documentUrl()
                 : options.base();
@@ -106,7 +106,7 @@ public final class Frame {
                 frameMap = typedMap;
 
             } else {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_FRAME, "Frame is not JSON object nor an array containing JSON object [" + expanded + "]");
+                throw new JsonLdException(ErrorCode.INVALID_FRAME, "Frame is not JSON object nor an array containing JSON object [" + expanded + "]");
             }
 
         } else if ((expanded instanceof Map map)) {
@@ -119,17 +119,17 @@ public final class Frame {
             return EMPTY;
 
         } else {
-            throw new JsonLdException(JsonLdErrorCode.INVALID_FRAME, "Frame is not JSON object. [" + expanded + "]");
+            throw new JsonLdException(ErrorCode.INVALID_FRAME, "Frame is not JSON object. [" + expanded + "]");
         }
 
         // 1.2.
         if (frameMap.containsKey(Keywords.ID) && !validateFrameId(frameMap)) {
-            throw new JsonLdException(JsonLdErrorCode.INVALID_FRAME, "Frame @id value is not valid [@id = " + frameMap.get(Keywords.ID) + "].");
+            throw new JsonLdException(ErrorCode.INVALID_FRAME, "Frame @id value is not valid [@id = " + frameMap.get(Keywords.ID) + "].");
         }
 
         // 1.3.
         if (frameMap.containsKey(Keywords.TYPE) && !validateFrameType(frameMap)) {
-            throw new JsonLdException(JsonLdErrorCode.INVALID_FRAME, "Frame @type value is not valid [@type = " + frameMap.get(Keywords.TYPE) + "].");
+            throw new JsonLdException(ErrorCode.INVALID_FRAME, "Frame @type value is not valid [@type = " + frameMap.get(Keywords.TYPE) + "].");
         }
 
         return new Frame(frameMap, frameGraphs);// , context, contextUrl, documentUrl);
@@ -145,14 +145,14 @@ public final class Frame {
                 return defaultValue;
             }
 
-            if (embed instanceof Map map && JsonLdAdapter.isValueNode(map)) {
-                embed = JsonLdAdapter.findValue(embed).orElseThrow(() -> new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE));
+            if (embed instanceof Map map && LdAdapter.isValueNode(map)) {
+                embed = LdAdapter.findValue(embed).orElseThrow(() -> new JsonLdException(ErrorCode.INVALID_KEYWORD_EMBED_VALUE));
             }
 
             if (embed instanceof String stringValue) {
 
                 if (Keywords.noneMatch(stringValue, Keywords.ALWAYS, Keywords.ONCE, Keywords.NEVER)) {
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag [@embed = " + stringValue + "].");
+                    throw new JsonLdException(ErrorCode.INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag [@embed = " + stringValue + "].");
                 }
 
                 return Embed.valueOf(stringValue.substring(1).toUpperCase());
@@ -164,7 +164,7 @@ public final class Frame {
                 return Embed.ONCE;
             }
 
-            throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag [@embed = " + embed + "].");
+            throw new JsonLdException(ErrorCode.INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag [@embed = " + embed + "].");
         }
 
         return defaultValue;
@@ -188,8 +188,8 @@ public final class Frame {
                 return defaultValue;
             }
 
-            if (value instanceof Map map && JsonLdAdapter.isValueNode(map)) {
-                value = JsonLdAdapter.findValue(value).orElseThrow(() -> new JsonLdException(JsonLdErrorCode.INVALID_FRAME));
+            if (value instanceof Map map && LdAdapter.isValueNode(map)) {
+                value = LdAdapter.findValue(value).orElseThrow(() -> new JsonLdException(ErrorCode.INVALID_FRAME));
             }
 
             if (value instanceof String bool) {
@@ -204,7 +204,7 @@ public final class Frame {
             if (value instanceof Boolean bool) {
                 return bool;
             }
-            throw new JsonLdException(JsonLdErrorCode.INVALID_FRAME);
+            throw new JsonLdException(ErrorCode.INVALID_FRAME);
         }
 
         return defaultValue;
@@ -295,7 +295,7 @@ public final class Frame {
     }
 
     public boolean isValuePattern() {
-        return JsonLdAdapter.isValueNode(expanded);
+        return LdAdapter.isValueNode(expanded);
     }
 
     public boolean matchValue(Object value) {
@@ -303,18 +303,18 @@ public final class Frame {
     }
 
     public boolean isDefaultObject(String property) {
-        return JsonLdAdapter.isDefault(expanded.get(property))
+        return LdAdapter.isDefault(expanded.get(property))
                 || expanded.get(property) instanceof Collection array
                         && array.size() == 1
-                        && JsonLdAdapter.isDefault(array.iterator().next());
+                        && LdAdapter.isDefault(array.iterator().next());
     }
 
     public boolean isPattern() {
-        return JsonLdAdapter.isNode(expanded);
+        return LdAdapter.isNode(expanded);
     }
 
     public boolean isReference() {
-        return JsonLdAdapter.isReference(expanded);
+        return LdAdapter.isReference(expanded);
     }
 
     public boolean matchNode(FramingState state, Object value, boolean requireAll) throws JsonLdException {
@@ -334,7 +334,7 @@ public final class Frame {
     }
 
     public boolean isList() {
-        return JsonLdAdapter.isList(expanded);
+        return LdAdapter.isList(expanded);
     }
 
     public boolean isDefault(String graphKey) {

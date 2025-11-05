@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.document.Document;
 
 /**
@@ -99,7 +99,7 @@ public final class SchemeRouter implements DocumentLoader {
             return fallback.loadDocument(url, options);
         }
 
-        throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "URL scheme [" + url.getScheme() + "] is not supported.");
+        throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "URL scheme [" + url.getScheme() + "] is not supported.");
 
     }
 

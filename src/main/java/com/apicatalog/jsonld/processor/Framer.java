@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.compaction.UriCompaction;
 import com.apicatalog.jsonld.context.Context;
@@ -55,7 +55,7 @@ public final class Framer {
     public static Map<String, ?> frame(
             final Document document,
             final Document frame,
-            final JsonLdOptions options,
+            final Options options,
             final Execution runtime) throws JsonLdException, IOException {
 
         final var contextNode = Context.extract(frame.content());
@@ -77,7 +77,7 @@ public final class Framer {
             final URI baseUrl,
             final PolyNode localContext,
             final URI localContextBase,
-            final JsonLdOptions options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException, IOException {
 
         // 10-11.
         return new Context.Builder(
@@ -91,17 +91,17 @@ public final class Framer {
 
     public static final Collection<?> expand(
             Document document,
-            final JsonLdOptions options,
+            final Options options,
             final Execution runtime) throws JsonLdException, IOException {
         return Expander.expand(
                 document,
-                JsonLdOptions.copyOf(options).ordered(false),
+                Options.copyOf(options).ordered(false),
                 runtime);
     }
 
     public static final Collection<?> expand(
             PolyNode document,
-            final JsonLdOptions options,
+            final Options options,
             final Execution runtime) throws JsonLdException, IOException {
         return Expander.expand(
                 document,
@@ -110,7 +110,7 @@ public final class Framer {
                         null,
                         options),
                 options.base(),
-                JsonLdOptions.copyOf(options).ordered(false),
+                Options.copyOf(options).ordered(false),
                 runtime);
     }
 
@@ -118,7 +118,7 @@ public final class Framer {
             final Collection<?> expanded,
             final Frame frame,
             final Context context,
-            final JsonLdOptions options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException, IOException {
 
         final var runtime = Execution.of(options);
 

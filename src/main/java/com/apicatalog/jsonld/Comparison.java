@@ -30,9 +30,9 @@ import com.apicatalog.tree.io.PolyNode;
  *      Object comparison</a>
  *
  */
-public final class JsonLdComparison {
+public final class Comparison {
 
-    private JsonLdComparison() {
+    private Comparison() {
     }
 
     public static final boolean equals(

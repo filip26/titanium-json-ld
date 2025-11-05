@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.compaction.UriCompaction;
 import com.apicatalog.jsonld.context.Context;
@@ -43,7 +43,7 @@ public final class Compactor {
     public static final Map<String, ?> compact(
             final Document input,
             final URI contextUri,
-            final JsonLdOptions options,
+            final Options options,
             final Execution runtime) throws JsonLdException, IOException {
 
         URI contextBase = input.documentUrl();
@@ -59,7 +59,7 @@ public final class Compactor {
 
         final var expandedInput = Expander.expand(
                 input,
-                JsonLdOptions.copyOf(options)
+                Options.copyOf(options)
                         .ordered(false)
                         .extractAllScripts(false),
                         runtime);
@@ -75,7 +75,7 @@ public final class Compactor {
     public static final Map<String, ?> compact(
             final Document input,
             final Document context,
-            final JsonLdOptions options,
+            final Options options,
             final Execution runtime) throws JsonLdException, IOException {
 //        
 //        URI contextBase = input.getDocumentUrl();
@@ -108,7 +108,7 @@ public final class Compactor {
 //        final var ctx = Context.unwrap(context.getContent());
 //        context(ctx, input.getDocumentUrl(), options)
 
-        final var expandedInput = Expander.expand(input, JsonLdOptions.copyOf(options)
+        final var expandedInput = Expander.expand(input, Options.copyOf(options)
                 .ordered(false).extractAllScripts(false),
                 runtime);
 
@@ -124,7 +124,7 @@ public final class Compactor {
             final Object expanded,
             final URI baseUrl,
             final PolyNode context,
-            final JsonLdOptions options,
+            final Options options,
             final Execution runtime) throws JsonLdException, IOException {
 
         URI contextBase = baseUrl;
@@ -166,7 +166,7 @@ public final class Compactor {
     static final Map<String, ?> compact(
             final Object expanded,
             final Context context,
-            final JsonLdOptions options, 
+            final Options options, 
             final Execution runtime) throws JsonLdException, IOException {
 
         var activeContext = context;

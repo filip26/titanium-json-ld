@@ -31,9 +31,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdProfile;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.jsonld.Profile;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.tree.io.NodeParser;
@@ -217,11 +217,11 @@ public class HttpLoader implements DocumentLoader {
                             continue;
                         }
 
-                        throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Header location is required for code [" + response.statusCode() + "].");
+                        throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "Header location is required for code [" + response.statusCode() + "].");
                     }
 
                     if (response.statusCode() != 200) {
-                        throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unexpected response code [" + response.statusCode() + "]");
+                        throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "Unexpected response code [" + response.statusCode() + "]");
                     }
 
                     contentType = response.contentType()
@@ -261,11 +261,11 @@ public class HttpLoader implements DocumentLoader {
 
                             final List<Link> contextUris = linkValues.stream()
                                     .flatMap(l -> Link.of(l, baseUri).stream())
-                                    .filter(l -> l.relations().contains(JsonLdProfile.CONTEXT))
+                                    .filter(l -> l.relations().contains(Profile.CONTEXT))
                                     .collect(Collectors.toList());
 
                             if (contextUris.size() > 1) {
-                                throw new JsonLdException(JsonLdErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS);
+                                throw new JsonLdException(ErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS);
 
                             } else if (contextUris.size() == 1) {
                                 contextUri = contextUris.get(0).target();
@@ -277,17 +277,17 @@ public class HttpLoader implements DocumentLoader {
                         LOGGER.log(Level.WARNING, "GET on URL [{0}] does not return content-type header.", uri);
 
                     } else if (!acceptContent.test(contentType)) {
-                        throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unsupported content-type '" + contentType + "'.");
+                        throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "Unsupported content-type '" + contentType + "'.");
                     }
 
                     return read(contentType, targetUri, contextUri, response);
                 }
             }
 
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections");
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections");
 
         } catch (IOException e) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
 
@@ -310,7 +310,7 @@ public class HttpLoader implements DocumentLoader {
             return remoteDocument;
 
         } catch (Exception e) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
 

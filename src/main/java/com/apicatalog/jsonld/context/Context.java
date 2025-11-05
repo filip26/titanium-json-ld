@@ -23,10 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdProfile;
-import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.jsonld.Profile;
+import com.apicatalog.jsonld.Version;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.lang.Direction;
@@ -47,17 +47,17 @@ public interface Context {
     default boolean isV11() {
         return version() == null
                 ? true
-                : JsonLdVersion.V1_1 == version();
+                : Version.V1_1 == version();
     }
 
     default boolean isV10() {
         return version() == null
                 ? false
-                : JsonLdVersion.V1_0 == version();
+                : Version.V1_0 == version();
     }
 
     /** context version, might be null if unspecified */
-    JsonLdVersion version();
+    Version version();
 
     PolyNode source();
 
@@ -104,7 +104,7 @@ public interface Context {
         final var adapter = document.adapter();
 
         if (!adapter.isMap(node)) {
-            throw new JsonLdException(JsonLdErrorCode.INVALID_CONTEXT_ENTRY, "Document is not map but [" + node + "].");
+            throw new JsonLdException(ErrorCode.INVALID_CONTEXT_ENTRY, "Document is not map but [" + node + "].");
         }
 
         final var context = adapter.property(Keywords.CONTEXT, node);
@@ -180,8 +180,8 @@ public interface Context {
 
             final var loaderOptions = new DocumentLoader.Options(
                     false,
-                    JsonLdProfile.CONTEXT,
-                    List.of(JsonLdProfile.CONTEXT));
+                    Profile.CONTEXT,
+                    List.of(Profile.CONTEXT));
 
             try {
 
@@ -189,17 +189,17 @@ public interface Context {
 
                 // 5.2.5.1.
             } catch (JsonLdException e) {
-                throw new JsonLdException(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "There was a problem encountered loading a remote context [" + uri + "]", e);
+                throw new JsonLdException(ErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "There was a problem encountered loading a remote context [" + uri + "]", e);
             }
 
             if (document == null) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");
+                throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");
             }
         }
 
         // 5.2.5.2.
         if (!PolyNode.isMap(document.content())) {
-            throw new JsonLdException(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is not valid JSON-LD context: " + document.content() + ".");
+            throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is not valid JSON-LD context: " + document.content() + ".");
         }
 
         return document;
@@ -255,7 +255,7 @@ public interface Context {
 
         DocumentLoader loader;
 
-        public Builder(JsonLdVersion version) {
+        public Builder(Version version) {
             this(null, null, version);
         }
 
@@ -268,11 +268,11 @@ public interface Context {
             return ctx.getBaseUri();
         }
 
-        public Builder(URI base, JsonLdVersion version) {
+        public Builder(URI base, Version version) {
             this(base, base, version);
         }
 
-        public Builder(URI baseUri, URI baseUrl, JsonLdVersion version) {
+        public Builder(URI baseUri, URI baseUrl, Version version) {
 //            this.baseUri = baseUri;
 //            this.baseUrl = baseUrl;
 //            this.version = version;

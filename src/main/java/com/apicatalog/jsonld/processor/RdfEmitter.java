@@ -20,9 +20,9 @@ import java.net.URI;
 import java.util.Collection;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
-import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.Options.RdfDirection;
+import com.apicatalog.jsonld.Version;
 import com.apicatalog.jsonld.api.CommonApi;
 import com.apicatalog.jsonld.api.ContextApi;
 import com.apicatalog.jsonld.api.LoaderApi;
@@ -45,18 +45,18 @@ public final class RdfEmitter implements
         ContextApi<RdfEmitter>,
         LoaderApi<RdfEmitter> {
 
-    private JsonLdOptions options;
+    private Options options;
 
 //    public RdfEmitter() {
 //        this(new JsonLdOptions());
 //    }
 
-    public RdfEmitter(JsonLdOptions options) {
+    public RdfEmitter(Options options) {
         this.options = options;
     }
 
     @Override
-    public RdfEmitter options(JsonLdOptions options) {
+    public RdfEmitter options(Options options) {
 
         if (options == null) {
             throw new IllegalArgumentException("Parameter 'options' is null.");
@@ -135,7 +135,7 @@ public final class RdfEmitter implements
     }
 
     @Override
-    public RdfEmitter mode(JsonLdVersion processingMode) {
+    public RdfEmitter mode(Version processingMode) {
         options.mode(processingMode);
         return this;
     }
@@ -185,8 +185,8 @@ public final class RdfEmitter implements
         RdfEmitter.toRdf(document, consumer, options);
     }
 
-    public static final void toRdf(final Document input, final RdfQuadConsumer consumer, final JsonLdOptions options) throws JsonLdException, IOException {
-        final JsonLdOptions expansionOptions = JsonLdOptions.copyOf(options);
+    public static final void toRdf(final Document input, final RdfQuadConsumer consumer, final Options options) throws JsonLdException, IOException {
+        final Options expansionOptions = Options.copyOf(options);
 
         expansionOptions.mode(options.mode());
         expansionOptions.base(options.base());
@@ -201,8 +201,8 @@ public final class RdfEmitter implements
         toRdf(expanded, consumer, options);
     }
 
-    public static final void toRdf(final PolyNode input, final RdfQuadConsumer consumer, final JsonLdOptions options) throws JsonLdException, IOException {
-        final JsonLdOptions expansionOptions = JsonLdOptions.copyOf(options);
+    public static final void toRdf(final PolyNode input, final RdfQuadConsumer consumer, final Options options) throws JsonLdException, IOException {
+        final Options expansionOptions = Options.copyOf(options);
 
         expansionOptions.mode(options.mode());
         expansionOptions.base(options.base());
@@ -217,7 +217,7 @@ public final class RdfEmitter implements
         toRdf(expanded, consumer, options);
     }
 
-    public static final void toRdf(final Collection<?> expanded, final RdfQuadConsumer consumer, final JsonLdOptions options) throws JsonLdException {
+    public static final void toRdf(final Collection<?> expanded, final RdfQuadConsumer consumer, final Options options) throws JsonLdException {
         JsonLdToQuads
                 .with(new NodeMapBuilder(expanded, new NodeMap()).build())
                 .produceGeneralizedRdf(options.isProduceGeneralizedRdf())

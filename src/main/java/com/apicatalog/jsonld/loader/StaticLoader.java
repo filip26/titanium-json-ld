@@ -5,8 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.tree.io.PolyNode;
@@ -88,7 +88,7 @@ public final class StaticLoader implements DocumentLoader {
         }
 
         throw new JsonLdException(
-                JsonLdErrorCode.LOADING_DOCUMENT_FAILED,
+                ErrorCode.LOADING_DOCUMENT_FAILED,
                 "URL [" + url + "] is not recogized and fallback loader is not set.");
     }
 

@@ -17,17 +17,17 @@ package com.apicatalog.jsonld;
 
 import java.util.Objects;
 
-public enum JsonLdVersion {
+public enum Version {
 
     V1_0("json-ld-1.0"), V1_1("json-ld-1.1");
 
     private final String text;
 
-    JsonLdVersion(final String text) {
+    Version(final String text) {
         this.text = text;
     }
 
-    public static JsonLdVersion of(String version) {
+    public static Version of(String version) {
 
         Objects.requireNonNull(version);
 

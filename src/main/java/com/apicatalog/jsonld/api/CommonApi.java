@@ -17,19 +17,19 @@ package com.apicatalog.jsonld.api;
 
 import java.net.URI;
 
-import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.Version;
 import com.apicatalog.web.uri.UriUtils;
 
 public interface CommonApi<R> {
 
     /**
-     * Override an existing settings with {@link JsonLdOptions}.
+     * Override an existing settings with {@link Options}.
      *
-     * @param options {@link JsonLdOptions}
+     * @param options {@link Options}
      * @return builder instance
      */
-    R options(JsonLdOptions options);
+    R options(Options options);
 
     /**
      * Set <code>JSON-LD</code> processing mode. JSON-LD 1.1 is set by default.
@@ -37,7 +37,7 @@ public interface CommonApi<R> {
      * @param processingMode to set
      * @return builder instance
      */
-    R mode(JsonLdVersion processingMode);
+    R mode(Version processingMode);
 
     /**
      * Set the base <code>IRI</code>. If set, this overrides the input document's IRI.

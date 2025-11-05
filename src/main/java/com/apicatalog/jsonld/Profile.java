@@ -18,7 +18,7 @@ package com.apicatalog.jsonld;
 /**
  * @see <a href="https://www.w3.org/TR/json-ld11/#iana-considerations">IANA Considerations</a>
  */
-public final class JsonLdProfile {
+public final class Profile {
 
     public static final String EXPANDED = "http://www.w3.org/ns/json-ld#expanded";
 
@@ -32,6 +32,6 @@ public final class JsonLdProfile {
 
     public static final String FRAMED = "http://www.w3.org/ns/json-ld#framed";
 
-    private JsonLdProfile() {
+    private Profile() {
     }
 }

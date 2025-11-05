@@ -60,7 +60,7 @@ public interface HttpLoaderClient {
      * <p>
      * If a server does not respond within the specified duration, a
      * {@link JsonLdException} with code
-     * {@link com.apicatalog.jsonld.JsonLdErrorCode#LOADING_DOCUMENT_TIMEOUT} may be
+     * {@link com.apicatalog.jsonld.ErrorCode#LOADING_DOCUMENT_TIMEOUT} may be
      * thrown by the loader.
      * </p>
      *

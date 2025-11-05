@@ -22,8 +22,8 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.apicatalog.jsonld.lang.Direction;
-import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.PolyNode;
 
 public final class TermDefinition {
 

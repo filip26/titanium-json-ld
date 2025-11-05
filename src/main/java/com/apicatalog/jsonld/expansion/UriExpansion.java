@@ -16,14 +16,13 @@
 package com.apicatalog.jsonld.expansion;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.BlankNode;
@@ -88,7 +87,7 @@ public final class UriExpansion {
         this.localContext = null;
         this.adapter = null;
         this.defined = null;
-        this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
+        this.uriValidation = Options.DEFAULT_URI_VALIDATION;
     }
 
     /**

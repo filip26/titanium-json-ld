@@ -29,7 +29,7 @@ import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.web.uri.UriValidationPolicy;
 
 /**
- * The {@link JsonLdOptions} type is used to pass various options to the
+ * The {@link Options} type is used to pass various options to the
  * processor.
  *
  * @see <a href=
@@ -37,7 +37,7 @@ import com.apicatalog.web.uri.UriValidationPolicy;
  *      JsonLdOptions Specification.</a>
  *
  */
-public final class JsonLdOptions {
+public final class Options {
 
     public enum RdfDirection {
         I18N_DATATYPE,
@@ -95,7 +95,7 @@ public final class JsonLdOptions {
 
     private boolean ordered;
 
-    private JsonLdVersion processingMode;
+    private Version processingMode;
 
     private boolean generalizedRdf;
 
@@ -138,11 +138,11 @@ public final class JsonLdOptions {
     // a policy on how proceed with undefined terms during expansion
     private ProcessingPolicy undefinedTerms;
 
-    private JsonLdOptions() {
+    private Options() {
         this((DocumentLoader)null);
     }
 
-    private JsonLdOptions(DocumentLoader loader) {
+    private Options(DocumentLoader loader) {
 
         this.loader = loader;
         
@@ -153,7 +153,7 @@ public final class JsonLdOptions {
         this.expandContext = null;
         this.extractAllScripts = false;
         this.ordered = false;
-        this.processingMode = JsonLdVersion.V1_1;
+        this.processingMode = Version.V1_1;
         this.generalizedRdf = true;
         this.rdfDirection = null;
         this.useNativeTypes = false;
@@ -178,7 +178,7 @@ public final class JsonLdOptions {
         this.undefinedTerms = ProcessingPolicy.Ignore;
     }
 
-    private JsonLdOptions(JsonLdOptions options) {
+    private Options(Options options) {
         this.loader = options.loader;
         this.base = options.base;
         this.compactArrays = options.compactArrays;
@@ -216,8 +216,8 @@ public final class JsonLdOptions {
      *
      * @return a new {@code JsonLdOptions} instance using standard defaults
      */    
-    public static final JsonLdOptions newOptions() {
-        return new JsonLdOptions();
+    public static final Options newOptions() {
+        return new Options();
     }
 
     /**
@@ -228,8 +228,8 @@ public final class JsonLdOptions {
      * @param loader the document loader to use; must not be {@code null}
      * @return a new {@code JsonLdOptions} instance configured with the given loader
      */
-    public static final JsonLdOptions with(DocumentLoader loader) {
-        return new JsonLdOptions(loader);
+    public static final Options with(DocumentLoader loader) {
+        return new Options(loader);
     }
 
     /**
@@ -238,8 +238,8 @@ public final class JsonLdOptions {
      * @param options the options to copy; must not be {@code null}
      * @return a new {@code JsonLdOptions} instance with the same configuration
      */
-    public static final JsonLdOptions copyOf(JsonLdOptions options) {
-        return new JsonLdOptions(options);
+    public static final Options copyOf(Options options) {
+        return new Options(options);
     }
 
     /**
@@ -315,7 +315,7 @@ public final class JsonLdOptions {
         return ordered;
     }
 
-    public JsonLdVersion mode() {
+    public Version mode() {
         return processingMode;
     }
 
@@ -339,67 +339,67 @@ public final class JsonLdOptions {
         return expandContext;
     }
 
-    public JsonLdOptions base(URI baseUri) {
+    public Options base(URI baseUri) {
         this.base = baseUri;
         return this;
     }
 
-    public JsonLdOptions base(String baseUri) {
+    public Options base(String baseUri) {
         this.base = URI.create(baseUri);
         return this;
     }
 
-    public JsonLdOptions compactArrays(boolean compactArrays) {
+    public Options compactArrays(boolean compactArrays) {
         this.compactArrays = compactArrays;
         return this;
     }
 
-    public JsonLdOptions compactToRelative(boolean compactToRelative) {
+    public Options compactToRelative(boolean compactToRelative) {
         this.compactToRelative = compactToRelative;
         return this;
     }
 
-    public JsonLdOptions loader(DocumentLoader documentLoader) {
+    public Options loader(DocumentLoader documentLoader) {
         this.loader = documentLoader;
         return this;
     }
 
-    public JsonLdOptions extractAllScripts(boolean extractAllScripts) {
+    public Options extractAllScripts(boolean extractAllScripts) {
         this.extractAllScripts = extractAllScripts;
         return this;
     }
 
-    public JsonLdOptions ordered(boolean ordered) {
+    public Options ordered(boolean ordered) {
         this.ordered = ordered;
         return this;
     }
 
-    public JsonLdOptions mode(JsonLdVersion processingMode) {
+    public Options mode(Version processingMode) {
         this.processingMode = processingMode;
         return this;
     }
 
-    public JsonLdOptions generalizedRdf(boolean produceGeneralizedRdf) {
+    public Options generalizedRdf(boolean produceGeneralizedRdf) {
         this.generalizedRdf = produceGeneralizedRdf;
         return this;
     }
 
-    public JsonLdOptions rdfDirection(RdfDirection rdfDirection) {
+    public Options rdfDirection(RdfDirection rdfDirection) {
         this.rdfDirection = rdfDirection;
         return this;
     }
 
-    public JsonLdOptions useNativeTypes(boolean useNativeTypes) {
+    public Options useNativeTypes(boolean useNativeTypes) {
         this.useNativeTypes = useNativeTypes;
         return this;
     }
 
-    public JsonLdOptions useRdfType(boolean useRdfType) {
+    public Options useRdfType(boolean useRdfType) {
         this.useRdfType = useRdfType;
         return this;
     }
 
-    public JsonLdOptions expandContext(final String contextLocation) {
+    public Options expandContext(final String contextLocation) {
 
         if (contextLocation == null) {
             this.expandContext = null;
@@ -410,7 +410,7 @@ public final class JsonLdOptions {
         return this;
     }
 
-    public JsonLdOptions expandContext(URI contextUri) {
+    public Options expandContext(URI contextUri) {
 
         if (contextUri == null) {
             this.expandContext = null;
@@ -420,7 +420,7 @@ public final class JsonLdOptions {
         return expandContext(contextUri.toString());
     }
 
-    public JsonLdOptions expandContext(PolyNode node) {
+    public Options expandContext(PolyNode node) {
 
         if (node == null) {
             this.expandContext = null;
@@ -430,7 +430,7 @@ public final class JsonLdOptions {
         return this;
     }
 
-    public JsonLdOptions expandContext(Document context) {
+    public Options expandContext(Document context) {
         this.expandContext = context;
         return this;
     }
@@ -441,7 +441,7 @@ public final class JsonLdOptions {
         return embed;
     }
 
-    public JsonLdOptions embed(Embed embed) {
+    public Options embed(Embed embed) {
         this.embed = embed;
         return this;
     }
@@ -450,7 +450,7 @@ public final class JsonLdOptions {
         return explicit;
     }
 
-    public JsonLdOptions explicit(boolean explicit) {
+    public Options explicit(boolean explicit) {
         this.explicit = explicit;
         return this;
     }
@@ -459,7 +459,7 @@ public final class JsonLdOptions {
         return omitDefault;
     }
 
-    public JsonLdOptions omitDefault(boolean omitDefault) {
+    public Options omitDefault(boolean omitDefault) {
         this.omitDefault = omitDefault;
         return this;
     }
@@ -468,7 +468,7 @@ public final class JsonLdOptions {
         return omitGraph;
     }
 
-    public JsonLdOptions omitGraph(Boolean omitGraph) {
+    public Options omitGraph(Boolean omitGraph) {
         this.omitGraph = omitGraph;
         return this;
     }
@@ -477,7 +477,7 @@ public final class JsonLdOptions {
         return requiredAll;
     }
 
-    public JsonLdOptions requiredAll(boolean requiredAll) {
+    public Options requiredAll(boolean requiredAll) {
         this.requiredAll = requiredAll;
         return this;
     }
@@ -487,7 +487,7 @@ public final class JsonLdOptions {
      *
      * @param enable numeric @id support
      */
-    public JsonLdOptions useNumericId(boolean enable) {
+    public Options useNumericId(boolean enable) {
         this.useNumericId = enable;
         return this;
     }
@@ -513,7 +513,7 @@ public final class JsonLdOptions {
         return documentCache;
     }
 
-    public JsonLdOptions setDocumentCache(Cache<String, Document> documentCache) {
+    public Options setDocumentCache(Cache<String, Document> documentCache) {
         this.documentCache = documentCache;
         return this;
     }
@@ -529,7 +529,7 @@ public final class JsonLdOptions {
      * @see <a href="https://json-ld.github.io/json-ld-star">JSON-LD-STAR Draft</a>
      *
      */
-    public JsonLdOptions rdfStar(boolean rdfStar) {
+    public Options rdfStar(boolean rdfStar) {
         this.rdfStar = rdfStar;
         return this;
     }
@@ -551,7 +551,7 @@ public final class JsonLdOptions {
      * 
      * @since 1.5.0
      */
-    public JsonLdOptions uriValidation(UriValidationPolicy uriValidation) {
+    public Options uriValidation(UriValidationPolicy uriValidation) {
         this.uriValidation = uriValidation;
         return this;
     }
@@ -579,7 +579,7 @@ public final class JsonLdOptions {
      * 
      * @param timeout to limit processing time
      */
-    public JsonLdOptions timeout(Duration timeout) {
+    public Options timeout(Duration timeout) {
         this.timeout = timeout;
         return this;
     }
@@ -600,7 +600,7 @@ public final class JsonLdOptions {
      * @param undefinedTerms the processing policy, never <code>null</code>
      * 
      */
-    public JsonLdOptions undefinedTermsPolicy(ProcessingPolicy undefinedTerms) {
+    public Options undefinedTermsPolicy(ProcessingPolicy undefinedTerms) {
         this.undefinedTerms = undefinedTerms;
         return this;
     }

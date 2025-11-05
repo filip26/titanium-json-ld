@@ -21,13 +21,11 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.tree.io.NodeAdapter;
 
 /**
@@ -65,7 +63,7 @@ public final class ValueExpansion {
             final String property, 
             final Object value, 
             final NodeAdapter adapter, 
-            final JsonLdOptions options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException, IOException {
 
         final Optional<TermDefinition> definition = context.findTerm(property);
 

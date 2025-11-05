@@ -18,8 +18,8 @@ package com.apicatalog.jsonld.loader;
 import java.io.IOException;
 import java.net.URI;
 
-import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.tree.io.NodeParser;
@@ -75,7 +75,7 @@ public final class ClasspathLoader implements DocumentLoader {
 
         if (!"classpath".equalsIgnoreCase(url.getScheme())) {
             throw new JsonLdException(
-                    JsonLdErrorCode.LOADING_DOCUMENT_FAILED,
+                    ErrorCode.LOADING_DOCUMENT_FAILED,
                     "Unsupported URL scheme [" + url.getScheme() + "]. ClasspathLoader accepts only classpath: scheme.");
         }
         try (final var is = ClasspathLoader.class.getResourceAsStream(url.getPath())) {
@@ -85,7 +85,7 @@ public final class ClasspathLoader implements DocumentLoader {
             return RemoteDocument.of(node, url);
 
         } catch (IOException e) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED);
         }
     }
 }

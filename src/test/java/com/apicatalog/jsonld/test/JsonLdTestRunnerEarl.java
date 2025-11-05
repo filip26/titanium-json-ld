@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.test.JsonLdTestCase.Type;
@@ -41,7 +41,7 @@ public class JsonLdTestRunnerEarl {
         assertNotNull(testCase.baseUri);
         assertNotNull(testCase.input);
 
-        final JsonLdOptions options = testCase.getOptions();
+        final Options options = testCase.getOptions();
 
         assertNotNull(options);
         assertNotNull(options.loader());

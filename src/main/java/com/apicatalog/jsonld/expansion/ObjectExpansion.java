@@ -21,12 +21,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.apicatalog.jsonld.JsonLdAdapter;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
+import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.PolyNode;
@@ -300,13 +300,13 @@ public final class ObjectExpansion {
     ) throws JsonLdException {
 
         // 15.1.
-        if (JsonLdAdapter.isNotValueNode(result)) {
-            throw new JsonLdException(JsonLdErrorCode.INVALID_VALUE_OBJECT);
+        if (LdAdapter.isNotValueNode(result)) {
+            throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT);
         }
 
         if ((result.containsKey(Keywords.DIRECTION) || result.containsKey(Keywords.LANGUAGE))
                 && result.containsKey(Keywords.TYPE)) {
-            throw new JsonLdException(JsonLdErrorCode.INVALID_VALUE_OBJECT, "Invalid @value [" + result + "]");
+            throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT, "Invalid @value [" + result + "]");
         }
 
         // 15.2.
@@ -325,13 +325,13 @@ public final class ObjectExpansion {
             } else if (!frameExpansion
                     && !(value instanceof String) && result.containsKey(Keywords.LANGUAGE)) {
                 // 15.4
-                throw new JsonLdException(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
+                throw new JsonLdException(ErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
 
             } else if (!frameExpansion
                     && type != null
                     && (!(type instanceof String uri) || UriUtils.isNotURI(uri))) {
                 // 15.5
-                throw new JsonLdException(JsonLdErrorCode.INVALID_TYPED_VALUE, "Invalid @type [" + type + "].");
+                throw new JsonLdException(ErrorCode.INVALID_TYPED_VALUE, "Invalid @type [" + type + "].");
             }
         }
         return normalize(result, activeProperty, frameExpansion);
@@ -358,7 +358,7 @@ public final class ObjectExpansion {
 
         // 17.1.
         if (result.size() > 2 || result.size() == 2 && !result.containsKey(Keywords.INDEX)) {
-            throw new JsonLdException(JsonLdErrorCode.INVALID_SET_OR_LIST_OBJECT, "Invalid object [" + result + "].");
+            throw new JsonLdException(ErrorCode.INVALID_SET_OR_LIST_OBJECT, "Invalid object [" + result + "].");
         }
 
         // 17.2.

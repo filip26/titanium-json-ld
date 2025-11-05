@@ -28,7 +28,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.Options;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
@@ -71,7 +71,7 @@ class FramingReversePerformanceTest {
 
         final long startTime = System.currentTimeMillis();
 
-        final var framed = JsonLd.frame(data[0], data[1], JsonLdOptions.newOptions());
+        final var framed = JsonLd.frame(data[0], data[1], Options.newOptions());
 
         final long endTime = System.currentTimeMillis();
 

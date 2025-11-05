@@ -21,8 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.JsonLdVersion;
-import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.Version;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.loader.DocumentLoader;
@@ -40,7 +39,7 @@ public final class ActiveContext implements Context {
     // interpreted
     private final Map<String, TermDefinition> terms;
 
-    private JsonLdVersion version;
+    private Version version;
 
     // the current base IRI
     private URI baseUri;
@@ -66,15 +65,15 @@ public final class ActiveContext implements Context {
     
 //    private final ProcessingRuntime runtime;
 
-    ActiveContext(final JsonLdVersion version) {
+    ActiveContext(final Version version) {
         this(null, null, null, version);
     }
 
-    public ActiveContext(final URI baseUri, final URI baseUrl, JsonLdVersion version) {
+    public ActiveContext(final URI baseUri, final URI baseUrl, Version version) {
         this(baseUri, baseUrl, null, version);
     }
 
-    ActiveContext(final URI baseUri, final URI baseUrl, final ActiveContext previousContext, final JsonLdVersion version) {
+    ActiveContext(final URI baseUri, final URI baseUrl, final ActiveContext previousContext, final Version version) {
         this.baseUri = baseUri;
         this.baseUrl = baseUrl;
         this.previousContext = previousContext;
@@ -228,11 +227,11 @@ public final class ActiveContext implements Context {
     }
 
     @Override
-    public JsonLdVersion version() {
+    public Version version() {
         return version;
     }
 
-    public void setVersion(JsonLdVersion version) {
+    public void setVersion(Version version) {
         this.version = version;
     }
     

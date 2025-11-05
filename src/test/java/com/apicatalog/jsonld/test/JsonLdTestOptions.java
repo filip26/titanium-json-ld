@@ -19,17 +19,17 @@ import java.net.URI;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.JsonLdOptions.ProcessingPolicy;
-import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
-import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.Options.ProcessingPolicy;
+import com.apicatalog.jsonld.Options.RdfDirection;
+import com.apicatalog.jsonld.Version;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.web.media.MediaType;
 import com.apicatalog.web.uri.UriResolver;
 
 public class JsonLdTestOptions {
 
-    public JsonLdVersion version;
+    public Version version;
     public String base;
     public String processingMode;
     public Boolean normative;
@@ -45,11 +45,11 @@ public class JsonLdTestOptions {
     public Boolean useNumericId;
     public Boolean rdfStar;
     public MediaType contentType;
-    public JsonLdOptions.ProcessingPolicy undefinedTerms;
+    public Options.ProcessingPolicy undefinedTerms;
     public URI redirectTo;
     public Integer httpStatus;
     public Set<String> httpLink;
-    public JsonLdOptions.ProcessingPolicy undefinedTermPolicy = JsonLdOptions.ProcessingPolicy.Ignore;
+    public Options.ProcessingPolicy undefinedTermPolicy = Options.ProcessingPolicy.Ignore;
 
     public static final JsonLdTestOptions newOptions() {
         return new JsonLdTestOptions();
@@ -65,7 +65,7 @@ public class JsonLdTestOptions {
 
             switch (key) {
             case "specVersion":
-                options.version = JsonLdVersion.of(adapter.stringValue(entry.getValue()));
+                options.version = Version.of(adapter.stringValue(entry.getValue()));
                 break;
 
             case "base":
@@ -157,10 +157,10 @@ public class JsonLdTestOptions {
         return options;
     }
 
-    public JsonLdOptions setup(JsonLdOptions options) {
+    public Options setup(Options options) {
 
         if (processingMode != null) {
-            options.mode(JsonLdVersion.of(processingMode));
+            options.mode(Version.of(processingMode));
         }
 
         if (base != null) {

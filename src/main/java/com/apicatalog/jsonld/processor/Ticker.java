@@ -4,8 +4,8 @@ import java.time.Duration;
 import java.time.Instant;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.jsonld.Options;
 
 class Ticker extends Execution {
 
@@ -13,7 +13,7 @@ class Ticker extends Execution {
     
     Instant ticker;
 
-    Ticker(JsonLdOptions options) {
+    Ticker(Options options) {
         this.ttl = options.timeout();
         this.ticker = null;
     }
@@ -32,7 +32,7 @@ class Ticker extends Execution {
 
         if (elapsed.isNegative()) {
             ticker = null;
-            throw new JsonLdException(JsonLdErrorCode.PROCESSING_TIMEOUT_EXCEEDED);
+            throw new JsonLdException(ErrorCode.PROCESSING_TIMEOUT_EXCEEDED);
         }
     }
 }

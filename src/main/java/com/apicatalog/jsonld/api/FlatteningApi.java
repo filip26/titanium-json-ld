@@ -19,8 +19,8 @@ import java.io.IOException;
 import java.net.URI;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.Version;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.Execution;
@@ -37,14 +37,14 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
     // optional
     private Document context;
     private URI contextUri;
-    private JsonLdOptions options;
+    private Options options;
 
     public FlatteningApi(URI documentUri) {
         this.document = null;
         this.documentUri = documentUri;
         this.context = null;
         this.contextUri = null;
-        this.options = JsonLdOptions.newOptions();
+        this.options = Options.newOptions();
     }
 
     public FlatteningApi(Document document) {
@@ -52,11 +52,11 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
         this.documentUri = null;
         this.context = null;
         this.contextUri = null;
-        this.options = JsonLdOptions.newOptions();
+        this.options = Options.newOptions();
     }
 
     @Override
-    public FlatteningApi options(JsonLdOptions options) {
+    public FlatteningApi options(Options options) {
 
         if (options == null) {
             throw new IllegalArgumentException("Parameter 'options' is null.");
@@ -67,7 +67,7 @@ public final class FlatteningApi implements CommonApi<FlatteningApi>, LoaderApi<
     }
 
     @Override
-    public FlatteningApi mode(JsonLdVersion processingMode) {
+    public FlatteningApi mode(Version processingMode) {
         options.mode(processingMode);
         return this;
     }

@@ -25,8 +25,8 @@ import java.time.temporal.ChronoUnit;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdTestSuite;
+import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.UriBaseRewriter;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.jsonld.test.JsonLdMockServer;
@@ -190,7 +190,7 @@ public class EarlGenerator {
 
                             result = (new JsonLdTestRunnerEarl(testCase)).execute(options -> {
 
-                                final var expandOptions = JsonLdOptions.copyOf(options);
+                                final var expandOptions = Options.copyOf(options);
 
                                 expandOptions.loader(
                                         new UriBaseRewriter(

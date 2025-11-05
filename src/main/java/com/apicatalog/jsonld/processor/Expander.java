@@ -24,7 +24,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.expansion.Expansion;
@@ -43,7 +43,7 @@ public final class Expander {
 
     public static final Collection<?> expand(
             final Document document,
-            final JsonLdOptions options,
+            final Options options,
             final Execution runtime) throws JsonLdException, IOException {
 
         return Expander.expand(
@@ -61,14 +61,14 @@ public final class Expander {
             final PolyNode node,
             final Context context,
             final URI baseUrl,
-            final JsonLdOptions options,
+            final Options options,
             final Execution runtime) throws JsonLdException, IOException {
         return expand(node, context, baseUrl, false, options, runtime);
     }
 
     public static final Collection<?> expandFrame(
             final Document document,
-            final JsonLdOptions options,
+            final Options options,
             final Execution runtime) throws JsonLdException, IOException {
 
         return Expander.expandFrame(
@@ -86,7 +86,7 @@ public final class Expander {
             final PolyNode node,
             final Context context,
             final URI baseUrl,
-            final JsonLdOptions options,
+            final Options options,
             final Execution runtime) throws JsonLdException, IOException {
         return expand(node, context, baseUrl, true, options, runtime);
     }
@@ -94,7 +94,7 @@ public final class Expander {
     public static final Context context(
             final URI document,
             final URI context,
-            final JsonLdOptions options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException, IOException {
 
         // 5. Initialize a new empty active context. The base IRI and
         // original base URL of the active context is set to the documentUrl
@@ -139,7 +139,7 @@ public final class Expander {
         return builder.build();
     }
 
-    public static final URI baseUrl(URI document, JsonLdOptions options) {
+    public static final URI baseUrl(URI document, Options options) {
         return document != null
                 ? document
                 : options.base();
@@ -150,7 +150,7 @@ public final class Expander {
             final Context context,
             final URI baseUrl,
             boolean frameExpansion,
-            final JsonLdOptions options,
+            final Options options,
             final Execution runtime) throws JsonLdException, IOException {
 
         // 8.

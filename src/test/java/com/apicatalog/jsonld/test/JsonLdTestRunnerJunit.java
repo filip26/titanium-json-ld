@@ -26,11 +26,11 @@ import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
 
+import com.apicatalog.jsonld.Comparison;
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.JsonLdComparison;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdTestSuite;
+import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.jsonld.test.JsonLdTestCase.Type;
@@ -117,7 +117,7 @@ public class JsonLdTestRunnerJunit {
         assertNotNull(testCase.baseUri);
         assertNotNull(testCase.input);
 
-        final JsonLdOptions options = testCase.getOptions();
+        final Options options = testCase.getOptions();
 
         assertNotNull(options);
         assertNotNull(options.loader());
@@ -201,7 +201,7 @@ public class JsonLdTestRunnerJunit {
         }
     }
 
-    private boolean validateJsonLd(final JsonLdTestCase testCase, final JsonLdOptions options, final Object result, final NodeAdapter resultAdapter) {
+    private boolean validateJsonLd(final JsonLdTestCase testCase, final Options options, final Object result, final NodeAdapter resultAdapter) {
 
         assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
 
@@ -219,7 +219,7 @@ public class JsonLdTestRunnerJunit {
         return false;
     }
 
-    private boolean validateQuads(final JsonLdTestCase testCase, final JsonLdOptions options, final RdfQuadSet result) throws NQuadsReaderException, RdfConsumerException {
+    private boolean validateQuads(final JsonLdTestCase testCase, final Options options, final RdfQuadSet result) throws NQuadsReaderException, RdfConsumerException {
 
         // A PositiveSyntaxTest succeeds when no error is found when processing.
         if (testCase.expect == null && testCase.type.contains(Type.POSITIVE_SYNTAX_TEST)) {
@@ -242,7 +242,7 @@ public class JsonLdTestRunnerJunit {
 
     public static final boolean compareJson(final JsonLdTestCase testCase, final Object result, final NodeAdapter resultAdapter, final PolyNode expected) throws IOException {
 
-        if (JsonLdComparison.equals(expected.node(), expected.adapter(), result, resultAdapter)) {
+        if (Comparison.equals(expected.node(), expected.adapter(), result, resultAdapter)) {
             return true;
         }
 

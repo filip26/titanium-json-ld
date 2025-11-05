@@ -23,11 +23,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.apicatalog.jsonld.JsonLdAdapter;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.tree.io.NodeAdapter;
@@ -47,7 +47,7 @@ public final class Expansion {
             boolean frameExpansion,
             boolean fromMap,
             URI baseUrl,
-            JsonLdOptions options,
+            Options options,
             Execution runtime) {
 
         /**
@@ -259,7 +259,7 @@ public final class Expansion {
                             .map(TermDefinition::getContainerMapping)
                             .filter(c -> c.contains(Keywords.LIST)).isPresent()) {
 
-                expanded = JsonLdAdapter.toList(list);
+                expanded = LdAdapter.toList(list);
             }
 
             // 5.2.3

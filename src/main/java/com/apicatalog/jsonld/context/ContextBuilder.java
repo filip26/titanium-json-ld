@@ -26,10 +26,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdProfile;
-import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.jsonld.Profile;
+import com.apicatalog.jsonld.Version;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Direction;
@@ -118,7 +118,7 @@ public final class ContextBuilder {
             if (!adapter.isNull(propagateValue)) {
 
                 if (!adapter.isBoolean(propagateValue)) {
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_PROPAGATE_VALUE);
+                    throw new JsonLdException(ErrorCode.INVALID_KEYWORD_PROPAGATE_VALUE);
                 }
 
                 propagate = adapter.isTrue(propagateValue);
@@ -141,7 +141,7 @@ public final class ContextBuilder {
                 // protected term definitions, an invalid context nullification has been
                 // detected and processing is aborted.
                 if (!overrideProtected && result.containsProtectedTerm()) {
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_CONTEXT_NULLIFICATION);
+                    throw new JsonLdException(ErrorCode.INVALID_CONTEXT_NULLIFICATION);
                 }
 
                 // 5.1.2. Initialize result as a newly-initialized active context, setting both
@@ -171,7 +171,7 @@ public final class ContextBuilder {
             // 5.3. If context is not a map, an invalid local context error has been
             // detected and processing is aborted.
             if (!adapter.isMap(itemContext)) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_LOCAL_CONTEXT);
+                throw new JsonLdException(ErrorCode.INVALID_LOCAL_CONTEXT);
             }
 
             // 5.4. Otherwise, it's a context definition
@@ -192,15 +192,15 @@ public final class ContextBuilder {
                 // 5.5.1. If the associated value is not 1.1, an invalid @version value has been
                 // detected, and processing is aborted.
                 if (!"1.1".equals(versionString)) {
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_VERSION_VALUE);
+                    throw new JsonLdException(ErrorCode.INVALID_KEYWORD_VERSION_VALUE);
                 }
 
                 // 5.5.2.
                 if (activeContext.isV10()) {
-                    throw new JsonLdException(JsonLdErrorCode.PROCESSING_MODE_CONFLICT);
+                    throw new JsonLdException(ErrorCode.PROCESSING_MODE_CONFLICT);
                 }
 
-                result.setVersion(JsonLdVersion.V1_1);
+                result.setVersion(Version.V1_1);
             }
 
             // 5.6. If context has an @import
@@ -213,12 +213,12 @@ public final class ContextBuilder {
 
                 // 5.6.1.
                 if (activeContext.isV10()) {
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_CONTEXT_ENTRY);
+                    throw new JsonLdException(ErrorCode.INVALID_CONTEXT_ENTRY);
                 }
 
                 // 5.6.2.
                 if (!adapter.isString(contextImport)) {
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE, "Invalid context @import value [" + contextImport + "].");
+                    throw new JsonLdException(ErrorCode.INVALID_KEYWORD_IMPORT_VALUE, "Invalid context @import value [" + contextImport + "].");
                 }
 
                 // 5.6.3.
@@ -228,13 +228,13 @@ public final class ContextBuilder {
 
                 // 5.6.4.
                 if (loader == null) {
-                    throw new JsonLdException(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED);
+                    throw new JsonLdException(ErrorCode.LOADING_REMOTE_CONTEXT_FAILED);
                 }
 
                 final var loaderOptions = new DocumentLoader.Options(
                         false,
-                        JsonLdProfile.CONTEXT,
-                        List.of(JsonLdProfile.CONTEXT));
+                        Profile.CONTEXT,
+                        List.of(Profile.CONTEXT));
 
                 PolyNode importedContent = null;
 
@@ -243,7 +243,7 @@ public final class ContextBuilder {
                     final Document importedDocument = loader.loadDocument(contextImportUri, loaderOptions);
 
                     if (importedDocument == null) {
-                        throw new JsonLdException(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context[" + contextImportUri + "] is null.");
+                        throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT, "Imported context[" + contextImportUri + "] is null.");
                     }
 
 //                    if (importedDocument instanceof JsonDocument jsonDocument) {
@@ -258,7 +258,7 @@ public final class ContextBuilder {
 
                     // 5.6.5
                 } catch (JsonLdException e) {
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE, e);
+                    throw new JsonLdException(ErrorCode.INVALID_KEYWORD_IMPORT_VALUE, e);
                 }
 
                 var importedNode = importedContent.node();
@@ -266,19 +266,19 @@ public final class ContextBuilder {
 
                 // 5.6.6
                 if (!importAdapter.isMap(importedNode)) {
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_REMOTE_CONTEXT);
+                    throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT);
                 }
 
                 var importedContext = importAdapter.property(Keywords.CONTEXT, importedNode);
 
                 if (importedContext == null
                         || !importAdapter.isMap(importedContext)) {
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_REMOTE_CONTEXT);
+                    throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT);
                 }
 
                 // 5.6.7
                 if (importAdapter.keys(importedContext).contains(Keywords.IMPORT)) {
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_CONTEXT_ENTRY);
+                    throw new JsonLdException(ErrorCode.INVALID_CONTEXT_ENTRY);
                 }
 
                 // 5.6.8
@@ -335,18 +335,18 @@ public final class ContextBuilder {
                                     "5.7.4: valueString={0}, localContext={1}, baseUrl={2}",
                                     new Object[] { valueString, localContext, baseUrl });
 
-                            throw new JsonLdException(JsonLdErrorCode.INVALID_BASE_IRI,
+                            throw new JsonLdException(ErrorCode.INVALID_BASE_IRI,
                                     "A relative base IRI cannot be resolved [@base = " + valueString +
                                             "]. Please use JsonLdOptions.setBase() method to set an absolute IRI.");
                         }
 
                     } else if (valueString != null && !valueString.isBlank()) {
-                        throw new JsonLdException(JsonLdErrorCode.INVALID_BASE_IRI,
+                        throw new JsonLdException(ErrorCode.INVALID_BASE_IRI,
                                 "An invalid base IRI has been detected [@base = " + valueString + "].");
                     }
 
                 } else {
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_BASE_IRI,
+                    throw new JsonLdException(ErrorCode.INVALID_BASE_IRI,
                             "An invalid base IRI has been detected [@base = " + baseValue + "].");
                 }
             }
@@ -380,15 +380,15 @@ public final class ContextBuilder {
                             result.setVocabularyMapping(vocabularyMapping);
 
                         } else {
-                            throw new JsonLdException(JsonLdErrorCode.INVALID_VOCAB_MAPPING, "An invalid vocabulary mapping [" + vocabularyMapping + "] has been detected.");
+                            throw new JsonLdException(ErrorCode.INVALID_VOCAB_MAPPING, "An invalid vocabulary mapping [" + vocabularyMapping + "] has been detected.");
                         }
 
                     } else {
-                        throw new JsonLdException(JsonLdErrorCode.INVALID_VOCAB_MAPPING, "An invalid vocabulary mapping [" + valueString + "] has been detected.");
+                        throw new JsonLdException(ErrorCode.INVALID_VOCAB_MAPPING, "An invalid vocabulary mapping [" + valueString + "] has been detected.");
                     }
 
                 } else {
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_VOCAB_MAPPING);
+                    throw new JsonLdException(ErrorCode.INVALID_VOCAB_MAPPING);
                 }
             }
 
@@ -411,7 +411,7 @@ public final class ContextBuilder {
                     }
 
                 } else {
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_DEFAULT_LANGUAGE);
+                    throw new JsonLdException(ErrorCode.INVALID_DEFAULT_LANGUAGE);
                 }
             }
 
@@ -422,7 +422,7 @@ public final class ContextBuilder {
 
                 // 5.10.1.
                 if (activeContext.isV10()) {
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_CONTEXT_ENTRY);
+                    throw new JsonLdException(ErrorCode.INVALID_CONTEXT_ENTRY);
                 }
 
                 // 5.10.3.
@@ -441,11 +441,11 @@ public final class ContextBuilder {
                         result.setDefaultBaseDirection(Direction.RTL);
 
                     } else {
-                        throw new JsonLdException(JsonLdErrorCode.INVALID_BASE_DIRECTION);
+                        throw new JsonLdException(ErrorCode.INVALID_BASE_DIRECTION);
                     }
 
                 } else {
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_BASE_DIRECTION);
+                    throw new JsonLdException(ErrorCode.INVALID_BASE_DIRECTION);
                 }
             }
 
@@ -455,12 +455,12 @@ public final class ContextBuilder {
             if (propagateValue != null) {
                 // 5.11.1.
                 if (activeContext.isV10()) {
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_CONTEXT_ENTRY);
+                    throw new JsonLdException(ErrorCode.INVALID_CONTEXT_ENTRY);
                 }
                 // 5.11.2.
                 if (!contextAdapter.isBoolean(propagateValue)) {
                     throw new JsonLdException(
-                            JsonLdErrorCode.INVALID_KEYWORD_PROPAGATE_VALUE,
+                            ErrorCode.INVALID_KEYWORD_PROPAGATE_VALUE,
                             "Expected boolean but got %s".formatted(propagateValue));
                 }
             }
@@ -522,11 +522,11 @@ public final class ContextBuilder {
             }
 
             if (!contextUri.isAbsolute()) {
-                throw new JsonLdException(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Context URI is not absolute [" + contextUri + "].");
+                throw new JsonLdException(ErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Context URI is not absolute [" + contextUri + "].");
             }
 
         } catch (IllegalArgumentException e) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Context URI is not URI [" + uri + "].");
+            throw new JsonLdException(ErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Context URI is not URI [" + uri + "].");
         }
 
         final String contextKey = contextUri.toString();
@@ -538,7 +538,7 @@ public final class ContextBuilder {
 
         // 5.2.3
         if (remoteContexts.size() > MAX_REMOTE_CONTEXTS) {
-            throw new JsonLdException(JsonLdErrorCode.CONTEXT_OVERFLOW, "Too many contexts [>" + MAX_REMOTE_CONTEXTS + "].");
+            throw new JsonLdException(ErrorCode.CONTEXT_OVERFLOW, "Too many contexts [>" + MAX_REMOTE_CONTEXTS + "].");
         }
 
         remoteContexts.add(contextKey);
@@ -559,7 +559,7 @@ public final class ContextBuilder {
 
         // 5.2.5.
         if (loader == null) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Document loader is null. Cannot fetch [" + contextUri + "].");
+            throw new JsonLdException(ErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "Document loader is null. Cannot fetch [" + contextUri + "].");
         }
 
         Document remoteDocument = null;
@@ -575,8 +575,8 @@ public final class ContextBuilder {
 
             final var loaderOptions = new DocumentLoader.Options(
                     false,
-                    JsonLdProfile.CONTEXT,
-                    List.of(JsonLdProfile.CONTEXT));
+                    Profile.CONTEXT,
+                    List.of(Profile.CONTEXT));
 
             try {
 
@@ -584,11 +584,11 @@ public final class ContextBuilder {
 
                 // 5.2.5.1.
             } catch (JsonLdException e) {
-                throw new JsonLdException(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "There was a problem encountered loading a remote context [" + contextUri + "]", e);
+                throw new JsonLdException(ErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "There was a problem encountered loading a remote context [" + contextUri + "]", e);
             }
 
             if (remoteDocument == null) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");
+                throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");
             }
         }
 
@@ -604,14 +604,14 @@ public final class ContextBuilder {
 
         // 5.2.5.2.
         if (!PolyNode.isMap(importedContent)) {
-            throw new JsonLdException(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is not valid JSON-LD context: " + importedContent.node() + ".");
+            throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is not valid JSON-LD context: " + importedContent.node() + ".");
         }
 
         // 5.2.5.3.
         final var importedContext = importedContent.property(Keywords.CONTEXT);
 
         if (importedContext == null) {
-            throw new JsonLdException(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context does not contain @context key and is not valid JSON-LD context.");
+            throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT, "Imported context does not contain @context key and is not valid JSON-LD context.");
         }
 
         var newContext = new NativeMaterializer().node(importedContext, importedContent.adapter());
@@ -643,7 +643,7 @@ public final class ContextBuilder {
 //            }
 
         } catch (JsonLdException e) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
+            throw new JsonLdException(ErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);
         }
     }
 }

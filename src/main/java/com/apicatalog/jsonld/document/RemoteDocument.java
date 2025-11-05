@@ -20,8 +20,8 @@ import java.net.URI;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.web.media.MediaType;
@@ -230,7 +230,7 @@ public final class RemoteDocument implements Document {
     public static final Document fetch(URI uri, DocumentLoader loader, boolean extractAllScripts) throws JsonLdException {
 
         if (loader == null) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + uri + "].");
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + uri + "].");
         }
 
         final var loaderOptions = new DocumentLoader.Options(
@@ -241,7 +241,7 @@ public final class RemoteDocument implements Document {
         final Document remoteDocument = loader.loadDocument(uri, loaderOptions);
 
         if (remoteDocument == null) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Returned document is null [" + uri + "].");
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "Returned document is null [" + uri + "].");
         }
         return remoteDocument;
     }

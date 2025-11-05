@@ -25,10 +25,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import com.apicatalog.jsonld.JsonLdAdapter;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.lang.BlankNode;
+import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
@@ -233,7 +233,7 @@ public final class NodeMapBuilder {
             }
 
             // 6.
-        } else if (JsonLdAdapter.isNode(element, NativeAdapter.instance())) {
+        } else if (LdAdapter.isNode(element, NativeAdapter.instance())) {
 
             var id = (String) elementMap.get(Keywords.ID);
 
@@ -357,7 +357,7 @@ public final class NodeMapBuilder {
             if (elementMap.containsKey(Keywords.INDEX)) {
 
                 if (nodeMap.contains(activeGraph, id, Keywords.INDEX)) {
-                    throw new JsonLdException(JsonLdErrorCode.CONFLICTING_INDEXES);
+                    throw new JsonLdException(ErrorCode.CONFLICTING_INDEXES);
                 }
 
                 nodeMap.set(activeGraph, id, Keywords.INDEX, elementMap.get(Keywords.INDEX));

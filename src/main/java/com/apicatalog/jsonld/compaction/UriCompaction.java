@@ -22,12 +22,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.JsonLdAdapter;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.BlankNode;
+import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.web.uri.UriRelativizer;
@@ -119,7 +119,7 @@ public final class UriCompaction {
 
             // 4.5.
             if (node instanceof Map<?, ?> map && map.containsKey(Keywords.INDEX)
-                    && JsonLdAdapter.isNotGraph(map)) { // TODO was !Gra...isGraph
+                    && LdAdapter.isNotGraph(map)) { // TODO was !Gra...isGraph
 
                 containers.add(Keywords.INDEX);
                 containers.add(Keywords.INDEX.concat(Keywords.SET));
@@ -134,7 +134,7 @@ public final class UriCompaction {
                 containers.add(Keywords.SET);
 
                 // 4.7.
-            } else if (node instanceof Map valueMap && JsonLdAdapter.isList(valueMap)) {
+            } else if (node instanceof Map valueMap && LdAdapter.isList(valueMap)) {
 
                 // 4.7.1.
                 if (!valueMap.containsKey(Keywords.INDEX)) {
@@ -236,7 +236,7 @@ public final class UriCompaction {
                 }
 
                 // 4.8.
-            } else if (node instanceof Map<?, ?> map && JsonLdAdapter.isGraph(map)) {
+            } else if (node instanceof Map<?, ?> map && LdAdapter.isGraph(map)) {
 
                 // 4.8.1.
                 if (map.containsKey(Keywords.INDEX)) {
@@ -279,7 +279,7 @@ public final class UriCompaction {
             } else {
 
                 // 4.9.1.
-                if (node instanceof Map map && JsonLdAdapter.isValueNode(map)) {
+                if (node instanceof Map map && LdAdapter.isValueNode(map)) {
 
                     // 4.9.1.1.
                     if (map.containsKey(Keywords.DIRECTION)
@@ -401,7 +401,7 @@ public final class UriCompaction {
                     }
 
                 } else {
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_ID_VALUE, "An @id entry was encountered whose value was not a string but [" + idValue + "].");
+                    throw new JsonLdException(ErrorCode.INVALID_KEYWORD_ID_VALUE, "An @id entry was encountered whose value was not a string but [" + idValue + "].");
                 }
 
                 preferredValues.add(Keywords.NONE);
@@ -412,7 +412,7 @@ public final class UriCompaction {
                 preferredValues.add(Keywords.NONE);
 
                 if (node instanceof Map<?, ?> map
-                        && JsonLdAdapter.isList(map)
+                        && LdAdapter.isList(map)
                         && map.get(Keywords.LIST) instanceof Collection<?> array
                         && array.isEmpty()) {
 
@@ -504,7 +504,7 @@ public final class UriCompaction {
                     && uri.getScheme() != null
                     && uri.getAuthority() == null
                     && context.findTerm(uri.getScheme()).filter(TermDefinition::isPrefix).isPresent()) {
-                throw new JsonLdException(JsonLdErrorCode.IRI_CONFUSED_WITH_PREFIX);
+                throw new JsonLdException(ErrorCode.IRI_CONFUSED_WITH_PREFIX);
             }
         } catch (IllegalArgumentException e) {
             /* variable is not URI */ }

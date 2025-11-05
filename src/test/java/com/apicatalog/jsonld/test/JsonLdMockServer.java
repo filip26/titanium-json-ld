@@ -34,8 +34,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.web.link.Link;
@@ -162,7 +162,7 @@ public class JsonLdMockServer implements AutoCloseable {
             server = new ServerSocket(0);
             pool.submit(this::serve);
         } catch (IOException e) {
-            throw new JsonLdException(JsonLdErrorCode.UNSPECIFIED, e);
+            throw new JsonLdException(ErrorCode.UNSPECIFIED, e);
         }
     }
 
@@ -173,7 +173,7 @@ public class JsonLdMockServer implements AutoCloseable {
             server.close();
             pool.shutdownNow();
         } catch (IOException e) {
-            throw new JsonLdException(JsonLdErrorCode.UNSPECIFIED, e);
+            throw new JsonLdException(ErrorCode.UNSPECIFIED, e);
         }
     }
 

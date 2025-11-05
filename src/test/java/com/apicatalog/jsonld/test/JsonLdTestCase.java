@@ -24,10 +24,10 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.Version;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.UriBaseRewriter;
@@ -44,7 +44,7 @@ public final class JsonLdTestCase {
 
     public static final String TESTS_BASE = "https://w3c.github.io";
 
-    public static final Predicate<JsonLdTestCase> IS_NOT_V1_0 = test -> test.options != null && !JsonLdVersion.V1_0.equals(test.options.version);
+    public static final Predicate<JsonLdTestCase> IS_NOT_V1_0 = test -> test.options != null && !Version.V1_0.equals(test.options.version);
 
     public String id;
 
@@ -58,7 +58,7 @@ public final class JsonLdTestCase {
 
     public URI frame;
 
-    public JsonLdErrorCode expectErrorCode;
+    public ErrorCode expectErrorCode;
 
     public String baseUri;
 
@@ -170,9 +170,9 @@ public final class JsonLdTestCase {
         return testCase;
     }
 
-    public JsonLdOptions getOptions() {
+    public Options getOptions() {
         return options.setup(
-                JsonLdOptions.with(
+                Options.with(
                         new UriBaseRewriter(
                                 baseUri,
                                 testsBase,
@@ -180,7 +180,7 @@ public final class JsonLdTestCase {
                         .ordered(true));
     }
 
-    public static final JsonLdErrorCode errorCode(String errorCode) {
+    public static final ErrorCode errorCode(String errorCode) {
 
         if (errorCode == null || errorCode.isBlank()) {
             return null;
@@ -194,16 +194,16 @@ public final class JsonLdTestCase {
          * since JSON-LD Community Group Final Report</a>
          */
         if ("recursive context inclusion".equalsIgnoreCase(errorCode)) {
-            return JsonLdErrorCode.CONTEXT_OVERFLOW;
+            return ErrorCode.CONTEXT_OVERFLOW;
         }
         if ("list of lists".equalsIgnoreCase(errorCode)) {
-            return JsonLdErrorCode.UNSPECIFIED;
+            return ErrorCode.UNSPECIFIED;
         }
         if ("compaction to list of lists".equalsIgnoreCase(errorCode)) {
-            return JsonLdErrorCode.UNSPECIFIED;
+            return ErrorCode.UNSPECIFIED;
         }
 
-        return JsonLdErrorCode.valueOf(errorCode.strip().toUpperCase().replace(" ", "_").replace("-", "_").replaceAll("\\_\\@", "_KEYWORD_"));
+        return ErrorCode.valueOf(errorCode.strip().toUpperCase().replace(" ", "_").replace("-", "_").replaceAll("\\_\\@", "_KEYWORD_"));
     }
 
     public enum Type {

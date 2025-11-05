@@ -22,8 +22,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Map;
 
-import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.tree.io.NodeParser;
@@ -79,13 +79,13 @@ public final class FileLoader implements DocumentLoader {
     public Document loadDocument(final URI url, final Options options) throws JsonLdException {
 
         if (!"file".equalsIgnoreCase(url.getScheme())) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unsupported URL scheme [" + url.getScheme() + "]. FileLoader accepts only file scheme.");
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "Unsupported URL scheme [" + url.getScheme() + "]. FileLoader accepts only file scheme.");
         }
 
         final File file = new File(url);
 
         if (!file.canRead()) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "File [" + url + "] is not accessible to read.");
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "File [" + url + "] is not accessible to read.");
         }
 
         var contentType = fromFileExtension(file.getName());
@@ -97,10 +97,10 @@ public final class FileLoader implements DocumentLoader {
 
         } catch (FileNotFoundException e) {
 
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "File not found [" + url + "].");
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "File not found [" + url + "].");
 
         } catch (Exception e) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
 

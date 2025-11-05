@@ -27,7 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.CompactUri;
 import com.apicatalog.jsonld.lang.Direction;
@@ -110,7 +110,7 @@ public final class TermDefinitionBuilder {
     public void create(final String term) throws JsonLdException, IOException {
 
         if (term == null || term.isBlank()) {
-            throw new JsonLdException(JsonLdErrorCode.INVALID_TERM_DEFINITION);
+            throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
         }
 
         // 1.
@@ -120,7 +120,7 @@ public final class TermDefinitionBuilder {
                 return;
             }
 
-            throw new JsonLdException(JsonLdErrorCode.CYCLIC_IRI_MAPPING);
+            throw new JsonLdException(ErrorCode.CYCLIC_IRI_MAPPING);
         }
 
         // 2.
@@ -133,7 +133,7 @@ public final class TermDefinitionBuilder {
         if (Keywords.TYPE.equals(term)) {
 
             if (activeContext.isV10()) {
-                throw new JsonLdException(JsonLdErrorCode.KEYWORD_REDEFINITION);
+                throw new JsonLdException(ErrorCode.KEYWORD_REDEFINITION);
             }
 
             if (adapter.isMap(value)) {
@@ -144,7 +144,7 @@ public final class TermDefinitionBuilder {
                 if (container != null && adapter.isSingleEntry(value)) {
 
                     if (!adapter.isString(container) || !Keywords.SET.equals(adapter.stringValue(container))) {
-                        throw new JsonLdException(JsonLdErrorCode.KEYWORD_REDEFINITION);
+                        throw new JsonLdException(ErrorCode.KEYWORD_REDEFINITION);
                     }
 
                 } else if (container != null
@@ -158,20 +158,20 @@ public final class TermDefinitionBuilder {
                             || adapter.isMap(container) && adapter.keyStream(container)
                                     .map(adapter::asString)
                                     .noneMatch(Keywords.SET::equals)) {
-                        throw new JsonLdException(JsonLdErrorCode.KEYWORD_REDEFINITION);
+                        throw new JsonLdException(ErrorCode.KEYWORD_REDEFINITION);
                     }
 
                 } else if (protect == null || adapter.keys(value).size() != 1) {
-                    throw new JsonLdException(JsonLdErrorCode.KEYWORD_REDEFINITION);
+                    throw new JsonLdException(ErrorCode.KEYWORD_REDEFINITION);
                 }
 
             } else {
-                throw new JsonLdException(JsonLdErrorCode.KEYWORD_REDEFINITION);
+                throw new JsonLdException(ErrorCode.KEYWORD_REDEFINITION);
             }
 
         } else if (Keywords.contains(term)) {
             // 5.
-            throw new JsonLdException(JsonLdErrorCode.KEYWORD_REDEFINITION, "A keyword [" + term + "] redefinition has been detected.");
+            throw new JsonLdException(ErrorCode.KEYWORD_REDEFINITION, "A keyword [" + term + "] redefinition has been detected.");
 
         } else if (Keywords.matchForm(term)) {
             LOGGER.log(Level.WARNING, "Term [{0}] has form of a keyword. Keywords cannot be overridden.", term);
@@ -211,7 +211,7 @@ public final class TermDefinitionBuilder {
             simpleTerm = false;
 
         } else {
-            throw new JsonLdException(JsonLdErrorCode.INVALID_TERM_DEFINITION);
+            throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
         }
 
         // 10.
@@ -223,11 +223,11 @@ public final class TermDefinitionBuilder {
         if (protectedValue != null) {
 
             if (activeContext.isV10()) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_TERM_DEFINITION);
+                throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
             }
 
             if (!adapter.isBoolean(protectedValue)) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_PROTECTED_VALUE);
+                throw new JsonLdException(ErrorCode.INVALID_KEYWORD_PROTECTED_VALUE);
             }
 
             definition.setProtected(adapter.isTrue(protectedValue));
@@ -239,7 +239,7 @@ public final class TermDefinitionBuilder {
         if (typeValue != null) {
 
             if (!adapter.isString(typeValue)) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_TYPE_MAPPING);
+                throw new JsonLdException(ErrorCode.INVALID_TYPE_MAPPING);
             }
 
             // 12.2.
@@ -251,7 +251,7 @@ public final class TermDefinitionBuilder {
                     .expand(adapter.stringValue(typeValue));
 
             if (expandedTypeString == null) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_TYPE_MAPPING);
+                throw new JsonLdException(ErrorCode.INVALID_TYPE_MAPPING);
             }
 
             // 12.3.
@@ -260,7 +260,7 @@ public final class TermDefinitionBuilder {
                     // 12.4.
                     || (Keywords.noneMatch(expandedTypeString, Keywords.ID, Keywords.JSON, Keywords.NONE, Keywords.VOCAB)
                             && UriUtils.isNotAbsoluteUri(expandedTypeString, UriValidationPolicy.Full))) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_TYPE_MAPPING);
+                throw new JsonLdException(ErrorCode.INVALID_TYPE_MAPPING);
             }
 
             // 12.5.
@@ -274,12 +274,12 @@ public final class TermDefinitionBuilder {
 
             // 13.1.
             if (valueObjectKeys.contains(Keywords.ID) || valueObjectKeys.contains(Keywords.NEST)) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_REVERSE_PROPERTY);
+                throw new JsonLdException(ErrorCode.INVALID_REVERSE_PROPERTY);
             }
 
             // 13.2.
             if (!adapter.isString(reverseValue)) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_IRI_MAPPING);
+                throw new JsonLdException(ErrorCode.INVALID_IRI_MAPPING);
             }
 
             final String reverseString = adapter.stringValue(reverseValue);
@@ -300,7 +300,7 @@ public final class TermDefinitionBuilder {
                             .expand(reverseString));
 
             if (UriUtils.isNotURI(definition.getUriMapping())) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_IRI_MAPPING);
+                throw new JsonLdException(ErrorCode.INVALID_IRI_MAPPING);
             }
 
             // 13.5.
@@ -309,7 +309,7 @@ public final class TermDefinitionBuilder {
             if (containerValue != null) {
 
                 if (!adapter.isString(containerValue) && !adapter.isNull(containerValue)) {
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_REVERSE_PROPERTY);
+                    throw new JsonLdException(ErrorCode.INVALID_REVERSE_PROPERTY);
                 }
 
                 if (adapter.isString(containerValue)) {
@@ -320,7 +320,7 @@ public final class TermDefinitionBuilder {
                         definition.addContainerMapping(containerString);
 
                     } else {
-                        throw new JsonLdException(JsonLdErrorCode.INVALID_REVERSE_PROPERTY);
+                        throw new JsonLdException(ErrorCode.INVALID_REVERSE_PROPERTY);
                     }
                 }
             }
@@ -342,7 +342,7 @@ public final class TermDefinitionBuilder {
 
                 // 14.2.1
                 if (!adapter.isString(idValue)) {
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_IRI_MAPPING);
+                    throw new JsonLdException(ErrorCode.INVALID_IRI_MAPPING);
                 }
 
                 final String idValueString = adapter.stringValue(idValue);
@@ -363,13 +363,13 @@ public final class TermDefinitionBuilder {
                                 .expand(idValueString));
 
                 if (Keywords.CONTEXT.equals(definition.getUriMapping())) {
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_ALIAS);
+                    throw new JsonLdException(ErrorCode.INVALID_KEYWORD_ALIAS);
                 }
 
                 if (!Keywords.contains(definition.getUriMapping()) && UriUtils.isNotURI(definition.getUriMapping())
                         && !BlankNode.hasPrefix(definition.getUriMapping())) {
 
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_IRI_MAPPING);
+                    throw new JsonLdException(ErrorCode.INVALID_IRI_MAPPING);
                 }
 
                 // 14.2.4
@@ -387,7 +387,7 @@ public final class TermDefinitionBuilder {
                             .expand(term);
 
                     if (expandedTerm == null || !expandedTerm.equals(definition.getUriMapping())) {
-                        throw new JsonLdException(JsonLdErrorCode.INVALID_IRI_MAPPING);
+                        throw new JsonLdException(ErrorCode.INVALID_IRI_MAPPING);
                     }
                 }
 
@@ -442,7 +442,7 @@ public final class TermDefinitionBuilder {
                             .expand(term));
 
             if (UriUtils.isNotURI(definition.getUriMapping())) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_IRI_MAPPING);
+                throw new JsonLdException(ErrorCode.INVALID_IRI_MAPPING);
             }
 
             // 17.
@@ -451,7 +451,7 @@ public final class TermDefinitionBuilder {
 
             // 18.
         } else if (activeContext.getVocabularyMapping() == null) {
-            throw new JsonLdException(JsonLdErrorCode.INVALID_IRI_MAPPING);
+            throw new JsonLdException(ErrorCode.INVALID_IRI_MAPPING);
 
         } else {
             definition.setUriMapping(activeContext.getVocabularyMapping().concat(term));
@@ -463,7 +463,7 @@ public final class TermDefinitionBuilder {
         if (containerValue != null) {
 
             if (!validateContainer(containerValue)) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_CONTAINER_MAPPING);
+                throw new JsonLdException(ErrorCode.INVALID_CONTAINER_MAPPING);
             }
 
             // 19.3.
@@ -483,7 +483,7 @@ public final class TermDefinitionBuilder {
                 if (!Keywords.ID.equals(definition.getTypeMapping())
                         && !Keywords.VOCAB.equals(definition.getTypeMapping())) {
 
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_TYPE_MAPPING);
+                    throw new JsonLdException(ErrorCode.INVALID_TYPE_MAPPING);
                 }
             }
         }
@@ -493,14 +493,14 @@ public final class TermDefinitionBuilder {
 
             // 20.1.
             if (activeContext.isV10() || !definition.getContainerMapping().contains(Keywords.INDEX)) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_TERM_DEFINITION);
+                throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
             }
 
             // 20.2.
             final var index = propertyGetter.apply(Keywords.INDEX);
 
             if (!adapter.isString(index)) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_TERM_DEFINITION);
+                throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
             }
 
             final var indexString = adapter.stringValue(index);
@@ -513,7 +513,7 @@ public final class TermDefinitionBuilder {
                     .expand(indexString);
 
             if (expandedIndex == null || UriUtils.isNotURI(expandedIndex)) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_TERM_DEFINITION);
+                throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
             }
 
             definition.setIndexMapping(indexString);
@@ -526,7 +526,7 @@ public final class TermDefinitionBuilder {
 
             // 21.1.
             if (activeContext.isV10()) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_TERM_DEFINITION);
+                throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
             }
 
             // 21.3.
@@ -539,7 +539,7 @@ public final class TermDefinitionBuilder {
                         .build(contextValue, adapter, baseUrl);
 
             } catch (JsonLdException e) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_SCOPED_CONTEXT, e);
+                throw new JsonLdException(ErrorCode.INVALID_SCOPED_CONTEXT, e);
             }
 
             // 21.4.
@@ -566,7 +566,7 @@ public final class TermDefinitionBuilder {
                 definition.setLanguageMapping(language);
 
             } else {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_LANGUAGE_MAPPING);
+                throw new JsonLdException(ErrorCode.INVALID_LANGUAGE_MAPPING);
             }
 
 //            if (JsonUtils.isNull(language) || JsonUtils.isString(language)) {
@@ -602,11 +602,11 @@ public final class TermDefinitionBuilder {
                     definition.setDirectionMapping(Direction.RTL);
 
                 } else {
-                    throw new JsonLdException(JsonLdErrorCode.INVALID_BASE_DIRECTION);
+                    throw new JsonLdException(ErrorCode.INVALID_BASE_DIRECTION);
                 }
 
             } else {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_BASE_DIRECTION);
+                throw new JsonLdException(ErrorCode.INVALID_BASE_DIRECTION);
             }
         }
 
@@ -617,17 +617,17 @@ public final class TermDefinitionBuilder {
 
             // 24.1
             if (activeContext.isV10()) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_TERM_DEFINITION);
+                throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
             }
 
             if (!adapter.isString(nestValue)) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
+                throw new JsonLdException(ErrorCode.INVALID_KEYWORD_NEST_VALUE);
             }
 
             var nestString = adapter.stringValue(nestValue);
 
             if (Keywords.contains(nestString) && !Keywords.NEST.equals(nestString)) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_NEST_VALUE);
+                throw new JsonLdException(ErrorCode.INVALID_KEYWORD_NEST_VALUE);
             }
 
             definition.setNestValue(nestString);
@@ -640,7 +640,7 @@ public final class TermDefinitionBuilder {
 
             // 25.1.
             if (activeContext.isV10() || term.contains(":") || term.contains("/")) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_TERM_DEFINITION);
+                throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
             }
 
             final var prefixType = adapter.type(prefixValue);
@@ -652,18 +652,18 @@ public final class TermDefinitionBuilder {
                 definition.setPrefix(false);
 
             } else {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_KEYWORD_PREFIX_VALUE);
+                throw new JsonLdException(ErrorCode.INVALID_KEYWORD_PREFIX_VALUE);
             }
 
             // 25.3
             if (definition.isPrefix() && Keywords.contains(definition.getUriMapping())) {
-                throw new JsonLdException(JsonLdErrorCode.INVALID_TERM_DEFINITION);
+                throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
             }
         }
 
         // 26.
         if (!PROTECTED_KEYWORDS.containsAll(valueObjectKeys)) {
-            throw new JsonLdException(JsonLdErrorCode.INVALID_TERM_DEFINITION);
+            throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
         }
 
         // 27.
@@ -671,7 +671,7 @@ public final class TermDefinitionBuilder {
 
             // 27.1.
             if (definition.isNotSameExcept(previousDefinition)) {
-                throw new JsonLdException(JsonLdErrorCode.PROTECTED_TERM_REDEFINITION);
+                throw new JsonLdException(ErrorCode.PROTECTED_TERM_REDEFINITION);
             }
 
             // 27.2.

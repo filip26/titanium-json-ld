@@ -11,11 +11,11 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.apicatalog.jsonld.Comparison;
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.JsonLdComparison;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdTestSuite;
+import com.apicatalog.jsonld.Options;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.model.RdfQuadSet;
@@ -31,10 +31,10 @@ class NativeInputTest {
     @Test
     void testExpand() throws JsonLdException, IOException {
 
-        final var result = JsonLd.expand(PL_2_COMPACTED, JsonLdOptions.newOptions());
+        final var result = JsonLd.expand(PL_2_COMPACTED, Options.newOptions());
         assertNotNull(result);
 
-        var match = JsonLdComparison.equals(
+        var match = Comparison.equals(
                 result,
                 PL_2_EXPANDED,
                 NativeAdapter.instance());
@@ -45,10 +45,10 @@ class NativeInputTest {
     @Test
     void testCompact() throws JsonLdException, IOException {
 
-        final var result = JsonLd.compact(PL_2_EXPANDED, PL_2_CONTEXT, JsonLdOptions.newOptions());
+        final var result = JsonLd.compact(PL_2_EXPANDED, PL_2_CONTEXT, Options.newOptions());
         assertNotNull(result);
 
-        var match = JsonLdComparison.equals(
+        var match = Comparison.equals(
                 result,
                 PL_2_COMPACTED,
                 NativeAdapter.instance());
@@ -59,13 +59,13 @@ class NativeInputTest {
     @Test
     void testFlatten() throws JsonLdException, IOException {
 
-        final var result = JsonLd.flatten(PL_2_COMPACTED, JsonLdOptions.newOptions());
+        final var result = JsonLd.flatten(PL_2_COMPACTED, Options.newOptions());
         assertNotNull(result);
 
         final var expected = readJson("/com/apicatalog/jsonld/test/pl-2-flattened.json");
         assertNotNull(expected);
 
-        var match = JsonLdComparison.equals(
+        var match = Comparison.equals(
                 result,
                 NativeAdapter.instance(),
                 expected.node(),
@@ -77,12 +77,12 @@ class NativeInputTest {
     @Test
     void testFrame() throws JsonLdException, IOException {
 
-        final var result = JsonLd.frame(PL_2_COMPACTED, PL_2_FRAME, JsonLdOptions.newOptions());
+        final var result = JsonLd.frame(PL_2_COMPACTED, PL_2_FRAME, Options.newOptions());
         assertNotNull(result);
 
 //        final var expected = readJson("/com/apicatalog/jsonld/test/pl-2-flattened.json");
 //        assertNotNull(expected);
-        var match = JsonLdComparison.equals(
+        var match = Comparison.equals(
                 result,
                 PL_2_COMPACTED,
                 NativeAdapter.instance());
@@ -95,7 +95,7 @@ class NativeInputTest {
 
         final var set = new OrderedQuadSet();
 
-        JsonLd.toRdf(PL_2_COMPACTED, new QuadAcceptor(set), JsonLdOptions.newOptions());
+        JsonLd.toRdf(PL_2_COMPACTED, new QuadAcceptor(set), Options.newOptions());
 
         final var expected = readNQuads("/com/apicatalog/jsonld/test/pl-2-quads.nq");
         assertNotNull(expected);

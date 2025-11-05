@@ -13,8 +13,8 @@ import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 
 final class NativeHttpClient implements HttpLoaderClient {
 
@@ -49,13 +49,13 @@ final class NativeHttpClient implements HttpLoaderClient {
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, e);
 
         } catch (HttpTimeoutException e) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_TIMEOUT, e);
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_TIMEOUT, e);
 
         } catch (IOException e) {
-            throw new JsonLdException(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
 

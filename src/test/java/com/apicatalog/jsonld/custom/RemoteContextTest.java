@@ -28,11 +28,11 @@ import java.time.Duration;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import com.apicatalog.jsonld.Comparison;
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.JsonLdComparison;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdTestSuite;
+import com.apicatalog.jsonld.Options;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.model.RdfQuadSet;
@@ -62,7 +62,7 @@ class RemoteContextTest {
         JsonLd.toRdf(
                 document,
                 new QuadAcceptor(result),
-                JsonLdOptions.newOptions()
+                Options.newOptions()
                         .expandContext(context));
 
         try (final var is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue61-out.nq")) {
@@ -94,7 +94,7 @@ class RemoteContextTest {
         JsonLd.toRdf(
                 document,
                 new QuadAcceptor(result),
-                JsonLdOptions.newOptions().expandContext(context));
+                Options.newOptions().expandContext(context));
 
         try (final var is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue61-out.nq")) {
 
@@ -124,7 +124,7 @@ class RemoteContextTest {
         JsonLd.toRdf(
                 document,
                 new QuadAcceptor(result),
-                JsonLdOptions.with(JsonLdTestSuite.CLASSPATH_LOADER));
+                Options.with(JsonLdTestSuite.CLASSPATH_LOADER));
 
         assertNotNull(result);
 
@@ -163,13 +163,13 @@ class RemoteContextTest {
 
             long start = System.nanoTime();
 
-            final var result = JsonLd.expand(document, JsonLdOptions.with(JsonLdTestSuite.HTTP_LOADER));
+            final var result = JsonLd.expand(document, Options.with(JsonLdTestSuite.HTTP_LOADER));
 
             System.out.println("Time elapsed: " + Duration.ofNanos(System.nanoTime() - start));
 
             assertNotNull(result);
 
-            boolean match = JsonLdComparison.equals(
+            boolean match = Comparison.equals(
                     result, NativeAdapter.instance(),
                     expected, JakartaAdapter.instance());
 

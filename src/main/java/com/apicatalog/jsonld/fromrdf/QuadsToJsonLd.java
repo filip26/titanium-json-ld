@@ -26,11 +26,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
-import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
-import com.apicatalog.jsonld.JsonLdVersion;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.Options.RdfDirection;
+import com.apicatalog.jsonld.Version;
 import com.apicatalog.jsonld.fromrdf.GraphMap.Reference;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -55,7 +55,7 @@ import com.apicatalog.web.uri.UriValidationPolicy;
  * <p>
  * This class can be configured using methods such as {@link #ordered(boolean)},
  * {@link #rdfDirection(RdfDirection)}, {@link #useNativeTypes(boolean)},
- * {@link #useRdfType(boolean)}, {@link #mode(JsonLdVersion)}, and
+ * {@link #useRdfType(boolean)}, {@link #mode(Version)}, and
  * {@link #uriValidation(UriValidationPolicy)}.
  * </p>
  * <p>
@@ -89,7 +89,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
     protected boolean useRdfType;
     protected boolean useXsdDecimal;
     protected UriValidationPolicy uriValidation;
-    protected JsonLdVersion processingMode;
+    protected Version processingMode;
 
     protected NodeParser jsonParser;
     protected Map<String, Function<String, Object>> nativeTypes;
@@ -111,8 +111,8 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
         this.nativeTypes = Map.of();
         this.useXsdDecimal = false;
         this.useRdfType = false;
-        this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
-        this.processingMode = JsonLdVersion.V1_1;
+        this.uriValidation = Options.DEFAULT_URI_VALIDATION;
+        this.processingMode = Version.V1_1;
     }
 
     /**
@@ -168,7 +168,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
      * @param processingMode the processing mode (e.g., V1_0, V1_1)
      * @return this instance for chaining
      */
-    public QuadsToJsonLd mode(JsonLdVersion processingMode) {
+    public QuadsToJsonLd mode(Version processingMode) {
         this.processingMode = processingMode;
         return this;
     }
@@ -189,7 +189,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
         return this;
     }
 
-    public QuadsToJsonLd options(JsonLdOptions options) {
+    public QuadsToJsonLd options(Options options) {
         this.ordered = options.isOrdered();
         this.rdfDirection = options.rdfDirection();
         this.useNativeTypes(options.isUseNativeTypes());
@@ -286,7 +286,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
 
                             if (!(lang instanceof String langString)
                                     || !LanguageTag.isWellFormed(langString)) {
-                                throw new JsonLdException(JsonLdErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
+                                throw new JsonLdException(ErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
                             }
 
                             clObject.put(Keywords.LANGUAGE, lang);
@@ -300,7 +300,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
                             if (!(direction instanceof String dirString)
                                     || (!"ltr".equalsIgnoreCase(dirString)
                                             && !"rtl".equalsIgnoreCase(dirString))) {
-                                throw new JsonLdException(JsonLdErrorCode.INVALID_BASE_DIRECTION);
+                                throw new JsonLdException(ErrorCode.INVALID_BASE_DIRECTION);
                             }
 
                             clObject.put(Keywords.DIRECTION, direction);
@@ -585,7 +585,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
 
         // 2.5.
         if (jsonParser != null
-                && processingMode != JsonLdVersion.V1_0
+                && processingMode != Version.V1_0
                 && Terms.RDF_JSON.equals(datatype)) {
 
             try {
@@ -604,7 +604,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
                         Keywords.TYPE, Keywords.JSON);
 
             } catch (Exception e) {
-                throw new RdfConsumerException(new JsonLdException(JsonLdErrorCode.INVALID_JSON_LITERAL, e));
+                throw new RdfConsumerException(new JsonLdException(ErrorCode.INVALID_JSON_LITERAL, e));
             }
         }
 

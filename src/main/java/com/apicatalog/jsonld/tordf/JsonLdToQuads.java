@@ -26,13 +26,13 @@ import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
 import com.apicatalog.jcs.Jcs;
-import com.apicatalog.jsonld.JsonLdAdapter;
-import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.JsonLdOptions.RdfDirection;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.Options.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.lang.BlankNode;
+import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.lang.Utils;
@@ -67,7 +67,7 @@ public final class JsonLdToQuads {
 
         this.produceGeneralizedRdf = false;
         this.rdfDirection = null;
-        this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
+        this.uriValidation = Options.DEFAULT_URI_VALIDATION;
     }
 
     public static final JsonLdToQuads with(NodeMap nodeMap) {
@@ -91,7 +91,7 @@ public final class JsonLdToQuads {
             if (e.getCause() instanceof JsonLdException) {
                 throw (JsonLdException) e.getCause();
             }
-            throw new JsonLdException(JsonLdErrorCode.UNSPECIFIED, e);
+            throw new JsonLdException(ErrorCode.UNSPECIFIED, e);
         }
     }
 
@@ -182,7 +182,7 @@ public final class JsonLdToQuads {
             final String predicate) throws JsonLdException, RdfConsumerException {
 
         // 1. - 2.
-        if (JsonLdAdapter.isNode(item)) {
+        if (LdAdapter.isNode(item)) {
 
             var id = item.get(Keywords.ID);
 
@@ -202,7 +202,7 @@ public final class JsonLdToQuads {
         }
 
         // 3.
-        if (JsonLdAdapter.isList(item)) {
+        if (LdAdapter.isList(item)) {
 
             @SuppressWarnings("unchecked")
             final var list = (Collection<Map<String, Object>>) item.get(Keywords.LIST);
@@ -211,7 +211,7 @@ public final class JsonLdToQuads {
         }
 
         // 4.
-        if (!JsonLdAdapter.isValueNode(item)) {
+        if (!LdAdapter.isValueNode(item)) {
             return;
         }
 

@@ -1,4 +1,4 @@
-package com.apicatalog.jsonld;
+package com.apicatalog.jsonld.lang;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,10 +8,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.NodeAdapter;
 
-public class JsonLdAdapter {
+public class LdAdapter {
 
     private static final Set<String> GRAPH_ALLOWED_KEYS = Set.of(
             Keywords.GRAPH,
