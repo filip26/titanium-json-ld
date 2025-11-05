@@ -28,8 +28,7 @@ import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.web.uri.UriValidationPolicy;
 
 /**
- * The {@link Options} type is used to pass various options to the
- * processor.
+ * The {@link Options} type is used to pass various options to the processor.
  *
  * @see <a href=
  *      "https://www.w3.org/TR/json-ld11-api/#the-jsonldoptions-type">The
@@ -104,6 +103,8 @@ public final class Options {
 
     private boolean useRdfType;
 
+    private boolean useJcs;
+
     // Framing https://www.w3.org/TR/json-ld11-framing/#jsonldoptions
 
     private Embed embed;
@@ -138,14 +139,8 @@ public final class Options {
     private ProcessingPolicy undefinedTerms;
 
     private Options() {
-        this((DocumentLoader)null);
-    }
-
-    private Options(DocumentLoader loader) {
-
-        this.loader = loader;
-        
         // default values
+        this.loader = null;
         this.base = null;
         this.compactArrays = true;
         this.compactToRelative = true;
@@ -157,6 +152,7 @@ public final class Options {
         this.rdfDirection = null;
         this.useNativeTypes = false;
         this.useRdfType = false;
+        this.useJcs = true;
 
         // framing defaults
         this.embed = Embed.ONCE;
@@ -190,6 +186,7 @@ public final class Options {
         this.rdfDirection = options.rdfDirection;
         this.useNativeTypes = options.useNativeTypes;
         this.useRdfType = options.useRdfType;
+        this.useJcs = options.useJcs;
 
         // framing
         this.embed = options.embed;
@@ -214,7 +211,7 @@ public final class Options {
      * Returns a new {@code JsonLdOptions} instance with default configuration.
      *
      * @return a new {@code JsonLdOptions} instance using standard defaults
-     */    
+     */
     public static final Options newOptions() {
         return new Options();
     }
@@ -228,7 +225,7 @@ public final class Options {
      * @return a new {@code JsonLdOptions} instance configured with the given loader
      */
     public static final Options with(DocumentLoader loader) {
-        return new Options(loader);
+        return new Options().loader(loader);
     }
 
     /**
@@ -326,12 +323,16 @@ public final class Options {
         return rdfDirection;
     }
 
-    public boolean isUseNativeTypes() {
+    public boolean useNativeTypes() {
         return useNativeTypes;
     }
 
-    public boolean isUseRdfType() {
+    public boolean useRdfType() {
         return useRdfType;
+    }
+    
+    public boolean useJcs() {
+        return useJcs;
     }
 
     public Document expandContext() {
@@ -395,6 +396,11 @@ public final class Options {
 
     public Options useRdfType(boolean useRdfType) {
         this.useRdfType = useRdfType;
+        return this;
+    }
+
+    public Options useJcs(boolean enable) {
+        this.useJcs = enable;
         return this;
     }
 

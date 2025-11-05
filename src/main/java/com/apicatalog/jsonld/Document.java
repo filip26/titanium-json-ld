@@ -118,24 +118,30 @@ public class Document {
                 contextUrl);
     }
 
-    public static final Document fetch(URI uri, DocumentLoader loader, boolean extractAllScripts) throws JsonLdException {
+    public static final Document fetch(URI url, DocumentLoader loader) throws JsonLdException {
+        return fetch(url, loader, false);
+    }
+
+    public static final Document fetch(URI url, DocumentLoader loader, boolean extractAllScripts) throws JsonLdException {
+
+        Objects.requireNonNull(url);
 
         if (loader == null) {
             throw new JsonLdException(
                     ErrorCode.LOADING_DOCUMENT_FAILED,
-                    "Document loader is null. Cannot fetch [" + uri + "].");
+                    "Document loader is null. Cannot fetch [" + url + "].");
         }
 
         return Optional.ofNullable(
                 loader.loadDocument(
-                        uri,
+                        url,
                         new DocumentLoader.Options(
                                 extractAllScripts,
                                 null,
                                 null)))
                 .orElseThrow(() -> new JsonLdException(
                         ErrorCode.LOADING_DOCUMENT_FAILED,
-                        "Returned document is null [" + uri + "]."));
+                        "Returned document is null [" + url + "]."));
     }
 
     /**

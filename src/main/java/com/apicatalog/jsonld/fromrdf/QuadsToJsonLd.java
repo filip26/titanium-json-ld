@@ -192,8 +192,8 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
     public QuadsToJsonLd options(Options options) {
         this.ordered = options.isOrdered();
         this.rdfDirection = options.rdfDirection();
-        this.useNativeTypes(options.isUseNativeTypes());
-        this.useRdfType = options.isUseRdfType();
+        this.useNativeTypes(options.useNativeTypes());
+        this.useRdfType = options.useRdfType();
         this.uriValidation = options.uriValidation();
         this.processingMode = options.mode();
         return this;
