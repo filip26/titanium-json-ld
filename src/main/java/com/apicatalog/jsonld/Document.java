@@ -19,8 +19,6 @@ import java.net.URI;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.swing.text.html.parser.DocumentParser;
-
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.PolyNode;
@@ -28,12 +26,9 @@ import com.apicatalog.web.media.MediaType;
 
 /**
  * A JSON-LD document that can be processed by the processor.
- *
- * This can either be {@link JsonStructure}, representing JSON-LD or JSON
- * document.
- *
- * Implemented by {@link JsonDocument}, {@link RdfDocument}, and provided by
- * {@link DocumentParser}.
+ * 
+ * Holds tree alike data strcuture as a content. Library, serialization format
+ * agnostic {@link PolyNode}.
  *
  */
 public class Document {
@@ -106,10 +101,6 @@ public class Document {
         return of(content, contentType, null, documentUrl, contextUrl);
     }
 
-    public static Document of(final PolyNode content, String profile, URI documentUrl) {
-        return of(content, null, profile, documentUrl, null);
-    }
-
     public static Document of(final PolyNode content, MediaType contentType, String profile, URI documentUrl) {
         return of(content, contentType, profile, documentUrl, null);
     }
@@ -122,7 +113,7 @@ public class Document {
                         : null,
                 profile == null && contentType != null
                         ? contentType.findFirstParameter("profile").orElse(null)
-                        : null,
+                        : profile,
                 documentUrl,
                 contextUrl);
     }
@@ -130,20 +121,21 @@ public class Document {
     public static final Document fetch(URI uri, DocumentLoader loader, boolean extractAllScripts) throws JsonLdException {
 
         if (loader == null) {
-            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + uri + "].");
+            throw new JsonLdException(
+                    ErrorCode.LOADING_DOCUMENT_FAILED,
+                    "Document loader is null. Cannot fetch [" + uri + "].");
         }
 
-        final var loaderOptions = new DocumentLoader.Options(
-                extractAllScripts,
-                null,
-                null);
-
-        final Document remoteDocument = loader.loadDocument(uri, loaderOptions);
-
-        if (remoteDocument == null) {
-            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "Returned document is null [" + uri + "].");
-        }
-        return remoteDocument;
+        return Optional.ofNullable(
+                loader.loadDocument(
+                        uri,
+                        new DocumentLoader.Options(
+                                extractAllScripts,
+                                null,
+                                null)))
+                .orElseThrow(() -> new JsonLdException(
+                        ErrorCode.LOADING_DOCUMENT_FAILED,
+                        "Returned document is null [" + uri + "]."));
     }
 
     /**
