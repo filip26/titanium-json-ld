@@ -26,19 +26,19 @@ public record Path(
         String leaf,
         boolean relative) {
 
-    public static final Path EMPTY = new Path(new ArrayList<>(), null, true);
+    public static final Path EMPTY = new Path(null, null, true);
 
     private static final Pattern SEGMENTS_DEL_RE = Pattern.compile("/");
 
     public Path {
-        segments = List.copyOf(segments);
+        segments = segments != null ? List.copyOf(segments) : List.of();
     }
 
     public static final Path of(final String path) {
 
         final var relative = !path.startsWith("/");
 
-        //TODO better
+        // TODO better
         final var segments = new ArrayList<String>(
                 List.of(SEGMENTS_DEL_RE.split(
                         (relative

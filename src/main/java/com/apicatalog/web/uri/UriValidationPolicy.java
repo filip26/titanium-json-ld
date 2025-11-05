@@ -15,8 +15,8 @@ public enum UriValidationPolicy {
 
     /**
      * Validates only the scheme component of the URI, allowing for more lenient
-     * processing while still ensuring a recognizable scheme (e.g., "http:",
-     * "https:").
+     * processing while still ensuring a recognizable scheme (e.g., "https:",
+     * "did:", "file:", ...).
      */
     SchemeOnly,
 

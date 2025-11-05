@@ -143,7 +143,7 @@ public final class UriResolver {
                         target[2] = removeDotSegments(merge(basePath, componentPath));
 
                     } else {
-                        target[2] = "/".concat(removeDotSegments(componentPath));
+                        target[2] = "/" + removeDotSegments(componentPath);
 
                     }
                     target[3] = relative.getQuery();
@@ -195,14 +195,14 @@ public final class UriResolver {
 
                 // B.
             } else if (input.startsWith("/./")) {
-                input = "/".concat(input.substring(3));
+                input = "/" + input.substring(3);
 
             } else if ("/.".equals(input)) {
                 input = "/";
 
                 // C.
             } else if (input.startsWith("/../")) {
-                input = "/".concat(input.substring(4));
+                input = "/" + input.substring(4);
                 if (!output.isEmpty()) {
                     output.remove(output.size() - 1);
                 }
@@ -247,7 +247,7 @@ public final class UriResolver {
     private static final String merge(String basePath, String path) {
 
         if (basePath == null) {
-            return "/".concat(path);
+            return "/" + path;
         }
 
         int rightMostSlash = basePath.lastIndexOf('/');
@@ -256,6 +256,6 @@ public final class UriResolver {
             return path;
         }
 
-        return basePath.substring(0, rightMostSlash + 1).concat(path);
+        return basePath.substring(0, rightMostSlash + 1) + path;
     }
 }

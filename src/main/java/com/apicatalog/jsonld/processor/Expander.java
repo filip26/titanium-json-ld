@@ -32,7 +32,6 @@ import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.PolyNode;
 import com.apicatalog.tree.io.java.NativeAdapter;
-import com.apicatalog.tree.io.java.NativeMaterializer;
 
 /**
  *
@@ -206,12 +205,13 @@ public final class Expander {
             return context.property(Keywords.CONTEXT);
         }
 
-        // Case 3: Native adapter — wrap as list
-        if (NativeAdapter.instance().isCompatibleWith(context.adapter())) {
-            return List.of(context.node());
-        }
-
-        // Case 4: Fallback — materialize node and wrap
-        return List.of(NativeMaterializer.node(context));
+        return context.node();
+//        // Case 3: Native adapter — wrap as list
+//        if (NativeAdapter.instance().isCompatibleWith(context.adapter())) {
+//            return List.of(context.node());
+//        }
+//
+//        // Case 4: Fallback — materialize node and wrap
+//        return List.of(NativeMaterializer.node(context));
     }
 }

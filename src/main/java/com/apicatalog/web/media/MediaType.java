@@ -21,6 +21,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import com.apicatalog.jsonld.JsonLdOptions.ProcessingPolicy;
+
 /**
  *
  * @see <a href="https://tools.ietf.org/html/rfc7231#section-3.1.1.1">Media
@@ -55,7 +57,6 @@ public record MediaType(
         parameters = parameters == null ? Map.of() : Map.copyOf(parameters);
     }
 
-    // TODO of(..)
     public MediaType(String type, String subtype) {
         this(type, subtype, null);
     }
