@@ -66,11 +66,15 @@ public class Document {
      * @return {@link Document} representing JSON content
      */
     public static Document of(final PolyNode content) {
-        return new Document(Objects.requireNonNull(content), null, null, null, null);
+        return of(content, null, null, null, null);
     }
 
     public static Document of(final PolyNode content, final URI documentUrl) {
-        return new Document(Objects.requireNonNull(content), null, null, null, null);
+        return of(content, null, null, documentUrl, null);
+    }
+
+    public static Document of(final PolyNode content, final URI documentUrl, URI contextUrl) {
+        return of(content, null, null, documentUrl, contextUrl);
     }
 
     /**
@@ -83,11 +87,7 @@ public class Document {
      * @return {@link Document} representing JSON content
      */
     public static Document of(final PolyNode content, MediaType contentType) {
-        return of(
-                content,
-                new MediaType(contentType.type(), contentType.subtype()),
-                contentType.findFirstParameter("profile").orElse(null),
-                null, null);
+        return of(content, contentType, null, null, null);
     }
 
     public static Document of(final PolyNode content, String profile) {
@@ -117,8 +117,12 @@ public class Document {
     public static Document of(final PolyNode content, MediaType contentType, String profile, URI documentUrl, URI contextUrl) {
         return new Document(
                 Objects.requireNonNull(content),
-                contentType,
-                profile,
+                contentType != null
+                        ? new MediaType(contentType.type(), contentType.subtype())
+                        : null,
+                profile == null && contentType != null
+                        ? contentType.findFirstParameter("profile").orElse(null)
+                        : null,
                 documentUrl,
                 contextUrl);
     }
