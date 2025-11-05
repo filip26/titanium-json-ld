@@ -20,21 +20,51 @@ import java.util.Objects;
 
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.NodeParser;
 import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.PolyNode;
 
 /**
+ * Provides structural equality for JSON-LD values as defined by the
+ * <a href="https://www.w3.org/TR/json-ld11-api/#comparison">JSON-LD 1.1 Object
+ * Comparison</a> algorithm.
+ * <p>
+ * This comparison does not rely on Java {@link Object#equals(Object)}. Instead,
+ * it determines whether two nodes represent the same logical JSON-LD value
+ * regardless of serialization differences or adapter implementations.
+ * </p>
  *
- * @see <a href=
- *      "https://w3c.github.io/json-ld-api/tests/#json-ld-object-comparison">JSON-LD
- *      Object comparison</a>
+ * <h2>Comparison semantics</h2>
+ * <ul>
+ * <li><b>Scalars</b> ({@code null}, {@code true}, {@code false}, strings,
+ * numbers, binary values) are compared by value.</li>
+ * <li><b>Maps</b> (JSON objects) are compared recursively by key and value. Key
+ * order is ignored.</li>
+ * <li><b>Arrays</b> (JSON arrays) are compared as unordered collections, except
+ * when the array is the value of an {@code @list} property, in which case order
+ * matters.</li>
+ * <li>Nodes may originate from different {@link NodeParser} instances;
+ * compatible adapters are compared natively, otherwise via normalized scalar
+ * values.</li>
+ * </ul>
  *
+ * <p>
+ * This class is stateless and thread-safe. All methods are static.
+ * </p>
+ *
+ * @see <a href="https://www.w3.org/TR/json-ld11-api/#comparison"> JSON-LD 1.1
+ *      Object Comparison</a>
  */
 public final class Comparison {
 
     private Comparison() {
     }
 
+    /**
+     * Compares two nodes using the same {@link NodeAdapter}.
+     *
+     * @return {@code true} if both nodes are JSON-LD equivalent
+     */
     public static final boolean equals(
             final Object value1,
             final Object value2,
@@ -43,6 +73,11 @@ public final class Comparison {
         return equals(value1, adapter, value2, adapter, null);
     }
 
+    /**
+     * Compares two nodes that may use different {@link NodeAdapter}s.
+     *
+     * @return {@code true} if both nodes are JSON-LD equivalent
+     */
     public static final boolean equals(
             final Object value1, final NodeAdapter adapter1,
             final Object value2, final NodeAdapter adapter2) {
