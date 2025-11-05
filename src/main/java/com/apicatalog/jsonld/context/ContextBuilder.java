@@ -35,8 +35,8 @@ import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.tree.io.NodeAdapter;
-import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.TreeIOAdapter;
+import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.tree.io.java.NativeMaterializer;
 import com.apicatalog.web.lang.LanguageTag;
@@ -92,13 +92,13 @@ public final class ContextBuilder {
         return new ContextBuilder(activeContext, loader);
     }
 
-    public ActiveContext build(PolyNode context, URI baseUrl) throws JsonLdException, IOException {
+    public ActiveContext build(TreeIO context, URI baseUrl) throws JsonLdException, IOException {
         return build(context.node(), context.adapter(), baseUrl);
     }
 
     public ActiveContext build(
             final Object localContext,
-            final NodeAdapter adapter,
+            final TreeIOAdapter adapter,
             final URI baseUrl) throws JsonLdException, IOException {
 
         // 1. Initialize result to the result of cloning active context, with inverse
@@ -106,7 +106,7 @@ public final class ContextBuilder {
         result = new ActiveContext(activeContext);
         result.setInverseContext(null);
         // TODO better
-        result.setSource(new PolyNode(localContext, adapter));
+        result.setSource(new TreeIO(localContext, adapter));
 //        result.setVersion(activeContext.runtime().version());
 
         // 2. If local context is an object containing the member @propagate,
@@ -236,7 +236,7 @@ public final class ContextBuilder {
                         Terms.PROFILE_CONTEXT,
                         List.of(Terms.PROFILE_CONTEXT));
 
-                PolyNode importedContent = null;
+                TreeIO importedContent = null;
 
                 try {
 
@@ -592,7 +592,7 @@ public final class ContextBuilder {
             }
         }
 
-        final PolyNode importedContent = remoteDocument.content();
+        final TreeIO importedContent = remoteDocument.content();
 
 //        if (remoteImport.content() instanceof PolyNode adaptedNode) {
 //            importedNode = adaptedNode;
@@ -603,7 +603,7 @@ public final class ContextBuilder {
 //        }
 
         // 5.2.5.2.
-        if (!PolyNode.isMap(importedContent)) {
+        if (!TreeIO.isMap(importedContent)) {
             throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is not valid JSON-LD context: " + importedContent.node() + ".");
         }
 

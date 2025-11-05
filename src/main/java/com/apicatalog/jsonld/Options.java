@@ -23,7 +23,9 @@ import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.loader.CacheLoader.Cache;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.jsonld.tordf.JsonLdToQuads;
+import com.apicatalog.jsonld.tordf.JsonLdToQuads.RdfJsonLiteralWriter;
+import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.web.uri.UriValidationPolicy;
 
@@ -103,7 +105,7 @@ public final class Options {
 
     private boolean useRdfType;
 
-    private boolean useJcs;
+    private RdfJsonLiteralWriter rdfJsonLiteralWriter;
 
     // Framing https://www.w3.org/TR/json-ld11-framing/#jsonldoptions
 
@@ -152,7 +154,7 @@ public final class Options {
         this.rdfDirection = null;
         this.useNativeTypes = false;
         this.useRdfType = false;
-        this.useJcs = true;
+        this.rdfJsonLiteralWriter = JsonLdToQuads.JCS;
 
         // framing defaults
         this.embed = Embed.ONCE;
@@ -186,7 +188,7 @@ public final class Options {
         this.rdfDirection = options.rdfDirection;
         this.useNativeTypes = options.useNativeTypes;
         this.useRdfType = options.useRdfType;
-        this.useJcs = options.useJcs;
+        this.rdfJsonLiteralWriter = options.rdfJsonLiteralWriter;
 
         // framing
         this.embed = options.embed;
@@ -330,9 +332,10 @@ public final class Options {
     public boolean useRdfType() {
         return useRdfType;
     }
-    
-    public boolean useJcs() {
-        return useJcs;
+
+    // when useJcs -> Jcs::canonize
+    public RdfJsonLiteralWriter rdfJsonLiteralWriter() {
+        return rdfJsonLiteralWriter;
     }
 
     public Document expandContext() {
@@ -399,8 +402,9 @@ public final class Options {
         return this;
     }
 
-    public Options useJcs(boolean enable) {
-        this.useJcs = enable;
+    // useJcs -> Jcs::canonize
+    public Options rdfJsonLiteralWriter(RdfJsonLiteralWriter jsonWriter) {
+        this.rdfJsonLiteralWriter = jsonWriter;
         return this;
     }
 
@@ -411,7 +415,7 @@ public final class Options {
             return this;
         }
         this.expandContext = Document.of(
-                new PolyNode(Set.of(contextLocation), NativeAdapter.instance()));
+                new TreeIO(Set.of(contextLocation), NativeAdapter.instance()));
         return this;
     }
 
@@ -425,7 +429,7 @@ public final class Options {
         return expandContext(contextUri.toString());
     }
 
-    public Options expandContext(PolyNode node) {
+    public Options expandContext(TreeIO node) {
 
         if (node == null) {
             this.expandContext = null;

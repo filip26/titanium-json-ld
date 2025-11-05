@@ -15,19 +15,26 @@
  */
 package com.apicatalog.jsonld.test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.JsonLd.Version;
+import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.jsonld.JsonLdTestSuite;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.Options.ProcessingPolicy;
 import com.apicatalog.jsonld.Options.RdfDirection;
-import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.jsonld.tordf.JsonLdToQuads;
+import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.TreeIOAdapter;
 import com.apicatalog.web.media.MediaType;
 import com.apicatalog.web.uri.UriResolver;
 
-public class JsonLdTestOptions {
+public class TestOptions {
 
     public Version version;
     public String base;
@@ -41,6 +48,7 @@ public class JsonLdTestOptions {
     public Boolean produceGeneralizedRdf;
     public Boolean useNativeTypes;
     public Boolean useRdfType;
+    public Boolean useJcs;
     public Boolean omitGraph;
     public Boolean useNumericId;
     public Boolean rdfStar;
@@ -51,13 +59,13 @@ public class JsonLdTestOptions {
     public Set<String> httpLink;
     public Options.ProcessingPolicy undefinedTermPolicy = Options.ProcessingPolicy.Ignore;
 
-    public static final JsonLdTestOptions newOptions() {
-        return new JsonLdTestOptions();
+    public static final TestOptions newOptions() {
+        return new TestOptions();
     }
 
-    public static final JsonLdTestOptions of(Object node, NodeAdapter adapter, String baseUri) {
+    public static final TestOptions of(Object node, TreeIOAdapter adapter, String baseUri) {
 
-        final JsonLdTestOptions options = new JsonLdTestOptions();
+        final TestOptions options = new TestOptions();
 
         for (final var entry : adapter.entries(node)) {
 
@@ -143,12 +151,16 @@ public class JsonLdTestOptions {
             case "useNumericId":
                 options.useNumericId = adapter.isTrue(entry.getValue());
                 break;
-                
+
             case "undefinedTermPolicy":
                 options.undefinedTermPolicy = ProcessingPolicy.valueOf(adapter.stringValue(entry.getValue()));
                 System.out.println("## " + options.undefinedTermPolicy);
                 break;
-                
+
+            case "useJCS":
+                options.useJcs = adapter.isTrue(entry.getValue());
+                break;
+
             default:
                 System.err.println("An unknown test option " + key + " = " + entry.getValue() + ".");
             }
@@ -193,6 +205,25 @@ public class JsonLdTestOptions {
 
         if (useRdfType != null) {
             options.useRdfType(useRdfType);
+        }
+
+        if (useJcs != null) {
+            options.rdfJsonLiteralWriter(
+                    useJcs
+                            ? JsonLdToQuads.JCS
+                            : (node, adapter) -> {
+
+                                var os = new ByteArrayOutputStream();
+                                try {
+                                    JsonLdTestSuite.JAKARTA_WRITER.write(
+                                            new TreeIO(node, adapter),
+                                            os);
+                                    return os.toString();
+                                } catch (IOException e) {
+                                    throw new JsonLdException(ErrorCode.UNSPECIFIED, e);
+                                }
+
+                            });
         }
 
         if (omitGraph != null) {

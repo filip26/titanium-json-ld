@@ -21,27 +21,27 @@ import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.web.media.MediaType;
 
 /**
  * A JSON-LD document that can be processed by the processor.
  * 
  * Holds tree alike data strcuture as a content. Library, serialization format
- * agnostic {@link PolyNode}.
+ * agnostic {@link TreeIO}.
  *
  */
 public class Document {
 
     protected final MediaType contentType;
     protected final String profile;
-    protected final PolyNode content;
+    protected final TreeIO content;
 
     protected final URI documentUrl;
     protected final URI contextUrl;
 
     protected Document(
-            final PolyNode content,
+            final TreeIO content,
             final MediaType contentType,
             final String profile,
             final URI documentUrl,
@@ -60,15 +60,15 @@ public class Document {
      * @param structure representing parsed JSON content
      * @return {@link Document} representing JSON content
      */
-    public static Document of(final PolyNode content) {
+    public static Document of(final TreeIO content) {
         return of(content, null, null, null, null);
     }
 
-    public static Document of(final PolyNode content, final URI documentUrl) {
+    public static Document of(final TreeIO content, final URI documentUrl) {
         return of(content, null, null, documentUrl, null);
     }
 
-    public static Document of(final PolyNode content, final URI documentUrl, URI contextUrl) {
+    public static Document of(final TreeIO content, final URI documentUrl, URI contextUrl) {
         return of(content, null, null, documentUrl, contextUrl);
     }
 
@@ -81,31 +81,31 @@ public class Document {
      * @param structure   representing parsed JSON content
      * @return {@link Document} representing JSON content
      */
-    public static Document of(final PolyNode content, MediaType contentType) {
+    public static Document of(final TreeIO content, MediaType contentType) {
         return of(content, contentType, null, null, null);
     }
 
-    public static Document of(final PolyNode content, String profile) {
+    public static Document of(final TreeIO content, String profile) {
         return of(content, null, profile, null, null);
     }
 
-    public static Document of(final PolyNode content, MediaType contentType, String profile) {
+    public static Document of(final TreeIO content, MediaType contentType, String profile) {
         return of(content, contentType, profile, null, null);
     }
 
-    public static Document of(final PolyNode content, MediaType contentType, URI documentUrl) {
+    public static Document of(final TreeIO content, MediaType contentType, URI documentUrl) {
         return of(content, contentType, null, documentUrl, null);
     }
 
-    public static Document of(final PolyNode content, MediaType contentType, URI documentUrl, URI contextUrl) {
+    public static Document of(final TreeIO content, MediaType contentType, URI documentUrl, URI contextUrl) {
         return of(content, contentType, null, documentUrl, contextUrl);
     }
 
-    public static Document of(final PolyNode content, MediaType contentType, String profile, URI documentUrl) {
+    public static Document of(final TreeIO content, MediaType contentType, String profile, URI documentUrl) {
         return of(content, contentType, profile, documentUrl, null);
     }
 
-    public static Document of(final PolyNode content, MediaType contentType, String profile, URI documentUrl, URI contextUrl) {
+    public static Document of(final TreeIO content, MediaType contentType, String profile, URI documentUrl, URI contextUrl) {
         return new Document(
                 Objects.requireNonNull(content),
                 contentType != null
@@ -189,9 +189,9 @@ public class Document {
     /**
      * Get the document parsed content.
      *
-     * @return {@link PolyNode} representing materialized document content
+     * @return {@link TreeIO} representing materialized document content
      */
-    public PolyNode content() {
+    public TreeIO content() {
         return content;
     }
 }

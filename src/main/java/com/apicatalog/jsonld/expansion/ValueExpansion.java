@@ -26,7 +26,7 @@ import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.TreeIOAdapter;
 
 /**
  * Implements the JSON-LD Value Expansion algorithm.
@@ -62,7 +62,7 @@ public final class ValueExpansion {
             final Context context, 
             final String property, 
             final Object value, 
-            final NodeAdapter adapter, 
+            final TreeIOAdapter adapter, 
             final Options options) throws JsonLdException, IOException {
 
         final Optional<TermDefinition> definition = context.findTerm(property);

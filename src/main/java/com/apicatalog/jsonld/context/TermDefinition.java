@@ -22,8 +22,8 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.apicatalog.jsonld.lang.Direction;
-import com.apicatalog.tree.io.NodeAdapter;
-import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.TreeIOAdapter;
+import com.apicatalog.tree.io.TreeIO;
 
 public final class TermDefinition {
 
@@ -39,7 +39,7 @@ public final class TermDefinition {
     // optional
     private URI baseUrl;
 
-    private PolyNode localContext;
+    private TreeIO localContext;
 
     private Set<String> containerMapping;
 
@@ -60,8 +60,8 @@ public final class TermDefinition {
         this.containerMapping = new HashSet<>();
     }
 
-    public void setLocalContext(Object context, NodeAdapter adapter) {
-        this.localContext = new PolyNode(context, adapter);
+    public void setLocalContext(Object context, TreeIOAdapter adapter) {
+        this.localContext = new TreeIO(context, adapter);
     }
 
     public String getUriMapping() {
@@ -104,7 +104,7 @@ public final class TermDefinition {
         return containerMapping;
     }
 
-    public PolyNode getLocalContext() {
+    public TreeIO getLocalContext() {
         return localContext;
     }
     
@@ -177,7 +177,7 @@ public final class TermDefinition {
                 || !Objects.equals(nestValue, ref.nestValue)
                 || !Objects.equals(typeMapping, ref.typeMapping)
                 || !Objects.equals(languageMapping, ref.languageMapping)
-                || !PolyNode.deepEquals(localContext, ref.localContext);
+                || !TreeIO.deepEquals(localContext, ref.localContext);
     }
 
     public boolean hasContainerMapping(String value) {

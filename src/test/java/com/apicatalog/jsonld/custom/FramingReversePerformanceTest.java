@@ -29,7 +29,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
-import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.Json;
@@ -59,15 +59,15 @@ class FramingReversePerformanceTest {
                 new Object[] { 10_000, Duration.ofSeconds(2) });
     }
 
-    private PolyNode[] buildTestData(final int elementCount) throws JsonLdException, IOException {
+    private TreeIO[] buildTestData(final int elementCount) throws JsonLdException, IOException {
 
-        final var document = new PolyNode(buildTestDocument(elementCount), JakartaAdapter.instance());
-        final var frame = new PolyNode(buildTestFrame(), JakartaAdapter.instance());
+        final var document = new TreeIO(buildTestDocument(elementCount), JakartaAdapter.instance());
+        final var frame = new TreeIO(buildTestFrame(), JakartaAdapter.instance());
 
-        return new PolyNode[] { document, frame };
+        return new TreeIO[] { document, frame };
     }
 
-    private long measureFramingPerformance(PolyNode[] data) throws JsonLdException, IOException {
+    private long measureFramingPerformance(TreeIO[] data) throws JsonLdException, IOException {
 
         final long startTime = System.currentTimeMillis();
 

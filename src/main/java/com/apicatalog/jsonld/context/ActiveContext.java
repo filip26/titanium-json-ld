@@ -25,8 +25,8 @@ import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.tree.io.NodeAdapter;
-import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.TreeIOAdapter;
+import com.apicatalog.tree.io.TreeIO;
 
 /**
  * A context that is used to resolve terms while the processing algorithm is
@@ -61,7 +61,7 @@ public final class ActiveContext implements Context {
     // an optional default base direction ("ltr" or "rtl")
     private Direction defaultBaseDirection;
 
-    private PolyNode source;
+    private TreeIO source;
     
 //    private final ProcessingRuntime runtime;
 
@@ -179,7 +179,7 @@ public final class ActiveContext implements Context {
 //    }
 
     @Override
-    public TermDefinitionBuilder newTerm(final Object localContext, final NodeAdapter adapter, final Map<String, Boolean> defined, DocumentLoader loader) {
+    public TermDefinitionBuilder newTerm(final Object localContext, final TreeIOAdapter adapter, final Map<String, Boolean> defined, DocumentLoader loader) {
         return TermDefinitionBuilder.with(this, localContext, adapter, defined, loader);
     }
 
@@ -235,12 +235,12 @@ public final class ActiveContext implements Context {
         this.version = version;
     }
     
-    public void setSource(PolyNode source) {
+    public void setSource(TreeIO source) {
         this.source = source;
     }
     
     @Override
-    public PolyNode source() {
+    public TreeIO source() {
         return source;
     }
 }

@@ -24,27 +24,27 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.apicatalog.jsonld.test.JsonLdTestCase;
-import com.apicatalog.jsonld.test.JsonLdTestManifest;
-import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
+import com.apicatalog.jsonld.test.TestCase;
+import com.apicatalog.jsonld.test.TestManifest;
+import com.apicatalog.jsonld.test.JunitRunner;
 
 @DisplayName(value = "FromRDF")
 class FromRdfTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource({"jsonLdApi"})
-    void testFromRdf(final JsonLdTestCase testCase) {
-        assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
+    void testFromRdf(final TestCase testCase) {
+        assertTrue(new JunitRunner(testCase).execute());
     }
 
-    static final Stream<JsonLdTestCase> jsonLdApi() throws JsonLdException {
-        return JsonLdTestManifest
+    static final Stream<TestCase> jsonLdApi() throws JsonLdException {
+        return TestManifest
                     .load(
-                            JsonLdTestManifest.JSON_LD_API_BASE, 
+                            TestManifest.JSON_LD_API_BASE, 
                             "fromRdf-manifest.jsonld", 
                             JsonLdTestSuite.ZIP_RESOURCE_LOADER)
                     .stream()
-                    .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
+                    .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                     ;
     }
 }

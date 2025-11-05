@@ -14,7 +14,7 @@ class RdfQuadEmitter implements RdfTripleConsumer {
         this.graph = null;
     }
 
-    public static RdfTripleConsumer newInstance(RdfQuadConsumer consumer) {
+    public static RdfTripleConsumer newEmitter(RdfQuadConsumer consumer) {
         return new RdfQuadEmitter(consumer);
     }
 

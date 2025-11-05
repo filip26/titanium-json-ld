@@ -23,17 +23,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.apicatalog.jsonld.test.JsonLdTestCase;
-import com.apicatalog.jsonld.test.JsonLdTestManifest;
-import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
+import com.apicatalog.jsonld.test.TestCase;
+import com.apicatalog.jsonld.test.TestManifest;
+import com.apicatalog.jsonld.test.JunitRunner;
 
 @DisplayName(value = "Expander")
 class ExpanderTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource({ "jsonLdApi" })
-    void testExpand(final JsonLdTestCase testCase) {
-        assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
+    void testExpand(final TestCase testCase) {
+        assertTrue(new JunitRunner(testCase).execute());
     }
 
 //    @ParameterizedTest(name = "{0}")
@@ -44,21 +44,21 @@ class ExpanderTest {
 //        assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
 //    }
 
-    static final Stream<JsonLdTestCase> jsonLdApi() throws JsonLdException {
-        return JsonLdTestManifest
+    static final Stream<TestCase> jsonLdApi() throws JsonLdException {
+        return TestManifest
                 .load(
-                        JsonLdTestManifest.JSON_LD_API_BASE,
-                        JsonLdTestManifest.EXPAND,
+                        TestManifest.JSON_LD_API_BASE,
+                        TestManifest.EXPAND,
                         JsonLdTestSuite.ZIP_RESOURCE_LOADER)
                 .stream()
-                .filter(JsonLdTestCase.IS_NOT_V1_0); // skip specVersion == 1.0
+                .filter(TestCase.IS_NOT_V1_0); // skip specVersion == 1.0
     }
 
-    static final Stream<JsonLdTestCase> jsonLdStar() throws JsonLdException {
-        return JsonLdTestManifest
+    static final Stream<TestCase> jsonLdStar() throws JsonLdException {
+        return TestManifest
                 .load(
-                        JsonLdTestManifest.JSON_LD_STAR_BASE,
-                        JsonLdTestManifest.EXPAND,
+                        TestManifest.JSON_LD_STAR_BASE,
+                        TestManifest.EXPAND,
                         JsonLdTestSuite.ZIP_RESOURCE_LOADER)
                 .stream();
     }

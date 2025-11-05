@@ -30,7 +30,7 @@ import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.expansion.Expansion;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
 /**
@@ -58,7 +58,7 @@ public final class Expander {
     }
 
     public static final Collection<?> expand(
-            final PolyNode node,
+            final TreeIO node,
             final Context context,
             final URI baseUrl,
             final Options options,
@@ -83,7 +83,7 @@ public final class Expander {
     }
 
     public static final Collection<?> expandFrame(
-            final PolyNode node,
+            final TreeIO node,
             final Context context,
             final URI baseUrl,
             final Options options,
@@ -146,7 +146,7 @@ public final class Expander {
     }
 
     private static final Collection<?> expand(
-            final PolyNode node,
+            final TreeIO node,
             final Context context,
             final URI baseUrl,
             boolean frameExpansion,
@@ -181,7 +181,7 @@ public final class Expander {
         return Set.of(expanded);
     }
 
-    private static Object extractExpansionContext(final PolyNode context) throws IOException {
+    private static Object extractExpansionContext(final TreeIO context) throws IOException {
         // Defensive null check — optional, but safer in utility code
         Objects.requireNonNull(context, "context must not be null");
 

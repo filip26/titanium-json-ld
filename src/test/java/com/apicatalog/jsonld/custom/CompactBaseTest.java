@@ -24,24 +24,24 @@ import org.junit.jupiter.api.Test;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdTestSuite;
 import com.apicatalog.jsonld.Options;
-import com.apicatalog.jsonld.test.JsonLdTestManifest;
-import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
+import com.apicatalog.jsonld.test.TestManifest;
+import com.apicatalog.jsonld.test.JunitRunner;
 
 class CompactBaseTest {
 
     @Test
     void testCompactBase() {
 
-        final var testCase = JsonLdTestManifest
+        final var testCase = TestManifest
                 .load(
-                        JsonLdTestManifest.JSON_LD_API_BASE,
+                        TestManifest.JSON_LD_API_BASE,
                         "compact-manifest.jsonld",
                         JsonLdTestSuite.ZIP_RESOURCE_LOADER)
                 .stream()
                 .filter(o -> "#t0047".equals(o.id))
                 .findFirst().orElseThrow(() -> new IllegalStateException());
 
-        assertTrue(new JsonLdTestRunnerJunit(testCase)
+        assertTrue(new JunitRunner(testCase)
                 .execute(options -> JsonLd.compact(
                         testCase.input,
                         testCase.context,

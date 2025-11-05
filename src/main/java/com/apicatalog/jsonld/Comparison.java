@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.TreeIOAdapter;
 import com.apicatalog.tree.io.NodeType;
-import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.TreeIO;
 
 /**
  * Structural equality for JSON-LD values as defined by the
@@ -57,50 +57,50 @@ public final class Comparison {
     }
 
     /**
-     * Compares two nodes using the same {@link NodeAdapter}.
+     * Compares two nodes using the same {@link TreeIOAdapter}.
      *
      * @return {@code true} if both nodes are JSON-LD equivalent
      */
     public static final boolean equals(
             final Object value1,
             final Object value2,
-            final NodeAdapter adapter) {
+            final TreeIOAdapter adapter) {
 
         return equals(value1, adapter, value2, adapter, null);
     }
 
     /**
-     * Compares two nodes that may use different {@link NodeAdapter}s.
+     * Compares two nodes that may use different {@link TreeIOAdapter}s.
      *
      * @return {@code true} if both nodes are JSON-LD equivalent
      */
     public static final boolean equals(
-            final Object value1, final NodeAdapter adapter1,
-            final Object value2, final NodeAdapter adapter2) {
+            final Object value1, final TreeIOAdapter adapter1,
+            final Object value2, final TreeIOAdapter adapter2) {
 
         return equals(value1, adapter1, value2, adapter2, null);
     }
 
     private static final boolean equals(
-            final Object value1, final NodeAdapter adapter1,
-            final Object value2, final NodeAdapter adapter2,
+            final Object value1, final TreeIOAdapter adapter1,
+            final Object value2, final TreeIOAdapter adapter2,
             final String parentProperty) {
 
         final var type1 = adapter1.type(value1);
 
-        if (type1 == NodeType.POLY) {
+        if (type1 == NodeType.TREE_IO) {
             return equals(
-                    ((PolyNode) value1).node(), ((PolyNode) value1).adapter(),
+                    ((TreeIO) value1).node(), ((TreeIO) value1).adapter(),
                     value2, adapter2,
                     parentProperty);
         }
 
         final var type2 = adapter2.type(value2);
 
-        if (type2 == NodeType.POLY) {
+        if (type2 == NodeType.TREE_IO) {
             return equals(
                     value1, adapter1,
-                    ((PolyNode) value2).node(), ((PolyNode) value2).adapter(),
+                    ((TreeIO) value2).node(), ((TreeIO) value2).adapter(),
                     parentProperty);
         }
 
@@ -135,7 +135,7 @@ public final class Comparison {
 
         case MAP -> objectEquals(value1, adapter1, value2, adapter2);
 
-        case POLY -> throw new IllegalStateException();
+        case TREE_IO -> throw new IllegalStateException();
 
         default -> false;
 
@@ -143,8 +143,8 @@ public final class Comparison {
     }
 
     private static final boolean objectEquals(
-            final Object map1, final NodeAdapter adapter1,
-            final Object map2, final NodeAdapter adapter2) {
+            final Object map1, final TreeIOAdapter adapter1,
+            final Object map2, final TreeIOAdapter adapter2) {
 
         final var it1 = adapter1.entryStream(map1).toList();
 
@@ -166,8 +166,8 @@ public final class Comparison {
     }
 
     private static final boolean arrayEquals(
-            final Object array1, final NodeAdapter adapter1,
-            final Object array2, final NodeAdapter adapter2,
+            final Object array1, final TreeIOAdapter adapter1,
+            final Object array2, final TreeIOAdapter adapter2,
             final String parentProperty) {
 
         // For values of @list, the order of these items is significant
@@ -190,8 +190,8 @@ public final class Comparison {
 
     // JSON arrays are generally compared with no regard to order
     private static final boolean arraysEqualsUnordered(
-            final Object array1, final NodeAdapter adapter1,
-            final Object array2, final NodeAdapter adapter2) {
+            final Object array1, final TreeIOAdapter adapter1,
+            final Object array2, final TreeIOAdapter adapter2) {
 
         var list1 = adapter1.elementStream(array1).toList();
         var list2 = adapter2.elementStream(array2).toList();

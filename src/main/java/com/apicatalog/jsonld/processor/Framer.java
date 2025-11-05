@@ -42,7 +42,7 @@ import com.apicatalog.jsonld.framing.Framing;
 import com.apicatalog.jsonld.framing.FramingState;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.TreeIO;
 
 /**
  *
@@ -75,7 +75,7 @@ public final class Framer {
 
     public static final Context context(
             final URI baseUrl,
-            final PolyNode localContext,
+            final TreeIO localContext,
             final URI localContextBase,
             final Options options) throws JsonLdException, IOException {
 
@@ -100,7 +100,7 @@ public final class Framer {
     }
 
     public static final Collection<?> expand(
-            PolyNode document,
+            TreeIO document,
             final Options options,
             final Execution runtime) throws JsonLdException, IOException {
         return Expander.expand(

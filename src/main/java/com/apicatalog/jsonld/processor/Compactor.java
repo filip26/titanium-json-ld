@@ -27,7 +27,7 @@ import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.compaction.UriCompaction;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.TreeIO;
 
 /**
  *
@@ -123,7 +123,7 @@ public final class Compactor {
     public static final Map<String, ?> compact(
             final Object expanded,
             final URI baseUrl,
-            final PolyNode context,
+            final TreeIO context,
             final Options options,
             final Execution runtime) throws JsonLdException, IOException {
 
@@ -199,7 +199,7 @@ public final class Compactor {
             if (col.isEmpty()) {
                 return Map.of();
 
-            } else if (!PolyNode.isEmptyOrNull(context.source())) {
+            } else if (!TreeIO.isEmptyOrNull(context.source())) {
                 return Map.of(
                         Keywords.CONTEXT,
                         context.source(),

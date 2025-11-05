@@ -28,8 +28,8 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.NodeAdapter;
-import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.TreeIOAdapter;
+import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.web.uri.UriUtils;
 
 /**
@@ -44,9 +44,9 @@ public final class ObjectExpansion {
 
     // mandatory
     private Context activeContext;
-    private PolyNode propertyContext;
+    private TreeIO propertyContext;
     private Object element;
-    private NodeAdapter adapter;
+    private TreeIOAdapter adapter;
     private String activeProperty;
 //    private final URI baseUrl;
 
@@ -58,8 +58,8 @@ public final class ObjectExpansion {
     private Params params;
 
     public ObjectExpansion(final Context activeContext,
-            final PolyNode propertyContext,
-            final Object element, final NodeAdapter adapter,
+            final TreeIO propertyContext,
+            final Object element, final TreeIOAdapter adapter,
             final String activeProperty,
             Params params) {
         this.activeContext = activeContext;
@@ -141,7 +141,7 @@ public final class ObjectExpansion {
     private static Context initPreviousContext(
             final Context context,
             final Object element,
-            final NodeAdapter adapter,
+            final TreeIOAdapter adapter,
             final Params params) throws JsonLdException, IOException {
 
         // 7. If active context has a previous context, the active context is not
@@ -157,7 +157,7 @@ public final class ObjectExpansion {
 
             boolean revert = true;
 
-            var it = adapter.keyStream(element).sorted(PolyNode.comparingElement(adapter::stringValue)).iterator();
+            var it = adapter.keyStream(element).sorted(TreeIO.comparingElement(adapter::stringValue)).iterator();
 
             while (it.hasNext()) {
 
@@ -195,7 +195,7 @@ public final class ObjectExpansion {
 
         final var typeKeys = adapter
                 .keyStream(element)
-                .sorted(PolyNode.comparingElement(adapter::asString))
+                .sorted(TreeIO.comparingElement(adapter::asString))
                 .iterator();
 
         // 11.
@@ -255,7 +255,7 @@ public final class ObjectExpansion {
             final Context context,
             final String typeKey,
             final Object element,
-            final NodeAdapter adapter
+            final TreeIOAdapter adapter
 
     ) throws JsonLdException, IOException {
 

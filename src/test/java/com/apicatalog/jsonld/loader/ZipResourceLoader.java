@@ -27,13 +27,13 @@ import java.util.zip.ZipFile;
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
-import com.apicatalog.tree.io.NodeParser;
+import com.apicatalog.tree.io.TreeIOReader;
 
 public class ZipResourceLoader implements DocumentLoader {
 
-    private final NodeParser reader;
+    private final TreeIOReader reader;
 
-    public ZipResourceLoader(NodeParser reader) {
+    public ZipResourceLoader(TreeIOReader reader) {
         this.reader = reader;
     }
 

@@ -36,9 +36,9 @@ import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.TreeIOAdapter;
 import com.apicatalog.tree.io.NodeType;
-import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.tree.io.java.NativeMaterializer;
 import com.apicatalog.web.lang.LanguageTag;
@@ -74,11 +74,11 @@ final class ObjectExpansion1314 {
     public void expand(
             final Context activeContext,
             final Object element,
-            final NodeAdapter adapter,
+            final TreeIOAdapter adapter,
             final String activeProperty) throws JsonLdException, IOException {
 
         var keys = params.options().isOrdered()
-                ? adapter.keyStream(element).sorted(PolyNode.comparingElement(adapter::asString)).iterator()
+                ? adapter.keyStream(element).sorted(TreeIO.comparingElement(adapter::asString)).iterator()
                 : adapter.keyStream(element).iterator();
 
         // 13.
@@ -738,7 +738,7 @@ final class ObjectExpansion1314 {
 //                (JsonStructure) new JakartaMaterializer().node(collection, new JsonLdAdapter())
 
 //                expandedValue = new NativeMaterializer().node(value, JakartaAdapter.instance());
-                expandedValue = new PolyNode(value, adapter); //TODO verify
+                expandedValue = new TreeIO(value, adapter); //TODO verify
 
 //                if (expandedValue != null) {
                 expandedValue = Map.of(
@@ -1112,7 +1112,7 @@ final class ObjectExpansion1314 {
     private void recurse(
             final Context context,
             final Object element,
-            final NodeAdapter adapter,
+            final TreeIOAdapter adapter,
             final String activeProperty) throws JsonLdException, IOException {
 
         var activeContext = context;
@@ -1146,7 +1146,7 @@ final class ObjectExpansion1314 {
     private void processNest(
             final Context activeContext,
             final Object element,
-            final NodeAdapter adapter) throws JsonLdException, IOException {
+            final TreeIOAdapter adapter) throws JsonLdException, IOException {
 
         final var nestedKeys = params.options().isOrdered()
                 ? nest.keySet().stream().sorted().iterator()

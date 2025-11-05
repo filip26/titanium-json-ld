@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.loader.DocumentLoader.Options;
-import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonValue;
@@ -37,7 +37,7 @@ public class LRUDocumentCacheTest {
         public Document loadDocument(URI url, Options options) {
             requests.add(new Request(url, options));
             // Return empty document.
-            return Document.of(new PolyNode(JsonValue.EMPTY_JSON_ARRAY, JakartaAdapter.instance()));
+            return Document.of(new TreeIO(JsonValue.EMPTY_JSON_ARRAY, JakartaAdapter.instance()));
         }
 
     }
@@ -134,6 +134,4 @@ public class LRUDocumentCacheTest {
 
         Assertions.assertEquals(2, loader.requests.size());
     }
-
-
 }

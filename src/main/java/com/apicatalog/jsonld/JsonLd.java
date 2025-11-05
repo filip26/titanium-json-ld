@@ -31,7 +31,7 @@ import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.processor.Framer;
 import com.apicatalog.jsonld.processor.RdfEmitter;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
-import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
 /**
@@ -124,10 +124,10 @@ public final class JsonLd {
             throw new IllegalArgumentException();
         }
 
-        return expand(new PolyNode(document, NativeAdapter.instance()), options);
+        return expand(new TreeIO(document, NativeAdapter.instance()), options);
     }
 
-    public static final Collection<?> expand(final PolyNode document, final Options options) throws JsonLdException, IOException {
+    public static final Collection<?> expand(final TreeIO document, final Options options) throws JsonLdException, IOException {
 
         var runtime = Execution.of(options);
         runtime.tick();
@@ -324,7 +324,7 @@ public final class JsonLd {
         return Framer.frame(document, frame, options, runtime);
     }
 
-    public static final Map<String, ?> frame(final PolyNode document, final PolyNode frame, final Options options) throws JsonLdException, IOException {
+    public static final Map<String, ?> frame(final TreeIO document, final TreeIO frame, final Options options) throws JsonLdException, IOException {
         final Execution runtime = Execution.of(options);
         runtime.tick();
 
@@ -392,12 +392,12 @@ public final class JsonLd {
         RdfEmitter.toRdf(document, consumer, options);
     }
 
-    public static final void toRdf(final PolyNode document, RdfQuadConsumer consumer, Options options) throws JsonLdException, IOException {
+    public static final void toRdf(final TreeIO document, RdfQuadConsumer consumer, Options options) throws JsonLdException, IOException {
         RdfEmitter.toRdf(document, consumer, options);
     }
 
     public static final void toRdf(final Map<String, ?> document, RdfQuadConsumer consumer, Options options) throws JsonLdException, IOException {
-        RdfEmitter.toRdf(new PolyNode(document, NativeAdapter.instance()), consumer, options);
+        RdfEmitter.toRdf(new TreeIO(document, NativeAdapter.instance()), consumer, options);
     }
 
     /* --- FROM RDF -- */

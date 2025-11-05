@@ -24,19 +24,19 @@ import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.test.JsonLdTestCase.Type;
+import com.apicatalog.jsonld.test.TestCase.Type;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.model.RdfQuadSet;
 
-public class JsonLdTestRunnerEarl {
+public class EarlRunner {
 
-    private final JsonLdTestCase testCase;
+    private final TestCase testCase;
 
-    public JsonLdTestRunnerEarl(JsonLdTestCase testCase) {
+    public EarlRunner(TestCase testCase) {
         this.testCase = testCase;
     }
 
-    public boolean execute(JsonLdTestMethod method) {
+    public boolean execute(TestMethod method) {
 
         assertNotNull(testCase.baseUri);
         assertNotNull(testCase.input);

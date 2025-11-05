@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.TreeIOAdapter;
 
 public class LdAdapter {
 
@@ -43,7 +43,7 @@ public class LdAdapter {
                         || Arrays.asList(Keywords.CONTEXT, Keywords.GRAPH).containsAll(map.keySet()));
     }
 
-    public static boolean isNode(Object value, NodeAdapter adapter) {
+    public static boolean isNode(Object value, TreeIOAdapter adapter) {
         if (!adapter.isMap(value)) {
             return false;
         }
@@ -106,11 +106,11 @@ public class LdAdapter {
      * @param adapter
      * @return <code>true</code> if the provided value is valid default object
      */
-    public static boolean isDefault(Object node, NodeAdapter adapter) {
+    public static boolean isDefault(Object node, TreeIOAdapter adapter) {
         return adapter.isMap(node) && adapter.keys(node).contains(Keywords.DEFAULT);
     }
 
-    public static Optional<?> findDefaultValue(Object node, NodeAdapter adapter) {
+    public static Optional<?> findDefaultValue(Object node, TreeIOAdapter adapter) {
         return adapter.isMap(node)
                 ? Optional.ofNullable(adapter.property(Keywords.DEFAULT, node))
                 : Optional.empty();

@@ -32,8 +32,8 @@ import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.tree.io.NodeAdapter;
-import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.TreeIOAdapter;
+import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.tree.io.java.NativeMaterializer;
 
@@ -59,7 +59,7 @@ public interface Context {
     /** context version, might be null if unspecified */
     Version version();
 
-    PolyNode source();
+    TreeIO source();
 
     Optional<TermDefinition> findTerm(final String value);
 
@@ -74,7 +74,7 @@ public interface Context {
     Context getPreviousContext();
 
     @Deprecated
-    TermDefinitionBuilder newTerm(Object localContext, NodeAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader);
+    TermDefinitionBuilder newTerm(Object localContext, TreeIOAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader);
 
     @Deprecated
     ContextBuilder newContext(DocumentLoader loader);
@@ -98,7 +98,7 @@ public interface Context {
 
     Map<String, TermDefinition> getTermsMapping();
 
-    public static PolyNode extract(PolyNode document) throws JsonLdException {
+    public static TreeIO extract(TreeIO document) throws JsonLdException {
 
         final var node = document.node();
         final var adapter = document.adapter();
@@ -110,7 +110,7 @@ public interface Context {
         final var context = adapter.property(Keywords.CONTEXT, node);
 
         if (context != null) {
-            return new PolyNode(context, adapter);
+            return new TreeIO(context, adapter);
         }
 
 //        if (context != null
@@ -122,11 +122,11 @@ public interface Context {
 //            return new PolyNode(context, adapter);
 //        }
 
-        return new PolyNode(Map.of(), NativeAdapter.instance());
+        return new TreeIO(Map.of(), NativeAdapter.instance());
 
     }
 
-    public static PolyNode unwrap(PolyNode context) {
+    public static TreeIO unwrap(TreeIO context) {
 
         Object node = context.node();
         var adapter = context.adapter();
@@ -153,16 +153,16 @@ public interface Context {
         }
 
         return changed
-                ? new PolyNode(node, adapter)
+                ? new TreeIO(node, adapter)
                 : context;
     }
 
     public static Map<String, ?> inject(
             final Map<String, ?> node,
-            final PolyNode context) throws JsonLdException, IOException {
+            final TreeIO context) throws JsonLdException, IOException {
 
         // 9.3.
-        if (!PolyNode.isEmptyOrNull(context)) {
+        if (!TreeIO.isEmptyOrNull(context)) {
             final var compacted = new LinkedHashMap<String, Object>(node.size() + 1);
             compacted.put(Keywords.CONTEXT, context);
             compacted.putAll(node);
@@ -198,7 +198,7 @@ public interface Context {
         }
 
         // 5.2.5.2.
-        if (!PolyNode.isMap(document.content())) {
+        if (!TreeIO.isMap(document.content())) {
             throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is not valid JSON-LD context: " + document.content() + ".");
         }
 
@@ -289,11 +289,11 @@ public interface Context {
             return ctx;
         }
 
-        public Builder update(PolyNode node, URI baseUrl) throws JsonLdException, IOException {
+        public Builder update(TreeIO node, URI baseUrl) throws JsonLdException, IOException {
             return update(node.node(), node.adapter(), baseUrl);
         }
 
-        public Builder update(Object node, NodeAdapter adapter, URI baseUrl) throws JsonLdException, IOException {
+        public Builder update(Object node, TreeIOAdapter adapter, URI baseUrl) throws JsonLdException, IOException {
             // TODO merge if set
 //            this.context = node;
 //            this.adapter = adapter;
@@ -305,7 +305,7 @@ public interface Context {
         private final ActiveContext updateContext(
                 final ActiveContext activeContext,
                 final Object expandedContext,
-                final NodeAdapter adapter,
+                final TreeIOAdapter adapter,
                 final URI baseUrl)
                 throws JsonLdException, IOException {
 

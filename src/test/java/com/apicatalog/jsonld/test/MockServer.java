@@ -42,7 +42,7 @@ import com.apicatalog.web.link.Link;
 import com.apicatalog.web.media.MediaType;
 import com.apicatalog.web.uri.UriResolver;
 
-public class JsonLdMockServer implements AutoCloseable {
+public class MockServer implements AutoCloseable {
 
     final String testBase;
     final String resourceBase;
@@ -63,7 +63,11 @@ public class JsonLdMockServer implements AutoCloseable {
             byte[] responseBody) {
     }
 
-    public JsonLdMockServer(int port, String testBase, String resourceBase) {
+    public MockServer(String testBase, String resourceBase) {
+        this(0, testBase, resourceBase);
+    }
+
+    public MockServer(int port, String testBase, String resourceBase) {
         this.port = port;
         this.testBase = testBase;
         this.resourceBase = resourceBase;
@@ -159,7 +163,7 @@ public class JsonLdMockServer implements AutoCloseable {
 
     public void start() throws JsonLdException {
         try {
-            server = new ServerSocket(0);
+            server = new ServerSocket(port);
             pool.submit(this::serve);
         } catch (IOException e) {
             throw new JsonLdException(ErrorCode.UNSPECIFIED, e);
@@ -183,7 +187,7 @@ public class JsonLdMockServer implements AutoCloseable {
                 server.getLocalPort());
     }
 
-    public void setup(JsonLdTestCase testCase) throws JsonLdException {
+    public void setup(TestCase testCase) throws JsonLdException {
 
         stubs.clear();
 

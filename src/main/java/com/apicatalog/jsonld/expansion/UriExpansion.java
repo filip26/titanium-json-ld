@@ -28,7 +28,7 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.TreeIOAdapter;
 import com.apicatalog.web.uri.UriResolver;
 import com.apicatalog.web.uri.UriUtils;
 import com.apicatalog.web.uri.UriValidationPolicy;
@@ -74,7 +74,7 @@ public final class UriExpansion {
     private UriValidationPolicy uriValidation;
 
     private Object localContext;
-    private NodeAdapter adapter;
+    private TreeIOAdapter adapter;
     private Map<String, Boolean> defined;
 
     private UriExpansion(final Context activeContext, final DocumentLoader loader) {
@@ -206,7 +206,7 @@ public final class UriExpansion {
      * @param adapter
      * @return this instance, for method chaining
      */
-    public UriExpansion localContext(Object value, NodeAdapter adapter) {
+    public UriExpansion localContext(Object value, TreeIOAdapter adapter) {
         this.localContext = value;
         this.adapter = adapter;
         return this;

@@ -31,7 +31,7 @@ import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.jsonld.processor.Expander;
-import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.web.uri.UriUtils;
 import com.apicatalog.web.uri.UriValidationPolicy;
 
@@ -62,7 +62,7 @@ public final class Frame {
         return of(expanded, keys);
     }
 
-    public static final Frame of(final PolyNode frame, final Options options, final Execution runtime) throws JsonLdException, IOException {
+    public static final Frame of(final TreeIO frame, final Options options, final Execution runtime) throws JsonLdException, IOException {
         @SuppressWarnings("unchecked")
         Set<String> keys = (frame.node() instanceof Map map)
                 ? map.keySet()

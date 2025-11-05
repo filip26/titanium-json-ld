@@ -32,7 +32,7 @@ import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.tordf.JsonLdToQuads;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
-import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.TreeIO;
 
 /**
  *
@@ -201,7 +201,7 @@ public final class RdfEmitter implements
         toRdf(expanded, consumer, options);
     }
 
-    public static final void toRdf(final PolyNode input, final RdfQuadConsumer consumer, final Options options) throws JsonLdException, IOException {
+    public static final void toRdf(final TreeIO input, final RdfQuadConsumer consumer, final Options options) throws JsonLdException, IOException {
         final Options expansionOptions = Options.copyOf(options);
 
         expansionOptions.mode(options.mode());
@@ -221,6 +221,7 @@ public final class RdfEmitter implements
         JsonLdToQuads
                 .with(new NodeMapBuilder(expanded, new NodeMap()).build())
                 .produceGeneralizedRdf(options.isProduceGeneralizedRdf())
+                .jsonWriter(options.rdfJsonLiteralWriter())
                 .rdfDirection(options.rdfDirection())
                 .uriValidation(options.uriValidation())
                 .provide(consumer);

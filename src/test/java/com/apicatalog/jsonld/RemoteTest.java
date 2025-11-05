@@ -26,21 +26,20 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.apicatalog.jsonld.loader.UriBaseRewriter;
-import com.apicatalog.jsonld.test.JsonLdMockServer;
-import com.apicatalog.jsonld.test.JsonLdTestCase;
-import com.apicatalog.jsonld.test.JsonLdTestManifest;
-import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
+import com.apicatalog.jsonld.test.MockServer;
+import com.apicatalog.jsonld.test.TestCase;
+import com.apicatalog.jsonld.test.TestManifest;
+import com.apicatalog.jsonld.test.JunitRunner;
 
 class RemoteTest {
 
-    static JsonLdMockServer server;
+    static MockServer server;
 
     @BeforeAll
     static void startMockServer() throws JsonLdException {
-        server = new JsonLdMockServer(
-                8080,
-                JsonLdTestCase.TESTS_BASE,
-                JsonLdTestManifest.JSON_LD_API_BASE);
+        server = new MockServer(
+                TestManifest.TESTS_BASE,
+                TestManifest.JSON_LD_API_BASE);
         server.start();
     }
 
@@ -52,7 +51,7 @@ class RemoteTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")
-    void testRemote(final JsonLdTestCase testCase) {
+    void testRemote(final TestCase testCase) {
 
         // skip, HTML extraction is not supported yet
         assumeFalse("#t0013".equals(testCase.id));
@@ -60,13 +59,13 @@ class RemoteTest {
         try {
             server.setup(testCase);
 
-            (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
+            (new JunitRunner(testCase)).execute(options -> {
 
                 Options expandOptions = Options.copyOf(options);
 
                 expandOptions.loader(
                         new UriBaseRewriter(
-                                JsonLdTestCase.TESTS_BASE,
+                                TestManifest.TESTS_BASE,
                                 server.baseUrl(),
                                 JsonLdTestSuite.HTTP_LOADER));
 
@@ -78,14 +77,14 @@ class RemoteTest {
         }
     }
 
-    static final Stream<JsonLdTestCase> data() throws JsonLdException {
-        return JsonLdTestManifest
+    static final Stream<TestCase> data() throws JsonLdException {
+        return TestManifest
                 .load(
-                        JsonLdTestManifest.JSON_LD_API_BASE,
+                        TestManifest.JSON_LD_API_BASE,
                         "remote-doc-manifest.jsonld",
                         JsonLdTestSuite.ZIP_RESOURCE_LOADER)
                 .stream()
-                .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
+                .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
         ;
     }
 }

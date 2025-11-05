@@ -22,23 +22,23 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.apicatalog.jsonld.test.JsonLdTestCase;
-import com.apicatalog.jsonld.test.JsonLdTestManifest;
-import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
+import com.apicatalog.jsonld.test.TestCase;
+import com.apicatalog.jsonld.test.TestManifest;
+import com.apicatalog.jsonld.test.JunitRunner;
 
 class CustomTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")
-    void testCustom(JsonLdTestCase testCase) {
-        assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
+    void testCustom(TestCase testCase) {
+        assertTrue(new JunitRunner(testCase).execute());
     }
 
-    static final Stream<JsonLdTestCase> data() throws JsonLdException {
-        return JsonLdTestManifest
+    static final Stream<TestCase> data() throws JsonLdException {
+        return TestManifest
                 .load("classpath:/com/apicatalog/jsonld/test/", "manifest.json", JsonLdTestSuite.RESOURCE_LOADER)
                 .stream()
-                .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
+                .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .filter(test -> !"#t0008".equals(test.id)) // requires mock server
         ;
     }

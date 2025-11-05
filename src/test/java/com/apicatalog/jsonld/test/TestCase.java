@@ -37,14 +37,12 @@ import com.apicatalog.rdf.nquads.NQuadsReader;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
-import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.TreeIOAdapter;
 import com.apicatalog.web.media.MediaType;
 
-public final class JsonLdTestCase {
+public final class TestCase {
 
-    public static final String TESTS_BASE = "https://w3c.github.io";
-
-    public static final Predicate<JsonLdTestCase> IS_NOT_V1_0 = test -> test.options != null && !Version.V1_0.equals(test.options.version);
+    public static final Predicate<TestCase> IS_NOT_V1_0 = test -> test.options != null && !Version.V1_0.equals(test.options.version);
 
     public String id;
 
@@ -66,26 +64,26 @@ public final class JsonLdTestCase {
 
     public Set<Type> type;
 
-    public JsonLdTestOptions options;
+    public TestOptions options;
 
     public String testsBase;
 
     private final DocumentLoader loader;
 
-    public JsonLdTestCase(final String testsBase, final DocumentLoader loader) {
+    public TestCase(final String testsBase, final DocumentLoader loader) {
         this.testsBase = testsBase;
         this.loader = loader;
     }
 
-    public static final JsonLdTestCase of(
+    public static final TestCase of(
             final Object node,
-            final NodeAdapter adapter,
+            final TreeIOAdapter adapter,
             final String manifestUri,
             final String manifestBase,
             final String baseUri,
             final DocumentLoader loader) {
 
-        final var testCase = new JsonLdTestCase(manifestBase, loader);
+        final var testCase = new TestCase(manifestBase, loader);
         testCase.baseUri = baseUri;
 
         for (final var entry : adapter.entries(node)) {
@@ -138,10 +136,7 @@ public final class JsonLdTestCase {
                 break;
 
             case "option":
-                testCase.options = JsonLdTestOptions.of(entry.getValue(), adapter, baseUri);
-                break;
-
-            case "purpose":
+                testCase.options = TestOptions.of(entry.getValue(), adapter, baseUri);
                 break;
 
             default:
@@ -151,7 +146,7 @@ public final class JsonLdTestCase {
         }
 
         if (testCase.options == null) {
-            testCase.options = JsonLdTestOptions.newOptions();
+            testCase.options = TestOptions.newOptions();
         }
 
         if (testCase.options.contentType == null && testCase.input != null) {

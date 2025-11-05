@@ -21,7 +21,7 @@ import java.net.URI;
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
-import com.apicatalog.tree.io.NodeParser;
+import com.apicatalog.tree.io.TreeIOReader;
 
 /**
  * A {@link DocumentLoader} that retrieves JSON-LD documents from the
@@ -42,16 +42,16 @@ import com.apicatalog.tree.io.NodeParser;
  */
 public final class ClasspathLoader implements DocumentLoader {
 
-    private final NodeParser parser;
+    private final TreeIOReader parser;
 
     /**
-     * Creates a new loader that parses classpath resources using the given parser.
+     * Creates a new loader that parses classpath resources using the given reader.
      *
-     * @param parser the {@link NodeParser} used to parse the loaded resource (must
-     *               not be {@code null})
+     * @param reader the {@link TreeIOReader} used to parse the loaded resource
+     *               (must not be {@code null})
      */
-    public ClasspathLoader(final NodeParser parser) {
-        this.parser = parser;
+    public ClasspathLoader(final TreeIOReader reader) {
+        this.parser = reader;
     }
 
     /**
@@ -75,13 +75,17 @@ public final class ClasspathLoader implements DocumentLoader {
         if (!"classpath".equalsIgnoreCase(url.getScheme())) {
             throw new JsonLdException(
                     ErrorCode.LOADING_DOCUMENT_FAILED,
-                    "Unsupported URL scheme [" + url.getScheme() + "]. ClasspathLoader accepts only classpath: scheme.");
+                    "Unsupported URL scheme [" + url.getScheme() + "]. Only classpath: scheme is accepted.");
         }
+
         try (final var is = ClasspathLoader.class.getResourceAsStream(url.getPath())) {
 
             var node = parser.parse(is);
 
-            return Document.of(node, url);
+            return Document.of(
+                    node,
+                    FileLoader.fromFileExtension(url.getPath()), // detect media type
+                    url);
 
         } catch (IOException e) {
             throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED);

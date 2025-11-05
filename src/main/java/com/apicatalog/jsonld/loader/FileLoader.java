@@ -18,14 +18,13 @@ package com.apicatalog.jsonld.loader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.net.URI;
 import java.util.Map;
 
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
-import com.apicatalog.tree.io.NodeParser;
+import com.apicatalog.tree.io.TreeIOReader;
 import com.apicatalog.web.media.MediaType;
 
 /**
@@ -33,9 +32,8 @@ import com.apicatalog.web.media.MediaType;
  *
  * <p>
  * This loader only supports {@code file:} URIs. It reads the referenced file,
- * parses it with the provided {@link NodeParser}, and wraps the result in a
- * {@link Document}. Files must exist and be readable by the current
- * process.
+ * parses it with the provided {@link TreeIOReader}, and wraps the result in a
+ * {@link Document}. Files must exist and be readable by the current process.
  * </p>
  *
  * @see DocumentLoader
@@ -43,21 +41,27 @@ import com.apicatalog.web.media.MediaType;
  */
 public final class FileLoader implements DocumentLoader {
 
-    private static final Map<String, MediaType> EXTENSIONS = Map.of(
+    private static final Map<String, MediaType> FILE_EXTENSIONS = Map.of(
             ".jsonld", MediaType.JSON_LD,
             ".json", MediaType.JSON,
             ".html", MediaType.HTML,
             ".xhtml", MediaType.XHTML,
-            ".nq", MediaType.N_QUADS);
+            ".nq", MediaType.N_QUADS,
+            ".cbor", MediaType.CBOR,
+            ".cborld", MediaType.CBOR_LD,
+            ".yml", MediaType.YAML,
+            ".yaml", MediaType.YAML,
+            ".yamlld", MediaType.YAML_LD);
 
-    private final NodeParser reader;
+    private final TreeIOReader reader;
 
     /**
-     * Creates a loader that parses local files using the given {@link NodeParser}.
+     * Creates a loader that parses local files using the given
+     * {@link TreeIOReader}.
      *
      * @param reader parser used to decode the file content
      */
-    public FileLoader(NodeParser reader) {
+    public FileLoader(TreeIOReader reader) {
         this.reader = reader;
     }
 
@@ -87,9 +91,9 @@ public final class FileLoader implements DocumentLoader {
             throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "File [" + url + "] is not accessible to read.");
         }
 
-        var contentType = fromFileExtension(file.getName());
+        final var contentType = fromFileExtension(file.getName());
 
-        try (final InputStream is = new FileInputStream(file)) {
+        try (final var is = new FileInputStream(file)) {
             var node = reader.parse(is);
 
             return Document.of(node, contentType, url);
@@ -110,7 +114,7 @@ public final class FileLoader implements DocumentLoader {
 
         final String lower = name.toLowerCase();
 
-        return EXTENSIONS.entrySet().stream()
+        return FILE_EXTENSIONS.entrySet().stream()
                 .filter(e -> lower.endsWith(e.getKey()))
                 .map(Map.Entry::getValue)
                 .findFirst()

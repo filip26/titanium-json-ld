@@ -41,7 +41,7 @@ import com.apicatalog.rdf.nquads.NQuadsReaderException;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.set.OrderedQuadDataset;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
-import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
@@ -177,9 +177,9 @@ class RemoteContextTest {
         });
     }
 
-    private final PolyNode read(final String name) throws JsonLdException, IOException {
+    private final TreeIO read(final String name) throws JsonLdException, IOException {
         try (final var is = getClass().getResourceAsStream(name)) {
-            return JsonLdTestSuite.JAKARTA_PARSER.parse(is);
+            return JsonLdTestSuite.JAKARTA_READER.parse(is);
         }
     }
 }

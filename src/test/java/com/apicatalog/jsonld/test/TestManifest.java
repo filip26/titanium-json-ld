@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
-public final class JsonLdTestManifest {
+public final class TestManifest {
 
     public static final String JSON_LD_API_BASE = "zip://json-ld-test-suite-20251009.zip/com/github/w3c/json-ld-api/tests/";
     public static final String JSON_LD_FRAMING_BASE = "zip://json-ld-framing-test-suite-20251009.zip/com/github/w3c/json-ld-framing/tests/";
@@ -32,26 +32,27 @@ public final class JsonLdTestManifest {
     // Extension: JSON-LD-STAR (Experimental)
     public static final String JSON_LD_STAR_BASE = "zip://json-ld-star-test-suite-20251009.zip/com/github/json-ld/json-ld-star/tests/";
 
-
     public static final String EXPAND = "expand-manifest.jsonld";
+    
+    public static final String TESTS_BASE = "https://w3c.github.io";
     
     private final String manifestName;
     private final String manifestBase;
 
     private final DocumentLoader loader;
 
-    private JsonLdTestManifest(final String manifestBase, final String manifestName, final DocumentLoader loader) {
+    private TestManifest(final String manifestBase, final String manifestName, final DocumentLoader loader) {
         this.manifestBase = manifestBase;
         this.manifestName = manifestName;
 
         this.loader = loader;
     }
 
-    public static JsonLdTestManifest load(final String manifestBase, final String manifestName, final DocumentLoader loader) {
-        return new JsonLdTestManifest(manifestBase, manifestName, loader);
+    public static TestManifest load(final String manifestBase, final String manifestName, final DocumentLoader loader) {
+        return new TestManifest(manifestBase, manifestName, loader);
     }
 
-    public Stream<JsonLdTestCase> stream() {
+    public Stream<TestCase> stream() {
 
         try {
 
@@ -65,7 +66,7 @@ public final class JsonLdTestManifest {
 
             return node.adapter()
                     .elementStream(node.property("sequence"))
-                    .map(test -> JsonLdTestCase.of(
+                    .map(test -> TestCase.of(
                             test,
                             node.adapter(),
                             manifestName,

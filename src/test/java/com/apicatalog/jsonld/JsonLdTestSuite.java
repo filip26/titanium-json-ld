@@ -30,8 +30,10 @@ import com.apicatalog.jsonld.loader.FileLoader;
 import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.loader.SchemeRouter;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
-import com.apicatalog.tree.io.NodeParser;
-import com.apicatalog.tree.io.jakarta.JakartaParser;
+import com.apicatalog.tree.io.TreeIOReader;
+import com.apicatalog.tree.io.TreeIOWriter;
+import com.apicatalog.tree.io.jakarta.JakartaReader;
+import com.apicatalog.tree.io.jakarta.JakartaWriter;
 
 import jakarta.json.Json;
 
@@ -56,9 +58,11 @@ public class JsonLdTestSuite {
 //    om.setSerializationInclusion(Include.ALWAYS);
 //    }
 
-    public static final NodeParser JAKARTA_PARSER =
+    public static final TreeIOReader JAKARTA_READER =
 //            new Jackson2Parser(om);
-            new JakartaParser(Json.createReaderFactory(Map.of()));
+            new JakartaReader(Json.createReaderFactory(Map.of()));
+
+    public static final TreeIOWriter JAKARTA_WRITER = new JakartaWriter(Json.createGeneratorFactory(Map.of()));
 
     public static final HttpLoader HTTP_LOADER = HttpLoader
             .newLoader(
@@ -67,18 +71,18 @@ public class JsonLdTestSuite {
                             .followRedirects(Redirect.NEVER)
                             .connectTimeout(Duration.ofSeconds(5))
                             .build(),
-                    JAKARTA_PARSER)
+                    JAKARTA_READER)
             .timeout(Duration.ofSeconds(5));
 
-    public static final ZipResourceLoader ZIP_RESOURCE_LOADER = new ZipResourceLoader(JAKARTA_PARSER);
+    public static final ZipResourceLoader ZIP_RESOURCE_LOADER = new ZipResourceLoader(JAKARTA_READER);
 
-    public static final FileLoader FILE_LOADER = new FileLoader(JAKARTA_PARSER);
+    public static final FileLoader FILE_LOADER = new FileLoader(JAKARTA_READER);
 
-    public static final ClasspathLoader CLASSPATH_LOADER = new ClasspathLoader(JAKARTA_PARSER);
+    public static final ClasspathLoader CLASSPATH_LOADER = new ClasspathLoader(JAKARTA_READER);
 
     public static final DocumentLoader RESOURCE_LOADER = SchemeRouter.newBuilder()
-          .route("zip", ZIP_RESOURCE_LOADER)
-          .route("classpath", CLASSPATH_LOADER)
-          .build();
+            .route("zip", ZIP_RESOURCE_LOADER)
+            .route("classpath", CLASSPATH_LOADER)
+            .build();
 
 }

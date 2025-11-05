@@ -26,16 +26,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.apicatalog.jsonld.test.JsonLdTestCase;
-import com.apicatalog.jsonld.test.JsonLdTestManifest;
-import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
+import com.apicatalog.jsonld.test.TestCase;
+import com.apicatalog.jsonld.test.TestManifest;
+import com.apicatalog.jsonld.test.JunitRunner;
 
 @DisplayName(value = "ToRDF")
 class ToRdfTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource({"jsonLdApi"})
-    void testToRdf(final JsonLdTestCase testCase) throws IOException {
+    void testToRdf(final TestCase testCase) throws IOException {
 
         // Force a locale to something different than US to be aware of DecimalFormat errors
         Locale.setDefault(Locale.GERMAN);
@@ -45,17 +45,17 @@ class ToRdfTest {
         // invalid IRI/URI are not accepted - wont'fix
         assumeFalse("#tli12".equals(testCase.id));
 
-        assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
+        assertTrue(new JunitRunner(testCase).execute());
     }
 
-    static final Stream<JsonLdTestCase> jsonLdApi() throws JsonLdException {
-        return JsonLdTestManifest
+    static final Stream<TestCase> jsonLdApi() throws JsonLdException {
+        return TestManifest
                     .load(
-                            JsonLdTestManifest.JSON_LD_API_BASE, 
+                            TestManifest.JSON_LD_API_BASE, 
                             "toRdf-manifest.jsonld", 
                             JsonLdTestSuite.ZIP_RESOURCE_LOADER)
                     .stream()
-                    .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
+                    .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                     ;
     }
 }

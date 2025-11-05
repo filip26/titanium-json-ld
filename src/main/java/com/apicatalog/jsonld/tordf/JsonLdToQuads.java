@@ -32,13 +32,14 @@ import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.Options.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.lang.BlankNode;
-import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
-import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.TreeIOAdapter;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.web.lang.LanguageTag;
 import com.apicatalog.web.uri.UriUtils;
@@ -46,6 +47,13 @@ import com.apicatalog.web.uri.UriValidationPolicy;
 
 public final class JsonLdToQuads {
 
+    @FunctionalInterface
+    public interface RdfJsonLiteralWriter {
+        String write(Object node, TreeIOAdapter adapter) throws JsonLdException;
+    }
+    
+    public static final RdfJsonLiteralWriter JCS = Jcs::canonize;
+    
     private static final Logger LOGGER = Logger.getLogger(JsonLdToQuads.class.getName());
 
     private static final DecimalFormat xsdDecimalFormat = new DecimalFormat("0.0##############E0", new DecimalFormatSymbols(Locale.ENGLISH));
@@ -59,6 +67,7 @@ public final class JsonLdToQuads {
 
     // optional
     private boolean produceGeneralizedRdf;
+    private RdfJsonLiteralWriter jsonWriter;
     private RdfDirection rdfDirection;
     private UriValidationPolicy uriValidation;
 
@@ -66,12 +75,24 @@ public final class JsonLdToQuads {
         this.nodeMap = nodeMap;
 
         this.produceGeneralizedRdf = false;
+        this.jsonWriter = JCS;
         this.rdfDirection = null;
         this.uriValidation = Options.DEFAULT_URI_VALIDATION;
     }
-
+    
     public static final JsonLdToQuads with(NodeMap nodeMap) {
         return new JsonLdToQuads(nodeMap);
+    }
+    
+    public void provide(RdfQuadConsumer consumer) throws JsonLdException {
+        try {
+            from(RdfQuadEmitter.newEmitter(consumer));
+        } catch (RdfConsumerException e) {
+            if (e.getCause() instanceof JsonLdException) {
+                throw (JsonLdException) e.getCause();
+            }
+            throw new JsonLdException(ErrorCode.UNSPECIFIED, e);
+        }
     }
 
     public JsonLdToQuads produceGeneralizedRdf(boolean enable) {
@@ -83,17 +104,17 @@ public final class JsonLdToQuads {
         this.rdfDirection = rdfDirection;
         return this;
     }
-
-    public void provide(RdfQuadConsumer consumer) throws JsonLdException {
-        try {
-            from(RdfQuadEmitter.newInstance(consumer));
-        } catch (RdfConsumerException e) {
-            if (e.getCause() instanceof JsonLdException) {
-                throw (JsonLdException) e.getCause();
-            }
-            throw new JsonLdException(ErrorCode.UNSPECIFIED, e);
-        }
+    
+    public JsonLdToQuads jsonWriter(RdfJsonLiteralWriter jsonWriter) {
+        this.jsonWriter = jsonWriter; 
+        return this;
     }
+
+    public JsonLdToQuads uriValidation(UriValidationPolicy uriValidation) {
+        this.uriValidation = uriValidation;
+        return this;
+    }
+
 
     protected void from(RdfTripleConsumer consumer) throws JsonLdException, RdfConsumerException {
 
@@ -163,11 +184,6 @@ public final class JsonLdToQuads {
                 }
             }
         }
-    }
-
-    public JsonLdToQuads uriValidation(UriValidationPolicy uriValidation) {
-        this.uriValidation = uriValidation;
-        return this;
     }
 
     /*
@@ -242,11 +258,11 @@ public final class JsonLdToQuads {
 
         // 8.
         if (Keywords.JSON.equals(datatype)) {
-            // TODO useJCS
-            if (value instanceof PolyNode node) {
-                valueString = Jcs.canonize(node.node(), node.adapter());
+            if (value instanceof TreeIO node) {
+                valueString = jsonWriter.write(node.node(), node.adapter());
+                
             } else {
-                valueString = Jcs.canonize(value, NativeAdapter.instance());
+                valueString = jsonWriter.write(value, NativeAdapter.instance());
             }
             datatype = Terms.RDF_JSON;
 

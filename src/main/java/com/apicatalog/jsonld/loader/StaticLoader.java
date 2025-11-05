@@ -8,7 +8,7 @@ import java.util.Objects;
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
-import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.TreeIO;
 
 /**
  * A {@link DocumentLoader} that resolves JSON-LD documents from an in-memory
@@ -21,7 +21,7 @@ import com.apicatalog.tree.io.PolyNode;
  * </p>
  *
  * <p>
- * Each URI is explicitly mapped to a {@link Document} or {@link PolyNode}. When
+ * Each URI is explicitly mapped to a {@link Document} or {@link TreeIO}. When
  * {@link #loadDocument(URI, Options)} is invoked, the loader first checks the
  * internal registry. If no entry exists, it can delegate to an optional
  * fallback {@link DocumentLoader}.
@@ -139,7 +139,7 @@ public final class StaticLoader implements DocumentLoader {
          * @param node the parsed JSON-LD node
          * @return this builder instance
          */
-        public Builder set(String url, PolyNode node) {
+        public Builder set(String url, TreeIO node) {
             return set(URI.create(url), node);
         }
 
@@ -150,7 +150,7 @@ public final class StaticLoader implements DocumentLoader {
          * @param node the parsed JSON-LD node
          * @return this builder instance
          */
-        public Builder set(URI url, PolyNode node) {
+        public Builder set(URI url, TreeIO node) {
             resources.put(url, Document.of(node, url));
             return this;
         }

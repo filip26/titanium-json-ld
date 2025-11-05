@@ -46,11 +46,13 @@ import com.apicatalog.jsonld.JsonLdException.ErrorCode;
  * </p>
  *
  * <pre>{@code
+ * 
+ * static final var httpLoader = HttpLoader.newLoader(parser);
+ * 
  * DocumentLoader loader = SchemeRouter.newBuilder()
- *         .route("http", HttpLoader.newLoader(parser))
- *         .route("https", HttpLoader.newLoader(parser))
+ *         .route("https", httpLoader)
  *         .route("file", new FileLoader(parser))
- *         .fallback(new InMemoryLoader())
+ *         .fallback(StaticLoader.newBuilder().set(url, document).build())
  *         .build();
  * }</pre>
  *

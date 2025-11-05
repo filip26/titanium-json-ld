@@ -23,7 +23,7 @@ import com.apicatalog.rdf.nquads.NQuadsReader;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
-import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
 class NativeInputTest {
@@ -140,9 +140,9 @@ class NativeInputTest {
                             "@type", "xsd:dateTime")),
             "ical:location", "New Orleans Arena, New Orleans, Louisiana, USA");
 
-    private static final PolyNode readJson(final String name) throws JsonLdException, IOException {
+    private static final TreeIO readJson(final String name) throws JsonLdException, IOException {
         try (final var is = NativeInputTest.class.getResourceAsStream(name)) {
-            return JsonLdTestSuite.JAKARTA_PARSER.parse(is);
+            return JsonLdTestSuite.JAKARTA_READER.parse(is);
         }
     }
 

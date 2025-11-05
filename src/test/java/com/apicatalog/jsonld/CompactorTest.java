@@ -25,16 +25,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.apicatalog.jsonld.test.JsonLdTestCase;
-import com.apicatalog.jsonld.test.JsonLdTestManifest;
-import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
+import com.apicatalog.jsonld.test.TestCase;
+import com.apicatalog.jsonld.test.TestManifest;
+import com.apicatalog.jsonld.test.JunitRunner;
 
 @DisplayName(value = "Compactor")
 class CompactorTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource({ "jsonLdApi" /* , "jsonLdStar" */ })
-    void testCompact(JsonLdTestCase testCase) {
+    void testCompact(TestCase testCase) {
 
         // Skip JSON-LD-STAR (Experimental) embedded node tests - unsupported now
         assumeFalse(Arrays.stream(new String[] {
@@ -42,24 +42,24 @@ class CompactorTest {
                 "#tst15", "#tst16", "#tst17"
         }).anyMatch(testCase.id::equals));
 
-        assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
+        assertTrue(new JunitRunner(testCase).execute());
     }
 
-    static final Stream<JsonLdTestCase> jsonLdApi() throws JsonLdException {
-        return JsonLdTestManifest
+    static final Stream<TestCase> jsonLdApi() throws JsonLdException {
+        return TestManifest
                 .load(
-                        JsonLdTestManifest.JSON_LD_API_BASE,
+                        TestManifest.JSON_LD_API_BASE,
                         "compact-manifest.jsonld",
                         JsonLdTestSuite.ZIP_RESOURCE_LOADER)
                 .stream()
-                .filter(JsonLdTestCase.IS_NOT_V1_0) // skip specVersion == 1.0
+                .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
         ;
     }
 
-    static final Stream<JsonLdTestCase> jsonLdStar() throws JsonLdException {
-        return JsonLdTestManifest
+    static final Stream<TestCase> jsonLdStar() throws JsonLdException {
+        return TestManifest
                 .load(
-                        JsonLdTestManifest.JSON_LD_STAR_BASE,
+                        TestManifest.JSON_LD_STAR_BASE,
                         "compact-manifest.jsonld",
                         JsonLdTestSuite.ZIP_RESOURCE_LOADER)
                 .stream();

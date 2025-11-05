@@ -33,7 +33,7 @@ import com.apicatalog.jsonld.JsonLdTestSuite;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
-import com.apicatalog.jsonld.test.JsonLdTestCase.Type;
+import com.apicatalog.jsonld.test.TestCase.Type;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.model.RdfQuadSet;
@@ -42,8 +42,8 @@ import com.apicatalog.rdf.nquads.NQuadsWriter;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.flow.QuadEmitter;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
-import com.apicatalog.tree.io.NodeAdapter;
-import com.apicatalog.tree.io.PolyNode;
+import com.apicatalog.tree.io.TreeIOAdapter;
+import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 import com.apicatalog.tree.io.java.NativeAdapter;
@@ -55,11 +55,11 @@ import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
 
-public class JsonLdTestRunnerJunit {
+public class JunitRunner {
 
-    private final JsonLdTestCase testCase;
+    private final TestCase testCase;
 
-    public JsonLdTestRunnerJunit(JsonLdTestCase testCase) {
+    public JunitRunner(TestCase testCase) {
         this.testCase = testCase;
     }
 
@@ -91,7 +91,7 @@ public class JsonLdTestRunnerJunit {
         if (testCase.type.contains(Type.FROM_RDF_TEST)) {
             return execute(options -> {
 
-                final var toLd = JsonLd.fromRdf(options).jsonParser(JsonLdTestSuite.JAKARTA_PARSER);
+                final var toLd = JsonLd.fromRdf(options).jsonParser(JsonLdTestSuite.JAKARTA_READER);
 
                 try {
 
@@ -112,7 +112,7 @@ public class JsonLdTestRunnerJunit {
         throw new IllegalStateException("An uknown test type to execute = " + testCase.type + ".");
     }
 
-    public boolean execute(final JsonLdTestMethod method) {
+    public boolean execute(final TestMethod method) {
 
         assertNotNull(testCase.baseUri);
         assertNotNull(testCase.input);
@@ -201,7 +201,7 @@ public class JsonLdTestRunnerJunit {
         }
     }
 
-    private boolean validateJsonLd(final JsonLdTestCase testCase, final Options options, final Object result, final NodeAdapter resultAdapter) {
+    private boolean validateJsonLd(final TestCase testCase, final Options options, final Object result, final TreeIOAdapter resultAdapter) {
 
         assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
 
@@ -219,7 +219,7 @@ public class JsonLdTestRunnerJunit {
         return false;
     }
 
-    private boolean validateQuads(final JsonLdTestCase testCase, final Options options, final RdfQuadSet result) throws NQuadsReaderException, RdfConsumerException {
+    private boolean validateQuads(final TestCase testCase, final Options options, final RdfQuadSet result) throws NQuadsReaderException, RdfConsumerException {
 
         // A PositiveSyntaxTest succeeds when no error is found when processing.
         if (testCase.expect == null && testCase.type.contains(Type.POSITIVE_SYNTAX_TEST)) {
@@ -240,7 +240,7 @@ public class JsonLdTestRunnerJunit {
         return false;
     }
 
-    public static final boolean compareJson(final JsonLdTestCase testCase, final Object result, final NodeAdapter resultAdapter, final PolyNode expected) throws IOException {
+    public static final boolean compareJson(final TestCase testCase, final Object result, final TreeIOAdapter resultAdapter, final TreeIO expected) throws IOException {
 
         if (Comparison.equals(expected.node(), expected.adapter(), result, resultAdapter)) {
             return true;
@@ -255,7 +255,7 @@ public class JsonLdTestRunnerJunit {
         return false;
     }
 
-    public static void write(final JsonLdTestCase testCase, final JsonValue result, final JsonValue expected, JsonLdException error) {
+    public static void write(final TestCase testCase, final JsonValue result, final JsonValue expected, JsonLdException error) {
         final StringWriter stringWriter = new StringWriter();
 
         try (final var writer = new PrintWriter(stringWriter)) {
@@ -301,7 +301,7 @@ public class JsonLdTestRunnerJunit {
         writer.println();
     }
 
-    public static final boolean compareRdf(final JsonLdTestCase testCase, final RdfQuadSet result, final RdfQuadSet expected) {
+    public static final boolean compareRdf(final TestCase testCase, final RdfQuadSet result, final RdfQuadSet expected) {
 
         try {
             boolean match = RdfComparison.equals(expected, result);
