@@ -24,10 +24,9 @@ import java.net.URL;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.tree.io.NodeParser;
 
 public class ZipResourceLoader implements DocumentLoader {
@@ -72,7 +71,7 @@ public class ZipResourceLoader implements DocumentLoader {
 
                 var node = reader.parse(is);
 
-                return RemoteDocument.of(node, url);
+                return Document.of(node, url);
             }
 
         } catch (IOException e) {

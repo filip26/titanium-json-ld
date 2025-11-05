@@ -17,9 +17,9 @@ package com.apicatalog.jsonld.loader;
 
 import java.net.URI;
 
+import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
-import com.apicatalog.jsonld.document.Document;
 
 public final class UriBaseRewriter implements DocumentLoader {
 
@@ -46,19 +46,23 @@ public final class UriBaseRewriter implements DocumentLoader {
 
         final String relativePath = sourceUrl.substring(sourceBase.length());
 
-        final Document remoteDocument = loader.loadDocument(URI.create(targetBase + relativePath), options);
+        final Document document = loader.loadDocument(URI.create(targetBase + relativePath), options);
 
-        if (remoteDocument == null) {
+        if (document == null) {
             throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED);
         }
 
-        if (remoteDocument.documentUrl() != null && remoteDocument.documentUrl().toString().startsWith(targetBase)) {
+        if (document.url() != null && document.url().toString().startsWith(targetBase)) {
 
-            final String remoteRelativePath = remoteDocument.documentUrl().toString().substring(targetBase.length());
-            remoteDocument.setDocumentUrl(URI.create(sourceBase + remoteRelativePath));
+            final var remoteRelativePath = document.url().toString().substring(targetBase.length());
 
+            return Document.of(
+                    document.content(),
+                    document.contentType(),
+                    document.profile(),
+                    URI.create(sourceBase + remoteRelativePath),
+                    document.context());
         }
-        return remoteDocument;
-
+        return document;
     }
 }

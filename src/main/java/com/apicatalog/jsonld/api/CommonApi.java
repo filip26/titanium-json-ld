@@ -17,8 +17,8 @@ package com.apicatalog.jsonld.api;
 
 import java.net.URI;
 
+import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.Options;
-import com.apicatalog.jsonld.Version;
 import com.apicatalog.web.uri.UriUtils;
 
 public interface CommonApi<R> {
@@ -56,7 +56,7 @@ public interface CommonApi<R> {
     default R base(String baseLocation) {
         URI baseUri = null;
 
-        if (StringUtils.isNotBlank(baseLocation)) {
+        if (baseLocation != null && !baseLocation.isBlank()) {
 
             baseUri = UriUtils.create(baseLocation);
 

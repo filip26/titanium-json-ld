@@ -29,12 +29,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.compaction.UriCompaction;
 import com.apicatalog.jsonld.context.Context;
-import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.framing.Frame;
@@ -65,7 +65,7 @@ public final class Framer {
                         Framer.expand(document, options, runtime),
                         Frame.of(frame, options, runtime),
                         Framer.context(
-                                document.documentUrl(),
+                                document.url(),
                                 contextNode,
                                 Frame.contextBase(frame, options),
                                 options),

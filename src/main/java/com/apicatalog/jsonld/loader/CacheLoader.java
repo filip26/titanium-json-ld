@@ -2,8 +2,8 @@ package com.apicatalog.jsonld.loader;
 
 import java.net.URI;
 
+import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.document.Document;
 
 /**
  * A {@link DocumentLoader} that caches previously loaded JSON-LD documents.

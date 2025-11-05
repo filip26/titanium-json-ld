@@ -23,10 +23,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.context.Context;
-import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.expansion.Expansion;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -49,10 +49,10 @@ public final class Expander {
         return Expander.expand(
                 document.content(),
                 Expander.context(
-                        document.documentUrl(),
-                        document.contextUrl(),
+                        document.url(),
+                        document.context(),
                         options),
-                Expander.baseUrl(document.documentUrl(), options),
+                Expander.baseUrl(document.url(), options),
                 options,
                 runtime);
     }
@@ -74,10 +74,10 @@ public final class Expander {
         return Expander.expandFrame(
                 document.content(),
                 Expander.context(
-                        document.documentUrl(),
-                        document.contextUrl(),
+                        document.url(),
+                        document.context(),
                         options),
-                Expander.baseUrl(document.documentUrl(), options),
+                Expander.baseUrl(document.url(), options),
                 options,
                 runtime);
     }

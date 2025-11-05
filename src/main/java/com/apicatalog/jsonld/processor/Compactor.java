@@ -20,12 +20,12 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
 
+import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.compaction.UriCompaction;
 import com.apicatalog.jsonld.context.Context;
-import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.PolyNode;
 
@@ -46,7 +46,7 @@ public final class Compactor {
             final Options options,
             final Execution runtime) throws JsonLdException, IOException {
 
-        URI contextBase = input.documentUrl();
+        URI contextBase = input.url();
 
         if (contextBase == null) {
             contextBase = options.base();
@@ -66,7 +66,7 @@ public final class Compactor {
 
         return compact(
                 expandedInput,
-                input.documentUrl(),
+                input.url(),
                 Context.load(options.loader(), contextUri).content(),
                 options,
                 runtime);
@@ -114,7 +114,7 @@ public final class Compactor {
 
         return compact(
                 expandedInput,
-                input.documentUrl(),
+                input.url(),
                 context.content(),
                 options,
                 runtime);

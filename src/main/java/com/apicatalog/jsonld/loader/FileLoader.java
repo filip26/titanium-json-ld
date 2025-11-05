@@ -22,10 +22,9 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Map;
 
+import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.tree.io.NodeParser;
 import com.apicatalog.web.media.MediaType;
 
@@ -35,7 +34,7 @@ import com.apicatalog.web.media.MediaType;
  * <p>
  * This loader only supports {@code file:} URIs. It reads the referenced file,
  * parses it with the provided {@link NodeParser}, and wraps the result in a
- * {@link RemoteDocument}. Files must exist and be readable by the current
+ * {@link Document}. Files must exist and be readable by the current
  * process.
  * </p>
  *
@@ -72,7 +71,7 @@ public final class FileLoader implements DocumentLoader {
      *
      * @param url     the {@code file:} URI of the document
      * @param options loading options (ignored for file resources)
-     * @return the loaded {@link RemoteDocument}
+     * @return the loaded {@link Document}
      * @throws JsonLdException if the file cannot be accessed or parsed
      */
     @Override
@@ -93,7 +92,7 @@ public final class FileLoader implements DocumentLoader {
         try (final InputStream is = new FileInputStream(file)) {
             var node = reader.parse(is);
 
-            return RemoteDocument.of(node, url, contentType);
+            return Document.of(node, contentType, url);
 
         } catch (FileNotFoundException e) {
 

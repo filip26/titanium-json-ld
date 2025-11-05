@@ -18,11 +18,11 @@ package com.apicatalog.jsonld.processor;
 import java.io.IOException;
 import java.net.URI;
 
+import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.context.Context;
-import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.flattening.Flattening;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
@@ -130,12 +130,12 @@ public final class Flattener {
                 compactionOptions.base(options.base());
 
             } else if (options.isCompactArrays()) {
-                compactionOptions.base(input.documentUrl());
+                compactionOptions.base(input.url());
             }
 
             flattenedOutput = Compactor.compact(
                     flattenedOutput,
-                    input.documentUrl(),
+                    input.url(),
                     context.content(),
                     compactionOptions,
                     runtime);
@@ -167,7 +167,7 @@ public final class Flattener {
                 compactionOptions.base(options.base());
 
             } else if (options.isCompactArrays()) {
-                compactionOptions.base(input.documentUrl());
+                compactionOptions.base(input.url());
             }
 
             flattenedOutput = Compactor.compact(

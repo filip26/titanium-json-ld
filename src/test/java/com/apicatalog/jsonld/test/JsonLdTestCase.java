@@ -24,10 +24,10 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
-import com.apicatalog.jsonld.Version;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.UriBaseRewriter;

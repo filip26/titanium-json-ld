@@ -26,11 +26,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
+import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.Options.RdfDirection;
-import com.apicatalog.jsonld.Version;
 import com.apicatalog.jsonld.fromrdf.GraphMap.Reference;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;

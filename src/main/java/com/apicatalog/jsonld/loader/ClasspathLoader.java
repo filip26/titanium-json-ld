@@ -18,10 +18,9 @@ package com.apicatalog.jsonld.loader;
 import java.io.IOException;
 import java.net.URI;
 
+import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.tree.io.NodeParser;
 
 /**
@@ -66,7 +65,7 @@ public final class ClasspathLoader implements DocumentLoader {
      *
      * @param url     the {@code classpath:} URI of the resource to load
      * @param options ignored in this implementation
-     * @return a {@link RemoteDocument} representing the loaded resource
+     * @return a {@link Document} representing the loaded resource
      * @throws JsonLdException if the scheme is unsupported or the resource cannot
      *                         be loaded
      */
@@ -82,7 +81,7 @@ public final class ClasspathLoader implements DocumentLoader {
 
             var node = parser.parse(is);
 
-            return RemoteDocument.of(node, url);
+            return Document.of(node, url);
 
         } catch (IOException e) {
             throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED);

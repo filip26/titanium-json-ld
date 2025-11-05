@@ -19,10 +19,10 @@ import java.net.URI;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.Options.ProcessingPolicy;
 import com.apicatalog.jsonld.Options.RdfDirection;
-import com.apicatalog.jsonld.Version;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.web.media.MediaType;
 import com.apicatalog.web.uri.UriResolver;

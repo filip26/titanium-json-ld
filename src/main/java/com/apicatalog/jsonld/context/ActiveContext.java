@@ -21,7 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.Version;
+import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.loader.DocumentLoader;

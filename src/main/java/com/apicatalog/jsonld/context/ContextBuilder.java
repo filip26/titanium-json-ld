@@ -26,14 +26,14 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.apicatalog.jsonld.Document;
+import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
-import com.apicatalog.jsonld.Profile;
-import com.apicatalog.jsonld.Version;
-import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.PolyNode;
@@ -233,8 +233,8 @@ public final class ContextBuilder {
 
                 final var loaderOptions = new DocumentLoader.Options(
                         false,
-                        Profile.CONTEXT,
-                        List.of(Profile.CONTEXT));
+                        Terms.PROFILE_CONTEXT,
+                        List.of(Terms.PROFILE_CONTEXT));
 
                 PolyNode importedContent = null;
 
@@ -575,8 +575,8 @@ public final class ContextBuilder {
 
             final var loaderOptions = new DocumentLoader.Options(
                     false,
-                    Profile.CONTEXT,
-                    List.of(Profile.CONTEXT));
+                    Terms.PROFILE_CONTEXT,
+                    List.of(Terms.PROFILE_CONTEXT));
 
             try {
 
@@ -635,7 +635,7 @@ public final class ContextBuilder {
                     .newContext(loader)
                     .remoteContexts(new ArrayList<>(remoteContexts))
                     .validateScopedContext(validateScopedContext)
-                    .build(newContext, NativeAdapter.instance(), remoteDocument.documentUrl());
+                    .build(newContext, NativeAdapter.instance(), remoteDocument.url());
 
 //FIXME
 //            if (result.runtime().getContextCache() != null && !validateScopedContext) {

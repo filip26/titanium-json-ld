@@ -22,10 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
-import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -82,8 +82,8 @@ public final class Frame {
     }
 
     public static final URI contextBase(final Document frame, final Options options) {
-        return (frame.contextUrl() != null)
-                ? frame.documentUrl()
+        return (frame.context() != null)
+                ? frame.url()
                 : options.base();
 
     }

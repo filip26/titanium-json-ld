@@ -19,14 +19,14 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 
+import com.apicatalog.jsonld.Document;
+import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.Options.RdfDirection;
-import com.apicatalog.jsonld.Version;
 import com.apicatalog.jsonld.api.CommonApi;
 import com.apicatalog.jsonld.api.ContextApi;
 import com.apicatalog.jsonld.api.LoaderApi;
-import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.loader.DocumentLoader;

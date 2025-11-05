@@ -57,6 +57,23 @@ public final class Terms {
 
     public static final String RDF_I18N_BASE = "https://www.w3.org/ns/i18n#";
 
+    /*
+     * @see <a href="https://www.w3.org/TR/json-ld11/#iana-considerations">IANA
+     *      Considerations</a>
+     */
+
+    public static final String PROFILE_EXPANDED = "http://www.w3.org/ns/json-ld#expanded";
+
+    public static final String PROFILE_COMPACTED = "http://www.w3.org/ns/json-ld#compacted";
+
+    public static final String PROFILE_CONTEXT = "http://www.w3.org/ns/json-ld#context";
+
+    public static final String PROFILE_FLATTENED = "http://www.w3.org/ns/json-ld#flattened";
+
+    public static final String PROFILE_FRAME = "http://www.w3.org/ns/json-ld#frame";
+
+    public static final String PROFILE_FRAMED = "http://www.w3.org/ns/json-ld#framed";
+
     private Terms() {
     }
 }

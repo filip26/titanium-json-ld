@@ -25,9 +25,9 @@ import java.net.URL;
 
 import org.junit.jupiter.api.Test;
 
+import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdTestSuite;
-import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.web.media.MediaType;
 
 class FileLoaderTest {

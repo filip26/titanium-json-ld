@@ -17,7 +17,7 @@ package com.apicatalog.jsonld.api;
 
 import java.net.URI;
 
-import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.Document;
 
 
 public interface ContextApi<R> {

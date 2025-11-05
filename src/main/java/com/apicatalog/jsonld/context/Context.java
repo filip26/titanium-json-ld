@@ -23,14 +23,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.apicatalog.jsonld.Document;
+import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
-import com.apicatalog.jsonld.Profile;
-import com.apicatalog.jsonld.Version;
-import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.PolyNode;
@@ -180,8 +180,8 @@ public interface Context {
 
             final var loaderOptions = new DocumentLoader.Options(
                     false,
-                    Profile.CONTEXT,
-                    List.of(Profile.CONTEXT));
+                    Terms.PROFILE_CONTEXT,
+                    List.of(Terms.PROFILE_CONTEXT));
 
             try {
 

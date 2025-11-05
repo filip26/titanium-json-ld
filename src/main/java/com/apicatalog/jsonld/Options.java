@@ -19,8 +19,7 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.Set;
 
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.loader.CacheLoader.Cache;
 import com.apicatalog.jsonld.loader.DocumentLoader;
@@ -405,7 +404,7 @@ public final class Options {
             this.expandContext = null;
             return this;
         }
-        this.expandContext = RemoteDocument.of(
+        this.expandContext = Document.of(
                 new PolyNode(Set.of(contextLocation), NativeAdapter.instance()));
         return this;
     }
@@ -426,7 +425,7 @@ public final class Options {
             this.expandContext = null;
             return this;
         }
-        this.expandContext = RemoteDocument.of(node);
+        this.expandContext = Document.of(node);
         return this;
     }
 

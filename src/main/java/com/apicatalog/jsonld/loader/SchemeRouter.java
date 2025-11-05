@@ -20,9 +20,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
-import com.apicatalog.jsonld.document.Document;
 
 /**
  * A {@link DocumentLoader} that delegates document loading to other loaders

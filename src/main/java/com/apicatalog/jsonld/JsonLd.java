@@ -19,11 +19,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 import com.apicatalog.jsonld.api.FlatteningApi;
 import com.apicatalog.jsonld.context.Context;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.jsonld.framing.Frame;
 import com.apicatalog.jsonld.fromrdf.QuadsToJsonLd;
 import com.apicatalog.jsonld.processor.Compactor;
@@ -43,6 +42,36 @@ import com.apicatalog.tree.io.java.NativeAdapter;
  * All the methods in this class are thread-safe.
  */
 public final class JsonLd {
+
+    public enum Version {
+
+        V1_0("json-ld-1.0"), V1_1("json-ld-1.1");
+
+        private final String text;
+
+        Version(final String text) {
+            this.text = text;
+        }
+
+        public static Version of(String version) {
+
+            Objects.requireNonNull(version);
+
+            if ("1.1".equals(version) || V1_1.text.equalsIgnoreCase(version)) {
+                return V1_1;
+            }
+
+            if ("1.0".equals(version) || V1_0.text.equalsIgnoreCase(version)) {
+                return V1_0;
+            }
+            return null;
+        }
+
+        @Override
+        public String toString() {
+            return text;
+        }
+    }
 
     private static final String DOCUMENT_URI_PARAM_NAME = "documentUri";
     private static final String DOCUMENT_PARAM_NAME = "document";
@@ -65,7 +94,7 @@ public final class JsonLd {
         runtime.tick();
 
         return Expander.expand(
-                RemoteDocument.fetch(
+                Document.fetch(
                         document,
                         options.loader(),
                         options.isExtractAllScripts()),
@@ -125,8 +154,8 @@ public final class JsonLd {
             final URI context,
             final Options options) throws JsonLdException, IOException {
         return compact(
-                RemoteDocument.fetch(document, options.loader(), options.isExtractAllScripts()),
-                RemoteDocument.fetch(context, options.loader(), options.isExtractAllScripts()),
+                Document.fetch(document, options.loader(), options.isExtractAllScripts()),
+                Document.fetch(context, options.loader(), options.isExtractAllScripts()),
                 options);
     }
 
@@ -146,7 +175,7 @@ public final class JsonLd {
     public static final Map<String, ?> compact(final URI document, final Document context,
             final Options options) throws JsonLdException, IOException {
         return compact(
-                RemoteDocument.fetch(document, options.loader(), options.isExtractAllScripts()),
+                Document.fetch(document, options.loader(), options.isExtractAllScripts()),
                 context,
                 options);
     }
@@ -164,7 +193,7 @@ public final class JsonLd {
     public static final Map<String, ?> compact(final Document document, final URI context, Options options) throws JsonLdException, IOException {
         return compact(
                 document,
-                RemoteDocument.fetch(context, options.loader(), options.isExtractAllScripts()),
+                Document.fetch(context, options.loader(), options.isExtractAllScripts()),
                 options);
     }
 
@@ -245,7 +274,7 @@ public final class JsonLd {
      */
     public static final Map<String, ?> frame(final URI document, final URI frame, final Options options) throws JsonLdException, IOException {
         return frame(
-                RemoteDocument.fetch(document, options.loader(), options.isExtractAllScripts()),
+                Document.fetch(document, options.loader(), options.isExtractAllScripts()),
                 frame,
                 options);
     }
@@ -260,7 +289,7 @@ public final class JsonLd {
     public static final Map<String, ?> frame(final Document document, final URI frame, final Options options) throws JsonLdException, IOException {
         return frame(
                 document,
-                RemoteDocument.fetch(frame, options.loader(), options.isExtractAllScripts()),
+                Document.fetch(frame, options.loader(), options.isExtractAllScripts()),
                 options);
     }
 
@@ -273,7 +302,7 @@ public final class JsonLd {
      */
     public static final Map<String, ?> frame(final URI document, final Document frame, final Options options) throws JsonLdException, IOException {
         return frame(
-                RemoteDocument.fetch(document, options.loader(), options.isExtractAllScripts()),
+                Document.fetch(document, options.loader(), options.isExtractAllScripts()),
                 frame,
                 options);
     }
@@ -344,7 +373,7 @@ public final class JsonLd {
      * @return {@link ToRdfApi} allowing to set additional parameters
      */
     public static final void toRdf(final URI document, RdfQuadConsumer consumer, Options options) throws JsonLdException, IOException {
-        toRdf(RemoteDocument
+        toRdf(Document
                 .fetch(
                         document,
                         options.loader(),

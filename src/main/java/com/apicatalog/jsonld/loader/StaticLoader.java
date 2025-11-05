@@ -5,10 +5,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.RemoteDocument;
 import com.apicatalog.tree.io.PolyNode;
 
 /**
@@ -33,7 +32,7 @@ import com.apicatalog.tree.io.PolyNode;
  * </p>
  *
  * @see DocumentLoader
- * @see RemoteDocument
+ * @see Document
  * @see SchemeRouter
  */
 public final class StaticLoader implements DocumentLoader {
@@ -152,7 +151,7 @@ public final class StaticLoader implements DocumentLoader {
          * @return this builder instance
          */
         public Builder set(URI url, PolyNode node) {
-            resources.put(url, RemoteDocument.of(node, url));
+            resources.put(url, Document.of(node, url));
             return this;
         }
 

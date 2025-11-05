@@ -18,10 +18,10 @@ package com.apicatalog.jsonld.api;
 import java.io.IOException;
 import java.net.URI;
 
+import com.apicatalog.jsonld.Document;
+import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
-import com.apicatalog.jsonld.Version;
-import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.jsonld.processor.Flattener;

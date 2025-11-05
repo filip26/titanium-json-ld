@@ -19,8 +19,8 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 
+import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.document.Document;
 
 /**
  * Loads JSON-LD documents identified by a URI.

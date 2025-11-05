@@ -31,11 +31,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
-import com.apicatalog.jsonld.Profile;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.RemoteDocument;
+import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.tree.io.NodeParser;
 import com.apicatalog.web.link.Link;
 import com.apicatalog.web.media.MediaType;
@@ -261,7 +260,7 @@ public class HttpLoader implements DocumentLoader {
 
                             final List<Link> contextUris = linkValues.stream()
                                     .flatMap(l -> Link.of(l, baseUri).stream())
-                                    .filter(l -> l.relations().contains(Profile.CONTEXT))
+                                    .filter(l -> l.relations().contains(Terms.PROFILE_CONTEXT))
                                     .collect(Collectors.toList());
 
                             if (contextUris.size() > 1) {
@@ -292,22 +291,16 @@ public class HttpLoader implements DocumentLoader {
     }
 
     private final Document read(
-            final MediaType mediaType,
+            final MediaType contentType,
             final URI targetUri,
             final URI contextUrl,
             final HttpLoaderClient.Response response) throws JsonLdException {
 
         try (final var is = response.body()) {
 
-            final var remoteContent = reader.parse(is);
+            final var content = reader.parse(is);
 
-            final var remoteDocument = RemoteDocument.of(mediaType, remoteContent);
-
-            remoteDocument.setDocumentUrl(targetUri);
-
-            remoteDocument.setContextUrl(contextUrl);
-
-            return remoteDocument;
+            return Document.of(content, contentType, targetUri, contextUrl);
 
         } catch (Exception e) {
             throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, e);
