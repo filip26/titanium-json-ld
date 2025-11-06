@@ -40,6 +40,26 @@ public final class Compactor {
     private Compactor() {
     }
 
+    public static final Collection<?> expand(
+            final TreeIO input,
+            final Options options,
+            final Execution runtime) throws JsonLdException, IOException {
+
+        final var expansionOptions = Options.copyOf(options)
+                .ordered(false)
+                .extractAllScripts(false);
+
+        return Expander.expand(
+                input,
+                Expander.context(
+                        null,
+                        null,
+                        options),
+                Expander.baseUrl(null, options),
+                expansionOptions,
+                runtime);
+    }
+
     public static final Map<String, ?> compact(
             final Document input,
             final URI contextUri,
@@ -62,7 +82,7 @@ public final class Compactor {
                 Options.copyOf(options)
                         .ordered(false)
                         .extractAllScripts(false),
-                        runtime);
+                runtime);
 
         return compact(
                 expandedInput,
@@ -166,7 +186,7 @@ public final class Compactor {
     static final Map<String, ?> compact(
             final Object expanded,
             final Context context,
-            final Options options, 
+            final Options options,
             final Execution runtime) throws JsonLdException, IOException {
 
         var activeContext = context;
@@ -205,7 +225,7 @@ public final class Compactor {
                         context.source(),
                         UriCompaction.withVocab(context, Keywords.GRAPH),
                         compactedOutput);
-                
+
             } else {
                 return Map.of(
                         UriCompaction.withVocab(context, Keywords.GRAPH),

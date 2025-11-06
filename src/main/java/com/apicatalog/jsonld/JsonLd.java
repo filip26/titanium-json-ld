@@ -223,12 +223,37 @@ public final class JsonLd {
     }
 
     public static final Map<String, ?> compact(
+            final TreeIO document,
+            final TreeIO context,
+            final Options options) throws JsonLdException, IOException {
+
+        final Execution runtime = Execution.of(options);
+        runtime.tick();
+
+        return Compactor.compact(
+                Compactor.expand(document, options, runtime),
+                null,
+                context,
+                options,
+                runtime);
+    }
+
+    public static final Map<String, ?> compact(
             final Collection<?> document,
             final Map<String, ?> context,
             final Options options) throws JsonLdException, IOException {
 
-        // TODO
-        return null;
+        if (!NativeAdapter.instance().isNode(document)) {
+            throw new IllegalArgumentException();
+        }
+        if (!NativeAdapter.instance().isNode(context)) {
+            throw new IllegalArgumentException();
+        }
+
+        return compact(
+                new TreeIO(document, NativeAdapter.instance()),
+                new TreeIO(context, NativeAdapter.instance()),
+                options);
     }
 
     /* --- FLATTEN -- */
@@ -352,16 +377,10 @@ public final class JsonLd {
             throw new IllegalArgumentException();
         }
 
-        final Execution runtime = Execution.of(options);
-        runtime.tick();
-
-        return null;
-        // TODO
-//        return Framer.frame(
-//                document, 
-//                Frame.of(frame, options, runtime), 
-//                options, 
-//                runtime);
+        return frame(
+                new TreeIO(document, NativeAdapter.instance()),
+                new TreeIO(frame, NativeAdapter.instance()),
+                options);
     }
 
     /* --- TO RDF -- */
