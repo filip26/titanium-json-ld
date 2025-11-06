@@ -103,10 +103,10 @@ public class EarlGenerator {
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
                         new EarlRunner(testCase).execute(options -> JsonLd
-                                .flatten(testCase.input)
-                                .context(testCase.context)
-                                .options(options)
-                                .get())));
+                                .flatten(
+                                        testCase.input,
+                                        testCase.context,
+                                        options))));
     }
 
     public void testToRdf(final PrintWriter writer) throws JsonLdException {

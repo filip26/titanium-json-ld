@@ -16,20 +16,13 @@
 package com.apicatalog.jsonld.processor;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.Collection;
 
 import com.apicatalog.jsonld.Document;
-import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
-import com.apicatalog.jsonld.Options.RdfDirection;
-import com.apicatalog.jsonld.api.CommonApi;
-import com.apicatalog.jsonld.api.ContextApi;
-import com.apicatalog.jsonld.api.LoaderApi;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
-import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.tordf.JsonLdToQuads;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.tree.io.TreeIO;
@@ -40,12 +33,9 @@ import com.apicatalog.tree.io.TreeIO;
  *      "https://w3c.github.io/json-ld-api/#dom-jsonldprocessor-tordf">JsonLdProcessor.toRdf()</a>
  *
  */
-public final class RdfEmitter implements
-        CommonApi<RdfEmitter>,
-        ContextApi<RdfEmitter>,
-        LoaderApi<RdfEmitter> {
+public final class RdfEmitter {
 
-    private Options options;
+    private final Options options;
 
 //    public RdfEmitter() {
 //        this(new JsonLdOptions());
@@ -53,119 +43,6 @@ public final class RdfEmitter implements
 
     public RdfEmitter(Options options) {
         this.options = options;
-    }
-
-    @Override
-    public RdfEmitter options(Options options) {
-
-        if (options == null) {
-            throw new IllegalArgumentException("Parameter 'options' is null.");
-        }
-
-        this.options = options;
-        return this;
-    }
-
-    @Override
-    public RdfEmitter context(URI contextUri) {
-        options.expandContext(contextUri);
-        return this;
-    }
-
-//    @Override
-//    public RdfEmitter context(String contextLocation) {
-//
-//        URI contextUri = null;
-//
-//        if (contextLocation != null) {
-//
-//            contextUri = UriUtils.create(contextLocation);
-//
-//            if (contextUri == null) {
-//                throw new IllegalArgumentException("Context location must be valid URI or null but is [" + contextLocation + ".");
-//            }
-//        }
-//
-//        return context(contextUri);
-//    }
-
-//    @Override
-//    public RdfEmitter context(JsonStructure context) {
-//        options.expandContext(context != null ? JsonDocument.of(context) : null);
-//        return this;
-//    }
-
-    @Override
-    public RdfEmitter context(Document context) {
-        options.expandContext(context);
-        return this;
-    }
-
-    /**
-     * If set to true, the JSON-LD processor may emit blank nodes for triple
-     * predicates, otherwise they will be omitted.
-     * 
-     * @param enable {@code true} to produce generalized RDF
-     * @return builder instance
-     */
-    public RdfEmitter produceGeneralizedRdf(boolean enable) {
-        options.generalizedRdf(enable);
-        return this;
-    }
-
-    /**
-     * The JSON-LD processor may emit blank nodes for triple predicates.
-     *
-     * @return builder instance
-     */
-    public RdfEmitter produceGeneralizedRdf() {
-        return produceGeneralizedRdf(true);
-    }
-
-    /**
-     * Determines how value objects containing a base direction are transformed to
-     * and from RDF.
-     *
-     * @param direction determines how to process directed language-tagged literals
-     * @return builder instance
-     */
-    public RdfEmitter rdfDirection(RdfDirection direction) {
-        options.rdfDirection(direction);
-        return this;
-    }
-
-    @Override
-    public RdfEmitter mode(Version processingMode) {
-        options.mode(processingMode);
-        return this;
-    }
-
-    @Override
-    public RdfEmitter base(URI baseUri) {
-        options.base(baseUri);
-        return this;
-    }
-
-    @Override
-    public RdfEmitter loader(DocumentLoader loader) {
-        options.loader(loader);
-        return this;
-    }
-
-    @Override
-    public RdfEmitter ordered(boolean enable) {
-        options.ordered(enable);
-        return this;
-    }
-
-    /**
-     * Experimental: Accept numeric <code>@id</code>. Disabled by default.
-     *
-     * @return builder instance
-     */
-    public RdfEmitter numericId() {
-        options.useNumericId(true);
-        return this;
     }
 
     /**

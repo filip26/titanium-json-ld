@@ -17,14 +17,13 @@ package com.apicatalog.jsonld.processor;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collection;
 
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
-import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.flattening.Flattening;
-import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.tree.io.TreeIO;
 
 /**
  *
@@ -37,123 +36,58 @@ public final class Flattener {
     private Flattener() {
     }
 
-    public static final Object flatten(final URI input, final URI context, final Options options, final Execution runtime) throws JsonLdException, IOException {
-
-        if (context == null) {
-            return flatten(input, (Document) null, options, runtime);
-        }
-
-        assertDocumentLoader(options, input);
-
-        final var loaderOptions = new DocumentLoader.Options(
-                options.isExtractAllScripts(),
-                null,
-                null);
-
-        var remoteDocument = options.loader().loadDocument(input, loaderOptions);
-
-        if (remoteDocument == null) {
-            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED);
-        }
-
-        return flatten(remoteDocument, context, options, runtime);
-
-//        assertDocumentLoader(options, input);
-//
-//        var contextDocument = options.getDocumentLoader().loadDocument(context, new LoaderOptions());
-//
-//        if (contextDocument == null) {
-//            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Context[" + context + "] is null.");
+    public static Object flatten(Document document, TreeIO context, Options options, Execution runtime) throws JsonLdException, IOException {
+//        if (options.expandContext() == null) {
+//            return flatten(input, (Document) null, options, runtime);
 //        }
-//
-//        return flatten(input, contextDocument, options);
+
+        // 4.
+        final var expansionOptions = Options.copyOf(options).ordered(false);
+
+        var expandedInput = Expander.expand(document, expansionOptions, runtime);
+
+        return flatten(
+                expandedInput,
+                document.url(),
+                context,
+                options,
+                runtime);
     }
 
-    public static final Object flatten(
-            final URI input,
-            final Document context,
-            final Options options,
-            final Execution runtime) throws JsonLdException, IOException {
+    public static Object flatten(TreeIO document, TreeIO context, Options options, Execution runtime) throws JsonLdException, IOException {
+//        if (options.expandContext() == null) {
+//            return flatten(input, (Document) null, options, runtime);
+//        }
 
-        assertDocumentLoader(options, input);
+        // 4.
+        final var expansionOptions = Options.copyOf(options).ordered(false);
 
-        final var loaderOptions = new DocumentLoader.Options(
-                options.isExtractAllScripts(),
+        var expandedInput = Expander.expand(
+                document,
+                Expander.context(
+                        null,
+                        null,
+                        options),
                 null,
-                null);
-        var remoteDocument = options.loader().loadDocument(input, loaderOptions);
+                expansionOptions,
+                runtime);
 
-        if (remoteDocument == null) {
-            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED);
-        }
+//        final var contextDocument = Context.load(options.loader(), context);
 
-        return flatten(remoteDocument, context, options, runtime);
+        return flatten(
+                expandedInput,
+                null,
+                context,
+                options,
+                runtime);
     }
 
-    public static final Object flatten(
-            final Document input,
-            final URI context,
+    static final Object flatten(
+            final Collection<?> expandedInput,
+            final URI documentUrl,
+            final TreeIO context,
             final Options options,
             final Execution runtime) throws JsonLdException, IOException {
-
-        if (context == null) {
-            return flatten(input, (Document) null, options, runtime);
-        }
-
-        assertDocumentLoader(options, context);
-
-        final var contextDocument = Context.load(options.loader(), context);
-
-        return flatten(input, contextDocument, options, runtime);
-    }
-
-    public static final Object flatten(
-            final Document input,
-            final Document context,
-            final Options options,
-            final Execution runtime) throws JsonLdException, IOException {
-
-        // 4.
-        final var expansionOptions = Options.copyOf(options).ordered(false);
-
-        var expandedInput = Expander.expand(input, expansionOptions, runtime);
-
-        // 6.
-        var flattenedOutput = Flattening.flatten(expandedInput, options.isOrdered());
-
-        // 6.1.
-        if (context != null && context.content() != null) {
-
-            Options compactionOptions = Options.copyOf(options);
-
-            if (options.base() != null) {
-                compactionOptions.base(options.base());
-
-            } else if (options.isCompactArrays()) {
-                compactionOptions.base(input.url());
-            }
-
-            flattenedOutput = Compactor.compact(
-                    flattenedOutput,
-                    input.url(),
-                    context.content(),
-                    compactionOptions,
-                    runtime);
-        }
-
-        return flattenedOutput;
-    }
-
-    public static final Object flatten(
-            final Document input,
-            final Context context,
-            final Options options,
-            final Execution runtime) throws JsonLdException, IOException {
-
-        // 4.
-        final var expansionOptions = Options.copyOf(options).ordered(false);
-
-        var expandedInput = Expander.expand(input, expansionOptions, runtime);
 
         // 6.
         var flattenedOutput = Flattening.flatten(expandedInput, options.isOrdered());
@@ -166,24 +100,97 @@ public final class Flattener {
             if (options.base() != null) {
                 compactionOptions.base(options.base());
 
-            } else if (options.isCompactArrays()) {
-                compactionOptions.base(input.url());
+            } else if (options.isCompactArrays() && documentUrl != null) {
+                compactionOptions.base(documentUrl);
             }
 
             flattenedOutput = Compactor.compact(
                     flattenedOutput,
+                    documentUrl,
                     context,
                     compactionOptions,
                     runtime);
         }
-
         return flattenedOutput;
     }
 
-    private static final void assertDocumentLoader(final Options options, final URI target) throws JsonLdException {
-        if (options.loader() == null) {
-            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + target + "].");
-        }
-    }
+    /* --- remove --- */
+//    public static final Object flatten(
+//            final Document input,
+//            final Document context,
+//            final Options options,
+//            final Execution runtime) throws JsonLdException, IOException {
+//
+//        // 4.
+//        final var expansionOptions = Options.copyOf(options).ordered(false);
+//
+//        var expandedInput = Expander.expand(input, expansionOptions, runtime);
+//
+//        // 6.
+//        var flattenedOutput = Flattening.flatten(expandedInput, options.isOrdered());
+//
+//        // 6.1.
+//        if (context != null && context.content() != null) {
+//
+//            Options compactionOptions = Options.copyOf(options);
+//
+//            if (options.base() != null) {
+//                compactionOptions.base(options.base());
+//
+//            } else if (options.isCompactArrays()) {
+//                compactionOptions.base(input.url());
+//            }
+//
+//            flattenedOutput = Compactor.compact(
+//                    flattenedOutput,
+//                    input.url(),
+//                    context.content(),
+//                    compactionOptions,
+//                    runtime);
+//        }
+//
+//        return flattenedOutput;
+//    }
 
+//    public static final Object flatten(
+//            final Document input,
+//            final Context context,
+//            final Options options,
+//            final Execution runtime) throws JsonLdException, IOException {
+//
+//        // 4.
+//        final var expansionOptions = Options.copyOf(options).ordered(false);
+//
+//        var expandedInput = Expander.expand(input, expansionOptions, runtime);
+//
+//        // 6.
+//        var flattenedOutput = Flattening.flatten(expandedInput, options.isOrdered());
+//
+//        // 6.1.
+//        if (context != null) {
+//
+//            Options compactionOptions = Options.copyOf(options);
+//
+//            if (options.base() != null) {
+//                compactionOptions.base(options.base());
+//
+//            } else if (options.isCompactArrays()) {
+//                compactionOptions.base(input.url());
+//            }
+//
+//            flattenedOutput = Compactor.compact(
+//                    flattenedOutput,
+//                    context,
+//                    compactionOptions,
+//                    runtime);
+//        }
+//
+//        return flattenedOutput;
+//    }
+//
+//    private static final void assertDocumentLoader(final Options options, final URI target) throws JsonLdException {
+//        if (options.loader() == null) {
+//            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + target + "].");
+//        }
+//    }
 }

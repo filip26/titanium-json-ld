@@ -66,15 +66,23 @@ public class JunitRunner {
     public boolean execute() {
 
         if (testCase.type.contains(Type.COMPACT_TEST)) {
-            return execute(options -> JsonLd.compact(testCase.input, testCase.context, options));
+            return execute(options -> JsonLd.compact(
+                    testCase.input,
+                    testCase.context,
+                    options));
         }
 
         if (testCase.type.contains(Type.EXPAND_TEST)) {
-            return execute(options -> JsonLd.expand(testCase.input, options));
+            return execute(options -> JsonLd.expand(
+                    testCase.input,
+                    options));
         }
 
         if (testCase.type.contains(Type.FLATTEN_TEST)) {
-            return execute(options -> JsonLd.flatten(testCase.input).context(testCase.context).options(options).get());
+            return execute(options -> JsonLd.flatten(
+                    testCase.input,
+                    testCase.context,
+                    options));
         }
 
         if (testCase.type.contains(Type.TO_RDF_TEST)) {

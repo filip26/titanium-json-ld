@@ -21,13 +21,13 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 
-import com.apicatalog.jsonld.api.FlatteningApi;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.framing.Frame;
 import com.apicatalog.jsonld.fromrdf.QuadsToJsonLd;
 import com.apicatalog.jsonld.processor.Compactor;
 import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.jsonld.processor.Expander;
+import com.apicatalog.jsonld.processor.Flattener;
 import com.apicatalog.jsonld.processor.Framer;
 import com.apicatalog.jsonld.processor.RdfEmitter;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
@@ -73,11 +73,10 @@ public final class JsonLd {
         }
     }
 
-    private static final String DOCUMENT_URI_PARAM_NAME = "documentUri";
-    private static final String DOCUMENT_PARAM_NAME = "document";
-
     private JsonLd() {
     }
+
+    /* --- EXPAND -- */
 
     /**
      * Expands the referenced document. DocumentLoader must be set in order to fetch
@@ -139,6 +138,8 @@ public final class JsonLd {
                 options,
                 runtime);
     }
+
+    /* --- COMPACT -- */
 
     /**
      * Compacts the referenced document using the context.
@@ -261,31 +262,70 @@ public final class JsonLd {
     /**
      * Flattens the given input and optionally compacts it using context.
      *
-     * @param documentUri {@code URI} referencing JSON-LD document to flatten
-     * @return {@link FlatteningApi} allowing to set additional parameters
+     * @param document {@code URI} referencing JSON-LD document to flatten
+     * @throws JsonLdException
+     * @throws IOException
      */
-    public static final FlatteningApi flatten(final URI documentUri) {
-        return new FlatteningApi(assertUri(documentUri, DOCUMENT_URI_PARAM_NAME));
+    public static final Object flatten(final URI document, URI context, final Options options) throws JsonLdException, IOException {
+        var runtime = Execution.of(options);
+        runtime.tick();
+
+        return Flattener.flatten(
+                Document.fetch(
+                        document,
+                        options.loader(),
+                        options.isExtractAllScripts()),
+                context != null
+                        ? Document.fetch(context, options.loader(), options.isExtractAllScripts()).content()
+                        : null,
+                options,
+                runtime);
     }
 
     /**
      * Flattens the remote input and optionally compacts it using context.
      *
      * @param document to flatten
-     * @return {@link FlatteningApi} allowing to set additional parameters
+     * @throws JsonLdException
+     * @throws IOException
      */
-    public static final FlatteningApi flatten(final Document document) {
-        return new FlatteningApi(assertJsonDocument(document, DOCUMENT_PARAM_NAME));
+    public static final Object flatten(final Document document, final Document context, final Options options) throws JsonLdException, IOException {
+
+        var runtime = Execution.of(options);
+        runtime.tick();
+
+        return Flattener.flatten(
+                document,
+                context != null
+                        ? context.content()
+                        : null,
+                options,
+                runtime);
     }
 
-    public static final Map<String, ?> flatten(final Map<String, ?> document, Options options) {
-//        return new FlatteningApi(assertUri(documentUri, DOCUMENT_URI_PARAM_NAME));
-        return null;
+    public static final Object flatten(final Map<String, ?> document, final Map<String, ?> context, final Options options) throws JsonLdException, IOException {
+        return flatten(
+                new TreeIO(document, NativeAdapter.instance()),
+                new TreeIO(context, NativeAdapter.instance()),
+                options);
     }
 
-    public static final Map<String, ?> flatten(final Collection<?> document, Options options) {
-//      return new FlatteningApi(assertUri(documentUri, DOCUMENT_URI_PARAM_NAME));
-        return null;
+    public static final Object flatten(final Collection<?> document, final Map<String, ?> context, final Options options) throws JsonLdException, IOException {
+        return flatten(
+                new TreeIO(document, NativeAdapter.instance()),
+                new TreeIO(context, NativeAdapter.instance()),
+                options);
+    }
+
+    public static final Object flatten(final TreeIO document, final TreeIO context, final Options options) throws JsonLdException, IOException {
+        var runtime = Execution.of(options);
+        runtime.tick();
+
+        return Flattener.flatten(
+                document,
+                context,
+                options,
+                runtime);
     }
 
     /* --- FRAME -- */
@@ -447,32 +487,5 @@ public final class JsonLd {
 
     public static final QuadsToJsonLd fromRdf(Options options) {
         return new QuadsToJsonLd().options(options);
-    }
-
-    private static final URI assertUri(final URI uri, final String param) {
-
-        assertNotNull(uri, param);
-
-        if (!uri.isAbsolute()) {
-            throw new IllegalArgumentException("'" + param + "' is not an absolute URI [" + uri + "].");
-        }
-
-        return uri;
-    }
-
-    private static final Document assertJsonDocument(final Document document, final String param) {
-
-        assertNotNull(document, param);
-
-//        if (!document.getJsonContent().isPresent()) {
-//            throw new IllegalArgumentException("'" + param + "' is not not JSON document but [" + document.contentType() + "].");
-//        }
-        return document;
-    }
-
-    private static final void assertNotNull(Object value, final String param) {
-        if (value == null) {
-            throw new IllegalArgumentException("'" + param + "' is null.");
-        }
     }
 }
