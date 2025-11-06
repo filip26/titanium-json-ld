@@ -39,7 +39,7 @@ import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.tree.io.TreeIO;
-import com.apicatalog.tree.io.TreeIOAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.web.lang.LanguageTag;
 import com.apicatalog.web.uri.UriUtils;
@@ -49,7 +49,7 @@ public final class JsonLdToQuads {
 
     @FunctionalInterface
     public interface RdfJsonLiteralWriter {
-        String write(Object node, TreeIOAdapter adapter) throws JsonLdException;
+        String write(Object node, TreeAdapter adapter) throws JsonLdException;
     }
     
     public static final RdfJsonLiteralWriter JCS = Jcs::canonize;

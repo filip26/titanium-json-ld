@@ -38,7 +38,7 @@ import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
-import com.apicatalog.tree.io.TreeIOReader;
+import com.apicatalog.tree.io.TreeParser;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.web.lang.LanguageTag;
 import com.apicatalog.web.uri.UriUtils;
@@ -91,7 +91,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
     protected UriValidationPolicy uriValidation;
     protected Version processingMode;
 
-    protected TreeIOReader jsonParser;
+    protected TreeParser jsonParser;
     protected Map<String, Function<String, Object>> nativeTypes;
 
     // runtime
@@ -184,7 +184,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
         return this;
     }
 
-    public QuadsToJsonLd jsonParser(TreeIOReader jsonParser) {
+    public QuadsToJsonLd jsonParser(TreeParser jsonParser) {
         this.jsonParser = jsonParser;
         return this;
     }

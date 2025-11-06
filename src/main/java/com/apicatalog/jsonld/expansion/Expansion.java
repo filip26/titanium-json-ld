@@ -30,7 +30,7 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.processor.Execution;
-import com.apicatalog.tree.io.TreeIOAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.TreeIO;
 
@@ -89,7 +89,7 @@ public final class Expansion {
     public static final Object expand(
             final Context activeContext,
             final Object node,
-            final TreeIOAdapter nodeAdapter,
+            final TreeAdapter nodeAdapter,
             final String activeProperty,
             final Params params
 
@@ -171,7 +171,7 @@ public final class Expansion {
             final String property,
             final TreeIO propertyContext,
             final Object node,
-            final TreeIOAdapter nodeAdapter,
+            final TreeAdapter nodeAdapter,
             final Params params) throws JsonLdException, IOException {
 
         /*
@@ -235,7 +235,7 @@ public final class Expansion {
      */
     static final Collection<?> array(final Context context,
             final Object node,
-            final TreeIOAdapter nodeAdapter,
+            final TreeAdapter nodeAdapter,
             final String property,
             final Params params) throws JsonLdException, IOException {
 

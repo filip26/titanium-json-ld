@@ -22,7 +22,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.apicatalog.jsonld.lang.Direction;
-import com.apicatalog.tree.io.TreeIOAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 
 public final class TermDefinition {
@@ -60,7 +60,7 @@ public final class TermDefinition {
         this.containerMapping = new HashSet<>();
     }
 
-    public void setLocalContext(Object context, TreeIOAdapter adapter) {
+    public void setLocalContext(Object context, TreeAdapter adapter) {
         this.localContext = new TreeIO(context, adapter);
     }
 

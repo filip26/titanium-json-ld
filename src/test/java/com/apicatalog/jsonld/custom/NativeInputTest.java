@@ -142,7 +142,7 @@ class NativeInputTest {
 
     private static final TreeIO readJson(final String name) throws JsonLdException, IOException {
         try (final var is = NativeInputTest.class.getResourceAsStream(name)) {
-            return JsonLdTestSuite.JAKARTA_READER.parse(is);
+            return JsonLdTestSuite.PARSER.parse(is);
         }
     }
 

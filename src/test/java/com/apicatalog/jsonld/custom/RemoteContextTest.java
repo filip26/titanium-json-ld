@@ -179,7 +179,7 @@ class RemoteContextTest {
 
     private final TreeIO read(final String name) throws JsonLdException, IOException {
         try (final var is = getClass().getResourceAsStream(name)) {
-            return JsonLdTestSuite.JAKARTA_READER.parse(is);
+            return JsonLdTestSuite.PARSER.parse(is);
         }
     }
 }

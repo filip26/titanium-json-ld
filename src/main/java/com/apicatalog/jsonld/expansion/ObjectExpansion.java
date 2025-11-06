@@ -28,7 +28,7 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.TreeIOAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.web.uri.UriUtils;
 
@@ -46,7 +46,7 @@ public final class ObjectExpansion {
     private Context activeContext;
     private TreeIO propertyContext;
     private Object element;
-    private TreeIOAdapter adapter;
+    private TreeAdapter adapter;
     private String activeProperty;
 //    private final URI baseUrl;
 
@@ -59,7 +59,7 @@ public final class ObjectExpansion {
 
     public ObjectExpansion(final Context activeContext,
             final TreeIO propertyContext,
-            final Object element, final TreeIOAdapter adapter,
+            final Object element, final TreeAdapter adapter,
             final String activeProperty,
             Params params) {
         this.activeContext = activeContext;
@@ -141,7 +141,7 @@ public final class ObjectExpansion {
     private static Context initPreviousContext(
             final Context context,
             final Object element,
-            final TreeIOAdapter adapter,
+            final TreeAdapter adapter,
             final Params params) throws JsonLdException, IOException {
 
         // 7. If active context has a previous context, the active context is not
@@ -255,7 +255,7 @@ public final class ObjectExpansion {
             final Context context,
             final String typeKey,
             final Object element,
-            final TreeIOAdapter adapter
+            final TreeAdapter adapter
 
     ) throws JsonLdException, IOException {
 

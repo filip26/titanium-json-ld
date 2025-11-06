@@ -35,7 +35,7 @@ import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.lang.Terms;
-import com.apicatalog.tree.io.TreeIOReader;
+import com.apicatalog.tree.io.TreeParser;
 import com.apicatalog.web.link.Link;
 import com.apicatalog.web.media.MediaType;
 import com.apicatalog.web.uri.UriResolver;
@@ -52,13 +52,13 @@ import com.apicatalog.web.uri.UriResolver;
  *
  * <p>
  * The loader uses a configurable {@link HttpLoaderClient} to send HTTP requests
- * and a {@link TreeIOReader} to parse the retrieved content into {@link Document}
+ * and a {@link TreeParser} to parse the retrieved content into {@link Document}
  * instances.
  * </p>
  *
  * @see DocumentLoader
  * @see HttpLoaderClient
- * @see TreeIOReader
+ * @see TreeParser
  */
 public class HttpLoader implements DocumentLoader {
 
@@ -109,7 +109,7 @@ public class HttpLoader implements DocumentLoader {
 
     private final HttpLoaderClient client;
 
-    private final TreeIOReader reader;
+    private final TreeParser reader;
 
     private Predicate<MediaType> acceptContent;
 
@@ -120,7 +120,7 @@ public class HttpLoader implements DocumentLoader {
      * @param reader          the parser for decoding JSON documents
      * @param maxRedirections the maximum number of HTTP redirects to follow
      */
-    protected HttpLoader(HttpLoaderClient httpClient, TreeIOReader reader, int maxRedirections) {
+    protected HttpLoader(HttpLoaderClient httpClient, TreeParser reader, int maxRedirections) {
         this.client = httpClient;
         this.maxRedirections = maxRedirections;
         this.reader = reader;
@@ -130,10 +130,10 @@ public class HttpLoader implements DocumentLoader {
     /**
      * Creates a new {@link HttpLoader} with a default {@link HttpClient}.
      *
-     * @param parser the {@link TreeIOReader} used to parse retrieved content
+     * @param parser the {@link TreeParser} used to parse retrieved content
      * @return a new configured {@link HttpLoader}
      */
-    public static HttpLoader newLoader(final TreeIOReader parser) {
+    public static HttpLoader newLoader(final TreeParser parser) {
         return newLoader(
                 HttpClient
                         .newBuilder()
@@ -151,7 +151,7 @@ public class HttpLoader implements DocumentLoader {
      * @param reader the JSON parser used to parse responses
      * @return a configured {@link HttpLoader} instance
      */
-    public static HttpLoader newLoader(final HttpClient client, TreeIOReader reader) {
+    public static HttpLoader newLoader(final HttpClient client, TreeParser reader) {
         return new HttpLoader(new NativeHttpClient(client), reader, MAX_REDIRECTIONS)
                 .headers(VENDOR_HEADERS);
     }
@@ -165,7 +165,7 @@ public class HttpLoader implements DocumentLoader {
      * @param maxRedirections the maximum number of redirects to follow
      * @return a configured {@link HttpLoader}
      */
-    public static HttpLoader newLoader(final HttpClient client, TreeIOReader reader, int maxRedirections) {
+    public static HttpLoader newLoader(final HttpClient client, TreeParser reader, int maxRedirections) {
         return new HttpLoader(new NativeHttpClient(client), reader, maxRedirections)
                 .headers(VENDOR_HEADERS);
     }
@@ -346,7 +346,7 @@ public class HttpLoader implements DocumentLoader {
      *
      * <p>
      * The predicate must not be {@code null}. Regardless of the accepted content
-     * type, the response body must still be parseable by {@link TreeIOReader}.
+     * type, the response body must still be parseable by {@link TreeParser}.
      * </p>
      *
      * @param predicate a non-{@code null} predicate that returns {@code true} for

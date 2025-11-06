@@ -35,7 +35,7 @@ import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.tree.io.TreeIOAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.tree.io.java.NativeMaterializer;
@@ -98,7 +98,7 @@ public final class ContextBuilder {
 
     public ActiveContext build(
             final Object localContext,
-            final TreeIOAdapter adapter,
+            final TreeAdapter adapter,
             final URI baseUrl) throws JsonLdException, IOException {
 
         // 1. Initialize result to the result of cloning active context, with inverse

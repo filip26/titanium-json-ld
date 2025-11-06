@@ -32,7 +32,7 @@ import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.tree.io.TreeIOAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.tree.io.java.NativeMaterializer;
@@ -74,7 +74,7 @@ public interface Context {
     Context getPreviousContext();
 
     @Deprecated
-    TermDefinitionBuilder newTerm(Object localContext, TreeIOAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader);
+    TermDefinitionBuilder newTerm(Object localContext, TreeAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader);
 
     @Deprecated
     ContextBuilder newContext(DocumentLoader loader);
@@ -293,7 +293,7 @@ public interface Context {
             return update(node.node(), node.adapter(), baseUrl);
         }
 
-        public Builder update(Object node, TreeIOAdapter adapter, URI baseUrl) throws JsonLdException, IOException {
+        public Builder update(Object node, TreeAdapter adapter, URI baseUrl) throws JsonLdException, IOException {
             // TODO merge if set
 //            this.context = node;
 //            this.adapter = adapter;
@@ -305,7 +305,7 @@ public interface Context {
         private final ActiveContext updateContext(
                 final ActiveContext activeContext,
                 final Object expandedContext,
-                final TreeIOAdapter adapter,
+                final TreeAdapter adapter,
                 final URI baseUrl)
                 throws JsonLdException, IOException {
 

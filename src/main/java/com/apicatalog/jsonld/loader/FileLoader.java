@@ -24,7 +24,7 @@ import java.util.Map;
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
-import com.apicatalog.tree.io.TreeIOReader;
+import com.apicatalog.tree.io.TreeParser;
 import com.apicatalog.web.media.MediaType;
 
 /**
@@ -32,7 +32,7 @@ import com.apicatalog.web.media.MediaType;
  *
  * <p>
  * This loader only supports {@code file:} URIs. It reads the referenced file,
- * parses it with the provided {@link TreeIOReader}, and wraps the result in a
+ * parses it with the provided {@link TreeParser}, and wraps the result in a
  * {@link Document}. Files must exist and be readable by the current process.
  * </p>
  *
@@ -53,15 +53,15 @@ public final class FileLoader implements DocumentLoader {
             ".yaml", MediaType.YAML,
             ".yamlld", MediaType.YAML_LD);
 
-    private final TreeIOReader reader;
+    private final TreeParser reader;
 
     /**
      * Creates a loader that parses local files using the given
-     * {@link TreeIOReader}.
+     * {@link TreeParser}.
      *
      * @param reader parser used to decode the file content
      */
-    public FileLoader(TreeIOReader reader) {
+    public FileLoader(TreeParser reader) {
         this.reader = reader;
     }
 

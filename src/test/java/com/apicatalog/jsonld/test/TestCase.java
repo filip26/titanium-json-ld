@@ -37,7 +37,7 @@ import com.apicatalog.rdf.nquads.NQuadsReader;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
-import com.apicatalog.tree.io.TreeIOAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.web.media.MediaType;
 
 public final class TestCase {
@@ -77,7 +77,7 @@ public final class TestCase {
 
     public static final TestCase of(
             final Object node,
-            final TreeIOAdapter adapter,
+            final TreeAdapter adapter,
             final String manifestUri,
             final String manifestBase,
             final String baseUri,
@@ -137,6 +137,14 @@ public final class TestCase {
 
             case "option":
                 testCase.options = TestOptions.of(entry.getValue(), adapter, baseUri);
+                break;
+
+            case "purpose":
+                // ignore textual justification
+                break;
+
+            case "requires":
+                // ignore feature declaration
                 break;
 
             default:

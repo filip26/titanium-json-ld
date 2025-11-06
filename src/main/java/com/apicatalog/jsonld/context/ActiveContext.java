@@ -25,7 +25,7 @@ import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.tree.io.TreeIOAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 
 /**
@@ -179,7 +179,7 @@ public final class ActiveContext implements Context {
 //    }
 
     @Override
-    public TermDefinitionBuilder newTerm(final Object localContext, final TreeIOAdapter adapter, final Map<String, Boolean> defined, DocumentLoader loader) {
+    public TermDefinitionBuilder newTerm(final Object localContext, final TreeAdapter adapter, final Map<String, Boolean> defined, DocumentLoader loader) {
         return TermDefinitionBuilder.with(this, localContext, adapter, defined, loader);
     }
 

@@ -33,7 +33,7 @@ import com.apicatalog.jsonld.lang.CompactUri;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.tree.io.TreeIOAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.web.lang.LanguageTag;
 import com.apicatalog.web.uri.UriUtils;
@@ -76,7 +76,7 @@ public final class TermDefinitionBuilder {
     private final ActiveContext activeContext;
 
     private final Object localContext;
-    private final TreeIOAdapter adapter;
+    private final TreeAdapter adapter;
 
     private final Map<String, Boolean> defined;
     private final DocumentLoader loader;
@@ -89,7 +89,7 @@ public final class TermDefinitionBuilder {
 
     private Collection<String> remoteContexts;
 
-    private TermDefinitionBuilder(ActiveContext activeContext, Object localContext, TreeIOAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader) {
+    private TermDefinitionBuilder(ActiveContext activeContext, Object localContext, TreeAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader) {
         this.activeContext = activeContext;
         this.localContext = localContext;
         this.adapter = adapter;
@@ -103,7 +103,7 @@ public final class TermDefinitionBuilder {
         this.remoteContexts = new ArrayList<>();
     }
 
-    public static final TermDefinitionBuilder with(ActiveContext activeContext, Object localContext, TreeIOAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader) {
+    public static final TermDefinitionBuilder with(ActiveContext activeContext, Object localContext, TreeAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader) {
         return new TermDefinitionBuilder(activeContext, localContext, adapter, defined, loader);
     }
 

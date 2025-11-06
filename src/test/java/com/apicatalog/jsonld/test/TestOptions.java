@@ -29,8 +29,7 @@ import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.Options.ProcessingPolicy;
 import com.apicatalog.jsonld.Options.RdfDirection;
 import com.apicatalog.jsonld.tordf.JsonLdToQuads;
-import com.apicatalog.tree.io.TreeIO;
-import com.apicatalog.tree.io.TreeIOAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.web.media.MediaType;
 import com.apicatalog.web.uri.UriResolver;
 
@@ -53,17 +52,16 @@ public class TestOptions {
     public Boolean useNumericId;
     public Boolean rdfStar;
     public MediaType contentType;
-    public Options.ProcessingPolicy undefinedTerms;
     public URI redirectTo;
     public Integer httpStatus;
     public Set<String> httpLink;
-    public Options.ProcessingPolicy undefinedTermPolicy = Options.ProcessingPolicy.Ignore;
+    public Options.ProcessingPolicy undefinedTerms = Options.ProcessingPolicy.Ignore;
 
     public static final TestOptions newOptions() {
         return new TestOptions();
     }
 
-    public static final TestOptions of(Object node, TreeIOAdapter adapter, String baseUri) {
+    public static final TestOptions of(Object node, TreeAdapter adapter, String baseUri) {
 
         final TestOptions options = new TestOptions();
 
@@ -153,13 +151,16 @@ public class TestOptions {
                 break;
 
             case "undefinedTermPolicy":
-                options.undefinedTermPolicy = ProcessingPolicy.valueOf(adapter.stringValue(entry.getValue()));
-                System.out.println("## " + options.undefinedTermPolicy);
+                options.undefinedTerms = ProcessingPolicy.valueOf(adapter.stringValue(entry.getValue()));
                 break;
 
             case "useJCS":
                 options.useJcs = adapter.isTrue(entry.getValue());
                 break;
+                
+            case "processorFeature":
+                // ignore feature declaration
+                break;                
 
             default:
                 System.err.println("An unknown test option " + key + " = " + entry.getValue() + ".");
@@ -215,14 +216,14 @@ public class TestOptions {
 
                                 var os = new ByteArrayOutputStream();
                                 try {
-                                    JsonLdTestSuite.JAKARTA_WRITER.write(
-                                            new TreeIO(node, adapter),
+                                    JsonLdTestSuite.RENDERER.render(
+                                            node,
+                                            adapter,
                                             os);
                                     return os.toString();
                                 } catch (IOException e) {
                                     throw new JsonLdException(ErrorCode.UNSPECIFIED, e);
                                 }
-
                             });
         }
 

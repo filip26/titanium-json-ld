@@ -42,7 +42,7 @@ import com.apicatalog.rdf.nquads.NQuadsWriter;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.flow.QuadEmitter;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
-import com.apicatalog.tree.io.TreeIOAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
@@ -91,7 +91,7 @@ public class JunitRunner {
         if (testCase.type.contains(Type.FROM_RDF_TEST)) {
             return execute(options -> {
 
-                final var toLd = JsonLd.fromRdf(options).jsonParser(JsonLdTestSuite.JAKARTA_READER);
+                final var toLd = JsonLd.fromRdf(options).jsonParser(JsonLdTestSuite.PARSER);
 
                 try {
 
@@ -201,7 +201,7 @@ public class JunitRunner {
         }
     }
 
-    private boolean validateJsonLd(final TestCase testCase, final Options options, final Object result, final TreeIOAdapter resultAdapter) {
+    private boolean validateJsonLd(final TestCase testCase, final Options options, final Object result, final TreeAdapter resultAdapter) {
 
         assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
 
@@ -240,7 +240,7 @@ public class JunitRunner {
         return false;
     }
 
-    public static final boolean compareJson(final TestCase testCase, final Object result, final TreeIOAdapter resultAdapter, final TreeIO expected) throws IOException {
+    public static final boolean compareJson(final TestCase testCase, final Object result, final TreeAdapter resultAdapter, final TreeIO expected) throws IOException {
 
         if (Comparison.equals(expected.node(), expected.adapter(), result, resultAdapter)) {
             return true;

@@ -36,7 +36,7 @@ import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.TreeIOAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.java.NativeAdapter;
@@ -74,7 +74,7 @@ final class ObjectExpansion1314 {
     public void expand(
             final Context activeContext,
             final Object element,
-            final TreeIOAdapter adapter,
+            final TreeAdapter adapter,
             final String activeProperty) throws JsonLdException, IOException {
 
         var keys = params.options().isOrdered()
@@ -1112,7 +1112,7 @@ final class ObjectExpansion1314 {
     private void recurse(
             final Context context,
             final Object element,
-            final TreeIOAdapter adapter,
+            final TreeAdapter adapter,
             final String activeProperty) throws JsonLdException, IOException {
 
         var activeContext = context;
@@ -1146,7 +1146,7 @@ final class ObjectExpansion1314 {
     private void processNest(
             final Context activeContext,
             final Object element,
-            final TreeIOAdapter adapter) throws JsonLdException, IOException {
+            final TreeAdapter adapter) throws JsonLdException, IOException {
 
         final var nestedKeys = params.options().isOrdered()
                 ? nest.keySet().stream().sorted().iterator()
