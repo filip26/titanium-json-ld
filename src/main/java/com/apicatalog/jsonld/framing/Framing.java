@@ -49,7 +49,12 @@ public final class Framing {
     // optional
     private boolean ordered;
 
-    private Framing(FramingState state, List<String> subjects, Frame frame, Map<String, Object> parent, String activeProperty) {
+    private Framing(
+            FramingState state,
+            List<String> subjects,
+            Frame frame,
+            Map<String, Object> parent,
+            String activeProperty) {
         this.state = state;
         this.subjects = subjects;
         this.frame = frame;
@@ -60,8 +65,12 @@ public final class Framing {
         this.ordered = false;
     }
 
-    public static final Framing with(FramingState state, List<String> subjects, Frame frame,
-            Map<String, Object> parent, String activeProperty) {
+    public static final Framing with(
+            FramingState state,
+            List<String> subjects,
+            Frame frame,
+            Map<String, Object> parent,
+            String activeProperty) {
         return new Framing(state, subjects, frame, parent, activeProperty);
     }
 
@@ -170,15 +179,11 @@ public final class Framing {
 
                     Framing.with(
                             graphState,
-                            
-//                            new ArrayList<>(state.getGraphMap().find(id).map(Map::keySet).orElse(Set.of())),
-                            
                             new ArrayList<>(
                                     state.getGraphMap().find(id)
-                                        .or(() -> state.getGraphMap().find(state.getGraphName())) // <— fallback to current graph
-                                        .map(Map::keySet)
-                                        .orElse(Set.of())
-                                ),
+                                            .or(() -> state.getGraphMap().find(state.getGraphName())) // <— fallback to current graph
+                                            .map(Map::keySet)
+                                            .orElse(Set.of())),
                             subframe,
                             output,
                             Keywords.GRAPH)
@@ -248,8 +253,6 @@ public final class Framing {
                         if (propertyValue instanceof Collection array
                                 && !array.isEmpty()
                                 && array.iterator().next() instanceof Map map) {
-//                                && !JsonUtils.isEmptyArray()
-//                                && JsonUtils.isObject(frame.get(property).asJsonArray().get(0))) {
                             listFrameValue = map.get(Keywords.LIST);
                         }
 
@@ -274,10 +277,12 @@ public final class Framing {
 
                                 final var listResult = new LinkedHashMap<String, Object>();
 
+                                @SuppressWarnings("unchecked")
+                                final var idMap = ((Map<String, String>) listItem).get(Keywords.ID);
+
                                 Framing.with(
                                         listState,
-                                        Arrays.asList(((Map<String, String>) listItem).get(Keywords.ID)),
-//                                        Arrays.asList(listItem.asJsonObject().getString(Keywords.ID)),
+                                        Arrays.asList(idMap),
                                         listFrame,
                                         listResult,
                                         Keywords.LIST)
@@ -305,10 +310,13 @@ public final class Framing {
 
                         FramingState clonedState = new FramingState(state);
                         clonedState.setEmbedded(true);
- 
+
+                        @SuppressWarnings("unchecked")
+                        final var idMap = ((Map<String, String>) item).get(Keywords.ID);
+
                         Framing.with(
                                 clonedState,
-                                Arrays.asList(((Map<String, String>) item).get(Keywords.ID)),
+                                Arrays.asList(idMap),
                                 Frame.of(subframe),
                                 output,
                                 property)
@@ -388,6 +396,7 @@ public final class Framing {
                                     .ordered(ordered)
                                     .frame();
 
+                            @SuppressWarnings("unchecked")
                             var reverse = (Map<String, Object>) output.get(Keywords.REVERSE);
 
                             if (reverse == null) {
@@ -413,7 +422,7 @@ public final class Framing {
     }
 
     private static void addToResult(Map<String, Object> result, String property, Object value) {
-        
+
         if (property == null) {
             result.put(Integer.toHexString(result.size()), value);
             return;

@@ -44,49 +44,4 @@ public class Execution {
 //     * Does nothing if timeout is not set.
 //     */
 //    public void start() {/* NOP does nothing if timeout is not set */}
-//
-//    public UriValidationPolicy getUriValidation() {
-//        return options.getUriValidation();
-//    }
-//
-////    public boolean isV10() {
-////        return options.getProcessingMode() != null && options.getProcessingMode().equals(JsonLdVersion.V1_0);
-////    }
-////
-////    public boolean isV11() {
-////        return options.getProcessingMode() != null && options.getProcessingMode().equals(JsonLdVersion.V1_1);
-////    }
-//
-//    public DocumentLoader getDocumentLoader() {
-//        return options.loader();
-//    }
-//
-//    public Cache<String, JsonValue> getContextCache() {
-//        return options.getContextCache();
-//    }
-//
-//    public Cache<String, Document> getDocumentCache() {
-//        return options.getDocumentCache();
-//    }
-//
-//    public boolean isRdfStar() {
-//        return options.isRdfStar();
-//    }
-//
-//    public boolean isNumericId() {
-//        return options.isNumericId();
-//    }
-//
-//    public ProcessingPolicy getUndefinedTermPolicy() {
-//        return options.undefinedTermsPolicy();
-//    }
-//    
-//    @Deprecated
-//    public JsonLdVersion version() {
-//        return options.getProcessingMode();
-//    }
-//
-//    public boolean ordered() {
-//        return options.isOrdered();
-//    }
 }

@@ -62,74 +62,15 @@ public final class Compactor {
 
     public static final Map<String, ?> compact(
             final Document input,
-            final URI contextUri,
+            final Document context,
             final Options options,
             final Execution runtime) throws JsonLdException, IOException {
-
-        URI contextBase = input.url();
-
-        if (contextBase == null) {
-            contextBase = options.base();
-        }
-
-        // 6.
-//        final JsonValue contextValue = context.getJsonContent()
-//                .map(ctx -> JsonUtils.flatten(ctx, Keywords.CONTEXT))
-//                .orElse(JsonValue.EMPTY_JSON_OBJECT);
 
         final var expandedInput = Expander.expand(
                 input,
                 Options.copyOf(options)
                         .ordered(false)
                         .extractAllScripts(false),
-                runtime);
-
-        return compact(
-                expandedInput,
-                input.url(),
-                Context.load(options.loader(), contextUri).content(),
-                options,
-                runtime);
-    }
-
-    public static final Map<String, ?> compact(
-            final Document input,
-            final Document context,
-            final Options options,
-            final Execution runtime) throws JsonLdException, IOException {
-//        
-//        URI contextBase = input.getDocumentUrl();
-//
-//        if (contextBase == null) {
-//            contextBase = options.getBase();
-//        }
-//
-//        // 6.
-////        final JsonValue contextValue = context.getJsonContent()
-////                .map(ctx -> JsonUtils.flatten(ctx, Keywords.CONTEXT))
-////                .orElse(JsonValue.EMPTY_JSON_OBJECT);
-//
-//        // 7.
-//        final var activeContext = new ActiveContext(ProcessingRuntime.of(options))
-//                .newContext()
-//                .build(context.asNode(), contextBase);
-//
-//        // 8.
-//        if (activeContext.getBaseUri() == null) {
-//
-//            if (options.getBase() != null) {
-//                activeContext.setBaseUri(options.getBase());
-//
-//            } else if (options.isCompactToRelative()) {
-//                activeContext.setBaseUri(input.getDocumentUrl());
-//            }
-//        }
-
-//        final var ctx = Context.unwrap(context.getContent());
-//        context(ctx, input.getDocumentUrl(), options)
-
-        final var expandedInput = Expander.expand(input, Options.copyOf(options)
-                .ordered(false).extractAllScripts(false),
                 runtime);
 
         return compact(
