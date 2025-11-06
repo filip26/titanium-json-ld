@@ -57,12 +57,16 @@ class NativeInputTest {
     @Test
     void testFlatten() throws JsonLdException, IOException {
 
-        final var result = JsonLd.flatten(PL_2_COMPACTED, PL_2_CONTEXT, Options.newOptions());
+        final var result = JsonLd.flatten(
+                PL_2_COMPACTED,
+                PL_2_CONTEXT,
+                Options.newOptions());
+
         assertNotNull(result);
-System.out.println(result);
+
         var match = Comparison.equals(
                 result,
-                PL_2_EXPANDED,  //FIXME replace with flatten
+                PL_2_FLATTENED,
                 NativeAdapter.instance());
 
         assertTrue(match);
@@ -96,15 +100,6 @@ System.out.println(result);
         assertTrue(match);
     }
 
-    static Map<String, ?> PL_2_COMPACTED = Map.of(
-            "@context", Map.of(
-                    "ical", "http://www.w3.org/2002/12/cal/ical#",
-                    "xsd", "http://www.w3.org/2001/XMLSchema#",
-                    "ical:dtstart", Map.of("@type", "xsd:dateTime")),
-            "ical:summary", "Lady Gaga Concert",
-            "ical:location", "New Orleans Arena, New Orleans, Louisiana, USA",
-            "ical:dtstart", "2011-04-09T20:00:00Z");
-
     static Collection<?> PL_2_EXPANDED = List.of(Map.of(
             "http://www.w3.org/2002/12/cal/ical#dtstart", List.of(
                     Map.of(
@@ -116,6 +111,25 @@ System.out.println(result);
             "http://www.w3.org/2002/12/cal/ical#summary", List.of(
                     Map.of(
                             "@value", "Lady Gaga Concert"))));
+
+    static Map<String, ?> PL_2_COMPACTED = Map.of(
+            "@context", Map.of(
+                    "ical", "http://www.w3.org/2002/12/cal/ical#",
+                    "xsd", "http://www.w3.org/2001/XMLSchema#",
+                    "ical:dtstart", Map.of("@type", "xsd:dateTime")),
+            "ical:summary", "Lady Gaga Concert",
+            "ical:location", "New Orleans Arena, New Orleans, Louisiana, USA",
+            "ical:dtstart", "2011-04-09T20:00:00Z");
+
+    static Map<String, ?> PL_2_FLATTENED = Map.of(
+            "@context", Map.of(
+                    "ical", "http://www.w3.org/2002/12/cal/ical#",
+                    "xsd", "http://www.w3.org/2001/XMLSchema#",
+                    "ical:dtstart", Map.of("@type", "xsd:dateTime")),
+            "@id", "_:b0",
+            "ical:summary", "Lady Gaga Concert",
+            "ical:location", "New Orleans Arena, New Orleans, Louisiana, USA",
+            "ical:dtstart", "2011-04-09T20:00:00Z");
 
     static Map<String, ?> PL_2_CONTEXT = Map.of(
             "@context", Map.of(

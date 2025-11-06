@@ -134,14 +134,14 @@ public final class JsonLdToQuads {
                 continue;
             }
 
-            for (final String subject : Utils.index(nodeMap.subjects(graphName), true)) {
+            for (final var subject : Utils.index(nodeMap.subjects(graphName), true)) {
 
                 if (!BlankNode.isWellFormed(subject) && UriUtils.isNotAbsoluteUri(subject, uriValidation)) {
                     LOGGER.log(Level.WARNING, "Non well-formed subject [{0}] has been skipped.", subject);
                     continue;
                 }
 
-                for (final String property : Utils.index(nodeMap.properties(graphName, subject), true)) {
+                for (final var property : Utils.index(nodeMap.properties(graphName, subject), true)) {
 
                     if (Keywords.TYPE.equals(property)) {
 

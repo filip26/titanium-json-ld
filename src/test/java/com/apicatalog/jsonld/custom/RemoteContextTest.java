@@ -56,7 +56,7 @@ class RemoteContextTest {
 
         final var document = read("/com/apicatalog/jsonld/test/issue61-in.json");
         final var context = read("/com/apicatalog/jsonld/test/issue61-context.json");
-        System.out.println("> " + context.node());
+
         final OrderedQuadDataset result = new OrderedQuadDataset();
 
         JsonLd.toRdf(

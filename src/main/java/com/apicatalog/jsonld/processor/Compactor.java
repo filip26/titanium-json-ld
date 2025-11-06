@@ -179,6 +179,7 @@ public final class Compactor {
         return compact(
                 expanded,
                 builder.build(),
+                localContext,
                 options,
                 runtime);
     }
@@ -186,6 +187,7 @@ public final class Compactor {
     static final Map<String, ?> compact(
             final Object expanded,
             final Context context,
+            final TreeIO contextSource,
             final Options options,
             final Execution runtime) throws JsonLdException, IOException {
 
@@ -206,6 +208,7 @@ public final class Compactor {
 //            }
 //        }
 //
+
         // 9.
         var compactedOutput = Compaction
                 .with(activeContext, options, runtime)
@@ -219,10 +222,10 @@ public final class Compactor {
             if (col.isEmpty()) {
                 return Map.of();
 
-            } else if (!TreeIO.isEmptyOrNull(context.source())) {
+            } else if (!TreeIO.isEmptyOrNull(contextSource)) {
                 return Map.of(
                         Keywords.CONTEXT,
-                        context.source(),
+                        contextSource,
                         UriCompaction.withVocab(context, Keywords.GRAPH),
                         compactedOutput);
 
@@ -241,8 +244,8 @@ public final class Compactor {
             @SuppressWarnings("unchecked")
             final var typedMap = (Map<String, ?>) map;
 
-            if (context.source() != null) {
-                return Context.inject(typedMap, context.source());
+            if (contextSource != null) {
+                return Context.inject(typedMap, contextSource);
             }
 
             return typedMap;

@@ -89,6 +89,7 @@ public final class Comparison {
         final var type1 = adapter1.type(value1);
 
         if (type1 == NodeType.TREE_IO) {
+
             return equals(
                     ((TreeIO) value1).node(), ((TreeIO) value1).adapter(),
                     value2, adapter2,

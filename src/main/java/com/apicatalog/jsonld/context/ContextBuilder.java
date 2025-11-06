@@ -106,7 +106,6 @@ public final class ContextBuilder {
         result = new ActiveContext(activeContext);
         result.setInverseContext(null);
         // TODO better
-        result.setSource(new TreeIO(localContext, adapter));
 //        result.setVersion(activeContext.runtime().version());
 
         // 2. If local context is an object containing the member @propagate,

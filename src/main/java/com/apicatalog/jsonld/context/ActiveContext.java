@@ -26,7 +26,6 @@ import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.TreeIO;
 
 /**
  * A context that is used to resolve terms while the processing algorithm is
@@ -61,7 +60,7 @@ public final class ActiveContext implements Context {
     // an optional default base direction ("ltr" or "rtl")
     private Direction defaultBaseDirection;
 
-    private TreeIO source;
+//    private TreeIO source;
     
 //    private final ProcessingRuntime runtime;
 
@@ -233,14 +232,5 @@ public final class ActiveContext implements Context {
 
     public void setVersion(Version version) {
         this.version = version;
-    }
-    
-    public void setSource(TreeIO source) {
-        this.source = source;
-    }
-    
-    @Override
-    public TreeIO source() {
-        return source;
     }
 }

@@ -306,7 +306,9 @@ public final class JsonLd {
     public static final Object flatten(final Map<String, ?> document, final Map<String, ?> context, final Options options) throws JsonLdException, IOException {
         return flatten(
                 new TreeIO(document, NativeAdapter.instance()),
-                new TreeIO(context, NativeAdapter.instance()),
+                context != null
+                        ? new TreeIO(context, NativeAdapter.instance())
+                        : null,
                 options);
     }
 

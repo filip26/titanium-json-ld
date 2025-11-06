@@ -59,8 +59,6 @@ public interface Context {
     /** context version, might be null if unspecified */
     Version version();
 
-    TreeIO source();
-
     Optional<TermDefinition> findTerm(final String value);
 
     Direction getDefaultBaseDirection();
