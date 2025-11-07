@@ -177,9 +177,8 @@ JsonLd.expand(document)
 implementation("com.apicatalog:titanium-json-ld-jre8:1.7.0")
 ```
 
-> [!NOTE]
+> [!WARNING]
 > The upcoming **2.x version** is under active development and requires Java 17 or higher. 2.x milestone releases are provided for **testing and feedback purposes only** and **should not be used in production**.  
-> See the [Building](#%EF%B8%8F-building) section for details on version 2.0 milestones.
 
 ### JSON-P Provider
 
@@ -232,8 +231,9 @@ Your support helps sustain development. Sponsorships also give your feature requ
 
 Fork and clone the project repository.
 
-> [!WARNING]
+> [!NOTE]
 > **Version 2.0 is under active development!**  The new major version 2.0 requires Java 17 and is released in **milestones** before the final release.  
+>
 > Each milestone can introduce **breaking changes** and is **intended only for testing**.
 
 ```bash
