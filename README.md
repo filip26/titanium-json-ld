@@ -42,7 +42,7 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 
 ## 💡 Examples
 
-Titanium provides a high-level [`JsonLd`](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/JsonLd.html) API for working with [JSON-LD](https://json-ld.org/) documents.
+Titanium provides a high-level [`JsonLd`](https://javadoc.io/doc/com.apicatalog/titanium-json-ld latest/com/apicatalog/jsonld/JsonLd.html) API for working with JSON-LD documents.
 
 ### Transformations
 
@@ -155,8 +155,7 @@ JsonLd.expand(document)
       .get();
 ```
 
-📘 **Learn more:**  
-See the [Javadoc API Reference](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/) for advanced configuration and usage options.
+📘 **Learn more:** See the [Javadoc API Reference](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/) for advanced configuration and usage options.
 
 ## ⚙️ Installation
 
@@ -179,8 +178,7 @@ implementation("com.apicatalog:titanium-json-ld-jre8:1.7.0")
 ```
 
 > [!NOTE]
-> The upcoming **2.x version** is under active development and **requires Java 17 or higher**.  
-> **2.x milestone releases** are provided for **testing and feedback purposes only** and **should not be used in production**.  
+> The upcoming **2.x version** is under active development and requires Java 17 or higher. 2.x milestone releases are provided for **testing and feedback purposes only** and **should not be used in production**.  
 > See the [Building](#%EF%B8%8F-building) section for details on version 2.0 milestones.
 
 ### JSON-P Provider
@@ -235,8 +233,7 @@ Your support helps sustain development. Sponsorships also give your feature requ
 Fork and clone the project repository.
 
 > [!WARNING]
-> **Version 2.0 is under active development!**  
-> The new **major version 2.0** requires **Java 17** and is released in **milestones** before the final release.  
+> **Version 2.0 is under active development!**  The new major version 2.0 requires Java 17 and is released in **milestones** before the final release.  
 > Each milestone can introduce **breaking changes** and is **intended only for testing**.
 
 ```bash
