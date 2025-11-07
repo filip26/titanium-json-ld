@@ -167,7 +167,7 @@ JsonLd.expand(document)
 
 ### Titanium
 
-#### Maven (Java 17+)
+#### Maven (Java 11+)
 
 ```xml
 <dependency>
@@ -175,6 +175,12 @@ JsonLd.expand(document)
     <artifactId>titanium-json-ld</artifactId>
     <version>1.7.0</version>
 </dependency>
+```
+
+#### Gradle (Java 8+, Android API Level >= 24)
+
+```gradle
+implementation("com.apicatalog:titanium-json-ld-jre8:1.7.0")
 ```
 
 ### JSON-P Provider
@@ -189,6 +195,12 @@ Ensure that the JSON-P provider is added to the classpath if it is not already p
     <artifactId>jakarta.json</artifactId>
     <version>2.0.1</version>
 </dependency>
+```
+
+#### Gradle
+
+```gradle
+implementation("org.glassfish:jakarta.json:2.0.1")
 ```
 
 ## Contributing
@@ -216,18 +228,14 @@ Contributions are welcome! Please submit a pull request.
 
 Fork and clone the project repository.
 
-#### Java 11
+> [!WARNING]
+> **Version 2.0 is under active development!**  
+> The new **major version 2.0** requires **Java 17** and is released in **milestones** before the final release.  
+> Each milestone can introduce **breaking changes** and is **intended only for testing**.
 
 ```bash
 > cd titanium-json-ld
 > mvn package
-```
-
-#### Java 8
-
-```bash
-> cd titanium-json-ld
-> mvn -f pom_jre8.xml package
 ```
 
 ## Resources
