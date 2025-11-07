@@ -26,18 +26,10 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 - [Titanium JCS](https://github.com/filip26/titanium-jcs) - RFC 8785 JSON Canonicalization Scheme (JCS)
 - [Iridium CBOR-LD](https://github.com/filip26/iridium-cbor-ld) - CBOR-based Processor for Linked Data
 
-## Table of Contents  
-- [Conformance](#conformance)
-- [Examples](#examples)
-- [Installation](#installation)
-- [Contributing](#contributing)
-- [Resources](#resources)
-- [Commercial Support](#commercial-support)
+## ✅ Conformance
 
-## Conformance
-
-| Feature | Tests | Pass | Status | Notes |
-| --- | ---: | ---: | ---: | --- |
+| Feature | Tests | Pass | Pass Rate | Notes |
+| :-- | --: | --: | --: | :-- |
 | [Expansion](https://www.w3.org/TR/json-ld/#expanded-document-form) | 376 | 376 | 100% | |
 | [Compaction](https://www.w3.org/TR/json-ld/#compacted-document-form) | 244 | 244 | 100% | |
 | [Flattening](https://www.w3.org/TR/json-ld/#flattened-document-form) | 55 | 55 | 100% | |
@@ -46,11 +38,11 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 | [Framing](https://www.w3.org/TR/json-ld11-framing/#framing) | 91 | 90 | 98.9% | <ul><li>[t0059 - @embed: @last](https://w3c.github.io/json-ld-framing/tests/frame-manifest#t0059)</li></ul> |
 | [Remote Document and Context Retrieval](https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval) | 18 | 17 | 94.4% | <ul><li>[t0013 - HTML document](https://w3c.github.io/json-ld-api/tests/remote-doc-manifest#t0013)</li></ul> |
 
-See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld-api/reports/#subj_Titanium_JSON_LD_Java) for more details.
+📄 **See also:** [EARL Results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld-api/reports/#subj_Titanium_JSON_LD_Java)
 
-## Examples
+## 💡 Examples
 
-Titanium provides a high-level [JsonLd](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/JsonLd.html) API for interacting with JSON-LD documents.
+Titanium provides a high-level [`JsonLd`](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/JsonLd.html) API for working with [JSON-LD](https://json-ld.org/) documents.
 
 ### Transformations
 
@@ -163,7 +155,10 @@ JsonLd.expand(document)
       .get();
 ```
 
-## Installation
+📘 **Learn more:**  
+See the [Javadoc API Reference](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/) for advanced configuration and usage options.
+
+## ⚙️ Installation
 
 ### Titanium
 
@@ -177,15 +172,20 @@ JsonLd.expand(document)
 </dependency>
 ```
 
-#### Gradle (Java 8+, Android API Level >= 24)
+#### Gradle (Java 8+, Android API Level ≥ 24)
 
 ```gradle
 implementation("com.apicatalog:titanium-json-ld-jre8:1.7.0")
 ```
 
+> [!NOTE]
+> The upcoming **2.x version** is under active development and **requires Java 17 or higher**.  
+> **2.x milestone releases** are provided for **testing and feedback purposes only** and **should not be used in production**.  
+> See the [Building](#%EF%B8%8F-building) section for details on version 2.0 milestones.
+
 ### JSON-P Provider
 
-Ensure that the JSON-P provider is added to the classpath if it is not already present.
+Titanium relies on a **JSON-P (Jakarta JSON Processing)** provider. Ensure that one is available on your classpath - for example, using the **Glassfish** reference implementation:
 
 #### Maven
 
@@ -203,28 +203,34 @@ Ensure that the JSON-P provider is added to the classpath if it is not already p
 implementation("org.glassfish:jakarta.json:2.0.1")
 ```
 
-## Contributing
+## 🤝 Contributing
 
-Contributions are welcome! Please submit a pull request.
+Contributions of all kinds are welcome — whether it’s code, documentation, testing, or community support! Please open a **pull request** or **issue** to get started.
 
-- Develop
-  - Implement a new feature 
-  - Fix an existing issue
-  - Improve an existing implementation
-- Test
-  - Report a bug
-  - Implement a new test case
-- Document
-  - Write Javadoc comments
-  - Write a tutorial or guide
-  - Proofread existing documentation for clarity and accuracy
-- Promote
-  - Star, share, the project
-  - Write an article or blog post about the project
-- Sponsor
-  - Sponsorship gives your requests top priority
+### 💻 Develop
+- Implement a new feature  
+- Fix an existing issue or bug  
+- Refactor or optimize existing code  
 
-### Building
+### 🧪 Test
+- Report bugs or unexpected behavior  
+- Add or improve unit/integration tests  
+- Verify milestone builds and provide feedback  
+
+### 📖 Document
+- Write or improve **Javadoc** and inline comments  
+- Create or update tutorials and usage guides  
+- Proofread and improve clarity or accuracy in documentation  
+
+### 🌟 Promote
+- Star ⭐ and share the project  
+- Write a blog post, article, or social media post about it  
+- Help answer questions or guide new contributors  
+
+### 💖 Sponsor
+Your support helps sustain development. Sponsorships also give your feature requests and issues **top priority**.
+
+### 🏗️ Building
 
 Fork and clone the project repository.
 
@@ -238,7 +244,8 @@ Fork and clone the project repository.
 > mvn package
 ```
 
-## Resources
+## 📚 Resources
+
 - [JSON-LD 1.1](https://www.w3.org/TR/json-ld/)
 - [JSON-LD 1.1 Processing Algorithms and API](https://www.w3.org/TR/json-ld-api/)
 - [JSON-LD 1.1 Framing](https://www.w3.org/TR/json-ld-framing/)
@@ -246,7 +253,7 @@ Fork and clone the project repository.
 - [JSON-LD-star](https://json-ld.github.io/json-ld-star/)
 - [JSON-LD Playground](https://json-ld.org/playground/)
 
-## Commercial Support
+## 💼 Commercial Support
 
 Commercial support and consulting are available.
 For inquiries, please contact: filip26@gmail.com
