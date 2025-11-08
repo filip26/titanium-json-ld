@@ -613,14 +613,22 @@ public final class ContextBuilder {
             throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT, "Imported context does not contain @context key and is not valid JSON-LD context.");
         }
 
-        var newContext = new NativeMaterializer().node(importedContext, importedContent.adapter());
+        var newContext = importedContext;
+        var newContextAdapter = importedContent.adapter();
 
-        // remove @base from a remote context
-        if (newContext instanceof Map map && map.containsKey(Keywords.BASE)) {
-            @SuppressWarnings("unchecked")
-            var hashMap = new HashMap<>(map);
-            hashMap.remove(Keywords.BASE);
-            newContext = hashMap;
+        if (newContextAdapter.isMap(newContext)
+                && newContextAdapter.keys(newContext).contains(Keywords.BASE)) {
+
+            newContext = NativeMaterializer.node(importedContext, importedContent.adapter());
+            newContextAdapter = NativeAdapter.instance();
+
+            // remove @base from a remote context
+            if (newContext instanceof Map map && map.containsKey(Keywords.BASE)) {
+                @SuppressWarnings("unchecked")
+                var hashMap = new HashMap<>(map);
+                hashMap.remove(Keywords.BASE);
+                newContext = hashMap;
+            }
         }
 
         // FIXME
@@ -634,7 +642,7 @@ public final class ContextBuilder {
                     .newContext(loader)
                     .remoteContexts(new ArrayList<>(remoteContexts))
                     .validateScopedContext(validateScopedContext)
-                    .build(newContext, NativeAdapter.instance(), remoteDocument.url());
+                    .build(newContext, newContextAdapter, remoteDocument.url());
 
 //FIXME
 //            if (result.runtime().getContextCache() != null && !validateScopedContext) {
