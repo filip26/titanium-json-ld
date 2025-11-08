@@ -29,9 +29,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.Comparison;
+import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdTestSuite;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.api.RdfConsumerException;
@@ -124,7 +124,7 @@ class RemoteContextTest {
         JsonLd.toRdf(
                 document,
                 new QuadAcceptor(result),
-                Options.with(JsonLdTestSuite.CLASSPATH_LOADER));
+                Options.with(JakartaTestSuite.CLASSPATH_LOADER));
 
         assertNotNull(result);
 
@@ -163,7 +163,7 @@ class RemoteContextTest {
 
             long start = System.nanoTime();
 
-            final var result = JsonLd.expand(document, Options.with(JsonLdTestSuite.HTTP_LOADER));
+            final var result = JsonLd.expand(document, Options.with(JakartaTestSuite.HTTP_LOADER));
 
             System.out.println("Time elapsed: " + Duration.ofNanos(System.nanoTime() - start));
 
@@ -179,7 +179,7 @@ class RemoteContextTest {
 
     private final TreeIO read(final String name) throws JsonLdException, IOException {
         try (final var is = getClass().getResourceAsStream(name)) {
-            return JsonLdTestSuite.PARSER.parse(is);
+            return JakartaTestSuite.PARSER.parse(is);
         }
     }
 }

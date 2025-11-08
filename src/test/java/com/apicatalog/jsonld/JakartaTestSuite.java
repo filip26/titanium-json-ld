@@ -20,16 +20,19 @@ import java.net.http.HttpClient.Redirect;
 import java.time.Duration;
 import java.util.Map;
 
+import org.junit.platform.suite.api.BeforeSuite;
 import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
 import org.junit.platform.suite.api.SuiteDisplayName;
 
-import com.apicatalog.jsonld.loader.ClasspathLoader;
-import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.loader.FileLoader;
 import com.apicatalog.jsonld.loader.HttpLoader;
-import com.apicatalog.jsonld.loader.SchemeRouter;
-import com.apicatalog.jsonld.loader.ZipResourceLoader;
+import com.apicatalog.jsonld.suite.CompactorTest;
+import com.apicatalog.jsonld.suite.ExpanderTest;
+import com.apicatalog.jsonld.suite.FlattenTest;
+import com.apicatalog.jsonld.suite.FramerTest;
+import com.apicatalog.jsonld.suite.FromRdfTest;
+import com.apicatalog.jsonld.suite.RemoteTest;
+import com.apicatalog.jsonld.suite.ToRdfTest;
 import com.apicatalog.tree.io.TreeParser;
 import com.apicatalog.tree.io.TreeRenderer;
 import com.apicatalog.tree.io.jakarta.JakartaParser;
@@ -38,7 +41,7 @@ import com.apicatalog.tree.io.jakarta.JakartaRenderer;
 import jakarta.json.Json;
 
 @Suite(failIfNoTests = true)
-@SuiteDisplayName("JsonLd Suite")
+@SuiteDisplayName("JSON-LD Suite (Jakarta)")
 @SelectClasses({
         ExpanderTest.class,
         FlattenTest.class,
@@ -48,19 +51,9 @@ import jakarta.json.Json;
         ToRdfTest.class,
         RemoteTest.class
 })
-public class JsonLdTestSuite {
+public class JakartaTestSuite extends SuiteEvironment {
 
-//    public static final ObjectMapper om  = new ObjectMapper();
-//    
-//    static {
-//    om.configure(DeserializationFeature.NUL SerializationFeature.NUL,false);
-//    om.configure(SerializationFeature.INDENT_OUTPUT,true);
-//    om.setSerializationInclusion(Include.ALWAYS);
-//    }
-
-    public static final TreeParser PARSER =
-//            new Jackson2Parser(om);
-            new JakartaParser(Json.createReaderFactory(Map.of()));
+    public static final TreeParser PARSER = new JakartaParser(Json.createReaderFactory(Map.of()));
 
     public static final TreeRenderer RENDERER = new JakartaRenderer(Json.createGeneratorFactory(Map.of()));
 
@@ -74,15 +67,13 @@ public class JsonLdTestSuite {
                     PARSER)
             .timeout(Duration.ofSeconds(5));
 
-    public static final ZipResourceLoader ZIP_RESOURCE_LOADER = new ZipResourceLoader(PARSER);
+    @BeforeSuite
+    public static void beforeSuite() {
+        start(PARSER, RENDERER);
+    }
 
-    public static final FileLoader FILE_LOADER = new FileLoader(PARSER);
-
-    public static final ClasspathLoader CLASSPATH_LOADER = new ClasspathLoader(PARSER);
-
-    public static final DocumentLoader RESOURCE_LOADER = SchemeRouter.newBuilder()
-            .route("zip", ZIP_RESOURCE_LOADER)
-            .route("classpath", CLASSPATH_LOADER)
-            .build();
+    public static void afterSuite() {
+        stop();
+    }
 
 }

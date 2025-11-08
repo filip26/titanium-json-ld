@@ -45,7 +45,8 @@ public final class Flattener {
         final var expansionOptions = Options.copyOf(options).ordered(false);
 
         var expandedInput = Expander.expand(document, expansionOptions, runtime);
-
+        System.out.println(document.content().node());
+System.out.println(expandedInput);
         return flatten(
                 expandedInput,
                 document.url(),

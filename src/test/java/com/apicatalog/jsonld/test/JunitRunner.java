@@ -27,9 +27,9 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.apicatalog.jsonld.Comparison;
+import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdTestSuite;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
@@ -99,7 +99,7 @@ public class JunitRunner {
         if (testCase.type.contains(Type.FROM_RDF_TEST)) {
             return execute(options -> {
 
-                final var toLd = JsonLd.fromRdf(options).jsonParser(JsonLdTestSuite.PARSER);
+                final var toLd = JsonLd.fromRdf(options).jsonParser(JakartaTestSuite.PARSER);
 
                 try {
 

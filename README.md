@@ -4,7 +4,7 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 
 ### 🎯 Goals
 - Full conformance to the specification
-- Secure, stable, fast, high-quality code (**~1600 tests**)
+- Secure, stable, fast, high-quality code (**>2500 tests**)
 - Minimal external dependencies
 - Simple and easy-to-use
 

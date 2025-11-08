@@ -23,16 +23,17 @@ import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
+import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdTestSuite;
 import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.SuiteEvironment;
 import com.apicatalog.jsonld.loader.UriBaseRewriter;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
+import com.apicatalog.jsonld.test.EarlRunner;
 import com.apicatalog.jsonld.test.MockServer;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
-import com.apicatalog.jsonld.test.EarlRunner;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.flow.QuadEmitter;
@@ -69,7 +70,7 @@ public class EarlGenerator {
                 .load(
                         TestManifest.JSON_LD_API_BASE,
                         "expand-manifest.jsonld",
-                        JsonLdTestSuite.ZIP_RESOURCE_LOADER)
+                        SuiteEvironment.ZIP_LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
@@ -82,7 +83,7 @@ public class EarlGenerator {
                 .load(
                         TestManifest.JSON_LD_API_BASE,
                         "compact-manifest.jsonld",
-                        JsonLdTestSuite.ZIP_RESOURCE_LOADER)
+                        SuiteEvironment.ZIP_LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
@@ -98,7 +99,7 @@ public class EarlGenerator {
                 .load(
                         TestManifest.JSON_LD_API_BASE,
                         "flatten-manifest.jsonld",
-                        JsonLdTestSuite.ZIP_RESOURCE_LOADER)
+                        SuiteEvironment.ZIP_LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
@@ -115,7 +116,7 @@ public class EarlGenerator {
                 .load(
                         TestManifest.JSON_LD_API_BASE,
                         "toRdf-manifest.jsonld",
-                        JsonLdTestSuite.ZIP_RESOURCE_LOADER)
+                        SuiteEvironment.ZIP_LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
@@ -132,7 +133,7 @@ public class EarlGenerator {
                 .load(
                         TestManifest.JSON_LD_API_BASE,
                         "fromRdf-manifest.jsonld",
-                        JsonLdTestSuite.ZIP_RESOURCE_LOADER)
+                        SuiteEvironment.ZIP_LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
@@ -158,7 +159,7 @@ public class EarlGenerator {
                 .load(
                         TestManifest.JSON_LD_FRAMING_BASE,
                         "frame-manifest.jsonld",
-                        JsonLdTestSuite.ZIP_RESOURCE_LOADER)
+                        SuiteEvironment.ZIP_LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
@@ -175,7 +176,7 @@ public class EarlGenerator {
                     .load(
                             TestManifest.JSON_LD_API_BASE,
                             "remote-doc-manifest.jsonld",
-                            JsonLdTestSuite.ZIP_RESOURCE_LOADER)
+                            SuiteEvironment.ZIP_LOADER)
                     .stream()
                     .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                     .forEach(testCase -> {
@@ -193,7 +194,7 @@ public class EarlGenerator {
                                         new UriBaseRewriter(
                                                 TestManifest.TESTS_BASE,
                                                 server.baseUrl(),
-                                                JsonLdTestSuite.HTTP_LOADER));
+                                                JakartaTestSuite.HTTP_LOADER));
 
                                 return JsonLd.expand(testCase.input, expandOptions);
                             });

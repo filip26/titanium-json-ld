@@ -13,38 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld;
-
+package com.apicatalog.jsonld.custom;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.SuiteEvironment;
+import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
-import com.apicatalog.jsonld.test.JunitRunner;
 
-@DisplayName(value = "FromRDF")
-class FromRdfTest {
+public class CustomTest {
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource({"jsonLdApi"})
-    void testFromRdf(final TestCase testCase) {
+    @MethodSource("data")
+    void testCustom(TestCase testCase) {
         assertTrue(new JunitRunner(testCase).execute());
     }
 
-    static final Stream<TestCase> jsonLdApi() throws JsonLdException {
+    static final Stream<TestCase> data() throws JsonLdException {
         return TestManifest
-                    .load(
-                            TestManifest.JSON_LD_API_BASE, 
-                            "fromRdf-manifest.jsonld", 
-                            JsonLdTestSuite.ZIP_RESOURCE_LOADER)
-                    .stream()
-                    .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
-                    ;
+                .load(
+                        "classpath:/com/apicatalog/jsonld/test/", 
+                        "manifest.json", 
+                        SuiteEvironment.CLASSPATH_LOADER)
+                .stream()
+                .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
+                .filter(test -> !"#t0008".equals(test.id)) // requires mock server
+        ;
     }
 }

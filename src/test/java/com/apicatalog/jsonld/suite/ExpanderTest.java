@@ -13,55 +13,63 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld;
+package com.apicatalog.jsonld.suite;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-import java.util.Arrays;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.apicatalog.jsonld.JakartaTestSuite;
+import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.SuiteEvironment;
+import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
-import com.apicatalog.jsonld.test.JunitRunner;
 
-@DisplayName(value = "Compactor")
-class CompactorTest {
+@DisplayName(value = "Expander")
+public class ExpanderTest {
+
+    @BeforeAll
+    public static void beforeAll() {
+        assumeTrue(SuiteEvironment.suiteRunning);
+    }
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource({ "jsonLdApi" /* , "jsonLdStar" */ })
-    void testCompact(TestCase testCase) {
-
-        // Skip JSON-LD-STAR (Experimental) embedded node tests - unsupported now
-        assumeFalse(Arrays.stream(new String[] {
-                "#tst04", "#tst05", "#tst06", "#tst07", "#tst08", "#tst09", "#tst10",
-                "#tst15", "#tst16", "#tst17"
-        }).anyMatch(testCase.id::equals));
-
+    @MethodSource({ "jsonLdApi" })
+    void testExpand(final TestCase testCase) {
         assertTrue(new JunitRunner(testCase).execute());
     }
+
+//    @ParameterizedTest(name = "{0}")
+//    @MethodSource({"jsonLdStar"})
+//    void testStar(final JsonLdTestCase testCase) {
+//        // Skip JSON-LD-STAR (Experimental) negative test (an invalid annotation inside @list)
+//        assumeFalse("#tst26".equals(testCase.id));
+//        assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
+//    }
 
     static final Stream<TestCase> jsonLdApi() throws JsonLdException {
         return TestManifest
                 .load(
                         TestManifest.JSON_LD_API_BASE,
-                        "compact-manifest.jsonld",
-                        JsonLdTestSuite.ZIP_RESOURCE_LOADER)
+                        TestManifest.EXPAND,
+                        SuiteEvironment.ZIP_LOADER)
                 .stream()
-                .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
-        ;
+                .filter(TestCase.IS_NOT_V1_0); // skip specVersion == 1.0
     }
 
     static final Stream<TestCase> jsonLdStar() throws JsonLdException {
         return TestManifest
                 .load(
                         TestManifest.JSON_LD_STAR_BASE,
-                        "compact-manifest.jsonld",
-                        JsonLdTestSuite.ZIP_RESOURCE_LOADER)
+                        TestManifest.EXPAND,
+                        SuiteEvironment.ZIP_LOADER)
                 .stream();
     }
 }

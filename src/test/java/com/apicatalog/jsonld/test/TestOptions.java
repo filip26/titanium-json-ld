@@ -21,10 +21,10 @@ import java.net.URI;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
-import com.apicatalog.jsonld.JsonLdTestSuite;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.Options.ProcessingPolicy;
 import com.apicatalog.jsonld.Options.RdfDirection;
@@ -216,7 +216,7 @@ public class TestOptions {
 
                                 var os = new ByteArrayOutputStream();
                                 try {
-                                    JsonLdTestSuite.RENDERER.render(
+                                    JakartaTestSuite.RENDERER.render(
                                             node,
                                             adapter,
                                             os);

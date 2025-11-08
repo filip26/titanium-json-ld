@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld;
+package com.apicatalog.jsonld.suite;
 
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.stream.Stream;
 
@@ -25,18 +26,24 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.apicatalog.jsonld.JakartaTestSuite;
+import com.apicatalog.jsonld.JsonLd;
+import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.SuiteEvironment;
 import com.apicatalog.jsonld.loader.UriBaseRewriter;
+import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.MockServer;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
-import com.apicatalog.jsonld.test.JunitRunner;
 
-class RemoteTest {
+public class RemoteTest {
 
-    static MockServer server;
+    static MockServer server = null;
 
     @BeforeAll
     static void startMockServer() throws JsonLdException {
+        assumeTrue(SuiteEvironment.suiteRunning);
         server = new MockServer(
                 TestManifest.TESTS_BASE,
                 TestManifest.JSON_LD_API_BASE);
@@ -45,8 +52,10 @@ class RemoteTest {
 
     @AfterAll
     static void stopMockServer() throws JsonLdException {
-        server.close();
-        server = null;
+        if (server != null) {
+            server.close();
+            server = null;
+        }
     }
 
     @ParameterizedTest(name = "{0}")
@@ -67,7 +76,7 @@ class RemoteTest {
                         new UriBaseRewriter(
                                 TestManifest.TESTS_BASE,
                                 server.baseUrl(),
-                                JsonLdTestSuite.HTTP_LOADER));
+                                JakartaTestSuite.HTTP_LOADER));
 
                 return JsonLd.expand(testCase.input, expandOptions);
             });
@@ -82,7 +91,7 @@ class RemoteTest {
                 .load(
                         TestManifest.JSON_LD_API_BASE,
                         "remote-doc-manifest.jsonld",
-                        JsonLdTestSuite.ZIP_RESOURCE_LOADER)
+                        SuiteEvironment.ZIP_LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
         ;

@@ -21,11 +21,12 @@ import java.net.URI;
 
 import org.junit.jupiter.api.Test;
 
+import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.JsonLdTestSuite;
 import com.apicatalog.jsonld.Options;
-import com.apicatalog.jsonld.test.TestManifest;
+import com.apicatalog.jsonld.SuiteEvironment;
 import com.apicatalog.jsonld.test.JunitRunner;
+import com.apicatalog.jsonld.test.TestManifest;
 
 class CompactBaseTest {
 
@@ -36,7 +37,7 @@ class CompactBaseTest {
                 .load(
                         TestManifest.JSON_LD_API_BASE,
                         "compact-manifest.jsonld",
-                        JsonLdTestSuite.ZIP_RESOURCE_LOADER)
+                        SuiteEvironment.ZIP_LOADER)
                 .stream()
                 .filter(o -> "#t0047".equals(o.id))
                 .findFirst().orElseThrow(() -> new IllegalStateException());

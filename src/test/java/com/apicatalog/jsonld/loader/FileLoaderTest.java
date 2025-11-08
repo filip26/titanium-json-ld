@@ -26,11 +26,13 @@ import java.net.URL;
 import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.Document;
+import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdTestSuite;
 import com.apicatalog.web.media.MediaType;
 
 class FileLoaderTest {
+
+    public static FileLoader FILE_LOADER = new FileLoader(JakartaTestSuite.PARSER);
 
     @Test
     void testLoadJson() throws URISyntaxException, JsonLdException {
@@ -39,7 +41,7 @@ class FileLoaderTest {
 
         assertNotNull(fileUrl);
 
-        Document document = JsonLdTestSuite.FILE_LOADER.loadDocument(fileUrl.toURI(), DocumentLoader.defaultOptions());
+        Document document = FILE_LOADER.loadDocument(fileUrl.toURI(), DocumentLoader.defaultOptions());
 
         assertNotNull(document);
         assertNotNull(document.content());
@@ -53,7 +55,7 @@ class FileLoaderTest {
 
         assertNotNull(fileUrl);
 
-        Document document = JsonLdTestSuite.FILE_LOADER.loadDocument(fileUrl.toURI(), DocumentLoader.defaultOptions());
+        Document document = FILE_LOADER.loadDocument(fileUrl.toURI(), DocumentLoader.defaultOptions());
 
         assertNotNull(document);
         assertTrue(MediaType.JSON_LD.match(document.contentType()));
@@ -66,12 +68,12 @@ class FileLoaderTest {
 
         assertNotNull(fileUrl);
 
-        assertThrows(JsonLdException.class, () -> JsonLdTestSuite.FILE_LOADER.loadDocument(fileUrl.toURI(), DocumentLoader.defaultOptions()));
+        assertThrows(JsonLdException.class, () -> FILE_LOADER.loadDocument(fileUrl.toURI(), DocumentLoader.defaultOptions()));
     }
 
     @Test
     void testUnsupportedScheme() throws URISyntaxException {
-        assertThrows(JsonLdException.class, () -> JsonLdTestSuite.FILE_LOADER.loadDocument(URI.create("https://github.com/"), DocumentLoader.defaultOptions()));
+        assertThrows(JsonLdException.class, () -> FILE_LOADER.loadDocument(URI.create("https://github.com/"), DocumentLoader.defaultOptions()));
     }
 
 }
