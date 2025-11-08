@@ -416,7 +416,6 @@ public final class Framing {
             state.removeLastParent();
 
             // 4.8.
-
             addToResult(parent, activeProperty, output);
         }
     }

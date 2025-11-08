@@ -48,10 +48,9 @@ public final class Frame {
     }
 
     public static final Frame of(final Document frame, final Options options, final Execution runtime) throws JsonLdException, IOException {
-
         @SuppressWarnings("unchecked")
-        Set<String> keys = (frame.content().node() instanceof Map map)
-                ? map.keySet()
+        Set<String> keys = frame.content().isMap()
+                ? (Set<String>) frame.content().keys()
                 : Set.of();
 
         var expanded = Expander.expandFrame(
@@ -64,8 +63,8 @@ public final class Frame {
 
     public static final Frame of(final TreeIO frame, final Options options, final Execution runtime) throws JsonLdException, IOException {
         @SuppressWarnings("unchecked")
-        Set<String> keys = (frame.node() instanceof Map map)
-                ? map.keySet()
+        Set<String> keys = frame.isMap()
+                ? (Set<String>) frame.keys()
                 : Set.of();
 
         var expanded = Expander.expandFrame(
@@ -338,14 +337,11 @@ public final class Frame {
     }
 
     public boolean isDefault(String graphKey) {
-//        if (context != null) {
-        // FIXME frameObject
         for (final String key : frameGraphs) {
             if (key.equals(graphKey)) {
                 return true;
             }
         }
-//        }
         return false;
     }
 }

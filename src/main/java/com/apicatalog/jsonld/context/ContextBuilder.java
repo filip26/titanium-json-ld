@@ -625,7 +625,7 @@ public final class ContextBuilder {
             // remove @base from a remote context
             if (newContext instanceof Map map && map.containsKey(Keywords.BASE)) {
                 @SuppressWarnings("unchecked")
-                var hashMap = new HashMap<>(map);
+                var hashMap = new LinkedHashMap<>(map);
                 hashMap.remove(Keywords.BASE);
                 newContext = hashMap;
             }
