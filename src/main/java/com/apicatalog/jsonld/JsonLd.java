@@ -43,36 +43,6 @@ import com.apicatalog.tree.io.java.NativeAdapter;
  */
 public final class JsonLd {
 
-    public enum Version {
-
-        V1_0("json-ld-1.0"), V1_1("json-ld-1.1");
-
-        private final String text;
-
-        Version(final String text) {
-            this.text = text;
-        }
-
-        public static Version of(String version) {
-
-            Objects.requireNonNull(version);
-
-            if ("1.1".equals(version) || V1_1.text.equalsIgnoreCase(version)) {
-                return V1_1;
-            }
-
-            if ("1.0".equals(version) || V1_0.text.equalsIgnoreCase(version)) {
-                return V1_0;
-            }
-            return null;
-        }
-
-        @Override
-        public String toString() {
-            return text;
-        }
-    }
-
     private JsonLd() {
     }
 
@@ -87,13 +57,15 @@ public final class JsonLd {
      * @return
      * @throws JsonLdException
      */
-    public static final Collection<?> expand(final URI document, final Options options) throws JsonLdException, IOException {
+    public static final Collection<?> expand(
+            final URI document,
+            final Options options) throws JsonLdException, IOException {
 
         var runtime = Execution.of(options);
         runtime.tick();
 
         return Expander.expand(
-                Document.fetch(
+                Document.load(
                         document,
                         options.loader(),
                         options.isExtractAllScripts()),
@@ -109,7 +81,9 @@ public final class JsonLd {
      * @return {@link ExpansionApi} allowing to set additional parameters
      * @throws JsonLdException
      */
-    public static final Collection<?> expand(final Document document, final Options options) throws JsonLdException, IOException {
+    public static final Collection<?> expand(
+            final Document document,
+            final Options options) throws JsonLdException, IOException {
 
         var runtime = Execution.of(options);
         runtime.tick();
@@ -117,16 +91,16 @@ public final class JsonLd {
         return Expander.expand(document, options, runtime);
     }
 
-    public static final Collection<?> expand(final Map<String, ?> document, final Options options) throws JsonLdException, IOException {
-
-        if (!NativeAdapter.instance().isNode(document)) {
-            throw new IllegalArgumentException();
-        }
+    public static final Collection<?> expand(
+            final Map<String, ?> document,
+            final Options options) throws JsonLdException, IOException {
 
         return expand(new TreeIO(document, NativeAdapter.instance()), options);
     }
 
-    public static final Collection<?> expand(final TreeIO document, final Options options) throws JsonLdException, IOException {
+    public static final Collection<?> expand(
+            final TreeIO document,
+            final Options options) throws JsonLdException, IOException {
 
         var runtime = Execution.of(options);
         runtime.tick();
@@ -155,8 +129,8 @@ public final class JsonLd {
             final URI context,
             final Options options) throws JsonLdException, IOException {
         return compact(
-                Document.fetch(document, options.loader(), options.isExtractAllScripts()),
-                Document.fetch(context, options.loader(), options.isExtractAllScripts()),
+                Document.load(document, options.loader(), options.isExtractAllScripts()),
+                Context.load(context, options.loader()),
                 options);
     }
 
@@ -176,7 +150,7 @@ public final class JsonLd {
     public static final Map<String, ?> compact(final URI document, final Document context,
             final Options options) throws JsonLdException, IOException {
         return compact(
-                Document.fetch(document, options.loader(), options.isExtractAllScripts()),
+                Document.load(document, options.loader(), options.isExtractAllScripts()),
                 context,
                 options);
     }
@@ -194,7 +168,7 @@ public final class JsonLd {
     public static final Map<String, ?> compact(final Document document, final URI context, Options options) throws JsonLdException, IOException {
         return compact(
                 document,
-                Document.fetch(context, options.loader(), options.isExtractAllScripts()),
+                Context.load(context, options.loader()),
                 options);
     }
 
@@ -244,13 +218,6 @@ public final class JsonLd {
             final Map<String, ?> context,
             final Options options) throws JsonLdException, IOException {
 
-        if (!NativeAdapter.instance().isNode(document)) {
-            throw new IllegalArgumentException();
-        }
-        if (!NativeAdapter.instance().isNode(context)) {
-            throw new IllegalArgumentException();
-        }
-
         return compact(
                 new TreeIO(document, NativeAdapter.instance()),
                 new TreeIO(context, NativeAdapter.instance()),
@@ -258,6 +225,20 @@ public final class JsonLd {
     }
 
     /* --- FLATTEN -- */
+
+    public static final Object flatten(final URI document, final Options options) throws JsonLdException, IOException {
+        var runtime = Execution.of(options);
+        runtime.tick();
+
+        return Flattener.flatten(
+                Document.load(
+                        document,
+                        options.loader(),
+                        options.isExtractAllScripts()),
+                null,
+                options,
+                runtime);
+    }
 
     /**
      * Flattens the given input and optionally compacts it using context.
@@ -271,13 +252,25 @@ public final class JsonLd {
         runtime.tick();
 
         return Flattener.flatten(
-                Document.fetch(
+                Document.load(
                         document,
                         options.loader(),
                         options.isExtractAllScripts()),
                 context != null
-                        ? Document.fetch(context, options.loader(), options.isExtractAllScripts()).content()
+                        ? Context.load(context, options.loader()).content()
                         : null,
+                options,
+                runtime);
+    }
+
+    public static final Object flatten(final Document document, final Options options) throws JsonLdException, IOException {
+
+        var runtime = Execution.of(options);
+        runtime.tick();
+
+        return Flattener.flatten(
+                document,
+                null,
                 options,
                 runtime);
     }
@@ -303,7 +296,21 @@ public final class JsonLd {
                 runtime);
     }
 
-    public static final Object flatten(final Map<String, ?> document, final Map<String, ?> context, final Options options) throws JsonLdException, IOException {
+    public static final Object flatten(
+            final Map<String, ?> document,
+            final Options options) throws JsonLdException, IOException {
+
+        return flatten(
+                new TreeIO(document, NativeAdapter.instance()),
+                null,
+                options);
+    }
+
+    public static final Object flatten(
+            final Map<String, ?> document,
+            final Map<String, ?> context,
+            final Options options) throws JsonLdException, IOException {
+
         return flatten(
                 new TreeIO(document, NativeAdapter.instance()),
                 context != null
@@ -312,11 +319,31 @@ public final class JsonLd {
                 options);
     }
 
+    public static final Object flatten(final Collection<?> document, final Options options) throws JsonLdException, IOException {
+        return flatten(
+                new TreeIO(document, NativeAdapter.instance()),
+                null,
+                options);
+    }
+
     public static final Object flatten(final Collection<?> document, final Map<String, ?> context, final Options options) throws JsonLdException, IOException {
         return flatten(
                 new TreeIO(document, NativeAdapter.instance()),
-                new TreeIO(context, NativeAdapter.instance()),
+                context != null
+                        ? new TreeIO(context, NativeAdapter.instance())
+                        : null,
                 options);
+    }
+
+    public static final Object flatten(final TreeIO document, final Options options) throws JsonLdException, IOException {
+        var runtime = Execution.of(options);
+        runtime.tick();
+
+        return Flattener.flatten(
+                document,
+                null,
+                options,
+                runtime);
     }
 
     public static final Object flatten(final TreeIO document, final TreeIO context, final Options options) throws JsonLdException, IOException {
@@ -341,7 +368,7 @@ public final class JsonLd {
      */
     public static final Map<String, ?> frame(final URI document, final URI frame, final Options options) throws JsonLdException, IOException {
         return frame(
-                Document.fetch(document, options.loader(), options.isExtractAllScripts()),
+                Document.load(document, options.loader(), options.isExtractAllScripts()),
                 frame,
                 options);
     }
@@ -356,7 +383,7 @@ public final class JsonLd {
     public static final Map<String, ?> frame(final Document document, final URI frame, final Options options) throws JsonLdException, IOException {
         return frame(
                 document,
-                Document.fetch(frame, options.loader(), options.isExtractAllScripts()),
+                Document.load(frame, options.loader(), options.isExtractAllScripts()),
                 options);
     }
 
@@ -369,7 +396,7 @@ public final class JsonLd {
      */
     public static final Map<String, ?> frame(final URI document, final Document frame, final Options options) throws JsonLdException, IOException {
         return frame(
-                Document.fetch(document, options.loader(), options.isExtractAllScripts()),
+                Document.load(document, options.loader(), options.isExtractAllScripts()),
                 frame,
                 options);
     }
@@ -391,7 +418,22 @@ public final class JsonLd {
         return Framer.frame(document, frame, options, runtime);
     }
 
-    public static final Map<String, ?> frame(final TreeIO document, final TreeIO frame, final Options options) throws JsonLdException, IOException {
+    public static final Map<String, ?> frame(
+            final Map<String, ?> document,
+            final Map<String, ?> frame,
+            final Options options) throws JsonLdException, IOException {
+
+        return frame(
+                new TreeIO(document, NativeAdapter.instance()),
+                new TreeIO(frame, NativeAdapter.instance()),
+                options);
+    }
+
+    public static final Map<String, ?> frame(
+            final TreeIO document,
+            final TreeIO frame,
+            final Options options) throws JsonLdException, IOException {
+
         final Execution runtime = Execution.of(options);
         runtime.tick();
 
@@ -410,21 +452,6 @@ public final class JsonLd {
                 contextNode);
     }
 
-    public static final Map<String, ?> frame(final Map<String, ?> document, final Map<String, ?> frame, final Options options) throws JsonLdException, IOException {
-
-        if (!NativeAdapter.instance().isNode(document)) {
-            throw new IllegalArgumentException();
-        }
-        if (!NativeAdapter.instance().isNode(frame)) {
-            throw new IllegalArgumentException();
-        }
-
-        return frame(
-                new TreeIO(document, NativeAdapter.instance()),
-                new TreeIO(frame, NativeAdapter.instance()),
-                options);
-    }
-
     /* --- TO RDF -- */
 
     /**
@@ -435,7 +462,7 @@ public final class JsonLd {
      */
     public static final void toRdf(final URI document, RdfQuadConsumer consumer, Options options) throws JsonLdException, IOException {
         toRdf(Document
-                .fetch(
+                .load(
                         document,
                         options.loader(),
                         options.isExtractAllScripts()),
@@ -512,7 +539,59 @@ public final class JsonLd {
         return new QuadsToJsonLd();
     }
 
+    /**
+     * Transforms an RDF quad set into a JSON-LD document in expanded form.
+     * <p>
+     * Use {@link NQuadsReader} to read quads, or manually add them to
+     * {@link QuadsToJsonLd} by calling
+     * {@link QuadsToJsonLd#quad(String, String, String, String, String, String, String)}.
+     * Retrieve the expanded JSON-LD document by calling
+     * {@link QuadsToJsonLd#toJsonLd()}.
+     * </p>
+     * <p>
+     * <strong>Note:</strong> {@link QuadsToJsonLd} adopts the
+     * {@link RdfQuadConsumer} interface, allowing integration with Jena, Jelly,
+     * RDF4J, and other RDF libraries.
+     * </p>
+     * 
+     * @since 2.0.0
+     *
+     * @param options
+     * @return a {@link QuadsToJsonLd} instance, allowing additional parameter
+     *         configuration
+     */
     public static final QuadsToJsonLd fromRdf(Options options) {
         return new QuadsToJsonLd().options(options);
     }
+
+    public enum Version {
+
+        V1_0("json-ld-1.0"), V1_1("json-ld-1.1");
+
+        private final String text;
+
+        Version(final String text) {
+            this.text = text;
+        }
+
+        public static Version of(String version) {
+
+            Objects.requireNonNull(version);
+
+            if ("1.1".equals(version) || V1_1.text.equalsIgnoreCase(version)) {
+                return V1_1;
+            }
+
+            if ("1.0".equals(version) || V1_0.text.equalsIgnoreCase(version)) {
+                return V1_0;
+            }
+            return null;
+        }
+
+        @Override
+        public String toString() {
+            return text;
+        }
+    }
+
 }

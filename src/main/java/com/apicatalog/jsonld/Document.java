@@ -119,10 +119,10 @@ public class Document {
     }
 
     public static final Document fetch(URI url, DocumentLoader loader) throws JsonLdException {
-        return fetch(url, loader, false);
+        return load(url, loader, false);
     }
 
-    public static final Document fetch(URI url, DocumentLoader loader, boolean extractAllScripts) throws JsonLdException {
+    public static final Document load(URI url, DocumentLoader loader, boolean extractAllScripts) throws JsonLdException {
 
         Objects.requireNonNull(url);
 

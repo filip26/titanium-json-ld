@@ -170,7 +170,7 @@ public interface Context {
         return node;
     }
 
-    public static Document load(DocumentLoader loader, URI uri) throws JsonLdException, IOException {
+    public static Document load(URI uri, DocumentLoader loader) throws JsonLdException, IOException {
 
         Document document = null;
 
