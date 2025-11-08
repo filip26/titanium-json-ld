@@ -15,8 +15,6 @@
  */
 package com.apicatalog.jsonld;
 
-import java.util.Map;
-
 import org.junit.platform.suite.api.BeforeSuite;
 import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
@@ -31,11 +29,10 @@ import com.apicatalog.jsonld.suite.RemoteTest;
 import com.apicatalog.jsonld.suite.ToRdfTest;
 import com.apicatalog.tree.io.TreeParser;
 import com.apicatalog.tree.io.TreeRenderer;
-import com.apicatalog.tree.io.jakarta.JakartaRenderer;
 import com.apicatalog.tree.io.jakcson.Jackson2Parser;
+import com.apicatalog.tree.io.jakcson.Jackson2Renderer;
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import jakarta.json.Json;
 
 @Suite(failIfNoTests = true)
 @SuiteDisplayName("JSON-LD Suite (Jackson)")
@@ -54,7 +51,7 @@ public class JacksonTestSuite extends SuiteEvironment {
 
     public static final TreeParser PARSER = new Jackson2Parser(OM);
 
-    public static final TreeRenderer RENDERER = new JakartaRenderer(Json.createGeneratorFactory(Map.of()));
+    public static final TreeRenderer RENDERER = new Jackson2Renderer(new JsonFactory());
 
     @BeforeSuite
     public static void beforeSuite() {
