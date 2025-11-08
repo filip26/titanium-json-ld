@@ -21,6 +21,7 @@ import java.net.URI;
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.TreeParser;
 
 /**
@@ -47,8 +48,8 @@ public final class ClasspathLoader implements DocumentLoader {
     /**
      * Creates a new loader that parses classpath resources using the given reader.
      *
-     * @param reader the {@link TreeParser} used to parse the loaded resource
-     *               (must not be {@code null})
+     * @param reader the {@link TreeParser} used to parse the loaded resource (must
+     *               not be {@code null})
      */
     public ClasspathLoader(final TreeParser reader) {
         this.parser = reader;
@@ -87,8 +88,8 @@ public final class ClasspathLoader implements DocumentLoader {
                     FileLoader.fromFileExtension(url.getPath()), // detect media type
                     url);
 
-        } catch (IOException e) {
-            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED);
+        } catch (TreeIOException | IOException e) {
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
 }

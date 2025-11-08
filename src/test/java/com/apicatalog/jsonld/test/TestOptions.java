@@ -16,7 +16,6 @@
 package com.apicatalog.jsonld.test;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.net.URI;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,6 +29,7 @@ import com.apicatalog.jsonld.Options.ProcessingPolicy;
 import com.apicatalog.jsonld.Options.RdfDirection;
 import com.apicatalog.jsonld.tordf.JsonLdToQuads;
 import com.apicatalog.tree.io.TreeAdapter;
+import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.web.media.MediaType;
 import com.apicatalog.web.uri.UriResolver;
 
@@ -225,7 +225,7 @@ public class TestOptions {
                                             adapter,
                                             os);
                                     return os.toString();
-                                } catch (IOException e) {
+                                } catch (TreeIOException e) {
                                     throw new JsonLdException(ErrorCode.UNSPECIFIED, e);
                                 }
                             });

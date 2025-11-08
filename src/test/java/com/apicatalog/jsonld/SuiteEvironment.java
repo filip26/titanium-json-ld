@@ -12,13 +12,12 @@ public class SuiteEvironment {
     public static TreeParser PARSER;
     public static DocumentLoader LOADER;
 
-
     static void start(TreeParser parser, TreeRenderer renderer) {
-        SuiteEvironment.PARSER = null;
+        SuiteEvironment.PARSER = parser;
         SuiteEvironment.LOADER = new ZipResourceLoader(parser);
         isRunning = true;
     }
-    
+
     static void stop() {
         isRunning = false;
         SuiteEvironment.LOADER = null;

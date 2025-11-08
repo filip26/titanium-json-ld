@@ -38,6 +38,7 @@ import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.tree.io.java.NativeMaterializer;
 import com.apicatalog.web.lang.LanguageTag;
@@ -302,7 +303,7 @@ public final class ContextBuilder {
                         merged.putAll((Map<?, ?>) NativeMaterializer.node(contextDefinition, adapter));
                     }
 
-                } catch (IOException e) {
+                } catch (TreeIOException e) {
                     throw new JsonLdException(ErrorCode.UNSPECIFIED, e);
                 }
 
@@ -636,7 +637,7 @@ public final class ContextBuilder {
                     hashMap.remove(Keywords.BASE);
                     newContext = hashMap;
                 }
-            } catch (IOException e) {
+            } catch (TreeIOException e) {
                 throw new JsonLdException(ErrorCode.UNSPECIFIED, e);
             }
         }

@@ -96,13 +96,13 @@ class HttpLoaderTest {
                 readBytes("/com/apicatalog/jsonld/loader/document.json"));
 
         var remote = JakartaTestSuite.HTTP_LOADER
-                .acceptContent(contentType -> true)
+                .accept(contentType -> true)
                 .loadDocument(
                         URI.create(server.baseUrl() + "/text.plain"),
                         DocumentLoader.defaultOptions());
 
         // reset shared instance state
-        JakartaTestSuite.HTTP_LOADER.acceptContent(HttpLoader.DEFAULT_JSON_LD_CONTENT);
+        JakartaTestSuite.HTTP_LOADER.accept(HttpLoader.DEFAULT_JSON_LD_CONTENT);
 
         assertNotNull(remote);
     }
@@ -120,7 +120,7 @@ class HttpLoaderTest {
                                 DocumentLoader.defaultOptions()));
 
         server.hangup();
-        
+
         // reset shared instance state
         JakartaTestSuite.HTTP_LOADER.timeout(Duration.ofSeconds(5));
 

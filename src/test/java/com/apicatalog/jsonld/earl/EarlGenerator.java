@@ -46,6 +46,9 @@ public class EarlGenerator {
     public static final String RELEASE_DATE = "2025-10-19";
 
     public static void main(String[] args) throws JsonLdException, IOException {
+        
+        SuiteEvironment.LOADER = new ZipResourceLoader(JakartaTestSuite.PARSER);
+        
         (new EarlGenerator()).generate(Paths.get(FILE_NAME));
     }
 
@@ -83,7 +86,7 @@ public class EarlGenerator {
                 .load(
                         TestManifest.JSON_LD_API_BASE,
                         "compact-manifest.jsonld",
-                        SuiteEvironment.LOADER)
+                        JakartaTestSuite.LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,

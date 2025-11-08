@@ -58,14 +58,14 @@ public class JakartaTestSuite extends SuiteEvironment {
 
     public static final TreeRenderer RENDERER = new JakartaRenderer(Json.createGeneratorFactory(Map.of()));
 
+    public static final HttpClient HTTP_CLIENT = HttpClient
+            .newBuilder()
+            .followRedirects(Redirect.NEVER)
+            .connectTimeout(Duration.ofSeconds(5))
+            .build();
+
     public static final HttpLoader HTTP_LOADER = HttpLoader
-            .newLoader(
-                    HttpClient
-                            .newBuilder()
-                            .followRedirects(Redirect.NEVER)
-                            .connectTimeout(Duration.ofSeconds(5))
-                            .build(),
-                    PARSER)
+            .newLoader(HTTP_CLIENT, PARSER)
             .timeout(Duration.ofSeconds(5));
 
     @BeforeSuite

@@ -81,7 +81,7 @@ public class HttpLoader implements DocumentLoader {
      *
      * <p>
      * Used by default when no custom predicate is supplied through
-     * {@link HttpLoader#acceptContent(java.util.function.Predicate)}.
+     * {@link HttpLoader#accept(java.util.function.Predicate)}.
      * </p>
      *
      * @since 2.0.0
@@ -355,7 +355,7 @@ public class HttpLoader implements DocumentLoader {
      * @throws NullPointerException if {@code predicate} is {@code null}
      * @since 2.0.0
      */
-    public HttpLoader acceptContent(Predicate<MediaType> predicate) {
+    public HttpLoader accept(Predicate<MediaType> predicate) {
         this.acceptContent = Objects.requireNonNull(predicate, "predicate must not be null");
         return this;
     }

@@ -43,6 +43,7 @@ import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.set.OrderedQuadDataset;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
 import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
@@ -55,7 +56,7 @@ class RemoteContextTest {
      *      #61</a>
      */
     @Test
-    void testToRdfMissingTriples1() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException {
+    void testToRdfMissingTriples1() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException, TreeIOException {
 
         final var document = read("/com/apicatalog/jsonld/test/issue61-in.json");
         final var context = read("/com/apicatalog/jsonld/test/issue61-context.json");
@@ -87,7 +88,7 @@ class RemoteContextTest {
      *      #61</a>
      */
     @Test
-    void testToRdfMissingTriples2() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException {
+    void testToRdfMissingTriples2() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException, TreeIOException {
 
         final var document = read("/com/apicatalog/jsonld/test/issue61-in.json");
         final var context = read("/com/apicatalog/jsonld/test/issue61-context.json");
@@ -113,12 +114,12 @@ class RemoteContextTest {
         }
     }
 
-    /**
+    /** 
      * @see <a href="https://github.com/filip26/titanium-json-ld/issues/63">Issue
      *      #63</a>
      */
     @Test
-    void testRemoteContext() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException {
+    void testRemoteContext() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException, TreeIOException {
 
         final var document = read("/com/apicatalog/jsonld/test/issue63-in.json");
 
@@ -150,11 +151,12 @@ class RemoteContextTest {
      *      #62</a>
      *
      * @throws JsonLdException
-     * @throws IOException
+     * @throws TreeIOException 
+     * @throws IOException 
      */
     @Test
     @Disabled("Run manually")
-    void testPerformance() throws JsonLdException, IOException {
+    void testPerformance() throws JsonLdException, TreeIOException, IOException {
 
         final var document = read("/com/apicatalog/jsonld/test/issue62-in.json");
         assertNotNull(document);
@@ -180,7 +182,7 @@ class RemoteContextTest {
         });
     }
 
-    private final TreeIO read(final String name) throws JsonLdException, IOException {
+    private final TreeIO read(final String name) throws JsonLdException, TreeIOException, IOException {
         try (final var is = getClass().getResourceAsStream(name)) {
             return JakartaTestSuite.PARSER.parse(is);
         }

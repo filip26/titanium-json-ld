@@ -38,6 +38,7 @@ import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.web.lang.LanguageTag;
 import com.apicatalog.web.uri.UriUtils;
@@ -47,7 +48,7 @@ public final class JsonLdToQuads {
 
     @FunctionalInterface
     public interface RdfJsonLiteralWriter {
-        String write(Object node, TreeAdapter adapter) throws JsonLdException;
+        String write(Object node, TreeAdapter adapter) throws JsonLdException, TreeIOException;
     }
 
     public static final RdfJsonLiteralWriter JCS = Jcs::canonize;
@@ -261,11 +262,15 @@ public final class JsonLdToQuads {
 
         // 8.
         if (Keywords.JSON.equals(datatype)) {
-            if (value instanceof TreeIO node) {
-                valueString = jsonWriter.write(node.node(), node.adapter());
+            try {
+                if (value instanceof TreeIO node) {
+                    valueString = jsonWriter.write(node.node(), node.adapter());
 
-            } else {
-                valueString = jsonWriter.write(value, NativeAdapter.instance());
+                } else {
+                    valueString = jsonWriter.write(value, NativeAdapter.instance());
+                }
+            } catch (TreeIOException e) {
+                throw new JsonLdException(ErrorCode.INVALID_JSON_LITERAL, e);
             }
 
             datatype = Terms.RDF_JSON;

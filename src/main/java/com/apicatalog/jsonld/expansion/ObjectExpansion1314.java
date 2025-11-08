@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld.expansion;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -37,6 +36,7 @@ import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.tree.io.java.NativeMaterializer;
 import com.apicatalog.web.lang.LanguageTag;
@@ -416,7 +416,7 @@ final class ObjectExpansion1314 {
                             expandedValue = NativeMaterializer.node(value, adapter); 
                             // FIXMEnew TreeIO(value, adapter);
 
-                        } catch (IOException e) {
+                        } catch (TreeIOException e) {
                             throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE, e);
                         }
 
@@ -434,7 +434,7 @@ final class ObjectExpansion1314 {
                         try {
                             expandedValue = NativeMaterializer.node(value, adapter);
 
-                        } catch (IOException e) {
+                        } catch (TreeIOException e) {
                             throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE, e);
                         }
 

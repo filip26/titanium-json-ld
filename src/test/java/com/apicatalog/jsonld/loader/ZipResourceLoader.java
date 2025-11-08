@@ -27,6 +27,7 @@ import java.util.zip.ZipFile;
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.TreeParser;
 
 public class ZipResourceLoader implements DocumentLoader {
@@ -74,7 +75,7 @@ public class ZipResourceLoader implements DocumentLoader {
                 return Document.of(node, url);
             }
 
-        } catch (IOException e) {
+        } catch (IOException | TreeIOException e) {
             throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
