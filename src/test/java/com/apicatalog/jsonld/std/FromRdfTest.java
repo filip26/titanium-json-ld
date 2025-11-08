@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.suite;
+package com.apicatalog.jsonld.std;
+
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-import java.util.Arrays;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -33,8 +32,8 @@ import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
 
-@DisplayName(value = "Compactor")
-public class CompactorTest {
+@DisplayName(value = "FromRDF")
+public class FromRdfTest {
 
     @BeforeAll
     public static void beforeAll() {
@@ -42,35 +41,19 @@ public class CompactorTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource({ "jsonLdApi" /* , "jsonLdStar" */ })
-    void testCompact(TestCase testCase) {
-
-        // Skip JSON-LD-STAR (Experimental) embedded node tests - unsupported now
-        assumeFalse(Arrays.stream(new String[] {
-                "#tst04", "#tst05", "#tst06", "#tst07", "#tst08", "#tst09", "#tst10",
-                "#tst15", "#tst16", "#tst17"
-        }).anyMatch(testCase.id::equals));
-
+    @MethodSource({"jsonLdApi"})
+    void testFromRdf(final TestCase testCase) {
         assertTrue(new JunitRunner(testCase).execute());
     }
 
     static final Stream<TestCase> jsonLdApi() throws JsonLdException {
         return TestManifest
-                .load(
-                        TestManifest.JSON_LD_API_BASE,
-                        "compact-manifest.jsonld",
-                        SuiteEvironment.LOADER)
-                .stream()
-                .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
-        ;
-    }
-
-    static final Stream<TestCase> jsonLdStar() throws JsonLdException {
-        return TestManifest
-                .load(
-                        TestManifest.JSON_LD_STAR_BASE,
-                        "compact-manifest.jsonld",
-                        SuiteEvironment.LOADER)
-                .stream();
+                    .load(
+                            TestManifest.JSON_LD_API_BASE, 
+                            "fromRdf-manifest.jsonld", 
+                            SuiteEvironment.LOADER)
+                    .stream()
+                    .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
+                    ;
     }
 }

@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.suite;
+package com.apicatalog.jsonld.std;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.stream.Stream;
@@ -31,8 +32,8 @@ import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
 
-@DisplayName(value = "Flatten")
-public class FlattenTest {
+@DisplayName(value = "Framer")
+public class FramerTest {
 
     @BeforeAll
     public static void beforeAll() {
@@ -40,19 +41,23 @@ public class FlattenTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource({ "jsonLdApi" })
-    void testFlatten(TestCase testCase) {
+    @MethodSource("data")
+    void testFrame(TestCase testCase) {
+
+        // @embed: @last - won't fix
+        assumeFalse("#t0059".equals(testCase.id));
+
         assertTrue(new JunitRunner(testCase).execute());
     }
 
-    static final Stream<TestCase> jsonLdApi() throws JsonLdException {
+    static final Stream<TestCase> data() throws JsonLdException {
         return TestManifest
-                .load(
-                        TestManifest.JSON_LD_API_BASE,
-                        "flatten-manifest.jsonld",
-                        SuiteEvironment.LOADER)
-                .stream()
-                .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
-        ;
+                    .load(
+                            TestManifest.JSON_LD_FRAMING_BASE, 
+                            "frame-manifest.jsonld", 
+                            SuiteEvironment.LOADER)
+                    .stream()
+                    .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
+                    ;
     }
 }

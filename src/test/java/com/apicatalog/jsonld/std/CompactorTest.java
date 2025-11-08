@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.suite;
+package com.apicatalog.jsonld.std;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -32,8 +35,9 @@ import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
 
-@DisplayName(value = "Framer")
-public class FramerTest {
+@DisplayName(value = "Compactor")
+@TestMethodOrder(MethodOrderer.MethodName.class)
+public class CompactorTest {
 
     @BeforeAll
     public static void beforeAll() {
@@ -41,23 +45,35 @@ public class FramerTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("data")
-    void testFrame(TestCase testCase) {
+    @MethodSource({ "jsonLdApi" /* , "jsonLdStar" */ })
+    void testCompact(TestCase testCase) {
 
-        // @embed: @last - won't fix
-        assumeFalse("#t0059".equals(testCase.id));
+        // Skip JSON-LD-STAR (Experimental) embedded node tests - unsupported now
+        assumeFalse(Arrays.stream(new String[] {
+                "#tst04", "#tst05", "#tst06", "#tst07", "#tst08", "#tst09", "#tst10",
+                "#tst15", "#tst16", "#tst17"
+        }).anyMatch(testCase.id::equals));
 
         assertTrue(new JunitRunner(testCase).execute());
     }
 
-    static final Stream<TestCase> data() throws JsonLdException {
+    static final Stream<TestCase> jsonLdApi() throws JsonLdException {
         return TestManifest
-                    .load(
-                            TestManifest.JSON_LD_FRAMING_BASE, 
-                            "frame-manifest.jsonld", 
-                            SuiteEvironment.LOADER)
-                    .stream()
-                    .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
-                    ;
+                .load(
+                        TestManifest.JSON_LD_API_BASE,
+                        "compact-manifest.jsonld",
+                        SuiteEvironment.LOADER)
+                .stream()
+                .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
+        ;
+    }
+
+    static final Stream<TestCase> jsonLdStar() throws JsonLdException {
+        return TestManifest
+                .load(
+                        TestManifest.JSON_LD_STAR_BASE,
+                        "compact-manifest.jsonld",
+                        SuiteEvironment.LOADER)
+                .stream();
     }
 }

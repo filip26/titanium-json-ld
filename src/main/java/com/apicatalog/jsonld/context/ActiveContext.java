@@ -31,7 +31,7 @@ import com.apicatalog.tree.io.TreeAdapter;
  * running.
  *
  */
-public final class ActiveContext implements Context {
+final class ActiveContext implements Context {
 
     // the active term definitions which specify how keys and values have to be
     // interpreted
@@ -63,7 +63,7 @@ public final class ActiveContext implements Context {
         this(null, null, null, version);
     }
 
-    public ActiveContext(final URI baseUri, final URI baseUrl, Version version) {
+    ActiveContext(final URI baseUri, final URI baseUrl, Version version) {
         this(baseUri, baseUrl, null, version);
     }
 
@@ -72,12 +72,11 @@ public final class ActiveContext implements Context {
         this.baseUrl = baseUrl;
         this.previousContext = previousContext;
         this.terms = new LinkedHashMap<>();
-//        this.runtime = runtime;
         this.version = version;
     }
 
     // copy constructor
-    public ActiveContext(final ActiveContext origin) {
+    ActiveContext(final ActiveContext origin) {
         this.terms = new LinkedHashMap<>(origin.terms);
         this.baseUri = origin.baseUri;
         this.baseUrl = origin.baseUrl;
@@ -86,7 +85,6 @@ public final class ActiveContext implements Context {
         this.vocabularyMapping = origin.vocabularyMapping;
         this.defaultLanguage = origin.defaultLanguage;
         this.defaultBaseDirection = origin.defaultBaseDirection;
-//        this.runtime = origin.runtime;
         this.version = origin.version;
     }
 
@@ -160,10 +158,6 @@ public final class ActiveContext implements Context {
         return ContextBuilder.with(this, loader);
     }
 
-//    public Map<String, ?> expandValue(final String activeProperty, final Object value, final NodeAdapter adapter) throws JsonLdError, IOException {
-//        return ValueExpansion.expand(this, activeProperty, value, adapter, runtime);
-//    }
-
     @Override
     public TermDefinitionBuilder newTerm(final Object localContext, final TreeAdapter adapter, final Map<String, Boolean> defined, DocumentLoader loader) {
         return TermDefinitionBuilder.with(this, localContext, adapter, defined, loader);
@@ -188,10 +182,6 @@ public final class ActiveContext implements Context {
     protected void setVocabularyMapping(final String vocabularyMapping) {
         this.vocabularyMapping = vocabularyMapping;
     }
-
-//    protected void setBaseUrl(final URI baseUrl) {
-//        this.baseUrl = baseUrl;
-//    }
 
     protected void setPreviousContext(final ActiveContext previousContext) {
         this.previousContext = previousContext;

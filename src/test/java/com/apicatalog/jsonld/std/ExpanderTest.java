@@ -13,15 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.suite;
+package com.apicatalog.jsonld.std;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -32,6 +35,7 @@ import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
 
 @DisplayName(value = "Expander")
+@TestMethodOrder(MethodOrderer.MethodName.class)
 public class ExpanderTest {
 
     @BeforeAll
@@ -41,17 +45,19 @@ public class ExpanderTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource({ "jsonLdApi" })
+    @DisplayName(value = "JSON-LD")
     void testExpand(final TestCase testCase) {
         assertTrue(new JunitRunner(testCase).execute());
     }
 
-//    @ParameterizedTest(name = "{0}")
-//    @MethodSource({"jsonLdStar"})
-//    void testStar(final JsonLdTestCase testCase) {
-//        // Skip JSON-LD-STAR (Experimental) negative test (an invalid annotation inside @list)
-//        assumeFalse("#tst26".equals(testCase.id));
-//        assertTrue(new JsonLdTestRunnerJunit(testCase).execute());
-//    }
+    @ParameterizedTest(name = "{0}")
+    @MethodSource({ "jsonLdStar" })
+    @DisplayName(value = "JSON-LD-star")
+    void testExpandStar(final TestCase testCase) {
+        // Skip JSON-LD-STAR (Experimental) negative test (an invalid annotation inside @list)
+        assumeFalse("#tst26".equals(testCase.id));
+        assertTrue(new JunitRunner(testCase).execute());
+    }
 
     static final Stream<TestCase> jsonLdApi() throws JsonLdException {
         return TestManifest

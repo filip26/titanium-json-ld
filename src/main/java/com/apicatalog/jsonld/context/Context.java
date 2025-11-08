@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld.context;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -34,12 +33,10 @@ import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.java.NativeAdapter;
-import com.apicatalog.tree.io.java.NativeMaterializer;
 
 /**
  * A context that is used to resolve terms while the processing algorithm is
  * running.
- *
  */
 public interface Context {
 
@@ -89,7 +86,7 @@ public interface Context {
     Map<String, TermDefinition> getTermsMapping();
 
     // ---
-    
+
     public static TreeIO extract(TreeIO document) throws JsonLdException {
 
         final var node = document.node();
@@ -238,7 +235,7 @@ public interface Context {
 //        return null;
 //}
 
-    static class Builder {
+    public static class Builder {
 
         ActiveContext ctx;
 
@@ -265,6 +262,11 @@ public interface Context {
             this.ctx = new ActiveContext(baseUri, baseUrl, version);
         }
 
+        public Builder loader(DocumentLoader loader) {
+            this.loader = loader;
+            return this;
+        }
+
         // TODO better
         public Context build() throws JsonLdException {
 //            var ctx = new ActiveContext(baseUri, baseUrl, runtime);
@@ -288,52 +290,48 @@ public interface Context {
             return this;
         }
 
-        private final ActiveContext updateContext(
-                final ActiveContext activeContext,
-                final Object expandedContext,
-                final TreeAdapter adapter,
-                final URI baseUrl)
-                throws JsonLdException, IOException {
-
-            if (adapter.isCollection(expandedContext)) {
-
-                if (adapter.isSingleElement(expandedContext)) {
-
-                    var value = adapter.singleElement(expandedContext);
-
-                    if (adapter.isMap(value)) {
-
-                        var context = adapter.property(Keywords.CONTEXT, value);
-
-                        if (!adapter.isNull(context)) {
-                            return activeContext
-                                    .newContext(loader)
-                                    .build(context, adapter, baseUrl);
-                        }
-                    }
-                }
-
-                return activeContext.newContext(loader).build(expandedContext, adapter, baseUrl);
-
-            } else if (adapter.isMap(expandedContext)) {
-
-                var context = adapter.property(Keywords.CONTEXT, expandedContext);
-
-                if (!adapter.isNull(context)) {
-                    return activeContext
-                            .newContext(loader)
-                            .build(context, adapter, baseUrl);
-                }
-            }
-            return activeContext.newContext(loader).build(
-                    List.of(NativeMaterializer.node(expandedContext, adapter)),
-                    NativeAdapter.instance(), 
-                    baseUrl);
-        }
-
-        public Builder loader(DocumentLoader loader) {
-            this.loader = loader;
-            return this;
-        }
+//        private final ActiveContext updateContext(
+//                final ActiveContext activeContext,
+//                final Object expandedContext,
+//                final TreeAdapter adapter,
+//                final URI baseUrl)
+//                throws JsonLdException, IOException {
+//
+//            if (adapter.isCollection(expandedContext)) {
+//
+//                if (adapter.isSingleElement(expandedContext)) {
+//
+//                    var value = adapter.singleElement(expandedContext);
+//
+//                    if (adapter.isMap(value)) {
+//
+//                        var context = adapter.property(Keywords.CONTEXT, value);
+//
+//                        if (!adapter.isNull(context)) {
+//                            return activeContext
+//                                    .newContext(loader)
+//                                    .build(context, adapter, baseUrl);
+//                        }
+//                    }
+//                }
+//
+//                return activeContext.newContext(loader).build(expandedContext, adapter, baseUrl);
+//
+//            } else if (adapter.isMap(expandedContext)) {
+//
+//                var context = adapter.property(Keywords.CONTEXT, expandedContext);
+//
+//                if (!adapter.isNull(context)) {
+//                    return activeContext
+//                            .newContext(loader)
+//                            .build(context, adapter, baseUrl);
+//                }
+//            }
+//            return activeContext.newContext(loader).build(
+//                    List.of(NativeMaterializer.node(expandedContext, adapter)),
+//                    NativeAdapter.instance(),
+//                    baseUrl);
+//        }
+//
     }
 }

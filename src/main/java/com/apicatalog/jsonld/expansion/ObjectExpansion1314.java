@@ -22,8 +22,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -183,20 +181,8 @@ final class ObjectExpansion1314 {
                             continue;
                         }
 
-//                        if (expandedStringValue != null) {
-//
-//                            expandedValue = JsonProvider.instance().createValue(expandedStringValue);
-//
-//                            if (frameExpansion) {
-//                                expandedValue = JsonProvider.instance().createArrayBuilder().add(expandedValue).build();
-//                            }
-//                        } else {
-//                            expandedValue = JsonValue.NULL;
-//                        }
-
                     } else if (adapter.isNumber(value)) {
 
-//                        final String expandedStringValue = activeContext
                         expandedValue = UriExpansion.with(activeContext, params.options().loader())
                                 .documentRelative(true)
                                 .vocab(false)
@@ -209,17 +195,6 @@ final class ObjectExpansion1314 {
                             result.put(Keywords.ID, null);
                             continue;
                         }
-
-//                        if (expandedStringValue != null) {
-//
-//                            expandedValue = JsonProvider.instance().createValue(expandedStringValue);
-//
-//                            if (frameExpansion) {
-//                                expandedValue = JsonProvider.instance().createArrayBuilder().add(expandedValue).build();
-//                            }
-//                        } else {
-//                            expandedValue = JsonValue.NULL;
-//                        }
 
                     } else if (adapter.isMap(value)) {
 
@@ -347,7 +322,7 @@ final class ObjectExpansion1314 {
 
                         var typeValue = result.get(Keywords.TYPE);
 
-                        if (typeValue instanceof HashSet set) {
+                        if (typeValue instanceof HashSet<?> set) {
                             @SuppressWarnings("unchecked")
                             var hashset = ((HashSet<Object>) set);
                             hashset.add(expandedValue);
@@ -355,7 +330,7 @@ final class ObjectExpansion1314 {
 
                         } else if (typeValue instanceof Collection<?> set) {
 
-                            var newSet = (new HashSet<Object>(set));
+                            var newSet = new HashSet<Object>(set);
                             newSet.add(expandedValue);
                             expandedValue = newSet;
 
@@ -636,7 +611,10 @@ final class ObjectExpansion1314 {
                             var reverseMap = new LinkedHashMap<String, Object>();
 
                             // 13.4.13.4.2
-                            for (var entry : ((Map<String, Object>) expandedValueObject).entrySet()) {
+                            @SuppressWarnings("unchecked")
+                            final var typedMap = (Map<String, Object>) expandedValueObject;
+
+                            for (var entry : typedMap.entrySet()) {
 
                                 if (Keywords.REVERSE.equals(entry.getKey())) {
                                     continue;
@@ -724,9 +702,9 @@ final class ObjectExpansion1314 {
             }
 
             // 13.5.
-            final Optional<TermDefinition> keyTermDefinition = activeContext.findTerm(key);
+            final var keyTermDefinition = activeContext.findTerm(key);
 
-            final Collection<String> containerMapping = keyTermDefinition
+            final var containerMapping = keyTermDefinition
                     .map(TermDefinition::getContainerMapping)
                     .orElse(List.of());
 
@@ -738,31 +716,14 @@ final class ObjectExpansion1314 {
                     .filter(Keywords.JSON::equals)
                     .isPresent()) {
 
-//                (JsonStructure) new JakartaMaterializer().node(collection, new JsonLdAdapter())
-
-//                expandedValue = new NativeMaterializer().node(value, JakartaAdapter.instance());
-                expandedValue = new TreeIO(value, adapter); // TODO verify
-
-//                if (expandedValue != null) {
                 expandedValue = Map.of(
                         Keywords.TYPE, Keywords.JSON,
-                        Keywords.VALUE, expandedValue);
-
-//                } else {
-//                    var map = new HashMap<>(2);
-//                    map.put(Keywords.TYPE, Keywords.JSON);
-//                    map.put(Keywords.VALUE, null);
-//                    expandedValue = map;
-//                }
-
-//                expandedValue = JsonProvider.instance().createObjectBuilder().add(Keywords.VALUE, value)
-//                        .add(Keywords.TYPE, Keywords.JSON).build();
+                        Keywords.VALUE, new TreeIO(value, adapter));
 
                 // 13.7.
             } else if (adapter.isMap(value) && containerMapping.contains(Keywords.LANGUAGE)) {
 
                 // 13.7.1.
-//                expandedValue = JsonValue.EMPTY_JSON_ARRAY;
                 final var langMaps = new ArrayList<>();
 
                 // 13.7.2.
@@ -820,11 +781,10 @@ final class ObjectExpansion1314 {
 
                         // 13.7.4.2.6.
                         langMaps.add(langMap);
-//                        expandedValue = JsonProvider.instance().createArrayBuilder(expandedValue.asJsonArray()).add(langMap).build();
                     }
                 }
 
-                expandedValue = Set.copyOf(langMaps);
+                expandedValue = List.copyOf(langMaps);
 
             } else if (adapter.isMap(value)
                     && (containerMapping.contains(Keywords.INDEX)
@@ -881,7 +841,8 @@ final class ObjectExpansion1314 {
                     }
 
                     // 13.8.3.4.
-                    final var expandedIndex = UriExpansion.with(activeContext, params.options().loader())
+                    final var expandedIndex = UriExpansion
+                            .with(activeContext, params.options().loader())
                             .vocab(true)
                             .expand(index);
 
@@ -940,10 +901,6 @@ final class ObjectExpansion1314 {
 
                             if (existingValues instanceof Collection<?> values) {
                                 indexPropertyValues.addAll(values);
-//FIXME?                                    existingValues
-//                                            .stream()
-//                                            .map(JsonUtils::asScalar)
-//                                            .forEach(indexPropertyValues::add);
 
                             } else if (existingValues != null) {
                                 indexPropertyValues.add(existingValues);
@@ -1066,12 +1023,20 @@ final class ObjectExpansion1314 {
 
                     if (map == null) {
                         result.put(Keywords.REVERSE, Map.of(expandedProperty, List.of(item)));
+
                     } else if (map instanceof LinkedHashMap hashmap) {
 
-                        LdAdapter.setOrAdd(hashmap, expandedProperty, item);
+                        @SuppressWarnings("unchecked")
+                        final var typedMap = (Map<String, Object>) hashmap;
+
+                        LdAdapter.setOrAdd(typedMap, expandedProperty, item);
 
                     } else if (map instanceof Map rawMap) {
-                        var hashmap = new LinkedHashMap<String, Object>(rawMap);
+
+                        @SuppressWarnings("unchecked")
+                        final var typedMap = (Map<String, Object>) rawMap;
+
+                        final var hashmap = new LinkedHashMap<String, Object>(typedMap);
                         LdAdapter.setOrAdd(hashmap, expandedProperty, item);
                         result.put(Keywords.REVERSE, hashmap);
                     }

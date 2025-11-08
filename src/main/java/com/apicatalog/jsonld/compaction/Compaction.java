@@ -900,20 +900,16 @@ public final class Compaction {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static final Map<String, Object> removeKey(Map container, String key) {
+    private static Map<String, Object> removeKey(Map container, String key) {
         final var compactedMap = new LinkedHashMap<String, Object>(container);
-
         compactedMap.remove(key);
-
         return compactedMap;
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static final Map<String, Object> replaceKey(Map container, String key, Object value) {
+    private static Map<String, Object> replaceKey(Map container, String key, Object value) {
         final var compactedMap = new LinkedHashMap<String, Object>(container);
-
         compactedMap.put(key, value);
-
         return compactedMap;
     }
 }
