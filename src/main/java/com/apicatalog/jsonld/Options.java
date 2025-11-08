@@ -30,30 +30,57 @@ import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.web.uri.UriValidationPolicy;
 
 /**
- * The {@link Options} type is used to pass various options to the processor.
+ * Configuration options used by the JSON-LD processor.
  *
- * @see <a href=
- *      "https://www.w3.org/TR/json-ld11-api/#the-jsonldoptions-type">The
- *      JsonLdOptions Specification.</a>
+ * <p>
+ * These options influence expansion, compaction, flattening, framing, and
+ * conversion to and from RDF.
+ * </p>
  *
+ * <p>
+ * Instances can be configured using fluent setter style:
+ * </p>
+ *
+ * <pre>{@code
+ * Options options = Options.newOptions()
+ *         .base(URI.create("https://example.com/"))
+ *         .compactArrays(true)
+ *         .ordered(false);
+ * }</pre>
+ *
+ * <p>
+ * Use {@link #copyOf(Options)} to obtain a copy of an existing options object.
+ * </p>
+ *
+ * @see <a href="https://www.w3.org/TR/json-ld11-api/#the-jsonldoptions-type">
+ *      JSON-LD 1.1 API - The JsonLdOptions Type</a>
  */
 public final class Options {
 
+    /**
+     * RDF direction handling strategies.
+     */
     public enum RdfDirection {
+        /** Use internationalization datatype representation. */
         I18N_DATATYPE,
+        /** Use compound literal representation. */
         COMPOUND_LITERAL
     }
 
+    /**
+     * Defines how the processor handles certain processing conditions, such as
+     * undefined terms.
+     */
     public enum ProcessingPolicy {
-        /** ignore, the current and default behavior */
+        /** Ignore the condition (default behavior). */
         Ignore,
-        /** stop processing with an error */
+        /** Stop processing and throw an error. */
         Fail,
-        /** print warning to log */
+        /** Log a warning but continue processing. */
         Warn
     }
 
-    /* default values */
+    /** Default settings. */
     public static final boolean DEFAULT_RDF_STAR = false;
     public static final boolean DEFAULT_NUMERIC_ID = false;
     public static final UriValidationPolicy DEFAULT_URI_VALIDATION = UriValidationPolicy.Full;
@@ -210,31 +237,30 @@ public final class Options {
     }
 
     /**
-     * Returns a new {@code JsonLdOptions} instance with default configuration.
+     * Returns a new options object with default settings.
      *
-     * @return a new {@code JsonLdOptions} instance using standard defaults
+     * @return a new options object
      */
     public static final Options newOptions() {
         return new Options();
     }
 
     /**
-     * Returns a new {@code JsonLdOptions} instance using the specified
-     * {@link DocumentLoader}.
-     * <p>
+     * Returns a new options object initialized with the provided document loader.
      *
-     * @param loader the document loader to use; must not be {@code null}
-     * @return a new {@code JsonLdOptions} instance configured with the given loader
+     * @param loader the loader to use for retrieving remote documents and contexts.
+     * @return a new options object with the given loader.
      */
     public static final Options with(DocumentLoader loader) {
         return new Options().loader(loader);
     }
 
     /**
-     * Returns a new {@code JsonLdOptions} instance copied from the given options.
+     * Copies the given options to create a new, distinct options object with the
+     * same settings.
      *
-     * @param options the options to copy; must not be {@code null}
-     * @return a new {@code JsonLdOptions} instance with the same configuration
+     * @param options the options to copy
+     * @return a new options object with the same values.
      */
     public static final Options copyOf(Options options) {
         return new Options(options);
@@ -292,9 +318,8 @@ public final class Options {
      * "https://www.w3.org/TR/json-ld11-api/#dfn-json-ld-script-element">JSON-LD
      * script elements</a> from HTML, unless a specific
      * <a href="https://tools.ietf.org/html/rfc3986#section-3.5">fragment
-     * identifier</a> is targeted, extracts all encountered <a href=
-     * "https://www.w3.org/TR/json-ld11-api/#dfn-json-ld-script-element">JSON-LD
-     * script elements</a> using an array form, if necessary.
+     * identifier</a> is targeted, extracts all encountered JSON-LD script elements
+     * using an array form, if necessary.
      *
      * @return <code>true</code> if script extraction is enabled
      */
@@ -313,14 +338,31 @@ public final class Options {
         return ordered;
     }
 
+    /**
+     * Specifies which version of the JSON-LD specification (e.g., 1.0 or 1.1) the
+     * processor adheres to for all subsequent operations.
+     *
+     * @return the processing mode.
+     */
     public Version mode() {
         return processingMode;
     }
 
+    /**
+     * Indicates if the processor is configured to convert the data into generalized
+     * RDF, which permits subjects or objects that are not strict IRIs or Literals.
+     *
+     * @return <code>true</code> if generalized RDF is enabled.
+     */
     public boolean isProduceGeneralizedRdf() {
         return generalizedRdf;
     }
 
+    /**
+     * Returns the configured RDF direction handling strategy.
+     *
+     * @return the RDF direction strategy or {@code null} if not set.
+     */
     public RdfDirection rdfDirection() {
         return rdfDirection;
     }

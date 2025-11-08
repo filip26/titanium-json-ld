@@ -75,6 +75,7 @@ public final class TestManifest {
                             loader));
 
         } catch (JsonLdException e) {
+            e.printStackTrace();
             fail(e);
         }
 

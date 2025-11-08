@@ -9,9 +9,12 @@ public class SuiteEvironment {
 
     public static Boolean isRunning = false;
 
+    public static TreeParser PARSER;
     public static DocumentLoader LOADER;
 
+
     static void start(TreeParser parser, TreeRenderer renderer) {
+        SuiteEvironment.PARSER = null;
         SuiteEvironment.LOADER = new ZipResourceLoader(parser);
         isRunning = true;
     }

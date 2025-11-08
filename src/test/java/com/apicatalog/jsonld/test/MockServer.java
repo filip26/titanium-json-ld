@@ -24,6 +24,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -54,7 +55,11 @@ public class MockServer implements AutoCloseable {
 
     ServerSocket server;
 
+    Duration listen;
+    
     volatile boolean running = true;
+    
+    volatile Thread thread;
 
     private record Stub(
             String acceptHeader,
@@ -71,6 +76,10 @@ public class MockServer implements AutoCloseable {
         this.port = port;
         this.testBase = testBase;
         this.resourceBase = resourceBase;
+    }
+
+    public void when(String path, int status, List<Entry<String, String>> headers, byte[] body) {
+        stubs.put(path, new Stub(null, status, headers, body));
     }
 
     public void when(String path, String accept, int status, List<Entry<String, String>> headers, byte[] body) {
@@ -105,6 +114,18 @@ public class MockServer implements AutoCloseable {
 
         final var stub = stubs.get(path);
 
+        if (listen != null) {
+            try {
+                thread = Thread.currentThread();
+                
+                Thread.sleep(listen.toMillis());
+            } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+            }
+            thread = null;
+            listen = null;
+        }
+        
         if (stub == null) {
             var notFoundResponse = """
                     HTTP/1.1 404 Not Found\r
@@ -276,5 +297,16 @@ public class MockServer implements AutoCloseable {
                     headers,
                     content);
         }
+    }
+
+    public void listen(Duration duration) {
+        this.listen = duration;
+    }
+
+    public void hangup() {
+        if (thread != null) {
+            thread.interrupt();
+        }
+        listen = null;
     }
 }

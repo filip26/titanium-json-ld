@@ -182,17 +182,17 @@ public class HttpLoader implements DocumentLoader {
      * </ul>
      * </p>
      *
-     * @param uri     the URI of the document to load
+     * @param url     the URI of the document to load
      * @param options loader options such as requested profiles
      * @return the loaded {@link Document}
      * @throws JsonLdException if the document cannot be loaded, parsed, or
      *                         validated
      */
     @Override
-    public Document loadDocument(final URI uri, final Options options) throws JsonLdException {
+    public Document loadDocument(final URI url, final Options options) throws JsonLdException {
 
         try {
-            URI targetUri = uri;
+            URI targetUri = url;
 
             MediaType contentType = null;
 
@@ -220,7 +220,7 @@ public class HttpLoader implements DocumentLoader {
                     }
 
                     if (response.statusCode() != 200) {
-                        throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "Unexpected response code [" + response.statusCode() + "]");
+                        throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "Unexpected response code [" + response.statusCode() + "] for URL [" + url + "].");
                     }
 
                     contentType = response.contentType()
@@ -273,7 +273,7 @@ public class HttpLoader implements DocumentLoader {
                     }
 
                     if (contentType == null) {
-                        LOGGER.log(Level.WARNING, "GET on URL [{0}] does not return content-type header.", uri);
+                        LOGGER.log(Level.WARNING, "GET on URL [{0}] does not return content-type header.", url);
 
                     } else if (!acceptContent.test(contentType)) {
                         throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "Unsupported content-type '" + contentType + "'.");
