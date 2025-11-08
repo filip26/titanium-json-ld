@@ -33,9 +33,9 @@ public final class TestManifest {
     public static final String JSON_LD_STAR_BASE = "zip://json-ld-star-test-suite-20251009.zip/com/github/json-ld/json-ld-star/tests/";
 
     public static final String EXPAND = "expand-manifest.jsonld";
-    
+
     public static final String TESTS_BASE = "https://w3c.github.io";
-    
+
     private final String manifestName;
     private final String manifestBase;
 

@@ -51,7 +51,7 @@ public class FlattenTest {
                 .load(
                         TestManifest.JSON_LD_API_BASE,
                         "flatten-manifest.jsonld",
-                        SuiteEvironment.ZIP_LOADER)
+                        SuiteEvironment.LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
         ;

@@ -33,6 +33,7 @@ import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.model.RdfQuadSet;
@@ -46,6 +47,8 @@ import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
 class RemoteContextTest {
+
+    static ClasspathLoader LOADER = new ClasspathLoader(JakartaTestSuite.PARSER);
 
     /**
      * @see <a href="https://github.com/filip26/titanium-json-ld/issues/61">Issue
@@ -124,7 +127,7 @@ class RemoteContextTest {
         JsonLd.toRdf(
                 document,
                 new QuadAcceptor(result),
-                Options.with(JakartaTestSuite.CLASSPATH_LOADER));
+                Options.with(LOADER));
 
         assertNotNull(result);
 

@@ -125,7 +125,7 @@ public final class SchemeRouter implements DocumentLoader {
          * Associates a URI scheme with a {@link DocumentLoader}.
          *
          * @param scheme the URI scheme (case-insensitive)
-         * @param loader the loader to handle that scheme
+         * @param LOADER the loader to handle that scheme
          * @return this builder instance
          */
         public Builder route(String scheme, DocumentLoader loader) {

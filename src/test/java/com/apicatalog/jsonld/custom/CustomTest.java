@@ -22,14 +22,17 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.SuiteEvironment;
+import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
 
 public class CustomTest {
 
+    static ClasspathLoader LOADER = new ClasspathLoader(JakartaTestSuite.PARSER);
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")
     void testCustom(TestCase testCase) {
@@ -41,7 +44,7 @@ public class CustomTest {
                 .load(
                         "classpath:/com/apicatalog/jsonld/test/", 
                         "manifest.json", 
-                        SuiteEvironment.CLASSPATH_LOADER)
+                        LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .filter(test -> !"#t0008".equals(test.id)) // requires mock server

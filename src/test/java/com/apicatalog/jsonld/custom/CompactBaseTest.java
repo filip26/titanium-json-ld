@@ -24,12 +24,15 @@ import org.junit.jupiter.api.Test;
 import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.Options;
-import com.apicatalog.jsonld.SuiteEvironment;
+import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.TestManifest;
 
 class CompactBaseTest {
 
+    static DocumentLoader LOADER = new ZipResourceLoader(JakartaTestSuite.PARSER);
+    
     @Test
     void testCompactBase() {
 
@@ -37,7 +40,7 @@ class CompactBaseTest {
                 .load(
                         TestManifest.JSON_LD_API_BASE,
                         "compact-manifest.jsonld",
-                        SuiteEvironment.ZIP_LOADER)
+                        LOADER)
                 .stream()
                 .filter(o -> "#t0047".equals(o.id))
                 .findFirst().orElseThrow(() -> new IllegalStateException());

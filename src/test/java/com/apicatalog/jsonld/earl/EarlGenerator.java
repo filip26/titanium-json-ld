@@ -70,7 +70,7 @@ public class EarlGenerator {
                 .load(
                         TestManifest.JSON_LD_API_BASE,
                         "expand-manifest.jsonld",
-                        SuiteEvironment.ZIP_LOADER)
+                        SuiteEvironment.LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
@@ -83,7 +83,7 @@ public class EarlGenerator {
                 .load(
                         TestManifest.JSON_LD_API_BASE,
                         "compact-manifest.jsonld",
-                        SuiteEvironment.ZIP_LOADER)
+                        SuiteEvironment.LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
@@ -99,7 +99,7 @@ public class EarlGenerator {
                 .load(
                         TestManifest.JSON_LD_API_BASE,
                         "flatten-manifest.jsonld",
-                        SuiteEvironment.ZIP_LOADER)
+                        SuiteEvironment.LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
@@ -116,7 +116,7 @@ public class EarlGenerator {
                 .load(
                         TestManifest.JSON_LD_API_BASE,
                         "toRdf-manifest.jsonld",
-                        SuiteEvironment.ZIP_LOADER)
+                        SuiteEvironment.LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
@@ -133,7 +133,7 @@ public class EarlGenerator {
                 .load(
                         TestManifest.JSON_LD_API_BASE,
                         "fromRdf-manifest.jsonld",
-                        SuiteEvironment.ZIP_LOADER)
+                        SuiteEvironment.LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
@@ -159,7 +159,7 @@ public class EarlGenerator {
                 .load(
                         TestManifest.JSON_LD_FRAMING_BASE,
                         "frame-manifest.jsonld",
-                        SuiteEvironment.ZIP_LOADER)
+                        SuiteEvironment.LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
@@ -176,7 +176,7 @@ public class EarlGenerator {
                     .load(
                             TestManifest.JSON_LD_API_BASE,
                             "remote-doc-manifest.jsonld",
-                            SuiteEvironment.ZIP_LOADER)
+                            SuiteEvironment.LOADER)
                     .stream()
                     .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                     .forEach(testCase -> {

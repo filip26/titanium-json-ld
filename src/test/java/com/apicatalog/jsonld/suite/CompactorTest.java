@@ -60,7 +60,7 @@ public class CompactorTest {
                 .load(
                         TestManifest.JSON_LD_API_BASE,
                         "compact-manifest.jsonld",
-                        SuiteEvironment.ZIP_LOADER)
+                        SuiteEvironment.LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
         ;
@@ -71,7 +71,7 @@ public class CompactorTest {
                 .load(
                         TestManifest.JSON_LD_STAR_BASE,
                         "compact-manifest.jsonld",
-                        SuiteEvironment.ZIP_LOADER)
+                        SuiteEvironment.LOADER)
                 .stream();
     }
 }
