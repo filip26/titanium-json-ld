@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld.expansion;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,11 +26,11 @@ import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.processor.Execution;
-import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.NodeType;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 
 /**
@@ -93,7 +92,7 @@ public final class Expansion {
             final String activeProperty,
             final Params params
 
-    ) throws JsonLdException, IOException {
+    ) throws JsonLdException {
 
         // 1. If element is null, return null
         if (nodeAdapter.isNull(node)) {
@@ -164,7 +163,6 @@ public final class Expansion {
      * @return a {@link Map} representing the expanded value object, or {@code null}
      *         if the scalar is dropped
      * @throws JsonLdException if an error occurs during expansion
-     * @throws IOException
      */
     static final Map<String, ?> scalar(
             final Context context,
@@ -172,7 +170,7 @@ public final class Expansion {
             final TreeIO propertyContext,
             final Object node,
             final TreeAdapter nodeAdapter,
-            final Params params) throws JsonLdException, IOException {
+            final Params params) throws JsonLdException {
 
         /*
          * 4.1. If active property is null or @graph, drop the free-floating scalar by
@@ -231,13 +229,12 @@ public final class Expansion {
      *         node representations.
      * @throws JsonLdException if an error occurs during the recursive expansion of an
      *                     item
-     * @throws IOException
      */
     static final Collection<?> array(final Context context,
             final Object node,
             final TreeAdapter nodeAdapter,
             final String property,
-            final Params params) throws JsonLdException, IOException {
+            final Params params) throws JsonLdException {
 
         if (nodeAdapter.isEmptyCollection(node)) {
             return List.of();

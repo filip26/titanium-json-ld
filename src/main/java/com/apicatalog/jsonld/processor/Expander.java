@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld.processor;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
@@ -44,7 +43,7 @@ public final class Expander {
     public static final Collection<?> expand(
             final Document document,
             final Options options,
-            final Execution runtime) throws JsonLdException, IOException {
+            final Execution runtime) throws JsonLdException {
 
         return Expander.expand(
                 document.content(),
@@ -62,14 +61,14 @@ public final class Expander {
             final Context context,
             final URI baseUrl,
             final Options options,
-            final Execution runtime) throws JsonLdException, IOException {
+            final Execution runtime) throws JsonLdException {
         return expand(node, context, baseUrl, false, options, runtime);
     }
 
     public static final Collection<?> expandFrame(
             final Document document,
             final Options options,
-            final Execution runtime) throws JsonLdException, IOException {
+            final Execution runtime) throws JsonLdException {
 
         return Expander.expandFrame(
                 document.content(),
@@ -87,14 +86,14 @@ public final class Expander {
             final Context context,
             final URI baseUrl,
             final Options options,
-            final Execution runtime) throws JsonLdException, IOException {
+            final Execution runtime) throws JsonLdException {
         return expand(node, context, baseUrl, true, options, runtime);
     }
 
     public static final Context context(
             final URI document,
             final URI context,
-            final Options options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException {
 
         // 5. Initialize a new empty active context. The base IRI and
         // original base URL of the active context is set to the documentUrl
@@ -151,7 +150,7 @@ public final class Expander {
             final URI baseUrl,
             boolean frameExpansion,
             final Options options,
-            final Execution runtime) throws JsonLdException, IOException {
+            final Execution runtime) throws JsonLdException {
 
         // 8.
         var expanded = Expansion.expand(
@@ -181,7 +180,7 @@ public final class Expander {
         return Set.of(expanded);
     }
 
-    private static Object extractExpansionContext(final TreeIO context) throws IOException {
+    private static Object extractExpansionContext(final TreeIO context) throws JsonLdException {
         // Defensive null check — optional, but safer in utility code
         Objects.requireNonNull(context, "context must not be null");
 

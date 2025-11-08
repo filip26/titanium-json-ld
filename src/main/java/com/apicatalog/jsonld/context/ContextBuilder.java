@@ -99,7 +99,7 @@ public final class ContextBuilder {
     public ActiveContext build(
             final Object localContext,
             final TreeAdapter adapter,
-            final URI baseUrl) throws JsonLdException, IOException {
+            final URI baseUrl) throws JsonLdException {
 
         // 1. Initialize result to the result of cloning active context, with inverse
         // context set to null.
@@ -283,20 +283,26 @@ public final class ContextBuilder {
                 // 5.6.8
                 final Map<Object, Object> merged;
 
-                if (importAdapter.isCompatibleWith(NativeAdapter.instance())
-                        && importedContext instanceof Map<?, ?> map) {
-                    merged = new LinkedHashMap<>(map);
+                try {
 
-                } else {
-                    merged = new LinkedHashMap<>((Map<?, ?>) NativeMaterializer.node(importedContext, importAdapter));
-                }
+                    if (importAdapter.isCompatibleWith(NativeAdapter.instance())
+                            && importedContext instanceof Map<?, ?> map) {
+                        merged = new LinkedHashMap<>(map);
 
-                if (importAdapter.isCompatibleWith(NativeAdapter.instance())
-                        && contextDefinition instanceof Map<?, ?> map) {
-                    merged.putAll(map);
+                    } else {
+                        merged = new LinkedHashMap<>((Map<?, ?>) NativeMaterializer.node(importedContext, importAdapter));
+                    }
 
-                } else {
-                    merged.putAll((Map<?, ?>) NativeMaterializer.node(contextDefinition, adapter));
+                    if (importAdapter.isCompatibleWith(NativeAdapter.instance())
+                            && contextDefinition instanceof Map<?, ?> map) {
+                        merged.putAll(map);
+
+                    } else {
+                        merged.putAll((Map<?, ?>) NativeMaterializer.node(contextDefinition, adapter));
+                    }
+
+                } catch (IOException e) {
+                    throw new JsonLdException(ErrorCode.UNSPECIFIED, e);
                 }
 
                 contextAdapter = NativeAdapter.instance();
@@ -508,7 +514,7 @@ public final class ContextBuilder {
         return this;
     }
 
-    private void fetch(final String uri, final URI baseUrl) throws JsonLdException, IOException {
+    private void fetch(final String uri, final URI baseUrl) throws JsonLdException {
 
         URI contextUri;
 
@@ -619,15 +625,19 @@ public final class ContextBuilder {
         if (newContextAdapter.isMap(newContext)
                 && newContextAdapter.keys(newContext).contains(Keywords.BASE)) {
 
-            newContext = NativeMaterializer.node(importedContext, importedContent.adapter());
-            newContextAdapter = NativeAdapter.instance();
+            try {
+                newContext = NativeMaterializer.node(importedContext, importedContent.adapter());
+                newContextAdapter = NativeAdapter.instance();
 
-            // remove @base from a remote context
-            if (newContext instanceof Map map && map.containsKey(Keywords.BASE)) {
-                @SuppressWarnings("unchecked")
-                var hashMap = new LinkedHashMap<>(map);
-                hashMap.remove(Keywords.BASE);
-                newContext = hashMap;
+                // remove @base from a remote context
+                if (newContext instanceof Map map && map.containsKey(Keywords.BASE)) {
+                    @SuppressWarnings("unchecked")
+                    var hashMap = new LinkedHashMap<>(map);
+                    hashMap.remove(Keywords.BASE);
+                    newContext = hashMap;
+                }
+            } catch (IOException e) {
+                throw new JsonLdException(ErrorCode.UNSPECIFIED, e);
             }
         }
 

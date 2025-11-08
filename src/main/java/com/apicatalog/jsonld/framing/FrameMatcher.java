@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
 public final class FrameMatcher {

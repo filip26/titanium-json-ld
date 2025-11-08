@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld.expansion;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -54,7 +53,7 @@ public final class ValueExpansion {
      *         containing keys like {@code @id}, {@code @value}, {@code @type},
      *         {@code @language}, or {@code @direction}.
      * @throws JsonLdException If an error occurs during IRI expansion.
-     * @throws IOException 
+     * 
      * @see <a href="https://www.w3.org/TR/json-ld11-api/#value-expansion">Value
      *      Expansion Algorithm</a>
      */
@@ -63,7 +62,7 @@ public final class ValueExpansion {
             final String property, 
             final Object value, 
             final TreeAdapter adapter, 
-            final Options options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException {
 
         final Optional<TermDefinition> definition = context.findTerm(property);
 

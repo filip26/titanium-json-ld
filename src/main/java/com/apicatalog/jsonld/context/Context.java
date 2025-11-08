@@ -157,7 +157,7 @@ public interface Context {
 
     public static Map<String, ?> inject(
             final Map<String, ?> node,
-            final TreeIO context) throws JsonLdException, IOException {
+            final TreeIO context) throws JsonLdException {
 
         // 9.3.
         if (!TreeIO.isEmptyOrNull(context)) {
@@ -170,7 +170,7 @@ public interface Context {
         return node;
     }
 
-    public static Document load(URI uri, DocumentLoader loader) throws JsonLdException, IOException {
+    public static Document load(URI uri, DocumentLoader loader) throws JsonLdException {
 
         Document document = null;
 
@@ -278,7 +278,7 @@ public interface Context {
         }
 
         // TODO better
-        public Context build() throws JsonLdException, IOException {
+        public Context build() throws JsonLdException {
 //            var ctx = new ActiveContext(baseUri, baseUrl, runtime);
 //            if (context != null) {
 //                ctx = ctx.newContext()
@@ -287,11 +287,11 @@ public interface Context {
             return ctx;
         }
 
-        public Builder update(TreeIO node, URI baseUrl) throws JsonLdException, IOException {
+        public Builder update(TreeIO node, URI baseUrl) throws JsonLdException {
             return update(node.node(), node.adapter(), baseUrl);
         }
 
-        public Builder update(Object node, TreeAdapter adapter, URI baseUrl) throws JsonLdException, IOException {
+        public Builder update(Object node, TreeAdapter adapter, URI baseUrl) throws JsonLdException {
             // TODO merge if set
 //            this.context = node;
 //            this.adapter = adapter;

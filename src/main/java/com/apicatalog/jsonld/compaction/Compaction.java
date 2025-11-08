@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld.compaction;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,8 +30,8 @@ import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
@@ -84,11 +83,11 @@ public final class Compaction {
         return this;
     }
 
-    public Object compact(final Object element) throws JsonLdException, IOException {
+    public Object compact(final Object element) throws JsonLdException {
         return compact(null, element);
     }
 
-    public Object compact(final String activeProperty, final Object element) throws JsonLdException, IOException {
+    public Object compact(final String activeProperty, final Object element) throws JsonLdException {
 
         if (element instanceof Collection<?> array) {
             return compactArray(activeProperty, array);
@@ -102,7 +101,7 @@ public final class Compaction {
         return element;
     }
 
-    public Object compactArray(final String activeProperty, final Collection<?> array) throws JsonLdException, IOException {
+    public Object compactArray(final String activeProperty, final Collection<?> array) throws JsonLdException {
 
         final var activePropertyDefinition = context.findTerm(activeProperty);
 
@@ -143,7 +142,7 @@ public final class Compaction {
         return result.get(0);
     }
 
-    public Object compactObject(final String activeProperty, final Map<String, ?> object) throws JsonLdException, IOException {
+    public Object compactObject(final String activeProperty, final Map<String, ?> object) throws JsonLdException {
 
         // 1.
         Context typeContext = context;
@@ -446,7 +445,7 @@ public final class Compaction {
                 }
 
             }
-//System.out.println(expandedValue); .asJsonArray()
+
             // 12.8.
             for (final var expandedItem : (Collection<?>) expandedValue) {
 

@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.NodeType;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 
 /**

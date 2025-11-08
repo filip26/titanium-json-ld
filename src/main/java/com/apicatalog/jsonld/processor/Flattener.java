@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld.processor;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 
@@ -36,7 +35,11 @@ public final class Flattener {
     private Flattener() {
     }
 
-    public static Object flatten(Document document, TreeIO context, Options options, Execution runtime) throws JsonLdException, IOException {
+    public static Object flatten(
+            Document document, 
+            TreeIO context, 
+            Options options, 
+            Execution runtime) throws JsonLdException {
 //        if (options.expandContext() == null) {
 //            return flatten(input, (Document) null, options, runtime);
 //        }
@@ -54,7 +57,11 @@ public final class Flattener {
                 runtime);
     }
 
-    public static Object flatten(TreeIO document, TreeIO context, Options options, Execution runtime) throws JsonLdException, IOException {
+    public static Object flatten(
+            TreeIO document, 
+            TreeIO context, 
+            Options options, 
+            Execution runtime) throws JsonLdException {
 //        if (options.expandContext() == null) {
 //            return flatten(input, (Document) null, options, runtime);
 //        }
@@ -87,7 +94,7 @@ public final class Flattener {
             final URI documentUrl,
             final TreeIO context,
             final Options options,
-            final Execution runtime) throws JsonLdException, IOException {
+            final Execution runtime) throws JsonLdException {
 
         // 6.
         var flattenedOutput = Flattening.flatten(expandedInput, options.isOrdered());

@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld.context;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,8 +32,8 @@ import com.apicatalog.jsonld.lang.CompactUri;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.NodeType;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.web.lang.LanguageTag;
 import com.apicatalog.web.uri.UriUtils;
 import com.apicatalog.web.uri.UriValidationPolicy;
@@ -107,7 +106,7 @@ public final class TermDefinitionBuilder {
         return new TermDefinitionBuilder(activeContext, localContext, adapter, defined, loader);
     }
 
-    public void create(final String term) throws JsonLdException, IOException {
+    public void create(final String term) throws JsonLdException {
 
         if (term == null || term.isBlank()) {
             throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);

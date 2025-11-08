@@ -34,10 +34,10 @@ import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Direction;
-import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.TreeAdapter;
+import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.tree.io.NodeType;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.tree.io.java.NativeMaterializer;
@@ -75,7 +75,7 @@ final class ObjectExpansion1314 {
             final Context activeContext,
             final Object element,
             final TreeAdapter adapter,
-            final String activeProperty) throws JsonLdException, IOException {
+            final String activeProperty) throws JsonLdException {
 
         var keys = params.options().isOrdered()
                 ? adapter.keyStream(element).sorted(TreeIO.comparingElement(adapter::asString)).iterator()
@@ -447,7 +447,12 @@ final class ObjectExpansion1314 {
                             throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE);
                         }
 
-                        expandedValue = NativeMaterializer.node(value, adapter); // FIXMEnew PolyNode(value, adapter);
+                        try {
+                            expandedValue = NativeMaterializer.node(value, adapter); // FIXMEnew PolyNode(value, adapter);
+
+                        } catch (IOException e) {
+                            throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE, e);
+                        }
 
                         // 13.4.7.2
                     } else if (adapter.isNull(value)
@@ -460,7 +465,12 @@ final class ObjectExpansion1314 {
                                                             .map(adapter::type)
                                                             .allMatch(NodeType::isScalar))) {
 
-                        expandedValue = NativeMaterializer.node(value, adapter);
+                        try {
+                            expandedValue = NativeMaterializer.node(value, adapter);
+
+                        } catch (IOException e) {
+                            throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE, e);
+                        }
 
                         if (params.frameExpansion()) {
                             expandedValue = asList(expandedValue);
@@ -738,7 +748,7 @@ final class ObjectExpansion1314 {
 //                (JsonStructure) new JakartaMaterializer().node(collection, new JsonLdAdapter())
 
 //                expandedValue = new NativeMaterializer().node(value, JakartaAdapter.instance());
-                expandedValue = new TreeIO(value, adapter); //TODO verify
+                expandedValue = new TreeIO(value, adapter); // TODO verify
 
 //                if (expandedValue != null) {
                 expandedValue = Map.of(
@@ -891,8 +901,8 @@ final class ObjectExpansion1314 {
                             adapter,
                             key,
                             new Params(
-                                    params.frameExpansion(), 
-                                    true, 
+                                    params.frameExpansion(),
+                                    true,
                                     params.baseUrl(),
                                     params.options(),
                                     params.runtime()));
@@ -1082,9 +1092,7 @@ final class ObjectExpansion1314 {
         }
 
         // 14.
-        if (nest != null)
-
-        {
+        if (nest != null) {
             processNest(activeContext, element, adapter);
         }
     }
@@ -1113,7 +1121,7 @@ final class ObjectExpansion1314 {
             final Context context,
             final Object element,
             final TreeAdapter adapter,
-            final String activeProperty) throws JsonLdException, IOException {
+            final String activeProperty) throws JsonLdException {
 
         var activeContext = context;
 
@@ -1146,7 +1154,7 @@ final class ObjectExpansion1314 {
     private void processNest(
             final Context activeContext,
             final Object element,
-            final TreeAdapter adapter) throws JsonLdException, IOException {
+            final TreeAdapter adapter) throws JsonLdException {
 
         final var nestedKeys = params.options().isOrdered()
                 ? nest.keySet().stream().sorted().iterator()

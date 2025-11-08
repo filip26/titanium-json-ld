@@ -45,7 +45,7 @@ public class ToRdfTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource({"jsonLdApi"})
-    void testToRdf(final TestCase testCase) throws IOException {
+    void testToRdf(final TestCase testCase) {
 
         // Force a locale to something different than US to be aware of DecimalFormat errors
         Locale.setDefault(Locale.GERMAN);

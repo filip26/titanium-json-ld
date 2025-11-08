@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld.processor;
 
-import java.io.IOException;
 import java.util.Collection;
 
 import com.apicatalog.jsonld.Document;
@@ -49,13 +48,12 @@ public final class RdfEmitter {
      * @param document
      * @param consumer that accepts emitted RDF statements
      * @throws JsonLdException if the document transformation fails
-     * @throws IOException
      */
     public void provide(
             Document document, 
             RdfQuadConsumer consumer,
             final Options options,
-            final Execution runtime) throws JsonLdException, IOException {
+            final Execution runtime) throws JsonLdException {
 
         RdfEmitter.toRdf(document, consumer, options, runtime);
     }
@@ -64,7 +62,7 @@ public final class RdfEmitter {
             final Document input, 
             final RdfQuadConsumer consumer, 
             final Options options,
-            final Execution runtime) throws JsonLdException, IOException {
+            final Execution runtime) throws JsonLdException {
         final Options expansionOptions = Options.copyOf(options);
 
         expansionOptions.mode(options.mode());
@@ -80,7 +78,7 @@ public final class RdfEmitter {
             final TreeIO input,
             final RdfQuadConsumer consumer,
             final Options options,
-            final Execution runtime) throws JsonLdException, IOException {
+            final Execution runtime) throws JsonLdException {
         
         final Options expansionOptions = Options.copyOf(options);
 

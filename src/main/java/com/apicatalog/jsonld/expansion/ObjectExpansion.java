@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld.expansion;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -26,8 +25,8 @@ import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
-import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.web.uri.UriUtils;
@@ -48,12 +47,6 @@ public final class ObjectExpansion {
     private Object element;
     private TreeAdapter adapter;
     private String activeProperty;
-//    private final URI baseUrl;
-
-    // optional
-//    private boolean frameExpansion;
-//    private boolean ordered;
-//    private boolean fromMap;
 
     private Params params;
 
@@ -70,7 +63,7 @@ public final class ObjectExpansion {
         this.params = params;
     }
 
-    public Object expand() throws JsonLdException, IOException {
+    public Object expand() throws JsonLdException {
 
         activeContext = initPreviousContext(
                 activeContext,
@@ -142,7 +135,7 @@ public final class ObjectExpansion {
             final Context context,
             final Object element,
             final TreeAdapter adapter,
-            final Params params) throws JsonLdException, IOException {
+            final Params params) throws JsonLdException {
 
         // 7. If active context has a previous context, the active context is not
         // propagated.
@@ -189,7 +182,7 @@ public final class ObjectExpansion {
             final Context typeContext
 //            final Object element,
 //            final NodeAdapter adapter
-    ) throws JsonLdException, IOException {
+    ) throws JsonLdException {
 
         String typeKey = null;
 
@@ -257,7 +250,7 @@ public final class ObjectExpansion {
             final Object element,
             final TreeAdapter adapter
 
-    ) throws JsonLdException, IOException {
+    ) throws JsonLdException {
 
         // Initialize input type to expansion of the last value of the first entry in
         // element

@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
@@ -59,7 +58,7 @@ public final class JsonLd {
      */
     public static final Collection<?> expand(
             final URI document,
-            final Options options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException {
 
         var runtime = Execution.of(options);
         runtime.tick();
@@ -83,7 +82,7 @@ public final class JsonLd {
      */
     public static final Collection<?> expand(
             final Document document,
-            final Options options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException {
 
         var runtime = Execution.of(options);
         runtime.tick();
@@ -93,14 +92,14 @@ public final class JsonLd {
 
     public static final Collection<?> expand(
             final Map<String, ?> document,
-            final Options options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException {
 
         return expand(new TreeIO(document, NativeAdapter.instance()), options);
     }
 
     public static final Collection<?> expand(
             final TreeIO document,
-            final Options options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException {
 
         var runtime = Execution.of(options);
         runtime.tick();
@@ -127,7 +126,7 @@ public final class JsonLd {
     public static final Map<String, ?> compact(
             final URI document,
             final URI context,
-            final Options options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException {
         return compact(
                 Document.load(document, options.loader(), options.isExtractAllScripts()),
                 Context.load(context, options.loader()),
@@ -144,11 +143,12 @@ public final class JsonLd {
      *                 context to use when compacting the document
      * @param options
      * @return {@link CompactionApi} allowing to set additional parameters
-     * @throws IOException
      * @throws JsonLdException
      */
-    public static final Map<String, ?> compact(final URI document, final Document context,
-            final Options options) throws JsonLdException, IOException {
+    public static final Map<String, ?> compact(
+            final URI document,
+            final Document context,
+            final Options options) throws JsonLdException {
         return compact(
                 Document.load(document, options.loader(), options.isExtractAllScripts()),
                 context,
@@ -162,10 +162,11 @@ public final class JsonLd {
      * @param context  {@link URI} referencing the context to use when compacting
      *                 the document
      * @return {@link CompactionApi} allowing to set additional parameters
-     * @throws IOException
      * @throws JsonLdException
      */
-    public static final Map<String, ?> compact(final Document document, final URI context, Options options) throws JsonLdException, IOException {
+    public static final Map<String, ?> compact(
+            final Document document, 
+            final URI context, Options options) throws JsonLdException {
         return compact(
                 document,
                 Context.load(context, options.loader()),
@@ -179,13 +180,12 @@ public final class JsonLd {
      * @param context  JSON-LD document
      * @param options
      * @return {@link CompactionApi} allowing to set additional parameters
-     * @throws IOException
      * @throws JsonLdException
      */
     public static final Map<String, ?> compact(
             final Document document,
             final Document context,
-            final Options options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException {
 
         final Execution runtime = Execution.of(options);
         runtime.tick();
@@ -200,7 +200,7 @@ public final class JsonLd {
     public static final Map<String, ?> compact(
             final TreeIO document,
             final TreeIO context,
-            final Options options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException {
 
         final Execution runtime = Execution.of(options);
         runtime.tick();
@@ -216,7 +216,7 @@ public final class JsonLd {
     public static final Map<String, ?> compact(
             final Collection<?> document,
             final Map<String, ?> context,
-            final Options options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException {
 
         return compact(
                 new TreeIO(document, NativeAdapter.instance()),
@@ -226,7 +226,9 @@ public final class JsonLd {
 
     /* --- FLATTEN -- */
 
-    public static final Object flatten(final URI document, final Options options) throws JsonLdException, IOException {
+    public static final Object flatten(
+            final URI document, 
+            final Options options) throws JsonLdException {
         var runtime = Execution.of(options);
         runtime.tick();
 
@@ -245,9 +247,11 @@ public final class JsonLd {
      *
      * @param document {@code URI} referencing JSON-LD document to flatten
      * @throws JsonLdException
-     * @throws IOException
      */
-    public static final Object flatten(final URI document, URI context, final Options options) throws JsonLdException, IOException {
+    public static final Object flatten(
+            final URI document,
+            final URI context, 
+            final Options options) throws JsonLdException {
         var runtime = Execution.of(options);
         runtime.tick();
 
@@ -263,7 +267,9 @@ public final class JsonLd {
                 runtime);
     }
 
-    public static final Object flatten(final Document document, final Options options) throws JsonLdException, IOException {
+    public static final Object flatten(
+            final Document document, 
+            final Options options) throws JsonLdException {
 
         var runtime = Execution.of(options);
         runtime.tick();
@@ -280,9 +286,11 @@ public final class JsonLd {
      *
      * @param document to flatten
      * @throws JsonLdException
-     * @throws IOException
      */
-    public static final Object flatten(final Document document, final Document context, final Options options) throws JsonLdException, IOException {
+    public static final Object flatten(
+            final Document document, 
+            final Document context, 
+            final Options options) throws JsonLdException {
 
         var runtime = Execution.of(options);
         runtime.tick();
@@ -298,7 +306,7 @@ public final class JsonLd {
 
     public static final Object flatten(
             final Map<String, ?> document,
-            final Options options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException {
 
         return flatten(
                 new TreeIO(document, NativeAdapter.instance()),
@@ -309,7 +317,7 @@ public final class JsonLd {
     public static final Object flatten(
             final Map<String, ?> document,
             final Map<String, ?> context,
-            final Options options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException {
 
         return flatten(
                 new TreeIO(document, NativeAdapter.instance()),
@@ -319,14 +327,19 @@ public final class JsonLd {
                 options);
     }
 
-    public static final Object flatten(final Collection<?> document, final Options options) throws JsonLdException, IOException {
+    public static final Object flatten(
+            final Collection<?> document, 
+            final Options options) throws JsonLdException {
         return flatten(
                 new TreeIO(document, NativeAdapter.instance()),
                 null,
                 options);
     }
 
-    public static final Object flatten(final Collection<?> document, final Map<String, ?> context, final Options options) throws JsonLdException, IOException {
+    public static final Object flatten(
+            final Collection<?> document, 
+            final Map<String, ?> context, 
+            final Options options) throws JsonLdException {
         return flatten(
                 new TreeIO(document, NativeAdapter.instance()),
                 context != null
@@ -335,7 +348,9 @@ public final class JsonLd {
                 options);
     }
 
-    public static final Object flatten(final TreeIO document, final Options options) throws JsonLdException, IOException {
+    public static final Object flatten(
+            final TreeIO document, 
+            final Options options) throws JsonLdException {
         var runtime = Execution.of(options);
         runtime.tick();
 
@@ -346,7 +361,10 @@ public final class JsonLd {
                 runtime);
     }
 
-    public static final Object flatten(final TreeIO document, final TreeIO context, final Options options) throws JsonLdException, IOException {
+    public static final Object flatten(
+            final TreeIO document, 
+            final TreeIO context, 
+            final Options options) throws JsonLdException {
         var runtime = Execution.of(options);
         runtime.tick();
 
@@ -366,7 +384,10 @@ public final class JsonLd {
      * @param frame    {@code URI} referencing JSON-LD frame
      * @return {@link FramingApi} allowing to set additional parameters
      */
-    public static final Map<String, ?> frame(final URI document, final URI frame, final Options options) throws JsonLdException, IOException {
+    public static final Map<String, ?> frame(
+            final URI document, 
+            final URI frame, 
+            final Options options) throws JsonLdException {
         return frame(
                 Document.load(document, options.loader(), options.isExtractAllScripts()),
                 frame,
@@ -380,7 +401,10 @@ public final class JsonLd {
      * @param frame    {@code URI} referencing JSON-LD frame
      * @return {@link FramingApi} allowing to set additional parameters
      */
-    public static final Map<String, ?> frame(final Document document, final URI frame, final Options options) throws JsonLdException, IOException {
+    public static final Map<String, ?> frame(
+            final Document document, 
+            final URI frame, 
+            final Options options) throws JsonLdException {
         return frame(
                 document,
                 Document.load(frame, options.loader(), options.isExtractAllScripts()),
@@ -394,7 +418,10 @@ public final class JsonLd {
      * @param frame    JSON-LD definition
      * @return {@link FramingApi} allowing to set additional parameters
      */
-    public static final Map<String, ?> frame(final URI document, final Document frame, final Options options) throws JsonLdException, IOException {
+    public static final Map<String, ?> frame(
+            final URI document, 
+            final Document frame, 
+            final Options options) throws JsonLdException {
         return frame(
                 Document.load(document, options.loader(), options.isExtractAllScripts()),
                 frame,
@@ -407,10 +434,12 @@ public final class JsonLd {
      * @param document to frame
      * @param frame    JSON-LD definition
      * @return {@link FramingApi} allowing to set additional parameters
-     * @throws IOException
      * @throws JsonLdException
      */
-    public static final Map<String, ?> frame(final Document document, final Document frame, final Options options) throws JsonLdException, IOException {
+    public static final Map<String, ?> frame(
+            final Document document, 
+            final Document frame, 
+            final Options options) throws JsonLdException {
 
         final Execution runtime = Execution.of(options);
         runtime.tick();
@@ -421,7 +450,7 @@ public final class JsonLd {
     public static final Map<String, ?> frame(
             final Map<String, ?> document,
             final Map<String, ?> frame,
-            final Options options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException {
 
         return frame(
                 new TreeIO(document, NativeAdapter.instance()),
@@ -432,7 +461,7 @@ public final class JsonLd {
     public static final Map<String, ?> frame(
             final TreeIO document,
             final TreeIO frame,
-            final Options options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException {
 
         final Execution runtime = Execution.of(options);
         runtime.tick();
@@ -460,7 +489,10 @@ public final class JsonLd {
      * @param documentUri {@code URI} referencing JSON-LD document to transform
      * @return {@link ToRdfApi} allowing to set additional parameters
      */
-    public static final void toRdf(final URI document, RdfQuadConsumer consumer, Options options) throws JsonLdException, IOException {
+    public static final void toRdf(
+            final URI document, 
+            RdfQuadConsumer consumer, 
+            Options options) throws JsonLdException {
         toRdf(Document
                 .load(
                         document,
@@ -479,7 +511,7 @@ public final class JsonLd {
     public static final void toRdf(
             final Document document,
             final RdfQuadConsumer consumer,
-            final Options options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException {
 
         final Execution runtime = Execution.of(options);
         runtime.tick();
@@ -490,7 +522,7 @@ public final class JsonLd {
     public static final void toRdf(
             final TreeIO document,
             final RdfQuadConsumer consumer,
-            final Options options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException {
 
         final Execution runtime = Execution.of(options);
         runtime.tick();
@@ -501,7 +533,7 @@ public final class JsonLd {
     public static final void toRdf(
             final Map<String, ?> document,
             final RdfQuadConsumer consumer,
-            final Options options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException {
 
         final Execution runtime = Execution.of(options);
         runtime.tick();

@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld.processor;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,7 +55,7 @@ public final class Framer {
             final Document document,
             final Document frame,
             final Options options,
-            final Execution runtime) throws JsonLdException, IOException {
+            final Execution runtime) throws JsonLdException {
 
         final var contextNode = Context.extract(frame.content());
 
@@ -77,7 +76,7 @@ public final class Framer {
             final URI baseUrl,
             final TreeIO localContext,
             final URI localContextBase,
-            final Options options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException {
 
         // 10-11.
         return new Context.Builder(
@@ -92,7 +91,7 @@ public final class Framer {
     public static final Collection<?> expand(
             Document document,
             final Options options,
-            final Execution runtime) throws JsonLdException, IOException {
+            final Execution runtime) throws JsonLdException {
         return Expander.expand(
                 document,
                 Options.copyOf(options).ordered(false),
@@ -102,7 +101,7 @@ public final class Framer {
     public static final Collection<?> expand(
             TreeIO document,
             final Options options,
-            final Execution runtime) throws JsonLdException, IOException {
+            final Execution runtime) throws JsonLdException {
         return Expander.expand(
                 document,
                 Expander.context(
@@ -118,7 +117,7 @@ public final class Framer {
             final Collection<?> expanded,
             final Frame frame,
             final Context context,
-            final Options options) throws JsonLdException, IOException {
+            final Options options) throws JsonLdException {
 
         final var runtime = Execution.of(options);
 

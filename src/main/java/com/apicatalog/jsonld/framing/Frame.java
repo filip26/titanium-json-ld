@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld.framing;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
@@ -27,8 +26,8 @@ import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.lang.Embed;
-import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.tree.io.TreeIO;
@@ -47,7 +46,11 @@ public final class Frame {
         this.frameGraphs = frameGraphs;
     }
 
-    public static final Frame of(final Document frame, final Options options, final Execution runtime) throws JsonLdException, IOException {
+    public static final Frame of(
+            final Document frame,
+            final Options options,
+            final Execution runtime) throws JsonLdException {
+
         @SuppressWarnings("unchecked")
         Set<String> keys = frame.content().isMap()
                 ? (Set<String>) frame.content().keys()
@@ -61,7 +64,10 @@ public final class Frame {
         return of(expanded, keys);
     }
 
-    public static final Frame of(final TreeIO frame, final Options options, final Execution runtime) throws JsonLdException, IOException {
+    public static final Frame of(
+            final TreeIO frame, 
+            final Options options, 
+            final Execution runtime) throws JsonLdException {
         @SuppressWarnings("unchecked")
         Set<String> keys = frame.isMap()
                 ? (Set<String>) frame.keys()
