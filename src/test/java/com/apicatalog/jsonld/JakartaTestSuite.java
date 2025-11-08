@@ -20,6 +20,7 @@ import java.net.http.HttpClient.Redirect;
 import java.time.Duration;
 import java.util.Map;
 
+import org.junit.platform.suite.api.AfterSuite;
 import org.junit.platform.suite.api.BeforeSuite;
 import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
@@ -72,6 +73,7 @@ public class JakartaTestSuite extends SuiteEvironment {
         start(PARSER, RENDERER);
     }
 
+    @AfterSuite
     public static void afterSuite() {
         stop();
     }

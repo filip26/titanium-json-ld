@@ -35,7 +35,6 @@ import com.apicatalog.jsonld.fromrdf.GraphMap.Reference;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
-import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.tree.io.TreeParser;
@@ -395,8 +394,14 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
         // 7.
         final var result = new ArrayList<Object>();
 
+        final var subjects = ordered
+                ? graphMap.keys(Keywords.DEFAULT).stream().sorted().iterator()
+                : graphMap.keys(Keywords.DEFAULT).iterator();
+
         // 8.
-        for (final var subject : Utils.index(graphMap.keys(Keywords.DEFAULT), ordered)) {
+        while (subjects.hasNext()) {
+
+            final var subject = subjects.next();
 
             final var node = graphMap.get(Keywords.DEFAULT, subject).orElseGet(() -> new LinkedHashMap<>());
 
@@ -405,7 +410,13 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
 
                 final var array = new ArrayList<Object>();
 
-                for (final String key : Utils.index(graphMap.keys(subject), ordered)) {
+                final var keys = ordered
+                        ? graphMap.keys(subject).stream().sorted().iterator()
+                        : graphMap.keys(subject).iterator();
+
+                while (keys.hasNext()) {
+
+                    final String key = keys.next();
 
                     final var entry = graphMap
                             .get(subject, key)

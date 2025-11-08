@@ -1,5 +1,6 @@
 package com.apicatalog.jsonld;
 
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.tree.io.TreeParser;
 import com.apicatalog.tree.io.TreeRenderer;
@@ -8,7 +9,7 @@ public class SuiteEvironment {
 
     public static Boolean suiteRunning = false;
 
-    public static ZipResourceLoader LOADER;
+    public static DocumentLoader LOADER;
 
     static void start(TreeParser parser, TreeRenderer renderer) {
         SuiteEvironment.LOADER = new ZipResourceLoader(parser);
@@ -17,5 +18,6 @@ public class SuiteEvironment {
     
     static void stop() {
         suiteRunning = false;
+        SuiteEvironment.LOADER = null;
     }
 }

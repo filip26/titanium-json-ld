@@ -26,7 +26,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.SuiteEvironment;
 import com.apicatalog.jsonld.test.JunitRunner;

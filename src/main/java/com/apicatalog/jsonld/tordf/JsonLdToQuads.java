@@ -34,7 +34,6 @@ import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Terms;
-import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.tree.io.TreeAdapter;
@@ -117,7 +116,11 @@ public final class JsonLdToQuads {
 
     protected void provide(RdfTripleConsumer consumer) throws JsonLdException, RdfConsumerException {
 
-        for (final String graphName : Utils.index(nodeMap.graphs(), true)) {
+        final var graphNames = nodeMap.graphs().stream().sorted().iterator();
+
+        while (graphNames.hasNext()) {
+
+            final String graphName = graphNames.next();
 
             if (Keywords.DEFAULT.equals(graphName)) {
                 consumer.defaultGraph();
@@ -133,14 +136,25 @@ public final class JsonLdToQuads {
                 continue;
             }
 
-            for (final var subject : Utils.index(nodeMap.subjects(graphName), true)) {
+            final var subjects = nodeMap.subjects(graphName).stream().sorted().iterator();
+
+            while (subjects.hasNext()) {
+
+                final var subject = subjects.next();
 
                 if (!BlankNode.isWellFormed(subject) && UriUtils.isNotAbsoluteUri(subject, uriValidation)) {
                     LOGGER.log(Level.WARNING, "Non well-formed subject [{0}] has been skipped.", subject);
                     continue;
                 }
 
-                for (final var property : Utils.index(nodeMap.properties(graphName, subject), true)) {
+                final var properties = nodeMap.properties(graphName, subject)
+                        .stream()
+                        .sorted()
+                        .iterator();
+
+                while (properties.hasNext()) {
+
+                    final var property = properties.next();
 
                     if (Keywords.TYPE.equals(property)) {
 

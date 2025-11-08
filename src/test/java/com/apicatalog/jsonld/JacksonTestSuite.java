@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld;
 
+import org.junit.platform.suite.api.AfterSuite;
 import org.junit.platform.suite.api.BeforeSuite;
 import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
@@ -58,6 +59,7 @@ public class JacksonTestSuite extends SuiteEvironment {
         start(PARSER, RENDERER);
     }
 
+    @AfterSuite
     public static void afterSuite() {
         stop();
     }

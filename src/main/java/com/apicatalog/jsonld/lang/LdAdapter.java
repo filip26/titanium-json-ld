@@ -134,11 +134,14 @@ public class LdAdapter {
                                 && node.containsKey(Keywords.INDEX));
     }
 
-//    public static boolean isList(Object node) {
-//        return node instanceof Map map && isList(map);
-//    }
-//
-
+    /**
+     * Convert expanded value to a list object by first setting it to an array
+     * containing only expanded value if it is not already an array, and then by
+     * setting it to a map containing the key-value pair @list-expanded value.
+     *
+     * @param value to convert
+     * @return list object containing the provided value
+     */
     public static Map<String, ?> toList(Object node) {
         return node instanceof Collection
                 ? Map.of(Keywords.LIST, node)
@@ -264,7 +267,10 @@ public class LdAdapter {
 
         if (previous instanceof ArrayList list) {
 
-            if (!asArray && list.isEmpty()) {
+            @SuppressWarnings("unchecked")
+            var typedList = (Collection<Object>)list; 
+            
+            if (!asArray && typedList.isEmpty()) {
                 if (value instanceof Collection<?> single && single.size() == 1) {
                     source.put(key, single.iterator().next());
                     return;
@@ -273,8 +279,8 @@ public class LdAdapter {
                 source.put(key, value);
                 return;
             }
-
-            array = list;
+            
+            array = typedList;
 
         } else if (previous instanceof Collection<?> col) {
 
@@ -305,25 +311,7 @@ public class LdAdapter {
     }
 
     /* ---- TODO ---- */
-//    @Deprecated
-//    public static final boolean isNodeJakarta(JsonValue value) {
-//        return JsonUtils.isObject(value)
-//                && ((!value.asJsonObject().containsKey(Keywords.VALUE)
-//                        && !value.asJsonObject().containsKey(Keywords.LIST)
-//                        && !value.asJsonObject().containsKey(Keywords.SET))
-//
-//                        || Arrays.asList(Keywords.CONTEXT, Keywords.GRAPH).containsAll(value.asJsonObject().keySet()));
-//    }
-//
-//    @Deprecated
-//    public static final boolean isNotNodeJakarta(JsonValue value) {
-//        return !isNodeJakarta(value);
-//    }
-//
-//    @Deprecated
-//    public static final boolean isReferenceJakarta(JsonValue value) {
-//        return JsonUtils.containsKey(value, Keywords.ID) && value.asJsonObject().size() == 1;
-//    }
+
 
     // Extension: JSON-LD-STAR (Experimental)
 //    @Deprecated
@@ -413,42 +401,4 @@ public class LdAdapter {
 //
 //        return true;
 //    }
-//
-//    @Deprecated
-//    public static final boolean isListObject(JsonValue value) {
-//        return JsonUtils.containsKey(value, Keywords.LIST)
-//                && (value.asJsonObject().size() == 1
-//                        || (value.asJsonObject().size() == 2
-//                                && value.asJsonObject().containsKey(Keywords.INDEX)));
-//    }
-//
-//    /**
-//     * Convert expanded value to a list object by first setting it to an array
-//     * containing only expanded value if it is not already an array, and then by
-//     * setting it to a map containing the key-value pair @list-expanded value.
-//     *
-//     * @param value to convert
-//     * @return list object containing the provided value
-//     */
-//    @Deprecated
-//    public static final JsonObject toListObject(JsonValue value) {
-//        if (JsonUtils.isArray(value)) {
-//            return JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, value).build();
-//        }
-//
-//        return JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, JsonProvider.instance().createArrayBuilder().add(value)).build();
-//    }
-//
-//    @Deprecated
-//    public static final boolean isValueObject(JsonValue value) {
-//        return JsonUtils.isObject(value) && value.asJsonObject().containsKey(Keywords.VALUE);
-//    }
-//
-//    @Deprecated
-//    public static Optional<JsonValue> getValueObject(JsonValue value) {
-//        return isValueObject(value)
-//                ? Optional.ofNullable(value.asJsonObject().get(Keywords.VALUE))
-//                : Optional.empty();
-//    }
-
 }

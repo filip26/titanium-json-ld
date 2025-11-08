@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-import java.io.IOException;
 import java.util.Locale;
 import java.util.stream.Stream;
 
@@ -28,7 +27,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.SuiteEvironment;
 import com.apicatalog.jsonld.test.JunitRunner;
