@@ -38,7 +38,6 @@ public record Path(
 
         final var relative = !path.startsWith("/");
 
-        // TODO better
         final var segments = new ArrayList<String>(
                 List.of(SEGMENTS_DEL_RE.split(
                         (relative
@@ -135,5 +134,4 @@ public record Path(
                 .concat(segments.isEmpty() ? "" : "/")
                 .concat(leaf != null ? leaf : "");
     }
-
 }

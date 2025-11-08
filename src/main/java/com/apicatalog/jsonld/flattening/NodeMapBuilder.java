@@ -235,15 +235,18 @@ public final class NodeMapBuilder {
             // 6.
         } else if (LdAdapter.isNode(element, NativeAdapter.instance())) {
 
-            var id = (String) elementMap.get(Keywords.ID);
+            String id = null;
 
             // 6.1.
-            if (id != null) {
+            if (elementMap.containsKey(Keywords.ID)) {
 
-                if (id instanceof String) {
-                    if (BlankNode.hasPrefix(id)) {
-                        id = nodeMap.createIdentifier(id);
+                if (elementMap.get(Keywords.ID) instanceof String idString) {
+                    if (BlankNode.hasPrefix(idString)) {
+                        id = nodeMap.createIdentifier(idString);
+                    } else {
+                        id = idString;
                     }
+
                     elementMap.remove(Keywords.ID);
 
                 } else {

@@ -37,10 +37,6 @@ public final class RdfEmitter {
 
     private final Options options;
 
-//    public RdfEmitter() {
-//        this(new JsonLdOptions());
-//    }
-
     public RdfEmitter(Options options) {
         this.options = options;
     }

@@ -179,10 +179,12 @@ implementation("com.apicatalog:titanium-json-ld-jre8:1.7.0")
 
 > [!WARNING]
 > The upcoming **2.x version** is under active development and requires Java 17 or higher. 2.x milestone releases are provided for **testing and feedback purposes only** and **should not be used in production**.  
+>
+> Each milestone can introduce **breaking changes**.
 
 ### JSON-P Provider
 
-Titanium relies on a **JSON-P (Jakarta JSON Processing)** provider. Ensure that one is available on your classpath - for example, using the **Glassfish** reference implementation:
+Titanium relies on a **JSON-P (Jakarta JSON Processing)** provider. Ensure that one is available on your classpath.
 
 #### Maven
 

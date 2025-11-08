@@ -51,9 +51,9 @@ public final class JsonLdToQuads {
     public interface RdfJsonLiteralWriter {
         String write(Object node, TreeAdapter adapter) throws JsonLdException;
     }
-    
+
     public static final RdfJsonLiteralWriter JCS = Jcs::canonize;
-    
+
     private static final Logger LOGGER = Logger.getLogger(JsonLdToQuads.class.getName());
 
     private static final DecimalFormat xsdDecimalFormat = new DecimalFormat("0.0##############E0", new DecimalFormatSymbols(Locale.ENGLISH));
@@ -79,14 +79,15 @@ public final class JsonLdToQuads {
         this.rdfDirection = null;
         this.uriValidation = Options.DEFAULT_URI_VALIDATION;
     }
-    
+
     public static final JsonLdToQuads with(NodeMap nodeMap) {
         return new JsonLdToQuads(nodeMap);
     }
-    
+
     public void provide(RdfQuadConsumer consumer) throws JsonLdException {
+
         try {
-            from(RdfQuadEmitter.newEmitter(consumer));
+            provide(RdfQuadEmitter.newEmitter(consumer));
         } catch (RdfConsumerException e) {
             if (e.getCause() instanceof JsonLdException) {
                 throw (JsonLdException) e.getCause();
@@ -104,9 +105,9 @@ public final class JsonLdToQuads {
         this.rdfDirection = rdfDirection;
         return this;
     }
-    
+
     public JsonLdToQuads jsonWriter(RdfJsonLiteralWriter jsonWriter) {
-        this.jsonWriter = jsonWriter; 
+        this.jsonWriter = jsonWriter;
         return this;
     }
 
@@ -115,8 +116,7 @@ public final class JsonLdToQuads {
         return this;
     }
 
-
-    protected void from(RdfTripleConsumer consumer) throws JsonLdException, RdfConsumerException {
+    protected void provide(RdfTripleConsumer consumer) throws JsonLdException, RdfConsumerException {
 
         for (final String graphName : Utils.index(nodeMap.graphs(), true)) {
 
@@ -200,20 +200,12 @@ public final class JsonLdToQuads {
         // 1. - 2.
         if (LdAdapter.isNode(item)) {
 
-            var id = item.get(Keywords.ID);
+            if (item.get(Keywords.ID) instanceof String idString
+                    && (BlankNode.isWellFormed(idString)
+                            || UriUtils.isAbsoluteUri(idString, uriValidation))) {
 
-//            JsonValue id = item.get(Keywords.ID);
-
-            if (id instanceof String idString) {
-
-                if (BlankNode.isWellFormed(idString) || UriUtils.isAbsoluteUri(idString, uriValidation)) {
-                    consumer.triple(subject, predicate, idString);
-                }
-
-//            if (JsonUtils.isNotString(id) || JsonUtils.isNull(id)) {
-//                return;
+                consumer.triple(subject, predicate, idString);
             }
-
             return;
         }
 
@@ -239,17 +231,13 @@ public final class JsonLdToQuads {
                 : null;
 
         // 6.
-        if (datatype != null
-                && !Keywords.JSON.equals(datatype)
-                && !UriUtils.isAbsoluteUri(datatype, uriValidation)) {
+        if (datatype != null && !Keywords.JSON.equals(datatype) && !UriUtils.isAbsoluteUri(datatype, uriValidation)) {
             LOGGER.log(Level.WARNING, "Datatype [{0}] is not an absolute IRI nor @json and value is skipped.", datatype);
             return;
         }
 
         // 7.
-        if (item.containsKey(Keywords.LANGUAGE)
-                && (!(item.get(Keywords.LANGUAGE) instanceof String langString)
-                        || !LanguageTag.isWellFormed(langString))) {
+        if (item.containsKey(Keywords.LANGUAGE) && (!(item.get(Keywords.LANGUAGE) instanceof String langString) || !LanguageTag.isWellFormed(langString))) {
             LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed string and value is skipped.", item.get(Keywords.LANGUAGE));
             return;
         }
@@ -260,7 +248,7 @@ public final class JsonLdToQuads {
         if (Keywords.JSON.equals(datatype)) {
             if (value instanceof TreeIO node) {
                 valueString = jsonWriter.write(node.node(), node.adapter());
-                
+
             } else {
                 valueString = jsonWriter.write(value, NativeAdapter.instance());
             }

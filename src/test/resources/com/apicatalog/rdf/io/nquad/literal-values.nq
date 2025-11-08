@@ -1,5 +1,0 @@
-<http://example/s> <http://example/p> <http://example/o> .
-<http://example/s> <http://example/p> _:o .
-<http://example/s> <http://example/p> "o" .
-<http://example/s> <http://example/p> "o"^^<http://example/dt> .
-<http://example/s> <http://example/p> "o"@en .
