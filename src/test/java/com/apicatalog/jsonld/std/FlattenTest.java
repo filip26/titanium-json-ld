@@ -36,7 +36,7 @@ public class FlattenTest {
 
     @BeforeAll
     public static void beforeAll() {
-        assumeTrue(SuiteEvironment.suiteRunning);
+        assumeTrue(SuiteEvironment.isRunning);
     }
     
     @ParameterizedTest(name = "{0}")

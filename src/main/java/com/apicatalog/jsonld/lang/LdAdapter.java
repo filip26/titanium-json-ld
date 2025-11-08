@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.apicatalog.tree.io.TreeAdapter;
+import com.apicatalog.web.uri.UriUtils;
 
 public class LdAdapter {
 
@@ -268,8 +269,8 @@ public class LdAdapter {
         if (previous instanceof ArrayList list) {
 
             @SuppressWarnings("unchecked")
-            var typedList = (Collection<Object>)list; 
-            
+            var typedList = (Collection<Object>) list;
+
             if (!asArray && typedList.isEmpty()) {
                 if (value instanceof Collection<?> single && single.size() == 1) {
                     source.put(key, single.iterator().next());
@@ -279,7 +280,7 @@ public class LdAdapter {
                 source.put(key, value);
                 return;
             }
-            
+
             array = typedList;
 
         } else if (previous instanceof Collection<?> col) {
@@ -303,15 +304,99 @@ public class LdAdapter {
             source.put(key, array);
         }
 
-        if (value instanceof Collection<?> col) {            
+        if (value instanceof Collection<?> col) {
             array.addAll(col);
         } else {
             array.add(value);
         }
     }
 
-    /* ---- TODO ---- */
+    /* ------ JSON-LD-STAR (Experimental) ----- */
 
+    public static final boolean isAnnotation(final Object node) {
+
+        if (node instanceof Collection<?> array) {
+            for (final var element : array) {
+                if (!isAnnotation(element)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        if (node instanceof Map<?, ?> map) {
+            for (final var entry : map.entrySet()) {
+                if (!(entry.getKey() instanceof String key)
+                        || (Keywords.ANNOTATION.equals(key)
+                                && !isAnnotation(entry.getValue()))
+                        || (Keywords.matchForm(key)
+                                && !Keywords.TYPE.equals(key)
+                                && !Keywords.REVERSE.equals(key))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isEmbedded(Object node) {
+
+        if (node instanceof Map<?, ?> map) {
+
+            boolean found = false;
+
+            for (final var entry : map.entrySet()) {
+
+                if (entry.getKey().equals(Keywords.INDEX)
+                        || entry.getKey().equals(Keywords.CONTEXT)
+                        || entry.getKey().equals(Keywords.REVERSE)) {
+                    return false;
+                }
+
+                if (!Keywords.TYPE.equals(entry.getKey())
+                        && entry.getKey() instanceof String key
+                        && Keywords.matchForm(key)) {
+                    continue;
+                }
+
+                // validate property name
+                if (!found && (Keywords.TYPE.equals(entry.getKey())
+                        || (entry.getKey() instanceof String key
+                                && UriUtils.isURI(key)))) {
+
+                    // validate property value
+                    var propertyValue = entry.getValue();
+
+                    if (propertyValue instanceof Collection array) {
+
+                        if (array.size() != 1) {
+                            return false;
+                        }
+
+                        propertyValue = array.iterator().next();
+                    }
+
+                    if (propertyValue instanceof Map valueMap
+                            && isValueNode(valueMap)) {
+                        propertyValue = findValue(valueMap).orElse(null);
+                    }
+
+                    if (propertyValue instanceof String
+                            || (propertyValue instanceof Map valueMap
+                                    && isEmbedded(valueMap))) {
+                        found = true;
+                        continue;
+                    }
+                }
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /* ---- TODO ---- */
 
     // Extension: JSON-LD-STAR (Experimental)
 //    @Deprecated

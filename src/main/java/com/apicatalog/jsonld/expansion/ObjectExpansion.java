@@ -41,32 +41,29 @@ import com.apicatalog.web.uri.UriUtils;
  */
 public final class ObjectExpansion {
 
-    // mandatory
+    private final Object element;
+    private final TreeAdapter adapter;
+    private final TreeIO propertyContext;
+    private final Params params;
+
     private Context activeContext;
-    private TreeIO propertyContext;
-    private Object element;
-    private TreeAdapter adapter;
-    private String activeProperty;
 
-    private Params params;
-
-    public ObjectExpansion(final Context activeContext,
+    public ObjectExpansion(
             final TreeIO propertyContext,
-            final Object element, final TreeAdapter adapter,
-            final String activeProperty,
-            Params params) {
-        this.activeContext = activeContext;
+            final Object element,
+            final TreeAdapter adapter,
+            final Params params) {
+
         this.propertyContext = propertyContext;
         this.element = element;
         this.adapter = adapter;
-        this.activeProperty = activeProperty;
         this.params = params;
     }
 
-    public Object expand() throws JsonLdException {
+    public Object expand(final Context context, final String property) throws JsonLdException {
 
         activeContext = initPreviousContext(
-                activeContext,
+                context,
                 element,
                 adapter,
                 params);
@@ -80,7 +77,7 @@ public final class ObjectExpansion {
                             propertyContext.node(),
                             propertyContext.adapter(),
                             activeContext
-                                    .findTerm(activeProperty)
+                                    .findTerm(property)
                                     .map(TermDefinition::getBaseUrl)
                                     .orElse(null));
         }
@@ -99,11 +96,7 @@ public final class ObjectExpansion {
 
         final var typeKey = processTypeScoped(typeContext);
 
-        final var inputType = findInputType(
-                activeContext,
-                typeKey,
-                element,
-                adapter);
+        final var inputType = findInputType(typeKey);
 
         final var result = new LinkedHashMap<String, Object>();
 
@@ -113,22 +106,22 @@ public final class ObjectExpansion {
                 .result(result)
                 .typeContext(typeContext)
                 .nest(new LinkedHashMap<>())
-                .expand(activeContext, element, adapter, activeProperty);
+                .expand(activeContext, element, adapter, property);
 
         // 15.
         if (result.containsKey(Keywords.VALUE)) {
-            return normalizeValue(result, activeProperty, params.frameExpansion());
+            return normalizeValue(result, property, params.frameExpansion());
 
             // 16.
         } else if (result.containsKey(Keywords.TYPE)) {
-            return normalizeType(result, activeProperty, params.frameExpansion());
+            return normalizeType(result, property, params.frameExpansion());
 
             // 17.
         } else if (result.containsKey(Keywords.LIST) || result.containsKey(Keywords.SET)) {
-            return normalizeContainer(result, activeProperty, params.frameExpansion());
+            return normalizeContainer(result, property, params.frameExpansion());
         }
 
-        return normalize(result, activeProperty, params.frameExpansion());
+        return normalize(result, property, params.frameExpansion());
     }
 
     private static Context initPreviousContext(
@@ -176,12 +169,7 @@ public final class ObjectExpansion {
         return context;
     }
 
-    private String processTypeScoped(
-//            final Context activeContext,
-            final Context typeContext
-//            final Object element,
-//            final NodeAdapter adapter
-    ) throws JsonLdException {
+    private String processTypeScoped(final Context typeContext) throws JsonLdException {
 
         String typeKey = null;
 
@@ -242,13 +230,7 @@ public final class ObjectExpansion {
         return typeKey;
     }
 
-    private String findInputType(
-            final Context context,
-            final String typeKey,
-            final Object element,
-            final TreeAdapter adapter
-
-    ) throws JsonLdException {
+    private String findInputType(final String typeKey) throws JsonLdException {
 
         // Initialize input type to expansion of the last value of the first entry in
         // element
@@ -268,13 +250,13 @@ public final class ObjectExpansion {
                         .reduce((first, second) -> second);
 
                 if (lastValue.isPresent()) {
-                    return UriExpansion.with(context, params.options().loader())
+                    return UriExpansion.with(activeContext, params.options().loader())
                             .vocab(true)
                             .expand(lastValue.get());
                 }
 
             } else if (adapter.isString(type)) {
-                return UriExpansion.with(context, params.options().loader())
+                return UriExpansion.with(activeContext, params.options().loader())
                         .vocab(true)
                         .expand(adapter.stringValue(type));
             }
@@ -286,9 +268,7 @@ public final class ObjectExpansion {
     private static Map<String, ?> normalizeValue(
             final Map<String, ?> result,
             final String activeProperty,
-            final boolean frameExpansion
-
-    ) throws JsonLdException {
+            final boolean frameExpansion) throws JsonLdException {
 
         // 15.1.
         if (LdAdapter.isNotValueNode(result)) {
@@ -373,13 +353,13 @@ public final class ObjectExpansion {
             final boolean frameExpansion) throws JsonLdException {
 
         // Extension: JSON-LD-STAR (Experimental)
-//        if (result.containsKey(Keywords.ANNOTATION)
-//                && (StringUtils.isBlank(activeProperty)
-//                        || Keywords.GRAPH.equals(activeProperty)
-//                        || Keywords.INCLUDED.equals(activeProperty)
-//                        || result.get(Keywords.ANNOTATION).filter(NodeObject::isNotAnnotationObject).isPresent())) {
-//            throw new JsonLdError(JsonLdErrorCode.INVALID_ANNOTATION);
-//        }
+        if (result.containsKey(Keywords.ANNOTATION)
+                && ((activeProperty == null || activeProperty.isBlank())
+                        || Keywords.GRAPH.equals(activeProperty)
+                        || Keywords.INCLUDED.equals(activeProperty)
+                        || !LdAdapter.isAnnotation(result.get(Keywords.ANNOTATION)))) {
+            throw new JsonLdException(ErrorCode.INVALID_ANNOTATION);
+        }
 
         // 18.
         if (result.size() == 1 && result.containsKey(Keywords.LANGUAGE)) {

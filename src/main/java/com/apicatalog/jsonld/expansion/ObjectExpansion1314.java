@@ -58,8 +58,7 @@ final class ObjectExpansion1314 {
     private String inputType;
     private Map<String, Object> nest;
 
-    // optional
-    private Params params;
+    private final Params params;
 
     private ObjectExpansion1314(Params params) {
         this.params = params;
@@ -136,25 +135,23 @@ final class ObjectExpansion1314 {
                 if (Keywords.ID.equals(expandedProperty)) {
 
                     // Extension: JSON-LD-STAR (Experimental)
-//                    if (!activeContext.runtime().isRdfStar() && Keywords.ANNOTATION.equals(activeProperty)) {
-//                        throw new JsonLdError(JsonLdErrorCode.INVALID_ANNOTATION);
-//
-//                    } else if (activeContext.runtime().isRdfStar() && JsonUtils.isNonEmptyObject(value)) {
-//
-//                        expandedValue = Expansion
-//                                .with(activeContext, value, null, baseUrl)
-//                                .frameExpansion(frameExpansion)
-//                                .ordered(ordered)
-//                                .compute();
-//
-//                        if (!NodeObject.isEmbeddedNode(expandedValue)) {
-//                            throw new JsonLdError(JsonLdErrorCode.INVALID_EMBEDDED_NODE);
-//                        }
-//
-//                        // 13.4.3.1
-//                    } else 
+                    if (!params.options().isRdfStar()
+                            && Keywords.ANNOTATION.equals(activeProperty)) {
+                        throw new JsonLdException(ErrorCode.INVALID_ANNOTATION);
+                    }
 
-                    if (!params.frameExpansion()
+                    if (params.options().isRdfStar()
+                            && adapter.isMap(value)
+                            && !adapter.isEmptyMap(value)) {
+
+                        expandedValue = Expansion.expand(activeContext, value, adapter, null, params);
+
+                        if (!LdAdapter.isEmbedded(expandedValue)) {
+                            throw new JsonLdException(ErrorCode.INVALID_EMBEDDED_NODE);
+                        }
+
+                        // 13.4.3.1
+                    } else if (!params.frameExpansion()
                             && !adapter.isString(value)
                             && (!params.options().useNumericId()
                                     || !adapter.isNumber(value))
@@ -760,7 +757,8 @@ final class ObjectExpansion1314 {
                         // 13.7.4.2.4.
                         if (!Keywords.NONE.equals(langCode)) {
 
-                            final var expandedLangCode = UriExpansion.with(activeContext, params.options().loader())
+                            final var expandedLangCode = UriExpansion
+                                    .with(activeContext, params.options().loader())
                                     .vocab(true)
                                     .expand((String) langCode);
 
@@ -821,7 +819,7 @@ final class ObjectExpansion1314 {
                     }
 
                     // 13.8.3.2.
-                    var indexTermDefinition = mapContext.findTerm(index).orElse(null);
+                    final var indexTermDefinition = mapContext.findTerm(index).orElse(null);
 
                     if (containerMapping.contains(Keywords.TYPE)
                             && indexTermDefinition != null
@@ -881,7 +879,7 @@ final class ObjectExpansion1314 {
                                 && !Keywords.NONE.equals(expandedIndex)) {
 
                             // 13.8.3.7.2.1.
-                            var reExpandedIndex = ValueExpansion.expand(
+                            final var reExpandedIndex = ValueExpansion.expand(
                                     activeContext,
                                     indexKey,
                                     index,
@@ -889,15 +887,15 @@ final class ObjectExpansion1314 {
                                     params.options());
 
                             // 13.8.3.7.2.2.
-                            var expandedIndexKey = UriExpansion.with(activeContext, params.options().loader())
+                            final var expandedIndexKey = UriExpansion.with(activeContext, params.options().loader())
                                     .vocab(true)
                                     .expand(indexKey);
 
                             // 13.8.3.7.2.3.
-                            var indexPropertyValues = new ArrayList<>();
+                            final var indexPropertyValues = new ArrayList<>();
                             indexPropertyValues.add(reExpandedIndex);
 
-                            var existingValues = indexMap.get(expandedIndexKey);
+                            final var existingValues = indexMap.get(expandedIndexKey);
 
                             if (existingValues instanceof Collection<?> values) {
                                 indexPropertyValues.addAll(values);
@@ -1149,44 +1147,6 @@ final class ObjectExpansion1314 {
             }
         }
     }
-//
-//    @SuppressWarnings({ "unchecked", "rawtypes" })
-//    private static void merge(Map map, String key, Object value) {
-//
-//        var previous = map.get(key);
-//
-//        if (previous == null) {
-//            if (value instanceof Collection<?>) {
-//                map.put(key, value);
-//                return;
-//            }
-//            map.put(key, Set.of(value));
-//            return;
-//        }
-//
-//        if (previous instanceof Collection<?> c1) {
-//
-//            final Collection<Object> result;
-//
-//            if (previous instanceof ArrayList list) {
-//                result = list;
-//            } else {
-//                result = new ArrayList<Object>(c1);
-//            }
-//
-//            if (value instanceof Collection<?> c2) {
-//                result.addAll(c2);
-//
-//            } else {
-//                result.add(value);
-//            }
-//
-//            map.put(key, result);
-//            return;
-//        }
-//
-//        map.put(key, List.of(previous, value));
-//    }
 
     private static Collection<?> asList(Object value) {
         if (value instanceof Collection<?> collection) {

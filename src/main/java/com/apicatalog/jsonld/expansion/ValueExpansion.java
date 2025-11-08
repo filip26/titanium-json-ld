@@ -17,7 +17,6 @@ package com.apicatalog.jsonld.expansion;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
@@ -64,9 +63,9 @@ public final class ValueExpansion {
             final TreeAdapter adapter,
             final Options options) throws JsonLdException {
 
-        final Optional<TermDefinition> definition = context.findTerm(property);
+        final var definition = context.findTerm(property);
 
-        final String typeMapping = definition
+        final var typeMapping = definition
                 .map(TermDefinition::getTypeMapping)
                 .orElse(Keywords.NONE);
 
@@ -107,7 +106,6 @@ public final class ValueExpansion {
             return Map.of(
                     Keywords.TYPE, typeMapping,
                     Keywords.VALUE, asScalar(value, adapter));
-
         }
 
         if (adapter.isString(value)) {
@@ -167,5 +165,4 @@ public final class ValueExpansion {
             return adapter.asString(node);
         }
     }
-
 }

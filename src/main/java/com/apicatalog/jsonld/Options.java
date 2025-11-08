@@ -372,6 +372,13 @@ public final class Options {
         return this;
     }
 
+    /**
+     * Sets the {@code ordered} flag.
+     *
+     * @param ordered if {@code true}, properties and values are processed in
+     *                lexical order.
+     * @return this instance, for method chaining.
+     */
     public Options ordered(boolean ordered) {
         this.ordered = ordered;
         return this;

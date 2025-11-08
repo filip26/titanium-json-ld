@@ -7,17 +7,17 @@ import com.apicatalog.tree.io.TreeRenderer;
 
 public class SuiteEvironment {
 
-    public static Boolean suiteRunning = false;
+    public static Boolean isRunning = false;
 
     public static DocumentLoader LOADER;
 
     static void start(TreeParser parser, TreeRenderer renderer) {
         SuiteEvironment.LOADER = new ZipResourceLoader(parser);
-        suiteRunning = true;
+        isRunning = true;
     }
     
     static void stop() {
-        suiteRunning = false;
+        isRunning = false;
         SuiteEvironment.LOADER = null;
     }
 }

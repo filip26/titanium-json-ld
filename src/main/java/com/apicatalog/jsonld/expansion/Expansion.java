@@ -59,30 +59,17 @@ public final class Expansion {
         public boolean frameExpansion() {
             return frameExpansion;
         }
-//
-//    /**
-//     * Sets the {@code ordered} flag.
-//     *
-//     * @param value if {@code true}, properties and values are processed in lexical
-//     *              order.
-//     * @return this instance, for method chaining.
-//     */
-//    public ArrayExpansion ordered(boolean value) {
-//        this.ordered = value;
-//        return this;
-//    }
-//
-//    /**
-//     * Sets the {@code fromMap} flag.
-//     *
-//     * @param value if {@code true}, indicates that the expanded element originates
-//     *              from a map (JSON object).
-//     * @return this instance, for method chaining.
-//     */
-//    public ArrayExpansion fromMap(boolean value) {
-//        this.fromMap = value;
-//        return this;
-//    }
+
+        /**
+         * The {@code fromMap} flag.
+         *
+         * @return {@code true}, indicates that the expanded element originates from a
+         *         map (JSON object).
+         */
+        @Override
+        public boolean fromMap() {
+            return fromMap;
+        }
     }
 
     public static final Object expand(
@@ -90,9 +77,7 @@ public final class Expansion {
             final Object node,
             final TreeAdapter nodeAdapter,
             final String activeProperty,
-            final Params params
-
-    ) throws JsonLdException {
+            final Params params) throws JsonLdException {
 
         // 1. If element is null, return null
         if (nodeAdapter.isNull(node)) {
@@ -124,18 +109,17 @@ public final class Expansion {
         }
 
         // 6. Otherwise element is a map
-        return new ObjectExpansion(activeContext,
+        return new ObjectExpansion(
                 propertyContext,
                 node,
                 nodeAdapter,
-                activeProperty,
                 new Params(
                         params.frameExpansion && !Keywords.DEFAULT.equals(activeProperty),
                         params.fromMap,
                         params.baseUrl,
                         params.options,
                         params.runtime))
-                .expand();
+                .expand(activeContext, activeProperty);
     }
 
     /**
@@ -160,8 +144,12 @@ public final class Expansion {
      * @param propertyContext a property-scoped context to apply, or {@code null} if
      *                        none
      * @param node            the scalar to expand
+     * @param nodeAdapter
+     * @param params
+     * 
      * @return a {@link Map} representing the expanded value object, or {@code null}
      *         if the scalar is dropped
+     * 
      * @throws JsonLdException if an error occurs during expansion
      */
     static final Map<String, ?> scalar(
@@ -224,11 +212,18 @@ public final class Expansion {
      * <li><b>5.3.</b> Returns the resulting collection.</li>
      * </ul>
      *
+     * @param context
+     * @param node
+     * @param nodeAdapter
+     * @param property
+     * @param params
+     * 
      * @return a {@link Collection} containing the expanded values, which may
      *         include {@link java.util.Map}s, {@link String}s, or other JSON-LD
      *         node representations.
-     * @throws JsonLdException if an error occurs during the recursive expansion of an
-     *                     item
+     * 
+     * @throws JsonLdException if an error occurs during the recursive expansion of
+     *                         an item
      */
     static final Collection<?> array(final Context context,
             final Object node,

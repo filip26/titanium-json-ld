@@ -158,6 +158,10 @@ public class TestOptions {
                 options.useJcs = adapter.isTrue(entry.getValue());
                 break;
                 
+            case "rdfstar":
+                options.rdfStar = adapter.isTrue(entry.getValue());
+                break;
+                
             case "processorFeature":
                 // ignore feature declaration
                 break;                

@@ -43,7 +43,7 @@ public class RemoteTest {
 
     @BeforeAll
     static void startMockServer() throws JsonLdException {
-        assumeTrue(SuiteEvironment.suiteRunning);
+        assumeTrue(SuiteEvironment.isRunning);
         server = new MockServer(
                 TestManifest.TESTS_BASE,
                 TestManifest.JSON_LD_API_BASE);
