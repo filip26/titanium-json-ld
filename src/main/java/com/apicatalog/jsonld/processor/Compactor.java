@@ -166,12 +166,12 @@ public final class Compactor {
                 return Map.of(
                         Keywords.CONTEXT,
                         contextSource,
-                        UriCompaction.withVocab(context, Keywords.GRAPH),
+                        UriCompaction.withVocab(context, Keywords.GRAPH, options),
                         compactedOutput);
 
             } else {
                 return Map.of(
-                        UriCompaction.withVocab(context, Keywords.GRAPH),
+                        UriCompaction.withVocab(context, Keywords.GRAPH, options),
                         compactedOutput);
             }
         }

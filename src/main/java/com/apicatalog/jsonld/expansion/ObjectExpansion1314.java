@@ -413,7 +413,8 @@ final class ObjectExpansion1314 {
                         }
 
                         try {
-                            expandedValue = NativeMaterializer.node(value, adapter); // FIXMEnew PolyNode(value, adapter);
+                            expandedValue = NativeMaterializer.node(value, adapter); 
+                            // FIXMEnew TreeIO(value, adapter);
 
                         } catch (IOException e) {
                             throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE, e);

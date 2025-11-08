@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Direction;
@@ -35,7 +36,11 @@ import com.apicatalog.tree.io.java.NativeAdapter;
  */
 public final class ValueCompaction {
 
-    public static Object compact(final Context context, final Map<String, ?> value, final String activeProperty) throws JsonLdException {
+    public static Object compact(
+            final Context context,
+            final Map<String, ?> value,
+            final String activeProperty,
+            final Options options) throws JsonLdException {
 
         // 1.
         Object result = value;
@@ -75,7 +80,7 @@ public final class ValueCompaction {
                     .filter(Keywords.ID::equals)
                     .isPresent()) {
 
-                result = UriCompaction.compact(context, (String) value.get(Keywords.ID));
+                result = UriCompaction.compact(context, (String) value.get(Keywords.ID), options);
 
                 // 6.2.
             } else if (activePropertyDefinition
@@ -83,7 +88,7 @@ public final class ValueCompaction {
                     .filter(Keywords.VOCAB::equals)
                     .isPresent()) {
 
-                result = UriCompaction.withVocab(context, (String) value.get(Keywords.ID));
+                result = UriCompaction.withVocab(context, (String) value.get(Keywords.ID), options);
             }
             // 7.
         } else if ((value.get(Keywords.TYPE) instanceof String type
@@ -95,10 +100,6 @@ public final class ValueCompaction {
                         && activePropertyDefinition
                                 .map(TermDefinition::getTypeMapping)
                                 .filter(types::contains)
-
-//                        .filter(d -> JsonUtils.contains(
-//                                d,
-//                                value.get(Keywords.TYPE)))
                                 .isPresent())) {
 
             result = value.get(Keywords.VALUE);
@@ -112,13 +113,11 @@ public final class ValueCompaction {
                         && (activePropertyDefinition
                                 .map(TermDefinition::getTypeMapping)
                                 .map(d -> !type.equals(d))
-//                                .map(d -> !JsonUtils.contains(d, value.get(Keywords.TYPE)))
                                 .orElse(true)))
                 || (value.get(Keywords.TYPE) instanceof Collection<?> types
                         && (activePropertyDefinition
                                 .map(TermDefinition::getTypeMapping)
                                 .map(d -> !types.contains(d))
-//                                .map(d -> !JsonUtils.contains(d, value.get(Keywords.TYPE)))
                                 .orElse(true)))) {
 
             // 8.1.
@@ -129,7 +128,7 @@ public final class ValueCompaction {
             if (resultTypes != null) {
 
                 for (final var type : NativeAdapter.asCollection(resultTypes)) {
-                    types.add(UriCompaction.withVocab(context, (String) type));
+                    types.add(UriCompaction.withVocab(context, (String) type, options));
                 }
 
                 var resultMap = new HashMap<String, Object>(value);
@@ -151,10 +150,7 @@ public final class ValueCompaction {
                 && (language.equalsIgnoreCase(langString)))
                 || ((language == null || Keywords.NULL.equals(language))
                         && ((!(value.get(Keywords.LANGUAGE) instanceof String langString)
-                                || Keywords.NULL.equals(langString))
-//                                || language == null
-//                                || JsonUtils.isNull (value.get(Keywords.LANGUAGE))
-                        )))
+                                || Keywords.NULL.equals(langString)))))
                 && ((direction != null && direction != Direction.NULL
                         && value.get(Keywords.DIRECTION) instanceof String dirString
                         && direction == Direction.valueOf(dirString.toUpperCase()))
@@ -170,11 +166,14 @@ public final class ValueCompaction {
         // 11.
         if (result instanceof Map<?, ?> map) {
 
-            final var resultMap = new HashMap<String, Object>();
+            final var resultMap = new HashMap<String, Object>(map.size());
 
             for (final var entry : map.entrySet()) {
-                resultMap.put(
-                        UriCompaction.withVocab(context, (String) entry.getKey()),
+                resultMap.put(UriCompaction
+                        .withVocab(
+                                context,
+                                (String) entry.getKey(),
+                                options),
                         entry.getValue());
             }
             result = resultMap;

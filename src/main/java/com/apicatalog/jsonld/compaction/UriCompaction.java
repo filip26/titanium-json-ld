@@ -24,6 +24,7 @@ import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.BlankNode;
@@ -42,22 +43,25 @@ public final class UriCompaction {
 
     public static String compact(
             final Context context,
-            final String variable) throws JsonLdException {
-        return compact(context, variable, null, false, false);
+            final String variable,
+            final Options options) throws JsonLdException {
+        return compact(context, variable, null, false, false, options);
     }
 
     public static String withVocab(
             final Context context,
-            final String variable) throws JsonLdException {
-        return compact(context, variable, null, true, false);
+            final String variable,
+            final Options options) throws JsonLdException {
+        return compact(context, variable, null, true, false, options);
     }
 
     public static String withVocab(
             final Context context,
             final String variable,
             final Object value,
-            final boolean reverse) throws JsonLdException {
-        return compact(context, variable, value, true, reverse);
+            final boolean reverse,
+            final Options options) throws JsonLdException {
+        return compact(context, variable, value, true, reverse, options);
     }
 
     private static String compact(
@@ -65,7 +69,8 @@ public final class UriCompaction {
             final String variable,
             final Object value,
             final boolean vocab,
-            final boolean reverse) throws JsonLdException {
+            final boolean reverse,
+            final Options options) throws JsonLdException {
 
         // 1.
         if (variable == null) {
@@ -374,16 +379,15 @@ public final class UriCompaction {
 
                 final var idValue = valueMap.get(Keywords.ID);
 
-                // FIXME // json-ld-star
-//                if (activeContext.runtime().isRdfStar() && JsonLdNode.isEmbedded(idValue)) {
-//                    preferredValues.add(Keywords.ID);
-//                    preferredValues.add(Keywords.VOCAB);
-//
-//                } else 
-                if (idValue instanceof String idString) {
+                // JSON-LD-star
+                if (options.isRdfStar() && LdAdapter.isEmbedded(idValue)) {
+                    preferredValues.add(Keywords.ID);
+                    preferredValues.add(Keywords.VOCAB);
+
+                } else if (idValue instanceof String idString) {
 
                     // 4.16.1.
-                    final var compactedIdValue = UriCompaction.withVocab(context, idString);
+                    final var compactedIdValue = UriCompaction.withVocab(context, idString, options);
 
                     final var compactedIdValueTermDefinition = context.findTerm(compactedIdValue);
 

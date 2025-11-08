@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.Arrays;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -43,9 +44,10 @@ public class CompactorTest {
     public static void beforeAll() {
         assumeTrue(SuiteEvironment.isRunning);
     }
-    
+
     @ParameterizedTest(name = "{0}")
-    @MethodSource({ "jsonLdApi" /* , "jsonLdStar" */ })
+    @MethodSource({ "jsonLdApi" })
+    @DisplayName(value = "JSON-LD")
     void testCompact(TestCase testCase) {
 
         // Skip JSON-LD-STAR (Experimental) embedded node tests - unsupported now
@@ -57,6 +59,20 @@ public class CompactorTest {
         assertTrue(new JunitRunner(testCase).execute());
     }
 
+    @ParameterizedTest(name = "{0}")
+    @MethodSource({ "jsonLdStar" })
+    @DisplayName(value = "JSON-LD-star")
+    void testCompactStar(TestCase testCase) {
+
+        // Skip JSON-LD-STAR (Experimental) embedded node tests - unsupported now
+        assumeFalse(Set.of(
+                "#tst04", "#tst05", "#tst06", "#tst07", "#tst08", "#tst09",
+                "#tst10", "#tst15", "#tst16", "#tst17")
+                .contains(testCase.id));
+
+        assertTrue(new JunitRunner(testCase).execute());
+    }
+
     static final Stream<TestCase> jsonLdApi() throws JsonLdException {
         return TestManifest
                 .load(
@@ -64,8 +80,7 @@ public class CompactorTest {
                         "compact-manifest.jsonld",
                         SuiteEvironment.LOADER)
                 .stream()
-                .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
-        ;
+                .filter(TestCase.IS_NOT_V1_0); // skip specVersion == 1.0
     }
 
     static final Stream<TestCase> jsonLdStar() throws JsonLdException {

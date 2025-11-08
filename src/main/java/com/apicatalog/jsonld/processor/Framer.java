@@ -131,7 +131,7 @@ public final class Framer {
         state.setOmitDefault(options.isOmitDefault()); // 14.5.
         state.setGraphMap(new NodeMapBuilder(expanded, new NodeMap()).build()); // 14.7.
 
-        final String graphKey = UriCompaction.withVocab(context, Keywords.GRAPH);
+        final String graphKey = UriCompaction.withVocab(context, Keywords.GRAPH, options);
 
         if (frame.isDefault(graphKey)) {
             state.setGraphName(Keywords.DEFAULT); // 14.6.
