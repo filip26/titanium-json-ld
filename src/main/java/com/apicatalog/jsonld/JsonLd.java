@@ -449,16 +449,41 @@ public final class JsonLd {
      * @param document to transform
      * @return {@link ToRdfApi} allowing to set additional parameters
      */
-    public static final void toRdf(final Document document, RdfQuadConsumer consumer, Options options) throws JsonLdException, IOException {
-        RdfEmitter.toRdf(document, consumer, options);
+    public static final void toRdf(
+            final Document document,
+            final RdfQuadConsumer consumer,
+            final Options options) throws JsonLdException, IOException {
+
+        final Execution runtime = Execution.of(options);
+        runtime.tick();
+
+        RdfEmitter.toRdf(document, consumer, options, runtime);
     }
 
-    public static final void toRdf(final TreeIO document, RdfQuadConsumer consumer, Options options) throws JsonLdException, IOException {
-        RdfEmitter.toRdf(document, consumer, options);
+    public static final void toRdf(
+            final TreeIO document,
+            final RdfQuadConsumer consumer,
+            final Options options) throws JsonLdException, IOException {
+
+        final Execution runtime = Execution.of(options);
+        runtime.tick();
+
+        RdfEmitter.toRdf(document, consumer, options, runtime);
     }
 
-    public static final void toRdf(final Map<String, ?> document, RdfQuadConsumer consumer, Options options) throws JsonLdException, IOException {
-        RdfEmitter.toRdf(new TreeIO(document, NativeAdapter.instance()), consumer, options);
+    public static final void toRdf(
+            final Map<String, ?> document,
+            final RdfQuadConsumer consumer,
+            final Options options) throws JsonLdException, IOException {
+
+        final Execution runtime = Execution.of(options);
+        runtime.tick();
+
+        RdfEmitter.toRdf(
+                new TreeIO(document, NativeAdapter.instance()),
+                consumer,
+                options,
+                runtime);
     }
 
     /* --- FROM RDF -- */

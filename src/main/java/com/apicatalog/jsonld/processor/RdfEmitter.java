@@ -35,10 +35,7 @@ import com.apicatalog.tree.io.TreeIO;
  */
 public final class RdfEmitter {
 
-    private final Options options;
-
-    public RdfEmitter(Options options) {
-        this.options = options;
+    private RdfEmitter() {
     }
 
     /**
@@ -54,47 +51,63 @@ public final class RdfEmitter {
      * @throws JsonLdException if the document transformation fails
      * @throws IOException
      */
-    public void provide(Document document, RdfQuadConsumer consumer) throws JsonLdException, IOException {
-        RdfEmitter.toRdf(document, consumer, options);
+    public void provide(
+            Document document, 
+            RdfQuadConsumer consumer,
+            final Options options,
+            final Execution runtime) throws JsonLdException, IOException {
+
+        RdfEmitter.toRdf(document, consumer, options, runtime);
     }
 
-    public static final void toRdf(final Document input, final RdfQuadConsumer consumer, final Options options) throws JsonLdException, IOException {
+    public static final void toRdf(
+            final Document input, 
+            final RdfQuadConsumer consumer, 
+            final Options options,
+            final Execution runtime) throws JsonLdException, IOException {
         final Options expansionOptions = Options.copyOf(options);
 
         expansionOptions.mode(options.mode());
         expansionOptions.base(options.base());
         expansionOptions.expandContext(options.expandContext());
-
-        // FIXME
-        final Execution runtime = Execution.of(options);
-        runtime.tick();
 
         final var expanded = Expander.expand(input, expansionOptions, runtime);
 
-        toRdf(expanded, consumer, options);
+        toRdf(expanded, consumer, options, runtime);
     }
 
-    public static final void toRdf(final TreeIO input, final RdfQuadConsumer consumer, final Options options) throws JsonLdException, IOException {
+    public static final void toRdf(
+            final TreeIO input,
+            final RdfQuadConsumer consumer,
+            final Options options,
+            final Execution runtime) throws JsonLdException, IOException {
+        
         final Options expansionOptions = Options.copyOf(options);
 
         expansionOptions.mode(options.mode());
         expansionOptions.base(options.base());
         expansionOptions.expandContext(options.expandContext());
 
-        // FIXME
-        final Execution runtime = Execution.of(options);
-        runtime.tick();
+        final var expanded = Expander.expand(
+                input,
+                Expander.context(null, null, options),
+                options.base(),
+                expansionOptions,
+                runtime);
 
-        final var expanded = Expander.expand(input, Expander.context(null, null, options), options.base(), expansionOptions, runtime);
-
-        toRdf(expanded, consumer, options);
+        toRdf(expanded, consumer, options, runtime);
     }
 
-    public static final void toRdf(final Collection<?> expanded, final RdfQuadConsumer consumer, final Options options) throws JsonLdException {
+    public static final void toRdf(
+            final Collection<?> expanded,
+            final RdfQuadConsumer consumer,
+            final Options options,
+            final Execution runtime) throws JsonLdException {
+
         JsonLdToQuads
                 .with(new NodeMapBuilder(expanded, new NodeMap()).build())
                 .produceGeneralizedRdf(options.isProduceGeneralizedRdf())
-                .jsonWriter(options.rdfJsonLiteralWriter())
+                .rdfJsonLiteralWriter(options.rdfJsonLiteralWriter())
                 .rdfDirection(options.rdfDirection())
                 .uriValidation(options.uriValidation())
                 .provide(consumer);

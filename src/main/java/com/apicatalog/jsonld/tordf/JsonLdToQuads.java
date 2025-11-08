@@ -23,7 +23,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.IntStream;
 
 import com.apicatalog.jcs.Jcs;
 import com.apicatalog.jsonld.JsonLdException;
@@ -38,8 +37,8 @@ import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
-import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.TreeAdapter;
+import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.web.lang.LanguageTag;
 import com.apicatalog.web.uri.UriUtils;
@@ -106,7 +105,7 @@ public final class JsonLdToQuads {
         return this;
     }
 
-    public JsonLdToQuads jsonWriter(RdfJsonLiteralWriter jsonWriter) {
+    public JsonLdToQuads rdfJsonLiteralWriter(RdfJsonLiteralWriter jsonWriter) {
         this.jsonWriter = jsonWriter;
         return this;
     }
@@ -166,7 +165,9 @@ public final class JsonLdToQuads {
 
                     } else if (!Keywords.contains(property)) {
 
-                        if ((!BlankNode.isWellFormed(property) || produceGeneralizedRdf) && UriUtils.isNotAbsoluteUri(property, uriValidation)) {
+                        if ((!BlankNode.isWellFormed(property)
+                                || produceGeneralizedRdf)
+                                && UriUtils.isNotAbsoluteUri(property, uriValidation)) {
                             continue;
                         }
 
@@ -252,6 +253,7 @@ public final class JsonLdToQuads {
             } else {
                 valueString = jsonWriter.write(value, NativeAdapter.instance());
             }
+
             datatype = Terms.RDF_JSON;
 
             // 9.
@@ -317,7 +319,7 @@ public final class JsonLdToQuads {
         if (item.containsKey(Keywords.DIRECTION) && rdfDirection != null) {
 
             // 13.1.
-            final String language = item.get(Keywords.LANGUAGE) instanceof String langString
+            final var language = item.get(Keywords.LANGUAGE) instanceof String langString
                     ? langString.toLowerCase()
                     : "";
             // 13.2.
@@ -395,9 +397,11 @@ public final class JsonLdToQuads {
         }
 
         // 2.
-        final String[] bnodes = new String[list.size()];
+        final var bnodes = new String[list.size()];
 
-        IntStream.range(0, bnodes.length).forEach(i -> bnodes[i] = nodeMap.createIdentifier());
+        for (int i = 0; i < bnodes.length; i++) {
+            bnodes[i] = nodeMap.createIdentifier();
+        }
 
         consumer.triple(subject, predicate, bnodes[0]);
 
