@@ -30,6 +30,7 @@ import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -368,15 +369,14 @@ public final class ContextBuilder {
                     // 5.8.3
                 } else if (contextAdapter.isString(vocabValue)) {
 
-                    final String valueString = contextAdapter.stringValue(vocabValue);
+                    final var valueString = contextAdapter.stringValue(vocabValue);
 
                     if (valueString == null
                             || valueString.isBlank()
                             || BlankNode.hasPrefix(valueString)
                             || UriUtils.isURI(valueString)) {
 
-                        final String vocabularyMapping = result
-                                .uriExpansion(loader)
+                        final var vocabularyMapping = UriExpansion.with(result, loader)
                                 .vocab(true)
                                 .documentRelative(true)
                                 .expand(valueString);

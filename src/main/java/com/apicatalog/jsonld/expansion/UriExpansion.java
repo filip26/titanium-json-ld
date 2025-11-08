@@ -258,10 +258,10 @@ public final class UriExpansion {
                 final String entryValueString = adapter.stringValue(entryValue);
 
                 if (!defined.containsKey(entryValueString) || Boolean.FALSE.equals(defined.get(entryValueString))) {
-                    // FIXME
+
                     activeContext.newTerm(
                             localContext,
-                            adapter,    //TODO verify
+                            adapter,
                             defined,
                             loader).create(value);
                 }
@@ -280,8 +280,8 @@ public final class UriExpansion {
      * @throws JsonLdException if an error occurs during term creation
      */
     private String initPropertyContext(
-            final String prefix, 
-            final String suffix, 
+            final String prefix,
+            final String suffix,
             final String result) throws JsonLdException {
 
         // 6.3. Create term definition for the prefix if it exists in the local context.
@@ -316,7 +316,7 @@ public final class UriExpansion {
 
         } else if (documentRelative) {
             // 8. If documentRelative is true, resolve the result against the base URI.
-            return UriResolver.resolve(activeContext.getBaseUri(), result);            
+            return UriResolver.resolve(activeContext.getBaseUri(), result);
         }
 
         // 9. Return the result as is.

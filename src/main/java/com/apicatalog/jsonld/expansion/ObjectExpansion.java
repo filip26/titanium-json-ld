@@ -158,8 +158,7 @@ public final class ObjectExpansion {
 
                 var key = adapter.stringValue(it.next());
 
-                final String expandedKey = context
-                        .uriExpansion(params.options().loader())
+                final String expandedKey = UriExpansion.with(context, params.options().loader())
                         .vocab(true)
                         .expand(key);
 
@@ -198,8 +197,7 @@ public final class ObjectExpansion {
 
             params.runtime().tick();
 
-            var expandedKey = activeContext
-                    .uriExpansion(params.options().loader())
+            var expandedKey = UriExpansion.with(activeContext, params.options().loader())
                     .vocab(true)
                     .expand(key);
 
@@ -270,13 +268,13 @@ public final class ObjectExpansion {
                         .reduce((first, second) -> second);
 
                 if (lastValue.isPresent()) {
-                    return context.uriExpansion(params.options().loader())
+                    return UriExpansion.with(context, params.options().loader())
                             .vocab(true)
                             .expand(lastValue.get());
                 }
 
             } else if (adapter.isString(type)) {
-                return context.uriExpansion(params.options().loader())
+                return UriExpansion.with(context, params.options().loader())
                         .vocab(true)
                         .expand(adapter.stringValue(type));
             }

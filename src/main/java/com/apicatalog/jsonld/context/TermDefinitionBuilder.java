@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.CompactUri;
 import com.apicatalog.jsonld.lang.Direction;
@@ -242,8 +243,7 @@ public final class TermDefinitionBuilder {
             }
 
             // 12.2.
-            final String expandedTypeString = activeContext
-                    .uriExpansion(loader)
+            final String expandedTypeString = UriExpansion.with(activeContext, loader)
                     .localContext(localContext, adapter)
                     .defined(defined)
                     .vocab(true)
@@ -291,8 +291,7 @@ public final class TermDefinitionBuilder {
 
             // 13.4.
             definition.setUriMapping(
-                    activeContext
-                            .uriExpansion(loader)
+                    UriExpansion.with(activeContext, loader)
                             .localContext(localContext, adapter)
                             .defined(defined)
                             .vocab(true)
@@ -354,8 +353,7 @@ public final class TermDefinitionBuilder {
 
                 // 14.2.3
                 definition.setUriMapping(
-                        activeContext
-                                .uriExpansion(loader)
+                        UriExpansion.with(activeContext, loader)
                                 .localContext(localContext, adapter)
                                 .defined(defined)
                                 .vocab(true)
@@ -378,8 +376,7 @@ public final class TermDefinitionBuilder {
                     defined.put(term, Boolean.TRUE);
 
                     // 14.2.4.2
-                    final var expandedTerm = activeContext
-                            .uriExpansion(loader)
+                    final var expandedTerm = UriExpansion.with(activeContext, loader)
                             .localContext(localContext, adapter)
                             .defined(defined)
                             .vocab(true)
@@ -433,8 +430,7 @@ public final class TermDefinitionBuilder {
         } else if (term.contains("/")) {
 
             definition.setUriMapping(
-                    activeContext
-                            .uriExpansion(loader)
+                    UriExpansion.with(activeContext, loader)
                             .localContext(localContext, adapter)
                             .defined(defined)
                             .vocab(true)
@@ -504,8 +500,7 @@ public final class TermDefinitionBuilder {
 
             final var indexString = adapter.stringValue(index);
 
-            final var expandedIndex = activeContext
-                    .uriExpansion(loader)
+            final var expandedIndex = UriExpansion.with(activeContext, loader)
                     .localContext(localContext, adapter)
                     .defined(defined)
                     .vocab(true)

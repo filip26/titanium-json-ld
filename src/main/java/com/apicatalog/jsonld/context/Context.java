@@ -27,7 +27,6 @@ import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
-import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
@@ -71,16 +70,9 @@ public interface Context {
 
     Context getPreviousContext();
 
-    @Deprecated
     TermDefinitionBuilder newTerm(Object localContext, TreeAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader);
 
-    @Deprecated
     ContextBuilder newContext(DocumentLoader loader);
-
-    // ---
-
-    @Deprecated
-    UriExpansion uriExpansion(DocumentLoader loader);
 
     InverseContext getInverseContext();
 
@@ -96,6 +88,8 @@ public interface Context {
 
     Map<String, TermDefinition> getTermsMapping();
 
+    // ---
+    
     public static TreeIO extract(TreeIO document) throws JsonLdException {
 
         final var node = document.node();
@@ -246,9 +240,6 @@ public interface Context {
 
     static class Builder {
 
-//        Object context;
-//        NodeAdapter adapter;
-
         ActiveContext ctx;
 
         DocumentLoader loader;
@@ -271,9 +262,6 @@ public interface Context {
         }
 
         public Builder(URI baseUri, URI baseUrl, Version version) {
-//            this.baseUri = baseUri;
-//            this.baseUrl = baseUrl;
-//            this.version = version;
             this.ctx = new ActiveContext(baseUri, baseUrl, version);
         }
 
@@ -348,40 +336,4 @@ public interface Context {
             return this;
         }
     }
-
-//
-//    static class Bx {
-//
-////        void Bx of() {
-////            
-////            
-////            PolyNode context = null;
-////
-////            if (adapter.keys(node).contains(Keywords.CONTEXT)) {
-////                var contextNode = adapter.property(Keywords.CONTEXT, node);
-////                if ((adapter.isString(contextNode)
-////                        || adapter.isCollection(contextNode)
-////                        || adapter.isMap(contextNode))
-////                        && !adapter.isEmptyCollection(contextNode)
-////                        && !adapter.isEmptyMap(contextNode)) {
-////                    context = new PolyNode(contextNode, adapter);
-////                }
-////            }
-////        }
-//    }
-
-//    PolyNode asNode();
-
-// ---
-//  void createInverseContext();
-
-//    URI getBaseUrl();
-
-//  boolean containsTerm(final String term);
-
-//  boolean containsProtectedTerm();
-
-//    URI getBaseUrl();
-
-// ---
 }

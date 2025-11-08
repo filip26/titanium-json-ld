@@ -58,10 +58,10 @@ public final class ValueExpansion {
      *      Expansion Algorithm</a>
      */
     public static Map<String, ?> expand(
-            final Context context, 
-            final String property, 
-            final Object value, 
-            final TreeAdapter adapter, 
+            final Context context,
+            final String property,
+            final Object value,
+            final TreeAdapter adapter,
             final Options options) throws JsonLdException {
 
         final Optional<TermDefinition> definition = context.findTerm(property);
@@ -83,7 +83,7 @@ public final class ValueExpansion {
             }
 
             if (idValue != null) {
-                return Map.of(Keywords.ID, context.uriExpansion(options.loader())
+                return Map.of(Keywords.ID, UriExpansion.with(context, options.loader())
                         .documentRelative(true)
                         .vocab(false)
                         .expand(idValue));
@@ -92,7 +92,7 @@ public final class ValueExpansion {
 
         case Keywords.VOCAB:
             if (adapter.isString(value)) {
-                return Map.of(Keywords.ID, context.uriExpansion(options.loader())
+                return Map.of(Keywords.ID, UriExpansion.with(context, options.loader())
                         .documentRelative(true)
                         .vocab(true)
                         .expand(adapter.stringValue(value)));
@@ -106,7 +106,7 @@ public final class ValueExpansion {
         default:
             return Map.of(
                     Keywords.TYPE, typeMapping,
-                    Keywords.VALUE, adapter.asScalar(value));
+                    Keywords.VALUE, asScalar(value, adapter));
 
         }
 
@@ -139,6 +139,33 @@ public final class ValueExpansion {
         }
 
         // 6.
-        return Map.of(Keywords.VALUE, adapter.asScalar(value));
+        return Map.of(Keywords.VALUE, asScalar(value, adapter));
     }
+
+    private static Object asScalar(Object node, TreeAdapter adapter) {
+        if (node == null) {
+            return null;
+        }
+
+        switch (adapter.type(node)) {
+        case NULL:
+            return null;
+
+        case FALSE:
+            return false;
+
+        case TRUE:
+            return true;
+
+        case NUMBER:
+            return adapter.numericValue(node);
+
+        case STRING:
+            return adapter.stringValue(node);
+
+        default:
+            return adapter.asString(node);
+        }
+    }
+
 }

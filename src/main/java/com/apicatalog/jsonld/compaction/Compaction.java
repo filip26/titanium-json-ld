@@ -30,6 +30,7 @@ import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.processor.Execution;
@@ -89,7 +90,7 @@ public final class Compaction {
 
     public Object compact(final String activeProperty, final Object element) throws JsonLdException {
 
-        if (element instanceof Collection<?> array) {
+        if (element instanceof Collection array) {
             return compactArray(activeProperty, array);
         }
 
@@ -424,10 +425,11 @@ public final class Compaction {
                     final String nestTerm = nestProperty.get();
 
                     // 12.7.2.1.
-                    if (!Keywords.NEST.equals(nestTerm) && !Keywords.NEST.equals(activeContext
-                            .uriExpansion(options.loader())
-                            .vocab(true)
-                            .expand(nestTerm))) {
+                    if (!Keywords.NEST.equals(nestTerm)
+                            && !Keywords.NEST.equals(
+                                    UriExpansion.with(activeContext, options.loader())
+                                            .vocab(true)
+                                            .expand(nestTerm))) {
                         throw new JsonLdException(ErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
 
@@ -470,10 +472,10 @@ public final class Compaction {
 
                     // 12.8.2.1.
                     if (!Keywords.NEST.equals(nestTerm)
-                            && !Keywords.NEST.equals(activeContext
-                                    .uriExpansion(options.loader())
-                                    .vocab(true)
-                                    .expand(nestTerm))) {
+                            && !Keywords.NEST.equals(
+                                    UriExpansion.with(activeContext, options.loader())
+                                            .vocab(true)
+                                            .expand(nestTerm))) {
                         throw new JsonLdException(ErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
 
@@ -633,25 +635,14 @@ public final class Compaction {
                         if (expandedItemMap.containsKey(Keywords.ID)) {
                             compactedItemMap = Map.of(
                                     UriCompaction.withVocab(activeContext, Keywords.GRAPH),
-//                                            .uriCompaction()
-//                                            .vocab(true)
-//                                            .compact(Keywords.GRAPH),
                                     compactedItem,
                                     UriCompaction.withVocab(activeContext, Keywords.ID),
-//                                            .uriCompaction()
-//                                            .vocab(true)
-//                                            .compact(Keywords.ID),
                                     UriCompaction.compact(activeContext, (String) expandedItemMap.get(Keywords.ID)));
-//                                            .uriCompaction()
-//                                            .compact((String) expandedItemMap.get(Keywords.ID)));
 
                         } else {
                             // 12.8.8.4.1.
                             compactedItemMap = Map.of(
                                     UriCompaction.withVocab(activeContext, Keywords.GRAPH),
-//                                            .uriCompaction()
-//                                            .vocab(true)
-//                                            .compact(Keywords.GRAPH),
                                     compactedItem);
                         }
 
@@ -661,12 +652,9 @@ public final class Compaction {
                         if (expandedItemMap.containsKey(Keywords.INDEX)) {
 
                             var map = new LinkedHashMap<>(compactedItemMap);
-                            map.put(
-                                    UriCompaction.withVocab(activeContext, Keywords.INDEX),
-//                                            .uriCompaction()
-//                                            .vocab(true)
-//                                            .compact(Keywords.INDEX),
+                            map.put(UriCompaction.withVocab(activeContext, Keywords.INDEX),
                                     (String) expandedItemMap.get(Keywords.INDEX));
+
                             compactedItem = map;
                         }
 
@@ -734,40 +722,38 @@ public final class Compaction {
                     } else if (container.contains(Keywords.INDEX) && !Keywords.INDEX.equals(indexKey)) {
 
                         // 12.8.9.6.1.
-                        containerKey = UriCompaction.withVocab(activeContext,
-                                activeContext.uriExpansion(options.loader()).expand(indexKey));
+                        containerKey = UriCompaction.withVocab(
+                                activeContext,
+                                UriExpansion.with(activeContext, options.loader())
+                                        .expand(indexKey));
 
                         // 12.8.9.6.2.
-                        if (compactedItem instanceof Map<?, ?> compactedItemMap
+                        if (compactedItem instanceof Map compactedItemMap
                                 && compactedItemMap.containsKey(containerKey)) {
-//                        if (JsonUtils.containsKey(compactedItem, containerKey)) {
 
                             final var containerValue = compactedItemMap.get(containerKey);
 
                             if (containerValue instanceof String valueString) {
-                                mapKey = valueString;
-
-                                var newMap = new LinkedHashMap<>(compactedItemMap);
-                                newMap.remove(containerKey);
 
                                 // 12.8.9.6.3.
-                                compactedItem = newMap;
-
-//                                        compactedItem.asJsonObject()).remove(containerKey).build();
+                                compactedItem = removeKey(compactedItemMap, containerKey);
+                                mapKey = valueString;
 
                             } else if (containerValue instanceof Collection<?> listValue
                                     && !listValue.isEmpty()) {
-//                            } else if (JsonUtils.isArray(containerValue) && !JsonUtils.isEmptyArray(containerValue)) {
 
-                                var it = listValue.iterator();
+                                final var it = listValue.iterator();
 
                                 mapKey = (String) it.next();
 
                                 if (listValue.size() == 1) {
 
-                                    compactedItem = new LinkedHashMap<>(compactedItemMap);
-                                    ((Map) compactedItem).remove(containerKey);
-                                    // containerValue.asJsonArray().getString(0);
+                                    @SuppressWarnings("unchecked")
+                                    final var compactedMap = new LinkedHashMap<String, Object>(compactedItemMap);
+                                    compactedMap.remove(containerKey);
+
+                                    compactedItem = compactedMap;
+
                                 } else {
 
                                     Object containerKeyValue;
@@ -781,12 +767,11 @@ public final class Compaction {
                                         containerKeyValue = list;
                                     }
 
-                                    compactedItem = new LinkedHashMap<>(compactedItemMap);
-                                    ((Map<?, ?>) compactedItem).remove(containerKey);
-                                    ((Map) compactedItem).put(containerKey, containerKeyValue);
+                                    compactedItem = replaceKey(
+                                            compactedItemMap,
+                                            containerKey,
+                                            containerKeyValue);
 
-//                                }
-//                                
 //                                // 12.8.9.6.3.
 //                                if (listValue.size() > 1) {
 //
@@ -818,12 +803,10 @@ public final class Compaction {
                     } else if (container.contains(Keywords.ID)) {
 
                         if (compactedItem instanceof Map map && map.containsKey(containerKey)) {
-                            // if (JsonUtils.containsKey(compactedItem, containerKey)) {
 
                             mapKey = (String) map.get(containerKey);
 
-                            compactedItem = new LinkedHashMap<>(map);
-                            ((Map<?, ?>) compactedItem).remove(containerKey);
+                            compactedItem = removeKey(map, containerKey);
                         }
 
                         // 12.8.9.8.
@@ -859,18 +842,14 @@ public final class Compaction {
 //                                                JsonProvider.instance().createArrayBuilder(compactedKeyArray).remove(0).build();
                                     }
 
-                                    compactedItem = new LinkedHashMap<String, Object>(map);
-                                    ((Map<?, ?>) compactedItem).remove(containerKey);
-                                    ((Map) compactedItem).put(containerKey, compactedKeyArrayValue);
+                                    compactedItem = replaceKey(map, containerKey, compactedKeyArrayValue);
 
                                 } else {
-                                    compactedItem = new LinkedHashMap<String, Object>(map);
-                                    ((Map<?, ?>) compactedItem).remove(containerKey);
+                                    compactedItem = removeKey(map, containerKey);
                                 }
 
                             } else {
-                                compactedItem = new LinkedHashMap<String, Object>(map);
-                                ((Map<?, ?>) compactedItem).remove(containerKey);
+                                compactedItem = removeKey(map, containerKey);
                             }
                         }
 
@@ -878,8 +857,7 @@ public final class Compaction {
                         if (compactedItem instanceof Map map && map.size() == 1) {
 //                        if (JsonUtils.isObject(compactedItem) && compactedItem.asJsonObject().size() == 1) {
 
-                            final var expandedKey = activeContext
-                                    .uriExpansion(options.loader())
+                            final var expandedKey = UriExpansion.with(activeContext, options.loader())
                                     .vocab(true)
                                     .expand((String) map.keySet().iterator().next());
 
@@ -900,8 +878,6 @@ public final class Compaction {
                     }
 
                     // 12.8.9.10.
-//                    nestResult.getMapBuilder(itemActiveProperty).add(mapKey, compactedItem, asArray);
-//                    System.out.println(">>>>> " + nestResult.get(itemActiveProperty));
                     LdAdapter.setOrAdd(
                             (Map<String, Object>) nestResult.computeIfAbsent(itemActiveProperty, k -> new LinkedHashMap<String, Object>()),
                             mapKey,
@@ -921,5 +897,23 @@ public final class Compaction {
 
         // 13.
         return result;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private static final Map<String, Object> removeKey(Map container, String key) {
+        final var compactedMap = new LinkedHashMap<String, Object>(container);
+
+        compactedMap.remove(key);
+
+        return compactedMap;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private static final Map<String, Object> replaceKey(Map container, String key, Object value) {
+        final var compactedMap = new LinkedHashMap<String, Object>(container);
+
+        compactedMap.put(key, value);
+
+        return compactedMap;
     }
 }

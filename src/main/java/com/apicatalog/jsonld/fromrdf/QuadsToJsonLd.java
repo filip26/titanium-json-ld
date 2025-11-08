@@ -403,7 +403,9 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
 
             final var subject = subjects.next();
 
-            final var node = graphMap.get(Keywords.DEFAULT, subject).orElseGet(() -> new LinkedHashMap<>());
+            final var node = graphMap
+                    .get(Keywords.DEFAULT, subject)
+                    .orElseGet(() -> new LinkedHashMap<>());
 
             // 8.1.
             if (graphMap.contains(subject)) {
@@ -416,10 +418,8 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
 
                 while (keys.hasNext()) {
 
-                    final String key = keys.next();
-
                     final var entry = graphMap
-                            .get(subject, key)
+                            .get(subject, keys.next())
                             .orElse(Map.of());
 
                     if (entry.size() > 1 || !entry.containsKey(Keywords.ID)) {

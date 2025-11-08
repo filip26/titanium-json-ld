@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLd.Version;
-import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.TreeAdapter;
@@ -60,10 +59,6 @@ public final class ActiveContext implements Context {
     // an optional default base direction ("ltr" or "rtl")
     private Direction defaultBaseDirection;
 
-//    private TreeIO source;
-    
-//    private final ProcessingRuntime runtime;
-
     ActiveContext(final Version version) {
         this(null, null, null, version);
     }
@@ -99,12 +94,16 @@ public final class ActiveContext implements Context {
         this.inverseContext = InverseContextBuilder.with(this).build();
     }
 
+    public boolean containsProtectedTerm() {
+        return terms.values().stream().anyMatch(TermDefinition::isProtected);
+    }
+
     public boolean containsTerm(final String term) {
         return terms.containsKey(term);
     }
 
-    public boolean containsProtectedTerm() {
-        return terms.values().stream().anyMatch(TermDefinition::isProtected);
+    public Optional<TermDefinition> findTerm(final String value) {
+        return Optional.ofNullable(terms.get(value));
     }
 
     protected Optional<TermDefinition> removeTerm(final String term) {
@@ -112,10 +111,6 @@ public final class ActiveContext implements Context {
             return Optional.of(terms.remove(term));
         }
         return Optional.empty();
-    }
-
-    public Optional<TermDefinition> findTerm(final String value) {
-        return Optional.ofNullable(terms.get(value));
     }
 
     public Direction getDefaultBaseDirection() {
@@ -163,14 +158,6 @@ public final class ActiveContext implements Context {
     @Override
     public ContextBuilder newContext(DocumentLoader loader) {
         return ContextBuilder.with(this, loader);
-    }
-
-    @Override
-    public UriExpansion uriExpansion(DocumentLoader loader) {
-        return UriExpansion.with(this, loader);
-//FIXME                .uriValidation(
-//                runtime.getUriValidation()
-//                );
     }
 
 //    public Map<String, ?> expandValue(final String activeProperty, final Object value, final NodeAdapter adapter) throws JsonLdError, IOException {

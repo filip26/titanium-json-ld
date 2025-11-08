@@ -132,7 +132,11 @@ public final class NodeMap {
                         if (result.get(Keywords.MERGED, subject.getKey(), property.getKey()) instanceof Collection<?> values) {
 
                             if (values instanceof ArrayList list) {
-                                mergedValues = list;
+                                
+                                @SuppressWarnings("unchecked")
+                                final var typedList = (List<Object>)list;
+                                
+                                mergedValues = typedList;
 
                             } else {
                                 mergedValues = new ArrayList<Object>(values);
