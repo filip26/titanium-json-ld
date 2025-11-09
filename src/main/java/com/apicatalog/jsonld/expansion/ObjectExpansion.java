@@ -86,6 +86,23 @@ public final class ObjectExpansion {
         final var contextValue = adapter.property(Keywords.CONTEXT, element);
 
         if (contextValue != null) {
+
+            // CBOR-LD collector
+//            if (params.runtime().contextKeysCollector() != null) {
+//                
+//                for (final JsonValue context : JsonUtils.toJsonArray(jsonContext)) {
+//                    final ActiveContext ac = new ActiveContext(activeContext.getBaseUri(), activeContext.getBaseUrl(), activeContext.runtime())
+//                            .newContext()
+//                            .create(context, baseUrl);
+//                    appliedContexts.accept(ac.getTerms());
+//                }
+//
+//                
+//                adapter.keyStream(localContext)
+//                        .map(String.class::cast)
+//                        .forEach(runtime.contextKeysCollector()::accept);
+//            }
+
             activeContext = activeContext
                     .newContext(params.options().loader(), params.runtime())
                     .build(contextValue, adapter, params.baseUrl());
@@ -214,6 +231,14 @@ public final class ObjectExpansion {
                             .orElse(null);
 
                     if (localContext != null) {
+
+                        // CBOR-LD collector
+//                        if (params.runtime().contextKeysCollector() != null) {
+//                            localContext.adapter().keyStream(localContext.node())
+//                                    .map(String.class::cast)
+//                                    .forEach(params.runtime().contextKeysCollector()::accept);
+//                        }
+
                         activeContext = activeContext
                                 .newContext(params.options().loader(), params.runtime())
                                 .propagate(false)

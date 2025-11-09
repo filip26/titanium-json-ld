@@ -13,6 +13,12 @@ import com.apicatalog.jsonld.Options;
  */
 public class Execution {
 
+    protected Consumer<String> contextKeysCollector;
+    
+    public Execution() {
+        this.contextKeysCollector = null;
+    }
+    
     //TODO builder, to set collectors, like type map
     
     public static Execution of(Options options) {
@@ -38,8 +44,7 @@ public class Execution {
     }
     
     public Consumer<String> contextKeysCollector() {
-        return a -> {
-        };
+        return contextKeysCollector;
     }
 
 //    /**

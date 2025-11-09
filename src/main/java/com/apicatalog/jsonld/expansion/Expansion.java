@@ -117,6 +117,8 @@ public final class Expansion {
                     nodeAdapter,
                     params);
         }
+        
+        params.runtime().tick();
 
         // 6. Otherwise element is a map
         return new ObjectExpansion(

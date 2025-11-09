@@ -10,7 +10,7 @@ import com.apicatalog.jsonld.Options;
 class Ticker extends Execution {
 
     final Duration ttl;
-    
+
     Instant ticker;
 
     Ticker(Options options) {
@@ -20,12 +20,11 @@ class Ticker extends Execution {
 
     @Override
     public void tick() throws JsonLdException {
-
         if (ticker == null) {
             ticker = Instant.now();
             return;
         }
-        
+
         final Instant now = Instant.now();
 
         var elapsed = ttl.minus(Duration.between(now, ticker).abs());
