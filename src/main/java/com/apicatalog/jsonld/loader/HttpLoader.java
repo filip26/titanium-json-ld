@@ -201,7 +201,7 @@ public class HttpLoader implements DocumentLoader {
             for (int redirection = 0; redirection < maxRedirections; redirection++) {
 
                 // 2.
-                try (HttpLoaderClient.Response response = client.send(targetUri, options.requestProfile())) {
+                try (final var response = client.send(targetUri, options.requestProfile())) {
 
                     // 3.
                     if (response.statusCode() == 301

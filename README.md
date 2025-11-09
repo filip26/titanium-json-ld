@@ -15,8 +15,10 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/c530c6b43b0243c08ce81521c5b4cf6a)](https://app.codacy.com/gh/filip26/titanium-json-ld/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/c530c6b43b0243c08ce81521c5b4cf6a)](https://app.codacy.com/gh/filip26/titanium-json-ld/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
 [![Javadoc](https://javadoc.io/badge2/com.apicatalog/titanium-json-ld/javadoc.svg)](https://javadoc.io/doc/com.apicatalog/titanium-json-ld)
-[![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/titanium-json-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:com.apicatalog%20AND%20a:titanium-json-ld)
+[![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/titanium-json-ld.svg?label=Maven%20Central)](https://mvnrepository.com/artifact/com.apicatalog/titanium-json-ld)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+
 
 ### 🧩 Libraries & Tools
 
@@ -46,7 +48,7 @@ Titanium provides a high-level [`JsonLd`](https://javadoc.io/doc/com.apicatalog/
 
 ### Transformations
 
-Perform standard JSON-LD operations such as expansion, compaction, flattening, framing, and conversion from/to RDF. The JSON-LD document to process can be remote or local, while context documents may also be local or remote.
+Perform standard JSON-LD operations such as expansion, compaction, flattening, framing, and conversion from/to RDF. The JSON-LD document to process can be remote or local.
 
 ```javascript
 // Expansion from a remote JSON-LD document
@@ -91,7 +93,7 @@ JsonLd.frame("https://example/document.jsonld", "https://example/frame.jsonld").
 
 ### Local JSON Document
 
-Load and process JSON-LD documents directly from an `InputStream` or `Reader`. You can perform expansion or compaction using local documents and contexts.
+Load and process JSON-LD documents directly from an `InputStream` or `Reader`.
 
 ```javascript
 // Load JSON from InputStream or Reader
@@ -227,7 +229,7 @@ Contributions of all kinds are welcome — whether it’s code, documentation, t
 - Help answer questions or guide new contributors  
 
 ### 💖 Sponsor
-Your support helps sustain development. Sponsorships also give your feature requests and issues **top priority**.
+Your support helps sustain development.
 
 ### 🏗️ Building
 

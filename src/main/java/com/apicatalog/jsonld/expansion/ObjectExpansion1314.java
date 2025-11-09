@@ -361,23 +361,21 @@ final class ObjectExpansion1314 {
 
                     if (expandedValue != null) {
 
-                        if (!(expandedValue instanceof Collection)) {
+                        if (!(expandedValue instanceof Collection includedValues)) {
+
+                            if (!LdAdapter.isNode(expandedValue)) {
+                                throw new JsonLdException(ErrorCode.INVALID_KEYWORD_INCLUDED_VALUE);
+                            }
+
                             expandedValue = List.of(expandedValue);
+
+                        } else {
+                            for (var node : includedValues) {
+                                if (!LdAdapter.isNode(node)) {
+                                    throw new JsonLdException(ErrorCode.INVALID_KEYWORD_INCLUDED_VALUE);
+                                }
+                            }
                         }
-
-                        // FIXME
-//                        if (((Collection<?>) expandedValue).stream().anyMatch(NodeObject::isNotNodeObject)) {
-//                            throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_INCLUDED_VALUE);
-//                        }
-
-//                        if (JsonUtils.isNotArray(expandedValue)) {
-//                            expandedValue = JsonProvider.instance().createArrayBuilder().add(expandedValue).build();
-//                        }
-//
-//                        // 13.4.6.3
-//                        if (expandedValue.asJsonArray().stream().anyMatch(NodeObject::isNotNodeObject)) {
-//                            throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_INCLUDED_VALUE);
-//                        }
 
                         // 13.4.6.4
                         final var includedValue = result.get(Keywords.INCLUDED);
@@ -413,8 +411,8 @@ final class ObjectExpansion1314 {
                         }
 
                         try {
-                            expandedValue = NativeMaterializer.node(value, adapter); 
-                            // FIXMEnew TreeIO(value, adapter);
+                            expandedValue = NativeMaterializer.node(value, adapter);
+                            // TODO use new TreeIO(value, adapter);
 
                         } catch (TreeIOException e) {
                             throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE, e);
@@ -766,7 +764,7 @@ final class ObjectExpansion1314 {
                             if (!Keywords.NONE.equals(expandedLangCode)) {
 
                                 if (!LanguageTag.isWellFormed((String) langCode)) {
-                                    LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", langCode);
+                                    LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", (String) langCode);
                                 }
 
                                 langMap.put(Keywords.LANGUAGE, ((String) langCode).toLowerCase());
