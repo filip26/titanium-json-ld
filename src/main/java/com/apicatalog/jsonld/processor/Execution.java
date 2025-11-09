@@ -4,6 +4,7 @@ import java.util.function.Consumer;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 
 /**
  * A runtime context used during a transformation processing.
@@ -14,6 +15,12 @@ public class Execution {
 
     @FunctionalInterface
     public interface NodeCounter {
+
+        /**
+         * Increments the node count by one.
+         *
+         * @throws com.apicatalog.jsonld.JsonLdException
+         */
         void increment() throws JsonLdException;
     }
 
@@ -94,6 +101,42 @@ public class Execution {
     public Execution contextKeyCollector(Consumer<String> consumer) {
         this.contextKeyCollector = consumer;
         return this;
+    }
+
+    /**
+     * A counter that tracks the number of processed nodes and enforces a maximum
+     * limit.
+     * <p>
+     * This class is typically used within JSON-LD processing to prevent excessive
+     * recursion or processing of an unbounded number of nodes. When the limit is
+     * exceeded, a {@link com.apicatalog.jsonld.JsonLdException} is thrown.
+     * </p>
+     * 
+     * Example usage:
+     * 
+     * <pre>{@code
+     * MaxNodesCounter counter = new MaxNodesCounter(1000);
+     * counter.increment();
+     * }</pre>
+     * 
+     * @since 1.4.0
+     */
+    static class NodeThrottle {
+
+        private final int maxNodes;
+        private int counter;
+
+        NodeThrottle(int maxNodes) {
+            this.maxNodes = maxNodes;
+            this.counter = 0;
+        }
+
+        void increment() throws JsonLdException {
+            if (++counter == maxNodes) {
+                // TODO add ErrorCode.MAX_NODES_LIMIT_EXCEEDED
+                throw new JsonLdException(ErrorCode.UNSPECIFIED);
+            }
+        }
     }
 
 //    /**
