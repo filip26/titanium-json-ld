@@ -15,6 +15,10 @@
  */
 package com.apicatalog.jsonld.lang;
 
+/**
+ * 
+ * @since 2.0.0
+ */
 public final class Terms {
 
     public static final String XSD_STRING = "http://www.w3.org/2001/XMLSchema#string";
