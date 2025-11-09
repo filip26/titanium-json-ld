@@ -42,7 +42,7 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 
 ## 💡 Examples
 
-Titanium provides a high-level [`JsonLd`](https://javadoc.io/doc/com.apicatalog/titanium-json-ld latest/com/apicatalog/jsonld/JsonLd.html) API for working with JSON-LD documents.
+Titanium provides a high-level [`JsonLd`](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/JsonLd.html) API for working with JSON-LD documents.
 
 ### Transformations
 

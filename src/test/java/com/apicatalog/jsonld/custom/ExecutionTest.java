@@ -16,7 +16,7 @@ import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 class ExecutionTest {
 
     @Test
-    void testTimeout() {
+    void testExpandTimeout() {
         var ex = assertThrows(JsonLdException.class, () -> JsonLd.expand(
                 Map.of(),
                 Options.newOptions().timeout(Duration.ofNanos(0))));
