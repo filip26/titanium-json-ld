@@ -27,7 +27,7 @@ import com.apicatalog.web.media.MediaType;
 /**
  * A JSON-LD document that can be processed by the processor.
  * 
- * Holds tree alike data strcuture as a content. Library, serialization format
+ * Holds tree alike data structure as a content. Library, serialization format
  * agnostic {@link TreeIO}.
  *
  */
