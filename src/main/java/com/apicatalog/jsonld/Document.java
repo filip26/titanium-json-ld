@@ -54,11 +54,11 @@ public class Document {
     }
 
     /**
-     * Create a new document from {@link JsonStructure}. Sets {@link MediaType#JSON}
+     * Create a new document from {@link TreeIO} node. Sets {@link MediaType#JSON}
      * as the content type.
      *
-     * @param structure representing parsed JSON content
-     * @return {@link Document} representing JSON content
+     * @param content representing a tree
+     * @return {@link Document} representing a tree content
      */
     public static Document of(final TreeIO content) {
         return of(content, null, null, null, null);
@@ -73,13 +73,12 @@ public class Document {
     }
 
     /**
-     * Create a new document from {@link JsonStructure}.
-     *
-     * @param contentType reflecting the provided {@link JsonStructure}, e.g.
-     *                    {@link MediaType#JSON_LD}, any JSON based media type is
-     *                    allowed
-     * @param structure   representing parsed JSON content
-     * @return {@link Document} representing JSON content
+     * Create a new document from {@link TreeIO} node.
+     * 
+     * @param content     representing a tree
+     * @param contentType reflecting the provided tree, e.g.
+     *                    {@link MediaType#JSON_LD}
+     * @return {@link Document} representing the tree content
      */
     public static Document of(final TreeIO content, MediaType contentType) {
         return of(content, contentType, null, null, null);

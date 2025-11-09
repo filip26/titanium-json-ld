@@ -49,7 +49,10 @@ import com.apicatalog.web.uri.UriValidationPolicy;
  * }</pre>
  *
  * <p>
- * Use {@link #copyOf(Options)} to obtain a copy of an existing options object.
+ * Use {@link #newOptions()} to create a new options instance with default
+ * settings, {@link #with(DocumentLoader)} to initialize with a custom document
+ * loader, or {@link #copyOf(Options)} to obtain a copy of an existing options
+ * object.
  * </p>
  *
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#the-jsonldoptions-type">
@@ -367,48 +370,127 @@ public final class Options {
         return rdfDirection;
     }
 
+    /**
+     * Indicates whether native JSON types (such as numbers and booleans) should be
+     * used when converting <strong>from RDF to JSON-LD</strong>, instead of using
+     * typed string values (e.g., {@code "xsd:boolean"}).
+     *
+     * @return {@code true} if native JSON types are used when converting from RDF;
+     *         otherwise {@code false}.
+     */
     public boolean useNativeTypes() {
         return useNativeTypes;
     }
 
+    /**
+     * Indicates whether the JSON-LD processor uses the RDF type (i.e.,
+     * {@code rdf:type}) instead of the JSON-LD keyword {@code @type}.
+     *
+     * @return {@code true} if RDF type is used; otherwise {@code false}.
+     */
     public boolean useRdfType() {
         return useRdfType;
     }
 
-    // when useJcs -> Jcs::canonize
+    /**
+     * Returns the {@link RdfJsonLiteralWriter} used when converting {@code @json}
+     * type <strong>to RDF</strong> to serialize JSON as {@code rdf:JSON}.
+     *
+     * @return the configured {@link RdfJsonLiteralWriter}, never {@code null}.
+     */
     public RdfJsonLiteralWriter rdfJsonLiteralWriter() {
         return rdfJsonLiteralWriter;
     }
 
+    /**
+     * Returns the expand context used to initialize the active context when
+     * expanding a document.
+     *
+     * @return the expand context, or {@code null} if none is set.
+     */
     public Document expandContext() {
         return expandContext;
     }
 
-    public Options base(URI baseUri) {
-        this.base = baseUri;
+    /**
+     * Sets the base IRI to use when expanding or compacting a document.
+     *
+     * @param base the base IRI as a {@link URI}, or {@code null} to clear it
+     * @return this {@link Options} instance, for method chaining
+     */
+    public Options base(URI base) {
+        this.base = base;
         return this;
     }
 
-    public Options base(String baseUri) {
-        this.base = URI.create(baseUri);
+    /**
+     * Sets the base IRI to use when expanding or compacting a document.
+     *
+     * <p>
+     * This is a convenience method equivalent to {@link #base(URI)}, using
+     * {@link URI#create(String)} to construct the URI.
+     * </p>
+     *
+     * @param base the base IRI as a string
+     * @return this {@link Options} instance, for method chaining
+     * @throws IllegalArgumentException if the given string violates {@link URI}
+     *                                  syntax rules
+     */
+    public Options base(String base) {
+        this.base = URI.create(base);
         return this;
     }
 
+    /**
+     * Enables or disables array compaction during JSON-LD compaction.
+     *
+     * <p>
+     * If {@code true}, arrays with a single element are replaced by that element.
+     * If {@code false}, all arrays are preserved.
+     * </p>
+     *
+     * @param compactArrays {@code true} to enable array compaction; {@code false}
+     *                      otherwise
+     * @return this {@link Options} instance, for method chaining
+     */
     public Options compactArrays(boolean compactArrays) {
         this.compactArrays = compactArrays;
         return this;
     }
 
+    /**
+     * Sets whether IRIs are compacted relative to the base IRI or document location
+     * during compaction.
+     *
+     * @param compactToRelative {@code true} to enable relative compaction;
+     *                          {@code false} to disable it
+     * @return this {@link Options} instance, for method chaining
+     */
     public Options compactToRelative(boolean compactToRelative) {
         this.compactToRelative = compactToRelative;
         return this;
     }
 
-    public Options loader(DocumentLoader documentLoader) {
-        this.loader = documentLoader;
+    /**
+     * Sets the {@link DocumentLoader} to be used for retrieving remote documents
+     * and contexts.
+     *
+     * @param loader the loader to use, or {@code null} to use the default loader
+     * @return this {@link Options} instance, for method chaining
+     */
+    public Options loader(DocumentLoader loader) {
+        this.loader = loader;
         return this;
     }
 
+    /**
+     * Enables or disables extraction of all JSON-LD script elements from HTML
+     * input.
+     *
+     * @param extractAllScripts {@code true} to extract all JSON-LD script elements;
+     *                          {@code false} otherwise
+     * @return this {@link Options} instance, for method chaining
+     */
     public Options extractAllScripts(boolean extractAllScripts) {
         this.extractAllScripts = extractAllScripts;
         return this;
@@ -426,58 +508,142 @@ public final class Options {
         return this;
     }
 
-    public Options mode(Version processingMode) {
-        this.processingMode = processingMode;
+    /**
+     * Sets the JSON-LD processing mode (e.g., 1.0 or 1.1) that determines the
+     * algorithm behavior.
+     *
+     * @param mode the {@link Version} to apply
+     * @return this {@link Options} instance, for method chaining
+     */
+    public Options mode(Version mode) {
+        this.processingMode = mode;
         return this;
     }
 
+    /**
+     * Sets whether the processor produces generalized RDF, which allows subjects or
+     * objects that are not IRIs or literals (for example, blank nodes as
+     * predicates).
+     * 
+     * <p>
+     * When set to {@code false}, output RDF will conform strictly to the RDF 1.1
+     * specification.
+     * </p>
+     *
+     * @param produceGeneralizedRdf {@code true} to enable generalized RDF
+     * @return this {@link Options} instance, for method chaining
+     */
     public Options generalizedRdf(boolean produceGeneralizedRdf) {
         this.generalizedRdf = produceGeneralizedRdf;
         return this;
     }
 
+    /**
+     * Sets the RDF direction handling strategy used when converting to or from RDF
+     * literals that include language direction information.
+     *
+     * @param rdfDirection the RDF direction strategy to apply
+     * @return this {@link Options} instance, for method chaining
+     */
     public Options rdfDirection(RdfDirection rdfDirection) {
         this.rdfDirection = rdfDirection;
         return this;
     }
 
+    /**
+     * If set to {@code true}, the JSON-LD processor will use native JSON types
+     * (such as numbers and booleans) when converting <strong>from RDF to
+     * JSON-LD</strong>, instead of using typed string values (e.g.,
+     * {@code "xsd:boolean"} or {@code "xsd:integer"}).
+     *
+     * @param useNativeTypes whether to use native JSON types when converting from
+     *                       RDF
+     * @return this {@link Options} instance, for method chaining
+     */
     public Options useNativeTypes(boolean useNativeTypes) {
         this.useNativeTypes = useNativeTypes;
         return this;
     }
 
+    /**
+     * If set to {@code true}, the JSON-LD processor will use the JSON-LD keyword
+     * {@code @type} instead of generating {@code rdf:type} statements when
+     * converting <strong>from RDF to JSON-LD</strong>.
+     *
+     * @param useRdfType whether to use {@code rdf:type} instead of {@code @type}
+     *                   when converting from RDF
+     * @return this {@link Options} instance, for method chaining
+     */
     public Options useRdfType(boolean useRdfType) {
         this.useRdfType = useRdfType;
         return this;
     }
 
-    // useJcs -> Jcs::canonize
+    /**
+     * Sets the {@link RdfJsonLiteralWriter} used for serializing {@code @json} type
+     * when converting to {@code rdf:JSON}.
+     *
+     * @param jsonWriter the JSON literal writer implementation
+     * @return this {@link Options} instance, for method chaining
+     */
     public Options rdfJsonLiteralWriter(RdfJsonLiteralWriter jsonWriter) {
         this.rdfJsonLiteralWriter = jsonWriter;
         return this;
     }
 
-    public Options expandContext(final String contextLocation) {
+    /**
+     * Sets the expand context by providing an URL representing a context.
+     *
+     * <p>
+     * If the provided URL is {@code null}, the expand context is cleared.
+     * </p>
+     *
+     * @param uri the URL represeting location of the context to load, or
+     *            {@code null} to clear
+     * @return this {@link Options} instance, for method chaining
+     */
+    public Options expandContext(final String uri) {
 
-        if (contextLocation == null) {
+        if (uri == null) {
             this.expandContext = null;
             return this;
         }
         this.expandContext = Document.of(
-                new TreeIO(Set.of(contextLocation), NativeAdapter.instance()));
+                new TreeIO(Set.of(uri), NativeAdapter.instance()));
         return this;
     }
 
-    public Options expandContext(URI contextUri) {
+    /**
+     * Sets the expand context by providing its location as a {@link URI}.
+     *
+     * <p>
+     * If the provided URI is {@code null}, the expand context is cleared.
+     * </p>
+     *
+     * @param uri the URI of the expand context, or {@code null} to clear it
+     * @return this {@link Options} instance, for method chaining
+     */
+    public Options expandContext(URI uri) {
 
-        if (contextUri == null) {
+        if (uri == null) {
             this.expandContext = null;
             return this;
         }
 
-        return expandContext(contextUri.toString());
+        return expandContext(uri.toString());
     }
 
+    /**
+     * Sets the expand context using a {@link TreeIO} node.
+     *
+     * <p>
+     * If {@code null} is provided, the expand context is cleared.
+     * </p>
+     *
+     * @param node the tree node representing the context, or {@code null} to clear
+     *             it
+     * @return this {@link Options} instance, for method chaining
+     */
     public Options expandContext(TreeIO node) {
 
         if (node == null) {
@@ -488,6 +654,13 @@ public final class Options {
         return this;
     }
 
+    /**
+     * Sets the expand context directly as a {@link Document}.
+     *
+     * @param context the document representing the context used when expanding, or
+     *                {@code null} to clear it
+     * @return this {@link Options} instance, for method chaining
+     */
     public Options expandContext(Document context) {
         this.expandContext = context;
         return this;
@@ -495,46 +668,114 @@ public final class Options {
 
     // Framing
 
+    /**
+     * Returns the current {@link Embed} mode used during framing.
+     *
+     * @return the embed mode.
+     */
     public Embed embed() {
         return embed;
     }
 
+    /**
+     * Sets the {@link Embed} mode used during framing.
+     *
+     * @param embed the embed mode to use
+     * @return this {@link Options} instance, for method chaining
+     */
     public Options embed(Embed embed) {
         this.embed = embed;
         return this;
     }
 
+    /**
+     * Indicates whether framing should include only explicitly defined properties.
+     *
+     * @return {@code true} if only explicitly defined properties are included
+     *         during framing
+     */
     public boolean isExplicit() {
         return explicit;
     }
 
+    /**
+     * Sets whether framing should include only explicitly defined properties.
+     *
+     * @param explicit {@code true} to include only explicitly defined properties
+     * @return this {@link Options} instance, for method chaining
+     */
     public Options explicit(boolean explicit) {
         this.explicit = explicit;
         return this;
     }
 
+    /**
+     * Indicates whether default values are omitted during framing output.
+     *
+     * @return {@code true} if default values are omitted
+     */
     public boolean isOmitDefault() {
         return omitDefault;
     }
 
+    /**
+     * Sets whether framing should omit default values from the output.
+     *
+     * @param omitDefault {@code true} to omit default values
+     * @return this {@link Options} instance, for method chaining
+     */
     public Options omitDefault(boolean omitDefault) {
         this.omitDefault = omitDefault;
         return this;
     }
 
+    /**
+     * Indicates whether framing should omit the top-level graph container when only
+     * a single node exists.
+     *
+     * @return {@code true} to omit the graph; {@code false} to include it; or
+     *         {@code null} if the default behavior is used
+     */
     public Boolean isOmitGraph() {
         return omitGraph;
     }
 
+    /**
+     * Sets whether framing output should omit the top-level graph container when
+     * only a single node exists.
+     *
+     * @param omitGraph {@code true} to omit the graph; {@code false} to include it;
+     *                  or {@code null} to use the default behavior
+     * @return this {@link Options} instance, for method chaining
+     */
     public Options omitGraph(Boolean omitGraph) {
         this.omitGraph = omitGraph;
         return this;
     }
 
+    /**
+     * Indicates whether all properties listed in a frame must be present in the
+     * matched nodes during framing.
+     *
+     * <p>
+     * If {@code true}, only nodes that include every property defined in the frame
+     * will match. If {@code false}, partial matches are allowed.
+     * </p>
+     *
+     * @return {@code true} if all frame properties are required; otherwise
+     *         {@code false}
+     */
     public boolean isRequiredAll() {
         return requiredAll;
     }
 
+    /**
+     * Sets whether framing requires all properties listed in the frame to appear in
+     * the matched nodes.
+     *
+     * @param requiredAll {@code true} if all properties must be present
+     * @return this {@link Options} instance, for method chaining
+     */
     public Options requiredAll(boolean requiredAll) {
         this.requiredAll = requiredAll;
         return this;
@@ -567,15 +808,32 @@ public final class Options {
 //        this.contextCache = contextCache;
 //    }
 //
+
+    /**
+     * Returns the cache used for storing retrieved remote documents.
+     *
+     * @return the document cache, or {@code null} if none is configured
+     */
     public Cache<String, Document> getDocumentCache() {
         return documentCache;
     }
 
+    /**
+     * Sets the cache used to store retrieved remote documents.
+     *
+     * @param documentCache the cache to use, or {@code null} to disable caching
+     * @return this {@link Options} instance, for method chaining
+     */
     public Options setDocumentCache(Cache<String, Document> documentCache) {
         this.documentCache = documentCache;
         return this;
     }
 
+    /**
+     * Indicates whether the JSON-LD-star is enabled.
+     *
+     * @return {@code true} if JSON-LD-star is enabled; otherwise {@code false}.
+     */
     public boolean isRdfStar() {
         return rdfStar;
     }
@@ -592,6 +850,17 @@ public final class Options {
         return this;
     }
 
+    /**
+     * Returns the URI validation policy currently in use.
+     *
+     * <p>
+     * The default policy is {@link UriValidationPolicy#Full}.
+     * </p>
+     *
+     * @return the current URI validation policy, never {@code null}
+     *
+     * @since 1.5.0
+     */
     public UriValidationPolicy uriValidation() {
         return uriValidation;
     }
@@ -619,7 +888,7 @@ public final class Options {
      * the duration, if set. There is no currency that processing gets terminated
      * immediately, but eventually.
      * 
-     * Please note, the timeout does not include time consumed by
+     * Please note, the timeout does not affect time consumed by
      * {@link DocumentLoader}.
      * 
      * @return a duration after which a processing is prematurely terminated.
@@ -632,7 +901,7 @@ public final class Options {
      * Set a pressing timeout. A processing is eventually terminated after the
      * specified duration. Set <code>null</code> for no timeout.
      * 
-     * Please note, the timeout does not include time consumed by
+     * Please note, the timeout does not affect time consumed by
      * {@link DocumentLoader}.
      * 
      * @param timeout to limit processing time

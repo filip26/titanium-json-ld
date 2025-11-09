@@ -37,6 +37,7 @@ public interface HttpLoaderClient {
      * representing the HTTP result.
      * <p>
      * Implementations should typically:
+     * </p>
      * <ul>
      * <li>Perform an HTTP GET request to the specified {@code targetUri}</li>
      * <li>Include an {@code Accept} header suitable for JSON-LD content types
@@ -44,7 +45,6 @@ public interface HttpLoaderClient {
      * <li>Apply any headers or timeout previously configured through
      * {@link #headers(Collection)} or {@link #timeout(Duration)}</li>
      * </ul>
-     * </p>
      *
      * @param url             the absolute URL of the remote resource to request
      * @param requestProfiles JSON-LD profile URIs to include in the {@code Accept}
@@ -60,8 +60,8 @@ public interface HttpLoaderClient {
      * <p>
      * If a server does not respond within the specified duration, a
      * {@link JsonLdException} with code
-     * {@link com.apicatalog.jsonld.ErrorCode#LOADING_DOCUMENT_TIMEOUT} may be
-     * thrown by the loader.
+     * {@link com.apicatalog.jsonld.JsonLdException.ErrorCode#LOADING_DOCUMENT_TIMEOUT}
+     * may be thrown by the loader.
      * </p>
      *
      * @param timeout the maximum duration to wait for a response, or {@code null}

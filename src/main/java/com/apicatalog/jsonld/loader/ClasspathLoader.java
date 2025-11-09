@@ -37,9 +37,8 @@ import com.apicatalog.tree.io.TreeParser;
  *
  * <p>
  * Example URI:
- * 
- * <pre>{@code classpath:/contexts/example.jsonld}</pre>
  * </p>
+ * <pre>{@code classpath:/contexts/example.jsonld}</pre>
  */
 public final class ClasspathLoader implements DocumentLoader {
 

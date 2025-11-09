@@ -171,7 +171,7 @@ public record MediaType(
      * RFC&nbsp;7231&nbsp;Section&nbsp;3.1.1.1</a>.
      * </p>
      *
-     * <h2>Examples</h2>
+     * <p>Examples</p>
      * 
      * <pre>{@code
      * new MediaType("application", "ld+json").toString();

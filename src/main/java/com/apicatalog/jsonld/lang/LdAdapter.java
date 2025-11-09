@@ -90,7 +90,7 @@ public class LdAdapter {
      * @see <a href="https://www.w3.org/TR/json-ld11/#dfn-default-object">Default
      *      Object</a>
      *
-     * @param value to check
+     * @param node to check
      * @return <code>true</code> if the provided value is valid default object
      */
     public static boolean isDefault(Object node) {
@@ -103,7 +103,7 @@ public class LdAdapter {
      * @see <a href="https://www.w3.org/TR/json-ld11/#dfn-default-object">Default
      *      Object</a>
      *
-     * @param value   to check
+     * @param node   to check
      * @param adapter
      * @return <code>true</code> if the provided value is valid default object
      */
@@ -140,8 +140,8 @@ public class LdAdapter {
      * containing only expanded value if it is not already an array, and then by
      * setting it to a map containing the key-value pair @list-expanded value.
      *
-     * @param value to convert
-     * @return list object containing the provided value
+     * @param node to convert
+     * @return {@code @list} object containing the provided value
      */
     public static Map<String, ?> toList(Object node) {
         return node instanceof Collection
@@ -161,10 +161,6 @@ public class LdAdapter {
         return (node instanceof Map<?, ?> map)
                 ? Optional.ofNullable(map.get(Keywords.VALUE))
                 : Optional.empty();
-
-//        return isValueObject(node)
-//                ? Optional.ofNullable(node.asJsonObject().get(Keywords.VALUE))
-//                : Optional.empty();
     }
 
     /* --- */
@@ -173,73 +169,10 @@ public class LdAdapter {
         setOrAdd(result, key, value, true);
     }
 
-//    public static Map<String, Object> setOrAdd(Map<String, Object> result, String parent, String key, Object value, boolean asArray) {
-//    
-//        Object node = result.computeIfAbsent(parent, k -> new LinkedHashMap<String, Object>());
-//        
-//        if (!node instanceof Map) {
-//            node = new 
-//        }
-//        
-//        JsonLdAdapter.setOrAdd(
-//            (Map<String, Object>) result.computeIfAbsent(parent, k -> new LinkedHashMap<String, Object>()),
-//            mapKey,
-//            compactedItem,
-//            asArray);
-//    
-//        return result;
-//    }
-
     public static void setOrAdd(
             final Map<String, Object> source,
             final String key, Object value,
             final boolean asArray) {
-//
-//        // 1. If as array is true and the value of key in object does not exist or is
-//        // not an array,
-//        // set it to a new array containing any original value.
-//        if (asArray) {
-//
-//            var original = source.get(key);
-//
-//            if (original == null) {
-//                source.put(key, new ArrayList<>());
-//
-//            } else if (!(original instanceof Collection)) {
-//                var x = new ArrayList<>();
-//                x.add(original);
-//                source.put(key, x);
-//            }
-//        }
-//
-//        // 2. If value is an array, then for each element v in value, use add value
-//        // recursively to add v to key in entry.
-//        if (value instanceof Collection<?> array) {
-//            array.forEach(v -> setOrAdd(source, key, v, asArray));
-//
-//            // 3.
-//        } else {
-//
-//            final var original = source.get(key);
-//
-//            // 3.1
-//            if (original != null) {
-//
-//                if (original instanceof Collection array) {
-//                    array.add(value);
-//
-//                } else {
-//                    var x = new ArrayList<>();
-//                    x.add(original);
-//                    x.add(value);
-//                    source.put(key, x);
-//                }
-//
-//                // 3.2
-//            } else {
-//                source.put(key, value);
-//            }
-//        }
 
         var previous = source.get(key);
 
@@ -395,95 +328,4 @@ public class LdAdapter {
         }
         return false;
     }
-
-    /* ---- TODO ---- */
-
-    // Extension: JSON-LD-STAR (Experimental)
-//    @Deprecated
-//    public static final boolean isEmbedded(JsonValue value) {
-//
-//        if (JsonUtils.isNotObject(value)) {
-//            return false;
-//        }
-//
-//        final JsonObject node = value.asJsonObject();
-//
-//        boolean found = false;
-//
-//        for (Entry<String, JsonValue> property : node.entrySet()) {
-//
-//            if (property.getKey().equals(Keywords.INDEX)
-//                    || property.getKey().equals(Keywords.CONTEXT)
-//                    || property.getKey().equals(Keywords.REVERSE)) {
-//                return false;
-//            }
-//
-//            if (!Keywords.TYPE.equals(property.getKey()) && Keywords.matchForm(property.getKey())) {
-//                continue;
-//            }
-//
-//            // validate property name
-//            if (!found && (Keywords.TYPE.equals(property.getKey()) || UriUtils.isURI(property.getKey()))) {
-//
-//                // validate property value
-//                JsonValue propertyValue = property.getValue();
-//
-//                if (JsonUtils.isArray(propertyValue)) {
-//
-//                    if (propertyValue.asJsonArray().size() != 1) {
-//                        return false;
-//                    }
-//
-//                    propertyValue = propertyValue.asJsonArray().get(0);
-//                }
-//
-//                if (isValueObject(propertyValue)) {
-//                    propertyValue = getValueObject(propertyValue).orElse(null);
-//                }
-//
-//                if (JsonUtils.isString(propertyValue)
-//                        || (JsonUtils.isObject(propertyValue) && isEmbedded(propertyValue.asJsonObject()))) {
-//                    found = true;
-//                    continue;
-//                }
-//            }
-//            return false;
-//        }
-//
-//        return true;
-//    }
-//
-//    // Extension: JSON-LD-STAR (Experimental)
-//    @Deprecated
-//    public static final boolean isNotAnnotation(final JsonValue annotation) {
-//        return !isAnnotation(annotation);
-//    }
-//
-//    @Deprecated
-//    public static final boolean isAnnotation(final JsonValue annotation) {
-//
-//        JsonValue value = annotation;
-//
-//        if (JsonUtils.isArray(value)) {
-//            return value.asJsonArray().stream().allMatch(JsonLdAdapter::isAnnotation);
-//        }
-//
-//        if (JsonUtils.isNotObject(value)) {
-//            return false;
-//        }
-//
-//        for (Entry<String, JsonValue> property : value.asJsonObject().entrySet()) {
-//
-//            if (Keywords.ANNOTATION.equals(property.getKey()) && !isAnnotation(property.getValue())) {
-//                return false;
-//            }
-//
-//            if (Keywords.matchForm(property.getKey()) && !Keywords.TYPE.equals(property.getKey()) && !Keywords.REVERSE.equals(property.getKey())) {
-//                return false;
-//            }
-//
-//        }
-//
-//        return true;
-//    }
 }

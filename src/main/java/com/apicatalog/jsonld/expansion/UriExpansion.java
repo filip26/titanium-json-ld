@@ -41,9 +41,9 @@ import com.apicatalog.web.uri.UriValidationPolicy;
  * <p>
  * This class encapsulates the state and logic for a single, configurable
  * expansion operation. It is used by creating an instance with an active
- * context via {@link #with(Context)}, setting flags such as {@code vocab} or
- * {@code documentRelative} through its fluent API, and then calling the
- * {@link #expand(String)} method to perform the expansion.
+ * context via {@link #with(Context, DocumentLoader, Execution)}, setting flags
+ * such as {@code vocab} or {@code documentRelative} through its fluent API, and
+ * then calling the {@link #expand(String)} method to perform the expansion.
  * </p>
  *
  * <p>

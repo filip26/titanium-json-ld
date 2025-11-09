@@ -71,13 +71,13 @@ public class HttpLoader implements DocumentLoader {
      * represents a JSON-LD compatible content type.
      * <p>
      * This predicate returns {@code true} if the provided media type is:
+     * </p>
      * <ul>
      * <li>{@code application/ld+json}</li>
      * <li>{@code application/json}</li>
      * <li>or any media type whose subtype ends with {@code +json}</li>
      * </ul>
      * A {@code null} input always results in {@code false}.
-     * </p>
      *
      * <p>
      * Used by default when no custom predicate is supplied through
@@ -93,7 +93,7 @@ public class HttpLoader implements DocumentLoader {
     /**
      * Default vendor headers added to every HTTP request.
      * 
-     * @see {@link HttpLoader#headers(Collection)}
+     * {@link HttpLoader#headers(Collection)}
      */
     public static final Collection<Entry<String, String>> VENDOR_HEADERS = List.of(
             Map.entry(
@@ -175,12 +175,12 @@ public class HttpLoader implements DocumentLoader {
      * specification.
      * <p>
      * This method handles:
+     * </p>
      * <ul>
      * <li>Redirections (301, 302, 303, 307) up to {@link #maxRedirections}</li>
      * <li>Content type negotiation and validation</li>
      * <li>Processing of HTTP Link headers for alternate or context URLs</li>
      * </ul>
-     * </p>
      *
      * @param url     the URI of the document to load
      * @param options loader options such as requested profiles
@@ -335,7 +335,7 @@ public class HttpLoader implements DocumentLoader {
 
     /**
      * Defines which HTTP response content types are accepted by this loader.
-     * <p>
+     * 
      * <p>
      * The provided predicate is evaluated against each response's
      * {@code Content-Type} header. If it returns {@code true}, the response is

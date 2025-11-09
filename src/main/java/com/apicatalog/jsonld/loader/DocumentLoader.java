@@ -34,6 +34,7 @@ import com.apicatalog.jsonld.JsonLdException;
  *
  * <p>
  * Common implementations include:
+ * </p>
  * <ul>
  * <li>{@link HttpLoader} — retrieves documents over HTTP or HTTPS</li>
  * <li>{@link FileLoader} — reads documents from the local file system</li>
@@ -43,7 +44,6 @@ import com.apicatalog.jsonld.JsonLdException;
  * <li>{@link SchemeRouter} — delegates to loaders based on URI scheme</li>
  * <li>{@link CacheLoader} — caches results of document retrieval</li>
  * </ul>
- * </p>
  *
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#loaddocumentcallback">
  *      JSON-LD 1.1 API — LoadDocumentCallback</a>

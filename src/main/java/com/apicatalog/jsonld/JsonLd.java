@@ -34,11 +34,19 @@ import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
 /**
- * The {@link JsonLd} interface is the high-level programming structure that
- * developers use to access the JSON-LD transformation methods. This class
- * provides methods to process JSON-LD.
+ * The {@code JsonLd} class provides high-level static methods to process
+ * JSON-LD data according to the
+ * <a href="https://www.w3.org/TR/json-ld11-api/">JSON-LD 1.1 Processing
+ * API</a>.
  *
- * All the methods in this class are thread-safe.
+ * <p>
+ * It supports expansion, compaction, flattening, framing, and conversion
+ * between RDF and JSON-LD representations.
+ * </p>
+ *
+ * <p>
+ * All methods are thread-safe and stateless.
+ * </p>
  */
 public final class JsonLd {
 
@@ -52,9 +60,9 @@ public final class JsonLd {
      * the referenced document. See JsonLdOptions.loader method.
      *
      * @param document {@link URI} referencing JSON-LD document to expand
-     * @param options
-     * @return
-     * @throws JsonLdException
+     * @param options  options to configure expansion
+     * @return expanded JSON-LD document
+     * @throws JsonLdException if expansion fails
      */
     public static final Collection<?> expand(
             final URI document,
@@ -76,9 +84,9 @@ public final class JsonLd {
      * Expands the provided remote document.
      *
      * @param document to expand
-     * @param options
-     * @return {@link ExpansionApi} allowing to set additional parameters
-     * @throws JsonLdException
+     * @param options  options to configure expansion
+     * @return expanded JSON-LD document
+     * @throws JsonLdException if expansion fails
      */
     public static final Collection<?> expand(
             final Document document,
@@ -90,6 +98,15 @@ public final class JsonLd {
         return Expander.expand(document, options, runtime);
     }
 
+    /**
+     * Expands a JSON-LD document provided as a {@link Map}.
+     *
+     * @param document a {@link Map} representation of the JSON-LD document to
+     *                 expand
+     * @param options  options to configure expansion
+     * @return the expanded JSON-LD document
+     * @throws JsonLdException if expansion fails
+     */
     public static final Collection<?> expand(
             final Map<String, ?> document,
             final Options options) throws JsonLdException {
@@ -97,6 +114,15 @@ public final class JsonLd {
         return expand(new TreeIO(document, NativeAdapter.instance()), options);
     }
 
+    /**
+     * Expands a JSON-LD document provided as a {@link TreeIO} node.
+     *
+     * @param document a {@link TreeIO} representation of the JSON-LD document to
+     *                 expand
+     * @param options  options to configure expansion
+     * @return the expanded JSON-LD document
+     * @throws JsonLdException if expansion fails
+     */
     public static final Collection<?> expand(
             final TreeIO document,
             final Options options) throws JsonLdException {
@@ -120,8 +146,9 @@ public final class JsonLd {
      * @param document {@link URI} referencing JSON-LD document to compact
      * @param context  {@link URI} referencing the context to use when compacting
      *                 the document
-     * @param options
-     * @return {@link CompactionApi} allowing to set additional parameters
+     * @param options  options to configure compaction
+     * @return the compacted JSON-LD document
+     * @throws JsonLdException if compaction fails
      */
     public static final Map<String, ?> compact(
             final URI document,
@@ -136,14 +163,12 @@ public final class JsonLd {
     /**
      * Compacts the referenced document using the context.
      *
-     * @param document {@code URI} referencing JSON-LD document to compact
-     * @param context  {@link Document} representing the context or
-     *                 {@link JsonArray} consisting of one or many
-     *                 {@link JsonObject} and {@link JsonString} referencing the
-     *                 context to use when compacting the document
-     * @param options
-     * @return {@link CompactionApi} allowing to set additional parameters
-     * @throws JsonLdException
+     * @param document {@link URI} referencing JSON-LD document to compact
+     * @param context  {@link Document} representing the context to use when
+     *                 compacting the document
+     * @param options  options to configure compaction
+     * @return the compacted JSON-LD document
+     * @throws JsonLdException if compaction fails
      */
     public static final Map<String, ?> compact(
             final URI document,
@@ -156,16 +181,17 @@ public final class JsonLd {
     }
 
     /**
-     * Compacts {@link Document} document using the context.
+     * Compacts a {@link Document} using the given context.
      *
-     * @param document to compact
+     * @param document {@link Document} to compact
      * @param context  {@link URI} referencing the context to use when compacting
      *                 the document
-     * @return {@link CompactionApi} allowing to set additional parameters
-     * @throws JsonLdException
+     * @param options  options to configure compaction
+     * @return the compacted JSON-LD document
+     * @throws JsonLdException if compaction fails
      */
     public static final Map<String, ?> compact(
-            final Document document, 
+            final Document document,
             final URI context, Options options) throws JsonLdException {
         return compact(
                 document,
@@ -174,13 +200,13 @@ public final class JsonLd {
     }
 
     /**
-     * Compacts {@link Document} document using the context.
+     * Compacts a {@link Document} using the given context.
      *
-     * @param document to compact
-     * @param context  JSON-LD document
-     * @param options
-     * @return {@link CompactionApi} allowing to set additional parameters
-     * @throws JsonLdException
+     * @param document {@link Document} to compact
+     * @param context  {@link Document} representing the context
+     * @param options  options to configure compaction
+     * @return the compacted JSON-LD document
+     * @throws JsonLdException if compaction fails
      */
     public static final Map<String, ?> compact(
             final Document document,
@@ -197,6 +223,16 @@ public final class JsonLd {
                 runtime);
     }
 
+    /**
+     * Compacts a JSON-LD document and context provided as {@link TreeIO} node.
+     *
+     * @param document a {@link TreeIO} representation of the JSON-LD document to
+     *                 compact
+     * @param context  a {@link TreeIO} representation of the context to use
+     * @param options  options to configure compaction
+     * @return the compacted JSON-LD document
+     * @throws JsonLdException if compaction fails
+     */
     public static final Map<String, ?> compact(
             final TreeIO document,
             final TreeIO context,
@@ -213,6 +249,17 @@ public final class JsonLd {
                 runtime);
     }
 
+    /**
+     * Compacts a JSON-LD document provided as a {@link Collection} using a context
+     * provided as a {@link Map}.
+     *
+     * @param document a {@link Collection} representing the JSON-LD document to
+     *                 compact
+     * @param context  a {@link Map} representation of the context to use
+     * @param options  options to configure compaction
+     * @return the compacted JSON-LD document
+     * @throws JsonLdException if compaction fails
+     */
     public static final Map<String, ?> compact(
             final Collection<?> document,
             final Map<String, ?> context,
@@ -226,8 +273,16 @@ public final class JsonLd {
 
     /* --- FLATTEN -- */
 
+    /**
+     * Flattens the referenced JSON-LD document.
+     *
+     * @param document a {@link URI} referencing the JSON-LD document to flatten
+     * @param options  options to configure flattening
+     * @return the flattened JSON-LD document
+     * @throws JsonLdException if flattening fails
+     */
     public static final Object flatten(
-            final URI document, 
+            final URI document,
             final Options options) throws JsonLdException {
         var runtime = Execution.of(options);
         runtime.tick();
@@ -243,14 +298,17 @@ public final class JsonLd {
     }
 
     /**
-     * Flattens the given input and optionally compacts it using context.
+     * Flattens the given input and compacts it using a context.
      *
-     * @param document {@code URI} referencing JSON-LD document to flatten
-     * @throws JsonLdException
+     * @param document {@link URI} referencing JSON-LD document to flatten
+     * @param context  {@link URI} referencing the context to use when flattening
+     * @param options  options to configure flattening
+     * @return the flattened JSON-LD document
+     * @throws JsonLdException if flattening fails
      */
     public static final Object flatten(
             final URI document,
-            final URI context, 
+            final URI context,
             final Options options) throws JsonLdException {
         var runtime = Execution.of(options);
         runtime.tick();
@@ -267,8 +325,17 @@ public final class JsonLd {
                 runtime);
     }
 
+    /**
+     * Flattens a JSON-LD document.
+     *
+     * @param document a {@link Document} representing the JSON-LD document to
+     *                 flatten
+     * @param options  options to configure flattening
+     * @return the flattened JSON-LD document
+     * @throws JsonLdException if flattening fails
+     */
     public static final Object flatten(
-            final Document document, 
+            final Document document,
             final Options options) throws JsonLdException {
 
         var runtime = Execution.of(options);
@@ -288,8 +355,8 @@ public final class JsonLd {
      * @throws JsonLdException
      */
     public static final Object flatten(
-            final Document document, 
-            final Document context, 
+            final Document document,
+            final Document context,
             final Options options) throws JsonLdException {
 
         var runtime = Execution.of(options);
@@ -304,6 +371,15 @@ public final class JsonLd {
                 runtime);
     }
 
+    /**
+     * Flattens {@code Map} representing JSON-LD document.
+     *
+     * @param document a {@link Map} representation of the JSON-LD document to
+     *                 flatten
+     * @param options  options to configure flattening
+     * @return the flattened JSON-LD document
+     * @throws JsonLdException if flattening fails
+     */
     public static final Object flatten(
             final Map<String, ?> document,
             final Options options) throws JsonLdException {
@@ -314,6 +390,17 @@ public final class JsonLd {
                 options);
     }
 
+    /**
+     * Flattens JSON-LD document and applies a context, both provided as
+     * {@link Map}.
+     *
+     * @param document a {@link Map} representation of the JSON-LD document to
+     *                 flatten
+     * @param context  a {@link Map} representation of the context to apply
+     * @param options  options to configure flattening
+     * @return the flattened JSON-LD document
+     * @throws JsonLdException if flattening fails
+     */
     public static final Object flatten(
             final Map<String, ?> document,
             final Map<String, ?> context,
@@ -327,8 +414,17 @@ public final class JsonLd {
                 options);
     }
 
+    /**
+     * Flattens a JSON-LD document provided as a {@link Collection}.
+     *
+     * @param document a {@link Collection} representing the JSON-LD document to
+     *                 flatten
+     * @param options  options to configure flattening
+     * @return the flattened JSON-LD document
+     * @throws JsonLdException if flattening fails
+     */
     public static final Object flatten(
-            final Collection<?> document, 
+            final Collection<?> document,
             final Options options) throws JsonLdException {
         return flatten(
                 new TreeIO(document, NativeAdapter.instance()),
@@ -336,9 +432,20 @@ public final class JsonLd {
                 options);
     }
 
+    /**
+     * Flattens a JSON-LD document provided as a {@link Collection} and applies a
+     * context.
+     *
+     * @param document a {@link Collection} representing the JSON-LD document to
+     *                 flatten
+     * @param context  a {@link Map} representation of the context to apply
+     * @param options  options to configure flattening
+     * @return the flattened JSON-LD document
+     * @throws JsonLdException if flattening fails
+     */
     public static final Object flatten(
-            final Collection<?> document, 
-            final Map<String, ?> context, 
+            final Collection<?> document,
+            final Map<String, ?> context,
             final Options options) throws JsonLdException {
         return flatten(
                 new TreeIO(document, NativeAdapter.instance()),
@@ -348,8 +455,17 @@ public final class JsonLd {
                 options);
     }
 
+    /**
+     * Flattens a JSON-LD document represented as a {@link TreeIO} node.
+     *
+     * @param document a {@link TreeIO} representation of the JSON-LD document to
+     *                 flatten
+     * @param options  options to configure flattening
+     * @return the flattened JSON-LD document
+     * @throws JsonLdException if flattening fails
+     */
     public static final Object flatten(
-            final TreeIO document, 
+            final TreeIO document,
             final Options options) throws JsonLdException {
         var runtime = Execution.of(options);
         runtime.tick();
@@ -361,9 +477,20 @@ public final class JsonLd {
                 runtime);
     }
 
+    /**
+     * Flattens a JSON-LD document represented as a {@link TreeIO} node.
+     *
+     * @param document a {@link TreeIO} representation of the JSON-LD document to
+     *                 flatten
+     * @param context  a {@link TreeIO} representation of the context to apply
+     *                 during flattening
+     * @param options  options to configure flattening
+     * @return the flattened JSON-LD document
+     * @throws JsonLdException if flattening fails
+     */
     public static final Object flatten(
-            final TreeIO document, 
-            final TreeIO context, 
+            final TreeIO document,
+            final TreeIO context,
             final Options options) throws JsonLdException {
         var runtime = Execution.of(options);
         runtime.tick();
@@ -378,15 +505,17 @@ public final class JsonLd {
     /* --- FRAME -- */
 
     /**
-     * Frames the given remote input using remote frame.
+     * Frames the given remote JSON-LD document using a remote frame.
      *
-     * @param document {@code URI} referencing JSON-LD document to frame
-     * @param frame    {@code URI} referencing JSON-LD frame
-     * @return {@link FramingApi} allowing to set additional parameters
+     * @param document {@link URI} referencing the JSON-LD document to frame
+     * @param frame    {@link URI} referencing the JSON-LD frame
+     * @param options  options to configure framing
+     * @return the framed JSON-LD document
+     * @throws JsonLdException if framing fails
      */
     public static final Map<String, ?> frame(
-            final URI document, 
-            final URI frame, 
+            final URI document,
+            final URI frame,
             final Options options) throws JsonLdException {
         return frame(
                 Document.load(document, options.loader(), options.isExtractAllScripts()),
@@ -395,15 +524,17 @@ public final class JsonLd {
     }
 
     /**
-     * Frames the remote input using given remote frame.
+     * Frames the remote JSON-LD document using the given remote frame.
      *
-     * @param document {@code IRI} referencing JSON-LD document to frame
-     * @param frame    {@code URI} referencing JSON-LD frame
-     * @return {@link FramingApi} allowing to set additional parameters
+     * @param document {@link Document} representing the JSON-LD document to frame
+     * @param frame    {@link URI} referencing the JSON-LD frame
+     * @param options  options to configure framing
+     * @return the framed JSON-LD document
+     * @throws JsonLdException if framing fails
      */
     public static final Map<String, ?> frame(
-            final Document document, 
-            final URI frame, 
+            final Document document,
+            final URI frame,
             final Options options) throws JsonLdException {
         return frame(
                 document,
@@ -412,15 +543,17 @@ public final class JsonLd {
     }
 
     /**
-     * Frames the remote input using given local frame.
+     * Frames the remote JSON-LD document using the given local frame.
      *
-     * @param document {@code URI} referencing JSON-LD document to frame
-     * @param frame    JSON-LD definition
-     * @return {@link FramingApi} allowing to set additional parameters
+     * @param document {@link URI} referencing the JSON-LD document to frame
+     * @param frame    {@link Document} representing the JSON-LD frame
+     * @param options  options to configure framing
+     * @return the framed JSON-LD document
+     * @throws JsonLdException if framing fails
      */
     public static final Map<String, ?> frame(
-            final URI document, 
-            final Document frame, 
+            final URI document,
+            final Document frame,
             final Options options) throws JsonLdException {
         return frame(
                 Document.load(document, options.loader(), options.isExtractAllScripts()),
@@ -429,16 +562,17 @@ public final class JsonLd {
     }
 
     /**
-     * Frames the local document using given local frame.
+     * Frames the local JSON-LD document using the given local frame.
      *
-     * @param document to frame
-     * @param frame    JSON-LD definition
-     * @return {@link FramingApi} allowing to set additional parameters
-     * @throws JsonLdException
+     * @param document {@link Document} to frame
+     * @param frame    {@link Document} representing the JSON-LD frame
+     * @param options  options to configure framing
+     * @return the framed JSON-LD document
+     * @throws JsonLdException if framing fails
      */
     public static final Map<String, ?> frame(
-            final Document document, 
-            final Document frame, 
+            final Document document,
+            final Document frame,
             final Options options) throws JsonLdException {
 
         final Execution runtime = Execution.of(options);
@@ -447,6 +581,15 @@ public final class JsonLd {
         return Framer.frame(document, frame, options, runtime);
     }
 
+    /**
+     * Frames a JSON-LD document and frame provided as {@link Map} representations.
+     *
+     * @param document a {@link Map} representation of the JSON-LD document to frame
+     * @param frame    a {@link Map} representation of the JSON-LD frame to apply
+     * @param options  options to configure framing
+     * @return the framed JSON-LD document
+     * @throws JsonLdException if framing fails
+     */
     public static final Map<String, ?> frame(
             final Map<String, ?> document,
             final Map<String, ?> frame,
@@ -458,6 +601,16 @@ public final class JsonLd {
                 options);
     }
 
+    /**
+     * Frames a JSON-LD document and frame provided as {@link TreeIO} node.
+     *
+     * @param document a {@link TreeIO} representation of the JSON-LD document to
+     *                 frame
+     * @param frame    a {@link TreeIO} representation of the JSON-LD frame to apply
+     * @param options  options to configure framing
+     * @return the framed JSON-LD document
+     * @throws JsonLdException if framing fails
+     */
     public static final Map<String, ?> frame(
             final TreeIO document,
             final TreeIO frame,
@@ -485,18 +638,21 @@ public final class JsonLd {
     /* --- TO RDF -- */
 
     /**
-     * Transforms the given input into {@link RdfDataset}.
+     * Transforms the given input into RDF.
      *
-     * @param documentUri {@code URI} referencing JSON-LD document to transform
-     * @return {@link ToRdfApi} allowing to set additional parameters
+     * @param uri      {@code URI} referencing JSON-LD document to transform
+     * @param consumer {@link RdfQuadConsumer} receiving emitted RDF quads
+     * @param options  options to configure transformation
+     * @throws JsonLdException if transformation fails
+     * 
      */
     public static final void toRdf(
-            final URI document, 
-            RdfQuadConsumer consumer, 
+            final URI uri,
+            RdfQuadConsumer consumer,
             Options options) throws JsonLdException {
         toRdf(Document
                 .load(
-                        document,
+                        uri,
                         options.loader(),
                         options.isExtractAllScripts()),
                 consumer,
@@ -504,10 +660,12 @@ public final class JsonLd {
     }
 
     /**
-     * Transforms {@link Document} into {@link RdfDataset}.
-     * 
-     * @param document to transform
-     * @return {@link ToRdfApi} allowing to set additional parameters
+     * Transforms the given JSON-LD document into RDF quads.
+     *
+     * @param document {@link URI} referencing the JSON-LD document to transform
+     * @param consumer {@link RdfQuadConsumer} receiving emitted RDF quads
+     * @param options  options to configure transformation
+     * @throws JsonLdException if transformation fails
      */
     public static final void toRdf(
             final Document document,
@@ -520,6 +678,16 @@ public final class JsonLd {
         RdfEmitter.toRdf(document, consumer, options, runtime);
     }
 
+    /**
+     * Transforms a JSON-LD document represented as {@link TreeIO} node into RDF
+     * quads.
+     *
+     * @param document a {@link TreeIO} representation of the JSON-LD document to
+     *                 transform
+     * @param consumer an {@link RdfQuadConsumer} receiving emitted RDF quads
+     * @param options  options to configure transformation
+     * @throws JsonLdException if transformation fails
+     */
     public static final void toRdf(
             final TreeIO document,
             final RdfQuadConsumer consumer,
@@ -531,6 +699,15 @@ public final class JsonLd {
         RdfEmitter.toRdf(document, consumer, options, runtime);
     }
 
+    /**
+     * Transforms a JSON-LD document represented as a {@link Map} into RDF quads.
+     *
+     * @param document a {@link Map} representation of the JSON-LD document to
+     *                 transform
+     * @param consumer an {@link RdfQuadConsumer} receiving emitted RDF quads
+     * @param options  options to configure transformation
+     * @throws JsonLdException if transformation fails
+     */
     public static final void toRdf(
             final Map<String, ?> document,
             final RdfQuadConsumer consumer,
@@ -551,7 +728,8 @@ public final class JsonLd {
     /**
      * Transforms an RDF quad set into a JSON-LD document in expanded form.
      * <p>
-     * Use {@link NQuadsReader} to read quads, or manually add them to
+     * Use <a href="https://github.com/filip26/titanium-rdf-n-quads">Titanium RDF
+     * N-QUADS</a> or any 3rd party library to read quads, or manually add them to
      * {@link QuadsToJsonLd} by calling
      * {@link QuadsToJsonLd#quad(String, String, String, String, String, String, String)}.
      * Retrieve the expanded JSON-LD document by calling
@@ -575,7 +753,8 @@ public final class JsonLd {
     /**
      * Transforms an RDF quad set into a JSON-LD document in expanded form.
      * <p>
-     * Use {@link NQuadsReader} to read quads, or manually add them to
+     * Use <a href="https://github.com/filip26/titanium-rdf-n-quads">Titanium RDF
+     * N-QUADS</a> or any 3rd party library to read quads, or manually add them to
      * {@link QuadsToJsonLd} by calling
      * {@link QuadsToJsonLd#quad(String, String, String, String, String, String, String)}.
      * Retrieve the expanded JSON-LD document by calling
@@ -597,6 +776,9 @@ public final class JsonLd {
         return new QuadsToJsonLd().options(options);
     }
 
+    /**
+     * Represents supported JSON-LD versions.
+     */
     public enum Version {
 
         V1_0("json-ld-1.0"), V1_1("json-ld-1.1");
@@ -607,6 +789,13 @@ public final class JsonLd {
             this.text = text;
         }
 
+        /**
+         * Gets {@link Version} from a string value.
+         *
+         * @param version textual representation of the JSON-LD version
+         * @return the corresponding {@link Version}, or {@code null} if unrecognized
+         * @throws NullPointerException if {@code version} is null
+         */
         public static Version of(String version) {
 
             Objects.requireNonNull(version);
@@ -621,6 +810,11 @@ public final class JsonLd {
             return null;
         }
 
+        /**
+         * Returns the string form of this version.
+         *
+         * @return the JSON-LD version identifier
+         */
         @Override
         public String toString() {
             return text;

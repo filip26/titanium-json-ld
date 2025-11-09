@@ -59,6 +59,7 @@ import com.apicatalog.web.uri.UriValidationPolicy;
  * </p>
  * <p>
  * Key methods include:
+ * </p>
  * <ul>
  * <li>{@link #reset()} to clear the internal state for reuse.</li>
  * <li>{@link #toJsonLd()} to generate the JSON-LD output from the processed
@@ -66,7 +67,6 @@ import com.apicatalog.web.uri.UriValidationPolicy;
  * <li>{@link #quad(String, String, String, String, String, String, String)} to
  * ingest a single RDF quad.</li>
  * </ul>
- * </p>
  * 
  * @see RdfQuadConsumer
  * @since 1.7.0
@@ -736,5 +736,4 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
 
         return result;
     }
-
 }
