@@ -54,7 +54,7 @@ public class Document {
     }
 
     /**
-     * Create a new document from {@link TreeIO} node. Sets {@link MediaType#JSON}
+     * Create a new document from {@link TreeIO} node.
      * as the content type.
      *
      * @param content representing a tree
@@ -117,7 +117,7 @@ public class Document {
                 contextUrl);
     }
 
-    public static final Document fetch(URI url, DocumentLoader loader) throws JsonLdException {
+    public static final Document load(URI url, DocumentLoader loader) throws JsonLdException {
         return load(url, loader, false);
     }
 
