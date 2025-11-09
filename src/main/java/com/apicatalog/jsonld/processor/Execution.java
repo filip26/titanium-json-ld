@@ -51,7 +51,7 @@ public class Execution {
     }
 
     /**
-     * Event fired before a node is processed.
+     * Event fired before a map node is processed.
      * 
      * @param parentKey
      */
@@ -62,7 +62,7 @@ public class Execution {
     }
 
     /**
-     * Event fired after a node is processed.
+     * Event fired after a map node is processed.
      * 
      * @param parentKey
      */
@@ -80,17 +80,20 @@ public class Execution {
      * @param key
      */
     public void onContextKey(String key) {
-        if (contextKeyCollector != null) {
-            contextKeyCollector.accept(key);
-        }
+        contextKeyCollector.accept(key);
     }
 
     public TypeMapCollector typeMapper() {
         return null;
     }
 
-    public Consumer<String> contextKeyCollector() {
-        return contextKeyCollector;
+    public boolean collectsContextKeys() {
+        return contextKeyCollector != null;
+    }
+
+    public Execution contextKeyCollector(Consumer<String> consumer) {
+        this.contextKeyCollector = consumer;
+        return this;
     }
 
 //    /**

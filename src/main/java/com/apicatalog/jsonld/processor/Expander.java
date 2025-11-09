@@ -58,6 +58,20 @@ public final class Expander {
     }
 
     public static final Collection<?> expand(
+            final TreeIO document,
+            final Options options,
+            final Execution runtime) throws JsonLdException {
+
+        return Expander.expand(
+                document,
+                Expander.context(null, null, options, runtime),
+                Expander.baseUrl(null, options),
+                options,
+                runtime);
+    }
+
+    
+    public static final Collection<?> expand(
             final TreeIO node,
             final Context context,
             final URI baseUrl,

@@ -99,13 +99,13 @@ public final class Expansion {
                 .orElse(null);
 
         // Extension: CBOR-LD collector
-        if (params.runtime().contextKeyCollector() != null
+        if (params.runtime().collectsContextKeys()
                 && propertyContext != null
                 && propertyContext.isMap()) {
             propertyContext
                     .keyStream()
                     .map(String.class::cast)
-                    .forEach(params.runtime().contextKeyCollector()::accept);
+                    .forEach(params.runtime()::onContextKey);
         }
 
         // 4. If element is a scalar
@@ -117,7 +117,7 @@ public final class Expansion {
                     nodeAdapter,
                     params);
         }
-        
+
         params.runtime().tick();
 
         // 6. Otherwise element is a map

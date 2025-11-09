@@ -26,7 +26,7 @@
  *         .base("https://example.com/")
  *         .ordered(true);
  *
- * var expanded = JsonLd.expand(document, options).get();
+ * var expanded = JsonLd.expand(document, options);
  * }</pre>
  *
  * @see com.apicatalog.jsonld.JsonLd

@@ -132,8 +132,6 @@ public final class JsonLd {
 
         return Expander.expand(
                 document,
-                Expander.context(null, null, options, runtime),
-                Expander.baseUrl(null, options),
                 options,
                 runtime);
     }

@@ -267,10 +267,10 @@ public final class UriExpansion {
                 if (!defined.containsKey(entryValueString) || Boolean.FALSE.equals(defined.get(entryValueString))) {
 
                     // CBOR-LD collector
-                    if (runtime.contextKeyCollector() != null) {
+                    if (runtime.collectsContextKeys()) {
                         adapter.keyStream(localContext)
                                 .map(String.class::cast)
-                                .forEach(runtime.contextKeyCollector()::accept);
+                                .forEach(runtime::onContextKey);
                     }
 
                     activeContext
@@ -307,10 +307,10 @@ public final class UriExpansion {
                 && !Boolean.TRUE.equals(defined.get(prefix))) {
 
             // CBOR-LD collector
-            if (runtime.contextKeyCollector() != null) {
+            if (runtime.collectsContextKeys()) {
                 adapter.keyStream(localContext)
                         .map(String.class::cast)
-                        .forEach(runtime.contextKeyCollector()::accept);
+                        .forEach(runtime::onContextKey);
             }
 
             activeContext.newTerm(localContext, adapter, defined, loader, runtime).create(prefix);
