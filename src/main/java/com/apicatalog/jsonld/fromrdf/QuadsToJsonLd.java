@@ -330,7 +330,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
 
                 // 6.4.2.
                 final var list = new ArrayList<Object>();
-                final List<String> listNodes = new ArrayList<>();
+                final var listNodes = new ArrayList<String>();
 
                 String nodeId = ((String) node.get(Keywords.ID));
 

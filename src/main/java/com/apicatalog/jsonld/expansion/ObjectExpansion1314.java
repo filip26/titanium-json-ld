@@ -357,7 +357,12 @@ final class ObjectExpansion1314 {
 
                     // 13.4.6.2
                     expandedValue = Expansion
-                            .expand(activeContext, value, adapter, null, params);
+                            .expand(
+                                    activeContext,
+                                    value,
+                                    adapter,
+                                    null,
+                                    params);
 
                     if (expandedValue != null) {
 
@@ -417,9 +422,9 @@ final class ObjectExpansion1314 {
                         } catch (TreeIOException e) {
                             throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE, e);
                         }
-
-                        // 13.4.7.2
-                    } else if (adapter.isNull(value)
+                    }
+                    // 13.4.7.2
+                    else if (adapter.isNull(value)
                             || adapter.type(value).isScalar()
                             || params.frameExpansion()
                                     && (adapter.isEmptyMap(value)
@@ -715,9 +720,9 @@ final class ObjectExpansion1314 {
                 expandedValue = Map.of(
                         Keywords.TYPE, Keywords.JSON,
                         Keywords.VALUE, new TreeIO(value, adapter));
-
-                // 13.7.
-            } else if (adapter.isMap(value) && containerMapping.contains(Keywords.LANGUAGE)) {
+            }
+            // 13.7.
+            else if (adapter.isMap(value) && containerMapping.contains(Keywords.LANGUAGE)) {
 
                 // 13.7.1.
                 final var langMaps = new ArrayList<>();
@@ -955,9 +960,9 @@ final class ObjectExpansion1314 {
                     }
                 }
                 expandedValue = indices;
-
-                // 13.9.
-            } else {
+            }
+            // 13.9.
+            else {
                 expandedValue = Expansion.expand(
                         activeContext,
                         value,

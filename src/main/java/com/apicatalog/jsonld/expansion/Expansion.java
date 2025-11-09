@@ -98,7 +98,7 @@ public final class Expansion {
                 .map(TermDefinition::getLocalContext)
                 .orElse(null);
 
-        // CBOR-LD collector
+        // Extension: CBOR-LD collector
         if (params.runtime().contextKeysCollector() != null
                 && propertyContext != null
                 && propertyContext.isMap()) {

@@ -94,9 +94,10 @@ public final class FrameMatcher {
                     return true;
                 }
                 return false;
-
-                // 2.2.
-            } else if (Keywords.TYPE.equals(property)) {
+            } 
+            
+            // 2.2.
+            if (Keywords.TYPE.equals(property)) {
 
                 if ((nodeValue != null && !((Collection<?>) nodeValue).isEmpty() && frame.isWildCard(property))
                         || ((nodeValue == null || ((Collection<?>) nodeValue).isEmpty()) && frame.isNone(property))
@@ -110,9 +111,10 @@ public final class FrameMatcher {
                     return true;
                 }
                 return false;
+            }
 
-                // skip other keywords
-            } else if (Keywords.matchForm(property)) {
+            // skip other keywords
+            if (Keywords.matchForm(property)) {
                 continue;
             }
 
@@ -176,7 +178,7 @@ public final class FrameMatcher {
 
                     var listValue = propertyFrame.get(Keywords.LIST);
 
-                    if (!nodeValues.isEmpty() 
+                    if (!nodeValues.isEmpty()
                             && nodeValues.iterator().next() instanceof Map nodeValueMap
                             && LdAdapter.isList(nodeValueMap)) {
 

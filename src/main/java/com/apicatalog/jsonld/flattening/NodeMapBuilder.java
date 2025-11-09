@@ -192,9 +192,9 @@ public final class NodeMapBuilder {
                 // 4.2.
                 list.put(Keywords.LIST, append(list.get(Keywords.LIST), element));
             }
-
-            // 5.
-        } else if (elementMap.containsKey(Keywords.LIST)) {
+        }
+        // 5.
+        else if (elementMap.containsKey(Keywords.LIST)) {
 
             // 5.1.
             final var result = new LinkedHashMap<String, Collection<?>>(Map.of(Keywords.LIST, List.of()));
@@ -231,9 +231,9 @@ public final class NodeMapBuilder {
                 // 5.4.
                 list.put(Keywords.LIST, append(list.get(Keywords.LIST), result));
             }
-
-            // 6.
-        } else if (LdAdapter.isNode(element, NativeAdapter.instance())) {
+        }
+        // 6.
+        else if (LdAdapter.isNode(element, NativeAdapter.instance())) {
 
             String id = null;
 
@@ -288,9 +288,9 @@ public final class NodeMapBuilder {
                     // 6.5.2.
                     nodeMap.set(activeGraph, id, activeProperty, Set.of(referencedNode));
                 }
-
-                // 6.6.
-            } else if (activeProperty != null) {
+            }
+            // 6.6.
+            else if (activeProperty != null) {
 
                 // 6.6.1.
                 final var reference = Map.of(Keywords.ID, id);
@@ -315,9 +315,9 @@ public final class NodeMapBuilder {
                         // 6.6.2.1.
                         nodeMap.set(activeGraph, activeSubject, activeProperty, Set.of(reference));
                     }
-
-                    // 6.6.3.
-                } else {
+                }
+                // 6.6.3.
+                else {
                     list.put(Keywords.LIST, append(list.get(Keywords.LIST), reference));
                 }
             }
@@ -404,7 +404,6 @@ public final class NodeMapBuilder {
             }
 
             // 6.11.
-
             final var includedMap = elementMap.get(Keywords.INCLUDED);
 
             if (includedMap != null) {

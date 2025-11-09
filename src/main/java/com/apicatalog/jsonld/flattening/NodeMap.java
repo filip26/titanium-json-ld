@@ -57,13 +57,10 @@ public final class NodeMap {
     }
 
     public Object get(String graphName, String subject, String property) {
-
-        var x = Optional.ofNullable(index.get(graphName))
+        return Optional.ofNullable(index.get(graphName))
                 .map(g -> g.get(subject))
                 .map(s -> s.get(property))
                 .orElse(null);
-
-        return x;
     }
 
     public boolean contains(String graphName, String subject, String property) {
@@ -93,6 +90,15 @@ public final class NodeMap {
         return index.getOrDefault(graphName, Map.of())
                 .getOrDefault(subject, Map.of())
                 .keySet();
+    }
+
+    public boolean contains(String id) {
+        return index.containsKey(id);
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toString(index);
     }
 
     /**
@@ -132,10 +138,10 @@ public final class NodeMap {
                         if (result.get(Keywords.MERGED, subject.getKey(), property.getKey()) instanceof Collection<?> values) {
 
                             if (values instanceof ArrayList list) {
-                                
+
                                 @SuppressWarnings("unchecked")
-                                final var typedList = (List<Object>)list;
-                                
+                                final var typedList = (List<Object>) list;
+
                                 mergedValues = typedList;
 
                             } else {
@@ -164,14 +170,4 @@ public final class NodeMap {
             index.put(Keywords.MERGED, result.index.get(Keywords.MERGED));
         }
     }
-
-    public boolean contains(String id) {
-        return index.containsKey(id);
-    }
-
-    @Override
-    public String toString() {
-        return Objects.toString(index);
-    }
-
 }

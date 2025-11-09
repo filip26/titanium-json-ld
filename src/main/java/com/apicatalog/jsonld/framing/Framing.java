@@ -82,15 +82,15 @@ public final class Framing {
     public void frame() throws JsonLdException {
 
         // 2.
-        final Embed embed = frame.getEmbed(state.getEmbed());
+        final var embed = frame.getEmbed(state.getEmbed());
 
-        final boolean explicit = frame.isExplicit(state.isExplicitInclusion());
+        final var isExplicit = frame.isExplicit(state.isExplicitInclusion());
 
-        final boolean requireAll = frame.isRequireAll(state.isRequireAll());
+        final var isRequireAll = frame.isRequireAll(state.isRequireAll());
 
         // 3.
-        final List<String> matchedSubjects = FrameMatcher
-                .with(state, frame, requireAll)
+        final var matchedSubjects = FrameMatcher
+                .with(state, frame, isRequireAll)
                 .match(subjects);
 
         // 4.
@@ -228,7 +228,7 @@ public final class Framing {
                 }
 
                 // 4.7.2.
-                if (explicit && !frame.contains(property)) {
+                if (isExplicit && !frame.contains(property)) {
                     continue;
                 }
 
@@ -239,8 +239,8 @@ public final class Framing {
 
                     if (subframe == null) {
                         subframe = Map.of(Keywords.EMBED, "@".concat(embed.name().toLowerCase()),
-                                Keywords.EXPLICIT, explicit,
-                                Keywords.REQUIRE_ALL, requireAll);
+                                Keywords.EXPLICIT, isExplicit,
+                                Keywords.REQUIRE_ALL, isRequireAll);
                     }
 
                     // 4.7.3.1.
@@ -259,8 +259,8 @@ public final class Framing {
                         if (listFrameValue == null) {
                             listFrameValue = Map.of(
                                     Keywords.EMBED, "@".concat(embed.name().toLowerCase()),
-                                    Keywords.EXPLICIT, explicit,
-                                    Keywords.REQUIRE_ALL, requireAll);
+                                    Keywords.EXPLICIT, isExplicit,
+                                    Keywords.REQUIRE_ALL, isRequireAll);
                         }
 
                         final Frame listFrame = Frame.of(listFrameValue);
@@ -303,9 +303,6 @@ public final class Framing {
 
                         LdAdapter.setOrAdd(output, property, Map.of(Keywords.LIST, list));
 
-//                        output.put(property, List.of(Map.of(Keywords.LIST, list)));
-//                                JsonProvider.instance().createObjectBuilder().add(Keywords.LIST, list)
-
                     } else if (LdAdapter.isReference(item)) {
 
                         FramingState clonedState = new FramingState(state);
@@ -324,6 +321,7 @@ public final class Framing {
                                 .frame();
 
                     } else if (item instanceof Map itemMap && LdAdapter.isValueNode(itemMap)) {
+
                         if (Frame.of(subframe).matchValue(item)) {
                             LdAdapter.setOrAdd(output, property, item);
                         }

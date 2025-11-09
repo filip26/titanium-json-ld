@@ -46,7 +46,10 @@ final class GraphMap {
     }
 
     public boolean contains(final String graphName, final String subject) {
-        return index.containsKey(graphName) && index.get(graphName).containsKey(subject);
+        return Optional
+                .ofNullable(index.get(graphName))
+                .map(graphs -> graphs.containsKey(subject))
+                .orElse(false);
     }
 
     public void set(final String graphName, final String subject, final String property, final Object value) {
@@ -57,31 +60,16 @@ final class GraphMap {
     }
 
     public Optional<Map<String, Object>> get(final String graphName, final String subject) {
-
-        final var graphMap = index.get(graphName);
-
-        if (graphMap == null) {
-            return Optional.empty();
-        }
-
-        return Optional.ofNullable(graphMap.get(subject));
+        return Optional
+                .ofNullable(index.get(graphName))
+                .map(graphs -> graphs.get(subject));
     }
 
     public Optional<Object> get(final String graphName, final String subject, final String property) {
-
-        final var graphMap = index.get(graphName);
-
-        if (graphMap == null) {
-            return Optional.empty();
-        }
-
-        final var subjectMap = graphMap.get(subject);
-
-        if (subjectMap == null) {
-            return Optional.empty();
-        }
-
-        return Optional.ofNullable(subjectMap.get(property));
+        return Optional
+                .ofNullable(index.get(graphName))
+                .map(graphs -> graphs.get(subject))
+                .map(subjects -> subjects.get(property));
     }
 
     public Set<String> keys(String graphName) {
@@ -97,9 +85,10 @@ final class GraphMap {
     }
 
     public List<Reference> getUsages(String graphName, String subject) {
-        return usages.containsKey(graphName) && usages.get(graphName).containsKey(subject)
-                ? usages.get(graphName).get(subject)
-                : List.of();
+        return Optional
+                .ofNullable(usages.get(graphName))
+                .map(graphs -> graphs.get(subject))
+                .orElse(List.of());
     }
 
     public void addUsage(String graphName, String subject, Reference reference) {
@@ -109,7 +98,8 @@ final class GraphMap {
     }
 
     public void remove(String graphName, String subject) {
-        index.get(graphName).remove(subject);
+        Optional.ofNullable(index.get(graphName))
+                .ifPresent(graph -> graph.remove(subject));
     }
 
     public void clear() {

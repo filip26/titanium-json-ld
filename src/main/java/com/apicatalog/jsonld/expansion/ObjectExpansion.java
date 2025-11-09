@@ -32,7 +32,7 @@ import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.web.uri.UriUtils;
 
 /**
- * O
+ * 
  * 
  * @see <a href=
  *      "https://www.w3.org/TR/json-ld11-api/#expansion-algorithm">Expansion
@@ -68,7 +68,7 @@ public final class ObjectExpansion {
                 adapter,
                 params);
 
-        // 8. init property context
+        // 8. initialize property context
         if (propertyContext != null) {
             activeContext = activeContext
                     .newContext(params.options().loader(), params.runtime())
@@ -128,13 +128,13 @@ public final class ObjectExpansion {
         // 15.
         if (result.containsKey(Keywords.VALUE)) {
             return normalizeValue(result, property, params.frameExpansion());
-
-            // 16.
-        } else if (result.containsKey(Keywords.TYPE)) {
+        }
+        // 16.
+        if (result.containsKey(Keywords.TYPE)) {
             return normalizeType(result, property, params.frameExpansion());
-
-            // 17.
-        } else if (result.containsKey(Keywords.LIST) || result.containsKey(Keywords.SET)) {
+        } 
+        // 17.
+        if (result.containsKey(Keywords.LIST) || result.containsKey(Keywords.SET)) {
             return normalizeContainer(result, property, params.frameExpansion());
         }
 

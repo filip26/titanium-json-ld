@@ -51,51 +51,41 @@ public final class Frame {
             final Options options,
             final Execution runtime) throws JsonLdException {
 
-        @SuppressWarnings("unchecked")
-        Set<String> keys = frame.content().isMap()
-                ? (Set<String>) frame.content().keys()
-                : Set.of();
-
-        var expanded = Expander.expandFrame(
-                frame,
-                Options.copyOf(options).ordered(false),
-                runtime);
-
-        return of(expanded, keys);
+        return of(
+                Expander.expandFrame(
+                        frame,
+                        Options.copyOf(options).ordered(false),
+                        runtime),
+                keysOf(frame.content()));
     }
 
     public static final Frame of(
-            final TreeIO frame, 
-            final Options options, 
+            final TreeIO frame,
+            final Options options,
             final Execution runtime) throws JsonLdException {
-        @SuppressWarnings("unchecked")
-        Set<String> keys = frame.isMap()
-                ? (Set<String>) frame.keys()
-                : Set.of();
 
-        var expanded = Expander.expandFrame(
-                frame,
-                Expander.context(
-                        null,
-                        null,
-                        options,
+        return of(
+                Expander.expandFrame(
+                        frame,
+                        Expander.context(
+                                null,
+                                null,
+                                options,
+                                runtime),
+                        Expander.baseUrl(null, options),
+                        Options.copyOf(options).ordered(false),
                         runtime),
-                Expander.baseUrl(null, options),
-                Options.copyOf(options).ordered(false),
-                runtime);
-
-        return of(expanded, keys);
+                keysOf(frame));
     }
 
     public static final URI contextBase(final Document frame, final Options options) {
         return (frame.context() != null)
                 ? frame.url()
                 : options.base();
-
     }
 
     static final Frame of(final Object expanded) throws JsonLdException {
-        return of(expanded, Set.of());
+        return of(expanded, List.of());
     }
 
     static final Frame of(final Object expanded, Collection<String> frameGraphs) throws JsonLdException {
@@ -350,5 +340,11 @@ public final class Frame {
             }
         }
         return false;
+    }
+
+    private static Collection<String> keysOf(TreeIO frame) {
+        return frame.isMap()
+                ? frame.keyStream().map(String.class::cast).toList()
+                : List.of();
     }
 }
