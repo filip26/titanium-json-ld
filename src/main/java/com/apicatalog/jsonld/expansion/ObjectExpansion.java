@@ -62,6 +62,8 @@ public final class ObjectExpansion {
 
     public Object expand(final Context context, final String property) throws JsonLdException {
 
+        params.runtime().onBeforeMap(property);
+
         activeContext = initPreviousContext(
                 context,
                 element,
@@ -125,6 +127,8 @@ public final class ObjectExpansion {
                 .nest(new LinkedHashMap<>())
                 .expand(activeContext, element, adapter, property);
 
+        params.runtime().onAfterMap(property);
+
         // 15.
         if (result.containsKey(Keywords.VALUE)) {
             return normalizeValue(result, property, params.frameExpansion());
@@ -132,7 +136,7 @@ public final class ObjectExpansion {
         // 16.
         if (result.containsKey(Keywords.TYPE)) {
             return normalizeType(result, property, params.frameExpansion());
-        } 
+        }
         // 17.
         if (result.containsKey(Keywords.LIST) || result.containsKey(Keywords.SET)) {
             return normalizeContainer(result, property, params.frameExpansion());
@@ -211,6 +215,8 @@ public final class ObjectExpansion {
                 if (typeKey == null) {
                     typeKey = key;
                 }
+
+                params.runtime().onTypeKey(key);
 
                 // 11.2
                 var terms = adapter.asStream(adapter.property(key, element))

@@ -5,21 +5,20 @@ import java.time.Instant;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
-import com.apicatalog.jsonld.Options;
 
-class Ticker extends Execution {
+class Ticker {
 
     final Duration ttl;
 
     Instant ticker;
 
-    Ticker(Options options) {
-        this.ttl = options.timeout();
+    Ticker(Duration ttl) {
+        this.ttl = ttl;
         this.ticker = null;
     }
 
-    @Override
     public void tick() throws JsonLdException {
+
         if (ticker == null) {
             ticker = Instant.now();
             return;
