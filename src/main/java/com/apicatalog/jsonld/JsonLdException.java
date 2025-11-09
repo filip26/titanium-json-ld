@@ -28,7 +28,7 @@ import java.util.Optional;
 public final class JsonLdException extends Exception {
 
     private static final long serialVersionUID = -7548366490116267200L;
-    
+
     private final ErrorCode code;
 
     /**
@@ -441,7 +441,7 @@ public final class JsonLdException extends Exception {
          * @param name the name of the error code
          * @return an {@link Optional} of {@link ErrorCode}
          */
-        public static Optional<ErrorCode> fromName(String name) {
+        public static Optional<ErrorCode> find(String name) {
             return Arrays.stream(values())
                     .filter(code -> code.name().equalsIgnoreCase(name))
                     .findFirst();
@@ -449,7 +449,7 @@ public final class JsonLdException extends Exception {
 
         @Override
         public String toString() {
-            return description + " [code=" + this.name() + "].";
+            return description + ", code=" + this.name() + ".";
         }
     }
 }
