@@ -1,6 +1,7 @@
 package com.apicatalog.jsonld.processor;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
@@ -34,6 +35,11 @@ public class Execution {
 
     public Optional<TypeMapCollector> typeMapper() {
         return Optional.empty();
+    }
+    
+    public Consumer<String> contextKeysCollector() {
+        return a -> {
+        };
     }
 
 //    /**

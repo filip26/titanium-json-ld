@@ -27,6 +27,7 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.web.uri.UriResolver;
 import com.apicatalog.web.uri.UriUtils;
@@ -66,6 +67,7 @@ public final class UriExpansion {
     // mandatory
     private final Context activeContext;
     private final DocumentLoader loader;
+    private final Execution runtime;
 
     // optional
     private boolean documentRelative;
@@ -76,9 +78,10 @@ public final class UriExpansion {
     private TreeAdapter adapter;
     private Map<String, Boolean> defined;
 
-    private UriExpansion(final Context activeContext, final DocumentLoader loader) {
+    private UriExpansion(final Context activeContext, final DocumentLoader loader, final Execution runtime) {
         this.activeContext = activeContext;
         this.loader = loader;
+        this.runtime = runtime;
 
         // default values
         this.documentRelative = false;
@@ -95,10 +98,14 @@ public final class UriExpansion {
      *
      * @param activeContext the active context to use for expansion
      * @param loader
+     * @param runtime
      * @return a new, configurable {@code UriExpansion} instance
      */
-    public static final UriExpansion with(final Context activeContext, final DocumentLoader loader) {
-        return new UriExpansion(activeContext, loader);
+    public static final UriExpansion with(
+            final Context activeContext,
+            final DocumentLoader loader,
+            final Execution runtime) {
+        return new UriExpansion(activeContext, loader, runtime);
     }
 
     /**
@@ -259,6 +266,13 @@ public final class UriExpansion {
 
                 if (!defined.containsKey(entryValueString) || Boolean.FALSE.equals(defined.get(entryValueString))) {
 
+                    // CBOR-LD collector
+                    if (runtime.contextKeysCollector() != null) {
+                        adapter.keyStream(localContext)
+                                .map(String.class::cast)
+                                .forEach(runtime.contextKeysCollector()::accept);
+                    }
+
                     activeContext.newTerm(
                             localContext,
                             adapter,
@@ -289,6 +303,13 @@ public final class UriExpansion {
                 && adapter.keys(localContext).contains(prefix)
                 && !Boolean.TRUE.equals(defined.get(prefix))) {
 
+            // CBOR-LD collector
+            if (runtime.contextKeysCollector() != null) {
+                adapter.keyStream(localContext)
+                        .map(String.class::cast)
+                        .forEach(runtime.contextKeysCollector()::accept);
+            }
+            
             activeContext.newTerm(localContext, adapter, defined, loader).create(prefix);
         }
 

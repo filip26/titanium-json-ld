@@ -98,6 +98,16 @@ public final class Expansion {
                 .map(TermDefinition::getLocalContext)
                 .orElse(null);
 
+        // CBOR-LD collector
+        if (params.runtime().contextKeysCollector() != null
+                && propertyContext != null
+                && propertyContext.isMap()) {
+            propertyContext
+                    .keyStream()
+                    .map(String.class::cast)
+                    .forEach(params.runtime().contextKeysCollector()::accept);
+        }
+
         // 4. If element is a scalar
         if (nodeType.isScalar()) {
             return scalar(activeContext,

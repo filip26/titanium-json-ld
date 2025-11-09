@@ -38,7 +38,6 @@
             <url>https://www.linkedin.com/in/filipkolarik/</url>      
             <roles>
                 <role>author</role>
-                <role>maintainer</role>
             </roles>
         </developer>
     </developers>
@@ -203,11 +202,12 @@
             <artifactId>maven-surefire-plugin</artifactId>
             <version>3.5.4</version>
             <configuration>
-                <excludes>
+<!--                <excludes>
                     <exclude>**Test.java</exclude>
-                </excludes>
-                <includes>
+                </excludes> -->
+                <includes>                
                     <include>**Suite.java</include>
+                    <include>**Test.java</include>
                 </includes>
             </configuration>
           </plugin>          
