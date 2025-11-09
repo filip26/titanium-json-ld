@@ -33,6 +33,7 @@ import com.apicatalog.jsonld.lang.CompactUri;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.web.lang.LanguageTag;
@@ -80,6 +81,8 @@ public final class TermDefinitionBuilder {
 
     private final Map<String, Boolean> defined;
     private final DocumentLoader loader;
+    private final Execution runtime;
+
     // optional
     private URI baseUrl;
 
@@ -89,12 +92,13 @@ public final class TermDefinitionBuilder {
 
     private Collection<String> remoteContexts;
 
-    private TermDefinitionBuilder(ActiveContext activeContext, Object localContext, TreeAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader) {
+    private TermDefinitionBuilder(ActiveContext activeContext, Object localContext, TreeAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader, final Execution runtime) {
         this.activeContext = activeContext;
         this.localContext = localContext;
         this.adapter = adapter;
         this.defined = defined;
         this.loader = loader;
+        this.runtime = runtime;
 
         // default values
         this.baseUrl = null;
@@ -103,8 +107,9 @@ public final class TermDefinitionBuilder {
         this.remoteContexts = new ArrayList<>();
     }
 
-    public static final TermDefinitionBuilder with(ActiveContext activeContext, Object localContext, TreeAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader) {
-        return new TermDefinitionBuilder(activeContext, localContext, adapter, defined, loader);
+    public static final TermDefinitionBuilder with(ActiveContext activeContext, Object localContext, TreeAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader,
+            final Execution runtime) {
+        return new TermDefinitionBuilder(activeContext, localContext, adapter, defined, loader, runtime);
     }
 
     public void create(final String term) throws JsonLdException {
@@ -243,7 +248,7 @@ public final class TermDefinitionBuilder {
             }
 
             // 12.2.
-            final String expandedTypeString = UriExpansion.with(activeContext, loader)
+            final String expandedTypeString = UriExpansion.with(activeContext, loader, runtime)
                     .localContext(localContext, adapter)
                     .defined(defined)
                     .vocab(true)
@@ -291,7 +296,7 @@ public final class TermDefinitionBuilder {
 
             // 13.4.
             definition.setUriMapping(
-                    UriExpansion.with(activeContext, loader)
+                    UriExpansion.with(activeContext, loader, runtime)
                             .localContext(localContext, adapter)
                             .defined(defined)
                             .vocab(true)
@@ -353,7 +358,7 @@ public final class TermDefinitionBuilder {
 
                 // 14.2.3
                 definition.setUriMapping(
-                        UriExpansion.with(activeContext, loader)
+                        UriExpansion.with(activeContext, loader, runtime)
                                 .localContext(localContext, adapter)
                                 .defined(defined)
                                 .vocab(true)
@@ -376,7 +381,7 @@ public final class TermDefinitionBuilder {
                     defined.put(term, Boolean.TRUE);
 
                     // 14.2.4.2
-                    final var expandedTerm = UriExpansion.with(activeContext, loader)
+                    final var expandedTerm = UriExpansion.with(activeContext, loader, runtime)
                             .localContext(localContext, adapter)
                             .defined(defined)
                             .vocab(true)
@@ -409,7 +414,14 @@ public final class TermDefinitionBuilder {
                     && compactUri.isNotBlank()
                     && adapter.keys(localContext).contains(compactUri.prefix())) {
 
-                activeContext.newTerm(localContext, adapter, defined, loader).create(compactUri.prefix());
+                activeContext
+                        .newTerm(
+                                localContext,
+                                adapter,
+                                defined,
+                                loader,
+                                runtime)
+                        .create(compactUri.prefix());
             }
             // 15.2.
             if (compactUri != null && compactUri.isNotBlank() && activeContext.containsTerm(compactUri.prefix())) {
@@ -430,7 +442,7 @@ public final class TermDefinitionBuilder {
         } else if (term.contains("/")) {
 
             definition.setUriMapping(
-                    UriExpansion.with(activeContext, loader)
+                    UriExpansion.with(activeContext, loader, runtime)
                             .localContext(localContext, adapter)
                             .defined(defined)
                             .vocab(true)
@@ -500,7 +512,7 @@ public final class TermDefinitionBuilder {
 
             final var indexString = adapter.stringValue(index);
 
-            final var expandedIndex = UriExpansion.with(activeContext, loader)
+            final var expandedIndex = UriExpansion.with(activeContext, loader, runtime)
                     .localContext(localContext, adapter)
                     .defined(defined)
                     .vocab(true)
@@ -526,7 +538,7 @@ public final class TermDefinitionBuilder {
             // 21.3.
             try {
                 activeContext
-                        .newContext(loader)
+                        .newContext(loader, runtime)
                         .overrideProtected(true)
                         .remoteContexts(new ArrayList<>(remoteContexts))
                         .validateScopedContext(false)

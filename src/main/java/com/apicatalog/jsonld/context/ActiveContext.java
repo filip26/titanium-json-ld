@@ -24,6 +24,7 @@ import java.util.Optional;
 import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.tree.io.TreeAdapter;
 
 /**
@@ -154,13 +155,13 @@ final class ActiveContext implements Context {
     }
 
     @Override
-    public ContextBuilder newContext(DocumentLoader loader) {
-        return ContextBuilder.with(this, loader);
+    public ContextBuilder newContext(DocumentLoader loader, final Execution runtime) {
+        return ContextBuilder.with(this, loader, runtime);
     }
 
     @Override
-    public TermDefinitionBuilder newTerm(final Object localContext, final TreeAdapter adapter, final Map<String, Boolean> defined, DocumentLoader loader) {
-        return TermDefinitionBuilder.with(this, localContext, adapter, defined, loader);
+    public TermDefinitionBuilder newTerm(final Object localContext, final TreeAdapter adapter, final Map<String, Boolean> defined, DocumentLoader loader, final Execution runtime) {
+        return TermDefinitionBuilder.with(this, localContext, adapter, defined, loader, runtime);
     }
 
     public Optional<String> selectTerm(

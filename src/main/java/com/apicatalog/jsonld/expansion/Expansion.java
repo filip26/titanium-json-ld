@@ -186,7 +186,7 @@ public final class Expansion {
          */
         if (propertyContext != null) {
             return ValueExpansion.expand(context
-                    .newContext(params.options().loader())
+                    .newContext(params.options().loader(), params.runtime())
                     .build(propertyContext.node(),
                             propertyContext.adapter(),
                             context.findTerm(property)
@@ -195,14 +195,14 @@ public final class Expansion {
                     property,
                     node,
                     nodeAdapter,
-                    params.options());
+                    params);
         }
 
         /*
          * 4.3. Return the result of the Value Expansion algorithm, passing the active
          * context, active property, and element as value.
          */
-        return ValueExpansion.expand(context, property, node, nodeAdapter, params.options());
+        return ValueExpansion.expand(context, property, node, nodeAdapter, params);
     }
 
     /**

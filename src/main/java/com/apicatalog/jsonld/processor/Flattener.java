@@ -74,7 +74,8 @@ public final class Flattener {
                 Expander.context(
                         null,
                         null,
-                        options),
+                        options,
+                        runtime),
                 null,
                 expansionOptions,
                 runtime);

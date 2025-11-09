@@ -53,7 +53,8 @@ public final class Compactor {
                 Expander.context(
                         null,
                         null,
-                        options),
+                        options,
+                        runtime),
                 Expander.baseUrl(null, options),
                 expansionOptions,
                 runtime);
@@ -102,6 +103,7 @@ public final class Compactor {
 
         // 7.
         final var builder = new Context.Builder(options.mode())
+                .runtime(runtime)
                 .loader(options.loader())
                 .update(localContext, contextBase);
 

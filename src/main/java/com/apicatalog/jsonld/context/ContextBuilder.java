@@ -36,6 +36,7 @@ import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.TreeIOException;
@@ -60,6 +61,7 @@ public final class ContextBuilder {
     // mandatory
     private final ActiveContext activeContext;
     private final DocumentLoader loader;
+    private final Execution runtime;
 
     // optional
     private Collection<String> remoteContexts;
@@ -73,10 +75,11 @@ public final class ContextBuilder {
     // runtime
     private ActiveContext result;
 
-    private ContextBuilder(final ActiveContext activeContext, DocumentLoader loader) {
+    private ContextBuilder(final ActiveContext activeContext, final DocumentLoader loader, final Execution runtime) {
 
         this.activeContext = activeContext;
         this.loader = loader;
+        this.runtime = runtime;
 
         // default optional values
         this.remoteContexts = new ArrayList<>();
@@ -90,8 +93,9 @@ public final class ContextBuilder {
 
     public static final ContextBuilder with(
             final ActiveContext activeContext,
-            final DocumentLoader loader) {
-        return new ContextBuilder(activeContext, loader);
+            final DocumentLoader loader,
+            final Execution runtime) {
+        return new ContextBuilder(activeContext, loader, runtime);
     }
 
     public ActiveContext build(TreeIO context, URI baseUrl) throws JsonLdException, IOException {
@@ -377,7 +381,7 @@ public final class ContextBuilder {
                             || BlankNode.hasPrefix(valueString)
                             || UriUtils.isURI(valueString)) {
 
-                        final var vocabularyMapping = UriExpansion.with(result, loader)
+                        final var vocabularyMapping = UriExpansion.with(result, loader, runtime)
                                 .vocab(true)
                                 .documentRelative(true)
                                 .expand(valueString);
@@ -472,7 +476,7 @@ public final class ContextBuilder {
             }
 
             final TermDefinitionBuilder termBuilder = result
-                    .newTerm(contextDefinition, contextAdapter, new HashMap<>(), loader)
+                    .newTerm(contextDefinition, contextAdapter, new HashMap<>(), loader, runtime)
                     .baseUrl(baseUrl)
                     .overrideProtectedFlag(overrideProtected);
 
@@ -650,7 +654,7 @@ public final class ContextBuilder {
         // 5.2.6
         try {
             result = result
-                    .newContext(loader)
+                    .newContext(loader, runtime)
                     .remoteContexts(new ArrayList<>(remoteContexts))
                     .validateScopedContext(validateScopedContext)
                     .build(newContext, newContextAdapter, remoteDocument.url());

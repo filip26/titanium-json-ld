@@ -78,7 +78,8 @@ public final class Frame {
                 Expander.context(
                         null,
                         null,
-                        options),
+                        options,
+                        runtime),
                 Expander.baseUrl(null, options),
                 Options.copyOf(options).ordered(false),
                 runtime);

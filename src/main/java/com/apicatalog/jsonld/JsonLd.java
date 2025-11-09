@@ -106,7 +106,7 @@ public final class JsonLd {
 
         return Expander.expand(
                 document,
-                Expander.context(null, null, options),
+                Expander.context(null, null, options, runtime),
                 Expander.baseUrl(null, options),
                 options,
                 runtime);
@@ -476,7 +476,8 @@ public final class JsonLd {
                                 null,
                                 contextNode,
                                 options.base(),
-                                options),
+                                options,
+                                runtime),
                         options),
                 contextNode);
     }

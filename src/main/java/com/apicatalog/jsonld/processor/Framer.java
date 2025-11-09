@@ -67,7 +67,8 @@ public final class Framer {
                                 document.url(),
                                 contextNode,
                                 Frame.contextBase(frame, options),
-                                options),
+                                options,
+                                runtime),
                         options),
                 contextNode);
     }
@@ -76,13 +77,15 @@ public final class Framer {
             final URI baseUrl,
             final TreeIO localContext,
             final URI localContextBase,
-            final Options options) throws JsonLdException {
+            final Options options,
+            final Execution runtime) throws JsonLdException {
 
         // 10-11.
         return new Context.Builder(
                 baseUrl,
                 baseUrl,
                 options.mode())
+                .runtime(runtime)
                 .loader(options.loader())
                 .update(localContext, localContextBase)
                 .build();
@@ -107,7 +110,8 @@ public final class Framer {
                 Expander.context(
                         null,
                         null,
-                        options),
+                        options,
+                        runtime),
                 options.base(),
                 Options.copyOf(options).ordered(false),
                 runtime);

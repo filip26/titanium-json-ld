@@ -50,7 +50,8 @@ public final class Expander {
                 Expander.context(
                         document.url(),
                         document.context(),
-                        options),
+                        options,
+                        runtime),
                 Expander.baseUrl(document.url(), options),
                 options,
                 runtime);
@@ -75,7 +76,8 @@ public final class Expander {
                 Expander.context(
                         document.url(),
                         document.context(),
-                        options),
+                        options,
+                        runtime),
                 Expander.baseUrl(document.url(), options),
                 options,
                 runtime);
@@ -93,7 +95,8 @@ public final class Expander {
     public static final Context context(
             final URI document,
             final URI context,
-            final Options options) throws JsonLdException {
+            final Options options,
+            final Execution runtime) throws JsonLdException {
 
         // 5. Initialize a new empty active context. The base IRI and
         // original base URL of the active context is set to the documentUrl
@@ -111,6 +114,7 @@ public final class Expander {
                 baseUri,
                 baseUrl,
                 options.mode())
+                .runtime(runtime)
                 .loader(options.loader());
 
         // 6. If the expandContext option in options is set, update the active context

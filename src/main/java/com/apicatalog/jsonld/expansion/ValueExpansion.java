@@ -19,9 +19,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.TreeAdapter;
@@ -46,8 +46,7 @@ public final class ValueExpansion {
      *                 term definition to apply.
      * @param value    The JSON value to expand.
      * @param adapter
-     * @param options
-     * @param runtime
+     * @param params
      * @return A {@code Map} representing the expanded value object, typically
      *         containing keys like {@code @id}, {@code @value}, {@code @type},
      *         {@code @language}, or {@code @direction}.
@@ -61,7 +60,7 @@ public final class ValueExpansion {
             final String property,
             final Object value,
             final TreeAdapter adapter,
-            final Options options) throws JsonLdException {
+            final Params params) throws JsonLdException {
 
         final var definition = context.findTerm(property);
 
@@ -77,12 +76,12 @@ public final class ValueExpansion {
                 idValue = adapter.stringValue(value);
 
                 // custom extension allowing to process numeric ids
-            } else if (options.useNumericId() && adapter.isNumber(value)) {
+            } else if (params.options().useNumericId() && adapter.isNumber(value)) {
                 idValue = adapter.asString(value);
             }
 
             if (idValue != null) {
-                return Map.of(Keywords.ID, UriExpansion.with(context, options.loader())
+                return Map.of(Keywords.ID, UriExpansion.with(context, params.options().loader(), params.runtime())
                         .documentRelative(true)
                         .vocab(false)
                         .expand(idValue));
@@ -91,7 +90,7 @@ public final class ValueExpansion {
 
         case Keywords.VOCAB:
             if (adapter.isString(value)) {
-                return Map.of(Keywords.ID, UriExpansion.with(context, options.loader())
+                return Map.of(Keywords.ID, UriExpansion.with(context, params.options().loader(), params.runtime())
                         .documentRelative(true)
                         .vocab(true)
                         .expand(adapter.stringValue(value)));

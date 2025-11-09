@@ -88,7 +88,7 @@ public final class RdfEmitter {
 
         final var expanded = Expander.expand(
                 input,
-                Expander.context(null, null, options),
+                Expander.context(null, null, options, runtime),
                 options.base(),
                 expansionOptions,
                 runtime);

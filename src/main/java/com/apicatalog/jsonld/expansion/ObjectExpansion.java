@@ -71,7 +71,7 @@ public final class ObjectExpansion {
         // 8. init property context
         if (propertyContext != null) {
             activeContext = activeContext
-                    .newContext(params.options().loader())
+                    .newContext(params.options().loader(), params.runtime())
                     .overrideProtected(true)
                     .build(
                             propertyContext.node(),
@@ -87,7 +87,7 @@ public final class ObjectExpansion {
 
         if (contextValue != null) {
             activeContext = activeContext
-                    .newContext(params.options().loader())
+                    .newContext(params.options().loader(), params.runtime())
                     .build(contextValue, adapter, params.baseUrl());
         }
 
@@ -151,7 +151,7 @@ public final class ObjectExpansion {
 
                 var key = adapter.stringValue(it.next());
 
-                final String expandedKey = UriExpansion.with(context, params.options().loader())
+                final String expandedKey = UriExpansion.with(context, params.options().loader(), params.runtime())
                         .vocab(true)
                         .expand(key);
 
@@ -185,7 +185,7 @@ public final class ObjectExpansion {
 
             params.runtime().tick();
 
-            var expandedKey = UriExpansion.with(activeContext, params.options().loader())
+            var expandedKey = UriExpansion.with(activeContext, params.options().loader(), params.runtime())
                     .vocab(true)
                     .expand(key);
 
@@ -215,7 +215,7 @@ public final class ObjectExpansion {
 
                     if (localContext != null) {
                         activeContext = activeContext
-                                .newContext(params.options().loader())
+                                .newContext(params.options().loader(), params.runtime())
                                 .propagate(false)
                                 .build(localContext.node(),
                                         localContext.adapter(),
@@ -250,13 +250,13 @@ public final class ObjectExpansion {
                         .reduce((first, second) -> second);
 
                 if (lastValue.isPresent()) {
-                    return UriExpansion.with(activeContext, params.options().loader())
+                    return UriExpansion.with(activeContext, params.options().loader(), params.runtime())
                             .vocab(true)
                             .expand(lastValue.get());
                 }
 
             } else if (adapter.isString(type)) {
-                return UriExpansion.with(activeContext, params.options().loader())
+                return UriExpansion.with(activeContext, params.options().loader(), params.runtime())
                         .vocab(true)
                         .expand(adapter.stringValue(type));
             }

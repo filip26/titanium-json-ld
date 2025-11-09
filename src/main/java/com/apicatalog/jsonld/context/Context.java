@@ -30,6 +30,7 @@ import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.java.NativeAdapter;
@@ -67,9 +68,9 @@ public interface Context {
 
     Context getPreviousContext();
 
-    TermDefinitionBuilder newTerm(Object localContext, TreeAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader);
+    TermDefinitionBuilder newTerm(Object localContext, TreeAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader, final Execution runtime);
 
-    ContextBuilder newContext(DocumentLoader loader);
+    ContextBuilder newContext(DocumentLoader loader, final Execution runtime);
 
     InverseContext getInverseContext();
 
@@ -240,18 +241,10 @@ public interface Context {
         ActiveContext ctx;
 
         DocumentLoader loader;
+        Execution runtime;
 
         public Builder(Version version) {
             this(null, null, version);
-        }
-
-        public Builder baseUri(URI base) {
-            ctx.setBaseUri(base);
-            return this;
-        }
-
-        public URI baseUri() {
-            return ctx.getBaseUri();
         }
 
         public Builder(URI base, Version version) {
@@ -265,6 +258,20 @@ public interface Context {
         public Builder loader(DocumentLoader loader) {
             this.loader = loader;
             return this;
+        }
+        
+        public Builder runtime(Execution runtime) {
+            this.runtime = runtime;
+            return this;
+        }
+
+        public Builder baseUri(URI base) {
+            ctx.setBaseUri(base);
+            return this;
+        }
+
+        public URI baseUri() {
+            return ctx.getBaseUri();
         }
 
         // TODO better
@@ -286,7 +293,7 @@ public interface Context {
 //            this.context = node;
 //            this.adapter = adapter;
 //            this.baseUrl = baseUrl;
-            this.ctx = ctx.newContext(loader).build(node, adapter, baseUrl);
+            this.ctx = ctx.newContext(loader, runtime).build(node, adapter, baseUrl);
             return this;
         }
 

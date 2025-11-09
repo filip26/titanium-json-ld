@@ -166,7 +166,7 @@ public final class Compaction {
             var localContext = activePropertyDefinition.get().getLocalContext();
 
             activeContext = activeContext
-                    .newContext(options.loader())
+                    .newContext(options.loader(), runtime)
                     .overrideProtected(true)
                     .build(localContext.node(),
                             localContext.adapter(),
@@ -234,7 +234,7 @@ public final class Compaction {
                     final var localContext = termDefinition.getLocalContext();
 
                     activeContext = activeContext
-                            .newContext(options.loader())
+                            .newContext(options.loader(), runtime)
                             .propagate(false)
                             .build(
                                     localContext.node(),
@@ -435,7 +435,7 @@ public final class Compaction {
                     // 12.7.2.1.
                     if (!Keywords.NEST.equals(nestTerm)
                             && !Keywords.NEST.equals(
-                                    UriExpansion.with(activeContext, options.loader())
+                                    UriExpansion.with(activeContext, options.loader(), runtime)
                                             .vocab(true)
                                             .expand(nestTerm))) {
                         throw new JsonLdException(ErrorCode.INVALID_KEYWORD_NEST_VALUE);
@@ -482,7 +482,7 @@ public final class Compaction {
                     // 12.8.2.1.
                     if (!Keywords.NEST.equals(nestTerm)
                             && !Keywords.NEST.equals(
-                                    UriExpansion.with(activeContext, options.loader())
+                                    UriExpansion.with(activeContext, options.loader(), runtime)
                                             .vocab(true)
                                             .expand(nestTerm))) {
                         throw new JsonLdException(ErrorCode.INVALID_KEYWORD_NEST_VALUE);
@@ -733,7 +733,7 @@ public final class Compaction {
                         // 12.8.9.6.1.
                         containerKey = UriCompaction.withVocab(
                                 activeContext,
-                                UriExpansion.with(activeContext, options.loader())
+                                UriExpansion.with(activeContext, options.loader(), runtime)
                                         .expand(indexKey),
                                 options);
 
@@ -867,7 +867,7 @@ public final class Compaction {
                         if (compactedItem instanceof Map map && map.size() == 1) {
 //                        if (JsonUtils.isObject(compactedItem) && compactedItem.asJsonObject().size() == 1) {
 
-                            final var expandedKey = UriExpansion.with(activeContext, options.loader())
+                            final var expandedKey = UriExpansion.with(activeContext, options.loader(), runtime)
                                     .vocab(true)
                                     .expand((String) map.keySet().iterator().next());
 

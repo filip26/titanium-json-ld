@@ -273,11 +273,14 @@ public final class UriExpansion {
                                 .forEach(runtime.contextKeysCollector()::accept);
                     }
 
-                    activeContext.newTerm(
-                            localContext,
-                            adapter,
-                            defined,
-                            loader).create(value);
+                    activeContext
+                            .newTerm(
+                                    localContext,
+                                    adapter,
+                                    defined,
+                                    loader,
+                                    runtime)
+                            .create(value);
                 }
             }
         }
@@ -309,8 +312,8 @@ public final class UriExpansion {
                         .map(String.class::cast)
                         .forEach(runtime.contextKeysCollector()::accept);
             }
-            
-            activeContext.newTerm(localContext, adapter, defined, loader).create(prefix);
+
+            activeContext.newTerm(localContext, adapter, defined, loader, runtime).create(prefix);
         }
 
         // 6.4. If the prefix is a term in the active context, append the suffix to its
