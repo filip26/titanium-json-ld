@@ -113,13 +113,7 @@
           <artifactId>titanium-rdfc</artifactId>
           <version>2.0.0</version>
           <scope>test</scope>       
-        </dependency>
-<!--        <dependency>
-          <groupId>jakarta.json</groupId>
-          <artifactId>jakarta.json-api</artifactId>
-          <version>${jakarta.json.version}</version>
-          <scope>test</scope>
-        </dependency>   -->     
+        </dependency>   
         <dependency>
           <groupId>org.glassfish</groupId>
           <artifactId>jakarta.json</artifactId>
@@ -137,13 +131,7 @@
             <artifactId>junit-platform-suite</artifactId>
           <version>${junit.version}</version>
           <scope>test</scope>
-        </dependency>
-<!--        <dependency>
-          <groupId>com.github.tomakehurst</groupId>
-          <artifactId>wiremock-jre8</artifactId>
-          <version>${wiremock.version}</version>
-          <scope>test</scope>
-        </dependency>-->        
+        </dependency>  
     </dependencies>
     <build>
         <plugins>
