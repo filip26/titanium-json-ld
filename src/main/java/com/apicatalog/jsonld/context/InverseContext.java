@@ -15,60 +15,46 @@
  */
 package com.apicatalog.jsonld.context;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
+/**
+ * InverseContext stores mapping keyed by (variable, container, type) -> (key ->
+ * value)
+ */
 public final class InverseContext {
 
-    private final Map<String, Map<String, Map<String, Map<String, String>>>> context;
+    private record Key(String variable, String container, String type) {
+    }
+
+    private final Set<String> variables;
+    private final Map<Key, Map<String, String>> mapping;
 
     public InverseContext() {
-        this.context = new LinkedHashMap<>();
-    }
-
-    private void set(final String variable, final String container, final String type, final String key, final String value) {
-        context.computeIfAbsent(variable, x -> new LinkedHashMap<>())
-                .computeIfAbsent(container, x -> new LinkedHashMap<>())
-                .computeIfAbsent(type, x -> new LinkedHashMap<>())
-                .put(key, value);
-    }
-
-    private boolean doesNotContain(final String variable, final String container, final String type, final String key) {
-        return !context.containsKey(variable)
-                || !context.get(variable).containsKey(container)
-                || !context.get(variable).get(container).containsKey(type)
-                || !context.get(variable).get(container).get(type).containsKey(key);
+        this.variables = new HashSet<>();
+        this.mapping = new LinkedHashMap<>();
     }
 
     public boolean contains(final String variable) {
-        return context.containsKey(variable);
+        return variables.contains(variable);
     }
 
     public boolean contains(final String variable, final String container, final String type) {
-        return context.containsKey(variable)
-                && context.get(variable).containsKey(container)
-                && context.get(variable).get(container).containsKey(type);
-    }
-
-    public boolean contains(final String variable, final String container, final String type, final String key) {
-        return contains(variable)
-                && context.get(variable).containsKey(container)
-                && context.get(variable).get(container).containsKey(type)
-                && context.get(variable).get(container).get(type).containsKey(key);
+        return mapping.containsKey(new Key(variable, container, type));
     }
 
     public InverseContext setIfAbsent(final String variable, final String container, final String type, final String key, final String value) {
-        if (doesNotContain(variable, container, type, key)) {
-            set(variable, container, type, key, value);
-        }
+        variables.add(variable);
+        mapping.computeIfAbsent(new Key(variable, container, type), k -> new LinkedHashMap<>())
+                .putIfAbsent(key, value);
         return this;
     }
 
     public Optional<String> get(final String variable, final String container, final String type, final String key) {
-        if (doesNotContain(variable, container, type, key)) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(context.get(variable).get(container).get(type).get(key));
+        return Optional.ofNullable(mapping.get(new Key(variable, container, type)))
+                .map(inner -> inner.get(key));
     }
 }

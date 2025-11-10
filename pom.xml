@@ -3,44 +3,104 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.apicatalog</groupId>
-        <artifactId>titanium</artifactId>
-        <version>1.7.0</version>
-        <relativePath>pom_parent.xml</relativePath>
-    </parent>
+    <groupId>com.apicatalog</groupId>
+    <version>2.0.0-M1</version>
     <artifactId>titanium-json-ld</artifactId>
     <packaging>jar</packaging>
-    <name>Titanium JSON-LD 1.1 (JRE11)</name>
+
+    <name>Titanium JSON-LD 1.1</name>
+    <description>A JSON-LD 1.1 Processor &amp; API</description>
     <url>https://github.com/filip26/titanium-json-ld</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
     <scm>
         <connection>scm:git:git://github.com/filip26/titanium-json-ld.git</connection>
-        <developerConnection>
-            scm:git:git://github.com/filip26/titanium-json-ld.git</developerConnection>
+        <developerConnection>scm:git:git://github.com/filip26/titanium-json-ld.git</developerConnection>
         <url>https://github.com/filip26/titanium-json-ld/tree/main</url>
     </scm>
+
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/filip26/titanium-json-ld/issues</url>
+    </issueManagement>
+
+    <developers>
+        <developer>
+            <id>filip26</id>
+            <name>Filip Kolarik</name>
+            <email>filip26@gmail.com</email>
+            <url>https://www.linkedin.com/in/filipkolarik/</url>      
+            <roles>
+                <role>author</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <inceptionYear>2020</inceptionYear>
+
     <properties>
-        <maven.compiler.target>11</maven.compiler.target>
-        <maven.compiler.source>11</maven.compiler.source>
-        <envSources>src/main/java11</envSources>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <argLine>-Dfile.encoding=UTF-8</argLine>
+        
+        <maven.compiler.release>17</maven.compiler.release>
+        
         <titanium.rdf.api.version>1.0.0</titanium.rdf.api.version>
         <titanium.rdf.nquads.version>1.0.2</titanium.rdf.nquads.version>        
+
+        <jcs.version>3.0.0-M1</jcs.version>
+        <tree-io.version>0.11.0</tree-io.version>
+        <jakarta.json.version>2.0.1</jakarta.json.version>
+
+        <!-- test resources -->
+        <junit.version>6.0.0</junit.version>
+        <wiremock.version>2.35.2</wiremock.version>
+
+        <sonar.projectKey>filip26_titanium-json-ld</sonar.projectKey>
+        <sonar.organization>apicatalog</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>        
     </properties>
+
     <dependencies>
         <dependency>
           <groupId>com.apicatalog</groupId>
           <artifactId>titanium-jcs</artifactId>
-          <version>1.1.1</version>
+          <version>${jcs.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.apicatalog</groupId>
+            <artifactId>tree-io-api</artifactId>
+            <version>${tree-io.version}</version>
+        </dependency>                
         <dependency>
           <groupId>com.apicatalog</groupId>
           <artifactId>titanium-rdf-api</artifactId>
           <version>${titanium.rdf.api.version}</version>
-        </dependency>
+        </dependency>        
+        <!-- Tests-->
+        <dependency>
+            <groupId>com.apicatalog</groupId>
+            <artifactId>tree-io-jakarta</artifactId>
+            <version>${tree-io.version}</version>
+            <scope>test</scope>
+        </dependency>                
+        <dependency>
+            <groupId>com.apicatalog</groupId>
+            <artifactId>tree-io-jackson2</artifactId>
+            <version>${tree-io.version}</version>
+            <scope>test</scope>
+        </dependency>      
         <dependency>
           <groupId>com.apicatalog</groupId>
           <artifactId>titanium-rdf-n-quads</artifactId>
           <version>${titanium.rdf.nquads.version}</version>
+          <scope>test</scope>
         </dependency>
         <dependency>
           <groupId>com.apicatalog</groupId>
@@ -53,6 +113,129 @@
           <artifactId>titanium-rdfc</artifactId>
           <version>2.0.0</version>
           <scope>test</scope>       
+        </dependency>   
+        <dependency>
+          <groupId>org.glassfish</groupId>
+          <artifactId>jakarta.json</artifactId>
+          <version>${jakarta.json.version}</version>
+          <scope>test</scope>
         </dependency>
+        <dependency>
+          <groupId>org.junit.jupiter</groupId>
+          <artifactId>junit-jupiter</artifactId>
+          <version>${junit.version}</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+          <version>${junit.version}</version>
+          <scope>test</scope>
+        </dependency>  
     </dependencies>
+    <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.3.1</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.12.0</version>
+            <configuration>
+              <doclint>all,-missing</doclint>
+              <failOnWarnings>false</failOnWarnings>
+              <failOnError>false</failOnError>          
+            </configuration>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.8.13</version>
+            <executions>
+              <execution>
+                <id>default-prepare-agent</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>report</id>
+                <phase>test</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.5.4</version>
+            <configuration>
+<!--                <excludes>
+                    <exclude>**Test.java</exclude>
+                </excludes> -->
+                <includes>                
+                    <include>**Suite.java</include>
+                    <include>**Test.java</include>
+                </includes>
+            </configuration>
+          </plugin>          
+        </plugins>
+    </build>
+    
+    <profiles>
+        <profile>
+          <id>maven-central</id>
+          <activation>
+            <activeByDefault>false</activeByDefault>
+          </activation>
+          <build>
+            <plugins>
+              <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.2.8</version>
+                <executions>
+                  <execution>
+                    <id>sign-artifacts</id>
+                    <phase>verify</phase>
+                    <goals>
+                      <goal>sign</goal>
+                    </goals>
+                  </execution>
+                </executions>
+              </plugin>
+              <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.9.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                  <publishingServerId>central</publishingServerId>
+                  <autoPublish>true</autoPublish>
+                </configuration>
+              </plugin>
+            </plugins>
+          </build>
+        </profile>
+    </profiles>    
 </project>

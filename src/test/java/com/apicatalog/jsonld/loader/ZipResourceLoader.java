@@ -15,43 +15,40 @@
  */
 package com.apicatalog.jsonld.loader;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.http.media.MediaType;
-import com.apicatalog.rdf.api.RdfConsumerException;
-import com.apicatalog.rdf.nquads.NQuadsReaderException;
+import com.apicatalog.jsonld.Document;
+import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.tree.io.TreeIOException;
+import com.apicatalog.tree.io.TreeParser;
 
-public class ZipResourceLoader implements DocumentLoader, TestLoader {
+public class ZipResourceLoader implements DocumentLoader {
 
-    private final DocumentResolver resolver;
+    private final TreeParser reader;
 
-    public ZipResourceLoader() {
-        this.resolver = new DocumentResolver();
+    public ZipResourceLoader(TreeParser reader) {
+        this.reader = reader;
     }
 
     @Override
-    public Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
+    public Document loadDocument(URI url, Options options) throws JsonLdException {
 
         if (!"zip".equals(url.getScheme())) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED);
         }
 
         URL zipFileUrl = getClass().getResource("/" + url.getAuthority());
 
         if (zipFileUrl == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED);
         }
 
         File zipFile = null;
@@ -60,7 +57,7 @@ public class ZipResourceLoader implements DocumentLoader, TestLoader {
             zipFile = new File(zipFileUrl.toURI());
 
         } catch (URISyntaxException e) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
 
         try (ZipFile zip = new ZipFile(zipFile)) {
@@ -71,51 +68,28 @@ public class ZipResourceLoader implements DocumentLoader, TestLoader {
                 return null;
             }
 
-            final DocumentReader<InputStream> reader;
-
-            if (zipEntry.getName().endsWith(".nq")) {
-                try (final InputStream is = zip.getInputStream(zipEntry)) {
-
-                    final Document document = QuadSetDocument.readNQuads(new InputStreamReader(is));
-                    document.setDocumentUrl(url);
-
-                    return document;
-                }
-
-            } else if (zipEntry.getName().endsWith(".json")) {
-                reader = resolver.getReader(MediaType.JSON);
-
-            } else if (zipEntry.getName().endsWith(".jsonld")) {
-                reader = resolver.getReader(MediaType.JSON_LD);
-
-            } else {
-                return null;
-            }
-
             try (final InputStream is = zip.getInputStream(zipEntry)) {
 
-                final Document document = reader.read(is);
-                document.setDocumentUrl(url);
+                var node = reader.parse(is);
 
-                return document;
+                return Document.of(node, url);
             }
 
-        } catch (IOException | RdfConsumerException | NQuadsReaderException e) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+        } catch (IOException | TreeIOException e) {
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
 
-    @Override
-    public byte[] fetchBytes(URI url) throws JsonLdError {
+    public static byte[] fetchBytes(URI url) throws JsonLdException {
 
         if (!"zip".equals(url.getScheme())) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "url = %s".formatted(url));
         }
 
-        URL zipFileUrl = getClass().getResource("/" + url.getAuthority());
+        URL zipFileUrl = ZipResourceLoader.class.getResource("/" + url.getAuthority());
 
         if (zipFileUrl == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED);
         }
 
         File zipFile = null;
@@ -124,7 +98,7 @@ public class ZipResourceLoader implements DocumentLoader, TestLoader {
             zipFile = new File(zipFileUrl.toURI());
 
         } catch (URISyntaxException e) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
 
         try (ZipFile zip = new ZipFile(zipFile)) {
@@ -137,26 +111,11 @@ public class ZipResourceLoader implements DocumentLoader, TestLoader {
 
             try (InputStream is = zip.getInputStream(zipEntry)) {
 
-                return readAsByteArray(is);
+                return is.readAllBytes();
             }
 
-
         } catch (IOException e) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
-    }
-
-    static final byte[] readAsByteArray(InputStream is) throws IOException {
-
-        final ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
-
-        byte[] buffer = new byte[16384];
-        int readed;
-
-        while ((readed = is.read(buffer, 0, buffer.length)) != -1) {
-            byteArrayStream.write(buffer, 0, readed);
-        }
-
-        return byteArrayStream.toByteArray();
     }
 }

@@ -18,85 +18,106 @@ package com.apicatalog.jsonld.loader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Map;
 
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.StringUtils;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.http.media.MediaType;
+import com.apicatalog.jsonld.Document;
+import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.tree.io.TreeParser;
+import com.apicatalog.web.media.MediaType;
 
+/**
+ * Loads JSON-LD documents directly from the local file system.
+ *
+ * <p>
+ * This loader only supports {@code file:} URIs. It reads the referenced file,
+ * parses it with the provided {@link TreeParser}, and wraps the result in a
+ * {@link Document}. Files must exist and be readable by the current process.
+ * </p>
+ *
+ * @see DocumentLoader
+ * @see HttpLoader
+ */
 public final class FileLoader implements DocumentLoader {
 
-    private static final Logger LOGGER = Logger.getLogger(FileLoader.class.getName());
+    private static final Map<String, MediaType> FILE_EXTENSIONS = Map.of(
+            ".jsonld", MediaType.JSON_LD,
+            ".json", MediaType.JSON,
+            ".html", MediaType.HTML,
+            ".xhtml", MediaType.XHTML,
+            ".nq", MediaType.N_QUADS,
+            ".cbor", MediaType.CBOR,
+            ".cborld", MediaType.CBOR_LD,
+            ".yml", MediaType.YAML,
+            ".yaml", MediaType.YAML,
+            ".yamlld", MediaType.YAML_LD);
 
-    private final DocumentResolver resolver;
+    private final TreeParser reader;
 
-    public FileLoader() {
-        this.resolver = new DocumentResolver();
-        this.resolver.setFallbackContentType(MediaType.JSON);
+    /**
+     * Creates a loader that parses local files using the given
+     * {@link TreeParser}.
+     *
+     * @param reader parser used to decode the file content
+     */
+    public FileLoader(TreeParser reader) {
+        this.reader = reader;
     }
 
+    /**
+     * Resolves and loads a JSON-LD document from a local {@code file:} URI.
+     *
+     * <p>
+     * Only {@code file:} URIs are supported. Other schemes will cause a
+     * {@link JsonLdException} to be thrown.
+     * </p>
+     *
+     * @param url     the {@code file:} URI of the document
+     * @param options loading options (ignored for file resources)
+     * @return the loaded {@link Document}
+     * @throws JsonLdException if the file cannot be accessed or parsed
+     */
     @Override
-    public Document loadDocument(final URI url, final DocumentLoaderOptions options) throws JsonLdError {
+    public Document loadDocument(final URI url, final Options options) throws JsonLdException {
 
         if (!"file".equalsIgnoreCase(url.getScheme())) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Unsupported URL scheme [" + url.getScheme() + "]. FileLoader accepts only file scheme.");
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "Unsupported URL scheme [" + url.getScheme() + "]. FileLoader accepts only file scheme.");
         }
 
         final File file = new File(url);
 
         if (!file.canRead()) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "File [" + url + "] is not accessible to read.");
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "File [" + url + "] is not accessible to read.");
         }
 
-        final MediaType contentType =
-                                detectedContentType(url.getPath().toLowerCase())
-                                .orElseGet(() -> {
-                                    LOGGER.log(Level.WARNING, "Cannot detect file [{0}] content type. Trying application/json.", url);
-                                    return MediaType.JSON;
-                                });
+        final var contentType = fromFileExtension(file.getName());
 
-        final DocumentReader<InputStream> reader = resolver.getReader(contentType);
+        try (final var is = new FileInputStream(file)) {
+            var node = reader.parse(is);
 
-        try (final InputStream is = new FileInputStream(file)) {
-            final Document document = reader.read(is);
-            document.setDocumentUrl(url);
-            return document;
+            return Document.of(node, contentType, url);
 
         } catch (FileNotFoundException e) {
 
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "File not found [" + url + "].");
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "File not found [" + url + "].");
 
-        } catch (IOException e) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+        } catch (Exception e) {
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
 
-    private static final Optional<MediaType> detectedContentType(String name) {
-
-        if (name == null || StringUtils.isBlank(name)) {
-            return Optional.empty();
+    static final MediaType fromFileExtension(String name) {
+        if (name == null || name.isBlank()) {
+            return null;
         }
 
-        if (name.endsWith(".nq")) {
-            return Optional.of(MediaType.N_QUADS);
-        }
-        if (name.endsWith(".json")) {
-            return Optional.of(MediaType.JSON);
-        }
-        if (name.endsWith(".jsonld")) {
-            return Optional.of(MediaType.JSON_LD);
-        }
-        if (name.endsWith(".html")) {
-            return Optional.of(MediaType.HTML);
-        }
+        final String lower = name.toLowerCase();
 
-        return Optional.empty();
+        return FILE_EXTENSIONS.entrySet().stream()
+                .filter(e -> lower.endsWith(e.getKey()))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(null);
     }
 }

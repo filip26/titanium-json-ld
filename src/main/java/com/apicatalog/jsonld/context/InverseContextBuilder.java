@@ -19,12 +19,8 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.lang.DirectionType;
+import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
-
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
 
 /**
  *
@@ -58,7 +54,7 @@ public final class InverseContextBuilder {
         activeContext.getTerms()
                 .stream()
                 .filter(termName -> activeContext
-                        .getTerm(termName)
+                        .findTerm(termName)
                         .map(TermDefinition::getUriMapping)
                         .isPresent())
                 .sorted()
@@ -66,7 +62,7 @@ public final class InverseContextBuilder {
                         termName,
                         result,
                         activeContext
-                                .getTerm(termName)
+                                .findTerm(termName)
                                 .map(TermDefinition::getUriMapping)
                                 .get(),
                         defaultLanguage));
@@ -79,7 +75,7 @@ public final class InverseContextBuilder {
 
         // 3.2.
         final String container = activeContext
-                .getTerm(termName)
+                .findTerm(termName)
                 .map(TermDefinition::getContainerMapping)
                 .filter(collection -> !collection.isEmpty())
                 .orElseGet(() -> Arrays.asList(Keywords.NONE))
@@ -90,14 +86,14 @@ public final class InverseContextBuilder {
         result.setIfAbsent(variableValue, container, Keywords.ANY, Keywords.NONE, termName);
 
         // 3.10.
-        if (activeContext.getTerm(termName).filter(TermDefinition::isReverseProperty).isPresent()) {
+        if (activeContext.findTerm(termName).filter(TermDefinition::isReverseProperty).isPresent()) {
 
             // 3.10.1
             result.setIfAbsent(variableValue, container, Keywords.TYPE, Keywords.REVERSE, termName);
             return;
         }
 
-        final Optional<String> typeMapping = activeContext.getTerm(termName).map(TermDefinition::getTypeMapping);
+        final Optional<String> typeMapping = activeContext.findTerm(termName).map(TermDefinition::getTypeMapping);
 
         // 3.11.
         if (typeMapping.filter(Keywords.NONE::equals).isPresent()) {
@@ -115,12 +111,12 @@ public final class InverseContextBuilder {
             return;
         }
 
-        final Optional<JsonValue> languageMapping = activeContext
-                .getTerm(termName)
+        final Optional<String> languageMapping = activeContext
+                .findTerm(termName)
                 .map(TermDefinition::getLanguageMapping);
 
-        final Optional<DirectionType> directionMapping = activeContext
-                .getTerm(termName)
+        final Optional<Direction> directionMapping = activeContext
+                .findTerm(termName)
                 .map(TermDefinition::getDirectionMapping);
 
         if (languageMapping.isPresent()) {
@@ -128,29 +124,29 @@ public final class InverseContextBuilder {
             // 3.13.1.
             final String langDir;
 
-            final JsonValue language = languageMapping.get();
+            final String language = languageMapping.get();
 
             // 3.13.
             if (directionMapping.isPresent()) {
 
-                final DirectionType direction = directionMapping.get();
+                final Direction direction = directionMapping.get();
 
                 // 3.13.2.
-                if (JsonUtils.isString(language)) {
+                if (language != null) {
 
-                    if (direction != DirectionType.NULL) {
+                    if (direction != Direction.NULL) {
 
-                        langDir = ((JsonString) language).getString()
+                        langDir = language
                                 .concat("_")
                                 .concat(direction.name())
                                 .toLowerCase();
                         // 3.13.3.
                     } else {
-                        langDir = ((JsonString) language).getString().toLowerCase();
+                        langDir = language.toLowerCase();
                     }
 
                     // 3.13.4.
-                } else if (direction != DirectionType.NULL) {
+                } else if (direction != Direction.NULL) {
 
                     langDir = "_".concat(direction.name().toLowerCase());
 
@@ -159,8 +155,8 @@ public final class InverseContextBuilder {
                 }
 
             } else {
-                langDir = JsonUtils.isString(language)
-                        ? ((JsonString) language).getString().toLowerCase()
+                langDir = language != null
+                        ? language.toLowerCase()
                         : Keywords.NULL;
             }
 
@@ -172,7 +168,7 @@ public final class InverseContextBuilder {
 
             // 3.15.1.
             final String direction = directionMapping
-                    .filter(d -> d != DirectionType.NULL)
+                    .filter(d -> d != Direction.NULL)
                     .map(d -> "_".concat(d.name().toLowerCase()))
                     .orElse(Keywords.NONE);
 
@@ -188,7 +184,6 @@ public final class InverseContextBuilder {
                             .concat("_")
                             .concat(activeContext.getDefaultBaseDirection().name())
                             .toLowerCase()
-
                     : defaultLanguage;
 
             result.setIfAbsent(variableValue, container, Keywords.LANGUAGE, langDir, termName)

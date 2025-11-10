@@ -15,73 +15,59 @@
  */
 package com.apicatalog.jsonld.flattening;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.json.JsonProvider;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-
-import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonValue;
 
 public final class NodeMap {
 
-    private final Map<String, Map<String, Map<String, JsonValue>>> index;
+    private final Map<String, Map<String, Map<String, Object>>> index;
 
-    private final BlankNodeIdGenerator generator = new BlankNodeIdGenerator();
+    private final BlankNodeIdGenerator generator;
 
     public NodeMap() {
+        this(new BlankNodeIdGenerator());
+    }
+
+    public NodeMap(BlankNodeIdGenerator generator) {
         this.index = new LinkedHashMap<>();
         this.index.put(Keywords.DEFAULT, new LinkedHashMap<>());
+        this.generator = generator;
     }
 
-    public void set(String graphName, String subject, String property, JsonValue value) {
-
-        if (subject == null) {
-            return;
-        }
-
-        index
-            .computeIfAbsent(graphName, x -> new LinkedHashMap<>())
-            .computeIfAbsent(subject, x -> new LinkedHashMap<>())
-            .put(property, value);
+    public void set(String graphName, String subject, String property, Object value) {
+        index.computeIfAbsent(graphName, x -> new LinkedHashMap<>())
+                .computeIfAbsent(subject, x -> new LinkedHashMap<>())
+                .put(property, value);
     }
 
-    public JsonValue get(String graphName, String subject, String property) {
-
-        if (index.containsKey(graphName) && index.get(graphName).containsKey(subject)) {
-            return index.get(graphName).get(subject).get(property);
-        }
-
-        return null;
+    public Optional<Map<String, Map<String, Object>>> find(String graphName) {
+        return Optional.ofNullable(index.get(graphName));
     }
 
-    public Map<String, JsonValue> get(String graphName, String subject) {
-
-        if (index.containsKey(graphName)) {
-            return index.get(graphName).get(subject);
-        }
-
-        return null;
+    public Optional<Map<String, ?>> find(String graphName, String subject) {
+        return Optional.ofNullable(index.get(graphName))
+                .map(g -> g.get(subject));
     }
 
-    public boolean contains(String graphName, String subject) {
-        return index.containsKey(graphName) && index.get(graphName).containsKey(subject);
+    public Object get(String graphName, String subject, String property) {
+        return Optional.ofNullable(index.get(graphName))
+                .map(g -> g.get(subject))
+                .map(s -> s.get(property))
+                .orElse(null);
     }
 
     public boolean contains(String graphName, String subject, String property) {
-        return index.containsKey(graphName)
-                    && index.get(graphName).containsKey(subject)
-                    && index.get(graphName).get(subject).containsKey(property);
-    }
-
-    public Optional<Map<String, Map<String, JsonValue>>> get(String graphName) {
-        return Optional.ofNullable(index.get(graphName));
+        return Optional.ofNullable(index.get(graphName))
+                .map(g -> g.get(subject))
+                .map(s -> s.containsKey(property))
+                .orElse(false);
     }
 
     public String createIdentifier(String name) {
@@ -97,66 +83,13 @@ public final class NodeMap {
     }
 
     public Collection<String> subjects(String graphName) {
-        return index.getOrDefault(graphName, Collections.emptyMap()).keySet();
+        return index.getOrDefault(graphName, Map.of()).keySet();
     }
 
     public Collection<String> properties(String graphName, String subject) {
-        return index.getOrDefault(graphName, Collections.emptyMap()).getOrDefault(subject, Collections.emptyMap()).keySet();
-    }
-
-    /**
-     *
-     * @see <a href="https://www.w3.org/TR/json-ld11-api/#merge-node-maps">Merge Node Maps</a>
-     */
-    public void merge() {
-
-        // 1.
-        final NodeMap result = new NodeMap();
-
-        // 2.
-        for (final Map.Entry<String, Map<String, Map<String, JsonValue>>> graphEntry : index.entrySet()) {
-
-            for (final Map.Entry<String, Map<String, JsonValue>> subject : graphEntry.getValue().entrySet()) {
-
-                // 2.1.
-                if (!result.contains(Keywords.MERGED, subject.getKey())) {
-                    result.set(Keywords.MERGED, subject.getKey(), Keywords.ID, JsonProvider.instance().createValue(subject.getKey()));
-                }
-
-                // 2.2.
-                for (final Map.Entry<String, JsonValue> property : subject.getValue().entrySet()) {
-
-                    // 2.2.1.
-                    if (!Keywords.TYPE.equals(property.getKey())
-                            && Keywords.matchForm(property.getKey())
-                            ) {
-
-                        result.set(Keywords.MERGED, subject.getKey(), property.getKey(), property.getValue());
-
-                    } else {
-
-                        final JsonArrayBuilder array;
-
-                        if (result.contains(Keywords.MERGED, subject.getKey(), property.getKey())) {
-                            array = JsonProvider.instance().createArrayBuilder(JsonUtils.toJsonArray(result.get(Keywords.MERGED, subject.getKey(), property.getKey())));
-
-                        } else {
-                            array = JsonProvider.instance().createArrayBuilder();
-                        }
-
-                        JsonUtils.toJsonArray(property.getValue()).forEach(array::add);
-
-                        result.set(Keywords.MERGED, subject.getKey(), property.getKey(), array.build());
-                    }
-
-                }
-
-            }
-        }
-
-        if (result.index.get(Keywords.MERGED) != null) {
-            index.put(Keywords.MERGED, result.index.get(Keywords.MERGED));
-        }
+        return index.getOrDefault(graphName, Map.of())
+                .getOrDefault(subject, Map.of())
+                .keySet();
     }
 
     public boolean contains(String id) {
@@ -166,5 +99,75 @@ public final class NodeMap {
     @Override
     public String toString() {
         return Objects.toString(index);
+    }
+
+    /**
+     *
+     * @see <a href="https://www.w3.org/TR/json-ld11-api/#merge-node-maps">Merge
+     *      Node Maps</a>
+     */
+    public void merge() {
+
+        // 1.
+        final NodeMap result = new NodeMap();
+
+        // 2.
+        for (final var graphEntry : index.entrySet()) {
+
+            for (final var subject : graphEntry.getValue().entrySet()) {
+
+                // 2.1.
+                if (result.find(Keywords.MERGED, subject.getKey()).isEmpty()) {
+                    result.set(
+                            Keywords.MERGED, subject.getKey(),
+                            Keywords.ID, subject.getKey());
+                }
+
+                // 2.2.
+                for (final var property : subject.getValue().entrySet()) {
+
+                    // 2.2.1.
+                    if (!Keywords.TYPE.equals(property.getKey()) && Keywords.matchForm(property.getKey())) {
+
+                        result.set(Keywords.MERGED, subject.getKey(), property.getKey(), property.getValue());
+
+                    } else {
+
+                        final List<Object> mergedValues;
+
+                        if (result.get(Keywords.MERGED, subject.getKey(), property.getKey()) instanceof Collection<?> values) {
+
+                            if (values instanceof ArrayList list) {
+
+                                @SuppressWarnings("unchecked")
+                                final var typedList = (List<Object>) list;
+
+                                mergedValues = typedList;
+
+                            } else {
+                                mergedValues = new ArrayList<Object>(values);
+                                result.set(Keywords.MERGED, subject.getKey(), property.getKey(), mergedValues);
+                            }
+
+                        } else {
+                            mergedValues = new ArrayList<>();
+                            result.set(Keywords.MERGED, subject.getKey(), property.getKey(), mergedValues);
+                        }
+
+                        if (property.getValue() instanceof Collection<?> properties) {
+
+                            mergedValues.addAll(properties);
+
+                        } else {
+                            mergedValues.add(property.getValue());
+                        }
+                    }
+                }
+            }
+        }
+
+        if (result.index.get(Keywords.MERGED) != null) {
+            index.put(Keywords.MERGED, result.index.get(Keywords.MERGED));
+        }
     }
 }

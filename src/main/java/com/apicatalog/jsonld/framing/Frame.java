@@ -15,274 +15,336 @@
  */
 package com.apicatalog.jsonld.framing;
 
+import java.net.URI;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
-import com.apicatalog.jsonld.JsonLdEmbed;
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.lang.DefaultObject;
+import com.apicatalog.jsonld.Document;
+import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.ListObject;
-import com.apicatalog.jsonld.lang.NodeObject;
-import com.apicatalog.jsonld.lang.ValueObject;
-import com.apicatalog.jsonld.uri.UriUtils;
-import com.apicatalog.jsonld.uri.UriValidationPolicy;
-
-import jakarta.json.JsonArray;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonString;
-import jakarta.json.JsonStructure;
-import jakarta.json.JsonValue;
+import com.apicatalog.jsonld.lang.LdAdapter;
+import com.apicatalog.jsonld.processor.Execution;
+import com.apicatalog.jsonld.processor.Expander;
+import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.web.uri.UriUtils;
+import com.apicatalog.web.uri.UriValidationPolicy;
 
 public final class Frame {
 
-    public static final Frame EMPTY = new Frame(JsonValue.EMPTY_JSON_OBJECT);
+    public static final Frame EMPTY = new Frame(Map.of(), Set.of());
 
-    private final JsonObject frameObject;
+    private final Map<String, ?> expanded;
+    private final Collection<String> frameGraphs;
 
-    private Frame(final JsonObject frameObject) {
-        this.frameObject = frameObject;
+    private Frame(final Map<String, ?> expanded, Collection<String> frameGraphs) {
+        this.expanded = expanded;
+        this.frameGraphs = frameGraphs;
     }
 
-    public static final Frame of(final JsonStructure structure) throws JsonLdError {
+    public static final Frame of(
+            final Document frame,
+            final Options options,
+            final Execution runtime) throws JsonLdException {
 
-        final JsonObject frameObject;
+        return of(
+                Expander.expandFrame(
+                        frame,
+                        Options.copyOf(options).ordered(false),
+                        runtime),
+                keysOf(frame.content()));
+    }
+
+    public static final Frame of(
+            final TreeIO frame,
+            final Options options,
+            final Execution runtime) throws JsonLdException {
+
+        return of(
+                Expander.expandFrame(
+                        frame,
+                        Expander.context(
+                                null,
+                                null,
+                                options,
+                                runtime),
+                        Expander.baseUrl(null, options),
+                        Options.copyOf(options).ordered(false),
+                        runtime),
+                keysOf(frame));
+    }
+
+    public static final URI contextBase(final Document frame, final Options options) {
+        return (frame.context() != null)
+                ? frame.url()
+                : options.base();
+    }
+
+    static final Frame of(final Object expanded) throws JsonLdException {
+        return of(expanded, List.of());
+    }
+
+    static final Frame of(final Object expanded, Collection<String> frameGraphs) throws JsonLdException {
+
+        final Map<String, Object> frameMap;
 
         // 1.
-        if (JsonUtils.isArray(structure)) {
+        if (expanded instanceof Collection array) {
 
-            if (structure.asJsonArray().size() != 1
-                    || JsonUtils.isNotObject(structure.asJsonArray().get(0))
-                    ) {
-                throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame is not JSON object nor an array containing JSON object [" + structure + "]");
+            if (array.size() == 1 && (array.iterator().next() instanceof Map map)) {
+
+                @SuppressWarnings("unchecked")
+                var typedMap = (Map<String, Object>) map;
+                frameMap = typedMap;
+
+            } else {
+                throw new JsonLdException(ErrorCode.INVALID_FRAME, "Frame is not JSON object nor an array containing JSON object [" + expanded + "]");
             }
 
-            frameObject = structure.asJsonArray().getJsonObject(0);
+        } else if ((expanded instanceof Map map)) {
 
+            @SuppressWarnings("unchecked")
+            var typedMap = (Map<String, Object>) map;
+            frameMap = typedMap;
 
-        } else if (JsonUtils.isObject(structure)) {
-
-            frameObject = structure.asJsonObject();
+        } else if (expanded == null) {
+            return EMPTY;
 
         } else {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame is not JSON object. [" + structure + "]");
+            throw new JsonLdException(ErrorCode.INVALID_FRAME, "Frame is not JSON object. [" + expanded + "]");
         }
 
         // 1.2.
-        if (frameObject.containsKey(Keywords.ID) && !validateFrameId(frameObject)) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @id value is not valid [@id = " + frameObject.get(Keywords.ID) + "].");
+        if (frameMap.containsKey(Keywords.ID) && !validateFrameId(frameMap)) {
+            throw new JsonLdException(ErrorCode.INVALID_FRAME, "Frame @id value is not valid [@id = " + frameMap.get(Keywords.ID) + "].");
         }
 
         // 1.3.
-        if (frameObject.containsKey(Keywords.TYPE) && !validateFrameType(frameObject)) {
-            throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME, "Frame @type value i not valid [@type = " + frameObject.get(Keywords.TYPE) + "].");
+        if (frameMap.containsKey(Keywords.TYPE) && !validateFrameType(frameMap)) {
+            throw new JsonLdException(ErrorCode.INVALID_FRAME, "Frame @type value is not valid [@type = " + frameMap.get(Keywords.TYPE) + "].");
         }
-        return new Frame(frameObject);
+
+        return new Frame(frameMap, frameGraphs);// , context, contextUrl, documentUrl);
     }
 
-    public JsonLdEmbed getEmbed(final JsonLdEmbed defaultValue) throws JsonLdError {
+    public Embed getEmbed(final Embed defaultValue) throws JsonLdException {
 
-        if (frameObject.containsKey(Keywords.EMBED)) {
+        if (expanded.containsKey(Keywords.EMBED)) {
 
-            JsonValue embed = frameObject.get(Keywords.EMBED);
+            var embed = expanded.get(Keywords.EMBED);
 
-            if (JsonUtils.isNull(embed)) {
+            if (embed == null) {
                 return defaultValue;
             }
 
-            if (ValueObject.isValueObject(embed)) {
-                embed = ValueObject.getValue(embed).orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE));
+            if (embed instanceof Map map && LdAdapter.isValueNode(map)) {
+                embed = LdAdapter.findValue(embed).orElseThrow(() -> new JsonLdException(ErrorCode.INVALID_KEYWORD_EMBED_VALUE));
             }
 
-            if (JsonUtils.isString(embed)) {
-
-                String stringValue = ((JsonString)embed).getString();
+            if (embed instanceof String stringValue) {
 
                 if (Keywords.noneMatch(stringValue, Keywords.ALWAYS, Keywords.ONCE, Keywords.NEVER)) {
-                    throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag [@embed = " + stringValue + "].");
+                    throw new JsonLdException(ErrorCode.INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag [@embed = " + stringValue + "].");
                 }
 
-                return JsonLdEmbed.valueOf(stringValue.substring(1).toUpperCase());
+                return Embed.valueOf(stringValue.substring(1).toUpperCase());
 
-            } else if (JsonUtils.isFalse(embed)) {
-                return JsonLdEmbed.NEVER;
+            } else if (Boolean.FALSE.equals(embed)) {
+                return Embed.NEVER;
 
-            } else if (JsonUtils.isTrue(embed)) {
-                return JsonLdEmbed.ONCE;
+            } else if (Boolean.TRUE.equals(embed)) {
+                return Embed.ONCE;
             }
 
-            throw new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag [@embed = " + embed + "].");
-         }
+            throw new JsonLdException(ErrorCode.INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag [@embed = " + embed + "].");
+        }
 
         return defaultValue;
     }
 
-    public boolean getExplicit(boolean defaultValue) throws JsonLdError {
-        return getBoolean(frameObject, Keywords.EXPLICIT, defaultValue);
+    public boolean isExplicit(boolean defaultValue) throws JsonLdException {
+        return getBoolean(expanded, Keywords.EXPLICIT, defaultValue);
     }
 
-    public boolean getRequireAll(boolean defaultValue) throws JsonLdError {
-        return getBoolean(frameObject, Keywords.REQUIRE_ALL, defaultValue);
+    public boolean isRequireAll(boolean defaultValue) throws JsonLdException {
+        return getBoolean(expanded, Keywords.REQUIRE_ALL, defaultValue);
     }
 
-    public static final boolean getBoolean(JsonObject frame, String key, boolean defaultValue) throws JsonLdError {
+    public static final boolean getBoolean(Map<?, ?> frame, String key, boolean defaultValue) throws JsonLdException {
 
         if (frame.containsKey(key)) {
 
-            JsonValue value = frame.get(key);
+            var value = frame.get(key);
 
-            if (JsonUtils.isNull(value)) {
+            if (value == null) {
                 return defaultValue;
             }
 
-            if (ValueObject.isValueObject(value)) {
-                value = ValueObject.getValue(value).orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_FRAME));
+            if (value instanceof Map map && LdAdapter.isValueNode(map)) {
+                value = LdAdapter.findValue(value).orElseThrow(() -> new JsonLdException(ErrorCode.INVALID_FRAME));
             }
 
-            if (JsonUtils.isString(value)) {
-                if ("true".equalsIgnoreCase(((JsonString)value).getString())) {
+            if (value instanceof String bool) {
+                if ("true".equalsIgnoreCase(bool)) {
                     return true;
 
-                } else if ("false".equalsIgnoreCase(((JsonString)value).getString())) {
+                } else if ("false".equalsIgnoreCase(bool)) {
                     return false;
                 }
             }
 
-            if (JsonUtils.isNotBoolean(value)) {
-                throw new JsonLdError(JsonLdErrorCode.INVALID_FRAME);
+            if (value instanceof Boolean bool) {
+                return bool;
             }
-
-            return JsonUtils.isTrue(value);
+            throw new JsonLdException(ErrorCode.INVALID_FRAME);
         }
+
         return defaultValue;
     }
 
-    private static final boolean validateFrameId(JsonObject frame) {
+    private static final boolean validateFrameId(Map<?, ?> frame) {
 
-        final JsonValue id = frame.get(Keywords.ID);
+        final var id = frame.get(Keywords.ID);
 
-        if (JsonUtils.isNonEmptyArray(id)) {
-
-            final JsonArray idArray = id.asJsonArray();
-
-            return ((idArray.size() == 1 && JsonUtils.isEmptyObject(idArray.get(0)))
+        if (id instanceof Collection<?> idArray && !idArray.isEmpty()) {
+            return ((idArray.size() == 1
+                    && idArray.iterator().next() instanceof Map map && map.isEmpty())
                     || idArray
-                        .stream()
-                        .noneMatch(item -> JsonUtils.isNotString(item)
-                                            || UriUtils.isNotAbsoluteUri(((JsonString)item).getString(), UriValidationPolicy.Full)));
+                            .stream()
+                            .noneMatch(item -> !(item instanceof String uri)
+                                    || UriUtils.isNotAbsoluteUri(uri, UriValidationPolicy.Full)));
         }
-        return JsonUtils.isString(id) && UriUtils.isAbsoluteUri(((JsonString)id).getString(), UriValidationPolicy.Full);
+        return id instanceof String uri
+                && UriUtils.isAbsoluteUri(uri, UriValidationPolicy.Full);
     }
 
-    private static final boolean validateFrameType(JsonObject frame) {
+    private static final boolean validateFrameType(Map<?, ?> frame) {
 
-        final JsonValue type = frame.get(Keywords.TYPE);
+        var type = frame.get(Keywords.TYPE);
 
-        if (JsonUtils.isNonEmptyArray(type)) {
-
-            final JsonArray typeArray = type.asJsonArray();
-
+        if (type instanceof Collection<?> typeArray && !typeArray.isEmpty()) {
             return ((typeArray.size() == 1
-                        && (JsonUtils.isEmptyObject(typeArray.get(0))
-                            || (JsonUtils.containsKey(typeArray.get(0), Keywords.DEFAULT))
-                            )
-                    )
+                    && (typeArray.iterator().next() instanceof Map map &&
+                            (map.isEmpty()
+                                    || map.containsKey(Keywords.DEFAULT)
+                            // JsonUtils.containsKey(typeArray.get(0), Keywords.DEFAULT)
+                            )))
                     || typeArray
-                        .stream()
-                        .noneMatch(item -> JsonUtils.isNotString(item)
-                                            || UriUtils.isNotAbsoluteUri(((JsonString)item).getString(), UriValidationPolicy.Full)));
+                            .stream()
+                            .noneMatch(item -> !(item instanceof String uri)
+                                    || UriUtils.isNotAbsoluteUri(uri, UriValidationPolicy.Full)));
         }
 
-        return JsonUtils.isEmptyArray(type)
-                || JsonUtils.isEmptyObject(type)
-                || JsonUtils.isString(type) && UriUtils.isAbsoluteUri(((JsonString)type).getString(), UriValidationPolicy.Full);
+        return type instanceof Collection array && array.isEmpty()
+                || type instanceof Map map && map.isEmpty()
+                || type instanceof String stringType && (Keywords.JSON.equals(stringType) // see https://github.com/w3c/json-ld-framing/issues/142
+                        || UriUtils.isAbsoluteUri(stringType, UriValidationPolicy.Full));
     }
 
     public Set<String> keys() {
-        return frameObject.keySet();
+        return expanded.keySet();
     }
 
-    public JsonValue get(String property) {
-        return frameObject.get(property);
+    public Object get(String property) {
+        return expanded.get(property);
     }
 
     public boolean contains(String property) {
-        return frameObject.containsKey(property);
+        return expanded.containsKey(property);
     }
 
     public boolean containsOnly(String property) {
-        return frameObject.containsKey(property) && ValuePatternMatcher.isWildcard(frameObject, property);
+        return expanded.containsKey(property) && ValuePatternMatcher.isWildcard(expanded, property);
     }
 
     public boolean isWildCard() {
-        return ValuePatternMatcher.isWildcard(frameObject);
+        return ValuePatternMatcher.isWildcard(expanded);
     }
 
     public boolean isWildCard(String property) {
-        return frameObject.containsKey(property)
-                    && ValuePatternMatcher.isWildcard(frameObject.get(property));
+        return expanded.containsKey(property)
+                && ValuePatternMatcher.isWildcard(expanded.get(property));
     }
 
     public boolean isNone(String property) {
-        return frameObject.containsKey(property)
-                    && ValuePatternMatcher.isNone(frameObject.get(property));
+        return expanded.containsKey(property)
+                && ValuePatternMatcher.isNone(expanded.get(property));
     }
 
-    public Collection<JsonValue> getCollection(String property) {
-        return frameObject.containsKey(property)
-                    ? JsonUtils.toJsonArray(frameObject.get(property))
-                    : JsonValue.EMPTY_JSON_ARRAY;
+    public Collection<?> asCollection(String property) {
+        final var value = expanded.get(property);
+
+        return value instanceof Collection col
+                ? col
+                : value != null
+                        ? List.of(value)
+                        : List.of();
     }
 
     @Override
     public String toString() {
-        return frameObject.toString();
+        return expanded.toString();
     }
 
     public boolean isValuePattern() {
-        return ValueObject.isValueObject(frameObject);
+        return LdAdapter.isValueNode(expanded);
     }
 
-    public boolean matchValue(JsonValue value) {
-        return JsonUtils.isObject(value) && ValuePatternMatcher.with(frameObject, value.asJsonObject()).match();
+    public boolean matchValue(Object value) {
+        return value instanceof Map map && ValuePatternMatcher.match(expanded, map);
     }
 
     public boolean isDefaultObject(String property) {
-        return DefaultObject.isDefaultObject(frameObject.get(property))
-                || JsonUtils.isArray(frameObject.get(property))
-                    && frameObject.get(property).asJsonArray().size() == 1
-                    && DefaultObject.isDefaultObject(frameObject.get(property).asJsonArray().get(0))
-                ;
+        return LdAdapter.isDefault(expanded.get(property))
+                || expanded.get(property) instanceof Collection array
+                        && array.size() == 1
+                        && LdAdapter.isDefault(array.iterator().next());
     }
 
-    public boolean isNodePattern() {
-        return NodeObject.isNodeObject(frameObject);
+    public boolean isPattern() {
+        return LdAdapter.isNode(expanded);
     }
 
-    public boolean isNodeReference() {
-        return NodeObject.isNodeReference(frameObject);
+    public boolean isReference() {
+        return LdAdapter.isReference(expanded);
     }
 
-    public boolean matchNode(FramingState state, JsonValue value, boolean requireAll) throws JsonLdError {
+    public boolean matchNode(FramingState state, Object value, boolean requireAll) throws JsonLdException {
 
-        if (JsonUtils.isNotObject(value) || !value.asJsonObject().containsKey(Keywords.ID)) {
-            return false;
+        if (value instanceof Map map && map.containsKey(Keywords.ID)) {
+
+            final var valueObject = state
+                    .getGraphMap()
+                    .find(state.getGraphName())
+                    .map(graph -> (Map<String, ?>) graph.get((String) map.get(Keywords.ID)));
+
+            return valueObject.isPresent()
+                    && FrameMatcher.with(state, this, requireAll)
+                            .match(valueObject.get());
         }
-
-        final Optional<Map<String, JsonValue>> valueObject =
-                    state
-                        .getGraphMap()
-                        .get(state.getGraphName())
-                        .map(graph -> graph.get(value.asJsonObject().getString(Keywords.ID)));
-
-        return valueObject.isPresent() && FrameMatcher.with(state, this, requireAll).match(valueObject.get());
+        return false;
     }
 
-    public boolean isListObject() {
-        return ListObject.isListObject(frameObject);
+    public boolean isList() {
+        return LdAdapter.isList(expanded);
+    }
+
+    public boolean isDefault(String graphKey) {
+        for (final String key : frameGraphs) {
+            if (key.equals(graphKey)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static Collection<String> keysOf(TreeIO frame) {
+        return frame.isMap()
+                ? frame.keyStream().map(String.class::cast).toList()
+                : List.of();
     }
 }

@@ -1,0 +1,69 @@
+/*
+ * Copyright 2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.apicatalog.jsonld.tordf;
+
+import com.apicatalog.jsonld.lang.Terms;
+import com.apicatalog.rdf.api.RdfConsumerException;
+import com.apicatalog.rdf.api.RdfQuadConsumer;
+
+class RdfQuadEmitter implements RdfTripleConsumer {
+
+    protected final RdfQuadConsumer consumer;
+    protected String graph;
+
+    protected RdfQuadEmitter(RdfQuadConsumer consumer) {
+        this.consumer = consumer;
+        this.graph = null;
+    }
+
+    public static RdfTripleConsumer newEmitter(RdfQuadConsumer consumer) {
+        return new RdfQuadEmitter(consumer);
+    }
+
+    @Override
+    public RdfTripleConsumer defaultGraph() {
+        this.graph = null;
+        return this;
+    }
+
+    @Override
+    public RdfTripleConsumer namedGraph(String graph) {
+        this.graph = graph;
+        return this;
+    }
+
+    @Override
+    public RdfTripleConsumer triple(String subject, String predicate, String object) throws RdfConsumerException {
+        consumer.quad(subject, predicate, object, null, null, null, graph);
+        return this;
+    }
+
+    @Override
+    public RdfTripleConsumer triple(String subject, String predicate, String literal, String datatype) throws RdfConsumerException {
+        consumer.quad(subject, predicate, literal, datatype, null, null, graph);
+        return this;
+    }
+
+    @Override
+    public RdfTripleConsumer triple(String subject, String predicate, String literal, String language, String direction) throws RdfConsumerException {
+        if (direction != null) {
+            consumer.quad(subject, predicate, literal, Terms.RDF_I18N_BASE, language, direction, graph);
+        } else {
+            consumer.quad(subject, predicate, literal, Terms.XSD_STRING, language, direction, graph);
+        }
+        return this;
+    }
+}

@@ -15,123 +15,153 @@
  */
 package com.apicatalog.jsonld.expansion;
 
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.json.JsonProvider;
-import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.lang.DirectionType;
+import com.apicatalog.jsonld.expansion.Expansion.Params;
+import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
-
-import jakarta.json.JsonNumber;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
+import com.apicatalog.tree.io.TreeAdapter;
 
 /**
+ * Implements the JSON-LD Value Expansion algorithm.
+ *
+ * <p>
+ * This is a utility class that provides a single static method to expand a JSON
+ * value.
  *
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#value-expansion">Value
  *      Expansion Algorithm</a>
- *
  */
 public final class ValueExpansion {
 
-    // required
-    private final ActiveContext activeContext;
+    /**
+     * Expands a JSON value based on the rules of the Value Expansion algorithm.
+     *
+     * @param context  The active context to use for expansion.
+     * @param property The active property being expanded, which determines which
+     *                 term definition to apply.
+     * @param value    The JSON value to expand.
+     * @param adapter
+     * @param params
+     * @return A {@code Map} representing the expanded value object, typically
+     *         containing keys like {@code @id}, {@code @value}, {@code @type},
+     *         {@code @language}, or {@code @direction}.
+     * @throws JsonLdException If an error occurs during IRI expansion.
+     * 
+     * @see <a href="https://www.w3.org/TR/json-ld11-api/#value-expansion">Value
+     *      Expansion Algorithm</a>
+     */
+    public static Map<String, ?> expand(
+            final Context context,
+            final String property,
+            final Object value,
+            final TreeAdapter adapter,
+            final Params params) throws JsonLdException {
 
-    // runtime
-    private Optional<TermDefinition> definition;
+        final var definition = context.findTerm(property);
 
-    private ValueExpansion(final ActiveContext activeContext) {
-        this.activeContext = activeContext;
-    }
+        final var typeMapping = definition
+                .map(TermDefinition::getTypeMapping)
+                .orElse(Keywords.NONE);
 
-    public static final ValueExpansion with(final ActiveContext activeContext) {
-        return new ValueExpansion(activeContext);
-    }
+        switch (typeMapping) {
+        case Keywords.ID:
+            String idValue = null;
 
-    public JsonObject expand(final JsonValue value, final String activeProperty) throws JsonLdError {
+            if (adapter.isString(value)) {
+                idValue = adapter.stringValue(value);
 
-        definition = activeContext.getTerm(activeProperty);
-
-        final Optional<String> typeMapping = definition.map(TermDefinition::getTypeMapping);
-
-        if (typeMapping.isPresent()) {
-            // 1.
-            if (Keywords.ID.equals(typeMapping.get())) {
-
-                String idValue = null;
-
-                if (JsonUtils.isString(value)) {
-                    idValue = ((JsonString) value).getString();
-
-                    // custom extension allowing to process numeric ids
-                } else if (activeContext.runtime().isNumericId() && JsonUtils.isNumber(value)) {
-                    idValue = ((JsonNumber) value).toString();
-                }
-
-                if (idValue != null) {
-                    final String expandedValue = activeContext.uriExpansion().documentRelative(true)
-                            .vocab(false).expand(idValue);
-
-                    return JsonProvider.instance().createObjectBuilder().add(Keywords.ID, expandedValue).build();
-                }
-
-                // 2.
-            } else if (Keywords.VOCAB.equals(typeMapping.get()) && JsonUtils.isString(value)) {
-
-                String expandedValue = activeContext.uriExpansion().documentRelative(true)
-                        .vocab(true).expand(((JsonString) value).getString());
-
-                return JsonProvider.instance().createObjectBuilder().add(Keywords.ID, expandedValue).build();
+                // custom extension allowing to process numeric ids
+            } else if (params.options().useNumericId() && adapter.isNumber(value)) {
+                idValue = adapter.asString(value);
             }
+
+            if (idValue != null) {
+                return Map.of(Keywords.ID, UriExpansion.with(context, params.options().loader(), params.runtime())
+                        .documentRelative(true)
+                        .vocab(false)
+                        .expand(idValue));
+            }
+            break;
+
+        case Keywords.VOCAB:
+            if (adapter.isString(value)) {
+                return Map.of(Keywords.ID, UriExpansion.with(context, params.options().loader(), params.runtime())
+                        .documentRelative(true)
+                        .vocab(true)
+                        .expand(adapter.stringValue(value)));
+            }
+            break;
+
+        case Keywords.NONE:
+            break;
+
+        // type mapping is not ID, VOCAB, NONE
+        default:
+            return Map.of(
+                    Keywords.TYPE, typeMapping,
+                    Keywords.VALUE, asScalar(value, adapter));
         }
 
-        // 3.
-        final JsonObjectBuilder result = JsonProvider.instance().createObjectBuilder().add(Keywords.VALUE, value);
+        if (adapter.isString(value)) {
 
-        // 4.
-        if (typeMapping
-                .filter(t -> !Keywords.ID.equals(t) && !Keywords.VOCAB.equals(t) && !Keywords.NONE.equals(t))
-                .isPresent()) {
+            var map = new HashMap<String, String>(3);
+            map.put(Keywords.VALUE, adapter.stringValue(value));
 
-            result.add(Keywords.TYPE, typeMapping.get());
+            // 5.1.
+            var language = definition
+                    .map(TermDefinition::getLanguageMapping)
+                    .orElseGet(context::getDefaultLanguage);
 
-            // 5.
-        } else if (JsonUtils.isString(value)) {
-            buildStringValue(result);
+            // 5.3.
+            if (language != null && !Keywords.NULL.equals(language)) {
+                map.put(Keywords.LANGUAGE, language);
+            }
+
+            // 5.2.
+            var direction = definition
+                    .map(TermDefinition::getDirectionMapping)
+                    .orElseGet(context::getDefaultBaseDirection);
+
+            // 5.4.
+            if (direction != null && !Direction.NULL.equals(direction)) {
+                map.put(Keywords.DIRECTION, direction.name().toLowerCase());
+            }
+
+            return map;
         }
 
         // 6.
-        return result.build();
+        return Map.of(Keywords.VALUE, asScalar(value, adapter));
     }
 
-    private void buildStringValue(final JsonObjectBuilder result) {
-
-        // 5.1.
-        final JsonValue language = definition
-                .map(TermDefinition::getLanguageMapping)
-                .orElseGet(() -> activeContext.getDefaultLanguage() != null
-                            ? JsonProvider.instance().createValue(activeContext.getDefaultLanguage())
-                            : null
-                        );
-
-        // 5.2.
-        final DirectionType direction = definition
-                .map(TermDefinition::getDirectionMapping)
-                .orElseGet(() -> activeContext.getDefaultBaseDirection());
-
-        // 5.3.
-        if (JsonUtils.isNotNull(language)) {
-            result.add(Keywords.LANGUAGE, language);
+    private static Object asScalar(Object node, TreeAdapter adapter) {
+        if (node == null) {
+            return null;
         }
 
-        // 5.4.
-        if (direction != null && !DirectionType.NULL.equals(direction)) {
-            result.add(Keywords.DIRECTION, JsonProvider.instance().createValue(direction.name().toLowerCase()));
+        switch (adapter.type(node)) {
+        case NULL:
+            return null;
+
+        case FALSE:
+            return false;
+
+        case TRUE:
+            return true;
+
+        case NUMBER:
+            return adapter.numericValue(node);
+
+        case STRING:
+            return adapter.stringValue(node);
+
+        default:
+            return adapter.asString(node);
         }
     }
 }

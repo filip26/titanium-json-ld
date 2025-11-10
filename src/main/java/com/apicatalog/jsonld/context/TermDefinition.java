@@ -21,9 +21,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import com.apicatalog.jsonld.lang.DirectionType;
-
-import jakarta.json.JsonValue;
+import com.apicatalog.jsonld.lang.Direction;
+import com.apicatalog.tree.io.TreeAdapter;
+import com.apicatalog.tree.io.TreeIO;
 
 public final class TermDefinition {
 
@@ -39,7 +39,7 @@ public final class TermDefinition {
     // optional
     private URI baseUrl;
 
-    private JsonValue localContext;
+    private TreeIO localContext;
 
     private Set<String> containerMapping;
 
@@ -49,9 +49,9 @@ public final class TermDefinition {
 
     private String typeMapping;
 
-    private DirectionType directionMapping;
+    private Direction directionMapping;
 
-    private JsonValue languageMapping;
+    private String languageMapping;
 
     public TermDefinition(boolean prefixFlag, boolean protectedFlag, boolean reversePropertyFlag) {
         this.prefixFlag = prefixFlag;
@@ -60,12 +60,8 @@ public final class TermDefinition {
         this.containerMapping = new HashSet<>();
     }
 
-    public void setLocalContext(JsonValue context) {
-        this.localContext = context;
-    }
-
-    protected void setBaseUrl(URI baseUrl) {
-        this.baseUrl = baseUrl;
+    public void setLocalContext(Object context, TreeAdapter adapter) {
+        this.localContext = new TreeIO(context, adapter);
     }
 
     public String getUriMapping() {
@@ -76,11 +72,11 @@ public final class TermDefinition {
         this.uriMapping = uriMapping;
     }
 
-    public JsonValue getLanguageMapping() {
+    public String getLanguageMapping() {
         return languageMapping;
     }
 
-    public DirectionType getDirectionMapping() {
+    public Direction getDirectionMapping() {
         return directionMapping;
     }
 
@@ -96,7 +92,7 @@ public final class TermDefinition {
         return !prefixFlag;
     }
 
-    protected void setLanguageMapping(JsonValue languageMapping) {
+    protected void setLanguageMapping(String languageMapping) {
         this.languageMapping = languageMapping;
     }
 
@@ -108,14 +104,20 @@ public final class TermDefinition {
         return containerMapping;
     }
 
-    public JsonValue getLocalContext() {
+    public TreeIO getLocalContext() {
         return localContext;
     }
-
+    
     public URI getBaseUrl() {
         return baseUrl;
     }
 
+    protected void setBaseUrl(URI baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+
+    
     public boolean hasLocalContext() {
         return localContext != null;
     }
@@ -156,7 +158,7 @@ public final class TermDefinition {
         this.typeMapping = typeMapping;
     }
 
-    protected void setDirectionMapping(DirectionType directionMapping) {
+    protected void setDirectionMapping(Direction directionMapping) {
         this.directionMapping = directionMapping;
     }
 
@@ -165,15 +167,17 @@ public final class TermDefinition {
     }
 
     public boolean isNotSameExcept(TermDefinition ref) {
-        return !Objects.equals(uriMapping, ref.uriMapping) || prefixFlag != ref.prefixFlag
+        return !Objects.equals(uriMapping, ref.uriMapping)
+                || prefixFlag != ref.prefixFlag
                 || !Objects.equals(reversePropertyFlag, ref.reversePropertyFlag)
-                || !Objects.equals(baseUrl, ref.baseUrl) || !Objects.equals(containerMapping, ref.containerMapping)
+                || !Objects.equals(baseUrl, ref.baseUrl)
+                || !Objects.equals(containerMapping, ref.containerMapping)
                 || !Objects.equals(directionMapping, ref.directionMapping)
-                || !Objects.equals(indexMapping, ref.indexMapping) || !Objects.equals(nestValue, ref.nestValue)
+                || !Objects.equals(indexMapping, ref.indexMapping)
+                || !Objects.equals(nestValue, ref.nestValue)
                 || !Objects.equals(typeMapping, ref.typeMapping)
                 || !Objects.equals(languageMapping, ref.languageMapping)
-                || !Objects.equals(localContext, ref.localContext)
-                ;
+                || !TreeIO.deepEquals(localContext, ref.localContext);
     }
 
     public boolean hasContainerMapping(String value) {
@@ -182,11 +186,11 @@ public final class TermDefinition {
 
     @Override
     public String toString() {
-        return "TermDefinition[uriMapping=" + uriMapping + ", "
-                    + "localContext=" + localContext + ", "
-                    + "indexMapping=" + indexMapping + ", "
-                    + "typeMapping=" + typeMapping + ", "
-                    + "containerMapping=" + containerMapping 
-                    + "]";
+        return "TermDefinition[uri=" + uriMapping + ", "
+                + "baseUri=" + baseUrl + ", "
+                + "indexMapping=" + indexMapping + ", "
+                + "typeMapping=" + typeMapping + ", "
+                + "containerMapping=" + containerMapping
+                + "]";
     }
 }

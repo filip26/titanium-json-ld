@@ -16,23 +16,41 @@
 package com.apicatalog.jsonld.lang;
 
 import java.util.Arrays;
+import java.util.function.IntPredicate;
 
-import com.apicatalog.rdf.nquads.NQuadsAlphabet;
-
-/**
- *
- * @see <a href="https://www.w3.org/TR/curie/">A syntax for expressing Compact
- *      URIs</a>
- *
- */
 public final class BlankNode {
+
+    static final IntPredicate ASCII_ALPHA = ch -> 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z';
+
+    static final IntPredicate ASCII_DIGIT = ch -> '0' <= ch && ch <= '9';
+
+    static final IntPredicate PN_CHARS_BASE = ASCII_ALPHA.or(ch -> (0x00C0 <= ch && ch <= 0x00D6)
+            || (0x00D8 <= ch && ch <= 0x00F6)
+            || (0x00F8 <= ch && ch <= 0x02FF)
+            || (0x0370 <= ch && ch <= 0x037D)
+            || (0x037F <= ch && ch <= 0x1FFF)
+            || (0x200C <= ch && ch <= 0x200D)
+            || (0x2070 <= ch && ch <= 0x218F)
+            || (0x2C00 <= ch && ch <= 0x2FEF)
+            || (0x3001 <= ch && ch <= 0xD7FF)
+            || (0xF900 <= ch && ch <= 0xFDCF)
+            || (0xFDF0 <= ch && ch <= 0xFFFD)
+            || (0x10000 <= ch && ch <= 0xEFFFF));
+
+    static final IntPredicate PN_CHARS_U = PN_CHARS_BASE.or(ch -> '_' == ch || ':' == ch);
+
+    static final IntPredicate PN_CHARS = PN_CHARS_U.or(ASCII_DIGIT).or(ch -> '-' == ch
+            || 0x00B7 == ch
+            || (0x0300 <= ch && ch <= 0x036F)
+            || (0x203F <= ch && ch <= 0x2040));
 
     private BlankNode() {
 
     }
 
     /**
-     * Returns <code>true</code> if the given value starts with a blank node prefix '<code>_:</code>'.
+     * Returns <code>true</code> if the given value starts with a blank node prefix
+     * '<code>_:</code>'.
      *
      * @param value to check
      * @return <code>true</code> if the give value has blank node prefix
@@ -47,13 +65,10 @@ public final class BlankNode {
      * @see <a href="https://www.w3.org/TR/n-quads/#sec-grammar">N-Quads Grammar</a>
      *
      * @param blankNodeId to check
-     * @return <code>true</code> if the provided string is well formed blank node identifier
+     * @return <code>true</code> if the provided string is well formed blank node
+     *         identifier
      */
     public static boolean isWellFormed(final String blankNodeId) {
-
-        if (blankNodeId == null) {
-            throw new IllegalArgumentException();
-        }
 
         if (blankNodeId.length() < 3) {
             return false;
@@ -63,10 +78,9 @@ public final class BlankNode {
 
         if (chars[0] != '_'
                 || chars[1] != ':'
-                || (NQuadsAlphabet.PN_CHARS_U.negate().test(chars[2])
-                        && NQuadsAlphabet.ASCII_DIGIT.negate().test(chars[2]))
-                || chars[chars.length - 1] == '.'
-                        )  {
+                || (PN_CHARS_U.negate().test(chars[2])
+                        && ASCII_DIGIT.negate().test(chars[2]))
+                || chars[chars.length - 1] == '.') {
             return false;
         }
 
@@ -74,6 +88,6 @@ public final class BlankNode {
             return true;
         }
 
-        return Arrays.stream(chars, 3, chars.length - 1).allMatch(NQuadsAlphabet.PN_CHARS.or(ch -> ch == '.'));
+        return Arrays.stream(chars, 3, chars.length - 1).allMatch(PN_CHARS.or(ch -> ch == '.'));
     }
 }

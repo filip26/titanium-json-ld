@@ -21,25 +21,24 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.compaction.UriCompaction;
-import com.apicatalog.jsonld.compaction.ValueCompaction;
-import com.apicatalog.jsonld.expansion.UriExpansion;
-import com.apicatalog.jsonld.expansion.ValueExpansion;
-import com.apicatalog.jsonld.lang.DirectionType;
-import com.apicatalog.jsonld.processor.ProcessingRuntime;
-
-import jakarta.json.JsonObject;
+import com.apicatalog.jsonld.JsonLd.Version;
+import com.apicatalog.jsonld.lang.Direction;
+import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.processor.Execution;
+import com.apicatalog.tree.io.TreeAdapter;
 
 /**
  * A context that is used to resolve terms while the processing algorithm is
  * running.
  *
  */
-public final class ActiveContext {
+final class ActiveContext implements Context {
 
     // the active term definitions which specify how keys and values have to be
     // interpreted
     private final Map<String, TermDefinition> terms;
+
+    private Version version;
 
     // the current base IRI
     private URI baseUri;
@@ -59,28 +58,26 @@ public final class ActiveContext {
     private String defaultLanguage;
 
     // an optional default base direction ("ltr" or "rtl")
-    private DirectionType defaultBaseDirection;
-    
-    private final ProcessingRuntime runtime;
+    private Direction defaultBaseDirection;
 
-    public ActiveContext(final ProcessingRuntime runtime) {
-        this(null, null, null, runtime);
+    ActiveContext(final Version version) {
+        this(null, null, null, version);
     }
 
-    public ActiveContext(final URI baseUri, final URI baseUrl, ProcessingRuntime runtime) {
-        this(baseUri, baseUrl, null, runtime);
+    ActiveContext(final URI baseUri, final URI baseUrl, Version version) {
+        this(baseUri, baseUrl, null, version);
     }
 
-    public ActiveContext(final URI baseUri, final URI baseUrl, final ActiveContext previousContext, final ProcessingRuntime runtime) {
+    ActiveContext(final URI baseUri, final URI baseUrl, final ActiveContext previousContext, final Version version) {
         this.baseUri = baseUri;
         this.baseUrl = baseUrl;
         this.previousContext = previousContext;
         this.terms = new LinkedHashMap<>();
-        this.runtime = runtime;
+        this.version = version;
     }
 
     // copy constructor
-    public ActiveContext(final ActiveContext origin) {
+    ActiveContext(final ActiveContext origin) {
         this.terms = new LinkedHashMap<>(origin.terms);
         this.baseUri = origin.baseUri;
         this.baseUrl = origin.baseUrl;
@@ -89,19 +86,23 @@ public final class ActiveContext {
         this.vocabularyMapping = origin.vocabularyMapping;
         this.defaultLanguage = origin.defaultLanguage;
         this.defaultBaseDirection = origin.defaultBaseDirection;
-        this.runtime = origin.runtime;
+        this.version = origin.version;
     }
 
     public void createInverseContext() {
         this.inverseContext = InverseContextBuilder.with(this).build();
-   }
+    }
+
+    public boolean containsProtectedTerm() {
+        return terms.values().stream().anyMatch(TermDefinition::isProtected);
+    }
 
     public boolean containsTerm(final String term) {
         return terms.containsKey(term);
     }
 
-    public boolean containsProtectedTerm() {
-        return terms.values().stream().anyMatch(TermDefinition::isProtected);
+    public Optional<TermDefinition> findTerm(final String value) {
+        return Optional.ofNullable(terms.get(value));
     }
 
     protected Optional<TermDefinition> removeTerm(final String term) {
@@ -111,18 +112,16 @@ public final class ActiveContext {
         return Optional.empty();
     }
 
-    public Optional<TermDefinition> getTerm(final String value) {
-        return Optional.ofNullable(terms.get(value));
-    }
-
-    public DirectionType getDefaultBaseDirection() {
+    public Direction getDefaultBaseDirection() {
         return defaultBaseDirection;
     }
 
+    @Override
     public String getDefaultLanguage() {
         return defaultLanguage;
     }
 
+    @Override
     public URI getBaseUri() {
         return baseUri;
     }
@@ -155,35 +154,25 @@ public final class ActiveContext {
         return terms.keySet();
     }
 
-    public ActiveContextBuilder newContext() {
-        return ActiveContextBuilder.with(this);
+    @Override
+    public ContextBuilder newContext(DocumentLoader loader, final Execution runtime) {
+        return ContextBuilder.with(this, loader, runtime);
     }
 
-    public UriExpansion uriExpansion() {
-        return UriExpansion.with(this).uriValidation(runtime.getUriValidation());
+    @Override
+    public TermDefinitionBuilder newTerm(final Object localContext, final TreeAdapter adapter, final Map<String, Boolean> defined, DocumentLoader loader, final Execution runtime) {
+        return TermDefinitionBuilder.with(this, localContext, adapter, defined, loader, runtime);
     }
 
-    public ValueExpansion valueExpansion() {
-        return ValueExpansion.with(this);
+    public Optional<String> selectTerm(
+            final Collection<String> preferredValues,
+            final String variable,
+            final Collection<String> containerMapping,
+            final String typeLanguage) {
+        return TermSelector.match(preferredValues, this, variable, containerMapping, typeLanguage);
     }
 
-    public UriCompaction uriCompaction() {
-        return UriCompaction.with(this);
-    }
-
-    public ValueCompaction valueCompaction() {
-        return ValueCompaction.with(this);
-    }
-
-    public TermDefinitionBuilder newTerm(final JsonObject localContext, final Map<String, Boolean> defined) {
-        return TermDefinitionBuilder.with(this, localContext, defined);
-    }
-
-    public TermSelector termSelector(final String variable, final Collection<String> containerMapping, final String typeLanguage) {
-        return TermSelector.with(this, variable, containerMapping, typeLanguage);
-    }
-
-    protected void setDefaultBaseDirection(final DirectionType defaultBaseDirection) {
+    protected void setDefaultBaseDirection(final Direction defaultBaseDirection) {
         this.defaultBaseDirection = defaultBaseDirection;
     }
 
@@ -193,10 +182,6 @@ public final class ActiveContext {
 
     protected void setVocabularyMapping(final String vocabularyMapping) {
         this.vocabularyMapping = vocabularyMapping;
-    }
-
-    protected void setBaseUrl(final URI baseUrl) {
-        this.baseUrl = baseUrl;
     }
 
     protected void setPreviousContext(final ActiveContext previousContext) {
@@ -213,10 +198,17 @@ public final class ActiveContext {
 
     @Override
     public String toString() {
-        return "ActiveContext[terms=" + terms + ", previousContext=" + previousContext + "]";
+        return "ActiveContext[uri=" + baseUri
+                + ", terms=" + terms
+                + ", previousContext=" + previousContext + "]";
     }
-    
-    public ProcessingRuntime runtime() {
-        return runtime;
+
+    @Override
+    public Version version() {
+        return version;
+    }
+
+    public void setVersion(Version version) {
+        this.version = version;
     }
 }

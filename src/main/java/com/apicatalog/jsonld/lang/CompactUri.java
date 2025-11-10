@@ -18,73 +18,93 @@ package com.apicatalog.jsonld.lang;
 import java.util.Objects;
 
 /**
+ * Represents an immutable Compact URI (CURIE).
+ * <p>
+ * A CURIE provides a shortened way to express a URI, consisting of a
+ * {@code prefix} and a {@code suffix} separated by a colon (e.g.,
+ * {@code "ex:resource"}).
  *
- * @see <a href="https://www.w3.org/TR/curie/">A syntax for expressing Compact
- *      URIs</a>
- *
+ * @see <a href="https://www.w3.org/TR/curie/">W3C CURIE Syntax 1.0</a>
  */
-public final class CompactUri {
+public record CompactUri(
+        String prefix,
+        String suffix) {
 
-    private final String prefix;
-    private final String suffix;
-
-    private final boolean blank;
-
-    private CompactUri(final String prefix, final String suffix, final boolean blank) {
-        this.prefix = prefix;
-        this.suffix = suffix;
-        this.blank = blank;
+    /**
+     * Constructs a new {@code CompactUri}.
+     *
+     * @param prefix the CURIE prefix, which must not be {@code null}.
+     * @param suffix the CURIE suffix, which must not be {@code null}.
+     * @throws NullPointerException if prefix or suffix is {@code null}.
+     */
+    public CompactUri {
+        Objects.requireNonNull(prefix, "Prefix must not be null");
+        Objects.requireNonNull(suffix, "Suffix must not be null");
     }
 
-    public static CompactUri create(String value) {
+    /**
+     * Parses a string value into a {@code CompactUri}.
+     * <p>
+     * The method validates the input string to ensure it contains a colon separator
+     * and that the prefix and suffix conform to basic CURIE rules (e.g., a prefix
+     * starting with a letter or being an underscore for blank nodes).
+     *
+     * @param value the string to parse, e.g., {@code "ex:foo"}.
+     * @return a new {@code CompactUri} instance if the value is a valid CURIE, or
+     *         {@code null} otherwise.
+     */
+    public static CompactUri of(String value) {
+
+        if (value == null || value.length() < 3) {
+            return null;
+        }
+
         final int splitIndex = value.indexOf(':', 1);
 
         if (splitIndex != -1) {
 
-            final String prefix = value.substring(0, splitIndex);
-            final String suffix = value.substring(splitIndex + 1);
+            final var prefix = value.substring(0, splitIndex);
+            final var suffix = value.substring(splitIndex + 1);
 
             if (!suffix.startsWith("/") && ("_".equals(prefix) || Character.isAlphabetic(prefix.charAt(0)))) {
-                return new CompactUri(prefix, suffix, "_".equals(prefix));
+                return new CompactUri(prefix, suffix);
             }
         }
         return null;
     }
 
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public String getSuffix() {
-        return suffix;
-    }
-
+    /**
+     * Checks if this CURIE does not represent a blank node.
+     * <p>
+     * This is the logical opposite of {@link #isBlank()}.
+     *
+     * @return {@code true} if the prefix is not an underscore, {@code false}
+     *         otherwise.
+     */
     public boolean isNotBlank() {
-        return !blank;
+        return !isBlank();
     }
 
+    /**
+     * Checks if this CURIE represents a blank node.
+     * <p>
+     * A blank node CURIE is defined by convention as having a prefix equal to an
+     * underscore ({@code _}), for example, {@code "_:b1"}.
+     *
+     * @return {@code true} if the prefix is an underscore, {@code false} otherwise.
+     */
+    public boolean isBlank() {
+        return "_".equals(prefix);
+    }
+
+    /**
+     * Returns the string representation of this CURIE in the format
+     * {@code "prefix:suffix"}.
+     *
+     * @return the fully composed CURIE string.
+     */
     @Override
     public String toString() {
-        return prefix.concat(":").concat(suffix);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(prefix, suffix);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        CompactUri other = (CompactUri) obj;
-        return Objects.equals(prefix, other.prefix) && Objects.equals(suffix, other.suffix);
+        return prefix + ":" + suffix;
     }
 }

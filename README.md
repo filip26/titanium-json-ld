@@ -4,20 +4,20 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 
 ### 🎯 Goals
 - Full conformance to the specification
-- Secure, stable, fast, high-quality code (**~1800 tests**)
+- Secure, stable, fast, high-quality code (**~2900 tests**)
 - Minimal external dependencies
 - Simple and easy-to-use
 
 ### 🚦 Status
 
-[![Java 11 CI](https://github.com/filip26/titanium-json-ld/actions/workflows/java11-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java11-build.yml)
-[![Android (Java 8) CI](https://github.com/filip26/titanium-json-ld/actions/workflows/java8-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java8-build.yml)
+[![Java 17 CI](https://github.com/filip26/titanium-json-ld/actions/workflows/java17-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java17-build.yml)
 [![CodeQL](https://github.com/filip26/titanium-json-ld/actions/workflows/codeql.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/codeql.yml)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/c530c6b43b0243c08ce81521c5b4cf6a)](https://app.codacy.com/gh/filip26/titanium-json-ld/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/c530c6b43b0243c08ce81521c5b4cf6a)](https://app.codacy.com/gh/filip26/titanium-json-ld/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
 [![Javadoc](https://javadoc.io/badge2/com.apicatalog/titanium-json-ld/javadoc.svg)](https://javadoc.io/doc/com.apicatalog/titanium-json-ld)
-[![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/titanium-json-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:com.apicatalog%20AND%20a:titanium-json-ld)
+[![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/titanium-json-ld.svg?label=Maven%20Central)](https://mvnrepository.com/artifact/com.apicatalog/titanium-json-ld)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+
 
 ### 🧩 Libraries & Tools
 
@@ -27,35 +27,27 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 - [Titanium JCS](https://github.com/filip26/titanium-jcs) - RFC 8785 JSON Canonicalization Scheme (JCS)
 - [Iridium CBOR-LD](https://github.com/filip26/iridium-cbor-ld) - CBOR-based Processor for Linked Data
 
-## Table of Contents  
-- [Conformance](#conformance)
-- [Examples](#examples)
-- [Installation](#installation)
-- [Contributing](#contributing)
-- [Resources](#resources)
-- [Commercial Support](#commercial-support)
+## ✅ Conformance
 
-## Conformance
-
-| Feature | Tests | Pass | Status | Notes |
-| --- | ---: | ---: | ---: | --- |
-| [Expansion](https://www.w3.org/TR/json-ld/#expanded-document-form) | 373 | 373 | 100% | |
-| [Compaction](https://www.w3.org/TR/json-ld/#compacted-document-form) | 243 | 243 | 100% | |
+| Feature | Tests | Pass | Pass Rate | Notes |
+| :-- | --: | --: | --: | :-- |
+| [Expansion](https://www.w3.org/TR/json-ld/#expanded-document-form) | 376 | 376 | 100% | |
+| [Compaction](https://www.w3.org/TR/json-ld/#compacted-document-form) | 244 | 244 | 100% | |
 | [Flattening](https://www.w3.org/TR/json-ld/#flattened-document-form) | 55 | 55 | 100% | |
-| [JSON-LD to RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 453 | 451 | 99.5% | <ul><li>[te075 - @vocab as blank node identifier](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#te075)</li><li>[tli12 - List with bad @base](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#tli12)</li></ul> |
-| [RDF to JSON-LD](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 51 | 51 | 100% | |
-| [Framing](https://www.w3.org/TR/json-ld11-framing/#framing) | 89 | 88 | 98.8% | <ul><li>[t0059 - @embed: @last](https://w3c.github.io/json-ld-framing/tests/frame-manifest#t0059)</li></ul> |
+| [JSON-LD to RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 456 | 454 | 99.6% | <ul><li>[te075 - @vocab as blank node identifier](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#te075)</li><li>[tli12 - List with bad @base](https://w3c.github.io/json-ld-api/tests/toRdf-manifest#tli12)</li></ul> |
+| [RDF to JSON-LD](https://www.w3.org/TR/json-ld/#relationship-to-rdf) | 52 | 52 | 100% | |
+| [Framing](https://www.w3.org/TR/json-ld11-framing/#framing) | 91 | 90 | 98.9% | <ul><li>[t0059 - @embed: @last](https://w3c.github.io/json-ld-framing/tests/frame-manifest#t0059)</li></ul> |
 | [Remote Document and Context Retrieval](https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval) | 18 | 17 | 94.4% | <ul><li>[t0013 - HTML document](https://w3c.github.io/json-ld-api/tests/remote-doc-manifest#t0013)</li></ul> |
 
-See [EARL results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld-api/reports/#subj_Titanium_JSON_LD_Java) for more details.
+📄 **See also:** [EARL Results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld-api/reports/#subj_Titanium_JSON_LD_Java)
 
-## Examples
+## 💡 Examples
 
-Titanium provides a high-level [JsonLd](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/JsonLd.html) API for interacting with JSON-LD documents.
+Titanium provides a high-level [`JsonLd`](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/JsonLd.html) API for working with JSON-LD documents.
 
 ### Transformations
 
-Perform standard JSON-LD operations such as expansion, compaction, flattening, framing, and conversion from/to RDF. The JSON-LD document to process can be remote or local, while context documents may also be local or remote.
+Perform standard JSON-LD operations such as expansion, compaction, flattening, framing, and conversion from/to RDF. The JSON-LD document to process can be remote or local.
 
 ```javascript
 // Expansion from a remote JSON-LD document
@@ -100,7 +92,7 @@ JsonLd.frame("https://example/document.jsonld", "https://example/frame.jsonld").
 
 ### Local JSON Document
 
-Load and process JSON-LD documents directly from an `InputStream` or `Reader`. You can perform expansion or compaction using local documents and contexts.
+Load and process JSON-LD documents directly from an `InputStream` or `Reader`.
 
 ```javascript
 // Load JSON from InputStream or Reader
@@ -164,7 +156,9 @@ JsonLd.expand(document)
       .get();
 ```
 
-## Installation
+📘 **Learn more:** See the [Javadoc API Reference](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/) for advanced configuration and usage options.
+
+## ⚙️ Installation
 
 ### Titanium
 
@@ -178,15 +172,20 @@ JsonLd.expand(document)
 </dependency>
 ```
 
-#### Gradle (Java 8+, Android API Level >= 24)
+#### Gradle (Java 8+, Android API Level ≥ 24)
 
 ```gradle
 implementation("com.apicatalog:titanium-json-ld-jre8:1.7.0")
 ```
 
+> [!WARNING]
+> The upcoming **2.x version** is under active development and requires Java 17 or higher. 2.x milestone releases are provided for **testing and feedback purposes only** and **should not be used in production**.  
+>
+> Each milestone can introduce **breaking changes**.
+
 ### JSON-P Provider
 
-Ensure that the JSON-P provider is added to the classpath if it is not already present.
+Titanium relies on a **JSON-P (Jakarta JSON Processing)** provider. Ensure that one is available on your classpath.
 
 #### Maven
 
@@ -204,46 +203,49 @@ Ensure that the JSON-P provider is added to the classpath if it is not already p
 implementation("org.glassfish:jakarta.json:2.0.1")
 ```
 
-## Contributing
+## 🤝 Contributing
 
-Contributions are welcome! Please submit a pull request.
+Contributions of all kinds are welcome — whether it’s code, documentation, testing, or community support! Please open a **pull request** or **issue** to get started.
 
-- Develop
-  - Implement a new feature 
-  - Fix an existing issue
-  - Improve an existing implementation
-- Test
-  - Report a bug
-  - Implement a new test case
-- Document
-  - Write Javadoc comments
-  - Write a tutorial or guide
-  - Proofread existing documentation for clarity and accuracy
-- Promote
-  - Star, share, the project
-  - Write an article or blog post about the project
-- Sponsor
-  - Sponsorship gives your requests top priority
+### 💻 Develop
+- Implement a new feature  
+- Fix an existing issue or bug  
+- Refactor or optimize existing code  
 
-### Building
+### 🧪 Test
+- Report bugs or unexpected behavior  
+- Add or improve unit/integration tests  
+- Verify milestone builds and provide feedback  
+
+### 📖 Document
+- Write or improve **Javadoc** and inline comments  
+- Create or update tutorials and usage guides  
+- Proofread and improve clarity or accuracy in documentation  
+
+### 🌟 Promote
+- Star ⭐ and share the project  
+- Write a blog post, article, or social media post about it  
+- Help answer questions or guide new contributors  
+
+### 💖 Sponsor
+Your support helps sustain development.
+
+### 🏗️ Building
 
 Fork and clone the project repository.
 
-#### Java 11
+> [!NOTE]
+> **Version 2.0 is under active development!**  The new major version 2.0 requires Java 17 and is released in **milestones** before the final release.  
+>
+> Each milestone can introduce **breaking changes** and is **intended only for testing**.
 
 ```bash
 > cd titanium-json-ld
 > mvn package
 ```
 
-#### Java 8
+## 📚 Resources
 
-```bash
-> cd titanium-json-ld
-> mvn -f pom_jre8.xml package
-```
-
-## Resources
 - [JSON-LD 1.1](https://www.w3.org/TR/json-ld/)
 - [JSON-LD 1.1 Processing Algorithms and API](https://www.w3.org/TR/json-ld-api/)
 - [JSON-LD 1.1 Framing](https://www.w3.org/TR/json-ld-framing/)
@@ -251,7 +253,7 @@ Fork and clone the project repository.
 - [JSON-LD-star](https://json-ld.github.io/json-ld-star/)
 - [JSON-LD Playground](https://json-ld.org/playground/)
 
-## Commercial Support
+## 💼 Commercial Support
 
 Commercial support and consulting are available.
 For inquiries, please contact: filip26@gmail.com

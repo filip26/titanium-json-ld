@@ -15,111 +15,104 @@
  */
 package com.apicatalog.jsonld.framing;
 
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-
-import jakarta.json.JsonObject;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
 
 /**
  *
- * @see <a href="https://w3c.github.io/json-ld-framing/#value-matching">Value Pattern Matching Algorithm</a>
+ * @see <a href="https://w3c.github.io/json-ld-framing/#value-matching">Value
+ *      Pattern Matching Algorithm</a>
  *
  */
 public final class ValuePatternMatcher {
 
-    // required
-    private JsonObject pattern;
-    private JsonObject value;
+    /**
+     *
+     * @see <a href="https://w3c.github.io/json-ld-framing/#value-matching">Value
+     *      Pattern Matching Algorithm</a>
+     *
+     */
+    public static boolean match(final Map<String, ?> pattern, final Map<?, ?> node) {
 
-    private ValuePatternMatcher(final JsonObject pattern, final JsonObject value) {
-        this.pattern = pattern;
-        this.value = value;
+        final var valuePattern = pattern.getOrDefault(Keywords.VALUE, null);
+
+        final var typePattern = pattern.getOrDefault(Keywords.TYPE, null);
+
+        final var langPattern = pattern.getOrDefault(Keywords.LANGUAGE, null);
+
+        return (valuePattern == null && typePattern == null && langPattern == null)
+                || (matchValue(valuePattern, node)
+                        && matchType(typePattern, node)
+                        && matchLanguage(langPattern, node));
     }
 
-    public static final  ValuePatternMatcher with(final JsonObject pattern, final JsonObject value) {
-        return new ValuePatternMatcher(pattern, value);
+    private static boolean matchValue(final Object pattern, final Map<?, ?> node) {
+
+        final var value = node.getOrDefault(Keywords.VALUE, null);
+
+        return (value != null && isWildcard(pattern))
+                || pattern != null && value != null
+                        && (pattern instanceof Collection array && array.contains(value)
+                                || pattern.equals(value));
     }
 
-    public boolean match() {
+    private static boolean matchType(final Object pattern, final Map<?, ?> node) {
 
-        final JsonValue value2 = pattern.getOrDefault(Keywords.VALUE, null);
+        final var type = node.getOrDefault(Keywords.TYPE, null);
 
-        final JsonValue type2 = pattern.getOrDefault(Keywords.TYPE, null);
-
-        final JsonValue lang2 = pattern.getOrDefault(Keywords.LANGUAGE, null);
-
-        return (value2 == null && type2 == null && lang2 == null)
-                || (matchValue(value2) && matchType(type2) && matchLanguage(lang2));
+        return (type != null && isWildcard(pattern))
+                || (type == null && isNone(pattern))
+                || (pattern != null
+                        && (pattern instanceof Collection array && array.contains(type)
+                                || pattern.equals(type)));
     }
 
-    private boolean matchValue(final JsonValue value2) {
+    private static boolean matchLanguage(final Object pattern, final Map<?, ?> node) {
 
-        final JsonValue value1 = value.getOrDefault(Keywords.VALUE, null);
+        final var lang = node.get(Keywords.LANGUAGE) instanceof String stringValue
+                ? stringValue.toLowerCase()
+                : null;
 
-        return (JsonUtils.isNotNull(value1) && isWildcard(value2))
-                    || (JsonUtils.isNotNull(value2) && JsonUtils.toJsonArray(value2).contains(value1))
-                    ;
+        return ((lang != null && isWildcard(pattern)) || (lang == null && isNone(pattern)))
+                || (lang != null && pattern != null
+                        && ((pattern instanceof Collection<?> col
+                                && col.stream()
+                                        .map(String.class::cast)
+                                        .anyMatch(lang::equalsIgnoreCase))
+                                || pattern.equals(lang)));
     }
 
-    private boolean matchType(final JsonValue type2) {
+    protected static final boolean isWildcard(final Object value, final String... except) {
 
-        final JsonValue type1 = value.getOrDefault(Keywords.TYPE, null);
+        Map<?, ?> frame = null;
 
-        return (JsonUtils.isNotNull(type1) && isWildcard(type2))
-                    || (JsonUtils.isNull(type1) && isNone(type2))
-                    || (JsonUtils.isNotNull(type2) && JsonUtils.toJsonArray(type2).contains(type1))
-                ;
-    }
+        if (value instanceof Map map) {
 
-    private boolean matchLanguage(final JsonValue lang2) {
+            if (map.isEmpty()) {
+                return true;
+            }
 
-        final String lang1 = value.containsKey(Keywords.LANGUAGE)
-                                    ? value.getString(Keywords.LANGUAGE).toLowerCase()
-                                    : null;
+            frame = map;
 
-        return ((lang1 != null && isWildcard(lang2)) || (lang1 == null && isNone(lang2)))
-                || (lang1 != null && lang2 != null
-                        && JsonUtils.isNotNull(lang2)
-                        && JsonUtils.toStream(lang2)
-                                        .map(JsonString.class::cast)
-                                        .map(JsonString::getString)
-                                        .anyMatch(x -> x.equalsIgnoreCase(lang1)));
-    }
-
-    protected static final boolean isWildcard(final JsonValue value, final String...except) {
-
-        if (JsonUtils.isEmptyObject(value)) {
-            return true;
+        } else if (value instanceof Collection array
+                && array.size() == 1
+                && array.iterator().next() instanceof Map map) {
+            frame = map;
         }
 
-        JsonObject frame = null;
-
-        if (JsonUtils.isObject(value)) {
-
-            frame = (JsonObject)value;
-
-        } else if (JsonUtils.isArray(value)
-                    && value.asJsonArray().size() == 1
-                    && JsonUtils.isObject(value.asJsonArray().get(0))) {
-
-            frame = value.asJsonArray().getJsonObject(0);
-        }
-
-        return frame != null && (frame.isEmpty() || Arrays.asList(
+        return frame != null && (frame.isEmpty() || Set.of(
                 Keywords.DEFAULT,
                 Keywords.OMIT_DEFAULT,
                 Keywords.EMBED,
                 Keywords.EXPLICIT,
                 Keywords.REQUIRE_ALL,
-                except
-        ).containsAll(frame.keySet()));
+                except).containsAll(frame.keySet()));
     }
 
-    protected static final boolean isNone(JsonValue value) {
-        return JsonUtils.isNull(value) || JsonUtils.isEmptyArray(value);
+    protected static final boolean isNone(Object value) {
+        return value == null || value instanceof Collection array && array.isEmpty();
     }
 }

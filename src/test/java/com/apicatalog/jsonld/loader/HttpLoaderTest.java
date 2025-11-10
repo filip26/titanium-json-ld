@@ -15,92 +15,121 @@
  */
 package com.apicatalog.jsonld.loader;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
+import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.NoSuchElementException;
+import java.time.Duration;
+import java.util.List;
+import java.util.Map;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.test.JsonLdManifestLoader;
-import com.apicatalog.jsonld.test.JsonLdMockServer;
-import com.apicatalog.jsonld.test.JsonLdTestCase;
-import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.apicatalog.jsonld.JakartaTestSuite;
+import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.jsonld.test.MockServer;
+import com.apicatalog.jsonld.test.TestManifest;
 
 class HttpLoaderTest {
 
-    WireMockServer wireMockServer;
+    static MockServer server = null;
 
-    @BeforeEach
-    void proxyToWireMock() {
-        wireMockServer = new WireMockServer(WireMockConfiguration.options());
-        wireMockServer.start();
+    @BeforeAll
+    static void startMockServer() throws JsonLdException {
+        server = new MockServer(
+                TestManifest.TESTS_BASE,
+                TestManifest.JSON_LD_API_BASE);
+        server.start();
     }
 
-    @AfterEach
-    void noMoreWireMock() {
-        wireMockServer.stop();
-        wireMockServer = null;
-    }
-
-    @Test
-    void testMissingContentType() throws URISyntaxException, JsonLdError {
-
-        final JsonLdTestCase testCase = JsonLdManifestLoader
-                .load("/com/apicatalog/jsonld/test/", "manifest.json", new ClasspathLoader())
-                .stream()
-                .filter(o -> "#t0002".equals(o.id))
-                .findFirst().orElseThrow(() -> new NoSuchElementException());
-
-        testCase.contentType = null;
-
-        execute(testCase);
+    @AfterAll
+    static void stopMockServer() throws JsonLdException {
+        if (server != null) {
+            server.close();
+            server = null;
+        }
     }
 
     @Test
-    void testPlainTextContentType() throws URISyntaxException, JsonLdError {
+    void testMissingContentType() throws URISyntaxException, JsonLdException, IOException {
 
-        final JsonLdTestCase testCase = JsonLdManifestLoader
-                .load("/com/apicatalog/jsonld/test/", "manifest.json", new ClasspathLoader())
-                .stream()
-                .filter(o -> "#t0008".equals(o.id))
-                .findFirst().orElseThrow(() -> new NoSuchElementException());
+        server.when("/no-ct", 200, List.of(), readBytes("/com/apicatalog/jsonld/loader/document.json"));
 
-        execute(testCase);
+        var remote = JakartaTestSuite.HTTP_LOADER.loadDocument(
+                URI.create(server.baseUrl() + "/no-ct"),
+                DocumentLoader.defaultOptions());
+
+        assertNotNull(remote);
     }
 
-    void execute(JsonLdTestCase testCase) {
-        JsonLdMockServer server = new JsonLdMockServer(testCase, testCase.baseUri.substring(0, testCase.baseUri.length() - 1), "/com/apicatalog/jsonld/test/", new ClasspathLoader());
+    @Test
+    void testPlainTextContentType() throws URISyntaxException, JsonLdException, IOException {
 
-        try {
+        server.when(
+                "/text.plain",
+                200,
+                List.of(Map.entry("Content-Type", "text/plain")),
+                readBytes("/com/apicatalog/jsonld/loader/document.json"));
 
-            server.start();
+        var ex = assertThrowsExactly(JsonLdException.class,
+                () -> JakartaTestSuite.HTTP_LOADER
+                        .loadDocument(
+                                URI.create(server.baseUrl() + "/text.plain"),
+                                DocumentLoader.defaultOptions()));
 
-            (new JsonLdTestRunnerJunit(testCase)).execute(options -> {
+        assertEquals(ErrorCode.LOADING_DOCUMENT_FAILED, ex.code());
+    }
 
-                JsonLdOptions expandOptions = new JsonLdOptions(options);
+    @Test
+    void testAcceptAnyContentType() throws URISyntaxException, JsonLdException, IOException {
 
-                expandOptions.setDocumentLoader(
-                                    new UriBaseRewriter(
-                                                testCase.baseUri,
-                                                wireMockServer.baseUrl() + "/",
-                                                SchemeRouter.defaultInstance()));
+        server.when(
+                "/text.plain",
+                200,
+                List.of(Map.entry("Content-Type", "text/plain")),
+                readBytes("/com/apicatalog/jsonld/loader/document.json"));
 
-                return JsonDocument.of(JsonLd.expand(testCase.input).options(expandOptions).get());
-            });
+        var remote = JakartaTestSuite.HTTP_LOADER
+                .accept(contentType -> true)
+                .loadDocument(
+                        URI.create(server.baseUrl() + "/text.plain"),
+                        DocumentLoader.defaultOptions());
 
-            server.stop();
+        // reset shared instance state
+        JakartaTestSuite.HTTP_LOADER.accept(HttpLoader.DEFAULT_JSON_LD_CONTENT);
 
-        } catch (Exception e) {
-            fail(e.getMessage());
+        assertNotNull(remote);
+    }
+
+    @Test
+    void testTimeout() throws URISyntaxException, JsonLdException, IOException {
+
+        server.listen(Duration.ofSeconds(5));
+
+        var ex = assertThrowsExactly(JsonLdException.class,
+                () -> JakartaTestSuite.HTTP_LOADER
+                        .timeout(Duration.ofMillis(200))
+                        .loadDocument(
+                                URI.create(server.baseUrl() + "/text.plain"),
+                                DocumentLoader.defaultOptions()));
+
+        server.hangup();
+
+        // reset shared instance state
+        JakartaTestSuite.HTTP_LOADER.timeout(Duration.ofSeconds(5));
+
+        assertEquals(ErrorCode.LOADING_DOCUMENT_TIMEOUT, ex.code());
+    }
+
+    private final byte[] readBytes(final String name) throws JsonLdException, IOException {
+        try (final var is = getClass().getResourceAsStream(name)) {
+            return is.readAllBytes();
         }
     }
 

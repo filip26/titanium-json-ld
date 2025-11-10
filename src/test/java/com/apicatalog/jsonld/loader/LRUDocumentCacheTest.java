@@ -1,16 +1,32 @@
+/*
+ * Copyright 2025 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.apicatalog.jsonld.loader;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.Document;
+import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.loader.DocumentLoader.Options;
+import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonValue;
 
@@ -20,13 +36,12 @@ public class LRUDocumentCacheTest {
 
         final URI url;
 
-        final DocumentLoaderOptions options;
+        final Options options;
 
-        public Request(URI url, DocumentLoaderOptions options) {
+        public Request(URI url, Options options) {
             this.url = url;
             this.options = options;
         }
-
     }
 
     static class RecordRequestLoader implements DocumentLoader {
@@ -34,20 +49,20 @@ public class LRUDocumentCacheTest {
         final List<Request> requests = new ArrayList<>();
 
         @Override
-        public Document loadDocument(URI url, DocumentLoaderOptions options) {
+        public Document loadDocument(URI url, Options options) {
             requests.add(new Request(url, options));
             // Return empty document.
-            return JsonDocument.of(JsonValue.EMPTY_JSON_ARRAY);
+            return Document.of(new TreeIO(JsonValue.EMPTY_JSON_ARRAY, JakartaAdapter.instance()));
         }
 
     }
 
     @Test
-    void testLoadDocument() throws JsonLdError {
+    void testLoadDocument() throws JsonLdException {
         RecordRequestLoader loader = new RecordRequestLoader();
-        LRUDocumentCache cachedLoader = new LRUDocumentCache(loader, 2);
+        CacheLoader cachedLoader = new CacheLoader(loader, 2);
 
-        DocumentLoaderOptions options = new DocumentLoaderOptions();
+        Options options = Options.DEFAULT;
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
@@ -62,11 +77,11 @@ public class LRUDocumentCacheTest {
     }
 
     @Test
-    void testCacheSize() throws JsonLdError {
+    void testCacheSize() throws JsonLdException {
         RecordRequestLoader loader = new RecordRequestLoader();
-        LRUDocumentCache cachedLoader = new LRUDocumentCache(loader, 2);
+        CacheLoader cachedLoader = new CacheLoader(loader, 2);
 
-        DocumentLoaderOptions options = new DocumentLoaderOptions();
+        Options options = Options.DEFAULT;
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
 
@@ -86,86 +101,52 @@ public class LRUDocumentCacheTest {
     }
 
     @Test
-    void testLoadDocumentsWithDifferentOptions() throws JsonLdError {
+    void testLoadDocumentsWithDifferentOptions() throws JsonLdException {
         RecordRequestLoader loader = new RecordRequestLoader();
-        LRUDocumentCache cachedLoader = new LRUDocumentCache(loader, 2);
+        CacheLoader cachedLoader = new CacheLoader(loader, 2);
 
         // Using options with same inside should lead to cache hit.
-        DocumentLoaderOptions options = new DocumentLoaderOptions();
+        Options options = Options.DEFAULT;
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
-        DocumentLoaderOptions sameOptions = new DocumentLoaderOptions();
+        Options sameOptions = Options.DEFAULT;
         cachedLoader.loadDocument(URI.create("http://localhost/1"), sameOptions);
         Assertions.assertEquals(1, loader.requests.size());
 
         // Use of different options should cause cache miss.
-        DocumentLoaderOptions differentOptions = new DocumentLoaderOptions();
-        differentOptions.setProfile("profile");
+        Options differentOptions = new Options(false, "profile", null);
         cachedLoader.loadDocument(URI.create("http://localhost/1"), differentOptions);
         Assertions.assertEquals(2, loader.requests.size());
     }
 
     @Test
-    void testCachingEqualOptions() throws JsonLdError {
+    void testCachingEqualOptions() throws JsonLdException {
         RecordRequestLoader loader = new RecordRequestLoader();
-        LRUDocumentCache cachedLoader = new LRUDocumentCache(loader, 2);
-        DocumentLoaderOptions options = null;
-
-        options = new DocumentLoaderOptions();
-        options.setProfile("profile");
-        options.setExtractAllScripts(true);
-        List<String> firstList = new ArrayList<>();
-        firstList.add("first");
-        firstList.add("second");
-        options.setRequestProfile(firstList);
+        CacheLoader cachedLoader = new CacheLoader(loader, 2);
+        
+        Options options = new Options(true, "profile", List.of("first", "second"));
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
 
-        options = new DocumentLoaderOptions();
-        options.setProfile("profile");
-        options.setExtractAllScripts(true);
-        List<String> secondList = new ArrayList<>();
-        secondList.add("first");
-        secondList.add("second");
-        options.setRequestProfile(secondList);
+        options = new Options(true, "profile", List.of("first", "second"));
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
 
-        options = new DocumentLoaderOptions();
-        options.setProfile("profile");
-        options.setExtractAllScripts(true);
-        List<String> thirdList = new LinkedList<>();
-        thirdList.add("first");
-        thirdList.add("second");
-        options.setRequestProfile(thirdList);
+        options = new Options(true, "profile", List.of("first", "second"));
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
 
         Assertions.assertEquals(1, loader.requests.size());
     }
 
     @Test
-    void testCachingProfilesOrderMatter() throws JsonLdError {
+    void testCachingProfilesOrderMatter() throws JsonLdException {
         RecordRequestLoader loader = new RecordRequestLoader();
-        LRUDocumentCache cachedLoader = new LRUDocumentCache(loader, 2);
-        DocumentLoaderOptions options = null;
+        CacheLoader cachedLoader = new CacheLoader(loader, 2);
+        Options options = null;
 
-        options = new DocumentLoaderOptions();
-        options.setProfile("profile");
-        options.setExtractAllScripts(true);
-        List<String> firstList = new ArrayList<>();
-        firstList.add("first");
-        firstList.add("second");
-        options.setRequestProfile(firstList);
+        options = new Options(true, "profile", List.of("first", "second"));
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
 
-        options = new DocumentLoaderOptions();
-        options.setProfile("profile");
-        options.setExtractAllScripts(true);
-        List<String> secondList = new ArrayList<>();
-        secondList.add("second");
-        secondList.add("first");
-        options.setRequestProfile(secondList);
+        options = new Options(true, "profile", List.of("second", "first"));
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
 
         Assertions.assertEquals(2, loader.requests.size());
     }
-
-
 }

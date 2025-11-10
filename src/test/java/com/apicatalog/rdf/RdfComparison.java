@@ -34,17 +34,16 @@ public final class RdfComparison {
         }
     }
 
-    static final String canon(RdfQuadSet set) throws RdfConsumerException {
+    private static final String canon(RdfQuadSet set) throws RdfConsumerException {
 
-        RdfCanon canon = RdfCanon.create("SHA-256", new RdfCanonTimeTicker(5 * 1000));
+        var canon = RdfCanon.create("SHA-256", new RdfCanonTimeTicker(5 * 1000));
 
         QuadEmitter.create(canon).emit(set);
 
-        StringWriter writer = new StringWriter();
+        var writer = new StringWriter();
 
         canon.provide(new NQuadsWriter(writer));
 
         return writer.toString();
-
     }
 }

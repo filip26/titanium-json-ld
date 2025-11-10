@@ -28,12 +28,11 @@ import java.time.Duration;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import com.apicatalog.jsonld.Comparison;
+import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.json.JsonLdComparison;
+import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.api.RdfConsumerException;
@@ -43,30 +42,34 @@ import com.apicatalog.rdf.nquads.NQuadsReaderException;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.set.OrderedQuadDataset;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
-
-import jakarta.json.JsonArray;
+import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.TreeIOException;
+import com.apicatalog.tree.io.jakarta.JakartaAdapter;
+import com.apicatalog.tree.io.java.NativeAdapter;
 
 class RemoteContextTest {
+
+    static ClasspathLoader LOADER = new ClasspathLoader(JakartaTestSuite.PARSER);
 
     /**
      * @see <a href="https://github.com/filip26/titanium-json-ld/issues/61">Issue
      *      #61</a>
-     * @throws JsonLdError
-     * @throws IOException
-     * @throws RdfConsumerException 
-     * @throws NQuadsReaderException 
      */
     @Test
-    void testToRdfMissingTriples1() throws JsonLdError, IOException, NQuadsReaderException, RdfConsumerException {
+    void testToRdfMissingTriples1() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException, TreeIOException {
 
-        final Document document = readDocument("/com/apicatalog/jsonld/test/issue61-in.json");
-        final Document context = readDocument("/com/apicatalog/jsonld/test/issue61-context.json");
+        final var document = read("/com/apicatalog/jsonld/test/issue61-in.json");
+        final var context = read("/com/apicatalog/jsonld/test/issue61-context.json");
 
         final OrderedQuadDataset result = new OrderedQuadDataset();
 
-        JsonLd.toRdf(document).context(context).provide(new QuadAcceptor(result));
+        JsonLd.toRdf(
+                document,
+                new QuadAcceptor(result),
+                Options.newOptions()
+                        .expandContext(context));
 
-        try (final InputStream is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue61-out.nq")) {
+        try (final var is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue61-out.nq")) {
 
             assertNotNull(is);
 
@@ -83,54 +86,49 @@ class RemoteContextTest {
     /**
      * @see <a href="https://github.com/filip26/titanium-json-ld/issues/61">Issue
      *      #61</a>
-     * @throws JsonLdError
-     * @throws IOException
-     * @throws RdfConsumerException 
-     * @throws NQuadsReaderException 
      */
     @Test
-    void testToRdfMissingTriples2() throws JsonLdError, IOException, NQuadsReaderException, RdfConsumerException {
+    void testToRdfMissingTriples2() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException, TreeIOException {
 
-        final Document document = readDocument("/com/apicatalog/jsonld/test/issue61-in.json");
-        final Document context = readDocument("/com/apicatalog/jsonld/test/issue61-context.json");
-
-        final JsonLdOptions options = new JsonLdOptions();
-        options.setExpandContext(context);
+        final var document = read("/com/apicatalog/jsonld/test/issue61-in.json");
+        final var context = read("/com/apicatalog/jsonld/test/issue61-context.json");
 
         final OrderedQuadSet result = new OrderedQuadSet();
-        
-        JsonLd.toRdf(document).options(options).provide(new QuadAcceptor(result));
 
-        try (final InputStream is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue61-out.nq")) {
+        JsonLd.toRdf(
+                document,
+                new QuadAcceptor(result),
+                Options.newOptions().expandContext(context));
+
+        try (final var is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue61-out.nq")) {
 
             assertNotNull(is);
 
             final OrderedQuadSet expected = new OrderedQuadSet();
 
             new NQuadsReader(new InputStreamReader(is)).provide(new QuadAcceptor(expected));
-            
+
             boolean match = RdfComparison.equals(result, expected);
 
             assertTrue(match);
         }
     }
 
-    /**
+    /** 
      * @see <a href="https://github.com/filip26/titanium-json-ld/issues/63">Issue
      *      #63</a>
-     * @throws JsonLdError
-     * @throws IOException
-     * @throws RdfConsumerException 
-     * @throws NQuadsReaderException 
      */
     @Test
-    void testRemoteContext() throws JsonLdError, IOException, NQuadsReaderException, RdfConsumerException {
+    void testRemoteContext() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException, TreeIOException {
 
-        final Document document = readDocument("/com/apicatalog/jsonld/test/issue63-in.json");
+        final var document = read("/com/apicatalog/jsonld/test/issue63-in.json");
 
         final OrderedQuadSet result = new OrderedQuadSet();
 
-        JsonLd.toRdf(document).loader(new ClasspathLoader()).provide(new QuadAcceptor(result));
+        JsonLd.toRdf(
+                document,
+                new QuadAcceptor(result),
+                Options.with(LOADER));
 
         assertNotNull(result);
 
@@ -152,39 +150,41 @@ class RemoteContextTest {
      * @see <a href="https://github.com/filip26/titanium-json-ld/issues/62">Issue
      *      #62</a>
      *
-     * @throws JsonLdError
-     * @throws IOException
+     * @throws JsonLdException
+     * @throws TreeIOException 
+     * @throws IOException 
      */
     @Test
     @Disabled("Run manually")
-    void testPerformance() throws JsonLdError, IOException {
+    void testPerformance() throws JsonLdException, TreeIOException, IOException {
 
-        final Document document = readDocument("/com/apicatalog/jsonld/test/issue62-in.json");
+        final var document = read("/com/apicatalog/jsonld/test/issue62-in.json");
         assertNotNull(document);
 
-        final Document expected = readDocument("/com/apicatalog/jsonld/test/issue62-out.json");
+        final var expected = read("/com/apicatalog/jsonld/test/issue62-out.json");
         assertNotNull(expected);
 
         assertTimeout(ofMinutes(1), () -> {
 
             long start = System.nanoTime();
 
-            final JsonArray result = JsonLd.expand(document).get();
+            final var result = JsonLd.expand(document, Options.with(JakartaTestSuite.HTTP_LOADER));
 
             System.out.println("Time elapsed: " + Duration.ofNanos(System.nanoTime() - start));
 
             assertNotNull(result);
 
-            boolean match = JsonLdComparison.equals(result, expected.getJsonContent().orElse(null));
+            boolean match = Comparison.equals(
+                    result, NativeAdapter.instance(),
+                    expected, JakartaAdapter.instance());
 
             assertTrue(match);
         });
-
     }
 
-    private final Document readDocument(final String name) throws JsonLdError, IOException {
-        try (final InputStream is = getClass().getResourceAsStream(name)) {
-            return JsonDocument.of(is);
+    private final TreeIO read(final String name) throws JsonLdException, TreeIOException, IOException {
+        try (final var is = getClass().getResourceAsStream(name)) {
+            return JakartaTestSuite.PARSER.parse(is);
         }
     }
 }

@@ -15,8 +15,8 @@
  */
 package com.apicatalog.jsonld.lang;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 public final class Keywords {
 
@@ -94,17 +94,15 @@ public final class Keywords {
     // Extension: JSON-LD-STAR (Experimental)
     public static final String ANNOTATION = "@annotation";
 
-    private static final Collection<String> ALL_KEYWORDS = Arrays.asList(ANY, BASE, CONTAINER, CONTEXT, DIRECTION, GRAPH,
-            ID, IMPORT, INCLUDED, INDEX, JSON, LANGUAGE, LIST, NEST, NONE, PREFIX, PRESERVE, PROPAGATE, PROTECTED, REVERSE, SET,
-            TYPE, VALUE, VERSION, VOCAB,
+    private static final Collection<String> ALL_KEYWORDS = List.of(ANY, BASE, CONTAINER, CONTEXT,
+            DIRECTION, GRAPH, ID, IMPORT, INCLUDED, INDEX, JSON, LANGUAGE, LIST, NEST, NONE, PREFIX,
+            PRESERVE, PROPAGATE, PROTECTED, REVERSE, SET, TYPE, VALUE, VERSION, VOCAB,
             // framing
             DEFAULT, EMBED, ALWAYS, ONCE, NEVER, EXPLICIT, NULL, OMIT_DEFAULT, REQUIRE_ALL, MERGED,
             // star
-            ANNOTATION
-            );
+            ANNOTATION);
 
-
-    protected Keywords() {
+    private Keywords() {
     }
 
     public static boolean contains(final String value) {
@@ -125,7 +123,7 @@ public final class Keywords {
         }
 
         // vanilla approach is 3 times faster than stream.allMatch
-        for (int i=1; i < value.length(); i++) {
+        for (int i = 1; i < value.length(); i++) {
             if (!Character.isAlphabetic(value.charAt(i))) {
                 return false;
             }
@@ -141,15 +139,5 @@ public final class Keywords {
             }
         }
         return true;
-    }
-
-    @Deprecated
-    public static boolean anyMatch(final String key, final String... keywords) {
-        return Arrays.asList(keywords).contains(key);
-    }
-
-    @Deprecated
-    public static boolean allMatch(final Collection<String> values, final String... keywords) {
-        return Arrays.asList(keywords).containsAll(values);
     }
 }

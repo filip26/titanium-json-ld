@@ -17,27 +17,39 @@ package com.apicatalog.jsonld.custom;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.NoSuchElementException;
+import java.net.URI;
 
 import org.junit.jupiter.api.Test;
 
+import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLd;
+import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
-import com.apicatalog.jsonld.test.JsonLdManifestLoader;
-import com.apicatalog.jsonld.test.JsonLdTestCase;
-import com.apicatalog.jsonld.test.JsonLdTestRunnerJunit;
+import com.apicatalog.jsonld.test.JunitRunner;
+import com.apicatalog.jsonld.test.TestManifest;
 
 class CompactBaseTest {
 
+    static DocumentLoader LOADER = new ZipResourceLoader(JakartaTestSuite.PARSER);
+    
     @Test
     void testCompactBase() {
 
-        final JsonLdTestCase testCase = JsonLdManifestLoader
-                .load(JsonLdManifestLoader.JSON_LD_API_BASE, "compact-manifest.jsonld", new ZipResourceLoader())
+        final var testCase = TestManifest
+                .load(
+                        TestManifest.JSON_LD_API_BASE,
+                        "compact-manifest.jsonld",
+                        LOADER)
                 .stream()
                 .filter(o -> "#t0047".equals(o.id))
-                .findFirst().orElseThrow(() -> new NoSuchElementException());
+                .findFirst().orElseThrow(() -> new IllegalStateException());
 
-        assertTrue(new JsonLdTestRunnerJunit(testCase).execute(options -> JsonLd.compact(testCase.input, testCase.context).options(options).base("http://fake.com").get()));
+        assertTrue(new JunitRunner(testCase)
+                .execute(options -> JsonLd.compact(
+                        testCase.input,
+                        testCase.context,
+                        Options.copyOf(options)
+                                .base(URI.create("http://fake.com")))));
     }
 }
