@@ -1,6 +1,6 @@
 # Titanium JSON-LD 1.1 Processor & API
 
-An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-based Serialization for Linked Data) specification in Java, utilizing [Jakarta JSON Processing](https://github.com/eclipse-ee4j/jsonp).
+An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-based Serialization for Linked Data) specification in Java.
 
 ### 🎯 Goals
 - Full conformance to the specification
@@ -185,7 +185,7 @@ implementation("com.apicatalog:titanium-json-ld-jre8:1.7.0")
 
 ### JSON-P Provider
 
-Titanium relies on a **JSON-P (Jakarta JSON Processing)** provider. Ensure that one is available on your classpath.
+Titanium v1.x.x relies on a **JSON-P (Jakarta JSON Processing)** provider. Ensure that one is available on your classpath.
 
 #### Maven
 
