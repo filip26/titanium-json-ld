@@ -15,6 +15,8 @@
  */
 package com.apicatalog.jsonld.processor;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.function.Consumer;
 
 import com.apicatalog.jsonld.JsonLdException;
@@ -29,7 +31,7 @@ import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 public class Execution {
 
     @FunctionalInterface
-    public interface NodeCounter {
+    public interface Counter {
 
         /**
          * Increments the node count by one.
@@ -40,10 +42,15 @@ public class Execution {
     }
 
     protected Consumer<String> contextKeyCollector;
-    protected NodeCounter counter;
+    protected Counter nodeCounter;
+    protected Counter ttl;
 
-    protected Execution(NodeCounter counter, Consumer<String> contextKeyCollector) {
-        this.counter = counter;
+    protected Execution(
+            Counter ttl,
+            Counter nodeCounter, 
+            Consumer<String> contextKeyCollector) {
+        this.ttl = ttl;
+        this.nodeCounter = nodeCounter;
         this.contextKeyCollector = contextKeyCollector;
     }
 
@@ -53,6 +60,7 @@ public class Execution {
                         ? new Ticker(options.timeout())::tick
                         : () -> {
                         },
+                null,
                 null);
     }
 
@@ -67,12 +75,15 @@ public class Execution {
      */
     @Deprecated
     public void tick() throws JsonLdException {
-        if (counter != null) {
-            counter.increment();
+        if (ttl != null) {
+            ttl.increment();
         }
     }
 
     public Execution start() throws JsonLdException {
+        if (ttl != null) {
+            ttl.increment();
+        }
         return this;
     }
 
@@ -82,8 +93,8 @@ public class Execution {
      * @param parentKey
      */
     public void onBeforeMap(String parentKey) throws JsonLdException {
-        if (counter != null) {
-            counter.increment();
+        if (nodeCounter != null) {
+            nodeCounter.increment();
         }
     }
 
@@ -145,7 +156,7 @@ public class Execution {
         private final int maxNodes;
         private int counter;
 
-        NodeThrottle(int maxNodes) {
+        private NodeThrottle(int maxNodes) {
             this.maxNodes = maxNodes;
             this.counter = 0;
         }
@@ -158,6 +169,36 @@ public class Execution {
         }
     }
 
+    static class Ticker {
+
+        private final Duration ttl;
+
+        private Instant ticker;
+
+        private Ticker(Duration ttl) {
+            this.ttl = ttl;
+            this.ticker = null;
+        }
+
+        void tick() throws JsonLdException {
+
+            if (ticker == null) {
+                ticker = Instant.now();
+                return;
+            }
+
+            final Instant now = Instant.now();
+
+            var elapsed = ttl.minus(Duration.between(now, ticker).abs());
+
+            if (elapsed.isNegative()) {
+                ticker = null;
+                throw new JsonLdException(ErrorCode.PROCESSING_TIMEOUT_EXCEEDED);
+            }
+        }
+    }
+
+    
 //    /**
 //     * Resume ticker, a next ping decreases remaining time if timeout is set. Is
 //     * used after an external method call, to exclude time consumed by

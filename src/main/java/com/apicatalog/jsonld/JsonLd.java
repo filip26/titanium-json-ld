@@ -272,8 +272,6 @@ public final class JsonLd {
     public static final Object flatten(
             final URI document,
             final Options options) throws JsonLdException {
-        var runtime = Execution.of(options);
-        runtime.tick();
 
         return Flattener.flatten(
                 Document.load(
@@ -282,7 +280,7 @@ public final class JsonLd {
                         options.isExtractAllScripts()),
                 null,
                 options,
-                runtime);
+                Execution.of(options).start());
     }
 
     /**
@@ -298,8 +296,6 @@ public final class JsonLd {
             final URI document,
             final URI context,
             final Options options) throws JsonLdException {
-        var runtime = Execution.of(options);
-        runtime.tick();
 
         return Flattener.flatten(
                 Document.load(
@@ -310,7 +306,7 @@ public final class JsonLd {
                         ? Context.load(context, options.loader()).content()
                         : null,
                 options,
-                runtime);
+                Execution.of(options).start());
     }
 
     /**
@@ -326,14 +322,11 @@ public final class JsonLd {
             final Document document,
             final Options options) throws JsonLdException {
 
-        var runtime = Execution.of(options);
-        runtime.tick();
-
         return Flattener.flatten(
                 document,
                 null,
                 options,
-                runtime);
+                Execution.of(options).start());
     }
 
     /**
@@ -347,16 +340,13 @@ public final class JsonLd {
             final Document context,
             final Options options) throws JsonLdException {
 
-        var runtime = Execution.of(options);
-        runtime.tick();
-
         return Flattener.flatten(
                 document,
                 context != null
                         ? context.content()
                         : null,
                 options,
-                runtime);
+                Execution.of(options).start());
     }
 
     /**
@@ -414,6 +404,7 @@ public final class JsonLd {
     public static final Object flatten(
             final Collection<?> document,
             final Options options) throws JsonLdException {
+
         return flatten(
                 new TreeIO(document, NativeAdapter.instance()),
                 null,
@@ -435,6 +426,7 @@ public final class JsonLd {
             final Collection<?> document,
             final Map<String, ?> context,
             final Options options) throws JsonLdException {
+
         return flatten(
                 new TreeIO(document, NativeAdapter.instance()),
                 context != null
@@ -455,14 +447,12 @@ public final class JsonLd {
     public static final Object flatten(
             final TreeIO document,
             final Options options) throws JsonLdException {
-        var runtime = Execution.of(options);
-        runtime.tick();
 
         return Flattener.flatten(
                 document,
                 null,
                 options,
-                runtime);
+                Execution.of(options).start());
     }
 
     /**
@@ -480,14 +470,12 @@ public final class JsonLd {
             final TreeIO document,
             final TreeIO context,
             final Options options) throws JsonLdException {
-        var runtime = Execution.of(options);
-        runtime.tick();
 
         return Flattener.flatten(
                 document,
                 context,
                 options,
-                runtime);
+                Execution.of(options).start());
     }
 
     /* --- FRAME -- */
@@ -505,6 +493,7 @@ public final class JsonLd {
             final URI document,
             final URI frame,
             final Options options) throws JsonLdException {
+
         return frame(
                 Document.load(document, options.loader(), options.isExtractAllScripts()),
                 frame,
@@ -524,6 +513,7 @@ public final class JsonLd {
             final Document document,
             final URI frame,
             final Options options) throws JsonLdException {
+
         return frame(
                 document,
                 Document.load(frame, options.loader(), options.isExtractAllScripts()),
@@ -543,6 +533,7 @@ public final class JsonLd {
             final URI document,
             final Document frame,
             final Options options) throws JsonLdException {
+
         return frame(
                 Document.load(document, options.loader(), options.isExtractAllScripts()),
                 frame,
@@ -563,10 +554,11 @@ public final class JsonLd {
             final Document frame,
             final Options options) throws JsonLdException {
 
-        final Execution runtime = Execution.of(options);
-        runtime.tick();
-
-        return Framer.frame(document, frame, options, runtime);
+        return Framer.frame(
+                document,
+                frame,
+                options,
+                Execution.of(options).start());
     }
 
     /**
@@ -604,8 +596,7 @@ public final class JsonLd {
             final TreeIO frame,
             final Options options) throws JsonLdException {
 
-        final Execution runtime = Execution.of(options);
-        runtime.tick();
+        final Execution runtime = Execution.of(options).start();
 
         final var contextNode = Context.extract(frame);
 
@@ -660,10 +651,11 @@ public final class JsonLd {
             final RdfQuadConsumer consumer,
             final Options options) throws JsonLdException {
 
-        final Execution runtime = Execution.of(options);
-        runtime.tick();
-
-        RdfEmitter.toRdf(document, consumer, options, runtime);
+        RdfEmitter.toRdf(
+                document,
+                consumer,
+                options,
+                Execution.of(options).start());
     }
 
     /**
@@ -681,10 +673,11 @@ public final class JsonLd {
             final RdfQuadConsumer consumer,
             final Options options) throws JsonLdException {
 
-        final Execution runtime = Execution.of(options);
-        runtime.tick();
-
-        RdfEmitter.toRdf(document, consumer, options, runtime);
+        RdfEmitter.toRdf(
+                document,
+                consumer,
+                options,
+                Execution.of(options).start());
     }
 
     /**
@@ -701,14 +694,11 @@ public final class JsonLd {
             final RdfQuadConsumer consumer,
             final Options options) throws JsonLdException {
 
-        final Execution runtime = Execution.of(options);
-        runtime.tick();
-
         RdfEmitter.toRdf(
                 new TreeIO(document, NativeAdapter.instance()),
                 consumer,
                 options,
-                runtime);
+                Execution.of(options).start());
     }
 
     /* --- FROM RDF -- */
@@ -808,5 +798,4 @@ public final class JsonLd {
             return text;
         }
     }
-
 }
