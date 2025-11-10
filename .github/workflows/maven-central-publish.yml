@@ -1,4 +1,4 @@
-name: Publish JRE17 to the Maven Central
+name: Publish to the Maven Central
 
 on:
   release:
