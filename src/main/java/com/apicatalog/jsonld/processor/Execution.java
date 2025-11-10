@@ -24,7 +24,7 @@ import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 
 /**
- * A runtime context used during a transformation processing.
+ * A runtime execution context used during a transformation processing.
  * 
  * @since 1.4.0
  */
@@ -47,7 +47,7 @@ public class Execution {
 
     protected Execution(
             Counter ttl,
-            Counter nodeCounter, 
+            Counter nodeCounter,
             Consumer<String> contextKeyCollector) {
         this.ttl = ttl;
         this.nodeCounter = nodeCounter;
@@ -58,8 +58,7 @@ public class Execution {
         return new Execution(
                 options.timeout() != null
                         ? new Ticker(options.timeout())::tick
-                        : () -> {
-                        },
+                        : null,
                 null,
                 null);
     }
@@ -171,34 +170,33 @@ public class Execution {
 
     static class Ticker {
 
-        private final Duration ttl;
+        private final long ttl;
 
-        private Instant ticker;
+        private long ticker;
 
         private Ticker(Duration ttl) {
-            this.ttl = ttl;
-            this.ticker = null;
+            this.ttl = ttl.toMillis();
+            this.ticker = 0;
         }
 
         void tick() throws JsonLdException {
 
-            if (ticker == null) {
-                ticker = Instant.now();
+            if (ticker == 0) {
+                ticker = System.currentTimeMillis();
                 return;
             }
 
-            final Instant now = Instant.now();
+            final var now = System.currentTimeMillis();
+            
+            final var elapsed = ttl - (now - ticker);
 
-            var elapsed = ttl.minus(Duration.between(now, ticker).abs());
-
-            if (elapsed.isNegative()) {
-                ticker = null;
+            if (elapsed <= 0) {
+                ticker = 0;
                 throw new JsonLdException(ErrorCode.PROCESSING_TIMEOUT_EXCEEDED);
             }
         }
     }
 
-    
 //    /**
 //     * Resume ticker, a next ping decreases remaining time if timeout is set. Is
 //     * used after an external method call, to exclude time consumed by
