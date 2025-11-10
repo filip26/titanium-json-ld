@@ -68,16 +68,13 @@ public final class JsonLd {
             final URI document,
             final Options options) throws JsonLdException {
 
-        var runtime = Execution.of(options);
-        runtime.tick();
-
         return Expander.expand(
                 Document.load(
                         document,
                         options.loader(),
                         options.isExtractAllScripts()),
                 options,
-                runtime);
+                Execution.of(options).start());
     }
 
     /**
@@ -92,10 +89,10 @@ public final class JsonLd {
             final Document document,
             final Options options) throws JsonLdException {
 
-        var runtime = Execution.of(options);
-        runtime.tick();
-
-        return Expander.expand(document, options, runtime);
+        return Expander.expand(
+                document,
+                options,
+                Execution.of(options).start());
     }
 
     /**
@@ -127,13 +124,10 @@ public final class JsonLd {
             final TreeIO document,
             final Options options) throws JsonLdException {
 
-        var runtime = Execution.of(options);
-        runtime.tick();
-
         return Expander.expand(
                 document,
                 options,
-                runtime);
+                Execution.of(options).start());
     }
 
     /* --- COMPACT -- */
@@ -211,14 +205,11 @@ public final class JsonLd {
             final Document context,
             final Options options) throws JsonLdException {
 
-        final Execution runtime = Execution.of(options);
-        runtime.tick();
-
         return Compactor.compact(
                 document,
                 context,
                 options,
-                runtime);
+                Execution.of(options).start());
     }
 
     /**
@@ -236,8 +227,7 @@ public final class JsonLd {
             final TreeIO context,
             final Options options) throws JsonLdException {
 
-        final Execution runtime = Execution.of(options);
-        runtime.tick();
+        final Execution runtime = Execution.of(options).start();
 
         return Compactor.compact(
                 Compactor.expand(document, options, runtime),

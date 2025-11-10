@@ -72,6 +72,10 @@ public class Execution {
         }
     }
 
+    public Execution start() throws JsonLdException {
+        return this;
+    }
+
     /**
      * Event fired before a map node is processed.
      * 
