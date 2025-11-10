@@ -16,12 +16,11 @@
 package com.apicatalog.jsonld.processor;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.function.Consumer;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.jsonld.Options;
 
 /**
  * A runtime execution context used during a transformation processing.
@@ -161,7 +160,7 @@ public class Execution {
         }
 
         void increment() throws JsonLdException {
-            if (++counter == maxNodes) {
+            if (++counter >= maxNodes) {
                 // TODO add ErrorCode.MAX_NODES_LIMIT_EXCEEDED
                 throw new JsonLdException(ErrorCode.UNSPECIFIED);
             }
