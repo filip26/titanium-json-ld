@@ -90,7 +90,7 @@ public final class ActiveContext implements Context {
     }
 
     public void createInverseContext() {
-        this.inverseContext = InverseContextBuilder.with(this).build();
+        this.inverseContext = InverseContext.newContext(this);
     }
 
     public boolean containsProtectedTerm() {
