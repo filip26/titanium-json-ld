@@ -51,14 +51,16 @@
         
         <maven.compiler.release>17</maven.compiler.release>
         
-        <titanium.rdf.api.version>1.0.0</titanium.rdf.api.version>
+        <rdf-api.version>1.0.0</rdf-api.version>
         <jcs.version>3.0.0-M2-SNAPSHOT</jcs.version>
         <tree-io.version>0.12.0-SNAPSHOT</tree-io.version>
 
         <!-- test resources -->
         <junit.version>6.0.1</junit.version>
         <jakarta.json.version>2.0.1</jakarta.json.version>
-        <titanium.rdf.nquads.version>1.0.2</titanium.rdf.nquads.version>        
+        <nquads.version>1.0.2</nquads.version>
+        <rdf-primitives.version>1.0.3</rdf-primitives.version>
+        <rdfc.version>2.0.0</rdfc.version>        
 
         <sonar.projectKey>filip26_titanium-json-ld</sonar.projectKey>
         <sonar.organization>apicatalog</sonar.organization>
@@ -79,7 +81,7 @@
         <dependency>
           <groupId>com.apicatalog</groupId>
           <artifactId>titanium-rdf-api</artifactId>
-          <version>${titanium.rdf.api.version}</version>
+          <version>${rdf-api.version}</version>
         </dependency>        
         <!-- Tests-->
         <dependency>
@@ -97,19 +99,19 @@
         <dependency>
           <groupId>com.apicatalog</groupId>
           <artifactId>titanium-rdf-n-quads</artifactId>
-          <version>${titanium.rdf.nquads.version}</version>
+          <version>${nquads.version}</version>
           <scope>test</scope>
         </dependency>
         <dependency>
           <groupId>com.apicatalog</groupId>
           <artifactId>titanium-rdf-primitives</artifactId>
-          <version>1.0.3</version>
+          <version>${rdf-primitives.version}</version>
           <scope>test</scope>
         </dependency>   
         <dependency>
           <groupId>com.apicatalog</groupId>
           <artifactId>titanium-rdfc</artifactId>
-          <version>2.0.0</version>
+          <version>${rdfc.version}</version>
           <scope>test</scope>       
         </dependency>   
         <dependency>
@@ -188,9 +190,6 @@
             <artifactId>maven-surefire-plugin</artifactId>
             <version>3.5.4</version>
             <configuration>
-<!--                <excludes>
-                    <exclude>**Test.java</exclude>
-                </excludes> -->
                 <includes>                
                     <include>**Suite.java</include>
                     <include>**Test.java</include>

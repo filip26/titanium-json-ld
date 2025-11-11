@@ -238,7 +238,7 @@ public interface Context {
 
     public static class Builder {
 
-        ActiveContext ctx;
+        Context ctx;
 
         DocumentLoader loader;
         Execution runtime;
@@ -341,4 +341,7 @@ public interface Context {
 //        }
 //
     }
+
+    @Deprecated
+    void setBaseUri(URI base);
 }

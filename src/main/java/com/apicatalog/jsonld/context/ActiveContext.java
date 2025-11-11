@@ -32,7 +32,7 @@ import com.apicatalog.tree.io.TreeAdapter;
  * running.
  *
  */
-final class ActiveContext implements Context {
+public final class ActiveContext implements Context {
 
     // the active term definitions which specify how keys and values have to be
     // interpreted

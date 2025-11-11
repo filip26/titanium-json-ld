@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.processor;
 
 import java.time.Duration;
+import java.util.Collection;
 import java.util.function.Consumer;
 
 import com.apicatalog.jsonld.JsonLdException;
@@ -40,14 +41,14 @@ public class Execution {
         void increment() throws JsonLdException;
     }
 
-    protected Consumer<String> contextKeyCollector;
+    protected Consumer<Collection<String>> contextKeyCollector;
     protected Counter nodeCounter;
     protected Counter ttl;
 
     protected Execution(
             Counter ttl,
             Counter nodeCounter,
-            Consumer<String> contextKeyCollector) {
+            Consumer<Collection<String>> contextKeyCollector) {
         this.ttl = ttl;
         this.nodeCounter = nodeCounter;
         this.contextKeyCollector = contextKeyCollector;
@@ -114,7 +115,7 @@ public class Execution {
      * 
      * @param key
      */
-    public void onContextKey(String key) {
+    public void onContextKey(Collection<String> key) {
         contextKeyCollector.accept(key);
     }
 
@@ -126,7 +127,7 @@ public class Execution {
         return contextKeyCollector != null;
     }
 
-    public Execution contextKeyCollector(Consumer<String> consumer) {
+    public Execution contextKeyCollector(Consumer<Collection<String>> consumer) {
         this.contextKeyCollector = consumer;
         return this;
     }

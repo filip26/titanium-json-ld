@@ -90,8 +90,8 @@ public final class ObjectExpansion {
         if (contextValue != null) {
 
             // CBOR-LD collector
-//            if (params.runtime().contextKeysCollector() != null) {
-//                
+            if (params.runtime().collectsContextKeys()) {
+                
 //                for (final JsonValue context : JsonUtils.toJsonArray(jsonContext)) {
 //                    final ActiveContext ac = new ActiveContext(activeContext.getBaseUri(), activeContext.getBaseUrl(), activeContext.runtime())
 //                            .newContext()
@@ -99,11 +99,20 @@ public final class ObjectExpansion {
 //                    appliedContexts.accept(ac.getTerms());
 //                }
 //
-//                
-//                adapter.keyStream(localContext)
-//                        .map(String.class::cast)
-//                        .forEach(runtime.contextKeysCollector()::accept);
-//            }
+                for (var ctx : adapter.asIterable(contextValue)) {
+                    
+                    var ac = activeContext
+                            .newContext(params.options().loader(), params.runtime())
+                            .build(ctx, adapter, params.baseUrl());
+                    
+                    params.runtime().onContextKey(ac.getTerms());
+                    
+//                    adapter.keyStream(contextValue)
+//                    .map(String.class::cast)
+//                    .forEach(params.runtime()::onContextKey);
+   
+                }                
+            }
 
             activeContext = activeContext
                     .newContext(params.options().loader(), params.runtime())
@@ -239,11 +248,13 @@ public final class ObjectExpansion {
                     if (localContext != null) {
 
                         // CBOR-LD collector
-//                        if (params.runtime().contextKeysCollector() != null) {
-//                            localContext.adapter().keyStream(localContext.node())
-//                                    .map(String.class::cast)
-//                                    .forEach(params.runtime().contextKeysCollector()::accept);
-//                        }
+                        if (params.runtime().collectsContextKeys()) {
+                            params.runtime().onContextKey(
+                            localContext.keyStream()
+                                    .map(localContext.adapter()::asString)
+                                    .toList()
+                                    );
+                        }
 
                         activeContext = activeContext
                                 .newContext(params.options().loader(), params.runtime())

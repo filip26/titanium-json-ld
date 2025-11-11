@@ -268,9 +268,10 @@ public final class UriExpansion {
 
                     // CBOR-LD collector
                     if (runtime.collectsContextKeys()) {
-                        adapter.keyStream(localContext)
-                                .map(String.class::cast)
-                                .forEach(runtime::onContextKey);
+                        runtime.onContextKey(
+                                adapter.keyStream(localContext)
+                                        .map(adapter::asString)
+                                        .toList());
                     }
 
                     activeContext
@@ -308,9 +309,11 @@ public final class UriExpansion {
 
             // CBOR-LD collector
             if (runtime.collectsContextKeys()) {
+                runtime.onContextKey(
                 adapter.keyStream(localContext)
-                        .map(String.class::cast)
-                        .forEach(runtime::onContextKey);
+                        .map(adapter::asString)
+                        .toList())
+                        ;
             }
 
             activeContext.newTerm(localContext, adapter, defined, loader, runtime).create(prefix);

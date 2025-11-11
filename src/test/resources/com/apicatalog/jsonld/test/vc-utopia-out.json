@@ -1,0 +1,11 @@
+{
+    "contextKeys": [
+        ["id","type","description","digestMultibase","digestSRI","mediaType","name","VerifiableCredential","EnvelopedVerifiableCredential","VerifiablePresentation","EnvelopedVerifiablePresentation","JsonSchemaCredential","JsonSchema","BitstringStatusListCredential","BitstringStatusList","BitstringStatusListEntry","DataIntegrityProof","...","_sd","_sd_alg","aud","cnf","exp","iat","iss","jku","kid","nbf","sub","x5u"],
+        ["id","type","MachineReadableZone","AamvaDriversLicenseScannableInformation","protectedComponentIndex","OpticalBarcodeCredential","TerseBitstringStatusListEntry"],
+        ["id","type","did:key:zDnaeZSD9XcuULaS8qmgDUa6TMg2QjF9xABnZK42awDH3BEzj","did:key:zDnaeZSD9XcuULaS8qmgDUa6TMg2QjF9xABnZK42awDH3BEzj#zDnaeZSD9XcuULaS8qmgDUa6TMg2QjF9xABnZK42awDH3BEzj","did:key:zDnaeWjKfs1ob9QcgasjYSPEMkwq31hmvSAWPVAgnrt1e9GKj","did:key:zDnaeWjKfs1ob9QcgasjYSPEMkwq31hmvSAWPVAgnrt1e9GKj#zDnaeWjKfs1ob9QcgasjYSPEMkwq31hmvSAWPVAgnrt1e9GKj","https://sandbox.platform.veres.dev/statuses/z19rJ4oGrbFCqf3cNTVDHSbNd/status-lists"],
+        ["@protected","id","type","confidenceMethod","credentialSchema","credentialStatus","credentialSubject","description","evidence","issuer","name","proof","refreshService","relatedResource","renderMethod","termsOfUse","validFrom","validUntil"],
+        ["@protected","id","type","terseStatusListBaseUrl","terseStatusListIndex"],
+        ["@protected","id","type","challenge","created","cryptosuite","domain","expires","nonce","previousProof","proofPurpose","proofValue","verificationMethod"],
+        ["@protected","id","type","assertionMethod","authentication","capabilityDelegation","capabilityInvocation","keyAgreement"]
+    ]
+}
