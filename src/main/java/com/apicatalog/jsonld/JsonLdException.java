@@ -420,7 +420,13 @@ public final class JsonLdException extends Exception {
          */
         UNDEFINED_TERM("An undefined term has been found. Set policy to ignore to pass"),
 
-        UNSPECIFIED("An unspecified processing error");
+        INLINE_CONTEXTS_ARE_NOT_ALLOWED("Inline contexts are not allowed"),
+
+        UNSPECIFIED("An unspecified processing error"),
+
+        MISSING_DOCUMENT_LOADER("A document loader is not present")
+
+        ;
 
         private final String description;
 
