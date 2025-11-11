@@ -52,15 +52,13 @@
         <maven.compiler.release>17</maven.compiler.release>
         
         <titanium.rdf.api.version>1.0.0</titanium.rdf.api.version>
-        <titanium.rdf.nquads.version>1.0.2</titanium.rdf.nquads.version>        
-
         <jcs.version>3.0.0-M1</jcs.version>
         <tree-io.version>0.11.0</tree-io.version>
-        <jakarta.json.version>2.0.1</jakarta.json.version>
 
         <!-- test resources -->
-        <junit.version>6.0.0</junit.version>
-        <wiremock.version>2.35.2</wiremock.version>
+        <junit.version>6.0.1</junit.version>
+        <jakarta.json.version>2.0.1</jakarta.json.version>
+        <titanium.rdf.nquads.version>1.0.2</titanium.rdf.nquads.version>        
 
         <sonar.projectKey>filip26_titanium-json-ld</sonar.projectKey>
         <sonar.organization>apicatalog</sonar.organization>
