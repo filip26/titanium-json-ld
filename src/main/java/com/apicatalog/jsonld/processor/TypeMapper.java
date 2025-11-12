@@ -19,11 +19,9 @@ public interface TypeMapper {
 
     void beginMap(String key);
 
-    void typeKeyName(String type);
+    void mapType(String key, String type);
 
-//TODO    void idKeyName(String type);
-
-    void type(String key, String name, String value); 
+    void mapType(String key, String type, String id); 
     
     void endMap();
 }

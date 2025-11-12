@@ -87,7 +87,7 @@ public final class ValueExpansion {
                         .vocab(false)
                         .expand(idValue);
                 
-                params.runtime().onType(property, Keywords.ID, id);
+                params.runtime().onTypeMapping(property, Keywords.ID, id);
                 
                 return Map.of(Keywords.ID, id);
             }
@@ -102,7 +102,7 @@ public final class ValueExpansion {
                         .vocab(true)
                         .expand(adapter.stringValue(value));
                 
-                params.runtime().onType(property, Keywords.VOCAB, id);
+                params.runtime().onTypeMapping(property, Keywords.VOCAB, id);
                 
                 return Map.of(Keywords.ID, id);
             }
@@ -114,7 +114,7 @@ public final class ValueExpansion {
         // type mapping is not ID, VOCAB, NONE
         default:
             
-            params.runtime().onType(property, Keywords.TYPE, typeMapping);
+            params.runtime().onTypeMapping(property, Keywords.TYPE, typeMapping);
 
 //            System.out.println("@v> " + property + ", " + typeMapping + ", " + value);
             return Map.of(

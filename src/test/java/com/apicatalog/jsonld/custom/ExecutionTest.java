@@ -103,8 +103,6 @@ class ExecutionTest {
 
         var options = Options.with(loader);
 
-        var keys = new ArrayList<Collection<String>>();
-
         var typeMap = new LinkedHashMap<String, Object>();
 
         var typeMapper = new TypeMapper() {
@@ -128,12 +126,12 @@ class ExecutionTest {
             }
 
             @Override
-            public void typeKeyName(String type) {
-                stack.peek().put(type, Keywords.TYPE);
+            public void mapType(String key, String type) {
+                stack.peek().put(key, type);
             }
 
             @Override
-            public void type(String key, String type, String value) {
+            public void mapType(String key, String type, String value) {
 
                 switch (type) {
                 case Keywords.ID:

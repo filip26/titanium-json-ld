@@ -22,7 +22,6 @@ import java.util.function.Consumer;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
-import com.apicatalog.jsonld.lang.Keywords;
 
 /**
  * A runtime execution context used during a transformation processing.
@@ -114,15 +113,15 @@ public class Execution {
         }
     }
 
-    public void onTypeKey(String type) throws JsonLdException {
+    public void onTypeMapping(String key, String type) throws JsonLdException {
         if (typeMapper != null) {
-            typeMapper.typeKeyName(type);
+            typeMapper.mapType(key, type);
         }
     }
 
-    public void onType(String key, String type, String id) {
+    public void onTypeMapping(String key, String type, String id) {
         if (typeMapper != null) {
-            typeMapper.type(key, type, id);
+            typeMapper.mapType(key, type, id);
         }
     }
     

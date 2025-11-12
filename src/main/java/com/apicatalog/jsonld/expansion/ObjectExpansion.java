@@ -204,9 +204,8 @@ public final class ObjectExpansion {
                 if (typeKey == null) {
                     typeKey = key;
                 }
-
-//                System.out.println("0- " + key + ", " + typeKey + "," + expandedKey);
-                params.runtime().onTypeKey(key);
+                
+                params.runtime().onTypeMapping(key, Keywords.TYPE);
 
                 // 11.2
                 var terms = adapter.asStream(adapter.property(key, element))
