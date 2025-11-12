@@ -22,8 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -34,6 +36,7 @@ import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.StaticLoader;
 import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.jsonld.processor.Expander;
@@ -103,54 +106,71 @@ class ExecutionTest {
         var keys = new ArrayList<Collection<String>>();
 
         var typeMap = new LinkedHashMap<String, Object>();
-        
+
         var typeMapper = new TypeMapper() {
-            
-            @Override
-            public void typeKeyName(String type) {
-                System.out.println("@type = " + type);      
-            }
-                        
-            @Override
-            public void endMap() {
-                System.out.println("< end");
-                
-            }
-            
-            @Override
-            public void beginMap(String key) {
-                System.out.println("begin > " + key);
-//                typeMap.put(key, new LinkedHashMap<>());
-                
+
+            Deque<Map<String, Object>> stack = new ArrayDeque<>();
+
+            {
+                stack.push(typeMap);
             }
 
             @Override
-            public void type(String key, String name, String value) {
-                System.out.println(key+ ": " + name + " = " + value);
-                
+            public void beginMap(String key) {
+                var map = new LinkedHashMap<String, Object>();
+                stack.peek().put(key, map);
+                stack.push(map);
+            }
+
+            @Override
+            public void endMap() {
+                stack.pop();
+            }
+
+            @Override
+            public void typeKeyName(String type) {
+                stack.peek().put(type, Keywords.TYPE);
+            }
+
+            @Override
+            public void type(String key, String type, String value) {
+
+                switch (type) {
+                case Keywords.ID:
+                    stack.peek().put(key, Map.of(
+                            Keywords.ID, value,
+                            Keywords.TYPE, Keywords.ID));
+                    break;
+                case Keywords.TYPE:
+                    stack.peek().put(key, Map.of(
+                            Keywords.TYPE, value));
+                    break;
+                case Keywords.VOCAB:
+                    stack.peek().put(key, Map.of(
+                            Keywords.ID, value,
+                            Keywords.TYPE, Keywords.VOCAB));
+                    break;
+
+                default:
+                    throw new IllegalStateException();
+                }
             }
         };
-        
+
         var runtime = Execution.of(options);
         runtime.typeMapper(typeMapper);
 
         var expanded = Expander.expand(document, options, runtime);
-//System.out.println(expanded);
         assertNotNull(expanded);
 
-//        System.out.println(keys
-//                .stream()
-//                .map(c -> c.stream().filter(Predicate.not(Keywords::contains)).sorted())
-//                .flatMap(Function.identity())
-//                .collect(Collectors.toCollection(LinkedHashSet::new)));
-        System.out.println(expanded);
+//        System.out.println(typeMap);
         var expected = read("/com/apicatalog/jsonld/test/vc-utopia-typemap.json");
 
-        var match = TreeIO.deepEquals(Map.of("contextKeys", keys), NativeAdapter.instance(), expected.node(), expected.adapter());
+        var match = TreeIO.deepEquals(typeMap, NativeAdapter.instance(), expected.node(), expected.adapter());
 
         assertTrue(match);
     }
-    
+
     private final TreeIO read(final String name) throws JsonLdException, TreeIOException, IOException {
         try (final var is = getClass().getResourceAsStream(name)) {
             return JakartaTestSuite.PARSER.parse(is);

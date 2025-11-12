@@ -62,7 +62,9 @@ public final class ObjectExpansion {
 
     public Object expand(final Context context, final String property) throws JsonLdException {
 
-        params.runtime().onBeginMap(property);
+        if (property != null) {
+            params.runtime().onBeginMap(property);
+        }
 
         activeContext = initPreviousContext(
                 context,
@@ -112,7 +114,9 @@ public final class ObjectExpansion {
                 .nest(new LinkedHashMap<>())
                 .expand(activeContext, element, adapter, property);
 
-        params.runtime().onEndMap(property);
+        if (property != null) {
+            params.runtime().onEndMap(property);
+        }
 
         // 15.
         if (result.containsKey(Keywords.VALUE)) {
