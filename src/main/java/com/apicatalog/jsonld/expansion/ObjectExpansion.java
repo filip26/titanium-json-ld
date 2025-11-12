@@ -205,7 +205,7 @@ public final class ObjectExpansion {
                     typeKey = key;
                 }
                 
-                params.runtime().onTypeMapping(key, Keywords.TYPE);
+                params.runtime().onProperty(key, Keywords.TYPE);
 
                 // 11.2
                 var terms = adapter.asStream(adapter.property(key, element))

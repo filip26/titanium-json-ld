@@ -113,6 +113,10 @@ final class ObjectExpansion1314 {
                 }
             }
 
+            if (!Keywords.TYPE.equals(expandedProperty)) {
+                params.runtime().onProperty(key, Keywords.ID, expandedProperty);
+            }
+
             final var value = adapter.property(key, element);
 
             // 13.4. If expanded property is a keyword:
@@ -136,7 +140,7 @@ final class ObjectExpansion1314 {
 
                 // 13.4.3
                 if (Keywords.ID.equals(expandedProperty)) {
-                    
+
                     // Extension: JSON-LD-STAR (Experimental)
                     if (!params.options().isRdfStar()
                             && Keywords.ANNOTATION.equals(activeProperty)) {
@@ -251,7 +255,7 @@ final class ObjectExpansion1314 {
 
                         throw new JsonLdException(ErrorCode.INVALID_TYPE_VALUE, "@type value is not valid [" + value + "].");
                     }
-                    
+
 //                    System.out.println("TYPE CTX1 > " + key + ", " + value);
 //                    System.out.println("TYPE CTX2 > " + expandedProperty + ", " + expandedValue);
 //                    System.out.println("TYPE CTX3 > "  + typeContext);
@@ -290,8 +294,8 @@ final class ObjectExpansion1314 {
                                 result.put(Keywords.VALUE, null);
                                 continue;
                             }
-                            
-                            params.runtime().onTypeMapping(Set.of((String)expandedValue));
+
+//                            params.runtime().onTypeMapping(Set.of((String)expandedValue));
 
                         } else if (adapter.isCollection(value)) {
 
@@ -321,10 +325,10 @@ final class ObjectExpansion1314 {
                             expandedValue = expandedItems != null
                                     ? expandedItems
                                     : List.of();
-                        
-                            if (expandedItems != null) {
-                                params.runtime().onTypeMapping(expandedItems);
-                            }
+
+//                            if (expandedItems != null) {
+//                                params.runtime().onTypeMapping(expandedItems);
+//                            }
                         }
 
                     }
@@ -716,7 +720,7 @@ final class ObjectExpansion1314 {
                 // 13.4.17
                 continue;
             }
-            
+
             // then it's not a keyword
 
             // 13.5.
@@ -1066,7 +1070,7 @@ final class ObjectExpansion1314 {
                 // 13.14
                 LdAdapter.setOrAdd(result, expandedProperty, expandedValue);
             }
-            
+
 //            System.out.println("3rd> " + key + " -> " + value + ", " + activeProperty);
 //            System.out.println("   > " + expandedValue);
 

@@ -40,7 +40,7 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.StaticLoader;
 import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.jsonld.processor.Expander;
-import com.apicatalog.jsonld.processor.TypeMapper;
+import com.apicatalog.jsonld.processor.PropertyMapper;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.java.NativeAdapter;
@@ -105,7 +105,7 @@ class ExecutionTest {
 
         var typeMap = new LinkedHashMap<String, Object>();
 
-        var typeMapper = new TypeMapper() {
+        var typeMapper = new PropertyMapper() {
 
             Deque<Map<String, Object>> stack = new ArrayDeque<>();
 
@@ -125,38 +125,41 @@ class ExecutionTest {
                 stack.pop();
             }
 
-            @Override
-            public void mapType(Collection<String> type) {
-                stack.peek().put(Keywords.TYPE, type);
-            }
+//            @Override
+//            public void mapTyp(Collection<String> type) {
+//                stack.peek().put(Keywords.TYPE, type);
+//            }
             
             @Override
-            public void mapType(String key, String type) {
-                stack.peek().put(key, type);
+            public void mapProperty(String key, String id) {
+                System.out.println("0>>> " + key + " -> " + id);
+                stack.peek().put(key, id);
             }
 
             @Override
-            public void mapType(String key, String type, String value) {
-
-                switch (type) {
-                case Keywords.ID:
-                    stack.peek().put(key, Map.of(
-                            Keywords.ID, value,
-                            Keywords.TYPE, Keywords.ID));
-                    break;
-                case Keywords.TYPE:
-                    stack.peek().put(key, Map.of(
-                            Keywords.TYPE, value));
-                    break;
-                case Keywords.VOCAB:
-                    stack.peek().put(key, Map.of(
-                            Keywords.ID, value,
-                            Keywords.TYPE, Keywords.VOCAB));
-                    break;
-
-                default:
-                    throw new IllegalStateException();
-                }
+            public void mapProperty(String key, String type, String value) {
+                System.out.println("1>>> " + key + " -> " + type + " = "  + value);
+                ((Map)stack.peek().computeIfAbsent(key, (k) -> new LinkedHashMap<String, Object>()))
+                .put(type, value);
+//                switch (type) {
+////                case Keywords.ID:
+////                    stack.peek().put(key, Map.of(
+////                            Keywords.ID, value,
+////                            Keywords.TYPE, Keywords.ID));
+////                    break;
+////                case Keywords.TYPE:
+////                    stack.peek().put(key, Map.of(
+////                            Keywords.TYPE, value));
+////                    break;
+////                case Keywords.VOCAB:
+////                    stack.peek().put(key, Map.of(
+////                            Keywords.ID, value,
+////                            Keywords.TYPE, Keywords.VOCAB));
+//                    break;
+//
+//                default:
+//                    throw new IllegalStateException();
+//                }
             }
         };
 

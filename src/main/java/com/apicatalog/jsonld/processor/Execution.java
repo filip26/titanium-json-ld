@@ -42,7 +42,7 @@ public class Execution {
     }
 
     protected Consumer<Collection<String>> contextKeyCollector;
-    protected TypeMapper typeMapper;
+    protected PropertyMapper typeMapper;
     protected Counter nodeCounter;
     protected Counter ttl;
 
@@ -114,25 +114,25 @@ public class Execution {
     }
 
 
-    public void onTypeMapping(Collection<String> types) {
+//    public void onTypeMapping(Collection<String> types) {
+//        if (typeMapper != null) {
+//            typeMapper.mapType(types);
+//        }
+//    }
+//    
+    public void onProperty(String key, String type) throws JsonLdException {
         if (typeMapper != null) {
-            typeMapper.mapType(types);
-        }
-    }
-    
-    public void onTypeMapping(String key, String type) throws JsonLdException {
-        if (typeMapper != null) {
-            typeMapper.mapType(key, type);
+            typeMapper.mapProperty(key, type);
         }
     }
 
-    public void onTypeMapping(String key, String type, String id) {
+    public void onProperty(String key, String type, String id) {
         if (typeMapper != null) {
-            typeMapper.mapType(key, type, id);
+            typeMapper.mapProperty(key, type, id);
         }
     }
     
-    public Execution typeMapper(TypeMapper typeMapper) {
+    public Execution typeMapper(PropertyMapper typeMapper) {
         this.typeMapper = typeMapper;
         return this;
     }
