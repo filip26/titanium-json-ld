@@ -74,7 +74,7 @@ public final class ContextBuilder {
     
     private boolean acceptInlineContext;
     
-    private Consumer<String> collectKey;
+    private Consumer<Collection<String>> collectKey;
 
     // runtime
     private ActiveContext result;
@@ -91,6 +91,7 @@ public final class ContextBuilder {
         this.propagate = true;
         this.validateScopedContext = true;
         this.acceptInlineContext = true;
+        this.collectKey = null;
 
         // runtime
         this.result = null;
@@ -180,7 +181,6 @@ public final class ContextBuilder {
 
             // 5.2. if context is a string,
             if (adapter.isString(itemContext)) {
-                System.out.println("STRING CTX " + itemContext);
                 fetch(adapter.stringValue(itemContext), baseUrl);
                 continue;
             }
@@ -189,13 +189,16 @@ public final class ContextBuilder {
                 throw new JsonLdException(ErrorCode.INLINE_CONTEXT_IS_NOT_ALLOWED); 
             }
 
-
             // 5.3. If context is not a map, an invalid local context error has been
             // detected and processing is aborted.
             if (!adapter.isMap(itemContext)) {
                 throw new JsonLdException(ErrorCode.INVALID_LOCAL_CONTEXT);
             }
-            System.out.println("MAP CTX " + itemContext);
+
+            if (collectKey != null) {
+                collectKey.accept(adapter.keyStream(itemContext).map(adapter::asString).toList());
+            }
+            
             // 5.4. Otherwise, it's a context definition
             var versionNode = adapter.property(Keywords.VERSION, itemContext);
 
@@ -542,7 +545,7 @@ public final class ContextBuilder {
         return this;
     }
     
-    public ContextBuilder collectKey(Consumer<String> collectKey) {
+    public ContextBuilder collectKey(Consumer<Collection<String>> collectKey) {
         this.collectKey = collectKey;
         return this;
     }
@@ -687,12 +690,17 @@ public final class ContextBuilder {
 //            activeContext.runtime().getDocumentCache().put(contextKey, remoteImport);
 //        }
 
+//        if (collectKey != null) {
+//            collectKey.accept(newContextAdapter.keyStream(newContext).map(newContextAdapter::asString).toList());
+//        }
+        
         // 5.2.6
         try {
             result = result
                     .newContext(loader, runtime)
                     .remoteContexts(new ArrayList<>(remoteContexts))
                     .validateScopedContext(validateScopedContext)
+                    .collectKey(collectKey)
                     .build(newContext, newContextAdapter, remoteDocument.url());
 
 //FIXME
