@@ -126,7 +126,7 @@ public final class ContextBuilder {
         if (adapter.isMap(contextValue)) {
 
             if (!acceptInlineContext) {
-                //TODO throw 
+                throw new JsonLdException(ErrorCode.INLINE_CONTEXT_IS_NOT_ALLOWED);
             }
             
             var propagateValue = adapter.property(Keywords.PROPAGATE, contextValue);
@@ -186,7 +186,7 @@ public final class ContextBuilder {
             }
             
             if (!acceptInlineContext) {
-                //TODO throw 
+                throw new JsonLdException(ErrorCode.INLINE_CONTEXT_IS_NOT_ALLOWED); 
             }
 
 

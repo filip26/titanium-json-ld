@@ -293,7 +293,20 @@
       }
     },
     {
-        "@id": "#t0031",
+      "@id": "#t0031",
+      "@type": [
+        "jld:NegativeEvaluationTest",
+        "jld:ExpandTest"
+      ],
+      "name": "Inner inline context fails",
+      "input": "inline-context-2.jsonld",
+      "expectErrorCode": "INLINE_CONTEXT_IS_NOT_ALLOWED",
+      "option": {
+        "useInlineContexts": false
+      }
+    },    
+    {
+        "@id": "#t0032",
         "@type": [
           "jld:NegativeEvaluationTest",
           "jld:ExpandTest"
@@ -304,6 +317,19 @@
         "option": {
           "useInlineContexts": false
         }      
-    }
+    },
+    {
+        "@id": "#t0032",
+        "@type": [
+          "jld:NegativeEvaluationTest",
+          "jld:ExpandTest"
+        ],
+        "name": "Inner mixed context fails",
+        "input": "mixed-context-2.jsonld",
+        "expectErrorCode": "INLINE_CONTEXT_IS_NOT_ALLOWED",
+        "option": {
+          "useInlineContexts": false
+        }      
+    }    
   ]
 }
