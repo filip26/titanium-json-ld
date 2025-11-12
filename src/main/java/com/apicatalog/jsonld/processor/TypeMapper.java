@@ -15,13 +15,15 @@
  */
 package com.apicatalog.jsonld.processor;
 
-public interface TypeMapCollector {
+public interface TypeMapper {
 
     void beginMap(String key);
 
     void typeKeyName(String type);
 
-    void end();
+//TODO    void idKeyName(String type);
 
-    boolean isTypeKey(String term);
+    void type(String key, String name, String value); 
+    
+    void endMap();
 }

@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.lang.Keywords;
 
 /**
  * A runtime execution context used during a transformation processing.
@@ -42,6 +43,7 @@ public class Execution {
     }
 
     protected Consumer<Collection<String>> contextKeyCollector;
+    protected TypeMapper typeMapper;
     protected Counter nodeCounter;
     protected Counter ttl;
 
@@ -91,9 +93,12 @@ public class Execution {
      * 
      * @param parentKey
      */
-    public void onBeforeMap(String parentKey) throws JsonLdException {
+    public void onBeginMap(String parentKey) throws JsonLdException {
         if (nodeCounter != null) {
             nodeCounter.increment();
+        }
+        if (typeMapper != null) {
+            typeMapper.beginMap(parentKey);
         }
     }
 
@@ -102,13 +107,37 @@ public class Execution {
      * 
      * @param parentKey
      */
-    public void onAfterMap(String parentKey) throws JsonLdException {
+    public void onEndMap(String parentKey) throws JsonLdException {
         // hook for extensions or instrumentation
+        if (typeMapper != null) {
+            typeMapper.endMap();
+        }
     }
 
     public void onTypeKey(String type) throws JsonLdException {
-
+        if (typeMapper != null) {
+            typeMapper.typeKeyName(type);
+        }
     }
+
+    public void onType(String key, String type, String id) {
+        if (typeMapper != null) {
+            typeMapper.type(key, type, id);
+        }
+    }
+    
+    public Execution typeMapper(TypeMapper typeMapper) {
+        this.typeMapper = typeMapper;
+        return this;
+    }
+
+//    void beginMap(String key);
+//
+//    void typeKeyName(String type);
+//
+//    void end();
+//
+//    boolean isTypeKey(String term);
 
     /**
      * Event fired when a new context key is encountered.
@@ -119,10 +148,6 @@ public class Execution {
         if (contextKeyCollector != null) {
             contextKeyCollector.accept(keys);
         }
-    }
-
-    public TypeMapCollector typeMapper() {
-        return null;
     }
 
     public boolean collectsContextKeys() {

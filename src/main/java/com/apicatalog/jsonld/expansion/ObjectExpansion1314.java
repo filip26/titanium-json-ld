@@ -78,6 +78,8 @@ final class ObjectExpansion1314 {
                 ? adapter.keyStream(element).sorted(TreeIO.comparingElement(adapter::asString)).iterator()
                 : adapter.keyStream(element).iterator();
 
+//        params.runtime().onBeginMap(activeProperty);
+
         // 13.
         while (keys.hasNext()) {
 
@@ -226,6 +228,9 @@ final class ObjectExpansion1314 {
 
                 // 13.4.4
                 else if (Keywords.TYPE.equals(expandedProperty)) {
+                    
+//                    System.out.println("TYPE> " + key + " -> " + value + ", " + activeProperty);
+                    
                     // 13.4.4.1
                     if ((!params.frameExpansion()
                             && !adapter.isString(value)
@@ -247,6 +252,10 @@ final class ObjectExpansion1314 {
 
                         throw new JsonLdException(ErrorCode.INVALID_TYPE_VALUE, "@type value is not valid [" + value + "].");
                     }
+                    
+//                    System.out.println("TYPE CTX1 > " + key + ", " + value);
+//                    System.out.println("TYPE CTX2 > " + expandedProperty + ", " + expandedValue);
+//                    System.out.println("TYPE CTX3 > "  + typeContext);
 
                     // 13.4.4.2
                     if (adapter.isEmptyMap(value)) {
@@ -701,6 +710,8 @@ final class ObjectExpansion1314 {
                 // 13.4.17
                 continue;
             }
+            
+            // then it's not a keyword
 
             // 13.5.
             final var keyTermDefinition = activeContext.findTerm(key);
@@ -1049,12 +1060,17 @@ final class ObjectExpansion1314 {
                 // 13.14
                 LdAdapter.setOrAdd(result, expandedProperty, expandedValue);
             }
+            
+//            System.out.println("3rd> " + key + " -> " + value + ", " + activeProperty);
+//            System.out.println("   > " + expandedValue);
+
         }
 
         // 14.
         if (nest != null) {
             processNest(activeContext, element, adapter);
         }
+//        params.runtime().onEndMap(activeProperty);
     }
 
     public ObjectExpansion1314 nest(Map<String, Object> nest) {
@@ -1108,6 +1124,7 @@ final class ObjectExpansion1314 {
         }
 
         // steps 13-14
+
         expand(activeContext, element, adapter, activeProperty);
     }
 
