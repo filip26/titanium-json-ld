@@ -105,7 +105,7 @@ public final class Compactor {
         final var builder = new Context.Builder(options.mode())
                 .runtime(runtime)
                 .loader(options.loader())
-                .update(localContext, contextBase);
+                .update(localContext, options.useInlineContexts(), contextBase);
 
         // 8.
         if (builder.baseUri() == null) {

@@ -76,8 +76,7 @@ public final class ObjectExpansion {
                     .newContext(params.options().loader(), params.runtime())
                     .overrideProtected(true)
                     .build(
-                            propertyContext.node(),
-                            propertyContext.adapter(),
+                            propertyContext,
                             activeContext
                                     .findTerm(property)
                                     .map(TermDefinition::getBaseUrl)
@@ -88,35 +87,43 @@ public final class ObjectExpansion {
         final var contextValue = adapter.property(Keywords.CONTEXT, element);
 
         if (contextValue != null) {
-
             // CBOR-LD collector
             if (params.runtime().collectsContextKeys()) {
-                
+//                params.runtime().onContextKey(activeContext.getTermsMapping().keySet());
+
 //                for (final JsonValue context : JsonUtils.toJsonArray(jsonContext)) {
 //                    final ActiveContext ac = new ActiveContext(activeContext.getBaseUri(), activeContext.getBaseUrl(), activeContext.runtime())
 //                            .newContext()
 //                            .create(context, baseUrl);
 //                    appliedContexts.accept(ac.getTerms());
 //                }
-//
+                System.out.println(">>> " + contextValue);
                 for (var ctx : adapter.asIterable(contextValue)) {
-                    
-                    var ac = activeContext
-                            .newContext(params.options().loader(), params.runtime())
-                            .build(ctx, adapter, params.baseUrl());
-                    
-                    params.runtime().onContextKey(ac.getTerms());
-                    
+
+//                    var ac = activeContext
+//                            .newContext(params.options().loader(), params.runtime())
+//                            .build(ctx, adapter, params.baseUrl());
+//                    
+////                    params.runtime().onContextKey(adapter.keyStream(ctx).map(adapter::asString).toList());
+//                    params.runtime().onContextKey(ac.getTermsMapping().keySet());
+
 //                    adapter.keyStream(contextValue)
 //                    .map(String.class::cast)
 //                    .forEach(params.runtime()::onContextKey);
-   
-                }                
+
+                }
+            }
+
+            if (!params.options().useInlineContexts()) {
+                // TODO
             }
 
             activeContext = activeContext
                     .newContext(params.options().loader(), params.runtime())
+                    .acceptInlineContext(params.options().useInlineContexts())
+//TODO                    .collectKey(null)!!
                     .build(contextValue, adapter, params.baseUrl());
+
         }
 
         // 10.
@@ -250,17 +257,15 @@ public final class ObjectExpansion {
                         // CBOR-LD collector
                         if (params.runtime().collectsContextKeys()) {
                             params.runtime().onContextKey(
-                            localContext.keyStream()
-                                    .map(localContext.adapter()::asString)
-                                    .toList()
-                                    );
+                                    localContext.keyStream()
+                                            .map(localContext.adapter()::asString)
+                                            .toList());
                         }
 
                         activeContext = activeContext
                                 .newContext(params.options().loader(), params.runtime())
                                 .propagate(false)
-                                .build(localContext.node(),
-                                        localContext.adapter(),
+                                .build(localContext,
                                         activeContext.findTerm(term)
                                                 .map(TermDefinition::getBaseUrl)
                                                 .orElse(null));

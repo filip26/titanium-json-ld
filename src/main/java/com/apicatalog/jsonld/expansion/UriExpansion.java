@@ -267,21 +267,27 @@ public final class UriExpansion {
                 if (!defined.containsKey(entryValueString) || Boolean.FALSE.equals(defined.get(entryValueString))) {
 
                     // CBOR-LD collector
-                    if (runtime.collectsContextKeys()) {
-                        runtime.onContextKey(
-                                adapter.keyStream(localContext)
-                                        .map(adapter::asString)
-                                        .toList());
-                    }
+//                    if (runtime.collectsContextKeys()) {
+//                        runtime.onContextKey(
+//                                adapter.keyStream(localContext)
+//                                        .map(adapter::asString)
+//                                        .toList());
+//                    }
 
                     activeContext
                             .newTerm(
+                                    value,
                                     localContext,
                                     adapter,
                                     defined,
                                     loader,
-                                    runtime)
-                            .create(value);
+                                    runtime);
+                    
+                    // CBOR-LD collector
+                    if (runtime.collectsContextKeys()) {
+                        runtime.onContextKey(activeContext.getTermsMapping().keySet());
+                    }
+
                 }
             }
         }
@@ -307,16 +313,21 @@ public final class UriExpansion {
                 && adapter.keys(localContext).contains(prefix)
                 && !Boolean.TRUE.equals(defined.get(prefix))) {
 
-            // CBOR-LD collector
+//            // CBOR-LD collector
+//            if (runtime.collectsContextKeys()) {
+//                runtime.onContextKey(
+//                adapter.keyStream(localContext)
+//                        .map(adapter::asString)
+//                        .toList())
+//                        ;
+//            }
+
+            activeContext.newTerm(prefix, localContext, adapter, defined, loader, runtime);
+            
             if (runtime.collectsContextKeys()) {
-                runtime.onContextKey(
-                adapter.keyStream(localContext)
-                        .map(adapter::asString)
-                        .toList())
-                        ;
+                runtime.onContextKey(activeContext.getTermsMapping().keySet());
             }
 
-            activeContext.newTerm(localContext, adapter, defined, loader, runtime).create(prefix);
         }
 
         // 6.4. If the prefix is a term in the active context, append the suffix to its

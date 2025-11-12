@@ -116,6 +116,7 @@ public class Execution {
      * @param key
      */
     public void onContextKey(Collection<String> key) {
+        System.out.println("HIT " + key);
         contextKeyCollector.accept(key);
     }
 

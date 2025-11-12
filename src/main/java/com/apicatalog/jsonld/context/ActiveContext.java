@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLd.Version;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.Execution;
@@ -160,8 +161,8 @@ public final class ActiveContext implements Context {
     }
 
     @Override
-    public TermDefinitionBuilder newTerm(final Object localContext, final TreeAdapter adapter, final Map<String, Boolean> defined, DocumentLoader loader, final Execution runtime) {
-        return TermDefinitionBuilder.with(this, localContext, adapter, defined, loader, runtime);
+    public void newTerm(final String term, final Object localContext, final TreeAdapter adapter, final Map<String, Boolean> defined, DocumentLoader loader, final Execution runtime) throws JsonLdException {
+        TermDefinitionBuilder.with(this, localContext, adapter, defined, loader, runtime).create(term);
     }
 
     public Optional<String> selectTerm(

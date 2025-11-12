@@ -416,12 +416,12 @@ public final class TermDefinitionBuilder {
 
                 activeContext
                         .newTerm(
+                                compactUri.prefix(),
                                 localContext,
                                 adapter,
                                 defined,
                                 loader,
-                                runtime)
-                        .create(compactUri.prefix());
+                                runtime);
             }
             // 15.2.
             if (compactUri != null && compactUri.isNotBlank() && activeContext.containsTerm(compactUri.prefix())) {
@@ -574,18 +574,6 @@ public final class TermDefinitionBuilder {
             } else {
                 throw new JsonLdException(ErrorCode.INVALID_LANGUAGE_MAPPING);
             }
-
-//            if (JsonUtils.isNull(language) || JsonUtils.isString(language)) {
-//
-//                if (JsonUtils.isString(language) && !LanguageTag.isWellFormed(((JsonString) language).getString())) {
-//                    LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", ((JsonString) language).getString());
-//                }
-//
-//                definition.setLanguageMapping(language);
-//
-//            } else {
-//                throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_MAPPING);
-//            }
         }
 
         // 23.
@@ -763,5 +751,4 @@ public final class TermDefinitionBuilder {
                         || containers.contains(Keywords.LANGUAGE)
                         || containers.contains(Keywords.TYPE));
     }
-
 }

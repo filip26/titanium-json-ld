@@ -142,6 +142,7 @@ public final class Expander {
             builder.update(
                     extractExpansionContext(expandContext),
                     expandContext.adapter(),
+                    true,
                     baseUrl);
         }
 
@@ -150,6 +151,7 @@ public final class Expander {
             builder.update(
                     context.toString(),
                     NativeAdapter.instance(),
+                    true,
                     context);
         }
 
@@ -198,6 +200,8 @@ public final class Expander {
         return Set.of(expanded);
     }
 
+    //TODO replace with Context.unwrap?
+    @Deprecated
     private static Object extractExpansionContext(final TreeIO context) throws JsonLdException {
         // Defensive null check — optional, but safer in utility code
         Objects.requireNonNull(context, "context must not be null");

@@ -829,11 +829,12 @@ final class ObjectExpansion1314 {
                             && indexTermDefinition != null
                             && indexTermDefinition.getLocalContext() != null) {
 
+                        // TODO contextKeys?
+
                         mapContext = mapContext
                                 .newContext(params.options().loader(), params.runtime())
                                 .build(
-                                        indexTermDefinition.getLocalContext().node(),
-                                        indexTermDefinition.getLocalContext().adapter(),
+                                        indexTermDefinition.getLocalContext(),
                                         indexTermDefinition.getBaseUrl());
                     }
 
@@ -1097,13 +1098,13 @@ final class ObjectExpansion1314 {
             activeContext = activeContext
                     .newContext(params.options().loader(), params.runtime())
                     .overrideProtected(true)
-                    .build(
-                            propertyContext.node(),
-                            propertyContext.adapter(),
+                    .build(propertyContext,
                             activeContext
                                     .findTerm(activeProperty)
                                     .map(TermDefinition::getBaseUrl)
                                     .orElse(null));
+
+            // TODO contextKeys?
         }
 
         // steps 13-14

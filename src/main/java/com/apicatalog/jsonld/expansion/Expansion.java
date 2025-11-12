@@ -189,8 +189,7 @@ public final class Expansion {
         if (propertyContext != null) {
             return ValueExpansion.expand(context
                     .newContext(params.options().loader(), params.runtime())
-                    .build(propertyContext.node(),
-                            propertyContext.adapter(),
+                    .build(propertyContext,
                             context.findTerm(property)
                                     .map(TermDefinition::getBaseUrl)
                                     .orElse(null)),

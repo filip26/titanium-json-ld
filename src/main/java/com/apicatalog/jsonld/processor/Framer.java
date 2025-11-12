@@ -87,7 +87,7 @@ public final class Framer {
                 options.mode())
                 .runtime(runtime)
                 .loader(options.loader())
-                .update(localContext, localContextBase)
+                .update(localContext, options.useInlineContexts(), localContextBase)
                 .build();
     }
 

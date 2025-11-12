@@ -278,6 +278,32 @@
         "expandContext": "undefined-term-context.json",
         "undefinedTermPolicy": "Fail"
       }
+    },
+    {
+      "@id": "#t0030",
+      "@type": [
+        "jld:NegativeEvaluationTest",
+        "jld:ExpandTest"
+      ],
+      "name": "Inline context fails",
+      "input": "inline-context-1.jsonld",
+      "expectErrorCode": "INLINE_CONTEXT_IS_NOT_ALLOWED",
+      "option": {
+        "useInlineContexts": false
+      }
+    },
+    {
+        "@id": "#t0031",
+        "@type": [
+          "jld:NegativeEvaluationTest",
+          "jld:ExpandTest"
+        ],
+        "name": "Mixed context fails",
+        "input": "mixed-context-1.jsonld",
+        "expectErrorCode": "INLINE_CONTEXT_IS_NOT_ALLOWED",
+        "option": {
+          "useInlineContexts": false
+        }      
     }
   ]
 }

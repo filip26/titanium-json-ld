@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -70,6 +71,10 @@ public final class ContextBuilder {
     private boolean propagate;
 
     private boolean validateScopedContext;
+    
+    private boolean acceptInlineContext;
+    
+    private Consumer<String> collectKey;
 
     // runtime
     private ActiveContext result;
@@ -85,6 +90,7 @@ public final class ContextBuilder {
         this.overrideProtected = false;
         this.propagate = true;
         this.validateScopedContext = true;
+        this.acceptInlineContext = true;
 
         // runtime
         this.result = null;
@@ -97,12 +103,14 @@ public final class ContextBuilder {
         return new ContextBuilder(activeContext, loader, runtime);
     }
 
-    public ActiveContext build(TreeIO context, URI baseUrl) throws JsonLdException {
+    public ActiveContext build(
+            final TreeIO context,
+            final URI baseUrl) throws JsonLdException {
         return build(context.node(), context.adapter(), baseUrl);
     }
 
     public ActiveContext build(
-            final Object localContext,
+            final Object contextValue,
             final TreeAdapter adapter,
             final URI baseUrl) throws JsonLdException {
 
@@ -115,9 +123,13 @@ public final class ContextBuilder {
 
         // 2. If local context is an object containing the member @propagate,
         // its value MUST be boolean true or false, set propagate to that value.
-        if (adapter.isMap(localContext)) {
+        if (adapter.isMap(contextValue)) {
 
-            var propagateValue = adapter.property(Keywords.PROPAGATE, localContext);
+            if (!acceptInlineContext) {
+                //TODO throw 
+            }
+            
+            var propagateValue = adapter.property(Keywords.PROPAGATE, contextValue);
 
             if (!adapter.isNull(propagateValue)) {
 
@@ -136,7 +148,7 @@ public final class ContextBuilder {
         }
 
         // 5. For each item context in local context:
-        for (var itemContext : adapter.asIterable(localContext)) {
+        for (var itemContext : adapter.asIterable(contextValue)) {
 
             // 5.1. If context is null:
             if (adapter.isNull(itemContext)) {
@@ -172,6 +184,11 @@ public final class ContextBuilder {
                 fetch(adapter.stringValue(itemContext), baseUrl);
                 continue;
             }
+            
+            if (!acceptInlineContext) {
+                //TODO throw 
+            }
+
 
             // 5.3. If context is not a map, an invalid local context error has been
             // detected and processing is aborted.
@@ -346,7 +363,7 @@ public final class ContextBuilder {
                         } else {
                             LOGGER.log(Level.FINE,
                                     "5.7.4: valueString={0}, localContext={1}, baseUrl={2}",
-                                    new Object[] { valueString, localContext, baseUrl });
+                                    new Object[] { valueString, contextValue, baseUrl });
 
                             throw new JsonLdException(ErrorCode.INVALID_BASE_IRI,
                                     "A relative base IRI cannot be resolved, @base=" + valueString +
@@ -477,8 +494,7 @@ public final class ContextBuilder {
                 }
             }
 
-            final TermDefinitionBuilder termBuilder = result
-                    .newTerm(contextDefinition, contextAdapter, new HashMap<>(), loader, runtime)
+            final var termBuilder = TermDefinitionBuilder.with(result, contextDefinition, contextAdapter, new HashMap<>(), loader, runtime)
                     .baseUrl(baseUrl)
                     .overrideProtectedFlag(overrideProtected);
 
@@ -518,6 +534,16 @@ public final class ContextBuilder {
 
     public ContextBuilder validateScopedContext(boolean value) {
         this.validateScopedContext = value;
+        return this;
+    }
+    
+    public ContextBuilder acceptInlineContext(boolean accept) {
+        this.acceptInlineContext = accept;
+        return this;
+    }
+    
+    public ContextBuilder collectKey(Consumer<String> collectKey) {
+        this.collectKey = collectKey;
         return this;
     }
 
@@ -630,7 +656,7 @@ public final class ContextBuilder {
         final var importedContext = importedContent.property(Keywords.CONTEXT);
 
         if (importedContext == null) {
-            throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT, 
+            throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT,
                     "Imported context does not contain @context key and is not valid JSON-LD context.");
         }
 

@@ -68,7 +68,13 @@ public interface Context {
 
     Context getPreviousContext();
 
-    TermDefinitionBuilder newTerm(Object localContext, TreeAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader, final Execution runtime);
+    void newTerm(
+            String term,
+            Object localContext,
+            TreeAdapter adapter,
+            Map<String, Boolean> defined,
+            DocumentLoader loader,
+            final Execution runtime) throws JsonLdException;
 
     ContextBuilder newContext(DocumentLoader loader, final Execution runtime);
 
@@ -88,6 +94,8 @@ public interface Context {
 
     // ---
 
+    // TODO move to Frame.context()
+    @Deprecated
     public static TreeIO extract(TreeIO document) throws JsonLdException {
 
         final var node = document.node();
@@ -259,7 +267,7 @@ public interface Context {
             this.loader = loader;
             return this;
         }
-        
+
         public Builder runtime(Execution runtime) {
             this.runtime = runtime;
             return this;
@@ -284,16 +292,18 @@ public interface Context {
             return ctx;
         }
 
-        public Builder update(TreeIO node, URI baseUrl) throws JsonLdException {
-            return update(node.node(), node.adapter(), baseUrl);
+        public Builder update(TreeIO node, boolean acceptInline, URI baseUrl) throws JsonLdException {
+            return update(node.node(), node.adapter(), acceptInline, baseUrl);
         }
 
-        public Builder update(Object node, TreeAdapter adapter, URI baseUrl) throws JsonLdException {
+        public Builder update(Object node, TreeAdapter adapter, boolean acceptInline, URI baseUrl) throws JsonLdException {
             // TODO merge if set
 //            this.context = node;
 //            this.adapter = adapter;
 //            this.baseUrl = baseUrl;
-            this.ctx = ctx.newContext(loader, runtime).build(node, adapter, baseUrl);
+            this.ctx = ctx.newContext(loader, runtime)
+                    .acceptInlineContext(acceptInline)
+                    .build(node, adapter, baseUrl);
             return this;
         }
 

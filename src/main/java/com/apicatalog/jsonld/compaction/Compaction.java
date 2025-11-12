@@ -168,9 +168,7 @@ public final class Compaction {
             activeContext = activeContext
                     .newContext(options.loader(), runtime)
                     .overrideProtected(true)
-                    .build(localContext.node(),
-                            localContext.adapter(),
-                            activePropertyDefinition.get().getBaseUrl());
+                    .build(localContext, activePropertyDefinition.get().getBaseUrl());
         }
 
         // 7.
@@ -236,9 +234,7 @@ public final class Compaction {
                     activeContext = activeContext
                             .newContext(options.loader(), runtime)
                             .propagate(false)
-                            .build(
-                                    localContext.node(),
-                                    localContext.adapter(),
+                            .build(localContext,
                                     termDefinition.getBaseUrl());
                 }
             }
