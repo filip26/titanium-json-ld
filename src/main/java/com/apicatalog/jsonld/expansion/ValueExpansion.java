@@ -74,36 +74,34 @@ public final class ValueExpansion {
             if (adapter.isString(value)) {
                 idValue = adapter.stringValue(value);
 
-                // custom extension allowing to process numeric ids
-            } else if (params.options().useNumericId() && adapter.isNumber(value)) {
+            } else
+            // custom extension allowing to process numeric ids
+            if (params.options().useNumericId() && adapter.isNumber(value)) {
                 idValue = adapter.asString(value);
             }
-//            System.out.println("@id> " + property + ", " + typeMapping + ", " + idValue);
 
             if (idValue != null) {
-                
+
                 final var id = UriExpansion.with(context, params.options().loader(), params.runtime())
                         .documentRelative(true)
                         .vocab(false)
                         .expand(idValue);
-                
+
                 params.runtime().onTypeMapping(property, Keywords.ID, id);
-                
+
                 return Map.of(Keywords.ID, id);
             }
             break;
 
         case Keywords.VOCAB:
             if (adapter.isString(value)) {
-//                System.out.println("@vocab> " + property + ", " + typeMapping + ", " + value);
-                
                 final var id = UriExpansion.with(context, params.options().loader(), params.runtime())
                         .documentRelative(true)
                         .vocab(true)
                         .expand(adapter.stringValue(value));
-                
+
                 params.runtime().onTypeMapping(property, Keywords.VOCAB, id);
-                
+
                 return Map.of(Keywords.ID, id);
             }
             break;
@@ -113,10 +111,8 @@ public final class ValueExpansion {
 
         // type mapping is not ID, VOCAB, NONE
         default:
-            
             params.runtime().onTypeMapping(property, Keywords.TYPE, typeMapping);
 
-//            System.out.println("@v> " + property + ", " + typeMapping + ", " + value);
             return Map.of(
                     Keywords.TYPE, typeMapping,
                     Keywords.VALUE, asScalar(value, adapter));

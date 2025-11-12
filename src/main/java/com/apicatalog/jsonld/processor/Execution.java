@@ -113,6 +113,13 @@ public class Execution {
         }
     }
 
+
+    public void onTypeMapping(Collection<String> types) {
+        if (typeMapper != null) {
+            typeMapper.mapType(types);
+        }
+    }
+    
     public void onTypeMapping(String key, String type) throws JsonLdException {
         if (typeMapper != null) {
             typeMapper.mapType(key, type);
@@ -222,6 +229,7 @@ public class Execution {
             }
         }
     }
+
 
 //    /**
 //     * Resume ticker, a next ping decreases remaining time if timeout is set. Is

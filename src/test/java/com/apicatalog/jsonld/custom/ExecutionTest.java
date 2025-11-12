@@ -126,6 +126,11 @@ class ExecutionTest {
             }
 
             @Override
+            public void mapType(Collection<String> type) {
+                stack.peek().put(Keywords.TYPE, type);
+            }
+            
+            @Override
             public void mapType(String key, String type) {
                 stack.peek().put(key, type);
             }
@@ -161,7 +166,7 @@ class ExecutionTest {
         var expanded = Expander.expand(document, options, runtime);
         assertNotNull(expanded);
 
-//        System.out.println(typeMap);
+        System.out.println(typeMap);
         var expected = read("/com/apicatalog/jsonld/test/vc-utopia-typemap.json");
 
         var match = TreeIO.deepEquals(typeMap, NativeAdapter.instance(), expected.node(), expected.adapter());

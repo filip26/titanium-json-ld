@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -135,7 +136,7 @@ final class ObjectExpansion1314 {
 
                 // 13.4.3
                 if (Keywords.ID.equals(expandedProperty)) {
-
+                    
                     // Extension: JSON-LD-STAR (Experimental)
                     if (!params.options().isRdfStar()
                             && Keywords.ANNOTATION.equals(activeProperty)) {
@@ -228,9 +229,7 @@ final class ObjectExpansion1314 {
 
                 // 13.4.4
                 else if (Keywords.TYPE.equals(expandedProperty)) {
-                    
-//                    System.out.println("TYPE> " + key + " -> " + value + ", " + activeProperty);
-                    
+
                     // 13.4.4.1
                     if ((!params.frameExpansion()
                             && !adapter.isString(value)
@@ -291,6 +290,8 @@ final class ObjectExpansion1314 {
                                 result.put(Keywords.VALUE, null);
                                 continue;
                             }
+                            
+                            params.runtime().onTypeMapping(Set.of((String)expandedValue));
 
                         } else if (adapter.isCollection(value)) {
 
@@ -320,7 +321,12 @@ final class ObjectExpansion1314 {
                             expandedValue = expandedItems != null
                                     ? expandedItems
                                     : List.of();
+                        
+                            if (expandedItems != null) {
+                                params.runtime().onTypeMapping(expandedItems);
+                            }
                         }
+
                     }
 
                     // 13.4.4.5

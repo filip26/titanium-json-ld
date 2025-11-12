@@ -15,10 +15,14 @@
  */
 package com.apicatalog.jsonld.processor;
 
+import java.util.Collection;
+
 public interface TypeMapper {
 
     void beginMap(String key);
 
+    void mapType(Collection<String> type);
+    
     void mapType(String key, String type);
 
     void mapType(String key, String type, String id); 

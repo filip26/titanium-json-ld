@@ -29,9 +29,9 @@
         },
         "type":"@type",
         "verificationMethod":{
-            "@id":"did:key:zDnaeWjKfs1ob9QcgasjYSPEMkwq31hmvSAWPVAgnrt1e9GKj#zDnaeWjKfs1ob9QcgasjYSPEMkwq31hmvSAWPVAgnrt1e9GKj",
+            "@expanded":"https://w3id.org/security#verificationMethod",
             "@type":"@id"
         }
     },
-    "type":"@type"
+    "type":"@type"    
 }
