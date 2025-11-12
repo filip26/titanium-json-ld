@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -61,7 +60,7 @@ class ExecutionTest {
                 .set("https://w3id.org/vc-barcodes/v1", read("/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld"))
                 .set("https://w3id.org/utopia/v2", read("/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld"))
                 .build();
-        
+
         var options = Options.with(loader);
 
         var keys = new ArrayList<Collection<String>>();
@@ -70,17 +69,19 @@ class ExecutionTest {
         runtime.contextKeyCollector(keys::add);
 
         var expanded = Expander.expand(document, options, runtime);
-        
+
         assertNotNull(expanded);
-        
-//        Collections.sort(keys);
-        
-        System.out.println(keys);
+
+//        System.out.println(keys
+//                .stream()
+//                .map(c -> c.stream().filter(Predicate.not(Keywords::contains)).sorted())
+//                .flatMap(Function.identity())
+//                .collect(Collectors.toCollection(LinkedHashSet::new)));
 
         var expected = read("/com/apicatalog/jsonld/test/vc-utopia-out.json");
-        
+
         var match = TreeIO.deepEquals(Map.of("contextKeys", keys), NativeAdapter.instance(), expected.node(), expected.adapter());
-        
+
         assertTrue(match);
 
     }

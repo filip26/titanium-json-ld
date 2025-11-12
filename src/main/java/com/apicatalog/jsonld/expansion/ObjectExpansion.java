@@ -90,7 +90,7 @@ public final class ObjectExpansion {
             activeContext = activeContext
                     .newContext(params.options().loader(), params.runtime())
                     .acceptInlineContext(params.options().useInlineContexts())
-                    .collectKey(params.runtime()::onContextKey)
+                    .collectKeys(params.runtime()::onContextKeys)
                     .build(contextValue, adapter, params.baseUrl());
 
         }
@@ -226,7 +226,7 @@ public final class ObjectExpansion {
                         activeContext = activeContext
                                 .newContext(params.options().loader(), params.runtime())
                                 .propagate(false)
-                                .collectKey(params.runtime()::onContextKey)
+                                .collectKeys(params.runtime()::onContextKeys)
                                 .build(localContext,
                                         activeContext.findTerm(term)
                                                 .map(TermDefinition::getBaseUrl)

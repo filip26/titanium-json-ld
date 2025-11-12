@@ -113,10 +113,12 @@ public class Execution {
     /**
      * Event fired when a new context key is encountered.
      * 
-     * @param key
+     * @param keys
      */
-    public void onContextKey(Collection<String> key) {
-        contextKeyCollector.accept(key);
+    public void onContextKeys(Collection<String> keys) {
+        if (contextKeyCollector != null) {
+            contextKeyCollector.accept(keys);
+        }
     }
 
     public TypeMapCollector typeMapper() {
@@ -187,7 +189,7 @@ public class Execution {
             }
 
             final var now = System.currentTimeMillis();
-            
+
             final var elapsed = ttl - (now - ticker);
 
             if (elapsed <= 0) {

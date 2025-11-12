@@ -102,7 +102,7 @@ public final class Expansion {
         if (params.runtime().collectsContextKeys()
                 && propertyContext != null
                 && propertyContext.isMap()) {
-            params.runtime().onContextKey(propertyContext
+            params.runtime().onContextKeys(propertyContext
                     .keyStream()
                     .map(propertyContext.adapter()::asString)
                     .toList());

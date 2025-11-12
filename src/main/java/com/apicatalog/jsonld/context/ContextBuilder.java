@@ -74,7 +74,7 @@ public final class ContextBuilder {
     
     private boolean acceptInlineContext;
     
-    private Consumer<Collection<String>> collectKey;
+    private Consumer<Collection<String>> collectKeys;
 
     // runtime
     private ActiveContext result;
@@ -91,7 +91,7 @@ public final class ContextBuilder {
         this.propagate = true;
         this.validateScopedContext = true;
         this.acceptInlineContext = true;
-        this.collectKey = null;
+        this.collectKeys = null;
 
         // runtime
         this.result = null;
@@ -195,8 +195,8 @@ public final class ContextBuilder {
                 throw new JsonLdException(ErrorCode.INVALID_LOCAL_CONTEXT);
             }
 
-            if (collectKey != null) {
-                collectKey.accept(adapter.keyStream(itemContext).map(adapter::asString).toList());
+            if (collectKeys != null) {
+                collectKeys.accept(adapter.keyStream(itemContext).map(adapter::asString).toList());
             }
             
             // 5.4. Otherwise, it's a context definition
@@ -545,8 +545,8 @@ public final class ContextBuilder {
         return this;
     }
     
-    public ContextBuilder collectKey(Consumer<Collection<String>> collectKey) {
-        this.collectKey = collectKey;
+    public ContextBuilder collectKeys(Consumer<Collection<String>> collectKeys) {
+        this.collectKeys = collectKeys;
         return this;
     }
 
@@ -700,7 +700,7 @@ public final class ContextBuilder {
                     .newContext(loader, runtime)
                     .remoteContexts(new ArrayList<>(remoteContexts))
                     .validateScopedContext(validateScopedContext)
-                    .collectKey(collectKey)
+                    .collectKeys(collectKeys)
                     .build(newContext, newContextAdapter, remoteDocument.url());
 
 //FIXME
