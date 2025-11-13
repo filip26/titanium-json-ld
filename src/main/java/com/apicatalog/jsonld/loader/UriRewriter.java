@@ -37,7 +37,11 @@ public final class UriRewriter implements DocumentLoader {
     public static final Builder newBuilder(DocumentLoader loader) {
         return new Builder(Map.of(), loader);
     }
-    
+
+    public static final Builder copyOf(UriRewriter loader) {
+        return new Builder(loader.rewrite, loader.loader);
+    }
+
     @Override
     public Document loadDocument(final URI url, final Options options) throws JsonLdException {
 
@@ -53,7 +57,7 @@ public final class UriRewriter implements DocumentLoader {
     public static final class Builder {
 
         private final Map<URI, URI> rewrite;
-        private final DocumentLoader loader;
+        private DocumentLoader loader;
 
         Builder(Map<URI, URI> resources, DocumentLoader loader) {
             this.rewrite = new LinkedHashMap<>(resources);
@@ -66,6 +70,11 @@ public final class UriRewriter implements DocumentLoader {
 
         public Builder map(URI from, URI to) {
             rewrite.put(from, to);
+            return this;
+        }
+        
+        public Builder loader(DocumentLoader loader) {
+            this.loader = loader;
             return this;
         }
 

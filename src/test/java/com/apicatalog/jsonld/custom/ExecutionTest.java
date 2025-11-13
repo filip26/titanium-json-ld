@@ -81,9 +81,9 @@ class ExecutionTest {
         var document = read(input);
 
         var loader = StaticLoader.newBuilder()
-                .set("https://www.w3.org/ns/credentials/v2", read("/com/apicatalog/jsonld/loader/credentials-v2.jsonld"))
-                .set("https://w3id.org/vc-barcodes/v1", read("/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld"))
-                .set("https://w3id.org/utopia/v2", read("/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld"))
+                .node("https://www.w3.org/ns/credentials/v2", read("/com/apicatalog/jsonld/loader/credentials-v2.jsonld"))
+                .node("https://w3id.org/vc-barcodes/v1", read("/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld"))
+                .node("https://w3id.org/utopia/v2", read("/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld"))
                 .build();
 
         var options = Options.with(loader);
@@ -137,9 +137,9 @@ class ExecutionTest {
         var document = read(input);
 
         var loader = StaticLoader.newBuilder()
-                .set("https://www.w3.org/ns/credentials/v2", read("/com/apicatalog/jsonld/loader/credentials-v2.jsonld"))
-                .set("https://w3id.org/vc-barcodes/v1", read("/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld"))
-                .set("https://w3id.org/utopia/v2", read("/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld"))
+                .node("https://www.w3.org/ns/credentials/v2", read("/com/apicatalog/jsonld/loader/credentials-v2.jsonld"))
+                .node("https://w3id.org/vc-barcodes/v1", read("/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld"))
+                .node("https://w3id.org/utopia/v2", read("/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld"))
                 .build();
 
         var options = Options.with(loader);

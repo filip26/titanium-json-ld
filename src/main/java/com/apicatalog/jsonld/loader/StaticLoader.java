@@ -15,15 +15,20 @@
  */
 package com.apicatalog.jsonld.loader;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.TreeIOException;
+import com.apicatalog.tree.io.TreeParser;
 
 /**
  * A {@link DocumentLoader} that resolves JSON-LD documents from an in-memory
@@ -52,6 +57,8 @@ import com.apicatalog.tree.io.TreeIO;
  */
 public final class StaticLoader implements DocumentLoader {
 
+    private static final Logger LOGGER = Logger.getLogger(StaticLoader.class.getName());
+
     private final Map<URI, Document> resources;
     private final DocumentLoader loader;
 
@@ -66,7 +73,7 @@ public final class StaticLoader implements DocumentLoader {
     }
 
     /** Creates a builder initialized from an existing {@code StaticLoader}. */
-    public static final Builder newBuilder(StaticLoader loader) {
+    public static final Builder copyOf(StaticLoader loader) {
         return new Builder(loader.resources, loader.loader);
     }
 
@@ -131,8 +138,8 @@ public final class StaticLoader implements DocumentLoader {
          * @param document the document to associate
          * @return this builder instance
          */
-        public Builder set(String url, Document document) {
-            return set(URI.create(url), document);
+        public Builder document(String url, Document document) {
+            return document(URI.create(url), document);
         }
 
         /**
@@ -142,7 +149,7 @@ public final class StaticLoader implements DocumentLoader {
          * @param document the document to associate
          * @return this builder instance
          */
-        public Builder set(URI url, Document document) {
+        public Builder document(URI url, Document document) {
             resources.put(url, document);
             return this;
         }
@@ -154,8 +161,8 @@ public final class StaticLoader implements DocumentLoader {
          * @param node the parsed JSON-LD node
          * @return this builder instance
          */
-        public Builder set(String url, TreeIO node) {
-            return set(URI.create(url), node);
+        public Builder node(String url, TreeIO node) {
+            return node(URI.create(url), node);
         }
 
         /**
@@ -165,8 +172,26 @@ public final class StaticLoader implements DocumentLoader {
          * @param node the parsed JSON-LD node
          * @return this builder instance
          */
-        public Builder set(URI url, TreeIO node) {
+        public Builder node(URI url, TreeIO node) {
             resources.put(url, Document.of(node, url));
+            return this;
+        }
+
+        /**
+         * 
+         * @param url
+         * @param resource an absolute classpath starting with '/' pointing to a resource
+         * @param parser
+         * @return
+         */
+        public Builder classpath(String url, String resource, TreeParser parser) {
+            try (final var is = StaticLoader.class.getResourceAsStream(resource)) {
+
+                return node(url, parser.parse(is));
+
+            } catch (IOException | TreeIOException e) {
+                LOGGER.log(Level.SEVERE, "An error [{0}] during loading static context [{1}]", new Object[] { e.getMessage(), resource });
+            }
             return this;
         }
 
