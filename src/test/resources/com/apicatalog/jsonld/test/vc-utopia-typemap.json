@@ -2,43 +2,33 @@
     "credentialStatus":{
         "terseStatusListBaseUrl":{
             "@id": "https://sandbox.platform.veres.dev/statuses/z19rJ4oGrbFCqf3cNTVDHSbNd/status-lists",
-            "@uri":"https://w3id.org/vc-barcodes#terseStatusListBaseUrl",
             "@type":"@id"
-        },
-        "terseStatusListIndex": {
-            "@uri": "https://w3id.org/vc-barcodes#terseStatusListIndex"
         },
         "type":"@type"
     },
     "credentialSubject":{
         "protectedComponentIndex":{
-            "@uri": "https://w3id.org/vc-barcodes#protectedComponentIndex",
             "@type":"https://w3id.org/security#multibase"
         },
         "type":"@type"
     },
     "issuer":{
-        "@uri":"https://www.w3.org/2018/credentials#issuer",
         "@id" :"did:key:zDnaeWjKfs1ob9QcgasjYSPEMkwq31hmvSAWPVAgnrt1e9GKj",
         "@type":"@id"
     },
     "proof":{
         "cryptosuite":{
-            "@uri":"https://w3id.org/security#cryptosuite",
             "@type":"https://w3id.org/security#cryptosuiteString"
         },
         "proofPurpose":{
-            "@uri":"https://w3id.org/security#proofPurpose",
             "@type":"@vocab"
         },
         "proofValue":{
-            "@uri":"https://w3id.org/security#proofValue",
             "@type":"https://w3id.org/security#multibase"
         },
         "type":"@type",
         "verificationMethod":{
             "@id": "did:key:zDnaeWjKfs1ob9QcgasjYSPEMkwq31hmvSAWPVAgnrt1e9GKj#zDnaeWjKfs1ob9QcgasjYSPEMkwq31hmvSAWPVAgnrt1e9GKj",
-            "@uri":"https://w3id.org/security#verificationMethod",
             "@type":"@id"
         }
     },

@@ -112,9 +112,9 @@ final class ObjectExpansion1314 {
                 }
             }
 
-            if (!Keywords.TYPE.equals(expandedProperty) && !Keywords.ID.equals(expandedProperty)) {
-                params.runtime().onProperty(key, "@uri", expandedProperty);
-            }
+//TODO?            if (!Keywords.TYPE.equals(expandedProperty) && !Keywords.ID.equals(expandedProperty)) {
+//                params.runtime().onProperty(key, "@uri", expandedProperty);
+//            }
 
             final var value = adapter.property(key, element);
 
@@ -191,6 +191,8 @@ final class ObjectExpansion1314 {
                                 .vocab(false)
                                 .expand(adapter.asString(value));
 
+                        params.runtime().onProperty(key, Keywords.ID, (String)expandedValue);
+                        
                         if (params.frameExpansion() && expandedValue != null) {
                             expandedValue = List.of(expandedValue);
 
@@ -198,7 +200,7 @@ final class ObjectExpansion1314 {
                             result.put(Keywords.ID, null);
                             continue;
                         }
-
+                        
                     } else if (adapter.isMap(value)) {
 
                         expandedValue = List.of(Map.of());

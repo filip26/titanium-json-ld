@@ -4,7 +4,7 @@
     "https://w3id.org/vc-barcodes/v1",
     "https://w3id.org/utopia/v2"
   ],
-  "id": "did:key:zDnaeZSD9XcuULaS8qmgDUa6TMg2QjF9xABnZK42awDH3BEzj",
+  "id": "id-placeholder",
   "type": [
     "VerifiableCredential",
     "OpticalBarcodeCredential"
@@ -14,6 +14,7 @@
   },
   "issuer": "did:key:zDnaeZSD9XcuULaS8qmgDUa6TMg2QjF9xABnZK42awDH3BEzj",
   "proof": {
+    "id": "id-placeholder-2",
     "type": "DataIntegrityProof",
     "verificationMethod": "did:key:zDnaeZSD9XcuULaS8qmgDUa6TMg2QjF9xABnZK42awDH3BEzj#zDnaeZSD9XcuULaS8qmgDUa6TMg2QjF9xABnZK42awDH3BEzj",
     "cryptosuite": "ecdsa-xi-2023",
