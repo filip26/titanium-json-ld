@@ -15,7 +15,7 @@
  */
 package com.apicatalog.jsonld.processor;
 
-public interface PropertyMapper {
+public interface KeyTypeMapper {
 
     void beginMap(String property);
 

@@ -58,6 +58,11 @@ import jakarta.json.stream.JsonGenerator;
 
 public class JunitRunner {
 
+    public static final JsonWriterFactory JSON_WRITER_FACTORY = Json.createWriterFactory(
+            Map.of(
+                    JsonGenerator.PRETTY_PRINTING,
+                    true));
+
     private final TestCase testCase;
 
     public JunitRunner(TestCase testCase) {
@@ -270,13 +275,8 @@ public class JunitRunner {
         try (final var writer = new PrintWriter(stringWriter)) {
             writer.println("Test " + testCase.id + ": " + testCase.name);
 
-            final var writerFactory = Json.createWriterFactory(
-                    Map.of(
-                            JsonGenerator.PRETTY_PRINTING,
-                            true));
-
             if (expected != null) {
-                write(writer, writerFactory, "Expected", expected);
+                write(writer, JSON_WRITER_FACTORY, "Expected", expected);
                 writer.println();
 
             } else if (testCase.expectErrorCode != null) {
@@ -284,7 +284,7 @@ public class JunitRunner {
             }
 
             if (result != null) {
-                write(writer, writerFactory, "Actual", result);
+                write(writer, JSON_WRITER_FACTORY, "Actual", result);
                 writer.println();
             }
             if (error != null) {
@@ -309,7 +309,7 @@ public class JunitRunner {
         writer.write(out.toString());
         writer.println();
     }
-
+    
     public static final boolean compareRdf(final TestCase testCase, final RdfQuadSet result, final RdfQuadSet expected) {
 
         try {

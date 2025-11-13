@@ -21,7 +21,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -113,8 +112,8 @@ final class ObjectExpansion1314 {
                 }
             }
 
-            if (!Keywords.TYPE.equals(expandedProperty)) {
-                params.runtime().onProperty(key, Keywords.ID, expandedProperty);
+            if (!Keywords.TYPE.equals(expandedProperty) && !Keywords.ID.equals(expandedProperty)) {
+                params.runtime().onProperty(key, "@uri", expandedProperty);
             }
 
             final var value = adapter.property(key, element);
@@ -229,6 +228,8 @@ final class ObjectExpansion1314 {
 
                         expandedValue = array != null ? array : value;
                     }
+
+                    params.runtime().onProperty(key, Keywords.ID);
                 }
 
                 // 13.4.4

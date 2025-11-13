@@ -42,7 +42,7 @@ public class Execution {
     }
 
     protected Consumer<Collection<String>> contextKeyCollector;
-    protected PropertyMapper typeMapper;
+    protected KeyTypeMapper keyTypeMapper;
     protected Counter nodeCounter;
     protected Counter ttl;
 
@@ -96,8 +96,8 @@ public class Execution {
         if (nodeCounter != null) {
             nodeCounter.increment();
         }
-        if (typeMapper != null) {
-            typeMapper.beginMap(parentKey);
+        if (keyTypeMapper != null) {
+            keyTypeMapper.beginMap(parentKey);
         }
     }
 
@@ -108,42 +108,27 @@ public class Execution {
      */
     public void onEndMap(String parentKey) throws JsonLdException {
         // hook for extensions or instrumentation
-        if (typeMapper != null) {
-            typeMapper.endMap();
+        if (keyTypeMapper != null) {
+            keyTypeMapper.endMap();
         }
     }
 
-
-//    public void onTypeMapping(Collection<String> types) {
-//        if (typeMapper != null) {
-//            typeMapper.mapType(types);
-//        }
-//    }
-//    
     public void onProperty(String key, String type) throws JsonLdException {
-        if (typeMapper != null) {
-            typeMapper.mapProperty(key, type);
+        if (keyTypeMapper != null) {
+            keyTypeMapper.mapProperty(key, type);
         }
     }
 
     public void onProperty(String key, String type, String id) {
-        if (typeMapper != null) {
-            typeMapper.mapProperty(key, type, id);
+        if (keyTypeMapper != null) {
+            keyTypeMapper.mapProperty(key, type, id);
         }
     }
     
-    public Execution typeMapper(PropertyMapper typeMapper) {
-        this.typeMapper = typeMapper;
+    public Execution keyTypeMapper(KeyTypeMapper keyTypeMapper) {
+        this.keyTypeMapper = keyTypeMapper;
         return this;
     }
-
-//    void beginMap(String key);
-//
-//    void typeKeyName(String type);
-//
-//    void end();
-//
-//    boolean isTypeKey(String term);
 
     /**
      * Event fired when a new context key is encountered.

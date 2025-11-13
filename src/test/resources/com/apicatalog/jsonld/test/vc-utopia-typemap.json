@@ -1,44 +1,44 @@
  {
     "credentialStatus":{
-        "@id": "https://www.w3.org/2018/credentials#credentialStatus",
         "terseStatusListBaseUrl":{
-            "@id":"https://w3id.org/vc-barcodes#terseStatusListBaseUrl",
+            "@id": "https://sandbox.platform.veres.dev/statuses/z19rJ4oGrbFCqf3cNTVDHSbNd/status-lists",
+            "@uri":"https://w3id.org/vc-barcodes#terseStatusListBaseUrl",
             "@type":"@id"
         },
         "terseStatusListIndex": {
-            "@id": "https://w3id.org/vc-barcodes#terseStatusListIndex"
+            "@uri": "https://w3id.org/vc-barcodes#terseStatusListIndex"
         },
         "type":"@type"
     },
     "credentialSubject":{
-        "@id": "https://www.w3.org/2018/credentials#credentialSubject",
         "protectedComponentIndex":{
-            "@id": "https://w3id.org/vc-barcodes#protectedComponentIndex",
+            "@uri": "https://w3id.org/vc-barcodes#protectedComponentIndex",
             "@type":"https://w3id.org/security#multibase"
         },
         "type":"@type"
     },
     "issuer":{
-        "@id":"https://www.w3.org/2018/credentials#issuer",
+        "@uri":"https://www.w3.org/2018/credentials#issuer",
+        "@id" :"did:key:zDnaeWjKfs1ob9QcgasjYSPEMkwq31hmvSAWPVAgnrt1e9GKj",
         "@type":"@id"
     },
     "proof":{
-        "@id": "https://w3id.org/security#proof",
         "cryptosuite":{
-            "@id":"https://w3id.org/security#cryptosuite",
+            "@uri":"https://w3id.org/security#cryptosuite",
             "@type":"https://w3id.org/security#cryptosuiteString"
         },
         "proofPurpose":{
-            "@id":"https://w3id.org/security#proofPurpose",
+            "@uri":"https://w3id.org/security#proofPurpose",
             "@type":"@vocab"
         },
         "proofValue":{
-            "@id":"https://w3id.org/security#proofValue",
+            "@uri":"https://w3id.org/security#proofValue",
             "@type":"https://w3id.org/security#multibase"
         },
         "type":"@type",
         "verificationMethod":{
-            "@id":"https://w3id.org/security#verificationMethod",
+            "@id": "did:key:zDnaeWjKfs1ob9QcgasjYSPEMkwq31hmvSAWPVAgnrt1e9GKj#zDnaeWjKfs1ob9QcgasjYSPEMkwq31hmvSAWPVAgnrt1e9GKj",
+            "@uri":"https://w3id.org/security#verificationMethod",
             "@type":"@id"
         }
     },

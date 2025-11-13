@@ -1,0 +1,32 @@
+ {
+    "id": "@id",
+    "type":"@type",
+    "credentialSubject":{
+        "type":"@type"
+    },
+    "issuer":{
+        "@uri":"https://www.w3.org/2018/credentials#issuer",
+        "@id" :"did:key:zDnaeZSD9XcuULaS8qmgDUa6TMg2QjF9xABnZK42awDH3BEzj",
+        "@type":"@id"
+    },
+    "proof":{
+        "cryptosuite":{
+            "@uri":"https://w3id.org/security#cryptosuite",
+            "@type":"https://w3id.org/security#cryptosuiteString"
+        },
+        "proofPurpose":{
+            "@uri":"https://w3id.org/security#proofPurpose",
+            "@type":"@vocab"
+        },
+        "proofValue":{
+            "@uri":"https://w3id.org/security#proofValue",
+            "@type":"https://w3id.org/security#multibase"
+        },
+        "type":"@type",
+        "verificationMethod":{
+            "@id": "did:key:zDnaeZSD9XcuULaS8qmgDUa6TMg2QjF9xABnZK42awDH3BEzj#zDnaeZSD9XcuULaS8qmgDUa6TMg2QjF9xABnZK42awDH3BEzj",
+            "@uri":"https://w3id.org/security#verificationMethod",
+            "@type":"@id"
+        }
+    }
+}

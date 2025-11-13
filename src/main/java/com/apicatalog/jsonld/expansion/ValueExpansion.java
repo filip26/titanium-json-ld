@@ -87,7 +87,10 @@ public final class ValueExpansion {
                         .vocab(false)
                         .expand(idValue);
 
-                params.runtime().onProperty(property, Keywords.TYPE, Keywords.ID);
+// TODO               if (params.runtime().keyTypeMapper() != null) {
+                    params.runtime().onProperty(property, Keywords.TYPE, Keywords.ID);
+                    params.runtime().onProperty(property, Keywords.ID, id);
+//                }
 
                 return Map.of(Keywords.ID, id);
             }

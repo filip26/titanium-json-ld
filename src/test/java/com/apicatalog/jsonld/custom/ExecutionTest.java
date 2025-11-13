@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -28,22 +29,29 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
-import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.StaticLoader;
 import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.jsonld.processor.Expander;
-import com.apicatalog.jsonld.processor.PropertyMapper;
+import com.apicatalog.jsonld.processor.KeyTypeMapper;
+import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.TreeIOException;
+import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 import com.apicatalog.tree.io.java.NativeAdapter;
+
+import jakarta.json.JsonWriter;
 
 class ExecutionTest {
 
@@ -90,10 +98,22 @@ class ExecutionTest {
         assertTrue(match);
     }
 
-    @Test
-    void testTypeMapper() throws JsonLdException, TreeIOException, IOException {
+    static Stream<Arguments> keyTypeMapCases() {
+        return Stream.of(
+                Arguments.of(
+                        "/com/apicatalog/jsonld/test/vc-utopia.jsonld",
+                        "/com/apicatalog/jsonld/test/vc-utopia-typemap.json"),
+                Arguments.of(
+                        "/com/apicatalog/jsonld/test/vc-utopia-2.jsonld",
+                        "/com/apicatalog/jsonld/test/vc-utopia-typemap-2.json")
+                );
+    }
 
-        var document = read("/com/apicatalog/jsonld/test/vc-utopia.jsonld");
+    @ParameterizedTest
+    @MethodSource("keyTypeMapCases")
+    void testTypeMapper(String input, String output) throws JsonLdException, TreeIOException, IOException {
+
+        var document = read(input);
 
         var loader = StaticLoader.newBuilder()
                 .set("https://www.w3.org/ns/credentials/v2", read("/com/apicatalog/jsonld/loader/credentials-v2.jsonld"))
@@ -105,7 +125,7 @@ class ExecutionTest {
 
         var typeMap = new LinkedHashMap<String, Object>();
 
-        var typeMapper = new PropertyMapper() {
+        var typeMapper = new KeyTypeMapper() {
 
             Deque<Map<String, Object>> stack = new ArrayDeque<>();
 
@@ -125,54 +145,38 @@ class ExecutionTest {
                 stack.pop();
             }
 
-//            @Override
-//            public void mapTyp(Collection<String> type) {
-//                stack.peek().put(Keywords.TYPE, type);
-//            }
-            
             @Override
             public void mapProperty(String key, String id) {
-                System.out.println("0>>> " + key + " -> " + id);
                 stack.peek().put(key, id);
             }
 
+            @SuppressWarnings("unchecked")
             @Override
             public void mapProperty(String key, String type, String value) {
-                System.out.println("1>>> " + key + " -> " + type + " = "  + value);
-                ((Map)stack.peek().computeIfAbsent(key, (k) -> new LinkedHashMap<String, Object>()))
-                .put(type, value);
-//                switch (type) {
-////                case Keywords.ID:
-////                    stack.peek().put(key, Map.of(
-////                            Keywords.ID, value,
-////                            Keywords.TYPE, Keywords.ID));
-////                    break;
-////                case Keywords.TYPE:
-////                    stack.peek().put(key, Map.of(
-////                            Keywords.TYPE, value));
-////                    break;
-////                case Keywords.VOCAB:
-////                    stack.peek().put(key, Map.of(
-////                            Keywords.ID, value,
-////                            Keywords.TYPE, Keywords.VOCAB));
-//                    break;
-//
-//                default:
-//                    throw new IllegalStateException();
-//                }
+                ((Map<String, Object>) stack.peek()
+                        .computeIfAbsent(key, (k) -> new LinkedHashMap<String, Object>()))
+                        .put(type, value);
             }
         };
 
         var runtime = Execution.of(options);
-        runtime.typeMapper(typeMapper);
+        runtime.keyTypeMapper(typeMapper);
 
         var expanded = Expander.expand(document, options, runtime);
         assertNotNull(expanded);
 
-        System.out.println(typeMap);
-        var expected = read("/com/apicatalog/jsonld/test/vc-utopia-typemap.json");
+        var expected = read(output);
 
         var match = TreeIO.deepEquals(typeMap, NativeAdapter.instance(), expected.node(), expected.adapter());
+
+        if (!match) {
+            var out = new StringWriter();
+
+            try (final JsonWriter jsonWriter = JunitRunner.JSON_WRITER_FACTORY.createWriter(out)) {
+                jsonWriter.write(new JakartaMaterializer().node(typeMap, NativeAdapter.instance()));
+            }
+            System.out.println(out);
+        }
 
         assertTrue(match);
     }
