@@ -56,7 +56,9 @@ public final class TestManifest {
 
         try {
 
-            final var manifest = loader.loadDocument(URI.create(manifestBase + manifestName), DocumentLoader.defaultOptions());
+            final var manifest = loader.loadDocument(
+                    URI.create(manifestBase + manifestName),
+                    DocumentLoader.defaultOptions());
 
             assertNotNull(manifest);
 

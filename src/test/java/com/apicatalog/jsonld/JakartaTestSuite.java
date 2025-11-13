@@ -18,7 +18,6 @@ package com.apicatalog.jsonld;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
 import java.time.Duration;
-import java.util.Map;
 
 import org.junit.platform.suite.api.AfterSuite;
 import org.junit.platform.suite.api.BeforeSuite;
@@ -39,8 +38,6 @@ import com.apicatalog.tree.io.TreeRenderer;
 import com.apicatalog.tree.io.jakarta.JakartaParser;
 import com.apicatalog.tree.io.jakarta.JakartaRenderer;
 
-import jakarta.json.Json;
-
 @Suite(failIfNoTests = true)
 @SuiteDisplayName("JSON-LD Suite (Jakarta)")
 @SelectClasses({
@@ -54,9 +51,9 @@ import jakarta.json.Json;
 })
 public class JakartaTestSuite extends SuiteEvironment {
 
-    public static final TreeParser PARSER = new JakartaParser(Json.createReaderFactory(Map.of()));
+    public static final TreeParser PARSER = new JakartaParser();
 
-    public static final TreeRenderer RENDERER = new JakartaRenderer(Json.createGeneratorFactory(Map.of()));
+    public static final TreeRenderer RENDERER = new JakartaRenderer();
 
     public static final HttpClient HTTP_CLIENT = HttpClient
             .newBuilder()
