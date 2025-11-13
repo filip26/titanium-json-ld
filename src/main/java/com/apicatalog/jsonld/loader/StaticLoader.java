@@ -125,10 +125,12 @@ public final class StaticLoader implements DocumentLoader {
 
         private final Map<URI, Document> resources;
         private DocumentLoader loader;
+        private TreeParser parser;
 
         Builder(Map<URI, Document> resources, DocumentLoader loader) {
             this.resources = new LinkedHashMap<>(resources);
             this.loader = loader;
+            this.parser = null;
         }
 
         /**
@@ -176,15 +178,21 @@ public final class StaticLoader implements DocumentLoader {
             resources.put(url, Document.of(node, url));
             return this;
         }
+        
+        public Builder parser(TreeParser parser) {
+            this.parser = parser;
+            return this;
+        }
 
         /**
          * 
+         * Note: a parser must be set with {@code #parser(TreeParser)} method.
+         * 
          * @param url
          * @param resource an absolute classpath starting with '/' pointing to a resource
-         * @param parser
          * @return
          */
-        public Builder classpath(String url, String resource, TreeParser parser) {
+        public Builder classpath(String url, String resource) {
             try (final var is = StaticLoader.class.getResourceAsStream(resource)) {
 
                 return node(url, parser.parse(is));
@@ -192,6 +200,11 @@ public final class StaticLoader implements DocumentLoader {
             } catch (IOException | TreeIOException e) {
                 LOGGER.log(Level.SEVERE, "An error [{0}] during loading static context [{1}]", new Object[] { e.getMessage(), resource });
             }
+            return this;
+        }
+        
+        public Builder classpath(Map<String, String> resources) {
+            resources.forEach(this::classpath);
             return this;
         }
 
