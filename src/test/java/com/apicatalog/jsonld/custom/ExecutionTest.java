@@ -63,10 +63,22 @@ class ExecutionTest {
         assertEquals(ErrorCode.PROCESSING_TIMEOUT_EXCEEDED, ex.code());
     }
 
-    @Test
-    void testContextKeyCollector() throws JsonLdException, TreeIOException, IOException {
+    static Stream<Arguments> contextKeysCases() {
+        return Stream.of(
+                Arguments.of(
+                        "/com/apicatalog/jsonld/test/vc-utopia.jsonld",
+                        "/com/apicatalog/jsonld/test/vc-utopia-terms.json"),
+                Arguments.of(
+                        "/com/apicatalog/jsonld/test/vc-utopia-2.jsonld",
+                        "/com/apicatalog/jsonld/test/vc-utopia-terms-2.json")
+                );
+    }
+    
+    @ParameterizedTest
+    @MethodSource("contextKeysCases")
+    void testContextKeyCollector(String input, String output) throws JsonLdException, TreeIOException, IOException {
 
-        var document = read("/com/apicatalog/jsonld/test/vc-utopia.jsonld");
+        var document = read(input);
 
         var loader = StaticLoader.newBuilder()
                 .set("https://www.w3.org/ns/credentials/v2", read("/com/apicatalog/jsonld/loader/credentials-v2.jsonld"))
@@ -91,10 +103,19 @@ class ExecutionTest {
 //                .flatMap(Function.identity())
 //                .collect(Collectors.toCollection(LinkedHashSet::new)));
 
-        var expected = read("/com/apicatalog/jsonld/test/vc-utopia-terms.json");
+        var expected = read(output);
 
         var match = TreeIO.deepEquals(Map.of("contextKeys", keys), NativeAdapter.instance(), expected.node(), expected.adapter());
 
+        if (!match) {
+            var out = new StringWriter();
+
+            try (final JsonWriter jsonWriter = JunitRunner.JSON_WRITER_FACTORY.createWriter(out)) {
+                jsonWriter.write(new JakartaMaterializer().node(keys, NativeAdapter.instance()));
+            }
+            System.out.println(out);
+        }
+        
         assertTrue(match);
     }
 
