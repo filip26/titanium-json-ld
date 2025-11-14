@@ -38,10 +38,12 @@ import com.apicatalog.tree.io.TreeParser;
  * <p>
  * Example URI:
  * </p>
+ * 
  * <pre>{@code classpath:/contexts/example.jsonld}</pre>
  */
 public final class ClasspathLoader implements DocumentLoader {
 
+    private final Class<?> baseClass;
     private final TreeParser parser;
 
     /**
@@ -51,7 +53,19 @@ public final class ClasspathLoader implements DocumentLoader {
      *               not be {@code null})
      */
     public ClasspathLoader(final TreeParser reader) {
+        this(reader, ClasspathLoader.class);
+    }
+
+    /**
+     * Creates a new loader that parses classpath resources using the given reader.
+     *
+     * @param reader the {@link TreeParser} used to parse the loaded resource (must
+     *               not be {@code null})
+     * @param base   the class from which relative classpaths are resolved
+     */
+    public ClasspathLoader(final TreeParser reader, final Class<?> base) {
         this.parser = reader;
+        this.baseClass = base;
     }
 
     /**
@@ -78,7 +92,11 @@ public final class ClasspathLoader implements DocumentLoader {
                     "Unsupported URL scheme [" + url.getScheme() + "]. Only classpath: scheme is accepted.");
         }
 
-        try (final var is = ClasspathLoader.class.getResourceAsStream(url.getPath())) {
+        final var path = url.getPath() != null
+                ? url.getPath()
+                : url.getSchemeSpecificPart();
+
+        try (final var is = baseClass.getResourceAsStream(path)) {
 
             var node = parser.parse(is);
 
