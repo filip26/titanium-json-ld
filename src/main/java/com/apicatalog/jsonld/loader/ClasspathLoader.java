@@ -17,12 +17,15 @@ package com.apicatalog.jsonld.loader;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.TreeParser;
+import com.apicatalog.web.media.MediaType;
 
 /**
  * A {@link DocumentLoader} that retrieves JSON-LD documents from the
@@ -43,29 +46,29 @@ import com.apicatalog.tree.io.TreeParser;
  */
 public final class ClasspathLoader implements DocumentLoader {
 
+    private final Map<MediaType, TreeParser> parsers;
+    private final TreeParser defaultParser;
     private final Class<?> baseClass;
-    private final TreeParser parser;
 
     /**
      * Creates a new loader that parses classpath resources using the given reader.
      *
-     * @param reader the {@link TreeParser} used to parse the loaded resource (must
-     *               not be {@code null})
+     * @param parsers       the {@link TreeParser} used to parse the loaded resource
+     *                      (must not be {@code null})
+     * @param defaultParser
+     * @param base          the class from which relative classpaths are resolved
      */
-    public ClasspathLoader(final TreeParser reader) {
-        this(reader, ClasspathLoader.class);
-    }
-
-    /**
-     * Creates a new loader that parses classpath resources using the given reader.
-     *
-     * @param reader the {@link TreeParser} used to parse the loaded resource (must
-     *               not be {@code null})
-     * @param base   the class from which relative classpaths are resolved
-     */
-    public ClasspathLoader(final TreeParser reader, final Class<?> base) {
-        this.parser = reader;
+    private ClasspathLoader(
+            final Map<MediaType, TreeParser> parsers,
+            final TreeParser defaultParser,
+            final Class<?> base) {
+        this.parsers = parsers;
+        this.defaultParser = defaultParser;
         this.baseClass = base;
+    }
+    
+    public static Builder newBuilder() {
+        return new Builder();
     }
 
     /**
@@ -96,17 +99,66 @@ public final class ClasspathLoader implements DocumentLoader {
                 ? url.getPath()
                 : url.getSchemeSpecificPart();
 
+        final var contentType = FileLoader.fromFileExtension(path); // detect media type
+        
+        final var parser = parsers.getOrDefault(contentType, defaultParser);
+        
+        if (parser == null) {
+            throw new JsonLdException(
+                    ErrorCode.LOADING_DOCUMENT_FAILED,
+                    "Cannot parse content-type=" + contentType + ", uri=" + url);            
+        }
+
         try (final var is = baseClass.getResourceAsStream(path)) {
 
             var node = parser.parse(is);
 
             return Document.of(
                     node,
-                    FileLoader.fromFileExtension(url.getPath()), // detect media type
+                    contentType,
                     url);
 
         } catch (TreeIOException | IOException e) {
-            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, e);
+            throw new JsonLdException(
+                    ErrorCode.LOADING_DOCUMENT_FAILED,
+                    "Document loader failed for uri=" + url + ", base=" + baseClass.getPackageName(),
+                    e);
+        }
+    }
+
+    public static final class Builder {
+
+        private final Map<MediaType, TreeParser> parsers;
+        private TreeParser defaultParser;
+        private Class<?> baseClass;
+
+        Builder() {
+            this.parsers = new HashMap<>();
+            this.defaultParser = null;
+            this.baseClass = ClasspathLoader.class;
+        }
+
+        public Builder parser(MediaType contentType, TreeParser parser) {
+            this.parsers.put(contentType, parser);
+            return this;
+        }
+        
+        public Builder defaultParser(TreeParser parser) {
+            this.defaultParser = parser;
+            return this;
+        }
+
+        public Builder base(Class<?> baseClass) {
+            this.baseClass = baseClass;
+            return this;
+        }
+
+        /** Builds an immutable {@link ClasspathLoader} instance. */
+        public ClasspathLoader build() {
+            return new ClasspathLoader(
+                    Map.copyOf(parsers),
+                    defaultParser,
+                    baseClass);
         }
     }
 }

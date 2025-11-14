@@ -49,7 +49,10 @@ import com.apicatalog.tree.io.java.NativeAdapter;
 
 class RemoteContextTest {
 
-    static ClasspathLoader LOADER = new ClasspathLoader(JakartaTestSuite.PARSER);
+    static ClasspathLoader LOADER = ClasspathLoader
+            .newBuilder()
+            .defaultParser(JakartaTestSuite.PARSER)
+            .build();
 
     /**
      * @see <a href="https://github.com/filip26/titanium-json-ld/issues/61">Issue
@@ -114,7 +117,7 @@ class RemoteContextTest {
         }
     }
 
-    /** 
+    /**
      * @see <a href="https://github.com/filip26/titanium-json-ld/issues/63">Issue
      *      #63</a>
      */
@@ -151,8 +154,8 @@ class RemoteContextTest {
      *      #62</a>
      *
      * @throws JsonLdException
-     * @throws TreeIOException 
-     * @throws IOException 
+     * @throws TreeIOException
+     * @throws IOException
      */
     @Test
     @Disabled("Run manually")
