@@ -204,7 +204,7 @@ public final class ObjectExpansion {
                 if (typeKey == null) {
                     typeKey = key;
                 }
-                
+
                 params.runtime().onProperty(key, Keywords.TYPE);
 
                 // 11.2

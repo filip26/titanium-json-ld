@@ -106,7 +106,7 @@ public final class ClasspathLoader implements DocumentLoader {
         if (parser == null) {
             throw new JsonLdException(
                     ErrorCode.LOADING_DOCUMENT_FAILED,
-                    "Cannot parse content-type=" + contentType + ", uri=" + url);            
+                    "Cannot parse content-type=" + contentType + ", uri=" + url + ", base=" + baseClass.getPackageName());            
         }
 
         try (final var is = baseClass.getResourceAsStream(path)) {
