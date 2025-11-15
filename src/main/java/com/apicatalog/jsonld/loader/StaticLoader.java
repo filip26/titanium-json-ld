@@ -29,6 +29,7 @@ import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.TreeParser;
+import com.apicatalog.web.media.MediaType;
 
 /**
  * A {@link DocumentLoader} that resolves JSON-LD documents from an in-memory
@@ -125,11 +126,13 @@ public final class StaticLoader implements DocumentLoader {
 
         private final Map<URI, Document> resources;
         private DocumentLoader loader;
+        private MediaType contentType;
         private TreeParser parser;
 
         Builder(Map<URI, Document> resources, DocumentLoader loader) {
             this.resources = new LinkedHashMap<>(resources);
             this.loader = loader;
+            this.contentType = null;
             this.parser = null;
         }
 
@@ -159,26 +162,34 @@ public final class StaticLoader implements DocumentLoader {
         /**
          * Registers a JSON-LD structure for the given URI (string form).
          *
-         * @param url  the document URI
-         * @param node the parsed JSON-LD node
+         * @param url         the document URI
+         * @param contentType
+         * @param node        the parsed JSON-LD node
          * @return this builder instance
          */
-        public Builder node(String url, TreeIO node) {
-            return node(URI.create(url), node);
+        Builder node(String url, MediaType contentType, TreeIO node) {
+            return node(URI.create(url), contentType, node);
         }
 
         /**
          * Registers a JSON-LD structure for the given URI.
          *
-         * @param url  the document URI
-         * @param node the parsed JSON-LD node
+         * @param url         the document URI
+         * @param contentType
+         * @param node        the parsed JSON-LD node
          * @return this builder instance
          */
-        public Builder node(URI url, TreeIO node) {
-            resources.put(url, Document.of(node, url));
+        Builder node(URI url, MediaType contentType, TreeIO node) {
+            resources.put(url, Document.of(node, contentType, url));
             return this;
         }
-        
+
+        public Builder parser(MediaType contentType, TreeParser parser) {
+            this.contentType = contentType;
+            this.parser = parser;
+            return this;
+        }
+
         public Builder parser(TreeParser parser) {
             this.parser = parser;
             return this;
@@ -189,20 +200,26 @@ public final class StaticLoader implements DocumentLoader {
          * Note: a parser must be set with {@code #parser(TreeParser)} method.
          * 
          * @param url
-         * @param resource an absolute classpath starting with '/' pointing to a resource
+         * @param resource an absolute classpath starting with '/' pointing to a
+         *                 resource
          * @return
          */
         public Builder classpath(String url, String resource) {
             try (final var is = StaticLoader.class.getResourceAsStream(resource)) {
 
-                return node(url, parser.parse(is));
+                return node(
+                        url,
+                        contentType != null
+                                ? contentType
+                                : FileLoader.fromFileExtension(resource), // detect media type
+                        parser.parse(is));
 
             } catch (IOException | TreeIOException e) {
                 LOGGER.log(Level.SEVERE, "An error [{0}] during loading static context [{1}]", new Object[] { e.getMessage(), resource });
             }
             return this;
         }
-        
+
         public Builder classpath(Map<String, String> resources) {
             resources.forEach(this::classpath);
             return this;

@@ -18,6 +18,7 @@ package com.apicatalog.jsonld.loader;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
@@ -26,20 +27,26 @@ public final class UriRewriter implements DocumentLoader {
 
     private final Map<URI, URI> rewrite;
 
+    private final Map<String, String> rebase;
+
     private final DocumentLoader loader;
 
-    private UriRewriter(Map<URI, URI> rewrite, final DocumentLoader loader) {
+    private UriRewriter(
+            Map<URI, URI> rewrite,
+            Map<String, String> rebase,
+            final DocumentLoader loader) {
         this.rewrite = rewrite;
+        this.rebase = rebase;
         this.loader = loader;
     }
 
     /** Creates a builder. */
     public static final Builder newBuilder(DocumentLoader loader) {
-        return new Builder(Map.of(), loader);
+        return new Builder(Map.of(), Map.of(), loader);
     }
 
-    public static final Builder copyOf(UriRewriter loader) {
-        return new Builder(loader.rewrite, loader.loader);
+    public static final Builder copyOf(UriRewriter rewriter) {
+        return new Builder(rewriter.rewrite, rewriter.rebase, rewriter.loader);
     }
 
     @Override
@@ -48,31 +55,80 @@ public final class UriRewriter implements DocumentLoader {
         final var target = rewrite.get(url);
 
         if (target != null) {
-            return loader.loadDocument(target, options);
+
+            var document = loader.loadDocument(target, options);
+
+            // update URL
+            if (document != null && document.url() != null && target.equals(document.url())) {
+                return Document.of(
+                        document.content(),
+                        document.contentType(),
+                        document.profile(),
+                        url,
+                        document.context());
+            }
+            return document;
         }
 
+        Entry<String, String> base = null;
+
+        for (var entry : rebase.entrySet()) {
+            if (url.toString().startsWith(entry.getKey())) {
+                base = entry;
+                break;
+            }
+        }
+
+        if (base != null) {
+
+            final var relativeTarget = url.toString().substring(base.getKey().length());
+
+            var document = loader.loadDocument(URI.create(base.getValue() + relativeTarget), options);
+
+            // update URL
+            if (document != null && document.url() != null && document.url().toString().startsWith(base.getValue())) {
+
+                final var relativeSource = document.url().toString().substring(base.getValue().length());
+
+                return Document.of(
+                        document.content(),
+                        document.contentType(),
+                        document.profile(),
+                        URI.create(base.getKey() + relativeSource),
+                        document.context());
+            }
+
+            return document;
+        }
         return loader.loadDocument(url, options);
     }
 
     public static final class Builder {
 
         private final Map<URI, URI> rewrite;
+        private final Map<String, String> rebase;
         private DocumentLoader loader;
 
-        Builder(Map<URI, URI> resources, DocumentLoader loader) {
+        Builder(Map<URI, URI> resources, Map<String, String> rebase, DocumentLoader loader) {
             this.rewrite = new LinkedHashMap<>(resources);
+            this.rebase = new LinkedHashMap<>(rebase);
             this.loader = loader;
         }
 
-        public Builder map(String from, String to) {
-            return map(URI.create(from), URI.create(to));
+        public Builder rewrite(String from, String to) {
+            return rewrite(URI.create(from), URI.create(to));
         }
 
-        public Builder map(URI from, URI to) {
+        public Builder rewrite(URI from, URI to) {
             rewrite.put(from, to);
             return this;
         }
-        
+
+        public Builder rebase(String from, String to) {
+            rebase.put(from, to);
+            return this;
+        }
+
         public Builder loader(DocumentLoader loader) {
             this.loader = loader;
             return this;
@@ -80,7 +136,10 @@ public final class UriRewriter implements DocumentLoader {
 
         /** Builds an immutable {@link UriRewriter} instance. */
         public UriRewriter build() {
-            return new UriRewriter(Map.copyOf(rewrite), loader);
+            return new UriRewriter(
+                    Map.copyOf(rewrite),
+                    Map.copyOf(rebase),
+                    loader);
         }
     }
 }

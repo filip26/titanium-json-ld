@@ -31,7 +31,7 @@ import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.SuiteEvironment;
-import com.apicatalog.jsonld.loader.UriBaseRewriter;
+import com.apicatalog.jsonld.loader.UriRewriter;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.MockServer;
 import com.apicatalog.jsonld.test.TestCase;
@@ -73,10 +73,9 @@ public class RemoteTest {
                 Options expandOptions = Options.copyOf(options);
 
                 expandOptions.loader(
-                        new UriBaseRewriter(
-                                TestManifest.TESTS_BASE,
-                                server.baseUrl(),
-                                JakartaTestSuite.HTTP_LOADER));
+                        UriRewriter.newBuilder(JakartaTestSuite.HTTP_LOADER)
+                                .rebase(TestManifest.TESTS_BASE, server.baseUrl())
+                                .build());
 
                 return JsonLd.expand(testCase.input, expandOptions);
             });

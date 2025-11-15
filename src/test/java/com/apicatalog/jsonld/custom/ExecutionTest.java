@@ -41,6 +41,7 @@ import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.StaticLoader;
 import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.jsonld.processor.Execution.KeyTypeMapper;
@@ -50,10 +51,18 @@ import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.web.media.MediaType;
 
 import jakarta.json.JsonWriter;
 
 class ExecutionTest {
+
+    static final DocumentLoader UTOPIA_LOADER = StaticLoader.newBuilder()
+            .parser(MediaType.JSON_LD, JakartaTestSuite.PARSER)
+            .classpath("https://www.w3.org/ns/credentials/v2", "/com/apicatalog/jsonld/loader/credentials-v2.jsonld")
+            .classpath("https://w3id.org/vc-barcodes/v1", "/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld")
+            .classpath("https://w3id.org/utopia/v2", "/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld")
+            .build();
 
     @Test
     void testExpandTimeout() {
@@ -70,23 +79,16 @@ class ExecutionTest {
                         "/com/apicatalog/jsonld/test/vc-utopia-terms.json"),
                 Arguments.of(
                         "/com/apicatalog/jsonld/test/vc-utopia-2.jsonld",
-                        "/com/apicatalog/jsonld/test/vc-utopia-terms-2.json")
-                );
+                        "/com/apicatalog/jsonld/test/vc-utopia-terms-2.json"));
     }
-    
+
     @ParameterizedTest
     @MethodSource("contextKeysCases")
     void testContextKeyCollector(String input, String output) throws JsonLdException, TreeIOException, IOException {
 
         var document = read(input);
 
-        var loader = StaticLoader.newBuilder()
-                .node("https://www.w3.org/ns/credentials/v2", read("/com/apicatalog/jsonld/loader/credentials-v2.jsonld"))
-                .node("https://w3id.org/vc-barcodes/v1", read("/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld"))
-                .node("https://w3id.org/utopia/v2", read("/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld"))
-                .build();
-
-        var options = Options.with(loader);
+        var options = Options.with(UTOPIA_LOADER);
 
         var keys = new ArrayList<Collection<String>>();
 
@@ -115,7 +117,7 @@ class ExecutionTest {
             }
             System.out.println(out);
         }
-        
+
         assertTrue(match);
     }
 
@@ -126,8 +128,7 @@ class ExecutionTest {
                         "/com/apicatalog/jsonld/test/vc-utopia-typemap.json"),
                 Arguments.of(
                         "/com/apicatalog/jsonld/test/vc-utopia-2.jsonld",
-                        "/com/apicatalog/jsonld/test/vc-utopia-typemap-2.json")
-                );
+                        "/com/apicatalog/jsonld/test/vc-utopia-typemap-2.json"));
     }
 
     @ParameterizedTest
@@ -136,13 +137,7 @@ class ExecutionTest {
 
         var document = read(input);
 
-        var loader = StaticLoader.newBuilder()
-                .node("https://www.w3.org/ns/credentials/v2", read("/com/apicatalog/jsonld/loader/credentials-v2.jsonld"))
-                .node("https://w3id.org/vc-barcodes/v1", read("/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld"))
-                .node("https://w3id.org/utopia/v2", read("/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld"))
-                .build();
-
-        var options = Options.with(loader);
+        var options = Options.with(UTOPIA_LOADER);
 
         var typeMap = new LinkedHashMap<String, Object>();
 
@@ -158,7 +153,7 @@ class ExecutionTest {
             public void onBeginMap(String key) {
                 var map = new LinkedHashMap<String, Object>();
                 stack.peek().put(key, map);
-                stack.push(map);                    
+                stack.push(map);
 
             }
 

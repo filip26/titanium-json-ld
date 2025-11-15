@@ -28,7 +28,7 @@ import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.SuiteEvironment;
-import com.apicatalog.jsonld.loader.UriBaseRewriter;
+import com.apicatalog.jsonld.loader.UriRewriter;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.jsonld.test.EarlRunner;
 import com.apicatalog.jsonld.test.MockServer;
@@ -46,9 +46,9 @@ public class EarlGenerator {
     public static final String RELEASE_DATE = "2025-10-19";
 
     public static void main(String[] args) throws JsonLdException, IOException {
-        
+
         SuiteEvironment.LOADER = new ZipResourceLoader(JakartaTestSuite.PARSER);
-        
+
         (new EarlGenerator()).generate(Paths.get(FILE_NAME));
     }
 
@@ -194,10 +194,10 @@ public class EarlGenerator {
                                 final var expandOptions = Options.copyOf(options);
 
                                 expandOptions.loader(
-                                        new UriBaseRewriter(
-                                                TestManifest.TESTS_BASE,
-                                                server.baseUrl(),
-                                                JakartaTestSuite.HTTP_LOADER));
+                                        UriRewriter.newBuilder(JakartaTestSuite.HTTP_LOADER)
+                                                .rebase(TestManifest.TESTS_BASE,
+                                                        server.baseUrl())
+                                                .build());
 
                                 return JsonLd.expand(testCase.input, expandOptions);
                             });
