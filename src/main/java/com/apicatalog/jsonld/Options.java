@@ -942,7 +942,8 @@ public final class Options {
         return useInlineContexts;
     }
 
-    public void useInlineContexts(boolean useInlineContext) {
+    public Options useInlineContexts(boolean useInlineContext) {
         this.useInlineContexts = useInlineContext;
+        return this;
     }
 }

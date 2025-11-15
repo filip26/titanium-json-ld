@@ -41,6 +41,15 @@ public class Execution {
         void increment() throws JsonLdException;
     }
 
+    public interface KeyTypeMapper {
+
+        void onBeginMap(String key);
+
+        void onKeyType(String key, String type);
+
+        void onEndMap();
+    }
+    
     protected Consumer<Collection<String>> contextKeyCollector;
     protected KeyTypeMapper keyTypeMapper;
     protected Counter nodeCounter;
@@ -207,15 +216,6 @@ public class Execution {
                 throw new JsonLdException(ErrorCode.PROCESSING_TIMEOUT_EXCEEDED);
             }
         }
-    }
-
-    public interface KeyTypeMapper {
-
-        void onBeginMap(String key);
-        
-        void onKeyType(String key, String id);
-        
-        void onEndMap();
     }
 
 //    /**
