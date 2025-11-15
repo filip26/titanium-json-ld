@@ -42,7 +42,7 @@ public class Execution {
     }
 
     protected Consumer<Collection<String>> contextKeyCollector;
-    protected KeyTypeMapper keyTypeMapper;
+    protected TypeMapper keyTypeMapper;
     protected Counter nodeCounter;
     protected Counter ttl;
 
@@ -113,19 +113,20 @@ public class Execution {
         }
     }
 
-    public void onProperty(String key, String type) throws JsonLdException {
+    public void onTypeMapping(String key, String type) throws JsonLdException {
         if (keyTypeMapper != null) {
             keyTypeMapper.mapProperty(key, type);
         }
     }
 
+    @Deprecated
     public void onProperty(String key, String type, String id) {
         if (keyTypeMapper != null) {
             keyTypeMapper.mapProperty(key, type, id);
         }
     }
     
-    public Execution keyTypeMapper(KeyTypeMapper keyTypeMapper) {
+    public Execution keyTypeMapper(TypeMapper keyTypeMapper) {
         this.keyTypeMapper = keyTypeMapper;
         return this;
     }

@@ -44,7 +44,7 @@ import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.StaticLoader;
 import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.jsonld.processor.Expander;
-import com.apicatalog.jsonld.processor.KeyTypeMapper;
+import com.apicatalog.jsonld.processor.TypeMapper;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.TreeIOException;
@@ -146,7 +146,7 @@ class ExecutionTest {
 
         var typeMap = new LinkedHashMap<String, Object>();
 
-        var typeMapper = new KeyTypeMapper() {
+        var typeMapper = new TypeMapper() {
 
             Deque<Map<String, Object>> stack = new ArrayDeque<>();
 
@@ -156,24 +156,38 @@ class ExecutionTest {
 
             @Override
             public void beginMap(String key) {
+                System.out.println("B > " + key + "; " + stack);
+
+                if (stack.peek().containsKey(key)) {
+                    var map = new LinkedHashMap<String, Object>();
+                    stack.peek().put(key, map);
+                    stack.push(map);                    
+                    
+                    return;
+                }
                 var map = new LinkedHashMap<String, Object>();
                 stack.peek().put(key, map);
-                stack.push(map);
+                stack.push(map);                    
+
             }
 
             @Override
             public void endMap() {
+                System.out.println("E > " + stack);
                 stack.pop();
             }
 
             @Override
             public void mapProperty(String key, String id) {
+                System.out.println("X1 " + key + " -> " + id  + "; " + stack);
                 stack.peek().put(key, id);
             }
 
             @SuppressWarnings("unchecked")
             @Override
             public void mapProperty(String key, String type, String value) {
+                
+                System.out.println("X2 " + key + " -> " + type + " = " + value + "; " + stack);
                 ((Map<String, Object>) stack.peek()
                         .computeIfAbsent(key, (k) -> new LinkedHashMap<String, Object>()))
                         .put(type, value);

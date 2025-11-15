@@ -119,12 +119,12 @@ final class ObjectExpansion1314 {
             // 13.4. If expanded property is a keyword:
             if (Keywords.contains(expandedProperty)) {
 
-                params.runtime().onProperty(key, expandedProperty);
+                params.runtime().onTypeMapping(key, expandedProperty);
 
                 final var value = adapter.property(key, element);
 
                 keyword(activeContext, value, adapter, activeProperty, key, expandedProperty);
-                
+
                 // 13.4.17
                 continue;
             }
@@ -133,11 +133,11 @@ final class ObjectExpansion1314 {
 
             // 13.5.
             final var keyTermDefinition = activeContext.findTerm(key);
-            
+
             final var typeMapping = keyTermDefinition.map(TermDefinition::getTypeMapping).orElse(null);
-            
+
             if (typeMapping != null) {
-                params.runtime().onProperty(key, typeMapping);
+                params.runtime().onTypeMapping(key, typeMapping);
             }
 
             final var containerMapping = keyTermDefinition
@@ -146,7 +146,7 @@ final class ObjectExpansion1314 {
 
             final var value = adapter.property(key, element);
             Object expandedValue = null;
-            
+
             // 13.6.
             if (keyTermDefinition
                     .map(TermDefinition::getTypeMapping)
@@ -407,7 +407,7 @@ final class ObjectExpansion1314 {
                         key,
                         params);
             }
-System.out.println("EXP VALUE " + expandedValue + ", "  + key + ", " + activeProperty);
+
             // 13.10.
             if (expandedValue == null) {
                 continue;
@@ -520,9 +520,9 @@ System.out.println("EXP VALUE " + expandedValue + ", "  + key + ", " + activePro
 
     private void keyword(
             final Context activeContext,
-            final Object value, 
+            final Object value,
             final TreeAdapter adapter,
-            final String activeProperty, 
+            final String activeProperty,
             final String key,
             final String expandedProperty) throws JsonLdException {
 
@@ -597,7 +597,7 @@ System.out.println("EXP VALUE " + expandedValue + ", "  + key + ", " + activePro
                         .expand(adapter.asString(value));
 
 //                params.runtime().onProperty(key, Keywords.ID, (String)expandedValue);
-                
+
                 if (params.frameExpansion() && expandedValue != null) {
                     expandedValue = List.of(expandedValue);
 
@@ -605,7 +605,7 @@ System.out.println("EXP VALUE " + expandedValue + ", "  + key + ", " + activePro
                     result.put(Keywords.ID, null);
                     return;
                 }
-                
+
             } else if (adapter.isMap(value)) {
 
                 expandedValue = List.of(Map.of());
@@ -1123,7 +1123,7 @@ System.out.println("EXP VALUE " + expandedValue + ", "  + key + ", " + activePro
             result.put(expandedProperty, expandedValue);
         }
     }
-    
+
     private void recurse(
             final Context context,
             final Object element,
