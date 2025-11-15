@@ -42,7 +42,7 @@ public class Execution {
     }
 
     protected Consumer<Collection<String>> contextKeyCollector;
-    protected TypeMapper keyTypeMapper;
+    protected KeyTypeMapper keyTypeMapper;
     protected Counter nodeCounter;
     protected Counter ttl;
 
@@ -97,7 +97,7 @@ public class Execution {
             nodeCounter.increment();
         }
         if (keyTypeMapper != null) {
-            keyTypeMapper.beginMap(parentKey);
+            keyTypeMapper.onBeginMap(parentKey);
         }
     }
 
@@ -109,24 +109,17 @@ public class Execution {
     public void onEndMap(String parentKey) throws JsonLdException {
         // hook for extensions or instrumentation
         if (keyTypeMapper != null) {
-            keyTypeMapper.endMap();
+            keyTypeMapper.onEndMap();
         }
     }
 
-    public void onTypeMapping(String key, String type) throws JsonLdException {
+    public void onKeyType(String key, String type) throws JsonLdException {
         if (keyTypeMapper != null) {
-            keyTypeMapper.mapProperty(key, type);
+            keyTypeMapper.onKeyType(key, type);
         }
     }
 
-    @Deprecated
-    public void onProperty(String key, String type, String id) {
-        if (keyTypeMapper != null) {
-            keyTypeMapper.mapProperty(key, type, id);
-        }
-    }
-    
-    public Execution keyTypeMapper(TypeMapper keyTypeMapper) {
+    public Execution keyTypeMapper(KeyTypeMapper keyTypeMapper) {
         this.keyTypeMapper = keyTypeMapper;
         return this;
     }
@@ -216,6 +209,14 @@ public class Execution {
         }
     }
 
+    public interface KeyTypeMapper {
+
+        void onBeginMap(String key);
+        
+        void onKeyType(String key, String id);
+        
+        void onEndMap();
+    }
 
 //    /**
 //     * Resume ticker, a next ping decreases remaining time if timeout is set. Is

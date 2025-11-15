@@ -4,25 +4,13 @@
     "credentialSubject":{
         "type":"@type"
     },
-    "issuer":{
-        "@id" :"did:key:zDnaeZSD9XcuULaS8qmgDUa6TMg2QjF9xABnZK42awDH3BEzj",
-        "@type":"@id"
-    },
+    "issuer":"@id",
     "proof":{
         "id": "@id",
         "type":"@type",
-        "cryptosuite":{
-            "@type":"https://w3id.org/security#cryptosuiteString"
-        },
-        "proofPurpose":{
-            "@type":"@vocab"
-        },
-        "proofValue":{
-            "@type":"https://w3id.org/security#multibase"
-        },
-        "verificationMethod":{
-            "@id": "did:key:zDnaeZSD9XcuULaS8qmgDUa6TMg2QjF9xABnZK42awDH3BEzj#zDnaeZSD9XcuULaS8qmgDUa6TMg2QjF9xABnZK42awDH3BEzj",
-            "@type":"@id"
-        }
+        "cryptosuite":"https://w3id.org/security#cryptosuiteString",
+        "proofPurpose":"@vocab",
+        "proofValue": "https://w3id.org/security#multibase",
+        "verificationMethod":"@id"
     }
 }

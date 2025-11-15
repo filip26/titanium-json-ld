@@ -119,7 +119,7 @@ final class ObjectExpansion1314 {
             // 13.4. If expanded property is a keyword:
             if (Keywords.contains(expandedProperty)) {
 
-                params.runtime().onTypeMapping(key, expandedProperty);
+                params.runtime().onKeyType(key, expandedProperty);
 
                 final var value = adapter.property(key, element);
 
@@ -137,7 +137,7 @@ final class ObjectExpansion1314 {
             final var typeMapping = keyTermDefinition.map(TermDefinition::getTypeMapping).orElse(null);
 
             if (typeMapping != null) {
-                params.runtime().onTypeMapping(key, typeMapping);
+                params.runtime().onKeyType(key, typeMapping);
             }
 
             final var containerMapping = keyTermDefinition

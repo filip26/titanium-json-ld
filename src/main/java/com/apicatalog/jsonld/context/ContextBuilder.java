@@ -192,7 +192,7 @@ public final class ContextBuilder {
             // 5.3. If context is not a map, an invalid local context error has been
             // detected and processing is aborted.
             if (!adapter.isMap(itemContext)) {
-                throw new JsonLdException(ErrorCode.INVALID_LOCAL_CONTEXT);
+                throw new JsonLdException(ErrorCode.INVALID_LOCAL_CONTEXT, "A context must be a map, context=" + itemContext);
             }
 
             if (collectKeys != null) {
