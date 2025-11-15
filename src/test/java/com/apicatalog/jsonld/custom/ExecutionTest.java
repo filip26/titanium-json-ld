@@ -44,7 +44,7 @@ import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.StaticLoader;
 import com.apicatalog.jsonld.processor.Execution;
-import com.apicatalog.jsonld.processor.Execution.KeyTypeMapper;
+import com.apicatalog.jsonld.processor.Execution.TypeMapper;
 import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.tree.io.TreeIO;
@@ -141,7 +141,7 @@ class ExecutionTest {
 
         var typeMap = new LinkedHashMap<String, Object>();
 
-        var typeMapper = new KeyTypeMapper() {
+        var typeMapper = new TypeMapper() {
 
             Deque<Map<String, Object>> stack = new ArrayDeque<>();
 
@@ -163,7 +163,7 @@ class ExecutionTest {
             }
 
             @Override
-            public void onKeyType(String key, String id) {
+            public void onType(String key, String id) {
                 stack.peek().put(key, id);
             }
         };

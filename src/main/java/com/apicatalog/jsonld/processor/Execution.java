@@ -41,17 +41,27 @@ public class Execution {
         void increment() throws JsonLdException;
     }
 
-    public interface KeyTypeMapper {
+    public interface TypeMapper {
 
         void onBeginMap(String key);
 
-        void onKeyType(String key, String type);
+        void onType(String key, String type);
+
+        void onEndMap();
+    }
+    
+    public interface TermMapper {
+
+        void onBeginMap(String key);
+
+        void onTerm(String key, String uri);
 
         void onEndMap();
     }
     
     protected Consumer<Collection<String>> contextKeyCollector;
-    protected KeyTypeMapper keyTypeMapper;
+    protected TypeMapper typeMapper;
+    protected TermMapper termMapper;
     protected Counter nodeCounter;
     protected Counter ttl;
 
@@ -105,8 +115,11 @@ public class Execution {
         if (nodeCounter != null) {
             nodeCounter.increment();
         }
-        if (keyTypeMapper != null) {
-            keyTypeMapper.onBeginMap(parentKey);
+        if (termMapper != null) {
+            termMapper.onBeginMap(parentKey);
+        }        
+        if (typeMapper != null) {
+            typeMapper.onBeginMap(parentKey);
         }
     }
 
@@ -117,19 +130,29 @@ public class Execution {
      */
     public void onEndMap(String parentKey) throws JsonLdException {
         // hook for extensions or instrumentation
-        if (keyTypeMapper != null) {
-            keyTypeMapper.onEndMap();
+        if (typeMapper != null) {
+            typeMapper.onEndMap();
+        }
+        if (termMapper != null) {
+            termMapper.onEndMap();
         }
     }
 
-    public void onKeyType(String key, String type) throws JsonLdException {
-        if (keyTypeMapper != null) {
-            keyTypeMapper.onKeyType(key, type);
+    public void onTerm(String key, String uri) {
+        if (termMapper != null) {
+            termMapper.onTerm(key, uri);
+        }
+        
+    }
+    
+    public void onType(String key, String type) throws JsonLdException {
+        if (typeMapper != null) {
+            typeMapper.onType(key, type);
         }
     }
 
-    public Execution keyTypeMapper(KeyTypeMapper keyTypeMapper) {
-        this.keyTypeMapper = keyTypeMapper;
+    public Execution keyTypeMapper(TypeMapper keyTypeMapper) {
+        this.typeMapper = keyTypeMapper;
         return this;
     }
 

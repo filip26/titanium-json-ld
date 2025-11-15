@@ -105,12 +105,14 @@ final class ObjectExpansion1314 {
                     throw new JsonLdException(ErrorCode.UNDEFINED_TERM,
                             "An undefined term has been found [" + key + "]. Change policy to Ignore or Warn or define the term in a context");
                 case Warn:
-                    LOGGER.log(Level.WARNING, "An undefined term has been found [{0}]", key);
+                    LOGGER.log(Level.WARNING, "An undefined term has been detected, term={0}", key);
 
                 case Ignore:
                     continue;
                 }
             }
+            
+            params.runtime().onTerm(key, expandedProperty);
 
 //TODO?            if (!Keywords.TYPE.equals(expandedProperty) && !Keywords.ID.equals(expandedProperty)) {
 //                params.runtime().onProperty(key, "@uri", expandedProperty);
@@ -119,7 +121,7 @@ final class ObjectExpansion1314 {
             // 13.4. If expanded property is a keyword:
             if (Keywords.contains(expandedProperty)) {
 
-                params.runtime().onKeyType(key, expandedProperty);
+                params.runtime().onType(key, expandedProperty);
 
                 final var value = adapter.property(key, element);
 
@@ -137,7 +139,7 @@ final class ObjectExpansion1314 {
             final var typeMapping = keyTermDefinition.map(TermDefinition::getTypeMapping).orElse(null);
 
             if (typeMapping != null) {
-                params.runtime().onKeyType(key, typeMapping);
+                params.runtime().onType(key, typeMapping);
             }
 
             final var containerMapping = keyTermDefinition
