@@ -24,7 +24,7 @@ import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.framing.Frame;
 import com.apicatalog.jsonld.fromrdf.QuadsToJsonLd;
 import com.apicatalog.jsonld.processor.Compactor;
-import com.apicatalog.jsonld.processor.Execution;
+import com.apicatalog.jsonld.processor.ExecutionEvents;
 import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.processor.Flattener;
 import com.apicatalog.jsonld.processor.Framer;
@@ -74,7 +74,7 @@ public final class JsonLd {
                         options.loader(),
                         options.isExtractAllScripts()),
                 options,
-                Execution.of(options).start());
+                ExecutionEvents.of(options).start());
     }
 
     /**
@@ -92,7 +92,7 @@ public final class JsonLd {
         return Expander.expand(
                 document,
                 options,
-                Execution.of(options).start());
+                ExecutionEvents.of(options).start());
     }
 
     /**
@@ -127,7 +127,7 @@ public final class JsonLd {
         return Expander.expand(
                 document,
                 options,
-                Execution.of(options).start());
+                ExecutionEvents.of(options).start());
     }
 
     /* --- COMPACT -- */
@@ -209,7 +209,7 @@ public final class JsonLd {
                 document,
                 context,
                 options,
-                Execution.of(options).start());
+                ExecutionEvents.of(options).start());
     }
 
     /**
@@ -227,7 +227,7 @@ public final class JsonLd {
             final TreeIO context,
             final Options options) throws JsonLdException {
 
-        final Execution runtime = Execution.of(options).start();
+        final ExecutionEvents runtime = ExecutionEvents.of(options).start();
 
         return Compactor.compact(
                 Compactor.expand(document, options, runtime),
@@ -280,7 +280,7 @@ public final class JsonLd {
                         options.isExtractAllScripts()),
                 null,
                 options,
-                Execution.of(options).start());
+                ExecutionEvents.of(options).start());
     }
 
     /**
@@ -306,7 +306,7 @@ public final class JsonLd {
                         ? Context.load(context, options.loader()).content()
                         : null,
                 options,
-                Execution.of(options).start());
+                ExecutionEvents.of(options).start());
     }
 
     /**
@@ -326,7 +326,7 @@ public final class JsonLd {
                 document,
                 null,
                 options,
-                Execution.of(options).start());
+                ExecutionEvents.of(options).start());
     }
 
     /**
@@ -346,7 +346,7 @@ public final class JsonLd {
                         ? context.content()
                         : null,
                 options,
-                Execution.of(options).start());
+                ExecutionEvents.of(options).start());
     }
 
     /**
@@ -452,7 +452,7 @@ public final class JsonLd {
                 document,
                 null,
                 options,
-                Execution.of(options).start());
+                ExecutionEvents.of(options).start());
     }
 
     /**
@@ -475,7 +475,7 @@ public final class JsonLd {
                 document,
                 context,
                 options,
-                Execution.of(options).start());
+                ExecutionEvents.of(options).start());
     }
 
     /* --- FRAME -- */
@@ -558,7 +558,7 @@ public final class JsonLd {
                 document,
                 frame,
                 options,
-                Execution.of(options).start());
+                ExecutionEvents.of(options).start());
     }
 
     /**
@@ -596,7 +596,7 @@ public final class JsonLd {
             final TreeIO frame,
             final Options options) throws JsonLdException {
 
-        final Execution runtime = Execution.of(options).start();
+        final ExecutionEvents runtime = ExecutionEvents.of(options).start();
 
         final var contextNode = Context.extract(frame);
 
@@ -655,7 +655,7 @@ public final class JsonLd {
                 document,
                 consumer,
                 options,
-                Execution.of(options).start());
+                ExecutionEvents.of(options).start());
     }
 
     /**
@@ -677,7 +677,7 @@ public final class JsonLd {
                 document,
                 consumer,
                 options,
-                Execution.of(options).start());
+                ExecutionEvents.of(options).start());
     }
 
     /**
@@ -698,7 +698,7 @@ public final class JsonLd {
                 new TreeIO(document, NativeAdapter.instance()),
                 consumer,
                 options,
-                Execution.of(options).start());
+                ExecutionEvents.of(options).start());
     }
 
     /* --- FROM RDF -- */

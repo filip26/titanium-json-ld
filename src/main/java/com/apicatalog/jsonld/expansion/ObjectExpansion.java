@@ -47,6 +47,7 @@ public final class ObjectExpansion {
     private final Params params;
 
     private Context activeContext;
+    private String term;
 
     public ObjectExpansion(
             final TreeIO propertyContext,
@@ -63,7 +64,7 @@ public final class ObjectExpansion {
     public Object expand(final Context context, final String property) throws JsonLdException {
 
         if (property != null) {
-            params.runtime().onBeginMap(property);
+            params.runtime().beginMap(term != null ? term : property);
         }
 
         activeContext = initPreviousContext(
@@ -115,7 +116,7 @@ public final class ObjectExpansion {
                 .expand(activeContext, element, adapter, property);
 
         if (property != null) {
-            params.runtime().onEndMap(property);
+            params.runtime().endMap(term != null ? term : property);
         }
 
         // 15.
@@ -153,15 +154,22 @@ public final class ObjectExpansion {
 
             boolean revert = true;
 
-            var it = adapter.keyStream(element).sorted(TreeIO.comparingElement(adapter::stringValue)).iterator();
+            final var it = adapter.keyStream(element)
+                    .map(adapter::stringValue)
+                    .sorted()
+                    .iterator();
 
             while (it.hasNext()) {
 
                 params.runtime().tick();
 
-                var key = adapter.stringValue(it.next());
+                final var key = it.next();
 
-                final String expandedKey = UriExpansion.with(context, params.options().loader(), params.runtime())
+                final var expandedKey = UriExpansion
+                        .with(
+                                context,
+                                params.options().loader(),
+                                params.runtime())
                         .vocab(true)
                         .expand(key);
 
@@ -185,17 +193,22 @@ public final class ObjectExpansion {
 
         final var typeKeys = adapter
                 .keyStream(element)
-                .sorted(TreeIO.comparingElement(adapter::asString))
+                .map(adapter::asString)
+                .sorted()
                 .iterator();
 
         // 11.
         while (typeKeys.hasNext()) {
 
-            final var key = adapter.asString(typeKeys.next());
+            final var key = typeKeys.next();
 
             params.runtime().tick();
 
-            var expandedKey = UriExpansion.with(activeContext, params.options().loader(), params.runtime())
+            var expandedKey = UriExpansion
+                    .with(
+                            activeContext,
+                            params.options().loader(),
+                            params.runtime())
                     .vocab(true)
                     .expand(key);
 
@@ -205,7 +218,7 @@ public final class ObjectExpansion {
                     typeKey = key;
                 }
 
-                params.runtime().onType(key, Keywords.TYPE);
+                params.runtime().type(key, Keywords.TYPE);
 
                 // 11.2
                 var terms = adapter.asStream(adapter.property(key, element))
@@ -399,5 +412,10 @@ public final class ObjectExpansion {
 
         }
         return result;
+    }
+
+    public ObjectExpansion term(String term) {
+        this.term = term;
+        return this;
     }
 }

@@ -1,0 +1,4 @@
+{
+    "dc11:title": "http://purl.org/dc/elements/1.1/title",
+    "ex:contains": "http://example.org/vocab#contains"
+}

@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.apicatalog.tree.io.TreeIO;
+
 /**
  * Represents a JSON-LD processing error.
  *
@@ -30,6 +32,9 @@ public final class JsonLdException extends Exception {
     private static final long serialVersionUID = -7548366490116267200L;
 
     private final ErrorCode code;
+    
+    // a node that caused the exception, if any
+    //TODO private final TreeIO value;
 
     /**
      * Creates a new {@code JsonLdException} with the specified error code.

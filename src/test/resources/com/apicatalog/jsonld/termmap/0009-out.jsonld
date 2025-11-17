@@ -1,0 +1,25 @@
+{
+    "@graph": [
+        {
+            "description": "http://purl.org/dc/elements/1.1/description",
+            "title": "http://purl.org/dc/elements/1.1/title"
+        },
+        {
+            "authored": "http://example.org/vocab#authored",
+            "name": "http://xmlns.com/foaf/0.1/name"
+        },
+        {
+            "name": "http://xmlns.com/foaf/0.1/name"
+        },
+        {
+            "contains": [
+                "http://example.org/vocab#contains",
+                {
+                    "contains": "http://example.org/vocab#contains",
+                    "contributor": "http://purl.org/dc/elements/1.1/contributor",
+                    "title": "http://purl.org/dc/elements/1.1/title"
+                }
+            ]
+        }
+    ]
+}

@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.processor;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
 
@@ -24,11 +25,11 @@ import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
 
 /**
- * A runtime execution context used during a transformation processing.
+ * A runtime execution events fired during a transformation processing.
  * 
  * @since 1.4.0
  */
-public class Execution {
+public class ExecutionEvents {
 
     @FunctionalInterface
     public interface Counter {
@@ -47,25 +48,34 @@ public class Execution {
 
         void onType(String key, String type);
 
-        void onEndMap();
+        void onEndMap(String key);
     }
     
+    @FunctionalInterface
     public interface TermMapper {
 
-        void onBeginMap(String key);
+        default void onBeginMap(String key) {};
 
         void onTerm(String key, String uri);
 
-        void onEndMap();
+        default void onEndMap(String key) {};
     }
     
+    private final Collection<Consumer<String>> onBeginMap = new ArrayList<>();
+//    public final List<Consumer<String>> onEndMap = new ArrayList<>();
+//
+//    public final List<BiConsumer<String, String>> onTerm = new ArrayList<>();
+//    public final List<BiConsumer<String, String>> onType = new ArrayList<>();
+//
+//    public final List<Consumer<Collection<String>>> onContextKeys = new ArrayList<>();
+//    
     protected Consumer<Collection<String>> contextKeyCollector;
     protected TypeMapper typeMapper;
     protected TermMapper termMapper;
     protected Counter nodeCounter;
     protected Counter ttl;
 
-    protected Execution(
+    protected ExecutionEvents(
             Counter ttl,
             Counter nodeCounter,
             Consumer<Collection<String>> contextKeyCollector) {
@@ -74,8 +84,8 @@ public class Execution {
         this.contextKeyCollector = contextKeyCollector;
     }
 
-    public static Execution of(Options options) {
-        return new Execution(
+    public static ExecutionEvents of(Options options) {
+        return new ExecutionEvents(
                 options.timeout() != null
                         ? new Ticker(options.timeout())::tick
                         : null,
@@ -99,7 +109,7 @@ public class Execution {
         }
     }
 
-    public Execution start() throws JsonLdException {
+    public ExecutionEvents start() throws JsonLdException {
         if (ttl != null) {
             ttl.increment();
         }
@@ -111,7 +121,13 @@ public class Execution {
      * 
      * @param parentKey
      */
-    public void onBeginMap(String parentKey) throws JsonLdException {
+    public void beginMap(String parentKey) throws JsonLdException {
+        System.out.println("> map " + parentKey);
+        if (onBeginMap != null) {
+            for (final var begin : onBeginMap) {
+
+            }
+        }
         if (nodeCounter != null) {
             nodeCounter.increment();
         }
@@ -128,30 +144,37 @@ public class Execution {
      * 
      * @param parentKey
      */
-    public void onEndMap(String parentKey) throws JsonLdException {
+    public void endMap(String parentKey) throws JsonLdException {
+        System.out.println("< map " + parentKey);
         // hook for extensions or instrumentation
         if (typeMapper != null) {
-            typeMapper.onEndMap();
+            typeMapper.onEndMap(parentKey);
         }
         if (termMapper != null) {
-            termMapper.onEndMap();
+            termMapper.onEndMap(parentKey);
         }
     }
 
-    public void onTerm(String key, String uri) {
+    public void term(String key, String uri) {
         if (termMapper != null) {
+            System.out.println("term " + key + " -> " + uri);
             termMapper.onTerm(key, uri);
         }
-        
     }
-    
-    public void onType(String key, String type) throws JsonLdException {
+
+    public ExecutionEvents termMapper(TermMapper termMapper) {
+        this.termMapper = termMapper;
+        return this;
+    }
+
+    public void type(String key, String type) throws JsonLdException {
         if (typeMapper != null) {
             typeMapper.onType(key, type);
         }
     }
 
-    public Execution keyTypeMapper(TypeMapper keyTypeMapper) {
+    public ExecutionEvents keyTypeMapper(TypeMapper keyTypeMapper) {
+        this.onBeginMap.add(keyTypeMapper::onBeginMap);
         this.typeMapper = keyTypeMapper;
         return this;
     }
@@ -159,9 +182,12 @@ public class Execution {
     /**
      * Event fired when a new context key is encountered.
      * 
+     * use beginMap(@context)
+     * 
      * @param keys
      */
     public void onContextKeys(Collection<String> keys) {
+        System.out.println("ctx keys > " + keys);
         if (contextKeyCollector != null) {
             contextKeyCollector.accept(keys);
         }
@@ -171,11 +197,16 @@ public class Execution {
         return contextKeyCollector != null;
     }
 
-    public Execution contextKeyCollector(Consumer<Collection<String>> consumer) {
+    public ExecutionEvents contextKeyCollector(Consumer<Collection<String>> consumer) {
         this.contextKeyCollector = consumer;
         return this;
     }
 
+    public ExecutionEvents undefinedTermCollector(Consumer<String> collector) {
+        
+        return this;
+    }
+    
     /**
      * A counter that tracks the number of processed nodes and enforces a maximum
      * limit.

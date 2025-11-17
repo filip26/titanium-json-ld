@@ -1,0 +1,16 @@
+{
+
+  "http://example.org/test#property1": [
+    "http://example.org/test#property1",
+  {
+    "http://example.org/test#property4": "http://example.org/test#property4",
+    "uri": "@id" 
+  }],
+  "http://example.org/test#property2": "http://example.org/test#property2",
+  "http://example.org/test#property3": [
+    "http://example.org/test#property3",
+    {
+    "uri": "@id"
+  }],
+  "uri": "@id"
+}

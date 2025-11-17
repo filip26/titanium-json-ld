@@ -36,7 +36,7 @@ import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.processor.Execution;
+import com.apicatalog.jsonld.processor.ExecutionEvents;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.TreeIOException;
@@ -61,7 +61,7 @@ public final class ContextBuilder {
     // mandatory
     private final ActiveContext activeContext;
     private final DocumentLoader loader;
-    private final Execution runtime;
+    private final ExecutionEvents runtime;
 
     // optional
     private Collection<String> remoteContexts;
@@ -79,7 +79,7 @@ public final class ContextBuilder {
     // runtime
     private ActiveContext result;
 
-    private ContextBuilder(final ActiveContext activeContext, final DocumentLoader loader, final Execution runtime) {
+    private ContextBuilder(final ActiveContext activeContext, final DocumentLoader loader, final ExecutionEvents runtime) {
 
         this.activeContext = activeContext;
         this.loader = loader;
@@ -100,7 +100,7 @@ public final class ContextBuilder {
     public static final ContextBuilder with(
             final ActiveContext activeContext,
             final DocumentLoader loader,
-            final Execution runtime) {
+            final ExecutionEvents runtime) {
         return new ContextBuilder(activeContext, loader, runtime);
     }
 

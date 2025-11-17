@@ -28,7 +28,7 @@ import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LdAdapter;
-import com.apicatalog.jsonld.processor.Execution;
+import com.apicatalog.jsonld.processor.ExecutionEvents;
 import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
@@ -47,7 +47,7 @@ public final class Expansion {
             boolean fromMap,
             URI baseUrl,
             Options options,
-            Execution runtime) {
+            ExecutionEvents runtime) {
 
         /**
          * The {@code frameExpansion} flag.
@@ -77,6 +77,7 @@ public final class Expansion {
             final Object node,
             final TreeAdapter nodeAdapter,
             final String activeProperty,
+            final String term,
             final Params params) throws JsonLdException {
 
         // 1. If element is null, return null
@@ -88,7 +89,7 @@ public final class Expansion {
 
         // 5. If element is an array,
         if (nodeType == NodeType.COLLECTION) {
-            return array(activeContext, node, nodeAdapter, activeProperty, params);
+            return array(activeContext, node, nodeAdapter, activeProperty, term, params);
         }
 
         // 3. If active property has a term definition in active context with a local
@@ -131,6 +132,7 @@ public final class Expansion {
                         params.baseUrl,
                         params.options,
                         params.runtime))
+                .term(term)
                 .expand(activeContext, activeProperty);
     }
 
@@ -240,6 +242,7 @@ public final class Expansion {
             final Object node,
             final TreeAdapter nodeAdapter,
             final String property,
+            final String term,
             final Params params) throws JsonLdException {
 
         if (nodeAdapter.isEmptyCollection(node)) {
@@ -254,7 +257,7 @@ public final class Expansion {
             params.runtime().tick();
 
             // 5.2.1
-            var expanded = expand(context, item, nodeAdapter, property, params);
+            var expanded = expand(context, item, nodeAdapter, property, term, params);
 
             // 5.2.2
             if (expanded instanceof Collection<?> list

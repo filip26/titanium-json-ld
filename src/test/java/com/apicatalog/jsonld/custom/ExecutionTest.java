@@ -40,11 +40,13 @@ import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.StaticLoader;
-import com.apicatalog.jsonld.processor.Execution;
-import com.apicatalog.jsonld.processor.Execution.TypeMapper;
+import com.apicatalog.jsonld.processor.ExecutionEvents;
+import com.apicatalog.jsonld.processor.ExecutionEvents.TermMapper;
+import com.apicatalog.jsonld.processor.ExecutionEvents.TypeMapper;
 import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.tree.io.TreeIO;
@@ -92,7 +94,7 @@ class ExecutionTest {
 
         var keys = new ArrayList<Collection<String>>();
 
-        var runtime = Execution.of(options);
+        var runtime = ExecutionEvents.of(options);
         runtime.contextKeyCollector(keys::add);
 
         var expanded = Expander.expand(document, options, runtime);
@@ -154,11 +156,10 @@ class ExecutionTest {
                 var map = new LinkedHashMap<String, Object>();
                 stack.peek().put(key, map);
                 stack.push(map);
-
             }
 
             @Override
-            public void onEndMap() {
+            public void onEndMap(String key) {
                 stack.pop();
             }
 
@@ -168,7 +169,7 @@ class ExecutionTest {
             }
         };
 
-        var runtime = Execution.of(options);
+        var runtime = ExecutionEvents.of(options);
         runtime.keyTypeMapper(typeMapper);
 
         var expanded = Expander.expand(document, options, runtime);
@@ -181,15 +182,85 @@ class ExecutionTest {
         if (!match) {
             var out = new StringWriter();
 
+            out.write("Expected\n");
+            try (final JsonWriter jsonWriter = JunitRunner.JSON_WRITER_FACTORY.createWriter(out)) {
+                jsonWriter.write(new JakartaMaterializer().node(expected));
+            }
+            out.flush();
+            out.write("\nActual\n");
+
             try (final JsonWriter jsonWriter = JunitRunner.JSON_WRITER_FACTORY.createWriter(out)) {
                 jsonWriter.write(new JakartaMaterializer().node(typeMap, NativeAdapter.instance()));
             }
+            
             System.out.println(out);
         }
 
         assertTrue(match);
     }
 
+    static Stream<Arguments> termMapCases() {
+        return Stream.of(
+                Arguments.of(
+                        "/com/apicatalog/jsonld/test/vc-utopia.jsonld",
+                        "/com/apicatalog/jsonld/test/vc-utopia-termmap.json"),
+                Arguments.of(
+                        "/com/apicatalog/jsonld/test/vc-utopia-2.jsonld",
+                        "/com/apicatalog/jsonld/test/vc-utopia-termmap-2.json"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("termMapCases")
+    void testTermMapper(String input, String output) throws JsonLdException, TreeIOException, IOException {
+
+        var document = read(input);
+
+        var options = Options.with(UTOPIA_LOADER);
+        
+        var termMap = new LinkedHashMap<String, Object>();
+
+        var termMapper = new TermMapper() {
+
+            Deque<Map<String, Object>> stack = new ArrayDeque<>();
+
+            {
+                stack.push(termMap);
+            }
+
+            @Override
+            public void onBeginMap(String key) {
+                var map = new LinkedHashMap<String, Object>();
+
+                var origin = stack.peek().get(key);
+                if (origin != null) {
+                    map.put(Keywords.ID, origin);
+                }
+                
+                stack.peek().put(key, map);
+                stack.push(map);
+            }
+
+            @Override
+            public void onEndMap(String key) {
+                stack.pop();
+            }
+
+            @Override
+            public void onTerm(String key, String uri) {
+                stack.peek().put(key, uri);
+            }
+        };
+
+        var runtime = ExecutionEvents.of(options);
+        runtime.termMapper(termMapper);
+
+        var expanded = Expander.expand(document, options, runtime);
+        assertNotNull(expanded);
+        
+        System.out.println("XXXX" + termMap);
+
+    }
+    
     private final TreeIO read(final String name) throws JsonLdException, TreeIOException, IOException {
         try (final var is = getClass().getResourceAsStream(name)) {
             return JakartaTestSuite.PARSER.parse(is);

@@ -1,0 +1,12 @@
+{
+    "know": [
+        "http://xmlns.com/foaf/0.1/knows",
+        { 
+            "homepage": "http://xmlns.com/foaf/0.1/homepage",
+            "name": "http://xmlns.com/foaf/0.1/name"
+        }, 
+        {
+            "homepage": "http://xmlns.com/foaf/0.1/homepage",
+            "name": "http://xmlns.com/foaf/0.1/name"
+        }]    
+}

@@ -53,7 +53,7 @@ public final class RdfEmitter {
             Document document, 
             RdfQuadConsumer consumer,
             final Options options,
-            final Execution runtime) throws JsonLdException {
+            final ExecutionEvents runtime) throws JsonLdException {
 
         RdfEmitter.toRdf(document, consumer, options, runtime);
     }
@@ -62,7 +62,7 @@ public final class RdfEmitter {
             final Document input, 
             final RdfQuadConsumer consumer, 
             final Options options,
-            final Execution runtime) throws JsonLdException {
+            final ExecutionEvents runtime) throws JsonLdException {
         final Options expansionOptions = Options.copyOf(options);
 
         expansionOptions.mode(options.mode());
@@ -78,7 +78,7 @@ public final class RdfEmitter {
             final TreeIO input,
             final RdfQuadConsumer consumer,
             final Options options,
-            final Execution runtime) throws JsonLdException {
+            final ExecutionEvents runtime) throws JsonLdException {
         
         final Options expansionOptions = Options.copyOf(options);
 
@@ -100,7 +100,7 @@ public final class RdfEmitter {
             final Collection<?> expanded,
             final RdfQuadConsumer consumer,
             final Options options,
-            final Execution runtime) throws JsonLdException {
+            final ExecutionEvents runtime) throws JsonLdException {
 
         JsonLdToQuads
                 .with(new NodeMapBuilder(expanded, new NodeMap()).build())

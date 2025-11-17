@@ -215,7 +215,7 @@ public class JunitRunner {
         }
     }
 
-    private boolean validateJsonLd(final TestCase testCase, final Options options, final Object result, final TreeAdapter resultAdapter) {
+    public static boolean validateJsonLd(final TestCase testCase, final Options options, final Object result, final TreeAdapter resultAdapter) {
 
         assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
 

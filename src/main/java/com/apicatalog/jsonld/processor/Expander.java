@@ -43,7 +43,7 @@ public final class Expander {
     public static final Collection<?> expand(
             final Document document,
             final Options options,
-            final Execution runtime) throws JsonLdException {
+            final ExecutionEvents runtime) throws JsonLdException {
 
         return Expander.expand(
                 document.content(),
@@ -60,7 +60,7 @@ public final class Expander {
     public static final Collection<?> expand(
             final TreeIO document,
             final Options options,
-            final Execution runtime) throws JsonLdException {
+            final ExecutionEvents runtime) throws JsonLdException {
 
         return Expander.expand(
                 document,
@@ -76,14 +76,14 @@ public final class Expander {
             final Context context,
             final URI baseUrl,
             final Options options,
-            final Execution runtime) throws JsonLdException {
+            final ExecutionEvents runtime) throws JsonLdException {
         return expand(node, context, baseUrl, false, options, runtime);
     }
 
     public static final Collection<?> expandFrame(
             final Document document,
             final Options options,
-            final Execution runtime) throws JsonLdException {
+            final ExecutionEvents runtime) throws JsonLdException {
 
         return Expander.expandFrame(
                 document.content(),
@@ -102,7 +102,7 @@ public final class Expander {
             final Context context,
             final URI baseUrl,
             final Options options,
-            final Execution runtime) throws JsonLdException {
+            final ExecutionEvents runtime) throws JsonLdException {
         return expand(node, context, baseUrl, true, options, runtime);
     }
 
@@ -110,7 +110,7 @@ public final class Expander {
             final URI document,
             final URI context,
             final Options options,
-            final Execution runtime) throws JsonLdException {
+            final ExecutionEvents runtime) throws JsonLdException {
 
         // 5. Initialize a new empty active context. The base IRI and
         // original base URL of the active context is set to the documentUrl
@@ -170,13 +170,14 @@ public final class Expander {
             final URI baseUrl,
             boolean frameExpansion,
             final Options options,
-            final Execution runtime) throws JsonLdException {
+            final ExecutionEvents runtime) throws JsonLdException {
 
         // 8.
         var expanded = Expansion.expand(
                 context,
                 node.node(),
                 node.adapter(),
+                null,
                 null,
                 new Params(frameExpansion, false, baseUrl, options, runtime));
 
