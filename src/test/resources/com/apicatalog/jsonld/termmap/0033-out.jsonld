@@ -1,12 +1,5 @@
-[{
-   "http://example.com/vocab#name": [{
-      "@value": "Markus Lanthaler"
-   }],
-   "http://example.com/vocab#homepage": [{
-      "@id": "http://www.markus-lanthaler.com/"
-   }],
-   "http://example.com/vocab#created_at": [{
-      "@value": "2012-10-28",
-      "@type": "http://www.w3.org/2001/XMLSchema#date"
-   }]
-}]
+{
+    "created_at": "http://example.com/vocab#created_at",
+    "homepage": "http://example.com/vocab#homepage",
+    "name": "http://example.com/vocab#name"
+}

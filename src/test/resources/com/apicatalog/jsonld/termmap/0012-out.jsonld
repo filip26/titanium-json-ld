@@ -12,14 +12,14 @@
             "foaf:name": "http://xmlns.com/foaf/0.1/name"
         },
         {
-            "ex:contains": {
-                "dc11:contributor": "http://purl.org/dc/elements/1.1/contributor",
-                "dc11:title": "http://purl.org/dc/elements/1.1/title",
-                "ex:contains": "http://example.org/vocab#contains"
-            },
-            "@terms": {
-                "ex:contains": "http://example.org/vocab#contains"
-            }
+            "ex:contains": [
+                "http://example.org/vocab#contains",
+                {
+                    "dc11:contributor": "http://purl.org/dc/elements/1.1/contributor",
+                    "dc11:title": "http://purl.org/dc/elements/1.1/title",
+                    "ex:contains": "http://example.org/vocab#contains"
+                }
+            ]
         }
     ]
 }

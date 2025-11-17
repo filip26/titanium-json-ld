@@ -141,12 +141,27 @@ class TermMapTest {
 
             @Override
             public void onTerm(String key, String uri) {
-                if (stack.peek().get(key) instanceof Map || stack.peek().get(key) instanceof Collection) {
-                    var map = (Map<String, String>)stack.peek().computeIfAbsent("@terms", v -> new HashMap<String, String>());
-                    map.put(key, uri);
-                } else {
-                    stack.peek().put(key, uri);
+                
+                var origin = stack.peek().get(key);
+                if (origin != null) {
+                    if (origin instanceof Collection col) {
+                        col.add(uri);
+                        return;
+                    }
+                    var col = new ArrayList<>();
+                    col.add(uri);
+                    col.add(origin);
+                    stack.peek().put(key, col);
+//                    stack.push(map);
+                    return;
                 }
+
+//                if (stack.peek().get(key) instanceof Map || stack.peek().get(key) instanceof Collection) {
+//                    var map = (Map<String, String>)stack.peek().computeIfAbsent("@terms", v -> new HashMap<String, String>());
+//                    map.put(key, uri);
+//                } else {
+                    stack.peek().put(key, uri);
+//                }
             }
         };
         try {

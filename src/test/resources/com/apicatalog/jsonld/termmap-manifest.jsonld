@@ -2,7 +2,7 @@
   "@context": ["context.jsonld", {"@base": "expand-manifest"}],
   "@id": "",
   "@type": "mf:Manifest",
-  "name": "Expansion",
+  "name": "Expansion - Term Maps",
   "description": "These tests implement the requirements for the JSON-LD [Expansion Algorithm](https://www.w3.org/TR/json-ld11-api/#expansion-algorithm).",
   "baseIri": "https://w3c.github.io/json-ld-api/tests/",
   "sequence": [

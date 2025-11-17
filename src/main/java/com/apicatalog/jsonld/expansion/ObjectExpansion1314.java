@@ -170,9 +170,10 @@ System.out.println("AC " + activeProperty + ", " + key + ", " + expandedProperty
 
                 // 13.7.4.
                 final var langCodes = params.options().isOrdered()
-                        ? adapter.keyStream(value).sorted().iterator()
-                        : adapter.keyStream(value).iterator();
+                        ? adapter.keyStream(value).map(adapter::asString).sorted().iterator()
+                        : adapter.keyStream(value).map(adapter::asString).iterator();
 
+                params.runtime().beginMap(key);
                 while (langCodes.hasNext()) {
 
                     final var langCode = langCodes.next();
@@ -220,7 +221,9 @@ System.out.println("AC " + activeProperty + ", " + key + ", " + expandedProperty
                         // 13.7.4.2.6.
                         langMaps.add(langMap);
                     }
+                    params.runtime().term(langCode, Keywords.LANGUAGE);
                 }
+                params.runtime().endMap(key);
 
                 expandedValue = List.copyOf(langMaps);
 
