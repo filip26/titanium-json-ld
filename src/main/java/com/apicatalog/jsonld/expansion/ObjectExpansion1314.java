@@ -244,6 +244,8 @@ System.out.println("AC " + activeProperty + ", " + key + ", " + expandedProperty
                         ? adapter.keyStream(value).sorted().iterator()
                         : adapter.keys(value).iterator();
 
+                params.runtime().beginMap(key);
+
                 // 13.8.3.
                 while (valueKeys.hasNext()) {
 
@@ -253,6 +255,8 @@ System.out.println("AC " + activeProperty + ", " + key + ", " + expandedProperty
 
                     final var index = adapter.asString(valueKey);
 
+                    params.runtime().term(index, Keywords.INDEX);
+                    
                     // 13.8.3.1.
                     Context mapContext = activeContext;
 
@@ -400,6 +404,7 @@ System.out.println("AC " + activeProperty + ", " + key + ", " + expandedProperty
                         indices.add(indexMap);
                     }
                 }
+                params.runtime().endMap(key);
                 expandedValue = indices;
             }
             // 13.9.
