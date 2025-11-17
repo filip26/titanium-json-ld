@@ -122,12 +122,12 @@ public class ExecutionEvents {
      * @param parentKey
      */
     public void beginMap(String parentKey) throws JsonLdException {
-        System.out.println("> map " + parentKey);
-        if (onBeginMap != null) {
-            for (final var begin : onBeginMap) {
-
-            }
-        }
+//
+//        if (onBeginMap != null) {
+//            for (final var begin : onBeginMap) {
+//
+//            }
+//        }
         if (nodeCounter != null) {
             nodeCounter.increment();
         }
@@ -145,7 +145,6 @@ public class ExecutionEvents {
      * @param parentKey
      */
     public void endMap(String parentKey) throws JsonLdException {
-        System.out.println("< map " + parentKey);
         // hook for extensions or instrumentation
         if (typeMapper != null) {
             typeMapper.onEndMap(parentKey);
@@ -157,7 +156,6 @@ public class ExecutionEvents {
 
     public void term(String key, String uri) {
         if (termMapper != null) {
-            System.out.println("term " + key + " -> " + uri);
             termMapper.onTerm(key, uri);
         }
     }
@@ -187,7 +185,6 @@ public class ExecutionEvents {
      * @param keys
      */
     public void onContextKeys(Collection<String> keys) {
-        System.out.println("ctx keys > " + keys);
         if (contextKeyCollector != null) {
             contextKeyCollector.accept(keys);
         }

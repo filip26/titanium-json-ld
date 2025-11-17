@@ -122,7 +122,7 @@ final class ObjectExpansion1314 {
                 params.runtime().type(key, expandedProperty);
 
                 final var value = adapter.property(key, element);
-System.out.println("AC " + activeProperty + ", " + key + ", " + expandedProperty + ", " + value);
+
                 keyword(activeContext, value, adapter, activeProperty, key, expandedProperty);
 
                 // 13.4.17
@@ -298,7 +298,7 @@ System.out.println("AC " + activeProperty + ", " + key + ", " + expandedProperty
                             indexValue,
                             adapter,
                             key,
-                            null,
+                            expandedIndex,
                             new Params(
                                     params.frameExpansion(),
                                     true,

@@ -1,10 +1,11 @@
-[
-    {
-        "@id": "http://example.com/node",
-        "http://example.com/property": [
+{
+    "@graph": {
+        "@set": [
+            null,
+            null,
             {
-                "@value": "nodes with properties are not removed"
+                "property": "http://example.com/property"
             }
         ]
     }
-]
+}

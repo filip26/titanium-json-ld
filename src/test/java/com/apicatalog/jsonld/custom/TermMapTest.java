@@ -22,10 +22,12 @@ import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -37,21 +39,19 @@ import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
-import com.apicatalog.jsonld.SuiteEvironment;
-import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.StaticLoader;
 import com.apicatalog.jsonld.processor.ExecutionEvents;
 import com.apicatalog.jsonld.processor.ExecutionEvents.TermMapper;
+import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
-import com.apicatalog.rdf.api.RdfConsumerException;
-import com.apicatalog.rdf.nquads.NQuadsReaderException;
-import com.apicatalog.jsonld.processor.Expander;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.TreeIOException;
+import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.web.media.MediaType;
 
@@ -103,18 +103,20 @@ class TermMapTest {
             @Override
             public void onBeginMap(String key) {
                 var map = new LinkedHashMap<String, Object>();
-
                 var origin = stack.peek().get(key);
+                
+                System.out.println("> map " + key + ", " + origin + ", " + stack.peek());
+                
                 if (origin != null) {
                     if (origin instanceof Collection col) {
                         col.add(map);
                         stack.push(map);
                         return;
                     }
-                    var col = new ArrayList<>();
-                    col.add(origin);
-                    col.add(map);
-                    stack.peek().put(key, col);
+                    var x = new ArrayList<>();
+                    x.add(origin);
+                    x.add(map);
+                    stack.peek().put(key, x);
                     stack.push(map);
                     return;
                 }
@@ -124,33 +126,98 @@ class TermMapTest {
 
             @Override
             public void onEndMap(String key) {
-                if (stack.peek().isEmpty()) {
+                System.out.println("< map " + key + ", " + stack);
+
+                var origin = stack.pop();
+//                if (origin.isEmpty()) {
+//                    if (stack.peek().get(key) instanceof Collection col && col.size() == 1) {
+//                        stack.peek().remove(key);
+//                        return;
+//                    }
+//                    if (stack.peek().size() == 1) {
+//                        stack.peek().remove(key);
+//                        return;
+//                    }                    
+//                }
+//                var value = stack.peek().get(key);
+//                System.out.println("XXX " + value);                
+//                if (value instanceof Collection col) {
 //
-                    stack.pop();
-                    stack.peek().remove(key);
+//                    if (col.isEmpty()) {
+//                        stack.remove(key);
+//                        return;
+//                    }
+//                    if (col.size() == 1) {
+//                        value = col.iterator().next();
+//                        stack.peek().put(key, value);
+//                        return;
+//                        
+//                    } else if (col.size() == 2) {
 //
-////                } else if (stack.peek().size() == 1 && stack.peek().containsKey(Keywords.ID)) {
+//                        var it = col.iterator();
+//                        value = it.next();
+//                        if (it.next() instanceof Map map && map.isEmpty()) {
+//                            stack.peek().put(key, value);
+//                            return;
+//                        }
+//                        
+//                        
+//                    }
+//                    
+//                }
+//                if (stack.peek())
+                
+//                if (stack.peek().isEmpty()) {
 ////
-////                    final var term = stack.pop().get(Keywords.ID);
+//                    stack.pop();
+////                    stack.peek().put(key, "@null");
+////                    stack.peek().remove(key);
 ////
-////                    stack.peek().put(key, term);
-                } else {
-                    stack.pop();
-                }
+//////                } else if (stack.peek().size() == 1 && stack.peek().containsKey(Keywords.ID)) {
+//////
+//////                    final var term = stack.pop().get(Keywords.ID);
+//////
+//////                    stack.peek().put(key, term);
+//                } else {
+
+//                }
             }
 
             @Override
             public void onTerm(String key, String uri) {
                 
                 var origin = stack.peek().get(key);
+                System.out.println("term " + key + " -> " + uri + ", " + origin + ", " + stack.peek());
+                
                 if (origin != null) {
-                    if (origin instanceof Collection col) {
-                        col.add(uri);
+                    if (origin instanceof Collection oc) {
+                        
+//                        var empty = true;
+//                        for (var item : oc) {
+//                            if (!(item instanceof Map map) || !map.isEmpty()) {
+//                                empty = false;
+//                                break;
+//                            }
+//                        }
+//                        
+//                        if (empty) {
+//                            stack.peek().put(key, uri);
+//                            return;                            
+//                        }
+                        
+//                        var col = new ArrayList<>(oc.size() + 1);
+                        oc.add(uri);
+//                        col.addAll(oc);
+//                        stack.peek().put(key, col);
                         return;
                     }
+//                    if (origin instanceof Map m && m.isEmpty()) {
+//                        stack.peek().put(key, uri);
+//                        return;
+//                    }
                     var col = new ArrayList<>();
-                    col.add(uri);
                     col.add(origin);
+                    col.add(uri);
                     stack.peek().put(key, col);
 //                    stack.push(map);
                     return;
@@ -176,13 +243,14 @@ class TermMapTest {
                     runtime);
 
             assertNotNull(expanded);
-
-            System.out.println("XXXX" + termMap);
-
-            JunitRunner.validateJsonLd(
+            
+            var x = normalize(termMap);
+System.out.println("out > " + termMap);
+System.out.println("out > " + x);
+            validateJson(
                     testCase,
                     options,
-                    termMap,
+                    x,
                     NativeAdapter.instance());
 
         } catch (JsonLdException e) {
@@ -201,7 +269,94 @@ class TermMapTest {
         }
 
     }
+    
+    static final Map<String, Object> normalize(Map<String, Object> termmap) {
+        System.out.println("-- map " + termmap);
+        if (termmap.isEmpty()) {
+            return Map.of();
+        }
+        
+        final var result = new LinkedHashMap<String, Object>(termmap.size());
+        
+        for (var entry : termmap.entrySet()) {
+            System.out.println("> entry " + entry);
+            var value = normalizeValue(entry.getValue());
+            System.out.println("< entry " + entry.getKey() + ", " + value);
+            if (value != null) {
+                result.put(entry.getKey(), value);
+            }
+        }
+        System.out.println("<< map " + result);
+        return result;
+    }
+    
+    static final Object normalizeValue(Object value) {
+        System.out.println("-- value " + (value instanceof List col) + ", " + value);
+        if (value instanceof List col) {
+            if (col.isEmpty()) {
+                return null;                
+            }
+            
+            col = new ArrayList<>(col);
+            
+            var last = col.size() - 1;
+            
 
+            if (col.get(last) instanceof String uri) {
+                if (col.size() == 1) {
+                    return uri;
+                }
+                last = col.size() - 2;
+            }
+
+            List<Object> list = null;
+
+            for (var i = last; i >= 0; i--) {
+
+                final var result = normalizeValue(col.get(i));
+
+                if (list != null || result != null) {
+                    if (list == null) {
+                        list = new ArrayList<>();
+                    }
+                    list.add(result);
+                }
+            }
+
+            if (list == null && last == col.size() - 2) {
+                return col.get(col.size() - 1);
+            }
+            
+            if (last == col.size() - 2) {
+                list.add(col.get(col.size() - 1));
+            }
+            
+            if (list == null) {
+                return null;
+            }
+            
+            if (list.size() == 1) {
+                return list.get(0);
+            }
+                        
+            Collections.reverse(list);
+            
+            return list;
+        }
+        
+        if (value instanceof Map map) {
+            if (map.isEmpty()) {
+                return null;
+            }
+            var result = normalize(map);
+            if (result == null || result.isEmpty()) {
+                return null;
+            }
+            return result;
+        }
+        return value;
+    }
+    
     static final Stream<TestCase> data() throws JsonLdException {
         return TestManifest
                 .load(
@@ -211,6 +366,40 @@ class TermMapTest {
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0); // skip specVersion == 1.0
     }
+
+    static boolean validateJson(final TestCase testCase, final Options options, final Object result, final TreeAdapter resultAdapter) {
+
+        assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
+
+        try {
+            var expectedDocument = options.loader().loadDocument(testCase.expect, DocumentLoader.defaultOptions());
+
+            assertNotNull(expectedDocument);
+
+            // compare expected with the result
+            return compareJson(testCase, result, resultAdapter, expectedDocument.content());
+
+        } catch (JsonLdException | TreeIOException e) {
+            fail(e.getMessage());
+        }
+        return false;
+    }
+    
+    public static final boolean compareJson(final TestCase testCase, final Object result, final TreeAdapter resultAdapter, final TreeIO expected) throws TreeIOException {
+
+        if (TreeIO.deepEquals(expected.node(), expected.adapter(), result, resultAdapter)) {
+            return true;
+        }
+
+        JunitRunner.write(testCase,
+                new JakartaMaterializer().node(result, resultAdapter),
+                new JakartaMaterializer().node(expected),
+                null);
+
+        fail("Expected " + expected.node() + ", but was" + result);
+        return false;
+    }
+
 
     private final TreeIO read(final String name) throws JsonLdException, TreeIOException, IOException {
         try (final var is = getClass().getResourceAsStream(name)) {
