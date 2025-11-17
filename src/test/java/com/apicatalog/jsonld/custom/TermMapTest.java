@@ -106,7 +106,7 @@ class TermMapTest {
             @Override
             public void onBeginMap(String key) {
                 System.out.println("> map " + key + "; " + path);
-                path.push(key);
+                path.push(escapeJsonPointerSegment(key));
             }
 
             @Override
@@ -135,9 +135,10 @@ class TermMapTest {
             public void onTerm(String key, String uri) {
                 System.out.println("term " + key + " -> " + uri + "; " + path);
                 if (path.isEmpty()) {
-                    termMap.put(key, uri);
+                    termMap.put(escapeJsonPointerSegment(key), uri);
                 } else {                    
-                    termMap.put(path.stream().map(Object::toString).collect(Collectors.joining(".")) + "." + key, uri);
+                    termMap.put(path.stream().map(Object::toString).collect(Collectors.joining("/"))
+                            + "/" + escapeJsonPointerSegment(key), uri);
                     System.out.println("XXX " + path.peek() + ", " + (path.peek() instanceof Integer order));
                     if (path.peek() instanceof Integer order) {
                         path.pop();
@@ -314,6 +315,20 @@ class TermMapTest {
         return false;
     }
 
+    /** Escape a single reference token (RFC6901): ~ -> ~0 and / -> ~1 */
+    static String escapeJsonPointerSegment(String s) {
+        Objects.requireNonNull(s, "segment");
+        int n = s.length();
+        StringBuilder sb = new StringBuilder(n + 4); // small growth room
+        for (int i = 0; i < n; ++i) {
+            char c = s.charAt(i);
+            if (c == '~') sb.append("~0");
+            else if (c == '/') sb.append("~1");
+            else sb.append(c);
+        }
+        return sb.toString();
+    }
+    
     private final TreeIO read(final String name) throws JsonLdException, TreeIOException, IOException {
         try (final var is = getClass().getResourceAsStream(name)) {
             return JakartaTestSuite.PARSER.parse(is);
