@@ -78,6 +78,7 @@ public final class Expansion {
             final TreeAdapter nodeAdapter,
             final String activeProperty,
             final String term,
+            final String expandedTerm,
             final Params params) throws JsonLdException {
 
         // 1. If element is null, return null
@@ -89,7 +90,7 @@ public final class Expansion {
 
         // 5. If element is an array,
         if (nodeType == NodeType.COLLECTION) {
-            return array(activeContext, node, nodeAdapter, activeProperty, term, params);
+            return array(activeContext, node, nodeAdapter, activeProperty, term, expandedTerm, params);
         }
 
         // 3. If active property has a term definition in active context with a local
@@ -111,12 +112,17 @@ public final class Expansion {
 
         // 4. If element is a scalar
         if (nodeType.isScalar()) {
-            return scalar(activeContext,
+            final var scalar = scalar(activeContext,
                     activeProperty,
                     propertyContext,
                     node,
                     nodeAdapter,
                     params);
+            
+            if (Keywords.SET.equals(expandedTerm)) {
+                params.runtime().term(term, null);
+            }
+            return scalar;
         }
 
         params.runtime().tick();
@@ -229,6 +235,8 @@ public final class Expansion {
      * @param node
      * @param nodeAdapter
      * @param property
+     * @param term
+     * @param expandedTerm
      * @param params
      * 
      * @return a {@link Collection} containing the expanded values, which may
@@ -243,12 +251,15 @@ public final class Expansion {
             final TreeAdapter nodeAdapter,
             final String property,
             final String term,
+            final String expandedTerm,
             final Params params) throws JsonLdException {
 
         if (nodeAdapter.isEmptyCollection(node)) {
             return List.of();
         }
 
+        params.runtime().beginList(term);
+        
         final var result = new ArrayList<Object>();
 
         // 5.2.
@@ -257,7 +268,7 @@ public final class Expansion {
             params.runtime().tick();
 
             // 5.2.1
-            var expanded = expand(context, item, nodeAdapter, property, term, params);
+            var expanded = expand(context, item, nodeAdapter, property, term, expandedTerm, params);
 
             // 5.2.2
             if (expanded instanceof Collection<?> list
@@ -280,6 +291,8 @@ public final class Expansion {
             }
         }
 
+        params.runtime().endList(term);
+        
         // 5.3
         return result;
     }

@@ -58,7 +58,10 @@ public class ExecutionEvents {
 
         void onTerm(String key, String uri);
 
-        default void onEndMap(String key) {};
+        default void onEndMap(String key) {}
+
+        default void onBeginList(String key) {}
+        default void onEndList(String key) {}
     }
     
     private final Collection<Consumer<String>> onBeginMap = new ArrayList<>();
@@ -154,6 +157,18 @@ public class ExecutionEvents {
         }
     }
 
+    public void beginList(String term) {
+        if (termMapper != null) {
+            termMapper.onBeginList(term);
+        }
+    }
+
+    public void endList(String term) {
+        if (termMapper != null) {
+            termMapper.onEndList(term);
+        }
+    }
+    
     public void term(String key, String uri) {
         if (termMapper != null) {
             termMapper.onTerm(key, uri);

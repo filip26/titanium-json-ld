@@ -179,6 +179,7 @@ public final class Expander {
                 node.adapter(),
                 null,
                 null,
+                null,
                 new Params(frameExpansion, false, baseUrl, options, runtime));
 
         // 8.1

@@ -1,5 +1,3 @@
-[
-  {
-    "http://example.org/term": [ { "@id": "http://example.com/vocab#suffix" } ]
-  }
-]
+{
+    "term": "http://example.org/term"
+}

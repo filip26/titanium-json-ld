@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -56,7 +55,7 @@ import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.web.media.MediaType;
 
-class TermMapTest {
+class TermMapTest2 {
 
     static ClasspathLoader LOADER = ClasspathLoader
             .newBuilder()
@@ -91,59 +90,67 @@ class TermMapTest {
 //
 //        var options = Options.with(UTOPIA_LOADER);
 
-        final var termMap = new LinkedHashMap<String, Object>();
+        var termMap = new LinkedHashMap<String, Object>();
 
         var termMapper = new TermMapper() {
 
             Deque<Map<String, Object>> stack = new ArrayDeque<>();
 
-            Deque<Object> path = new ArrayDeque<>();
-
             {
-//                stack.push(termMap);
+                stack.push(termMap);
             }
 
             @Override
             public void onBeginMap(String key) {
-                System.out.println("> map " + key + "; " + path);
-                path.push(key);
+                var map = new LinkedHashMap<String, Object>();
+                
+                System.out.println("> map " + key + ", " + stack.peek().containsKey(key) + ", " + stack.peek());
+                
+                if (stack.peek().containsKey(key)) {
+                    var origin = stack.peek().get(key);
+                    if (origin instanceof Collection col) {
+                        col.add(map);
+                        stack.push(map);
+                        return;
+                    }
+                    var x = new ArrayList<>();
+                    x.add(origin);
+                    x.add(map);
+                    stack.peek().put(key, x);
+                    stack.push(map);
+                    return;
+                }
+                stack.peek().put(key, map);
+                stack.push(map);
             }
 
             @Override
             public void onEndMap(String key) {
-                System.out.println("< map " + key + "; " + path);
-                path.pop();
-                if (path.peek() instanceof Integer order) {
-                    path.pop();
-                    path.push(order + 1);
-                }                
-            }
-            
-            @Override
-            public void onBeginList(String key) {
-                System.out.println("> list " + key);
-                path.push(0);
-            }
-            
-            @Override
-            public void onEndList(String key) {
-                System.out.println("< list " + key);
-                path.pop();
+                System.out.println("< map " + key + ", " + stack);
+                stack.pop();
             }
 
             @Override
             public void onTerm(String key, String uri) {
-                System.out.println("term " + key + " -> " + uri + "; " + path);
-                if (path.isEmpty()) {
-                    termMap.put(key, uri);
-                } else {                    
-                    termMap.put(path.stream().map(Object::toString).collect(Collectors.joining(".")) + "." + key, uri);
-                    System.out.println("XXX " + path.peek() + ", " + (path.peek() instanceof Integer order));
-                    if (path.peek() instanceof Integer order) {
-                        path.pop();
-                        path.push(order + 1);
+                
+
+                System.out.println("term " + key + " -> " + uri + ", " + stack.peek().containsKey(key) + ", " + stack.peek());
+                
+                if (stack.peek().containsKey(key)) {
+                    var origin = stack.peek().get(key);
+                    
+                    if (origin instanceof Collection oc) {
+                        oc.add(uri);
+                        return;
                     }
+                    var col = new ArrayList<>();
+                    col.add(origin);
+                    col.add(uri);
+                    stack.peek().put(key, col);
+                    return;
                 }
+
+                stack.peek().put(key, uri);
             }
         };
         try {
@@ -158,14 +165,14 @@ class TermMapTest {
                     runtime);
 
             assertNotNull(expanded);
-
-//            var x = normalize(termMap);
-            System.out.println("out > " + termMap);
-//System.out.println("out > " + x);
+            
+            var x = normalize(termMap);
+System.out.println("out > " + termMap);
+System.out.println("out > " + x);
             validateJson(
                     testCase,
                     options,
-                    termMap,
+                    x,
                     NativeAdapter.instance());
 
         } catch (JsonLdException e) {
@@ -184,15 +191,15 @@ class TermMapTest {
         }
 
     }
-
+    
     static final Map<String, Object> normalize(Map<String, Object> termmap) {
         System.out.println("-- map " + termmap);
         if (termmap.isEmpty()) {
             return Map.of();
         }
-
+        
         final var result = new LinkedHashMap<String, Object>(termmap.size());
-
+        
         for (var entry : termmap.entrySet()) {
             System.out.println("> entry " + entry);
             var value = normalizeValue(entry.getValue());
@@ -204,17 +211,18 @@ class TermMapTest {
         System.out.println("<< map " + result);
         return result;
     }
-
+    
     static final Object normalizeValue(Object value) {
         System.out.println("-- value " + (value instanceof List col) + ", " + value);
         if (value instanceof List col) {
             if (col.isEmpty()) {
-                return null;
+                return null;                
             }
-
+            
             col = new ArrayList<>(col);
-
+            
             var last = col.size() - 1;
+            
 
             if (col.get(last) instanceof String uri) {
                 if (col.size() == 1) {
@@ -240,37 +248,38 @@ class TermMapTest {
             if (list == null && last == col.size() - 2) {
                 return col.get(col.size() - 1);
             }
-
+            
             if (last == col.size() - 2) {
                 list.add(col.get(col.size() - 1));
             }
-
+            
             if (list == null) {
                 return null;
             }
-
+            
             if (list.size() == 1) {
                 return list.get(0);
             }
-
+                        
             Collections.reverse(list);
-
+            
             return list;
         }
-
+        
         if (value instanceof Map map) {
             if (map.isEmpty()) {
                 return null;
             }
             var result = normalize(map);
-            if (result == null || result.isEmpty()) {
+            if (result == null || result.isEmpty()
+                    ) {
                 return null;
             }
             return result;
         }
         return value;
     }
-
+    
     static final Stream<TestCase> data() throws JsonLdException {
         return TestManifest
                 .load(
@@ -298,7 +307,7 @@ class TermMapTest {
         }
         return false;
     }
-
+    
     public static final boolean compareJson(final TestCase testCase, final Object result, final TreeAdapter resultAdapter, final TreeIO expected) throws TreeIOException {
 
         if (TreeIO.deepEquals(expected.node(), expected.adapter(), result, resultAdapter)) {
@@ -313,6 +322,7 @@ class TermMapTest {
         fail("Expected " + expected.node() + ", but was" + result);
         return false;
     }
+
 
     private final TreeIO read(final String name) throws JsonLdException, TreeIOException, IOException {
         try (final var is = getClass().getResourceAsStream(name)) {

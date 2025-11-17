@@ -98,7 +98,7 @@ final class ObjectExpansion1314 {
                     .vocab(true)
                     .expand(key);
 
-            // if the term is undefined and
+            //FIXME if the term is undefined and
             if (expandedProperty == null || (!expandedProperty.contains(":") && !Keywords.contains(expandedProperty))) {
                 switch (params.options().undefinedTermsPolicy()) {
                 case Fail:
@@ -298,6 +298,7 @@ final class ObjectExpansion1314 {
                             indexValue,
                             adapter,
                             key,
+                            index,
                             expandedIndex,
                             new Params(
                                     params.frameExpansion(),
@@ -415,6 +416,7 @@ final class ObjectExpansion1314 {
                         adapter,
                         key,
                         key,
+                        expandedProperty,
                         params);
             }
 
@@ -496,8 +498,6 @@ final class ObjectExpansion1314 {
                 LdAdapter.setOrAdd(result, expandedProperty, expandedValue);
             }
 
-//            System.out.println("3rd> " + key + " -> " + value + ", " + activeProperty);
-//            System.out.println("   > " + expandedValue);
             if (!Keywords.contains(key) || !Keywords.contains(expandedProperty)) {
                 params.runtime().term(key, expandedProperty);
             }
@@ -505,7 +505,7 @@ final class ObjectExpansion1314 {
         }
 
         // 14.
-        if (nest != null) {
+        if (nest != null && !nest.isEmpty()) {
             processNest(activeContext, element, adapter);
         }
 //        params.runtime().onEndMap(activeProperty);
@@ -568,7 +568,7 @@ final class ObjectExpansion1314 {
                     && adapter.isMap(value)
                     && !adapter.isEmptyMap(value)) {
 
-                expandedValue = Expansion.expand(activeContext, value, adapter, null, key, params);
+                expandedValue = Expansion.expand(activeContext, value, adapter, null, key, expandedProperty, params);
 
                 if (!LdAdapter.isEmbedded(expandedValue)) {
                     throw new JsonLdException(ErrorCode.INVALID_EMBEDDED_NODE);
@@ -675,10 +675,6 @@ final class ObjectExpansion1314 {
                 throw new JsonLdException(ErrorCode.INVALID_TYPE_VALUE, "@type value is not valid [" + value + "].");
             }
 
-//            System.out.println("TYPE CTX1 > " + key + ", " + value);
-//            System.out.println("TYPE CTX2 > " + expandedProperty + ", " + expandedValue);
-//            System.out.println("TYPE CTX3 > "  + typeContext);
-
             // 13.4.4.2
             if (adapter.isEmptyMap(value)) {
                 expandedValue = Map.of();
@@ -783,6 +779,7 @@ final class ObjectExpansion1314 {
                     adapter,
                     Keywords.GRAPH,
                     key,
+                    Keywords.GRAPH,
                     params));
         }
 
@@ -802,6 +799,7 @@ final class ObjectExpansion1314 {
                             adapter,
                             null,
                             key,
+                            expandedProperty,
                             params);
 
             if (expandedValue != null) {
@@ -1003,6 +1001,7 @@ final class ObjectExpansion1314 {
                     adapter,
                     activeProperty,
                     key,
+                    expandedProperty,
                     params);
 
             if (!(expandedValue instanceof Collection<?>)) {
@@ -1018,6 +1017,7 @@ final class ObjectExpansion1314 {
                     adapter, 
                     activeProperty, 
                     key,
+                    expandedProperty,
                     params);
         }
 
@@ -1036,6 +1036,7 @@ final class ObjectExpansion1314 {
                     adapter,
                     Keywords.REVERSE,
                     key,
+                    expandedProperty,
                     params);
 
             if (expandedValue instanceof Map expandedValueObject) {
@@ -1123,6 +1124,7 @@ final class ObjectExpansion1314 {
                     adapter,
                     Keywords.ANNOTATION,
                     key,
+                    expandedProperty,
                     params));
         }
 
@@ -1135,7 +1137,7 @@ final class ObjectExpansion1314 {
                         || Keywords.REQUIRE_ALL.equals(expandedProperty))) {
 
             expandedValue = Expansion
-                    .expand(activeContext, value, adapter, expandedProperty, null, params);
+                    .expand(activeContext, value, adapter, expandedProperty, null, null, params);
         }
 
         // 13.4.16

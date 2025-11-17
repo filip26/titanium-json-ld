@@ -1,8 +1,5 @@
-[
-  {
-    "@id": "http://me.markus-lanthaler.com/",
-    "http://xmlns.com/foaf/0.1/homepage": [ { "@id": "http://www.markus-lanthaler.com/" } ],
-    "http://example.com/link": [ {  "@id": "https://w3c.github.io/json-ld-api/tests/expand/relative-iri" } ],
-    "http://xmlns.com/foaf/0.1/name": [ { "@value": "Markus Lanthaler" } ]
-  }
-]
+{
+    "homepage": "http://xmlns.com/foaf/0.1/homepage",
+    "link": "http://example.com/link",
+    "name": "http://xmlns.com/foaf/0.1/name"
+}

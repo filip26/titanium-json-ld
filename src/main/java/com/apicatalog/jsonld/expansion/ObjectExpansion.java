@@ -115,10 +115,21 @@ public final class ObjectExpansion {
                 .nest(new LinkedHashMap<>())
                 .expand(activeContext, element, adapter, property);
 
+        final var normalized = normalize(result, property, params);
+        
         if (property != null) {
             params.runtime().endMap(term != null ? term : property);
         }
+        
+        return normalized;
 
+    }
+    
+    private Object normalize(
+            final Map<String, Object> result,
+            final String property,
+            final Params params
+            ) throws JsonLdException {
         // 15.
         if (result.containsKey(Keywords.VALUE)) {
             return normalizeValue(result, property, params.frameExpansion());

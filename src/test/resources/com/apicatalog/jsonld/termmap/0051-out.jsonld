@@ -1,6 +1,4 @@
-[{
-   "http://example.com/property": [{
-      "@value": "ok"
-   }],
-   "@id": "https://w3c.github.io/issue/1"
-}]
+{
+    "http://example.com/property": "http://example.com/property",
+    "url": "@id"
+}
