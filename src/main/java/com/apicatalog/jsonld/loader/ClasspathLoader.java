@@ -92,7 +92,7 @@ public final class ClasspathLoader implements DocumentLoader {
         if (!"classpath".equalsIgnoreCase(url.getScheme())) {
             throw new JsonLdException(
                     ErrorCode.LOADING_DOCUMENT_FAILED,
-                    "Unsupported URL scheme [" + url.getScheme() + "]. Only classpath: scheme is accepted.");
+                    "Unsupported URL scheme [" + url.getScheme() + "]. Only classpath: scheme is accepted, url=" + url);
         }
 
         final var path = url.getPath() != null

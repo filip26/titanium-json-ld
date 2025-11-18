@@ -27,7 +27,6 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.apicatalog.jsonld.Document;
@@ -62,20 +61,11 @@ class TermMapTest {
             .classpath("https://www.w3.org/ns/credentials/v2", "/com/apicatalog/jsonld/loader/credentials-v2.jsonld")
             .classpath("https://w3id.org/vc-barcodes/v1", "/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld")
             .classpath("https://w3id.org/utopia/v2", "/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld")
+            .fallback(LOADER)
             .build();
 
-    static Stream<Arguments> termMapCases() {
-        return Stream.of(
-                Arguments.of(
-                        "/com/apicatalog/jsonld/test/vc-utopia.jsonld",
-                        "/com/apicatalog/jsonld/test/vc-utopia-termmap.json"),
-                Arguments.of(
-                        "/com/apicatalog/jsonld/test/vc-utopia-2.jsonld",
-                        "/com/apicatalog/jsonld/test/vc-utopia-termmap-2.json"));
-    }
-
     @ParameterizedTest(name = "{0}")
-    @MethodSource("data")
+    @MethodSource( "data" )
     void testTermMapper(TestCase testCase) {
 
         final var termMap = new LinkedHashMap<String, Object>();
@@ -131,7 +121,15 @@ class TermMapTest {
         };
         try {
             var options = testCase.getOptions();
-
+            
+            options.loader( StaticLoader.newBuilder()
+                    .parser(MediaType.JSON_LD, JakartaTestSuite.PARSER)
+                    .classpath("https://www.w3.org/ns/credentials/v2", "/com/apicatalog/jsonld/loader/credentials-v2.jsonld")
+                    .classpath("https://w3id.org/vc-barcodes/v1", "/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld")
+                    .classpath("https://w3id.org/utopia/v2", "/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld")
+                    .fallback(options.loader())
+                    .build());
+                    
             var runtime = ExecutionEvents.of(options).termMapper(termMapper);
 
             var expanded = Expander.expand(

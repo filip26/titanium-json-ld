@@ -2147,6 +2147,22 @@
       "option": {"specVersion": "json-ld-1.1"},
       "input": "termmap/tn02-in.jsonld",
       "expect": "termmap/tn02-out.jsonld"
-    }
+    },
+    {
+          "@id": "#tvc01",
+          "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+          "name": "VC Utopia Example",
+          "option": {"specVersion": "json-ld-1.1"},
+          "input": "test/vc-utopia.jsonld",
+          "expect": "test/vc-utopia-termmap.json"
+        },
+        {
+              "@id": "#tvc02",
+              "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+              "name": "VC Utopia Example #2",
+              "option": {"specVersion": "json-ld-1.1"},
+              "input": "test/vc-utopia-2.jsonld",
+              "expect": "test/vc-utopia-termmap-2.json"
+            }        
   ]
 }

@@ -1,0 +1,14 @@
+{
+    "/credentialSubject/type": "@type",
+    "/credentialSubject": "https://www.w3.org/2018/credentials#credentialSubject",
+    "/id": "@id",
+    "/issuer": "https://www.w3.org/2018/credentials#issuer",
+    "/proof/cryptosuite": "https://w3id.org/security#cryptosuite",
+    "/proof/id": "@id",
+    "/proof/proofPurpose": "https://w3id.org/security#proofPurpose",
+    "/proof/proofValue": "https://w3id.org/security#proofValue",
+    "/proof/type": "@type",
+    "/proof/verificationMethod": "https://w3id.org/security#verificationMethod",
+    "/proof": "https://w3id.org/security#proof",
+    "/type": "@type"
+}

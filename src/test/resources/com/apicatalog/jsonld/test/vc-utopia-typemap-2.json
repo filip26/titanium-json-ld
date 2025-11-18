@@ -1,16 +1,14 @@
- {
-    "id": "@id",
-    "type":"@type",
-    "credentialSubject":{
-        "type":"@type"
-    },
-    "issuer":"@id",
-    "proof":{
-        "id": "@id",
-        "type":"@type",
-        "cryptosuite":"https://w3id.org/security#cryptosuiteString",
-        "proofPurpose":"@vocab",
-        "proofValue": "https://w3id.org/security#multibase",
-        "verificationMethod":"@id"
-    }
+{
+    "/type": "@type",
+    "/id": "@id",
+    "/credentialSubject": "@id",
+    "/credentialSubject/type": "@type",
+    "/issuer": "@id",
+    "/proof": "@id",
+    "/proof/id": "@id",
+    "/proof/type": "@type",
+    "/proof/verificationMethod": "@id",
+    "/proof/cryptosuite": "https://w3id.org/security#cryptosuiteString",
+    "/proof/proofPurpose": "@vocab",
+    "/proof/proofValue": "https://w3id.org/security#multibase"
 }

@@ -44,20 +44,22 @@ public class ExecutionEvents {
 
     public interface TypeMapper {
 
-        void onBeginMap(String key);
-
         void onType(String key, String type);
 
+        void onBeginMap(String key);
         void onEndMap(String key);
+        
+        default void onBeginList(String key) {}
+        default void onEndList(String key) {}
+
     }
     
     @FunctionalInterface
     public interface TermMapper {
 
-        default void onBeginMap(String key) {};
-
         void onTerm(String key, String uri);
 
+        default void onBeginMap(String key) {};
         default void onEndMap(String key) {}
 
         default void onBeginList(String key) {}
