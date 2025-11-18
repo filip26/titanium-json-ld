@@ -2,13 +2,20 @@
 
 An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-based Serialization for Linked Data) specification in Java.
 
-### 🎯 Goals
-- Full conformance to the specification
-- Secure, stable, fast, high-quality code (**~3000 tests**)
-- Minimal external dependencies
-- Simple and easy-to-use
+### ✨ Features
 
-### 🚦 Status
+- Full conformance with the JSON-LD 1.1 specification  
+- Secure, stable, high-performance implementation with ~3000 tests
+- Minimal external dependencies
+- Simple, easy-to-use API
+- Extensions (since v2.0):
+  - JSON-LD-star expansion (experimental)
+  - Processing policies: undefined terms, time/space constraints
+  - Generated TypeMap / TermMap (experimental)
+  - Built-in loaders: HTTPS, file, classpath, scheme router, URI rewriter
+  - Generalized processing with [tree-io](https://github.com/filip26/tree-io) (Jakarta JSON, Jackson, or anything else)
+    
+### 🎯 Status
 
 [![Java 17 CI](https://github.com/filip26/titanium-json-ld/actions/workflows/java17-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java17-build.yml)
 [![CodeQL](https://github.com/filip26/titanium-json-ld/actions/workflows/codeql.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/codeql.yml)

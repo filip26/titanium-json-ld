@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * @see https://www.w3.org/TR/json-ld11/#keywords
+ * @see <a href="https://www.w3.org/TR/json-ld11/#keywords">JSON-LD Keywords</a>
  */
 public final class Keywords {
 
