@@ -1,16 +1,7 @@
-[{
-  "http://example.org/foo": [{
-    "@value": "org"
-  }],
-  "http://example.org/p": [{
-    "@type": ["http://example.org/Type"],
-    "http://example.com/foo": [{
-      "@value": "com"
-    }],
-    "http://example.com/nested": [{
-      "http://example.org/nested-prop": [{
-        "@value": "org"
-      }]
-    }]
-  }]
-}]
+{
+    "/foo": "http://example.org/foo",
+    "/p/foo": "http://example.com/foo",
+    "/p/nested/nested-prop": "http://example.org/nested-prop",
+    "/p/nested": "http://example.com/nested",
+    "/p": "http://example.org/p"
+}

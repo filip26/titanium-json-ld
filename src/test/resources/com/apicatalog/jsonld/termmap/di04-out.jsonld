@@ -1,10 +1,5 @@
-[
-  {
-    "@id": "http://example.com/queen",
-    "http://example.com/vocab/label": [
-      {"@value": "Die Königin", "@language": "de", "@direction": "ltr"},
-      {"@value": "Ihre Majestät", "@language": "de", "@direction": "ltr"},
-      {"@value": "The Queen", "@language": "en", "@direction": "ltr"}
-    ]
-  }
-]
+{
+    "/label/de": "@language",
+    "/label/en": "@language",
+    "/label": "http://example.com/vocab/label"
+}

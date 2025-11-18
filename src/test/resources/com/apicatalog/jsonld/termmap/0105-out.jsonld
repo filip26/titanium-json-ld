@@ -1,23 +1,9 @@
-[{
-  "http://example.org/input": [{
-    "@index": "g1",
-    "@graph": [{
-      "http://example.org/value": [{"@value": "x"}]
-    }]
-  }, {
-    "@index": "g1",
-    "@graph": [{
-      "http://example.org/value": [{"@value": "y"}]
-    }]
-  }, {
-    "@index": "g2",
-    "@graph": [{
-      "http://example.org/value": [{"@value": "a"}]
-    }]
-  }, {
-    "@index": "g2",
-    "@graph": [{
-      "http://example.org/value": [{"@value": "b"}]
-    }]
-  }]
-}]
+{
+    "/input/g1": "@index",
+    "/input/g1/0/@graph/value": "http://example.org/value",
+    "/input/g1/1/value": "http://example.org/value",
+    "/input/g2": "@index",
+    "/input/g2/0/@graph/value": "http://example.org/value",
+    "/input/g2/1/value": "http://example.org/value",
+    "/input": "http://example.org/input"
+}

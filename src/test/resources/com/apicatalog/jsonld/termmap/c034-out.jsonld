@@ -1,5 +1,4 @@
-[
-  {
-    "http://example/foo": [{"http://example.org/bar": [{"@value": "baz"}]}]
-  }
-]
+{
+    "/foo/bar": "http://example.org/bar",
+    "/foo": "http://example/foo"
+}

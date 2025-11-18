@@ -1,13 +1,11 @@
-[
-  {
-    "http://example.org/vocab#rtl": [{"@value": "rtl en", "@language": "en", "@direction": "rtl"}],
-    "http://example.org/vocab#ltr": [{"@value": "ltr en", "@language": "en", "@direction": "ltr"}],
-    "http://example.org/vocab#none": [{"@value": "no direction en", "@language": "en"}],
-    "http://example.org/vocab#german": [{"@value": "german rtl", "@language": "de", "@direction": "rtl"}],
-    "http://example.org/vocab#nolang": [{"@value": "no language rtl", "@direction": "rtl"}],
-    "http://example.org/vocab#german_ltr": [{"@value": "german ltr", "@language": "de", "@direction": "ltr"}],
-    "http://example.org/vocab#nolang_ltr": [{"@value": "no language ltr", "@direction": "ltr"}],
-    "http://example.org/vocab#none_none": [{"@value": "no language or direction"}],
-    "http://example.org/vocab#german_none": [{"@value": "german no direction", "@language": "de"}]
-  }
-]
+{
+    "/ex:german": "http://example.org/vocab#german",
+    "/ex:german_ltr": "http://example.org/vocab#german_ltr",
+    "/ex:german_none": "http://example.org/vocab#german_none",
+    "/ex:ltr": "http://example.org/vocab#ltr",
+    "/ex:nolang": "http://example.org/vocab#nolang",
+    "/ex:nolang_ltr": "http://example.org/vocab#nolang_ltr",
+    "/ex:none": "http://example.org/vocab#none",
+    "/ex:none_none": "http://example.org/vocab#none_none",
+    "/ex:rtl": "http://example.org/vocab#rtl"
+}

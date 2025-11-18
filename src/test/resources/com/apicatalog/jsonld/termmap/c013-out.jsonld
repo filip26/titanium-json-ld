@@ -1,12 +1,8 @@
-[{
- "@type": ["http://example/Outer"],
- "http://example/base-foo": [{"@value": "base-foo"}],
- "http://example/outer-prop": [{
-   "@type": ["http://example/Inner"],
-   "http://example/prop": [{
-     "@id": "http://example/inner-with-index",
-     "@index": "index",
-     "http://example/inner-foo": [{"@value": "inner-foo"}]
-   }]
- }]
-}]
+{
+    "/foo": "http://example/base-foo",
+    "/prop/Inner": "@index",
+    "/prop/Inner/prop/index": "@index",
+    "/prop/Inner/prop/index/foo": "http://example/inner-foo",
+    "/prop/Inner/prop": "http://example/prop",
+    "/prop": "http://example/outer-prop"
+}

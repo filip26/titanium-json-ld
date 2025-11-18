@@ -1,4 +1,3 @@
-[{
-  "@id": "http://foo.bar/baz/example/relative-iri",
-  "http://prop": [{"@value": "value"}]
-}]
+{
+    "/http:~1~1prop": "http://prop"
+}

@@ -1,8 +1,6 @@
-[{
-  "http://example/a": [{
-    "@type": ["http://example/B"],
-    "http://example.com/a": [{"@value": "A in example.com"}],
-    "http://example.org/c": [{"@value": "C in example.org"}]
-  }],
-  "http://example/c": [{"@value": "C in example"}]
-}]
+{
+    "/a/a": "http://example.com/a",
+    "/a/c": "http://example.org/c",
+    "/a": "http://example/a",
+    "/c": "http://example/c"
+}

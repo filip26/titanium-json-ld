@@ -1,6 +1,6 @@
-[{
-  "@included": [
-    {"http://example.org/prop": [{"@value": "value1"}]},
-    {"http://example.org/prop": [{"@value": "value2"}]}
-  ]
-}]
+{
+    "/included1": "@included",
+    "/included1/prop": "http://example.org/prop",
+    "/included2": "@included",
+    "/included2/prop": "http://example.org/prop"
+}

@@ -1,11 +1,3 @@
-[{
-  "@type": [
-    "http://example/Foo",
-    "http://example/Bar"
-  ],
-  "http://example/foo-prop": [
-    {
-      "@value": "foo"
-    }
-  ]
-}]
+{
+    "/prop": "http://example/foo-prop"
+}

@@ -1,13 +1,5 @@
-[{
-  "http://example.org/input": [
-    {
-      "@graph": [{
-        "@graph": [{
-          "http://example.org/value": [{"@value": "x"}]
-        }, {
-          "http://example.org/value": [{"@value": "y"}]
-        }]
-      }]
-    }
-  ]
-}]
+{
+    "/input/@graph/0/value": "http://example.org/value",
+    "/input/@graph/1/value": "http://example.org/value",
+    "/input": "http://example.org/input"
+}

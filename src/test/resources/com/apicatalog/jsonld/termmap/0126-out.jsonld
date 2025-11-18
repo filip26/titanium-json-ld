@@ -1,14 +1,4 @@
-[
-  {
-    "@id": "ex:id",
-    "ex:prop": [
-      {
-        "ex:value": [
-          {
-            "@value": "v"
-          }
-        ]
-      }
-    ]
-  }
-]
+{
+    "/prop/value": "ex:value",
+    "/prop": "ex:prop"
+}

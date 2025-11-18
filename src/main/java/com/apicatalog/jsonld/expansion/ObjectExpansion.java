@@ -117,7 +117,7 @@ public final class ObjectExpansion {
 
         final var normalized = normalize(result, property, params);
         
-        if (property != null) {
+        if (property != null || term != null) {
             params.runtime().endMap(term != null ? term : property);
         }
         

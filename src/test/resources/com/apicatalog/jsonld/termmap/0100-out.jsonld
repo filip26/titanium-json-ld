@@ -1,13 +1,7 @@
-[{
-  "http://example.org/input": [{
-    "@id": "http://example.com/g1",
-    "@graph": [{
-      "http://example.org/value": [{"@value": "x"}]
-    }]
-  }, {
-    "@id": "http://example.com/g2",
-    "@graph": [{
-      "http://example.org/value": [{"@value": "y"}]
-    }]
-  }]
-}]
+{
+    "/input/http:~1~1example.com~1g1": "@index",
+    "/input/http:~1~1example.com~1g1/value": "http://example.org/value",
+    "/input/http:~1~1example.com~1g2": "@index",
+    "/input/http:~1~1example.com~1g2/value": "http://example.org/value",
+    "/input": "http://example.org/input"
+}

@@ -1,9 +1,4 @@
-[
-  {
-    "http://a.example/out": [{
-      "http://a.example/in": [{
-        "@value":"ab"
-      }]
-    }]
-  }
-]
+{
+    "/outer/inner": "http://a.example/in",
+    "/outer": "http://a.example/out"
+}

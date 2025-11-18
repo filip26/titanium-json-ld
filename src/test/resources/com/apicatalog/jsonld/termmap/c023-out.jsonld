@@ -1,7 +1,4 @@
-[{
-  "@type": ["ex:Outer"],
-  "ex:nested": [{
-    "@type": ["ex:Inner"],
-    "ex:foo": [{"@id": "ex:Foo"}]
-  }]
-}]
+{
+    "/nested/foo": "ex:foo",
+    "/nested": "ex:nested"
+}

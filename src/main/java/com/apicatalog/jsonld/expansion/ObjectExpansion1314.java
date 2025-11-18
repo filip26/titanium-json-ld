@@ -1214,6 +1214,8 @@ final class ObjectExpansion1314 {
                     }
                 }
 
+                params.runtime().beginMap(nestedKey);
+                
                 // 14.2.2
                 ObjectExpansion1314
                         .with(params)
@@ -1222,6 +1224,8 @@ final class ObjectExpansion1314 {
                         .typeContext(typeContext)
                         .nest(new LinkedHashMap<>())
                         .recurse(activeContext, nestValue, adapter, nestedKey);
+                
+                params.runtime().endMap(nestedKey);
             }
         }
     }

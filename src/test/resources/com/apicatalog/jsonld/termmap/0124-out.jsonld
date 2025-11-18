@@ -1,9 +1,3 @@
-[
-  {
-    "http://example.org/ns/foo": [
-      {
-        "@value": "bar"
-      }
-    ]
-  }
-]
+{
+    "/foo": "http://example.org/ns/foo"
+}

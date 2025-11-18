@@ -258,7 +258,11 @@ public final class Expansion {
             return List.of();
         }
 
-        if (!Keywords.INDEX.equals(expandedTerm)) {
+        final var indexedSingleton = Keywords.INDEX.equals(expandedTerm)
+                && (nodeAdapter.type(node) != NodeType.COLLECTION
+                        || nodeAdapter.isSingleElement(node));
+                
+        if (!indexedSingleton) {
             params.runtime().beginList(term);
         }
 
@@ -277,7 +281,7 @@ public final class Expansion {
                     item,
                     nodeAdapter,
                     property,
-                    Keywords.INDEX.equals(expandedTerm)
+                    indexedSingleton
                             ? term
                             : Integer.toString(counter++),
                     null,
@@ -304,7 +308,7 @@ public final class Expansion {
             }
         }
 
-        if (!Keywords.INDEX.equals(expandedTerm)) {
+        if (!indexedSingleton) {
             params.runtime().endList(term);
         }
 

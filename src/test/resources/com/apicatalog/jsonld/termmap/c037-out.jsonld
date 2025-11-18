@@ -1,3 +1,4 @@
-[{
-  "http://example.org/nest/property": [{"@value": "should be in /nest"}]
-}]
+{
+    "/nest": "@nest",
+    "/nest/property": "http://example.org/nest/property"
+}

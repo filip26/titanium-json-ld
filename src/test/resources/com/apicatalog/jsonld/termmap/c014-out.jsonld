@@ -1,8 +1,4 @@
-[{
-  "http://example/foo": [{
-    "@value": "will-exist"
-  }],
-  "http://example/p": [{
-    "@type": ["http://example/Type"]
-  }]
-}]
+{
+    "/foo": "http://example/foo",
+    "/p": "http://example/p"
+}
