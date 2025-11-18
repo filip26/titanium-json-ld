@@ -1,6 +1,6 @@
 {
-    "mylist1": "http://example.com/mylist1",
-    "myset1": "http://example.com/myset1",
-    "myset2": "http://example.com/myset2",
-    "myset3": "http://example.com/myset3"
+    "/mylist1": "http://example.com/mylist1",
+    "/myset1": "http://example.com/myset1",
+    "/myset2": "http://example.com/myset2",
+    "/myset3": "http://example.com/myset3"
 }

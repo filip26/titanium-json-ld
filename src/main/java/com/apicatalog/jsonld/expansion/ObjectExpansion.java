@@ -63,7 +63,7 @@ public final class ObjectExpansion {
 
     public Object expand(final Context context, final String property) throws JsonLdException {
 
-        if (property != null) {
+        if (property != null || term != null) {
             params.runtime().beginMap(term != null ? term : property);
         }
 

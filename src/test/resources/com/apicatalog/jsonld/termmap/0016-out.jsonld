@@ -1,13 +1,9 @@
 {
-    "http://example.com/emptyobj": "http://example.com/emptyobj",
-    "mylist1": "http://example.com/mylist1",
-    "mylist2": "http://example.com/mylist2",
-    "myproperty": [
-        "http://example.com/myproperty",
-        {
-            "http://example.org/myproperty2": "http://example.org/myproperty2"
-        }
-    ],
-    "myset1": "http://example.com/myset1",
-    "myset2": "http://example.com/myset2"
+    "/http:~1~1example.com~1emptyobj": "http://example.com/emptyobj",
+    "/mylist1": "http://example.com/mylist1",
+    "/mylist2": "http://example.com/mylist2",
+    "/myproperty/http:~1~1example.org~1myproperty2": "http://example.org/myproperty2",
+    "/myproperty": "http://example.com/myproperty",
+    "/myset1": "http://example.com/myset1",
+    "/myset2": "http://example.com/myset2"
 }

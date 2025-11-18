@@ -80,7 +80,7 @@ public final class Expansion {
             final String term,
             final String expandedTerm,
             final Params params) throws JsonLdException {
-
+System.out.println("expand " + node);
         // 1. If element is null, return null
         if (nodeAdapter.isNull(node)) {
             return null;
@@ -262,13 +262,15 @@ public final class Expansion {
         
         final var result = new ArrayList<Object>();
 
+        var counter = 0;
+        
         // 5.2.
         for (final var item : nodeAdapter.asIterable(node)) {
 
             params.runtime().tick();
 
             // 5.2.1
-            var expanded = expand(context, item, nodeAdapter, property, term, expandedTerm, params);
+            var expanded = expand(context, item, nodeAdapter, property, Integer.toString(counter++), null, params);
 
             // 5.2.2
             if (expanded instanceof Collection<?> list

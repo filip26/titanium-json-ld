@@ -107,38 +107,50 @@ class TermMapTest {
             public void onBeginMap(String key) {
                 System.out.println("> map " + key + "; " + path);
                 path.push(escapeJsonPointerSegment(key));
+//                path.push(0);
             }
 
             @Override
             public void onEndMap(String key) {
                 System.out.println("< map " + key + "; " + path);
+//                path.pop();
                 path.pop();
-                if (path.peek() instanceof Integer order) {
-                    path.pop();
-                    path.push(order + 1);
-                }                
+//                if (path.peek() instanceof Integer order) {
+//                    path.pop();
+//                    path.push(order + 1);
+//                }                
             }
-            
+
             @Override
             public void onBeginList(String key) {
                 System.out.println("> list " + key);
-                path.push(0);
+                if (key != null) {
+                    path.push(key);
+                }
+//                path.push(0);
             }
-            
+
             @Override
             public void onEndList(String key) {
                 System.out.println("< list " + key);
-                path.pop();
+                if (key != null) {
+                    path.pop();
+                }
+//                path.pop();
             }
 
             @Override
             public void onTerm(String key, String uri) {
                 System.out.println("term " + key + " -> " + uri + "; " + path);
                 if (path.isEmpty()) {
-                    termMap.put(escapeJsonPointerSegment(key), uri);
-                } else {                    
-                    termMap.put(path.stream().map(Object::toString).collect(Collectors.joining("/"))
-                            + "/" + escapeJsonPointerSegment(key), uri);
+                    termMap.put("/" + escapeJsonPointerSegment(key), uri);
+                } else {
+                    var pointer = new ArrayList<String>(path.size());
+                    path.stream().map(Object::toString).forEach(pointer::add);
+                    Collections.reverse(pointer);
+                    pointer.add(escapeJsonPointerSegment(key));
+
+                    termMap.put("/" + String.join("/", pointer), uri);
                     System.out.println("XXX " + path.peek() + ", " + (path.peek() instanceof Integer order));
                     if (path.peek() instanceof Integer order) {
                         path.pop();
@@ -322,13 +334,16 @@ class TermMapTest {
         StringBuilder sb = new StringBuilder(n + 4); // small growth room
         for (int i = 0; i < n; ++i) {
             char c = s.charAt(i);
-            if (c == '~') sb.append("~0");
-            else if (c == '/') sb.append("~1");
-            else sb.append(c);
+            if (c == '~')
+                sb.append("~0");
+            else if (c == '/')
+                sb.append("~1");
+            else
+                sb.append(c);
         }
         return sb.toString();
     }
-    
+
     private final TreeIO read(final String name) throws JsonLdException, TreeIOException, IOException {
         try (final var is = getClass().getResourceAsStream(name)) {
             return JakartaTestSuite.PARSER.parse(is);

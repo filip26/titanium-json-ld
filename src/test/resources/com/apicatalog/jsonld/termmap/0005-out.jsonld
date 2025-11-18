@@ -1,7 +1,7 @@
 {
-    "know/0/homepage": "http://xmlns.com/foaf/0.1/homepage",
-    "know/0/name": "http://xmlns.com/foaf/0.1/name",
-    "know/1/homepage": "http://xmlns.com/foaf/0.1/homepage",
-    "know/1/name": "http://xmlns.com/foaf/0.1/name",
-    "know": "http://xmlns.com/foaf/0.1/knows"
+    "/know/0/homepage": "http://xmlns.com/foaf/0.1/homepage",
+    "/know/0/name": "http://xmlns.com/foaf/0.1/name",
+    "/know/1/homepage": "http://xmlns.com/foaf/0.1/homepage",
+    "/know/1/name": "http://xmlns.com/foaf/0.1/name",
+    "/know": "http://xmlns.com/foaf/0.1/knows"
 }
