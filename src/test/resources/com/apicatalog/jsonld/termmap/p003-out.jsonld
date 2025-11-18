@@ -1,4 +1,4 @@
-[{
- "http://example/a": [{"@id": "http://example.org/foo"}],
- "http://example/b": [{"@id": "http://example.org/bar"}]
-}]
+{
+    "/a": "http://example/a",
+    "/b": "http://example/b"
+}

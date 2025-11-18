@@ -18,18 +18,12 @@ package com.apicatalog.jsonld.custom;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -80,70 +74,46 @@ class TermMapTest {
                         "/com/apicatalog/jsonld/test/vc-utopia-termmap-2.json"));
     }
 
-//    @ParameterizedTest
-//    @MethodSource("termMapCases")
-//    void testTermMapper(String input, String output) throws JsonLdException, TreeIOException, IOException {
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")
     void testTermMapper(TestCase testCase) {
-
-//        var document = read(testCase.input);
-//
-//        var options = Options.with(UTOPIA_LOADER);
 
         final var termMap = new LinkedHashMap<String, Object>();
 
         var termMapper = new TermMapper() {
 
-            Deque<Map<String, Object>> stack = new ArrayDeque<>();
-
-            Deque<Object> path = new ArrayDeque<>();
-
-            {
-//                stack.push(termMap);
-            }
+            final Deque<Object> path = new ArrayDeque<>();
 
             @Override
             public void onBeginMap(String key) {
-                System.out.println("> map " + key + "; " + path);
                 path.push(escapeJsonPointerSegment(key));
-//                path.push(0);
             }
 
             @Override
             public void onEndMap(String key) {
-                System.out.println("< map " + key + "; " + path);
-//                path.pop();
                 path.pop();
-//                if (path.peek() instanceof Integer order) {
-//                    path.pop();
-//                    path.push(order + 1);
-//                }                
             }
 
             @Override
             public void onBeginList(String key) {
-                System.out.println("> list " + key);
                 if (key != null) {
                     path.push(key);
                 }
-//                path.push(0);
             }
 
             @Override
             public void onEndList(String key) {
-                System.out.println("< list " + key);
                 if (key != null) {
                     path.pop();
                 }
-//                path.pop();
             }
 
             @Override
             public void onTerm(String key, String uri) {
-                System.out.println("term " + key + " -> " + uri + "; " + path);
+
                 if (path.isEmpty()) {
                     termMap.put("/" + escapeJsonPointerSegment(key), uri);
+
                 } else {
                     var pointer = new ArrayList<String>(path.size());
                     path.stream().map(Object::toString).forEach(pointer::add);
@@ -151,7 +121,7 @@ class TermMapTest {
                     pointer.add(escapeJsonPointerSegment(key));
 
                     termMap.put("/" + String.join("/", pointer), uri);
-                    System.out.println("XXX " + path.peek() + ", " + (path.peek() instanceof Integer order));
+
                     if (path.peek() instanceof Integer order) {
                         path.pop();
                         path.push(order + 1);
@@ -160,10 +130,9 @@ class TermMapTest {
             }
         };
         try {
-            var options = testCase.getOptions();// .loader(JakartaTestSuite.LOADER);
+            var options = testCase.getOptions();
 
-            var runtime = ExecutionEvents.of(options);
-            runtime.termMapper(termMapper);
+            var runtime = ExecutionEvents.of(options).termMapper(termMapper);
 
             var expanded = Expander.expand(
                     Document.load(testCase.input, options.loader()),
@@ -172,9 +141,6 @@ class TermMapTest {
 
             assertNotNull(expanded);
 
-//            var x = normalize(termMap);
-            System.out.println("out > " + termMap);
-//System.out.println("out > " + x);
             validateJson(
                     testCase,
                     options,
@@ -256,11 +222,5 @@ class TermMapTest {
                 sb.append(c);
         }
         return sb.toString();
-    }
-
-    private final TreeIO read(final String name) throws JsonLdException, TreeIOException, IOException {
-        try (final var is = getClass().getResourceAsStream(name)) {
-            return JakartaTestSuite.PARSER.parse(is);
-        }
     }
 }

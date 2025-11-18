@@ -1,20 +1,4 @@
-[
-  {
-    "@type": [
-      "http://example.com/Parent"
-    ],
-    "http://example.com/foo": [
-      {
-        "@type": [
-          "http://example.com/Child"
-        ],
-        "http://example.com/foo": [
-          {
-            "@id": "http://example.com/test"
-          }
-        ]
-      }
-    ]
-  }
-]
-
+{
+    "/foo/foo": "http://example.com/foo",
+    "/foo": "http://example.com/foo"
+}

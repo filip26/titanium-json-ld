@@ -80,7 +80,7 @@ public final class Expansion {
             final String term,
             final String expandedTerm,
             final Params params) throws JsonLdException {
-        System.out.println("expand " + node);
+
         // 1. If element is null, return null
         if (nodeAdapter.isNull(node)) {
             return null;
@@ -257,7 +257,7 @@ public final class Expansion {
         if (nodeAdapter.isEmptyCollection(node)) {
             return List.of();
         }
-System.out.println("array " + property + ", " + term + ", " + expandedTerm);
+
         final var indexedSingleton = Keywords.INDEX.equals(expandedTerm)
                 && (nodeAdapter.type(node) != NodeType.COLLECTION
                         || nodeAdapter.isSingleElement(node));

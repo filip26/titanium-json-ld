@@ -1,6 +1,3 @@
-[{
-  "@id": "ex:outer",
-  "ex:foo": [{
-    "@id": "ex:inner"
-  }]
-}]
+{
+    "/foo": "ex:foo"
+}

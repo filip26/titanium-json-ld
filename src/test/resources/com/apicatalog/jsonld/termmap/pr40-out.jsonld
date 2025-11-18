@@ -1,7 +1,4 @@
-[{
-  "@id": "ex:outer",
-  "http://vocab.org/foo": [{
-    "@id": "ex:inner",
-    "http://example.org/other": [{"@value": "baz"}]
-  }]
-}]
+{
+    "/foo/bar": "http://example.org/other",
+    "/foo": "http://vocab.org/foo"
+}

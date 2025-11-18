@@ -1,8 +1,8 @@
-[{
-  "@id": "http://example.com/article",
-  "http://example.com/author": [
-    {"@id": "http://example.com/person/2", "http://example.com/prop": [{"@value": "guest"}, {"@value": "foo"}]},
-    {"@id": "http://example.com/person/3", "http://example.com/prop": [{"@value": "guest"}, {"@value": "foo"}]},
-    {"@id": "http://example.com/person/1", "http://example.com/prop": [{"@value": "regular"}, {"@value": "foo"}]}
-  ]
-}]
+{
+    "/author/guest": "@index",
+    "/author/guest/0/prop": "http://example.com/prop",
+    "/author/guest/1/prop": "http://example.com/prop",
+    "/author/regular": "@index",
+    "/author/regular/http:~1~1example.com~1prop": "http://example.com/prop",
+    "/author": "http://example.com/author"
+}
