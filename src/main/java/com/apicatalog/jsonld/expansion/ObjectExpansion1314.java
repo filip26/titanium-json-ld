@@ -79,9 +79,9 @@ final class ObjectExpansion1314 {
                 ? adapter.keyStream(element).sorted(TreeIO.comparingElement(adapter::asString)).iterator()
                 : adapter.keyStream(element).iterator();
 
-        if (activeProperty != null || term != null) {
-            params.runtime().beginMap(term != null ? term : activeProperty);
-        }
+//        if (activeProperty != null || term != null) {
+//            params.runtime().beginMap(term != null ? term : activeProperty);
+//        }
 
         // 13.
         while (keys.hasNext()) {
@@ -512,9 +512,9 @@ final class ObjectExpansion1314 {
             processNest(activeContext, element, adapter);
         }
 
-        if (activeProperty != null || term != null) {
-            params.runtime().endMap(term != null ? term : activeProperty);
-        }
+//        if (activeProperty != null || term != null) {
+//            params.runtime().endMap(term != null ? term : activeProperty);
+//        }
 
 //        params.runtime().onEndMap(activeProperty);
     }
@@ -1164,6 +1164,10 @@ final class ObjectExpansion1314 {
             final String activeProperty,
             final String term) throws JsonLdException {
 
+        if (activeProperty != null || term != null) {
+            params.runtime().beginMap(term != null ? term : activeProperty);
+        }
+
         var activeContext = context;
 
         params.runtime().tick();
@@ -1189,8 +1193,12 @@ final class ObjectExpansion1314 {
         }
 
         // steps 13-14
-
         expand(activeContext, element, adapter, activeProperty, term);
+        
+        if (activeProperty != null || term != null) {
+            params.runtime().endMap(term != null ? term : activeProperty);
+        }
+
     }
 
     private void processNest(
