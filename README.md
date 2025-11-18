@@ -1,17 +1,25 @@
 # Titanium JSON-LD 1.1 Processor & API
 
-An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-based Serialization for Linked Data) specification in Java, utilizing [Jakarta JSON Processing](https://github.com/eclipse-ee4j/jsonp).
+An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-based Serialization for Linked Data) specification in Java.
 
-### 🎯 Goals
-- Full conformance to the specification
-- Secure, stable, fast, high-quality code (**~2900 tests**)
+### ✨ Features
+
+- Full conformance with the JSON-LD 1.1 specification  
+- Secure, stable, high-performance implementation with ~3000 tests
 - Minimal external dependencies
-- Simple and easy-to-use
-
-### 🚦 Status
+- Simple, easy-to-use API
+- Extensions (since v2.0):
+  - JSON-LD-star expansion (experimental)
+  - Processing policies: undefined terms, time/space constraints
+  - Generated TypeMap / TermMap (experimental)
+  - Built-in loaders: HTTPS, file, classpath, scheme router, URI rewriter
+  - Generalized processing with [tree-io](https://github.com/filip26/tree-io) (Jakarta JSON, Jackson, or anything else)
+    
+### 🎯 Status
 
 [![Java 17 CI](https://github.com/filip26/titanium-json-ld/actions/workflows/java17-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java17-build.yml)
 [![CodeQL](https://github.com/filip26/titanium-json-ld/actions/workflows/codeql.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/codeql.yml)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/c530c6b43b0243c08ce81521c5b4cf6a)](https://app.codacy.com/gh/filip26/titanium-json-ld/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/c530c6b43b0243c08ce81521c5b4cf6a)](https://app.codacy.com/gh/filip26/titanium-json-ld/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
 [![Javadoc](https://javadoc.io/badge2/com.apicatalog/titanium-json-ld/javadoc.svg)](https://javadoc.io/doc/com.apicatalog/titanium-json-ld)
 [![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/titanium-json-ld.svg?label=Maven%20Central)](https://mvnrepository.com/artifact/com.apicatalog/titanium-json-ld)
@@ -185,7 +193,7 @@ implementation("com.apicatalog:titanium-json-ld-jre8:1.7.0")
 
 ### JSON-P Provider
 
-Titanium relies on a **JSON-P (Jakarta JSON Processing)** provider. Ensure that one is available on your classpath.
+Titanium v1.x.x relies on a **JSON-P (Jakarta JSON Processing)** provider. Ensure that one is available on your classpath.
 
 #### Maven
 

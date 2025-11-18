@@ -1,0 +1,13 @@
+{
+    "/#fragment-works": "http://example.com/relative#fragment-works",
+    "/..~1": "http://example.com/relative../",
+    "/..~1..~1..~1..~1..~1still-root": "http://example.com/relative../../../../../still-root",
+    "/..~1..~1.~1..~1.~1..~1..~1too-many-dots": "http://example.com/relative../.././.././../../too-many-dots",
+    "/..~1..~1parent-parent-eq-root": "http://example.com/relative../../parent-parent-eq-root",
+    "/..~1parent": "http://example.com/relative../parent",
+    "/.~1": "http://example.com/relative./",
+    "/~1~1example.org~1scheme-relative": "http://example.com/relative//example.org/scheme-relative",
+    "/~1absolute": "http://example.com/relative/absolute",
+    "/?query=works": "http://example.com/relative?query=works",
+    "/link": "http://example.com/relativelink"
+}

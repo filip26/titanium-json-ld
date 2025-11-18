@@ -30,7 +30,7 @@ import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.loader.UriBaseRewriter;
+import com.apicatalog.jsonld.loader.UriRewriter;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.model.RdfQuadSet;
 import com.apicatalog.rdf.nquads.NQuadsReader;
@@ -176,10 +176,9 @@ public final class TestCase {
     public Options getOptions() {
         return options.setup(
                 Options.with(
-                        new UriBaseRewriter(
-                                baseUri,
-                                testsBase,
-                                loader))
+                        UriRewriter.newBuilder(loader)
+                                .rebase(baseUri, testsBase)
+                                .build())
                         .ordered(true));
     }
 

@@ -18,6 +18,9 @@ package com.apicatalog.jsonld.lang;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * @see <a href="https://www.w3.org/TR/json-ld11/#keywords">JSON-LD Keywords</a>
+ */
 public final class Keywords {
 
     public static final String ANY = "@any";

@@ -1,0 +1,7 @@
+{
+    "/indexContainer/A": "@index",
+    "/indexContainer/B": "@index",
+    "/indexContainer/C": "@index",
+    "/indexContainer": "http://example.com/container",
+    "/property": "http://example.com/property"
+}

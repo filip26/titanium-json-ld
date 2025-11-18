@@ -1,0 +1,15 @@
+{
+    "/identifiedByType": "@nest",
+    "/instanceOf": "@nest",
+    "/provisionActivityByType": "@nest",
+    "/identifiedByType/Isbn": "@nest",
+    "/identifiedByType/Isbn/value": "http://purl.org/ontology/bibo/isbn",
+    "/instanceOf/contributionByRole": "@nest",
+    "/instanceOf/contributionByRole/aut/agent": "@nest",
+    "/instanceOf/contributionByRole/aut/agent/name": "http://www.w3.org/2000/01/rdf-schema#label",
+    "/instanceOf/contributionByRole/aut": "http://purl.org/dc/terms/creator",
+    "/provisionActivityByType/Publication": "@nest",
+    "/provisionActivityByType/Publication/agent/name": "http://www.w3.org/2000/01/rdf-schema#label",
+    "/provisionActivityByType/Publication/agent": "http://purl.org/dc/terms/publisher",
+    "/provisionActivityByType/Publication/date": "http://purl.org/dc/terms/published"
+}

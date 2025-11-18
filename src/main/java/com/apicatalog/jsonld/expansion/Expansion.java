@@ -28,7 +28,7 @@ import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LdAdapter;
-import com.apicatalog.jsonld.processor.Execution;
+import com.apicatalog.jsonld.processor.ExecutionEvents;
 import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
@@ -47,7 +47,7 @@ public final class Expansion {
             boolean fromMap,
             URI baseUrl,
             Options options,
-            Execution runtime) {
+            ExecutionEvents runtime) {
 
         /**
          * The {@code frameExpansion} flag.
@@ -77,6 +77,8 @@ public final class Expansion {
             final Object node,
             final TreeAdapter nodeAdapter,
             final String activeProperty,
+            final String term,
+            final String expandedTerm,
             final Params params) throws JsonLdException {
 
         // 1. If element is null, return null
@@ -88,7 +90,7 @@ public final class Expansion {
 
         // 5. If element is an array,
         if (nodeType == NodeType.COLLECTION) {
-            return array(activeContext, node, nodeAdapter, activeProperty, params);
+            return array(activeContext, node, nodeAdapter, activeProperty, term, expandedTerm, params);
         }
 
         // 3. If active property has a term definition in active context with a local
@@ -102,20 +104,25 @@ public final class Expansion {
         if (params.runtime().collectsContextKeys()
                 && propertyContext != null
                 && propertyContext.isMap()) {
-            propertyContext
+            params.runtime().onContextKeys(propertyContext
                     .keyStream()
-                    .map(String.class::cast)
-                    .forEach(params.runtime()::onContextKey);
+                    .map(propertyContext.adapter()::asString)
+                    .toList());
         }
 
         // 4. If element is a scalar
         if (nodeType.isScalar()) {
-            return scalar(activeContext,
+            final var scalar = scalar(activeContext,
                     activeProperty,
                     propertyContext,
                     node,
                     nodeAdapter,
                     params);
+
+            if (Keywords.SET.equals(expandedTerm)) {
+                params.runtime().term(term, null);
+            }
+            return scalar;
         }
 
         params.runtime().tick();
@@ -131,6 +138,7 @@ public final class Expansion {
                         params.baseUrl,
                         params.options,
                         params.runtime))
+                .term(term)
                 .expand(activeContext, activeProperty);
     }
 
@@ -189,8 +197,7 @@ public final class Expansion {
         if (propertyContext != null) {
             return ValueExpansion.expand(context
                     .newContext(params.options().loader(), params.runtime())
-                    .build(propertyContext.node(),
-                            propertyContext.adapter(),
+                    .build(propertyContext,
                             context.findTerm(property)
                                     .map(TermDefinition::getBaseUrl)
                                     .orElse(null)),
@@ -228,6 +235,8 @@ public final class Expansion {
      * @param node
      * @param nodeAdapter
      * @param property
+     * @param term
+     * @param expandedTerm
      * @param params
      * 
      * @return a {@link Collection} containing the expanded values, which may
@@ -241,13 +250,25 @@ public final class Expansion {
             final Object node,
             final TreeAdapter nodeAdapter,
             final String property,
+            final String term,
+            final String expandedTerm,
             final Params params) throws JsonLdException {
 
         if (nodeAdapter.isEmptyCollection(node)) {
             return List.of();
         }
 
+        final var indexedSingleton = Keywords.INDEX.equals(expandedTerm)
+                && (nodeAdapter.type(node) != NodeType.COLLECTION
+                        || nodeAdapter.isSingleElement(node));
+                
+        if (!indexedSingleton) {
+            params.runtime().beginList(term);
+        }
+
         final var result = new ArrayList<Object>();
+
+        var counter = 0;
 
         // 5.2.
         for (final var item : nodeAdapter.asIterable(node)) {
@@ -255,7 +276,16 @@ public final class Expansion {
             params.runtime().tick();
 
             // 5.2.1
-            var expanded = expand(context, item, nodeAdapter, property, params);
+            var expanded = expand(
+                    context,
+                    item,
+                    nodeAdapter,
+                    property,
+                    indexedSingleton
+                            ? term
+                            : Integer.toString(counter++),
+                    null,
+                    params);
 
             // 5.2.2
             if (expanded instanceof Collection<?> list
@@ -276,6 +306,10 @@ public final class Expansion {
                 // append non-null element
                 result.add(expanded);
             }
+        }
+
+        if (!indexedSingleton) {
+            params.runtime().endList(term);
         }
 
         // 5.3

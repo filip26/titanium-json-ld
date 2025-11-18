@@ -33,7 +33,7 @@ import com.apicatalog.jsonld.lang.CompactUri;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.processor.Execution;
+import com.apicatalog.jsonld.processor.ExecutionEvents;
 import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.web.lang.LanguageTag;
@@ -81,7 +81,7 @@ public final class TermDefinitionBuilder {
 
     private final Map<String, Boolean> defined;
     private final DocumentLoader loader;
-    private final Execution runtime;
+    private final ExecutionEvents runtime;
 
     // optional
     private URI baseUrl;
@@ -92,7 +92,7 @@ public final class TermDefinitionBuilder {
 
     private Collection<String> remoteContexts;
 
-    private TermDefinitionBuilder(ActiveContext activeContext, Object localContext, TreeAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader, final Execution runtime) {
+    private TermDefinitionBuilder(ActiveContext activeContext, Object localContext, TreeAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader, final ExecutionEvents runtime) {
         this.activeContext = activeContext;
         this.localContext = localContext;
         this.adapter = adapter;
@@ -108,7 +108,7 @@ public final class TermDefinitionBuilder {
     }
 
     public static final TermDefinitionBuilder with(ActiveContext activeContext, Object localContext, TreeAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader,
-            final Execution runtime) {
+            final ExecutionEvents runtime) {
         return new TermDefinitionBuilder(activeContext, localContext, adapter, defined, loader, runtime);
     }
 
@@ -416,12 +416,12 @@ public final class TermDefinitionBuilder {
 
                 activeContext
                         .newTerm(
+                                compactUri.prefix(),
                                 localContext,
                                 adapter,
                                 defined,
                                 loader,
-                                runtime)
-                        .create(compactUri.prefix());
+                                runtime);
             }
             // 15.2.
             if (compactUri != null && compactUri.isNotBlank() && activeContext.containsTerm(compactUri.prefix())) {
@@ -574,18 +574,6 @@ public final class TermDefinitionBuilder {
             } else {
                 throw new JsonLdException(ErrorCode.INVALID_LANGUAGE_MAPPING);
             }
-
-//            if (JsonUtils.isNull(language) || JsonUtils.isString(language)) {
-//
-//                if (JsonUtils.isString(language) && !LanguageTag.isWellFormed(((JsonString) language).getString())) {
-//                    LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", ((JsonString) language).getString());
-//                }
-//
-//                definition.setLanguageMapping(language);
-//
-//            } else {
-//                throw new JsonLdError(JsonLdErrorCode.INVALID_LANGUAGE_MAPPING);
-//            }
         }
 
         // 23.
@@ -763,5 +751,4 @@ public final class TermDefinitionBuilder {
                         || containers.contains(Keywords.LANGUAGE)
                         || containers.contains(Keywords.TYPE));
     }
-
 }

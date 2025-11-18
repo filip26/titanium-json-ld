@@ -1,0 +1,4 @@
+{
+    "/bar/baz": "http://example.org/baz",
+    "/bar": "http://example/bar"
+}

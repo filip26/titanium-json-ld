@@ -47,6 +47,7 @@ public final class ObjectExpansion {
     private final Params params;
 
     private Context activeContext;
+    private String term;
 
     public ObjectExpansion(
             final TreeIO propertyContext,
@@ -62,7 +63,9 @@ public final class ObjectExpansion {
 
     public Object expand(final Context context, final String property) throws JsonLdException {
 
-        params.runtime().onBeforeMap(property);
+        if (property != null || term != null) {
+            params.runtime().beginMap(term != null ? term : property);
+        }
 
         activeContext = initPreviousContext(
                 context,
@@ -76,8 +79,7 @@ public final class ObjectExpansion {
                     .newContext(params.options().loader(), params.runtime())
                     .overrideProtected(true)
                     .build(
-                            propertyContext.node(),
-                            propertyContext.adapter(),
+                            propertyContext,
                             activeContext
                                     .findTerm(property)
                                     .map(TermDefinition::getBaseUrl)
@@ -88,26 +90,12 @@ public final class ObjectExpansion {
         final var contextValue = adapter.property(Keywords.CONTEXT, element);
 
         if (contextValue != null) {
-
-            // CBOR-LD collector
-//            if (params.runtime().contextKeysCollector() != null) {
-//                
-//                for (final JsonValue context : JsonUtils.toJsonArray(jsonContext)) {
-//                    final ActiveContext ac = new ActiveContext(activeContext.getBaseUri(), activeContext.getBaseUrl(), activeContext.runtime())
-//                            .newContext()
-//                            .create(context, baseUrl);
-//                    appliedContexts.accept(ac.getTerms());
-//                }
-//
-//                
-//                adapter.keyStream(localContext)
-//                        .map(String.class::cast)
-//                        .forEach(runtime.contextKeysCollector()::accept);
-//            }
-
             activeContext = activeContext
                     .newContext(params.options().loader(), params.runtime())
+                    .acceptInlineContext(params.options().useInlineContexts())
+                    .collectKeys(params.runtime()::onContextKeys)
                     .build(contextValue, adapter, params.baseUrl());
+
         }
 
         // 10.
@@ -125,10 +113,23 @@ public final class ObjectExpansion {
                 .result(result)
                 .typeContext(typeContext)
                 .nest(new LinkedHashMap<>())
-                .expand(activeContext, element, adapter, property);
+                .expand(activeContext, element, adapter, property, term);
 
-        params.runtime().onAfterMap(property);
+        final var normalized = normalize(result, property, params);
+        
+        if (property != null || term != null) {
+            params.runtime().endMap(term != null ? term : property);
+        }
+        
+        return normalized;
 
+    }
+    
+    private Object normalize(
+            final Map<String, Object> result,
+            final String property,
+            final Params params
+            ) throws JsonLdException {
         // 15.
         if (result.containsKey(Keywords.VALUE)) {
             return normalizeValue(result, property, params.frameExpansion());
@@ -164,15 +165,22 @@ public final class ObjectExpansion {
 
             boolean revert = true;
 
-            var it = adapter.keyStream(element).sorted(TreeIO.comparingElement(adapter::stringValue)).iterator();
+            final var it = adapter.keyStream(element)
+                    .map(adapter::stringValue)
+                    .sorted()
+                    .iterator();
 
             while (it.hasNext()) {
 
                 params.runtime().tick();
 
-                var key = adapter.stringValue(it.next());
+                final var key = it.next();
 
-                final String expandedKey = UriExpansion.with(context, params.options().loader(), params.runtime())
+                final var expandedKey = UriExpansion
+                        .with(
+                                context,
+                                params.options().loader(),
+                                params.runtime())
                         .vocab(true)
                         .expand(key);
 
@@ -196,17 +204,22 @@ public final class ObjectExpansion {
 
         final var typeKeys = adapter
                 .keyStream(element)
-                .sorted(TreeIO.comparingElement(adapter::asString))
+                .map(adapter::asString)
+                .sorted()
                 .iterator();
 
         // 11.
         while (typeKeys.hasNext()) {
 
-            final var key = adapter.asString(typeKeys.next());
+            final var key = typeKeys.next();
 
             params.runtime().tick();
 
-            var expandedKey = UriExpansion.with(activeContext, params.options().loader(), params.runtime())
+            var expandedKey = UriExpansion
+                    .with(
+                            activeContext,
+                            params.options().loader(),
+                            params.runtime())
                     .vocab(true)
                     .expand(key);
 
@@ -216,7 +229,7 @@ public final class ObjectExpansion {
                     typeKey = key;
                 }
 
-                params.runtime().onTypeKey(key);
+                params.runtime().type(key, Keywords.TYPE);
 
                 // 11.2
                 var terms = adapter.asStream(adapter.property(key, element))
@@ -238,18 +251,11 @@ public final class ObjectExpansion {
 
                     if (localContext != null) {
 
-                        // CBOR-LD collector
-//                        if (params.runtime().contextKeysCollector() != null) {
-//                            localContext.adapter().keyStream(localContext.node())
-//                                    .map(String.class::cast)
-//                                    .forEach(params.runtime().contextKeysCollector()::accept);
-//                        }
-
                         activeContext = activeContext
                                 .newContext(params.options().loader(), params.runtime())
                                 .propagate(false)
-                                .build(localContext.node(),
-                                        localContext.adapter(),
+                                .collectKeys(params.runtime()::onContextKeys)
+                                .build(localContext,
                                         activeContext.findTerm(term)
                                                 .map(TermDefinition::getBaseUrl)
                                                 .orElse(null));
@@ -417,5 +423,10 @@ public final class ObjectExpansion {
 
         }
         return result;
+    }
+
+    public ObjectExpansion term(String term) {
+        this.term = term;
+        return this;
     }
 }

@@ -17,6 +17,7 @@ package com.apicatalog.jsonld.test;
 
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -48,6 +49,7 @@ public class TestOptions {
     public Boolean useNativeTypes;
     public Boolean useRdfType;
     public Boolean useJcs;
+    public Boolean useInlineContexts;
     public Boolean omitGraph;
     public Boolean useNumericId;
     public Boolean rdfStar;
@@ -157,14 +159,17 @@ public class TestOptions {
             case "useJCS":
                 options.useJcs = adapter.isTrue(entry.getValue());
                 break;
-                
+
             case "rdfstar":
                 options.rdfStar = adapter.isTrue(entry.getValue());
                 break;
-                
+
+            case "useInlineContexts":
+                options.useInlineContexts = adapter.isTrue(entry.getValue());
+
             case "processorFeature":
                 // ignore feature declaration
-                break;                
+                break;
 
             default:
                 System.err.println("An unknown test option " + key + " = " + entry.getValue() + ".");
@@ -231,25 +236,24 @@ public class TestOptions {
                             });
         }
 
-        if (omitGraph != null) {
-            options.omitGraph(omitGraph);
-        }
+        Optional.ofNullable(omitGraph)
+                .ifPresent(options::omitGraph);
 
-        if (ordered != null) {
-            options.ordered(ordered);
-        }
+        Optional.ofNullable(ordered)
+                .ifPresent(options::ordered);
 
-        if (useNumericId != null) {
-            options.useNumericId(useNumericId);
-        }
+        Optional.ofNullable(useNumericId)
+                .ifPresent(options::useNumericId);
 
-        if (rdfStar != null) {
-            options.rdfStar(rdfStar);
-        }
+        Optional.ofNullable(rdfStar)
+                .ifPresent(options::rdfStar);
 
-        if (undefinedTerms != null) {
-            options.undefinedTermsPolicy(undefinedTerms);
-        }
+        Optional.ofNullable(undefinedTerms)
+                .ifPresent(options::undefinedTermsPolicy);
+
+        Optional.ofNullable(useInlineContexts)
+                .ifPresent(options::useInlineContexts);
+
         return options;
     }
 }

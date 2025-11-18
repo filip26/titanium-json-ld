@@ -1,0 +1,6 @@
+{
+    "/isKnownBy/0/name": "http://xmlns.com/foaf/0.1/name",
+    "/isKnownBy/1/name": "http://xmlns.com/foaf/0.1/name",
+    "/isKnownBy": "http://xmlns.com/foaf/0.1/knows",
+    "/name": "http://xmlns.com/foaf/0.1/name"
+}

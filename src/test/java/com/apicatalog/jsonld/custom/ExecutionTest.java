@@ -18,23 +18,47 @@ package com.apicatalog.jsonld.custom;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.Options;
-import com.apicatalog.jsonld.processor.Execution;
-import com.apicatalog.jsonld.processor.Expander;
-import com.apicatalog.tree.io.TreeIO;
-import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.StaticLoader;
+import com.apicatalog.jsonld.processor.ExecutionEvents;
+import com.apicatalog.jsonld.processor.Expander;
+import com.apicatalog.jsonld.test.JunitRunner;
+import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.TreeIOException;
+import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
+import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.web.media.MediaType;
+
+import jakarta.json.JsonWriter;
 
 class ExecutionTest {
+
+    static final DocumentLoader UTOPIA_LOADER = StaticLoader.newBuilder()
+            .parser(MediaType.JSON_LD, JakartaTestSuite.PARSER)
+            .classpath("https://www.w3.org/ns/credentials/v2", "/com/apicatalog/jsonld/loader/credentials-v2.jsonld")
+            .classpath("https://w3id.org/vc-barcodes/v1", "/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld")
+            .classpath("https://w3id.org/utopia/v2", "/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld")
+            .build();
 
     @Test
     void testExpandTimeout() {
@@ -44,28 +68,58 @@ class ExecutionTest {
         assertEquals(ErrorCode.PROCESSING_TIMEOUT_EXCEEDED, ex.code());
     }
 
-    @Test
-    void testOnContextKey() throws JsonLdException {
-
-        var document = Map.of(
-                "@context", Map.of("name", "http://schema.org/name"),
-                "name", "Alice");
-
-        var options = Options.newOptions()
-                .base("https://example.com/")
-                .ordered(true);
-
-        var keys = new ArrayList<>();
-
-        var runtime = Execution.of(options);
-        runtime.contextKeyCollector(keys::add);
-
-        var expanded = Expander.expand(new TreeIO(document, NativeAdapter.instance()), options, runtime);
-        
-        assertNotNull(expanded);
-        
-        System.out.println(keys);
-
+    static Stream<Arguments> contextKeysCases() {
+        return Stream.of(
+                Arguments.of(
+                        "/com/apicatalog/jsonld/test/vc-utopia.jsonld",
+                        "/com/apicatalog/jsonld/test/vc-utopia-terms.json"),
+                Arguments.of(
+                        "/com/apicatalog/jsonld/test/vc-utopia-2.jsonld",
+                        "/com/apicatalog/jsonld/test/vc-utopia-terms-2.json"));
     }
 
+    @ParameterizedTest
+    @MethodSource("contextKeysCases")
+    void testContextKeyCollector(String input, String output) throws JsonLdException, TreeIOException, IOException {
+
+        var document = read(input);
+
+        var options = Options.with(UTOPIA_LOADER);
+
+        var keys = new ArrayList<Collection<String>>();
+
+        var runtime = ExecutionEvents.of(options);
+        runtime.contextKeyCollector(keys::add);
+
+        var expanded = Expander.expand(document, options, runtime);
+
+        assertNotNull(expanded);
+
+//        System.out.println(keys
+//                .stream()
+//                .map(c -> c.stream().filter(Predicate.not(Keywords::contains)).sorted())
+//                .flatMap(Function.identity())
+//                .collect(Collectors.toCollection(LinkedHashSet::new)));
+
+        var expected = read(output);
+
+        var match = TreeIO.deepEquals(Map.of("contextKeys", keys), NativeAdapter.instance(), expected.node(), expected.adapter());
+
+        if (!match) {
+            var out = new StringWriter();
+
+            try (final JsonWriter jsonWriter = JunitRunner.JSON_WRITER_FACTORY.createWriter(out)) {
+                jsonWriter.write(new JakartaMaterializer().node(keys, NativeAdapter.instance()));
+            }
+            System.out.println(out);
+        }
+
+        assertTrue(match);
+    }
+    
+    private final TreeIO read(final String name) throws JsonLdException, TreeIOException, IOException {
+        try (final var is = getClass().getResourceAsStream(name)) {
+            return JakartaTestSuite.PARSER.parse(is);
+        }
+    }
 }

@@ -1,0 +1,5 @@
+{
+    "/ex:boolean": "http://example.org/vocab#boolean",
+    "/ex:double": "http://example.org/vocab#double",
+    "/ex:integer": "http://example.org/vocab#integer"
+}

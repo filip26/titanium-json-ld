@@ -1,0 +1,297 @@
+/*
+ * Copyright 2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.apicatalog.jsonld.processor;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.function.Consumer;
+
+import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.jsonld.Options;
+
+/**
+ * A runtime execution events fired during a transformation processing.
+ * 
+ * @since 1.4.0
+ */
+public class ExecutionEvents {
+
+    @FunctionalInterface
+    public interface Counter {
+
+        /**
+         * Increments the node count by one.
+         *
+         * @throws com.apicatalog.jsonld.JsonLdException
+         */
+        void increment() throws JsonLdException;
+    }
+
+    public interface TypeMapper {
+
+        void onType(String key, String type);
+
+        void onBeginMap(String key);
+        void onEndMap(String key);
+        
+        default void onBeginList(String key) {}
+        default void onEndList(String key) {}
+
+    }
+    
+    @FunctionalInterface
+    public interface TermMapper {
+
+        void onTerm(String key, String uri);
+
+        default void onBeginMap(String key) {};
+        default void onEndMap(String key) {}
+
+        default void onBeginList(String key) {}
+        default void onEndList(String key) {}
+    }
+    
+    private final Collection<Consumer<String>> onBeginMap = new ArrayList<>();
+//    public final List<Consumer<String>> onEndMap = new ArrayList<>();
+//
+//    public final List<BiConsumer<String, String>> onTerm = new ArrayList<>();
+//    public final List<BiConsumer<String, String>> onType = new ArrayList<>();
+//
+//    public final List<Consumer<Collection<String>>> onContextKeys = new ArrayList<>();
+//    
+    protected Consumer<Collection<String>> contextKeyCollector;
+    protected TypeMapper typeMapper;
+    protected TermMapper termMapper;
+    protected Counter nodeCounter;
+    protected Counter ttl;
+
+    protected ExecutionEvents(
+            Counter ttl,
+            Counter nodeCounter,
+            Consumer<Collection<String>> contextKeyCollector) {
+        this.ttl = ttl;
+        this.nodeCounter = nodeCounter;
+        this.contextKeyCollector = contextKeyCollector;
+    }
+
+    public static ExecutionEvents of(Options options) {
+        return new ExecutionEvents(
+                options.timeout() != null
+                        ? new Ticker(options.timeout())::tick
+                        : null,
+                null,
+                null);
+    }
+
+    /**
+     * Called in multiple places during a processing to check processing timeout if
+     * set. Does nothing if timeout is not set.
+     * 
+     * When hit for the first time a timestamp is set, otherwise a duration is
+     * decreased by timestamps difference.
+     * 
+     * @throws JsonLdException if a processing has exceeded
+     */
+    @Deprecated
+    public void tick() throws JsonLdException {
+        if (ttl != null) {
+            ttl.increment();
+        }
+    }
+
+    public ExecutionEvents start() throws JsonLdException {
+        if (ttl != null) {
+            ttl.increment();
+        }
+        return this;
+    }
+
+    /**
+     * Event fired before a map node is processed.
+     * 
+     * @param parentKey
+     */
+    public void beginMap(String parentKey) throws JsonLdException {
+//
+//        if (onBeginMap != null) {
+//            for (final var begin : onBeginMap) {
+//
+//            }
+//        }
+        if (nodeCounter != null) {
+            nodeCounter.increment();
+        }
+        if (termMapper != null) {
+            termMapper.onBeginMap(parentKey);
+        }        
+        if (typeMapper != null) {
+            typeMapper.onBeginMap(parentKey);
+        }
+    }
+
+    /**
+     * Event fired after a map node is processed.
+     * 
+     * @param parentKey
+     */
+    public void endMap(String parentKey) throws JsonLdException {
+        // hook for extensions or instrumentation
+        if (typeMapper != null) {
+            typeMapper.onEndMap(parentKey);
+        }
+        if (termMapper != null) {
+            termMapper.onEndMap(parentKey);
+        }
+    }
+
+    public void beginList(String term) {
+        if (termMapper != null) {
+            termMapper.onBeginList(term);
+        }
+    }
+
+    public void endList(String term) {
+        if (termMapper != null) {
+            termMapper.onEndList(term);
+        }
+    }
+    
+    public void term(String key, String uri) {
+        if (termMapper != null) {
+            termMapper.onTerm(key, uri);
+        }
+    }
+
+    public ExecutionEvents termMapper(TermMapper termMapper) {
+        this.termMapper = termMapper;
+        return this;
+    }
+
+    public void type(String key, String type) throws JsonLdException {
+        if (typeMapper != null) {
+            typeMapper.onType(key, type);
+        }
+    }
+
+    public ExecutionEvents keyTypeMapper(TypeMapper keyTypeMapper) {
+        this.onBeginMap.add(keyTypeMapper::onBeginMap);
+        this.typeMapper = keyTypeMapper;
+        return this;
+    }
+
+    /**
+     * Event fired when a new context key is encountered.
+     * 
+     * use beginMap(@context)
+     * 
+     * @param keys
+     */
+    public void onContextKeys(Collection<String> keys) {
+        if (contextKeyCollector != null) {
+            contextKeyCollector.accept(keys);
+        }
+    }
+
+    public boolean collectsContextKeys() {
+        return contextKeyCollector != null;
+    }
+
+    public ExecutionEvents contextKeyCollector(Consumer<Collection<String>> consumer) {
+        this.contextKeyCollector = consumer;
+        return this;
+    }
+
+    public ExecutionEvents undefinedTermCollector(Consumer<String> collector) {
+        
+        return this;
+    }
+    
+    /**
+     * A counter that tracks the number of processed nodes and enforces a maximum
+     * limit.
+     * <p>
+     * This class is typically used within JSON-LD processing to prevent excessive
+     * recursion or processing of an unbounded number of nodes. When the limit is
+     * exceeded, a {@link com.apicatalog.jsonld.JsonLdException} is thrown.
+     * </p>
+     * 
+     * Example usage:
+     * 
+     * <pre>{@code
+     * MaxNodesCounter counter = new MaxNodesCounter(1000);
+     * counter.increment();
+     * }</pre>
+     * 
+     * @since 1.4.0
+     */
+    static class NodeThrottle {
+
+        private final int maxNodes;
+        private int counter;
+
+        private NodeThrottle(int maxNodes) {
+            this.maxNodes = maxNodes;
+            this.counter = 0;
+        }
+
+        void increment() throws JsonLdException {
+            if (++counter >= maxNodes) {
+                // TODO add ErrorCode.MAX_NODES_LIMIT_EXCEEDED
+                throw new JsonLdException(ErrorCode.UNSPECIFIED);
+            }
+        }
+    }
+
+    static class Ticker {
+
+        private final long ttl;
+
+        private long ticker;
+
+        private Ticker(Duration ttl) {
+            this.ttl = ttl.toMillis();
+            this.ticker = 0;
+        }
+
+        void tick() throws JsonLdException {
+
+            if (ticker == 0) {
+                ticker = System.currentTimeMillis();
+                return;
+            }
+
+            final var now = System.currentTimeMillis();
+
+            final var elapsed = ttl - (now - ticker);
+
+            if (elapsed <= 0) {
+                ticker = 0;
+                throw new JsonLdException(ErrorCode.PROCESSING_TIMEOUT_EXCEEDED);
+            }
+        }
+    }
+
+//    /**
+//     * Resume ticker, a next ping decreases remaining time if timeout is set. Is
+//     * used after an external method call, to exclude time consumed by
+//     * the external call. e.g. when calling HTTP client.
+//     * 
+//     * Does nothing if timeout is not set.
+//     */
+//    public void start() {/* NOP does nothing if timeout is not set */}
+}

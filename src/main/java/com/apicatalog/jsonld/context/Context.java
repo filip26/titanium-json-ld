@@ -30,7 +30,7 @@ import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.processor.Execution;
+import com.apicatalog.jsonld.processor.ExecutionEvents;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.java.NativeAdapter;
@@ -68,9 +68,15 @@ public interface Context {
 
     Context getPreviousContext();
 
-    TermDefinitionBuilder newTerm(Object localContext, TreeAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader, final Execution runtime);
+    void newTerm(
+            String term,
+            Object localContext,
+            TreeAdapter adapter,
+            Map<String, Boolean> defined,
+            DocumentLoader loader,
+            final ExecutionEvents runtime) throws JsonLdException;
 
-    ContextBuilder newContext(DocumentLoader loader, final Execution runtime);
+    ContextBuilder newContext(DocumentLoader loader, final ExecutionEvents runtime);
 
     InverseContext getInverseContext();
 
@@ -88,6 +94,8 @@ public interface Context {
 
     // ---
 
+    // TODO move to Frame.context()
+    @Deprecated
     public static TreeIO extract(TreeIO document) throws JsonLdException {
 
         final var node = document.node();
@@ -238,10 +246,10 @@ public interface Context {
 
     public static class Builder {
 
-        ActiveContext ctx;
+        Context ctx;
 
         DocumentLoader loader;
-        Execution runtime;
+        ExecutionEvents runtime;
 
         public Builder(Version version) {
             this(null, null, version);
@@ -259,8 +267,8 @@ public interface Context {
             this.loader = loader;
             return this;
         }
-        
-        public Builder runtime(Execution runtime) {
+
+        public Builder runtime(ExecutionEvents runtime) {
             this.runtime = runtime;
             return this;
         }
@@ -284,16 +292,18 @@ public interface Context {
             return ctx;
         }
 
-        public Builder update(TreeIO node, URI baseUrl) throws JsonLdException {
-            return update(node.node(), node.adapter(), baseUrl);
+        public Builder update(TreeIO node, boolean acceptInline, URI baseUrl) throws JsonLdException {
+            return update(node.node(), node.adapter(), acceptInline, baseUrl);
         }
 
-        public Builder update(Object node, TreeAdapter adapter, URI baseUrl) throws JsonLdException {
+        public Builder update(Object node, TreeAdapter adapter, boolean acceptInline, URI baseUrl) throws JsonLdException {
             // TODO merge if set
 //            this.context = node;
 //            this.adapter = adapter;
 //            this.baseUrl = baseUrl;
-            this.ctx = ctx.newContext(loader, runtime).build(node, adapter, baseUrl);
+            this.ctx = ctx.newContext(loader, runtime)
+                    .acceptInlineContext(acceptInline)
+                    .build(node, adapter, baseUrl);
             return this;
         }
 
@@ -341,4 +351,7 @@ public interface Context {
 //        }
 //
     }
+
+    @Deprecated
+    void setBaseUri(URI base);
 }

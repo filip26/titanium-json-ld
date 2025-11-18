@@ -27,7 +27,7 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.processor.Execution;
+import com.apicatalog.jsonld.processor.ExecutionEvents;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.web.uri.UriResolver;
 import com.apicatalog.web.uri.UriUtils;
@@ -41,7 +41,7 @@ import com.apicatalog.web.uri.UriValidationPolicy;
  * <p>
  * This class encapsulates the state and logic for a single, configurable
  * expansion operation. It is used by creating an instance with an active
- * context via {@link #with(Context, DocumentLoader, Execution)}, setting flags
+ * context via {@link #with(Context, DocumentLoader, ExecutionEvents)}, setting flags
  * such as {@code vocab} or {@code documentRelative} through its fluent API, and
  * then calling the {@link #expand(String)} method to perform the expansion.
  * </p>
@@ -67,7 +67,7 @@ public final class UriExpansion {
     // mandatory
     private final Context activeContext;
     private final DocumentLoader loader;
-    private final Execution runtime;
+    private final ExecutionEvents runtime;
 
     // optional
     private boolean documentRelative;
@@ -78,7 +78,7 @@ public final class UriExpansion {
     private TreeAdapter adapter;
     private Map<String, Boolean> defined;
 
-    private UriExpansion(final Context activeContext, final DocumentLoader loader, final Execution runtime) {
+    private UriExpansion(final Context activeContext, final DocumentLoader loader, final ExecutionEvents runtime) {
         this.activeContext = activeContext;
         this.loader = loader;
         this.runtime = runtime;
@@ -104,7 +104,7 @@ public final class UriExpansion {
     public static final UriExpansion with(
             final Context activeContext,
             final DocumentLoader loader,
-            final Execution runtime) {
+            final ExecutionEvents runtime) {
         return new UriExpansion(activeContext, loader, runtime);
     }
 
@@ -265,22 +265,18 @@ public final class UriExpansion {
                 final String entryValueString = adapter.stringValue(entryValue);
 
                 if (!defined.containsKey(entryValueString) || Boolean.FALSE.equals(defined.get(entryValueString))) {
-
-                    // CBOR-LD collector
-                    if (runtime.collectsContextKeys()) {
-                        adapter.keyStream(localContext)
-                                .map(String.class::cast)
-                                .forEach(runtime::onContextKey);
-                    }
-
                     activeContext
                             .newTerm(
+                                    value,
                                     localContext,
                                     adapter,
                                     defined,
                                     loader,
-                                    runtime)
-                            .create(value);
+                                    runtime);
+                    // CBOR-LD collector
+                    if (runtime.collectsContextKeys()) {
+                        runtime.onContextKeys(activeContext.getTermsMapping().keySet());
+                    }                    
                 }
             }
         }
@@ -306,14 +302,12 @@ public final class UriExpansion {
                 && adapter.keys(localContext).contains(prefix)
                 && !Boolean.TRUE.equals(defined.get(prefix))) {
 
-            // CBOR-LD collector
+            activeContext.newTerm(prefix, localContext, adapter, defined, loader, runtime);
+            
             if (runtime.collectsContextKeys()) {
-                adapter.keyStream(localContext)
-                        .map(String.class::cast)
-                        .forEach(runtime::onContextKey);
+                runtime.onContextKeys(activeContext.getTermsMapping().keySet());
             }
 
-            activeContext.newTerm(localContext, adapter, defined, loader, runtime).create(prefix);
         }
 
         // 6.4. If the prefix is a term in the active context, append the suffix to its

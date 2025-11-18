@@ -1,0 +1,13 @@
+{
+    "/@graph/0/authored/@graph/0/description": "http://purl.org/dc/elements/1.1/description",
+    "/@graph/0/authored/@graph/0/title": "http://purl.org/dc/elements/1.1/title",
+    "/@graph/0/authored/@graph/1/description": "http://purl.org/dc/elements/1.1/description",
+    "/@graph/0/authored/@graph/1/title": "http://purl.org/dc/elements/1.1/title",
+    "/@graph/0/authored": "http://example.org/vocab#authored",
+    "/@graph/0/name": "http://xmlns.com/foaf/0.1/name",
+    "/@graph/1/name": "http://xmlns.com/foaf/0.1/name",
+    "/@graph/2/contains/contains": "http://example.org/vocab#contains",
+    "/@graph/2/contains/contributor": "http://purl.org/dc/elements/1.1/contributor",
+    "/@graph/2/contains/title": "http://purl.org/dc/elements/1.1/title",
+    "/@graph/2/contains": "http://example.org/vocab#contains"
+}

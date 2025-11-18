@@ -55,7 +55,7 @@ public final class Framer {
             final Document document,
             final Document frame,
             final Options options,
-            final Execution runtime) throws JsonLdException {
+            final ExecutionEvents runtime) throws JsonLdException {
 
         final var contextNode = Context.extract(frame.content());
 
@@ -78,7 +78,7 @@ public final class Framer {
             final TreeIO localContext,
             final URI localContextBase,
             final Options options,
-            final Execution runtime) throws JsonLdException {
+            final ExecutionEvents runtime) throws JsonLdException {
 
         // 10-11.
         return new Context.Builder(
@@ -87,14 +87,14 @@ public final class Framer {
                 options.mode())
                 .runtime(runtime)
                 .loader(options.loader())
-                .update(localContext, localContextBase)
+                .update(localContext, options.useInlineContexts(), localContextBase)
                 .build();
     }
 
     public static final Collection<?> expand(
             Document document,
             final Options options,
-            final Execution runtime) throws JsonLdException {
+            final ExecutionEvents runtime) throws JsonLdException {
         return Expander.expand(
                 document,
                 Options.copyOf(options).ordered(false),
@@ -104,7 +104,7 @@ public final class Framer {
     public static final Collection<?> expand(
             TreeIO document,
             final Options options,
-            final Execution runtime) throws JsonLdException {
+            final ExecutionEvents runtime) throws JsonLdException {
         return Expander.expand(
                 document,
                 Expander.context(
@@ -123,7 +123,7 @@ public final class Framer {
             final Context context,
             final Options options) throws JsonLdException {
 
-        final var runtime = Execution.of(options);
+        final var runtime = ExecutionEvents.of(options);
 
         // 14.
         final var state = new FramingState();

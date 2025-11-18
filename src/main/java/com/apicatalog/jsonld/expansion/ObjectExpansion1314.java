@@ -72,11 +72,16 @@ final class ObjectExpansion1314 {
             final Context activeContext,
             final Object element,
             final TreeAdapter adapter,
-            final String activeProperty) throws JsonLdException {
+            final String activeProperty,
+            final String term) throws JsonLdException {
 
         var keys = params.options().isOrdered()
                 ? adapter.keyStream(element).sorted(TreeIO.comparingElement(adapter::asString)).iterator()
                 : adapter.keyStream(element).iterator();
+
+//        if (activeProperty != null || term != null) {
+//            params.runtime().beginMap(term != null ? term : activeProperty);
+//        }
 
         // 13.
         while (keys.hasNext()) {
@@ -96,619 +101,53 @@ final class ObjectExpansion1314 {
                     .vocab(true)
                     .expand(key);
 
-            // if the term is undefined and
+            // FIXME if the term is undefined and
             if (expandedProperty == null || (!expandedProperty.contains(":") && !Keywords.contains(expandedProperty))) {
                 switch (params.options().undefinedTermsPolicy()) {
                 case Fail:
                     throw new JsonLdException(ErrorCode.UNDEFINED_TERM,
                             "An undefined term has been found [" + key + "]. Change policy to Ignore or Warn or define the term in a context");
                 case Warn:
-                    LOGGER.log(Level.WARNING, "An undefined term has been found [{0}]", key);
+                    LOGGER.log(Level.WARNING, "An undefined term has been detected, term={0}", key);
 
                 case Ignore:
                     continue;
                 }
             }
 
-            final var value = adapter.property(key, element);
-
             // 13.4. If expanded property is a keyword:
             if (Keywords.contains(expandedProperty)) {
 
-                // 13.4.1
-                if (Keywords.REVERSE.equals(activeProperty)) {
-                    throw new JsonLdException(ErrorCode.INVALID_REVERSE_PROPERTY_MAP);
+                if (!Keywords.contains(key) || !Keywords.contains(expandedProperty)) {
+                    params.runtime().term(key, expandedProperty);
                 }
 
-                // 13.4.2
-                if (result.containsKey(expandedProperty)
-                        && Keywords.noneMatch(expandedProperty, Keywords.INCLUDED, Keywords.TYPE)) {
-                    throw new JsonLdException(ErrorCode.COLLIDING_KEYWORDS,
-                            "Two properties which expand to the same keyword have been detected. A property '" + key + "'"
-                                    + " expands to '" + expandedProperty + "'"
-                                    + " but the '" + expandedProperty + "' property is already present.");
-                }
+                params.runtime().type(key, expandedProperty);
 
-                Object expandedValue = null;
+                final var value = adapter.property(key, element);
 
-                // 13.4.3
-                if (Keywords.ID.equals(expandedProperty)) {
-
-                    // Extension: JSON-LD-STAR (Experimental)
-                    if (!params.options().isRdfStar()
-                            && Keywords.ANNOTATION.equals(activeProperty)) {
-                        throw new JsonLdException(ErrorCode.INVALID_ANNOTATION);
-                    }
-
-                    if (params.options().isRdfStar()
-                            && adapter.isMap(value)
-                            && !adapter.isEmptyMap(value)) {
-
-                        expandedValue = Expansion.expand(activeContext, value, adapter, null, params);
-
-                        if (!LdAdapter.isEmbedded(expandedValue)) {
-                            throw new JsonLdException(ErrorCode.INVALID_EMBEDDED_NODE);
-                        }
-
-                        // 13.4.3.1
-                    } else if (!params.frameExpansion()
-                            && !adapter.isString(value)
-                            && (!params.options().useNumericId()
-                                    || !adapter.isNumber(value))
-                            || params.frameExpansion()
-                                    && !adapter.isString(value)
-                                    && !adapter.isEmptyMap(value)
-                                    && (!adapter.isCollection(value)
-                                            || adapter.elementStream(value)
-                                                    .anyMatch(Predicate.not(adapter::isString)))) {
-                        throw new JsonLdException(ErrorCode.INVALID_KEYWORD_ID_VALUE, "An @id entry was encountered whose value [" + value + "] was not a string.");
-
-                    } else if (adapter.isString(value)) {
-                        // 13.4.3.2
-                        expandedValue = UriExpansion.with(activeContext, params.options().loader(), params.runtime())
-                                .documentRelative(true)
-                                .vocab(false)
-                                .expand(adapter.stringValue(value));
-
-                        if (params.frameExpansion() && expandedValue != null) {
-                            expandedValue = List.of(expandedValue);
-
-                        } else if (expandedValue == null) {
-                            result.put(Keywords.ID, null);
-                            continue;
-                        }
-
-                    } else if (adapter.isNumber(value)) {
-
-                        expandedValue = UriExpansion.with(activeContext, params.options().loader(), params.runtime())
-                                .documentRelative(true)
-                                .vocab(false)
-                                .expand(adapter.asString(value));
-
-                        if (params.frameExpansion() && expandedValue != null) {
-                            expandedValue = List.of(expandedValue);
-
-                        } else if (expandedValue == null) {
-                            result.put(Keywords.ID, null);
-                            continue;
-                        }
-
-                    } else if (adapter.isMap(value)) {
-
-                        expandedValue = List.of(Map.of());
-
-                    } else if (adapter.isEmptyCollection(value)) {
-
-                        expandedValue = List.of();
-
-                    } else if (adapter.isCollection(value)) {
-
-                        List<Object> array = null;
-
-                        for (var item : adapter.asIterable(value)) {
-
-                            var expandedStringValue = UriExpansion.with(activeContext, params.options().loader(), params.runtime())
-                                    .documentRelative(true)
-                                    .vocab(false)
-                                    .expand(adapter.stringValue(item));
-
-                            if (expandedStringValue != null) {
-                                if (array == null) {
-                                    array = new ArrayList<>();
-                                }
-                                array.add(expandedStringValue);
-                            }
-                        }
-
-                        expandedValue = array != null ? array : value;
-                    }
-                }
-
-                // 13.4.4
-                else if (Keywords.TYPE.equals(expandedProperty)) {
-                    // 13.4.4.1
-                    if ((!params.frameExpansion()
-                            && !adapter.isString(value)
-                            && (!adapter.isCollection(value)
-                                    || adapter.elementStream(value)
-                                            .anyMatch(Predicate.not(adapter::isString))))
-                            || params.frameExpansion()
-                                    && !adapter.isString(value)
-                                    && !adapter.isEmptyMap(value)
-                                    && (!adapter.isCollection(value)
-                                            || adapter.elementStream(value)
-                                                    .anyMatch(Predicate.not(adapter::isString)))
-                                    && !LdAdapter.isDefault(value, adapter)
-                                    && LdAdapter.findDefaultValue(value, adapter)
-                                            .filter(adapter::isString)
-                                            .map(adapter::stringValue)
-                                            .map(UriUtils::isNotURI)
-                                            .orElse(true)) {
-
-                        throw new JsonLdException(ErrorCode.INVALID_TYPE_VALUE, "@type value is not valid [" + value + "].");
-                    }
-
-                    // 13.4.4.2
-                    if (adapter.isEmptyMap(value)) {
-                        expandedValue = Map.of();
-
-                        // 13.4.4.3
-                    } else if (LdAdapter.isDefault(value, adapter)) {
-
-                        final var defaultValue = LdAdapter.findDefaultValue(value, adapter);
-
-                        if (defaultValue.filter(adapter::isString).isPresent()) {
-                            expandedValue = Map.of(
-                                    Keywords.DEFAULT,
-                                    UriExpansion.with(typeContext, params.options().loader(), params.runtime())
-                                            .vocab(true)
-                                            .documentRelative(true)
-                                            // deepcode ignore checkIsPresent~Optional: false positive
-                                            .expand(defaultValue
-                                                    .map(adapter::stringValue)
-                                                    .get()));
-                        }
-
-                    } else {
-                        // 13.4.4.4
-                        if (adapter.isString(value)) {
-
-                            expandedValue = UriExpansion.with(typeContext, params.options().loader(), params.runtime())
-                                    .vocab(true)
-                                    .documentRelative(true)
-                                    .expand(adapter.stringValue(value));
-
-                            if (expandedValue == null) {
-                                result.put(Keywords.VALUE, null);
-                                continue;
-                            }
-
-                        } else if (adapter.isCollection(value)) {
-
-                            List<String> expandedItems = null;
-
-                            final var items = adapter.elementStream(value)
-                                    .filter(adapter::isString)
-                                    .map(adapter::stringValue)
-                                    .iterator();
-
-                            while (items.hasNext()) {
-
-                                final var item = items.next();
-
-                                final var expandedStringValue = UriExpansion.with(typeContext, params.options().loader(), params.runtime())
-                                        .vocab(true)
-                                        .documentRelative(true)
-                                        .expand(item);
-
-                                if (expandedStringValue != null) {
-                                    if (expandedItems == null) {
-                                        expandedItems = new ArrayList<>();
-                                    }
-                                    expandedItems.add(expandedStringValue);
-                                }
-                            }
-                            expandedValue = expandedItems != null
-                                    ? expandedItems
-                                    : List.of();
-                        }
-                    }
-
-                    // 13.4.4.5
-                    if (result.containsKey(Keywords.TYPE)) {
-
-                        var typeValue = result.get(Keywords.TYPE);
-
-                        if (typeValue instanceof HashSet<?> set) {
-                            @SuppressWarnings("unchecked")
-                            var hashset = ((HashSet<Object>) set);
-                            hashset.add(expandedValue);
-                            expandedValue = set;
-
-                        } else if (typeValue instanceof Collection<?> set) {
-
-                            var newSet = new HashSet<Object>(set);
-                            newSet.add(expandedValue);
-                            expandedValue = newSet;
-
-                        } else {
-                            expandedValue = List.of(typeValue, expandedValue);
-                        }
-                    }
-                }
-
-                // 13.4.5
-                else if (Keywords.GRAPH.equals(expandedProperty)) {
-                    expandedValue = asList(Expansion.expand(
-                            typeContext,
-                            value,
-                            adapter,
-                            Keywords.GRAPH,
-                            params));
-                }
-
-                // 13.4.6
-                else if (Keywords.INCLUDED.equals(expandedProperty)) {
-
-                    // 13.4.6.1
-                    if (activeContext.isV10()) {
-                        continue;
-                    }
-
-                    // 13.4.6.2
-                    expandedValue = Expansion
-                            .expand(
-                                    activeContext,
-                                    value,
-                                    adapter,
-                                    null,
-                                    params);
-
-                    if (expandedValue != null) {
-
-                        if (!(expandedValue instanceof Collection includedValues)) {
-
-                            if (!LdAdapter.isNode(expandedValue)) {
-                                throw new JsonLdException(ErrorCode.INVALID_KEYWORD_INCLUDED_VALUE);
-                            }
-
-                            expandedValue = List.of(expandedValue);
-
-                        } else {
-                            for (var node : includedValues) {
-                                if (!LdAdapter.isNode(node)) {
-                                    throw new JsonLdException(ErrorCode.INVALID_KEYWORD_INCLUDED_VALUE);
-                                }
-                            }
-                        }
-
-                        // 13.4.6.4
-                        final var includedValue = result.get(Keywords.INCLUDED);
-
-                        if (includedValue != null) {
-
-                            final List<Object> included;
-
-                            if (includedValue instanceof Collection<?> set) {
-                                included = new ArrayList<>(set);
-                                included.addAll((Collection<?>) expandedValue);
-
-                            } else {
-                                included = new ArrayList<>((Collection<?>) expandedValue);
-                                included.add(includedValue);
-                            }
-
-                            expandedValue = included;
-                        }
-                    } else {
-                        throw new JsonLdException(ErrorCode.INVALID_KEYWORD_INCLUDED_VALUE);
-                    }
-                }
-
-                // 13.4.7
-                if (Keywords.VALUE.equals(expandedProperty)) {
-
-                    // 13.4.7.1
-                    if (Keywords.JSON.equals(inputType)) {
-
-                        if (activeContext.isV10()) {
-                            throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE);
-                        }
-
-                        try {
-                            expandedValue = NativeMaterializer.node(value, adapter);
-                            // TODO use new TreeIO(value, adapter);
-
-                        } catch (TreeIOException e) {
-                            throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE, e);
-                        }
-                    }
-                    // 13.4.7.2
-                    else if (adapter.isNull(value)
-                            || adapter.type(value).isScalar()
-                            || params.frameExpansion()
-                                    && (adapter.isEmptyMap(value)
-                                            || adapter.isEmptyCollection(value)
-                                            || adapter.isCollection(value)
-                                                    && adapter.elementStream(value)
-                                                            .map(adapter::type)
-                                                            .allMatch(NodeType::isScalar))) {
-
-                        try {
-                            expandedValue = NativeMaterializer.node(value, adapter);
-
-                        } catch (TreeIOException e) {
-                            throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE, e);
-                        }
-
-                        if (params.frameExpansion()) {
-                            expandedValue = asList(expandedValue);
-                        }
-
-                    } else {
-                        throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE);
-                    }
-
-                    // 13.4.7.4
-                    if (expandedValue == null) {
-                        result.put(Keywords.VALUE, null);
-                        continue;
-                    }
-                }
-
-                // 13.4.8
-                if (Keywords.LANGUAGE.equals(expandedProperty)) {
-
-                    // 13.4.8.1
-                    if (adapter.isString(value)) {
-
-                        var stringValue = adapter.stringValue(value);
-
-                        if (stringValue == null || !LanguageTag.isWellFormed(stringValue)) {
-                            LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", stringValue);
-                        }
-
-                        // 13.4.8.2
-                        expandedValue = stringValue.toLowerCase();
-
-                        if (params.frameExpansion()) {
-                            expandedValue = asList(expandedValue);
-                        }
-
-                    } else if (params.frameExpansion() && adapter.isEmptyMap(value)) {
-
-                        expandedValue = List.of(Map.of());
-
-                    } else if (params.frameExpansion() && adapter.isEmptyCollection(value)) {
-
-                        expandedValue = List.of();
-
-                    } else if (params.frameExpansion() && adapter.isCollection(value)
-                            && adapter
-                                    .elementStream(value)
-                                    .allMatch(adapter::isString)) {
-
-                        expandedValue = adapter.elementStream(value).map(adapter::stringValue).toList();
-
-                    } else {
-                        throw new JsonLdException(ErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
-                    }
-                }
-
-                // 13.4.9.
-                if (Keywords.DIRECTION.equals(expandedProperty)) {
-
-                    // 13.4.9.1.
-                    if (activeContext.isV10()) {
-                        continue;
-                    }
-
-                    // 13.4.9.2.
-                    if (adapter.isString(value)
-                            && ("ltr".equals(adapter.stringValue(value))
-                                    || "rtl".equals(adapter.stringValue(value)))) {
-
-                        // 13.4.9.3.
-                        expandedValue = adapter.stringValue(value);
-
-                        if (params.frameExpansion()) {
-                            expandedValue = asList(expandedValue);
-                        }
-
-                    } else if (params.frameExpansion() && adapter.isEmptyMap(value)) {
-
-                        expandedValue = List.of(Map.of());
-
-                    } else if (params.frameExpansion() && adapter.isEmptyCollection(value)) {
-
-                        expandedValue = List.of();
-
-                    } else if (params.frameExpansion() && adapter.isCollection(value)
-                            && adapter
-                                    .elementStream(value)
-                                    .allMatch(adapter::isString)) {
-
-                        expandedValue = adapter.elementStream(value).map(adapter::stringValue).toList();
-
-                    } else {
-                        throw new JsonLdException(ErrorCode.INVALID_BASE_DIRECTION);
-                    }
-                }
-
-                // 13.4.10.
-                if (Keywords.INDEX.equals(expandedProperty)) {
-
-                    // 13.4.10.1.
-                    if (adapter.isString(value)) {
-                        // 13.4.10.2
-                        expandedValue = adapter.stringValue(value);
-
-                    } else {
-                        throw new JsonLdException(ErrorCode.INVALID_KEYWORD_INDEX_VALUE);
-                    }
-                }
-
-                // 13.4.11
-                if (Keywords.LIST.equals(expandedProperty)) {
-
-                    // 13.4.11.1
-                    if (activeProperty == null || Keywords.GRAPH.equals(activeProperty)) {
-                        continue;
-                    }
-
-                    // 13.4.11.1
-                    expandedValue = Expansion.expand(
-                            activeContext,
-                            value,
-                            adapter,
-                            activeProperty,
-                            params);
-
-                    if (!(expandedValue instanceof Collection<?>)) {
-                        expandedValue = List.of(expandedValue);
-                    }
-                }
-
-                // 13.4.12
-                if (Keywords.SET.equals(expandedProperty)) {
-                    expandedValue = Expansion
-                            .expand(activeContext, value, adapter, activeProperty, params);
-                }
-
-                // 13.4.13
-                if (Keywords.REVERSE.equals(expandedProperty)) {
-
-                    // 13.4.13.1.
-                    if (!adapter.isMap(value)) {
-                        throw new JsonLdException(ErrorCode.INVALID_KEYWORD_REVERSE_VALUE);
-                    }
-
-                    // 13.4.13.2.
-                    expandedValue = Expansion.expand(
-                            activeContext,
-                            value,
-                            adapter,
-                            Keywords.REVERSE,
-                            params);
-
-                    if (expandedValue instanceof Map expandedValueObject) {
-
-                        // 13.4.13.3.
-                        if (expandedValueObject.get(Keywords.REVERSE) instanceof Map map) {
-
-                            @SuppressWarnings("unchecked")
-                            final var reverse = (Map<String, Object>) map;
-
-                            for (var entry : reverse.entrySet()) {
-                                // 13.4.13.3.1.
-                                LdAdapter.setOrAdd(result, entry.getKey(), entry.getValue());
-                            }
-                        }
-
-                        // 13.4.13.4.
-                        if (expandedValueObject.size() > 1
-                                || !expandedValueObject.containsKey(Keywords.REVERSE)) {
-
-                            var reverseMap = new LinkedHashMap<String, Object>();
-
-                            // 13.4.13.4.2
-                            @SuppressWarnings("unchecked")
-                            final var typedMap = (Map<String, Object>) expandedValueObject;
-
-                            for (var entry : typedMap.entrySet()) {
-
-                                if (Keywords.REVERSE.equals(entry.getKey())) {
-                                    continue;
-                                }
-
-                                // 13.4.13.4.2.1
-                                if (entry.getValue() instanceof Collection<?> collection) {
-
-                                    for (var item : collection) {
-
-                                        // 13.4.13.4.2.1.1
-                                        if (item instanceof Map<?, ?> map
-                                                && (LdAdapter.isList(map)
-                                                        || LdAdapter.isValueNode(map))) {
-                                            throw new JsonLdException(ErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
-                                        }
-
-                                        // 13.4.13.4.2.1.1
-                                        LdAdapter.setOrAdd(reverseMap, entry.getKey(), item);
-                                    }
-                                }
-                            }
-
-                            if (!reverseMap.isEmpty()) {
-                                result.put(Keywords.REVERSE, reverseMap);
-                            }
-                        }
-                    }
-
-                    // 13.4.13.5.
-                    continue;
-                }
-
-                // 13.4.14
-                if (Keywords.NEST.equals(expandedProperty)) {
-
-                    if (nest == null) {
-                        nest = new LinkedHashMap<>();
-                        nest.put(key, List.of());
-
-                    } else if (!nest.containsKey(key)) {
-                        nest.put(key, List.of());
-                    }
-
-                    continue;
-                }
-
-                // Extension: JSON-LD-STAR (Experimental)
-                if (Keywords.ANNOTATION.equals(expandedProperty)) {
-
-                    if (!params.options().isRdfStar()) {
-                        continue;
-                    }
-
-                    expandedValue = asList(Expansion.expand(
-                            activeContext,
-                            value,
-                            adapter,
-                            Keywords.ANNOTATION,
-                            params));
-                }
-
-                // 13.4.15
-                if (params.frameExpansion()
-                        && (Keywords.DEFAULT.equals(expandedProperty)
-                                || Keywords.EMBED.equals(expandedProperty)
-                                || Keywords.EXPLICIT.equals(expandedProperty)
-                                || Keywords.OMIT_DEFAULT.equals(expandedProperty)
-                                || Keywords.REQUIRE_ALL.equals(expandedProperty))) {
-
-                    expandedValue = Expansion
-                            .expand(activeContext, value, adapter, expandedProperty, params);
-                }
-
-                // 13.4.16
-                if (expandedValue != null
-                        || (Keywords.VALUE.equals(expandedProperty)
-                                && Keywords.JSON.equals(inputType))) {
-
-                    result.put(expandedProperty, expandedValue);
-                }
+                keyword(activeContext, value, adapter, activeProperty, key, expandedProperty);
 
                 // 13.4.17
                 continue;
             }
 
+            // then it's not a keyword
+
             // 13.5.
             final var keyTermDefinition = activeContext.findTerm(key);
+
+            final var typeMapping = keyTermDefinition.map(TermDefinition::getTypeMapping).orElse(null);
+
+            if (typeMapping != null) {
+                params.runtime().type(key, typeMapping);
+            }
 
             final var containerMapping = keyTermDefinition
                     .map(TermDefinition::getContainerMapping)
                     .orElse(List.of());
 
+            final var value = adapter.property(key, element);
             Object expandedValue = null;
 
             // 13.6.
@@ -734,9 +173,10 @@ final class ObjectExpansion1314 {
 
                 // 13.7.4.
                 final var langCodes = params.options().isOrdered()
-                        ? adapter.keyStream(value).sorted().iterator()
-                        : adapter.keyStream(value).iterator();
+                        ? adapter.keyStream(value).map(adapter::asString).sorted().iterator()
+                        : adapter.keyStream(value).map(adapter::asString).iterator();
 
+                params.runtime().beginMap(key);
                 while (langCodes.hasNext()) {
 
                     final var langCode = langCodes.next();
@@ -784,7 +224,9 @@ final class ObjectExpansion1314 {
                         // 13.7.4.2.6.
                         langMaps.add(langMap);
                     }
+                    params.runtime().term(langCode, Keywords.LANGUAGE);
                 }
+                params.runtime().endMap(key);
 
                 expandedValue = List.copyOf(langMaps);
 
@@ -805,6 +247,8 @@ final class ObjectExpansion1314 {
                         ? adapter.keyStream(value).sorted().iterator()
                         : adapter.keys(value).iterator();
 
+                params.runtime().beginMap(key);
+
                 // 13.8.3.
                 while (valueKeys.hasNext()) {
 
@@ -813,6 +257,8 @@ final class ObjectExpansion1314 {
                     final var indexValue = adapter.property(valueKey, value);
 
                     final var index = adapter.asString(valueKey);
+
+                    params.runtime().term(index, Keywords.INDEX);
 
                     // 13.8.3.1.
                     Context mapContext = activeContext;
@@ -829,11 +275,12 @@ final class ObjectExpansion1314 {
                             && indexTermDefinition != null
                             && indexTermDefinition.getLocalContext() != null) {
 
+                        // TODO contextKeys?
+
                         mapContext = mapContext
                                 .newContext(params.options().loader(), params.runtime())
                                 .build(
-                                        indexTermDefinition.getLocalContext().node(),
-                                        indexTermDefinition.getLocalContext().adapter(),
+                                        indexTermDefinition.getLocalContext(),
                                         indexTermDefinition.getBaseUrl());
                     }
 
@@ -854,6 +301,8 @@ final class ObjectExpansion1314 {
                             indexValue,
                             adapter,
                             key,
+                            index,
+                            Keywords.INDEX,
                             new Params(
                                     params.frameExpansion(),
                                     true,
@@ -959,6 +408,7 @@ final class ObjectExpansion1314 {
                         indices.add(indexMap);
                     }
                 }
+                params.runtime().endMap(key);
                 expandedValue = indices;
             }
             // 13.9.
@@ -968,6 +418,8 @@ final class ObjectExpansion1314 {
                         value,
                         adapter,
                         key,
+                        key,
+                        expandedProperty,
                         params);
             }
 
@@ -1048,12 +500,23 @@ final class ObjectExpansion1314 {
                 // 13.14
                 LdAdapter.setOrAdd(result, expandedProperty, expandedValue);
             }
+
+            if (!Keywords.contains(key) || !Keywords.contains(expandedProperty)) {
+                params.runtime().term(key, expandedProperty);
+            }
+
         }
 
         // 14.
-        if (nest != null) {
+        if (nest != null && !nest.isEmpty()) {
             processNest(activeContext, element, adapter);
         }
+
+//        if (activeProperty != null || term != null) {
+//            params.runtime().endMap(term != null ? term : activeProperty);
+//        }
+
+//        params.runtime().onEndMap(activeProperty);
     }
 
     public ObjectExpansion1314 nest(Map<String, Object> nest) {
@@ -1076,11 +539,634 @@ final class ObjectExpansion1314 {
         return this;
     }
 
+    private void keyword(
+            final Context activeContext,
+            final Object value,
+            final TreeAdapter adapter,
+            final String activeProperty,
+            final String key,
+            final String expandedProperty) throws JsonLdException {
+
+        // 13.4.1
+        if (Keywords.REVERSE.equals(activeProperty)) {
+            throw new JsonLdException(ErrorCode.INVALID_REVERSE_PROPERTY_MAP);
+        }
+
+        // 13.4.2
+        if (result.containsKey(expandedProperty)
+                && Keywords.noneMatch(expandedProperty, Keywords.INCLUDED, Keywords.TYPE)) {
+            throw new JsonLdException(ErrorCode.COLLIDING_KEYWORDS,
+                    "Two properties which expand to the same keyword have been detected. A property '" + key + "'"
+                            + " expands to '" + expandedProperty + "'"
+                            + " but the '" + expandedProperty + "' property is already present.");
+        }
+
+        Object expandedValue = null;
+
+        // 13.4.3
+        if (Keywords.ID.equals(expandedProperty)) {
+
+            // Extension: JSON-LD-STAR (Experimental)
+            if (!params.options().isRdfStar()
+                    && Keywords.ANNOTATION.equals(activeProperty)) {
+                throw new JsonLdException(ErrorCode.INVALID_ANNOTATION);
+            }
+
+            if (params.options().isRdfStar()
+                    && adapter.isMap(value)
+                    && !adapter.isEmptyMap(value)) {
+
+                expandedValue = Expansion.expand(activeContext, value, adapter, null, key, expandedProperty, params);
+
+                if (!LdAdapter.isEmbedded(expandedValue)) {
+                    throw new JsonLdException(ErrorCode.INVALID_EMBEDDED_NODE);
+                }
+
+                // 13.4.3.1
+            } else if (!params.frameExpansion()
+                    && !adapter.isString(value)
+                    && (!params.options().useNumericId()
+                            || !adapter.isNumber(value))
+                    || params.frameExpansion()
+                            && !adapter.isString(value)
+                            && !adapter.isEmptyMap(value)
+                            && (!adapter.isCollection(value)
+                                    || adapter.elementStream(value)
+                                            .anyMatch(Predicate.not(adapter::isString)))) {
+                throw new JsonLdException(ErrorCode.INVALID_KEYWORD_ID_VALUE, "An @id entry was encountered whose value [" + value + "] was not a string.");
+
+            } else if (adapter.isString(value)) {
+                // 13.4.3.2
+                expandedValue = UriExpansion.with(activeContext, params.options().loader(), params.runtime())
+                        .documentRelative(true)
+                        .vocab(false)
+                        .expand(adapter.stringValue(value));
+
+                if (params.frameExpansion() && expandedValue != null) {
+                    expandedValue = List.of(expandedValue);
+
+                } else if (expandedValue == null) {
+                    result.put(Keywords.ID, null);
+                    return;
+                }
+
+            } else if (adapter.isNumber(value)) {
+
+                expandedValue = UriExpansion.with(activeContext, params.options().loader(), params.runtime())
+                        .documentRelative(true)
+                        .vocab(false)
+                        .expand(adapter.asString(value));
+
+//                params.runtime().onProperty(key, Keywords.ID, (String)expandedValue);
+
+                if (params.frameExpansion() && expandedValue != null) {
+                    expandedValue = List.of(expandedValue);
+
+                } else if (expandedValue == null) {
+                    result.put(Keywords.ID, null);
+                    return;
+                }
+
+            } else if (adapter.isMap(value)) {
+
+                expandedValue = List.of(Map.of());
+
+            } else if (adapter.isEmptyCollection(value)) {
+
+                expandedValue = List.of();
+
+            } else if (adapter.isCollection(value)) {
+
+                List<Object> array = null;
+
+                for (var item : adapter.asIterable(value)) {
+
+                    var expandedStringValue = UriExpansion.with(activeContext, params.options().loader(), params.runtime())
+                            .documentRelative(true)
+                            .vocab(false)
+                            .expand(adapter.stringValue(item));
+
+                    if (expandedStringValue != null) {
+                        if (array == null) {
+                            array = new ArrayList<>();
+                        }
+                        array.add(expandedStringValue);
+                    }
+                }
+
+                expandedValue = array != null ? array : value;
+            }
+        }
+
+        // 13.4.4
+        else if (Keywords.TYPE.equals(expandedProperty)) {
+
+            // 13.4.4.1
+            if ((!params.frameExpansion()
+                    && !adapter.isString(value)
+                    && (!adapter.isCollection(value)
+                            || adapter.elementStream(value)
+                                    .anyMatch(Predicate.not(adapter::isString))))
+                    || params.frameExpansion()
+                            && !adapter.isString(value)
+                            && !adapter.isEmptyMap(value)
+                            && (!adapter.isCollection(value)
+                                    || adapter.elementStream(value)
+                                            .anyMatch(Predicate.not(adapter::isString)))
+                            && !LdAdapter.isDefault(value, adapter)
+                            && LdAdapter.findDefaultValue(value, adapter)
+                                    .filter(adapter::isString)
+                                    .map(adapter::stringValue)
+                                    .map(UriUtils::isNotURI)
+                                    .orElse(true)) {
+
+                throw new JsonLdException(ErrorCode.INVALID_TYPE_VALUE, "@type value is not valid [" + value + "].");
+            }
+
+            // 13.4.4.2
+            if (adapter.isEmptyMap(value)) {
+                expandedValue = Map.of();
+
+                // 13.4.4.3
+            } else if (LdAdapter.isDefault(value, adapter)) {
+
+                final var defaultValue = LdAdapter.findDefaultValue(value, adapter);
+
+                if (defaultValue.filter(adapter::isString).isPresent()) {
+                    expandedValue = Map.of(
+                            Keywords.DEFAULT,
+                            UriExpansion.with(typeContext, params.options().loader(), params.runtime())
+                                    .vocab(true)
+                                    .documentRelative(true)
+                                    // deepcode ignore checkIsPresent~Optional: false positive
+                                    .expand(defaultValue
+                                            .map(adapter::stringValue)
+                                            .get()));
+                }
+
+            } else {
+                // 13.4.4.4
+                if (adapter.isString(value)) {
+
+                    expandedValue = UriExpansion.with(typeContext, params.options().loader(), params.runtime())
+                            .vocab(true)
+                            .documentRelative(true)
+                            .expand(adapter.stringValue(value));
+
+                    if (expandedValue == null) {
+                        result.put(Keywords.VALUE, null);
+                        return;
+                    }
+
+//                    params.runtime().onTypeMapping(Set.of((String)expandedValue));
+
+                } else if (adapter.isCollection(value)) {
+
+                    List<String> expandedItems = null;
+
+                    final var items = adapter.elementStream(value)
+                            .filter(adapter::isString)
+                            .map(adapter::stringValue)
+                            .iterator();
+
+                    while (items.hasNext()) {
+
+                        final var item = items.next();
+
+                        final var expandedStringValue = UriExpansion.with(typeContext, params.options().loader(), params.runtime())
+                                .vocab(true)
+                                .documentRelative(true)
+                                .expand(item);
+
+                        if (expandedStringValue != null) {
+                            if (expandedItems == null) {
+                                expandedItems = new ArrayList<>();
+                            }
+                            expandedItems.add(expandedStringValue);
+                        }
+                    }
+                    expandedValue = expandedItems != null
+                            ? expandedItems
+                            : List.of();
+
+//                    if (expandedItems != null) {
+//                        params.runtime().onTypeMapping(expandedItems);
+//                    }
+                }
+
+            }
+
+            // 13.4.4.5
+            if (result.containsKey(Keywords.TYPE)) {
+
+                var typeValue = result.get(Keywords.TYPE);
+
+                if (typeValue instanceof HashSet<?> set) {
+                    @SuppressWarnings("unchecked")
+                    var hashset = ((HashSet<Object>) set);
+                    hashset.add(expandedValue);
+                    expandedValue = set;
+
+                } else if (typeValue instanceof Collection<?> set) {
+
+                    var newSet = new HashSet<Object>(set);
+                    newSet.add(expandedValue);
+                    expandedValue = newSet;
+
+                } else {
+                    expandedValue = List.of(typeValue, expandedValue);
+                }
+            }
+        }
+
+        // 13.4.5
+        else if (Keywords.GRAPH.equals(expandedProperty)) {
+            expandedValue = asList(Expansion.expand(
+                    typeContext,
+                    value,
+                    adapter,
+                    Keywords.GRAPH,
+                    key,
+                    Keywords.GRAPH,
+                    params));
+        }
+
+        // 13.4.6
+        else if (Keywords.INCLUDED.equals(expandedProperty)) {
+
+            // 13.4.6.1
+            if (activeContext.isV10()) {
+                return;
+            }
+
+            // 13.4.6.2
+            expandedValue = Expansion
+                    .expand(
+                            activeContext,
+                            value,
+                            adapter,
+                            null,
+                            key,
+                            expandedProperty,
+                            params);
+
+            if (expandedValue != null) {
+
+                if (!(expandedValue instanceof Collection includedValues)) {
+
+                    if (!LdAdapter.isNode(expandedValue)) {
+                        throw new JsonLdException(ErrorCode.INVALID_KEYWORD_INCLUDED_VALUE);
+                    }
+
+                    expandedValue = List.of(expandedValue);
+
+                } else {
+                    for (var node : includedValues) {
+                        if (!LdAdapter.isNode(node)) {
+                            throw new JsonLdException(ErrorCode.INVALID_KEYWORD_INCLUDED_VALUE);
+                        }
+                    }
+                }
+
+                // 13.4.6.4
+                final var includedValue = result.get(Keywords.INCLUDED);
+
+                if (includedValue != null) {
+
+                    final List<Object> included;
+
+                    if (includedValue instanceof Collection<?> set) {
+                        included = new ArrayList<>(set);
+                        included.addAll((Collection<?>) expandedValue);
+
+                    } else {
+                        included = new ArrayList<>((Collection<?>) expandedValue);
+                        included.add(includedValue);
+                    }
+
+                    expandedValue = included;
+                }
+            } else {
+                throw new JsonLdException(ErrorCode.INVALID_KEYWORD_INCLUDED_VALUE);
+            }
+        }
+
+        // 13.4.7
+        if (Keywords.VALUE.equals(expandedProperty)) {
+
+            // 13.4.7.1
+            if (Keywords.JSON.equals(inputType)) {
+
+                if (activeContext.isV10()) {
+                    throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE);
+                }
+
+                try {
+                    expandedValue = NativeMaterializer.node(value, adapter);
+                    // TODO use new TreeIO(value, adapter);
+
+                } catch (TreeIOException e) {
+                    throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE, e);
+                }
+            }
+            // 13.4.7.2
+            else if (adapter.isNull(value)
+                    || adapter.type(value).isScalar()
+                    || params.frameExpansion()
+                            && (adapter.isEmptyMap(value)
+                                    || adapter.isEmptyCollection(value)
+                                    || adapter.isCollection(value)
+                                            && adapter.elementStream(value)
+                                                    .map(adapter::type)
+                                                    .allMatch(NodeType::isScalar))) {
+
+                try {
+                    expandedValue = NativeMaterializer.node(value, adapter);
+
+                } catch (TreeIOException e) {
+                    throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE, e);
+                }
+
+                if (params.frameExpansion()) {
+                    expandedValue = asList(expandedValue);
+                }
+
+            } else {
+                throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE);
+            }
+
+            // 13.4.7.4
+            if (expandedValue == null) {
+                result.put(Keywords.VALUE, null);
+                return;
+            }
+        }
+
+        // 13.4.8
+        if (Keywords.LANGUAGE.equals(expandedProperty)) {
+
+            // 13.4.8.1
+            if (adapter.isString(value)) {
+
+                var stringValue = adapter.stringValue(value);
+
+                if (stringValue == null || !LanguageTag.isWellFormed(stringValue)) {
+                    LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", stringValue);
+                }
+
+                // 13.4.8.2
+                expandedValue = stringValue.toLowerCase();
+
+                if (params.frameExpansion()) {
+                    expandedValue = asList(expandedValue);
+                }
+
+            } else if (params.frameExpansion() && adapter.isEmptyMap(value)) {
+
+                expandedValue = List.of(Map.of());
+
+            } else if (params.frameExpansion() && adapter.isEmptyCollection(value)) {
+
+                expandedValue = List.of();
+
+            } else if (params.frameExpansion() && adapter.isCollection(value)
+                    && adapter
+                            .elementStream(value)
+                            .allMatch(adapter::isString)) {
+
+                expandedValue = adapter.elementStream(value).map(adapter::stringValue).toList();
+
+            } else {
+                throw new JsonLdException(ErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
+            }
+        }
+
+        // 13.4.9.
+        if (Keywords.DIRECTION.equals(expandedProperty)) {
+
+            // 13.4.9.1.
+            if (activeContext.isV10()) {
+                return;
+            }
+
+            // 13.4.9.2.
+            if (adapter.isString(value)
+                    && ("ltr".equals(adapter.stringValue(value))
+                            || "rtl".equals(adapter.stringValue(value)))) {
+
+                // 13.4.9.3.
+                expandedValue = adapter.stringValue(value);
+
+                if (params.frameExpansion()) {
+                    expandedValue = asList(expandedValue);
+                }
+
+            } else if (params.frameExpansion() && adapter.isEmptyMap(value)) {
+
+                expandedValue = List.of(Map.of());
+
+            } else if (params.frameExpansion() && adapter.isEmptyCollection(value)) {
+
+                expandedValue = List.of();
+
+            } else if (params.frameExpansion() && adapter.isCollection(value)
+                    && adapter
+                            .elementStream(value)
+                            .allMatch(adapter::isString)) {
+
+                expandedValue = adapter.elementStream(value).map(adapter::stringValue).toList();
+
+            } else {
+                throw new JsonLdException(ErrorCode.INVALID_BASE_DIRECTION);
+            }
+        }
+
+        // 13.4.10.
+        if (Keywords.INDEX.equals(expandedProperty)) {
+
+            // 13.4.10.1.
+            if (adapter.isString(value)) {
+                // 13.4.10.2
+                expandedValue = adapter.stringValue(value);
+
+            } else {
+                throw new JsonLdException(ErrorCode.INVALID_KEYWORD_INDEX_VALUE);
+            }
+        }
+
+        // 13.4.11
+        if (Keywords.LIST.equals(expandedProperty)) {
+
+            // 13.4.11.1
+            if (activeProperty == null || Keywords.GRAPH.equals(activeProperty)) {
+                return;
+            }
+
+            // 13.4.11.1
+            expandedValue = Expansion.expand(
+                    activeContext,
+                    value,
+                    adapter,
+                    activeProperty,
+                    key,
+                    expandedProperty,
+                    params);
+
+            if (!(expandedValue instanceof Collection<?>)) {
+                expandedValue = List.of(expandedValue);
+            }
+        }
+
+        // 13.4.12
+        if (Keywords.SET.equals(expandedProperty)) {
+            expandedValue = Expansion.expand(
+                    activeContext,
+                    value,
+                    adapter,
+                    activeProperty,
+                    key,
+                    expandedProperty,
+                    params);
+        }
+
+        // 13.4.13
+        if (Keywords.REVERSE.equals(expandedProperty)) {
+
+            // 13.4.13.1.
+            if (!adapter.isMap(value)) {
+                throw new JsonLdException(ErrorCode.INVALID_KEYWORD_REVERSE_VALUE);
+            }
+
+            // 13.4.13.2.
+            expandedValue = Expansion.expand(
+                    activeContext,
+                    value,
+                    adapter,
+                    Keywords.REVERSE,
+                    key,
+                    expandedProperty,
+                    params);
+
+            if (expandedValue instanceof Map expandedValueObject) {
+
+                // 13.4.13.3.
+                if (expandedValueObject.get(Keywords.REVERSE) instanceof Map map) {
+
+                    @SuppressWarnings("unchecked")
+                    final var reverse = (Map<String, Object>) map;
+
+                    for (var entry : reverse.entrySet()) {
+                        // 13.4.13.3.1.
+                        LdAdapter.setOrAdd(result, entry.getKey(), entry.getValue());
+                    }
+                }
+
+                // 13.4.13.4.
+                if (expandedValueObject.size() > 1
+                        || !expandedValueObject.containsKey(Keywords.REVERSE)) {
+
+                    var reverseMap = new LinkedHashMap<String, Object>();
+
+                    // 13.4.13.4.2
+                    @SuppressWarnings("unchecked")
+                    final var typedMap = (Map<String, Object>) expandedValueObject;
+
+                    for (var entry : typedMap.entrySet()) {
+
+                        if (Keywords.REVERSE.equals(entry.getKey())) {
+                            continue;
+                        }
+
+                        // 13.4.13.4.2.1
+                        if (entry.getValue() instanceof Collection<?> collection) {
+
+                            for (var item : collection) {
+
+                                // 13.4.13.4.2.1.1
+                                if (item instanceof Map<?, ?> map
+                                        && (LdAdapter.isList(map)
+                                                || LdAdapter.isValueNode(map))) {
+                                    throw new JsonLdException(ErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
+                                }
+
+                                // 13.4.13.4.2.1.1
+                                LdAdapter.setOrAdd(reverseMap, entry.getKey(), item);
+                            }
+                        }
+                    }
+
+                    if (!reverseMap.isEmpty()) {
+                        result.put(Keywords.REVERSE, reverseMap);
+                    }
+                }
+            }
+
+            // 13.4.13.5.
+            return;
+        }
+
+        // 13.4.14
+        if (Keywords.NEST.equals(expandedProperty)) {
+
+            if (nest == null) {
+                nest = new LinkedHashMap<>();
+                nest.put(key, List.of());
+
+            } else if (!nest.containsKey(key)) {
+                nest.put(key, List.of());
+            }
+
+            return;
+        }
+
+        // Extension: JSON-LD-STAR (Experimental)
+        if (Keywords.ANNOTATION.equals(expandedProperty)) {
+
+            if (!params.options().isRdfStar()) {
+                return;
+            }
+
+            expandedValue = asList(Expansion.expand(
+                    activeContext,
+                    value,
+                    adapter,
+                    Keywords.ANNOTATION,
+                    key,
+                    expandedProperty,
+                    params));
+        }
+
+        // 13.4.15
+        if (params.frameExpansion()
+                && (Keywords.DEFAULT.equals(expandedProperty)
+                        || Keywords.EMBED.equals(expandedProperty)
+                        || Keywords.EXPLICIT.equals(expandedProperty)
+                        || Keywords.OMIT_DEFAULT.equals(expandedProperty)
+                        || Keywords.REQUIRE_ALL.equals(expandedProperty))) {
+
+            expandedValue = Expansion
+                    .expand(activeContext, value, adapter, expandedProperty, null, null, params);
+        }
+
+        // 13.4.16
+        if (expandedValue != null
+                || (Keywords.VALUE.equals(expandedProperty)
+                        && Keywords.JSON.equals(inputType))) {
+
+            result.put(expandedProperty, expandedValue);
+        }
+    }
+
     private void recurse(
             final Context context,
             final Object element,
             final TreeAdapter adapter,
-            final String activeProperty) throws JsonLdException {
+            final String activeProperty,
+            final String term) throws JsonLdException {
+
+        if (activeProperty != null || term != null) {
+            params.runtime().beginMap(term != null ? term : activeProperty);
+        }
 
         var activeContext = context;
 
@@ -1097,17 +1183,22 @@ final class ObjectExpansion1314 {
             activeContext = activeContext
                     .newContext(params.options().loader(), params.runtime())
                     .overrideProtected(true)
-                    .build(
-                            propertyContext.node(),
-                            propertyContext.adapter(),
+                    .build(propertyContext,
                             activeContext
                                     .findTerm(activeProperty)
                                     .map(TermDefinition::getBaseUrl)
                                     .orElse(null));
+
+            // TODO contextKeys?
         }
 
         // steps 13-14
-        expand(activeContext, element, adapter, activeProperty);
+        expand(activeContext, element, adapter, activeProperty, term);
+        
+        if (activeProperty != null || term != null) {
+            params.runtime().endMap(term != null ? term : activeProperty);
+        }
+
     }
 
     private void processNest(
@@ -1123,8 +1214,13 @@ final class ObjectExpansion1314 {
 
             final var nestedKey = nestedKeys.next();
 
+            final var nestedNode = adapter.property(nestedKey, element);
+
+            final var collection = adapter.isCollection(nestedNode);
+            var counter = 0;
+
             // 14.2.
-            for (final var nestValue : adapter.asIterable(adapter.property(nestedKey, element))) {
+            for (final var nestValue : adapter.asIterable(nestedNode)) {
 
                 // 14.2.1
                 if (!adapter.isMap(nestValue)) {
@@ -1140,6 +1236,12 @@ final class ObjectExpansion1314 {
                     }
                 }
 
+                if (collection) {
+                    params.runtime().beginList(nestedKey);
+                } else {
+//                    params.runtime().beginMap(nestedKey);
+                }
+
                 // 14.2.2
                 ObjectExpansion1314
                         .with(params)
@@ -1147,8 +1249,18 @@ final class ObjectExpansion1314 {
                         .result(result)
                         .typeContext(typeContext)
                         .nest(new LinkedHashMap<>())
-                        .recurse(activeContext, nestValue, adapter, nestedKey);
+                        .recurse(activeContext, nestValue, adapter, nestedKey,
+                                collection
+                                        ? Integer.toString(counter++)
+                                        : nestedKey);
+
+                if (collection) {
+                    params.runtime().endList(nestedKey);
+                } else {
+//                    params.runtime().endMap(nestedKey);
+                }
             }
+
         }
     }
 

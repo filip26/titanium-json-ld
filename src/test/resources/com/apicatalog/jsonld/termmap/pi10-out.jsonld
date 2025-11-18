@@ -1,0 +1,5 @@
+{
+    "/author/@none": "@index",
+    "/author/guest": "@index",
+    "/author": "http://example.com/author"
+}

@@ -109,7 +109,7 @@ public class HttpLoader implements DocumentLoader {
 
     private final HttpLoaderClient client;
 
-    private final TreeParser reader;
+    private final TreeParser parser;
 
     private Predicate<MediaType> acceptContent;
 
@@ -117,13 +117,13 @@ public class HttpLoader implements DocumentLoader {
      * Constructs a new {@link HttpLoader}.
      *
      * @param httpClient      the HTTP client used for network requests
-     * @param reader          the parser for decoding JSON documents
+     * @param parser          the parser for decoding JSON documents
      * @param maxRedirections the maximum number of HTTP redirects to follow
      */
-    protected HttpLoader(HttpLoaderClient httpClient, TreeParser reader, int maxRedirections) {
+    protected HttpLoader(HttpLoaderClient httpClient, TreeParser parser, int maxRedirections) {
         this.client = httpClient;
         this.maxRedirections = maxRedirections;
-        this.reader = reader;
+        this.parser = parser;
         this.acceptContent = DEFAULT_JSON_LD_CONTENT;
     }
 
@@ -298,7 +298,7 @@ public class HttpLoader implements DocumentLoader {
 
         try (final var is = response.body()) {
 
-            final var content = reader.parse(is);
+            final var content = parser.parse(is);
 
             return Document.of(content, contentType, targetUri, contextUrl);
 

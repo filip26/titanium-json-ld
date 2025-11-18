@@ -1,0 +1,6 @@
+{
+    "/label/de": "@language",
+    "/label/en": "@language",
+    "/label/none": "@language",
+    "/label": "http://example.com/vocab/label"
+}

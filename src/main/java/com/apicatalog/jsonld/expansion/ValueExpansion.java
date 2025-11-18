@@ -71,29 +71,41 @@ public final class ValueExpansion {
         switch (typeMapping) {
         case Keywords.ID:
             String idValue = null;
-
             if (adapter.isString(value)) {
                 idValue = adapter.stringValue(value);
 
-                // custom extension allowing to process numeric ids
-            } else if (params.options().useNumericId() && adapter.isNumber(value)) {
+            } else
+            // custom extension allowing to process numeric ids
+            if (params.options().useNumericId() && adapter.isNumber(value)) {
                 idValue = adapter.asString(value);
             }
 
             if (idValue != null) {
-                return Map.of(Keywords.ID, UriExpansion.with(context, params.options().loader(), params.runtime())
+
+                final var id = UriExpansion.with(context, params.options().loader(), params.runtime())
                         .documentRelative(true)
                         .vocab(false)
-                        .expand(idValue));
+                        .expand(idValue);
+
+// TODO               if (params.runtime().keyTypeMapper() != null) {
+//                    params.runtime().onTypeMapping(property, Keywords.ID);
+//                    params.runtime().onProperty(property, Keywords.ID, id);
+//                }
+
+                return Map.of(Keywords.ID, id);
             }
             break;
 
         case Keywords.VOCAB:
             if (adapter.isString(value)) {
-                return Map.of(Keywords.ID, UriExpansion.with(context, params.options().loader(), params.runtime())
+                final var id = UriExpansion.with(context, params.options().loader(), params.runtime())
                         .documentRelative(true)
                         .vocab(true)
-                        .expand(adapter.stringValue(value)));
+                        .expand(adapter.stringValue(value));
+
+//                params.runtime().onTypeMapping(property, Keywords.VOCAB);
+
+                return Map.of(Keywords.ID, id);
             }
             break;
 
@@ -102,6 +114,8 @@ public final class ValueExpansion {
 
         // type mapping is not ID, VOCAB, NONE
         default:
+//            params.runtime().onTypeMapping(property, typeMapping);
+
             return Map.of(
                     Keywords.TYPE, typeMapping,
                     Keywords.VALUE, asScalar(value, adapter));

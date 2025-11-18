@@ -1,0 +1,5 @@
+{
+    "/coerceDefault": "http://example.org/coerceDefault",
+    "/coerceId": "http://example.org/coerceId",
+    "/coerceVocab": "http://example.org/coerceVocab"
+}

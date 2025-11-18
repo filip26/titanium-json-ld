@@ -1,0 +1,5 @@
+{
+    "/foo/prop1": "http://vocab.org/prop1",
+    "/foo/prop2": "http://vocab.override.org/prop2",
+    "/foo": "http://vocab.org/foo"
+}

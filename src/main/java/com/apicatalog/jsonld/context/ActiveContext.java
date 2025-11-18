@@ -22,9 +22,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLd.Version;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.processor.Execution;
+import com.apicatalog.jsonld.processor.ExecutionEvents;
 import com.apicatalog.tree.io.TreeAdapter;
 
 /**
@@ -32,7 +33,7 @@ import com.apicatalog.tree.io.TreeAdapter;
  * running.
  *
  */
-final class ActiveContext implements Context {
+public final class ActiveContext implements Context {
 
     // the active term definitions which specify how keys and values have to be
     // interpreted
@@ -90,7 +91,7 @@ final class ActiveContext implements Context {
     }
 
     public void createInverseContext() {
-        this.inverseContext = InverseContextBuilder.with(this).build();
+        this.inverseContext = InverseContext.newContext(this);
     }
 
     public boolean containsProtectedTerm() {
@@ -155,13 +156,13 @@ final class ActiveContext implements Context {
     }
 
     @Override
-    public ContextBuilder newContext(DocumentLoader loader, final Execution runtime) {
+    public ContextBuilder newContext(DocumentLoader loader, final ExecutionEvents runtime) {
         return ContextBuilder.with(this, loader, runtime);
     }
 
     @Override
-    public TermDefinitionBuilder newTerm(final Object localContext, final TreeAdapter adapter, final Map<String, Boolean> defined, DocumentLoader loader, final Execution runtime) {
-        return TermDefinitionBuilder.with(this, localContext, adapter, defined, loader, runtime);
+    public void newTerm(final String term, final Object localContext, final TreeAdapter adapter, final Map<String, Boolean> defined, DocumentLoader loader, final ExecutionEvents runtime) throws JsonLdException {
+        TermDefinitionBuilder.with(this, localContext, adapter, defined, loader, runtime).create(term);
     }
 
     public Optional<String> selectTerm(

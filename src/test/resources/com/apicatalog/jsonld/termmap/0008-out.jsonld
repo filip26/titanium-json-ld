@@ -1,0 +1,5 @@
+{
+    "/ex:test": "http://example.org/vocab#test",
+    "/ex:keep-full-value": "http://example.org/vocab#keep-full-value"
+}
+

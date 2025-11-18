@@ -1,0 +1,5 @@
+{
+    "/bar/baz/baz": "http://example/baz",
+    "/bar/baz": "http://example/baz",
+    "/bar": "http://example/bar"
+}

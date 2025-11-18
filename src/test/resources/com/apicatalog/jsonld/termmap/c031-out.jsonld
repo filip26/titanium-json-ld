@@ -1,0 +1,4 @@
+{
+    "/outer/inner": "http://a.example/in",
+    "/outer": "http://a.example/out"
+}

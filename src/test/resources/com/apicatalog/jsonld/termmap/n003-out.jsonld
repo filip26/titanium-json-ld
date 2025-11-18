@@ -1,0 +1,6 @@
+{
+    "/nest": "@nest",
+    "/p1": "http://example.org/p1",
+    "/p2": "http://example.org/p2",
+    "/nest/p2": "http://example.org/p2"
+}

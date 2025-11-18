@@ -1,0 +1,16 @@
+{
+    "/type": "@type",
+    "/credentialSubject": "@id",
+    "/credentialSubject/type": "@type",
+    "/credentialSubject/protectedComponentIndex": "https://w3id.org/security#multibase",
+    "/issuer": "@id",
+    "/credentialStatus": "@id",
+    "/credentialStatus/type": "@type",
+    "/credentialStatus/terseStatusListBaseUrl": "@id",
+    "/proof": "@id",
+    "/proof/type": "@type",
+    "/proof/verificationMethod": "@id",
+    "/proof/cryptosuite": "https://w3id.org/security#cryptosuiteString",
+    "/proof/proofPurpose": "@vocab",
+    "/proof/proofValue": "https://w3id.org/security#multibase"
+}

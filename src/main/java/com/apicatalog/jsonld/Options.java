@@ -86,6 +86,7 @@ public final class Options {
     /** Default settings. */
     public static final boolean DEFAULT_RDF_STAR = false;
     public static final boolean DEFAULT_NUMERIC_ID = false;
+    public static final boolean DEFAULT_INLINE_CONTEXTS = true;
     public static final UriValidationPolicy DEFAULT_URI_VALIDATION = UriValidationPolicy.Full;
 
     /**
@@ -154,8 +155,11 @@ public final class Options {
 
     // custom
 
-    // allow numeric @id
+    // allows numeric @id
     private boolean useNumericId;
+
+    // allows inline contexts
+    private boolean useInlineContexts;
 
     // context cache
 //    private Cache<String, JsonValue> contextCache;
@@ -198,6 +202,7 @@ public final class Options {
 
         // custom
         this.useNumericId = DEFAULT_NUMERIC_ID;
+        this.useInlineContexts = DEFAULT_INLINE_CONTEXTS;
 //        this.contextCache = new LruCache<>(256);
         this.documentCache = null;
         this.uriValidation = DEFAULT_URI_VALIDATION;
@@ -232,6 +237,7 @@ public final class Options {
 
         // custom
         this.useNumericId = options.useNumericId;
+        this.useInlineContexts = options.useInlineContexts;
 //        this.contextCache = options.contextCache;
         this.documentCache = options.documentCache;
         this.uriValidation = options.uriValidation;
@@ -929,6 +935,15 @@ public final class Options {
      */
     public Options undefinedTermsPolicy(ProcessingPolicy undefinedTerms) {
         this.undefinedTerms = undefinedTerms;
+        return this;
+    }
+
+    public boolean useInlineContexts() {
+        return useInlineContexts;
+    }
+
+    public Options useInlineContexts(boolean useInlineContext) {
+        this.useInlineContexts = useInlineContext;
         return this;
     }
 }

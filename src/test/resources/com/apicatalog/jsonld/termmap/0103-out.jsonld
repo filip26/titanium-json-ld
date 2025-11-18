@@ -1,0 +1,5 @@
+{
+    "/input/0/@graph/value": "http://example.org/value",
+    "/input/1/@graph/value": "http://example.org/value",
+    "/input": "http://example.org/input"
+}

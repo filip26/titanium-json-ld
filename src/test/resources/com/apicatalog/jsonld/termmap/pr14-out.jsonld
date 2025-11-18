@@ -1,0 +1,5 @@
+{
+    "/protected1": "ex:protected1",
+    "/protected2/protected1": "ex:protected3",
+    "/protected2": "ex:protected2"
+}

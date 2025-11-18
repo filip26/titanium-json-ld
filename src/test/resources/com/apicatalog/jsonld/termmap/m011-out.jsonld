@@ -1,0 +1,7 @@
+{
+    "/idmap/@none": "@index",
+    "/idmap/@none/label": "http://example/label",
+    "/idmap/none": "@index",
+    "/idmap/none/label": "http://example/label",
+    "/idmap": "http://example/idmap"
+}

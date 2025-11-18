@@ -1,0 +1,17 @@
+{
+    "/credentialStatus/terseStatusListBaseUrl": "https://w3id.org/vc-barcodes#terseStatusListBaseUrl",
+    "/credentialStatus/terseStatusListIndex": "https://w3id.org/vc-barcodes#terseStatusListIndex",
+    "/credentialStatus/type": "@type",
+    "/credentialStatus": "https://www.w3.org/2018/credentials#credentialStatus",
+    "/credentialSubject/protectedComponentIndex": "https://w3id.org/vc-barcodes#protectedComponentIndex",
+    "/credentialSubject/type": "@type",
+    "/credentialSubject": "https://www.w3.org/2018/credentials#credentialSubject",
+    "/issuer": "https://www.w3.org/2018/credentials#issuer",
+    "/proof/cryptosuite": "https://w3id.org/security#cryptosuite",
+    "/proof/proofPurpose": "https://w3id.org/security#proofPurpose",
+    "/proof/proofValue": "https://w3id.org/security#proofValue",
+    "/proof/type": "@type",
+    "/proof/verificationMethod": "https://w3id.org/security#verificationMethod",
+    "/proof": "https://w3id.org/security#proof",
+    "/type": "@type"
+}

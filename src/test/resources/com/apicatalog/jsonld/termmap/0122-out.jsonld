@@ -1,0 +1,5 @@
+{
+    "/http:~1~1example.org~1vocab~1at": "http://example.org/vocab/at",
+    "/http:~1~1example.org~1vocab~1foo.bar": "http://example.org/vocab/foo.bar",
+    "/http:~1~1example.org~1vocab~1ignoreme": "http://example.org/vocab/ignoreme"
+}

@@ -31,7 +31,10 @@ import com.apicatalog.jsonld.test.TestManifest;
 
 public class CustomTest {
 
-    static ClasspathLoader LOADER = new ClasspathLoader(JakartaTestSuite.PARSER);
+    static ClasspathLoader LOADER = ClasspathLoader
+            .newBuilder()
+            .defaultParser(JakartaTestSuite.PARSER)
+            .build();
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")

@@ -1,0 +1,6 @@
+{
+    "/included1": "@included",
+    "/included1/prop": "http://example.org/prop",
+    "/included2": "@included",
+    "/included2/prop": "http://example.org/prop"
+}

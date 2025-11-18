@@ -1,0 +1,6 @@
+{
+    "/statement/rdf:type": "@index",
+    "/statement/rdf:type/addedIn": "https://example.net/ns#addedIn",
+    "/statement/rdf:type/term": "http://www.w3.org/1999/02/22-rdf-syntax-ns#object",
+    "/statement": "http://www.w3.org/1999/02/22-rdf-syntax-ns#subject"
+}

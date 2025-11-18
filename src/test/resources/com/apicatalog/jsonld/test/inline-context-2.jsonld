@@ -1,0 +1,19 @@
+{
+  "@context": "classpath:/com/apicatalog/jsonld/test/issue63-context.json",
+  "name": "Manu Sporny",
+  "address": {
+    "@context": {
+      "name": "http://schema.org/name",
+      "image": {
+        "@id": "http://schema.org/image",
+        "@type": "@id"
+      },
+      "homepage": {
+        "@id": "http://schema.org/url",
+        "@type": "@id"
+      }
+    },
+    "homepage": "http://manu.sporny.org/",
+    "image": "http://manu.sporny.org/images/manu.png"
+  }
+}

@@ -1,0 +1,9 @@
+{
+    "/http:~1~1example.org~1test#property1/http:~1~1example.org~1test#property4": "http://example.org/test#property4",
+    "/http:~1~1example.org~1test#property1/uri": "@id",
+    "/http:~1~1example.org~1test#property1": "http://example.org/test#property1",
+    "/http:~1~1example.org~1test#property2": "http://example.org/test#property2",
+    "/http:~1~1example.org~1test#property3/uri": "@id",
+    "/http:~1~1example.org~1test#property3": "http://example.org/test#property3",
+    "/uri": "@id"
+}
