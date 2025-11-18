@@ -1,7 +1,3 @@
-[
-  {
-    "http://example.com/anotherVocab#term": [
-      { "@value": "value of term" }
-    ]
-  }
-]
+{
+    "/term": "http://example.com/anotherVocab#term"
+}

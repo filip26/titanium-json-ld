@@ -1,4 +1,4 @@
 {
-    "http://example.org/property": "http://example.org/property",
-    "property": "http://example.org/vocabRelativeProperty"
+    "/http:~1~1example.org~1property": "http://example.org/property",
+    "/property": "http://example.org/vocabRelativeProperty"
 }

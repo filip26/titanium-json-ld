@@ -299,7 +299,7 @@ final class ObjectExpansion1314 {
                             adapter,
                             key,
                             index,
-                            expandedIndex,
+                            Keywords.INDEX,
                             new Params(
                                     params.frameExpansion(),
                                     true,

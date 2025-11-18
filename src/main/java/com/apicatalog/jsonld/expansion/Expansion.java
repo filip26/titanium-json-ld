@@ -80,7 +80,7 @@ public final class Expansion {
             final String term,
             final String expandedTerm,
             final Params params) throws JsonLdException {
-System.out.println("expand " + node);
+        System.out.println("expand " + node);
         // 1. If element is null, return null
         if (nodeAdapter.isNull(node)) {
             return null;
@@ -118,7 +118,7 @@ System.out.println("expand " + node);
                     node,
                     nodeAdapter,
                     params);
-            
+
             if (Keywords.SET.equals(expandedTerm)) {
                 params.runtime().term(term, null);
             }
@@ -258,19 +258,30 @@ System.out.println("expand " + node);
             return List.of();
         }
 
-        params.runtime().beginList(term);
-        
+        if (!Keywords.INDEX.equals(expandedTerm)) {
+            params.runtime().beginList(term);
+        }
+
         final var result = new ArrayList<Object>();
 
         var counter = 0;
-        
+
         // 5.2.
         for (final var item : nodeAdapter.asIterable(node)) {
 
             params.runtime().tick();
 
             // 5.2.1
-            var expanded = expand(context, item, nodeAdapter, property, Integer.toString(counter++), null, params);
+            var expanded = expand(
+                    context,
+                    item,
+                    nodeAdapter,
+                    property,
+                    Keywords.INDEX.equals(expandedTerm)
+                            ? term
+                            : Integer.toString(counter++),
+                    null,
+                    params);
 
             // 5.2.2
             if (expanded instanceof Collection<?> list
@@ -293,8 +304,10 @@ System.out.println("expand " + node);
             }
         }
 
-        params.runtime().endList(term);
-        
+        if (!Keywords.INDEX.equals(expandedTerm)) {
+            params.runtime().endList(term);
+        }
+
         // 5.3
         return result;
     }

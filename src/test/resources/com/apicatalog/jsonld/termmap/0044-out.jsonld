@@ -1,13 +1,5 @@
 {
-    "property": [
-        "http://example.com/vocab/property",
-        {
-            "indexMap": [
-                "http://example.com/vocab/indexMap",
-                {
-                    "expands to english string": "@index"
-                }
-            ]
-        }
-    ]
+    "/property/0/indexMap/expands to english string": "@index",
+    "/property/0/indexMap": "http://example.com/vocab/indexMap",
+    "/property": "http://example.com/vocab/property"
 }

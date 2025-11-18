@@ -1,11 +1,5 @@
 {
-    "property": [
-        "http://example.com/property",
-        {
-            "property": "http://example.com/property"
-        },
-        {
-            "property": "http://example.com/property"
-        }
-    ]
+    "/property/0/property": "http://example.com/property",
+    "/property/1/property": "http://example.com/property",
+    "/property": "http://example.com/property"
 }

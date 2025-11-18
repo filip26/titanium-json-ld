@@ -1,5 +1,5 @@
 {
-    "homepage": "http://xmlns.com/foaf/0.1/homepage",
-    "link": "http://example.com/link",
-    "name": "http://xmlns.com/foaf/0.1/name"
+    "/homepage": "http://xmlns.com/foaf/0.1/homepage",
+    "/link": "http://example.com/link",
+    "/name": "http://xmlns.com/foaf/0.1/name"
 }

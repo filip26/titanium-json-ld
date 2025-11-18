@@ -1,14 +1,5 @@
 {
-    "property": [
-        "http://example.com/vocab#property",
-        {
-            "property": [
-                "http://example.com/vocab#property",
-                null,
-                {
-                    "property": "http://example.com/vocab#property"
-                }
-            ]
-        }
-    ]
+    "/property/property/1/property": "http://example.com/vocab#property",
+    "/property/property": "http://example.com/vocab#property",
+    "/property": "http://example.com/vocab#property"
 }

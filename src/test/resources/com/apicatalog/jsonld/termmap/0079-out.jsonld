@@ -1,9 +1,4 @@
-[{
-  "foo:input": [{
-    "@graph": [{
-      "foo:value": [{
-        "@value": "x"
-      }]
-    }]
-  }]
-}]
+{
+    "/input/value": "foo:value",
+    "/input": "foo:input"
+}
