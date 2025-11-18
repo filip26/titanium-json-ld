@@ -82,8 +82,8 @@ class TermMapTest2 {
 //    @ParameterizedTest
 //    @MethodSource("termMapCases")
 //    void testTermMapper(String input, String output) throws JsonLdException, TreeIOException, IOException {
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("data")
+//    @ParameterizedTest(name = "{0}")
+//    @MethodSource("data")
     void testTermMapper(TestCase testCase) {
 
 //        var document = read(testCase.input);

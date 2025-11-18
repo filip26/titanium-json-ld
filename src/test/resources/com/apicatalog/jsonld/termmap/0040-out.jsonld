@@ -1,4 +1,4 @@
 {
-    "indexes": "http://example.com/vocab/index",
-    "label": "http://example.com/vocab/label"
+    "/indexes": "http://example.com/vocab/index",
+    "/label": "http://example.com/vocab/label"
 }

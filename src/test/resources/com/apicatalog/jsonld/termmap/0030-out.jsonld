@@ -1,9 +1,5 @@
 {
-    "label": [
-        "http://example.com/vocab/label",
-        {
-            "de": "@language",
-            "en": "@language"
-        }
-    ]
+    "/label/de": "@language",
+    "/label/en": "@language",
+    "/label": "http://example.com/vocab/label"
 }

@@ -1,11 +1,5 @@
 {
-    "@reverse": {
-        "http://xmlns.com/foaf/0.1/knows": [
-            "http://xmlns.com/foaf/0.1/knows",
-            {
-                "name": "http://xmlns.com/foaf/0.1/name"
-            }
-        ]
-    },
-    "name": "http://xmlns.com/foaf/0.1/name"
+    "/@reverse/http:~1~1xmlns.com~1foaf~10.1~1knows/name": "http://xmlns.com/foaf/0.1/name",
+    "/@reverse/http:~1~1xmlns.com~1foaf~10.1~1knows": "http://xmlns.com/foaf/0.1/knows",
+    "/name": "http://xmlns.com/foaf/0.1/name"
 }

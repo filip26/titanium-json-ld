@@ -1,10 +1,6 @@
 {
-    "http://example.com/vocab/label": "http://example.com/vocab/label",
-    "label": [
-        "http://example.com/vocab/label",
-        {
-            "de": "@language",
-            "en": "@language"
-        }
-    ]
+    "/http:~1~1example.com~1vocab~1label": "http://example.com/vocab/label",
+    "/label": "http://example.com/vocab/label",
+    "/label/de": "@language",
+    "/label/en": "@language"
 }

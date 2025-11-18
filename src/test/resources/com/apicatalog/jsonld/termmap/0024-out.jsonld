@@ -1,6 +1,6 @@
 {
-    "homepage": "http://xmlns.com/foaf/0.1/homepage",
-    "ical:location": "http://www.w3.org/2002/12/cal/ical#location",
-    "ical:summary": "http://www.w3.org/2002/12/cal/ical#summary",
-    "name": "http://xmlns.com/foaf/0.1/name"
+    "/homepage": "http://xmlns.com/foaf/0.1/homepage",
+    "/ical:location": "http://www.w3.org/2002/12/cal/ical#location",
+    "/ical:summary": "http://www.w3.org/2002/12/cal/ical#summary",
+    "/name": "http://xmlns.com/foaf/0.1/name"
 }

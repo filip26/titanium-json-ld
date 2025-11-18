@@ -1,9 +1,5 @@
 {
-    "date": "http://example.org/vocab#date",
-    "embed": [
-        "http://example.org/vocab#embed",
-        {
-            "expandedDate": "http://example.org/vocab#expandedDate"
-        }
-    ]
+    "/date": "http://example.org/vocab#date",
+    "/embed/expandedDate": "http://example.org/vocab#expandedDate",
+    "/embed": "http://example.org/vocab#embed"
 }
