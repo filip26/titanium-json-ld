@@ -1,8 +1,4 @@
-[{
-  "ex:foo": [{
-    "@type": "@json",
-    "@value": {
-      "test": 1
-    }
-  }]
-}]
+{
+    "/ex:foo/value": "@value",
+    "/ex:foo": "ex:foo"
+}

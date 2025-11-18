@@ -63,9 +63,9 @@ public final class ObjectExpansion {
 
     public Object expand(final Context context, final String property) throws JsonLdException {
 
-        if (property != null || term != null) {
-            params.runtime().beginMap(term != null ? term : property);
-        }
+//        if (property != null || term != null) {
+//            params.runtime().beginMap(term != null ? term : property);
+//        }
 
         activeContext = initPreviousContext(
                 context,
@@ -113,13 +113,13 @@ public final class ObjectExpansion {
                 .result(result)
                 .typeContext(typeContext)
                 .nest(new LinkedHashMap<>())
-                .expand(activeContext, element, adapter, property);
+                .expand(activeContext, element, adapter, property, term);
 
         final var normalized = normalize(result, property, params);
         
-        if (property != null || term != null) {
-            params.runtime().endMap(term != null ? term : property);
-        }
+//        if (property != null || term != null) {
+//            params.runtime().endMap(term != null ? term : property);
+//        }
         
         return normalized;
 

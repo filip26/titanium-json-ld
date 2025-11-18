@@ -257,7 +257,7 @@ public final class Expansion {
         if (nodeAdapter.isEmptyCollection(node)) {
             return List.of();
         }
-
+System.out.println("array " + property + ", " + term + ", " + expandedTerm);
         final var indexedSingleton = Keywords.INDEX.equals(expandedTerm)
                 && (nodeAdapter.type(node) != NodeType.COLLECTION
                         || nodeAdapter.isSingleElement(node));

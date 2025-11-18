@@ -72,13 +72,16 @@ final class ObjectExpansion1314 {
             final Context activeContext,
             final Object element,
             final TreeAdapter adapter,
-            final String activeProperty) throws JsonLdException {
+            final String activeProperty,
+            final String term) throws JsonLdException {
 
         var keys = params.options().isOrdered()
                 ? adapter.keyStream(element).sorted(TreeIO.comparingElement(adapter::asString)).iterator()
                 : adapter.keyStream(element).iterator();
 
-//        params.runtime().onBeginMap(activeProperty);
+        if (activeProperty != null || term != null) {
+            params.runtime().beginMap(term != null ? term : activeProperty);
+        }
 
         // 13.
         while (keys.hasNext()) {
@@ -98,7 +101,7 @@ final class ObjectExpansion1314 {
                     .vocab(true)
                     .expand(key);
 
-            //FIXME if the term is undefined and
+            // FIXME if the term is undefined and
             if (expandedProperty == null || (!expandedProperty.contains(":") && !Keywords.contains(expandedProperty))) {
                 switch (params.options().undefinedTermsPolicy()) {
                 case Fail:
@@ -256,7 +259,7 @@ final class ObjectExpansion1314 {
                     final var index = adapter.asString(valueKey);
 
                     params.runtime().term(index, Keywords.INDEX);
-                    
+
                     // 13.8.3.1.
                     Context mapContext = activeContext;
 
@@ -508,6 +511,11 @@ final class ObjectExpansion1314 {
         if (nest != null && !nest.isEmpty()) {
             processNest(activeContext, element, adapter);
         }
+
+        if (activeProperty != null || term != null) {
+            params.runtime().endMap(term != null ? term : activeProperty);
+        }
+
 //        params.runtime().onEndMap(activeProperty);
     }
 
@@ -1012,10 +1020,10 @@ final class ObjectExpansion1314 {
         // 13.4.12
         if (Keywords.SET.equals(expandedProperty)) {
             expandedValue = Expansion.expand(
-                    activeContext, 
-                    value, 
-                    adapter, 
-                    activeProperty, 
+                    activeContext,
+                    value,
+                    adapter,
+                    activeProperty,
                     key,
                     expandedProperty,
                     params);
@@ -1153,7 +1161,8 @@ final class ObjectExpansion1314 {
             final Context context,
             final Object element,
             final TreeAdapter adapter,
-            final String activeProperty) throws JsonLdException {
+            final String activeProperty,
+            final String term) throws JsonLdException {
 
         var activeContext = context;
 
@@ -1181,7 +1190,7 @@ final class ObjectExpansion1314 {
 
         // steps 13-14
 
-        expand(activeContext, element, adapter, activeProperty);
+        expand(activeContext, element, adapter, activeProperty, term);
     }
 
     private void processNest(
@@ -1197,8 +1206,13 @@ final class ObjectExpansion1314 {
 
             final var nestedKey = nestedKeys.next();
 
+            final var nestedNode = adapter.property(nestedKey, element);
+
+            final var collection = adapter.isCollection(nestedNode);
+            var counter = 0;
+
             // 14.2.
-            for (final var nestValue : adapter.asIterable(adapter.property(nestedKey, element))) {
+            for (final var nestValue : adapter.asIterable(nestedNode)) {
 
                 // 14.2.1
                 if (!adapter.isMap(nestValue)) {
@@ -1214,8 +1228,12 @@ final class ObjectExpansion1314 {
                     }
                 }
 
-                params.runtime().beginMap(nestedKey);
-                
+                if (collection) {
+                    params.runtime().beginList(nestedKey);
+                } else {
+//                    params.runtime().beginMap(nestedKey);
+                }
+
                 // 14.2.2
                 ObjectExpansion1314
                         .with(params)
@@ -1223,10 +1241,18 @@ final class ObjectExpansion1314 {
                         .result(result)
                         .typeContext(typeContext)
                         .nest(new LinkedHashMap<>())
-                        .recurse(activeContext, nestValue, adapter, nestedKey);
-                
-                params.runtime().endMap(nestedKey);
+                        .recurse(activeContext, nestValue, adapter, nestedKey,
+                                collection
+                                        ? Integer.toString(counter++)
+                                        : nestedKey);
+
+                if (collection) {
+                    params.runtime().endList(nestedKey);
+                } else {
+//                    params.runtime().endMap(nestedKey);
+                }
             }
+
         }
     }
 
