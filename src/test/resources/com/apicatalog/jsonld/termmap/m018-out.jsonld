@@ -1,6 +1,4 @@
-[{
-  "http://example.org/ns/foo": [{
-    "@id": "http://example.org/base/baz",
-    "@type": [ "http://example.org/ns/bar" ]
-  }]
-}]
+{
+    "/foo/bar": "@index",
+    "/foo": "http://example.org/ns/foo"
+}

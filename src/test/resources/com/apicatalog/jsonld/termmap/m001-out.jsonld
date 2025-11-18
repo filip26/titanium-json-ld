@@ -1,6 +1,7 @@
-[{
-  "http://example/idmap": [
-    {"http://example/label": [{"@value": "Object with @id _:bar"}], "@id": "_:bar"},
-    {"http://example/label": [{"@value": "Object with @id <foo>"}], "@id": "http://example.org/foo"}
-  ]
-}]
+{
+    "/idmap/_:bar": "@index",
+    "/idmap/_:bar/label": "http://example/label",
+    "/idmap/http:~1~1example.org~1foo": "@index",
+    "/idmap/http:~1~1example.org~1foo/label": "http://example/label",
+    "/idmap": "http://example/idmap"
+}

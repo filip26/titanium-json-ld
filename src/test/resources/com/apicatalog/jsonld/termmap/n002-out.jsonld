@@ -1,4 +1,5 @@
-[{
-  "http://example.org/p1": [{"@value": "v1"}],
-  "http://example.org/p2": [{"@value": "v2"}]
-}]
+{
+    "/nest": "@nest",
+    "/p1": "http://example.org/p1",
+    "/nest/p2": "http://example.org/p2"
+}

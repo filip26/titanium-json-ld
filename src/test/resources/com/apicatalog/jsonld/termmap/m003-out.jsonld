@@ -1,6 +1,7 @@
-[{
-  "http://example/typemap": [
-    {"http://example/label": [{"@value": "Object with @type _:bar"}], "@type": ["_:bar"]},
-    {"http://example/label": [{"@value": "Object with @type <foo>"}], "@type": ["http://example.org/foo"]}
-  ]
-}]
+{
+    "/typemap/_:bar": "@index",
+    "/typemap/_:bar/label": "http://example/label",
+    "/typemap/http:~1~1example.org~1foo": "@index",
+    "/typemap/http:~1~1example.org~1foo/label": "http://example/label",
+    "/typemap": "http://example/typemap"
+}

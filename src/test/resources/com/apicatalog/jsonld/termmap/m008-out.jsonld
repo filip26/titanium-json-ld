@@ -1,5 +1,5 @@
-[{
-  "http://example/typemap": [
-    {"http://example.org/a": [{"@value": "Object with @type <Type>"}], "@type": ["http://example/Type"]}
-  ]
-}]
+{
+    "/typemap/Type": "@index",
+    "/typemap/Type/a": "http://example.org/a",
+    "/typemap": "http://example/typemap"
+}
