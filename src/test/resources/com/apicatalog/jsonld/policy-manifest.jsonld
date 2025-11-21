@@ -1,0 +1,53 @@
+{
+  "@context": ["context.jsonld", {"@base": "expand-manifest"}],
+  "@id": "",
+  "@type": "mf:Manifest",
+  "name": "Expansion",
+  "description": "These tests implement the requirements for the JSON-LD [Expansion Algorithm](https://www.w3.org/TR/json-ld11-api/#expansion-algorithm).",
+  "baseIri": "https://w3c.github.io/json-ld-api/tests/",
+  "sequence": [
+    {
+      "@id": "#t0001",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "name": "drop free-floating nodes",
+      "purpose": "Expand drops unreferenced nodes having only @id",
+      "input": "expand/0001-in.jsonld",
+      "expect": "expand/0001-out.jsonld"
+    }, {
+      "@id": "#t0003",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "name": "drop null and unmapped properties",
+      "purpose": "Verifies that null values and unmapped properties are removed from expanded output",
+      "input": "expand/0003-in.jsonld",
+      "expect": "expand/0003-out.jsonld"
+    }, {
+      "@id": "#t0008",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "name": "@value with @language",
+      "purpose": "Keep expanded values with @language, drop non-conforming value objects containing just @language",
+      "input": "expand/0008-in.jsonld",
+      "expect": "expand/0008-out.jsonld"
+    }, {
+      "@id": "#t0046",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "name": "Free-floating nodes",
+      "purpose": "Expanding free-floating nodes causes them to be removed",
+      "input": "expand/0046-in.jsonld",
+      "expect": "expand/0046-out.jsonld"
+    }, {
+      "@id": "#t0047",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "name": "Free-floating values in sets and free-floating lists",
+      "purpose": "Free-floating values in sets are removed, free-floating lists are removed completely",
+      "input": "expand/0047-in.jsonld",
+      "expect": "expand/0047-out.jsonld"
+    }, {
+      "@id": "#t0065",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "name": "Drop unmapped keys in reverse map",
+      "purpose": "Keys that are not mapped to an IRI in a reverse-map are dropped",
+      "input": "expand/0065-in.jsonld",
+      "expect": "expand/0065-out.jsonld"
+    }
+  ]
+}
