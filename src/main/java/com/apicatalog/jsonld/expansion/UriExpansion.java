@@ -275,7 +275,7 @@ public final class UriExpansion {
                                     runtime);
                     // CBOR-LD collector
                     if (runtime.collectsContextKeys()) {
-                        runtime.onContextKeys(activeContext.getTermsMapping().keySet());
+                        runtime.contextKeys(activeContext.getTermsMapping().keySet());
                     }                    
                 }
             }
@@ -305,7 +305,7 @@ public final class UriExpansion {
             activeContext.newTerm(prefix, localContext, adapter, defined, loader, runtime);
             
             if (runtime.collectsContextKeys()) {
-                runtime.onContextKeys(activeContext.getTermsMapping().keySet());
+                runtime.contextKeys(activeContext.getTermsMapping().keySet());
             }
 
         }

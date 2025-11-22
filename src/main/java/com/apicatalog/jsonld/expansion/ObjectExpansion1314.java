@@ -33,6 +33,7 @@ import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LdAdapter;
+import com.apicatalog.jsonld.runtime.Execution.EventType;
 import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
@@ -119,10 +120,10 @@ final class ObjectExpansion1314 {
             if (Keywords.contains(expandedProperty)) {
 
                 if (!Keywords.contains(key) || !Keywords.contains(expandedProperty)) {
-                    params.runtime().term(key, expandedProperty);
+                    params.runtime().fire(EventType.onTermKey, key, expandedProperty);
                 }
 
-                params.runtime().type(key, expandedProperty);
+                params.runtime().fire(EventType.onTypeKey, key, expandedProperty);
 
                 final var value = adapter.property(key, element);
 
@@ -140,7 +141,7 @@ final class ObjectExpansion1314 {
             final var typeMapping = keyTermDefinition.map(TermDefinition::getTypeMapping).orElse(null);
 
             if (typeMapping != null) {
-                params.runtime().type(key, typeMapping);
+                params.runtime().fire(EventType.onTypeKey, key, typeMapping);
             }
 
             final var containerMapping = keyTermDefinition
@@ -176,7 +177,7 @@ final class ObjectExpansion1314 {
                         ? adapter.keyStream(value).map(adapter::asString).sorted().iterator()
                         : adapter.keyStream(value).map(adapter::asString).iterator();
 
-                params.runtime().beginMap(key);
+                params.runtime().fire(EventType.onBeginMap, key);
                 while (langCodes.hasNext()) {
 
                     final var langCode = langCodes.next();
@@ -224,9 +225,9 @@ final class ObjectExpansion1314 {
                         // 13.7.4.2.6.
                         langMaps.add(langMap);
                     }
-                    params.runtime().term(langCode, Keywords.LANGUAGE);
+                    params.runtime().fire(EventType.onTermKey, langCode, Keywords.LANGUAGE);
                 }
-                params.runtime().endMap(key);
+                params.runtime().fire(EventType.onEndMap, key);
 
                 expandedValue = List.copyOf(langMaps);
 
@@ -247,7 +248,7 @@ final class ObjectExpansion1314 {
                         ? adapter.keyStream(value).sorted().iterator()
                         : adapter.keys(value).iterator();
 
-                params.runtime().beginMap(key);
+                params.runtime().fire(EventType.onBeginMap, key);
 
                 // 13.8.3.
                 while (valueKeys.hasNext()) {
@@ -258,7 +259,7 @@ final class ObjectExpansion1314 {
 
                     final var index = adapter.asString(valueKey);
 
-                    params.runtime().term(index, Keywords.INDEX);
+                    params.runtime().fire(EventType.onTermKey, index, Keywords.INDEX);
 
                     // 13.8.3.1.
                     Context mapContext = activeContext;
@@ -408,7 +409,7 @@ final class ObjectExpansion1314 {
                         indices.add(indexMap);
                     }
                 }
-                params.runtime().endMap(key);
+                params.runtime().fire(EventType.onEndMap, key);
                 expandedValue = indices;
             }
             // 13.9.
@@ -502,7 +503,7 @@ final class ObjectExpansion1314 {
             }
 
             if (!Keywords.contains(key) || !Keywords.contains(expandedProperty)) {
-                params.runtime().term(key, expandedProperty);
+                params.runtime().fire(EventType.onTermKey, key, expandedProperty);
             }
 
         }
@@ -1165,7 +1166,7 @@ final class ObjectExpansion1314 {
             final String term) throws JsonLdException {
 
         if (activeProperty != null || term != null) {
-            params.runtime().beginMap(term != null ? term : activeProperty);
+            params.runtime().fire(EventType.onBeginMap, term != null ? term : activeProperty);
         }
 
         var activeContext = context;
@@ -1194,9 +1195,9 @@ final class ObjectExpansion1314 {
 
         // steps 13-14
         expand(activeContext, element, adapter, activeProperty, term);
-        
+
         if (activeProperty != null || term != null) {
-            params.runtime().endMap(term != null ? term : activeProperty);
+            params.runtime().fire(EventType.onEndMap, term != null ? term : activeProperty);
         }
 
     }
@@ -1237,7 +1238,7 @@ final class ObjectExpansion1314 {
                 }
 
                 if (collection) {
-                    params.runtime().beginList(nestedKey);
+                    params.runtime().fire(EventType.onBeginList, nestedKey);
                 } else {
 //                    params.runtime().beginMap(nestedKey);
                 }
@@ -1255,7 +1256,7 @@ final class ObjectExpansion1314 {
                                         : nestedKey);
 
                 if (collection) {
-                    params.runtime().endList(nestedKey);
+                    params.runtime().fire(EventType.onEndList, nestedKey);
                 } else {
 //                    params.runtime().endMap(nestedKey);
                 }

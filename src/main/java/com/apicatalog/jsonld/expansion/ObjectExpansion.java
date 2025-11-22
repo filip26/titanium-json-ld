@@ -27,6 +27,7 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LdAdapter;
+import com.apicatalog.jsonld.runtime.Execution.EventType;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.web.uri.UriUtils;
@@ -64,7 +65,7 @@ public final class ObjectExpansion {
     public Object expand(final Context context, final String property) throws JsonLdException {
 
         if (property != null || term != null) {
-            params.runtime().beginMap(term != null ? term : property);
+            params.runtime().fire(EventType.onBeginMap, term != null ? term : property);
         }
 
         activeContext = initPreviousContext(
@@ -93,7 +94,7 @@ public final class ObjectExpansion {
             activeContext = activeContext
                     .newContext(params.options().loader(), params.runtime())
                     .acceptInlineContext(params.options().useInlineContexts())
-                    .collectKeys(params.runtime()::onContextKeys)
+                    .collectKeys(params.runtime()::contextKeys)
                     .build(contextValue, adapter, params.baseUrl());
 
         }
@@ -116,20 +117,19 @@ public final class ObjectExpansion {
                 .expand(activeContext, element, adapter, property, term);
 
         final var normalized = normalize(result, property, params);
-        
+
         if (property != null || term != null) {
-            params.runtime().endMap(term != null ? term : property);
+            params.runtime().fire(EventType.onEndMap, term != null ? term : property);
         }
-        
+
         return normalized;
 
     }
-    
+
     private Object normalize(
             final Map<String, Object> result,
             final String property,
-            final Params params
-            ) throws JsonLdException {
+            final Params params) throws JsonLdException {
         // 15.
         if (result.containsKey(Keywords.VALUE)) {
             return normalizeValue(result, property, params.frameExpansion());
@@ -229,7 +229,7 @@ public final class ObjectExpansion {
                     typeKey = key;
                 }
 
-                params.runtime().type(key, Keywords.TYPE);
+                params.runtime().fire(EventType.onTypeKey, key, Keywords.TYPE);
 
                 // 11.2
                 var terms = adapter.asStream(adapter.property(key, element))
@@ -254,7 +254,7 @@ public final class ObjectExpansion {
                         activeContext = activeContext
                                 .newContext(params.options().loader(), params.runtime())
                                 .propagate(false)
-                                .collectKeys(params.runtime()::onContextKeys)
+                                .collectKeys(params.runtime()::contextKeys)
                                 .build(localContext,
                                         activeContext.findTerm(term)
                                                 .map(TermDefinition::getBaseUrl)

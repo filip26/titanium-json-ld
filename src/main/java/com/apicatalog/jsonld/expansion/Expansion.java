@@ -29,6 +29,7 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.runtime.Execution;
+import com.apicatalog.jsonld.runtime.Execution.EventType;
 import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
@@ -104,7 +105,7 @@ public final class Expansion {
         if (params.runtime().collectsContextKeys()
                 && propertyContext != null
                 && propertyContext.isMap()) {
-            params.runtime().onContextKeys(propertyContext
+            params.runtime().contextKeys(propertyContext
                     .keyStream()
                     .map(propertyContext.adapter()::asString)
                     .toList());
@@ -120,7 +121,7 @@ public final class Expansion {
                     params);
 
             if (Keywords.SET.equals(expandedTerm)) {
-                params.runtime().term(term, null);
+                params.runtime().fire(EventType.onTermKey, term);
             }
             return scalar;
         }
@@ -261,9 +262,9 @@ public final class Expansion {
         final var indexedSingleton = Keywords.INDEX.equals(expandedTerm)
                 && (nodeAdapter.type(node) != NodeType.COLLECTION
                         || nodeAdapter.isSingleElement(node));
-                
+
         if (!indexedSingleton) {
-            params.runtime().beginList(term);
+            params.runtime().fire(EventType.onBeginList, term);
         }
 
         final var result = new ArrayList<Object>();
@@ -309,7 +310,7 @@ public final class Expansion {
         }
 
         if (!indexedSingleton) {
-            params.runtime().endList(term);
+            params.runtime().fire(EventType.onEndList, term);
         }
 
         // 5.3

@@ -75,7 +75,7 @@ class TypeMapTest {
 
         var typeMapper = new TypeMapCollector(typeMap::put);
 
-        var runtime = Execution.of(options).add(typeMapper);
+        var runtime = Execution.of(options, typeMapper);
 
         var expanded = Expander.expand(document, options, runtime);
         assertNotNull(expanded);
