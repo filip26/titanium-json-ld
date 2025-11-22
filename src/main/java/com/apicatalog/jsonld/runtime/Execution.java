@@ -69,7 +69,7 @@ public class Execution {
 
             final var consumers = new ArrayList<EventProcessor>(listeners.length + 2);
             if (options.timeout() != null) {
-                consumers.add(new TimeLimiter(options.timeout())::onEvent);
+                consumers.add(TimeLimiter.of(options.timeout())::onEvent);
             }
             if (options.droppedNodes() != null || options.undefinedTerms() != null) {
                 consumers.add(new PolicyEnforcer(

@@ -165,7 +165,7 @@ public final class ObjectExpansion {
             boolean revert = true;
 
             final var it = adapter.keyStream(element)
-                    .map(adapter::stringValue)
+                    .map(adapter::asString)
                     .sorted()
                     .iterator();
 
@@ -239,16 +239,15 @@ public final class ObjectExpansion {
 
                     final var localContext = typeContext
                             .findTerm(term)
-                            .map(TermDefinition::getLocalContext)
-                            .orElse(null);
+                            .map(TermDefinition::getLocalContext);
 
-                    if (localContext != null) {
+                    if (localContext.isPresent()) {
 
                         activeContext = activeContext
                                 .newContext(params.options().loader(), params.runtime())
                                 .propagate(false)
                                 .collectKeys(params.runtime()::contextKeys)
-                                .build(localContext,
+                                .build(localContext.get(),
                                         activeContext.findTerm(term)
                                                 .map(TermDefinition::getBaseUrl)
                                                 .orElse(null));
@@ -307,32 +306,32 @@ public final class ObjectExpansion {
 
         if ((result.containsKey(Keywords.DIRECTION) || result.containsKey(Keywords.LANGUAGE))
                 && result.containsKey(Keywords.TYPE)) {
-            throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT, "Invalid @value [" + result + "]");
+            throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT, "Invalid value object=" + result );
         }
 
         // 15.2.
         var type = result.get(Keywords.TYPE);
 
         if (type == null
-                || type instanceof Collection<?> c && !c.contains(Keywords.JSON)
+                || type instanceof Collection c && !c.contains(Keywords.JSON)
                 || type instanceof String s && !s.equals(Keywords.JSON)) {
 
             var value = result.get(Keywords.VALUE);
 
             // 15.3.
-            if (value == null || value instanceof Collection<?> c && c.isEmpty()) {
+            if (value == null || value instanceof Collection c && c.isEmpty()) {
                 return null;
 
             } else if (!frameExpansion
                     && !(value instanceof String) && result.containsKey(Keywords.LANGUAGE)) {
                 // 15.4
-                throw new JsonLdException(ErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
+                throw new JsonLdException(ErrorCode.INVALID_LANGUAGE_TAGGED_VALUE, "Invalid @language=" + value);
 
             } else if (!frameExpansion
                     && type != null
                     && (!(type instanceof String uri) || UriUtils.isNotURI(uri))) {
                 // 15.5
-                throw new JsonLdException(ErrorCode.INVALID_TYPED_VALUE, "Invalid @type [" + type + "].");
+                throw new JsonLdException(ErrorCode.INVALID_TYPED_VALUE, "Invalid @type=" + type);
             }
         }
         return normalize(result, activeProperty, frameExpansion);
@@ -359,7 +358,7 @@ public final class ObjectExpansion {
 
         // 17.1.
         if (result.size() > 2 || result.size() == 2 && !result.containsKey(Keywords.INDEX)) {
-            throw new JsonLdException(ErrorCode.INVALID_SET_OR_LIST_OBJECT, "Invalid object [" + result + "].");
+            throw new JsonLdException(ErrorCode.INVALID_SET_OR_LIST_OBJECT, "Invalid set or list object=" + result);
         }
 
         // 17.2.
@@ -393,7 +392,7 @@ public final class ObjectExpansion {
 
         // 18.
         if (result.size() == 1 && result.containsKey(Keywords.LANGUAGE)) {
-            params.runtime().fire(EventType.DROPPED_NODE, activeProperty);
+            params.runtime().fire(EventType.DROPPED_NODE, term);
             return null;
         }
 
@@ -405,7 +404,7 @@ public final class ObjectExpansion {
             if (!frameExpansion && result.isEmpty()
                     || result.containsKey(Keywords.VALUE)
                     || result.containsKey(Keywords.LIST)) {
-                params.runtime().fire(EventType.DROPPED_NODE, activeProperty);
+                params.runtime().fire(EventType.DROPPED_NODE, term);
                 return null;
             }
 
@@ -413,7 +412,7 @@ public final class ObjectExpansion {
             // the frameExpansion flag is set, a map containing only the @id entry is
             // retained.
             if (!frameExpansion && result.size() == 1 && result.containsKey(Keywords.ID)) {
-                params.runtime().fire(EventType.DROPPED_NODE, activeProperty);
+                params.runtime().fire(EventType.DROPPED_NODE, term);
                 return null;
             }
 

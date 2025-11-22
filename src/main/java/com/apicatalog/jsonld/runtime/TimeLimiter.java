@@ -7,31 +7,30 @@ import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
 import com.apicatalog.jsonld.runtime.Execution.EventProcessor;
 
-public class TimeLimiter implements EventProcessor {
-    
+public final class TimeLimiter implements EventProcessor {
+
     private final long ttl;
 
-    private long ticker;
+    private final long start;
 
-    public TimeLimiter(Duration ttl) {
+    private TimeLimiter(Duration ttl, long start) {
         this.ttl = ttl.toMillis();
-        this.ticker = 0;
+        this.start = start;
+    }
+
+    public static TimeLimiter of(Duration ttl) {
+        return new TimeLimiter(ttl, System.currentTimeMillis());
     }
 
     @Override
     public void onEvent(EventType type, String key, String value) throws JsonLdException {
-        if (ticker == 0) {
-            ticker = System.currentTimeMillis();
-            return;
-        }
 
         final var now = System.currentTimeMillis();
 
-        final var elapsed = ttl - (now - ticker);
+        final var elapsed = ttl - (now - start);
 
         if (elapsed <= 0) {
-            ticker = 0;
             throw new JsonLdException(ErrorCode.PROCESSING_TIMEOUT_EXCEEDED);
-        }        
+        }
     }
 }
