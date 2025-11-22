@@ -22,6 +22,7 @@ import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
+import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.jsonld.tordf.JsonLdToQuads;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.tree.io.TreeIO;
@@ -53,7 +54,7 @@ public final class RdfEmitter {
             Document document, 
             RdfQuadConsumer consumer,
             final Options options,
-            final ExecutionEvents runtime) throws JsonLdException {
+            final Execution runtime) throws JsonLdException {
 
         RdfEmitter.toRdf(document, consumer, options, runtime);
     }
@@ -62,7 +63,7 @@ public final class RdfEmitter {
             final Document input, 
             final RdfQuadConsumer consumer, 
             final Options options,
-            final ExecutionEvents runtime) throws JsonLdException {
+            final Execution runtime) throws JsonLdException {
         final Options expansionOptions = Options.copyOf(options);
 
         expansionOptions.mode(options.mode());
@@ -78,7 +79,7 @@ public final class RdfEmitter {
             final TreeIO input,
             final RdfQuadConsumer consumer,
             final Options options,
-            final ExecutionEvents runtime) throws JsonLdException {
+            final Execution runtime) throws JsonLdException {
         
         final Options expansionOptions = Options.copyOf(options);
 
@@ -100,7 +101,7 @@ public final class RdfEmitter {
             final Collection<?> expanded,
             final RdfQuadConsumer consumer,
             final Options options,
-            final ExecutionEvents runtime) throws JsonLdException {
+            final Execution runtime) throws JsonLdException {
 
         JsonLdToQuads
                 .with(new NodeMapBuilder(expanded, new NodeMap()).build())

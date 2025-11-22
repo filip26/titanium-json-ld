@@ -27,7 +27,7 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.processor.ExecutionEvents;
+import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.web.uri.UriResolver;
 import com.apicatalog.web.uri.UriUtils;
@@ -41,7 +41,7 @@ import com.apicatalog.web.uri.UriValidationPolicy;
  * <p>
  * This class encapsulates the state and logic for a single, configurable
  * expansion operation. It is used by creating an instance with an active
- * context via {@link #with(Context, DocumentLoader, ExecutionEvents)}, setting flags
+ * context via {@link #with(Context, DocumentLoader, Execution)}, setting flags
  * such as {@code vocab} or {@code documentRelative} through its fluent API, and
  * then calling the {@link #expand(String)} method to perform the expansion.
  * </p>
@@ -67,7 +67,7 @@ public final class UriExpansion {
     // mandatory
     private final Context activeContext;
     private final DocumentLoader loader;
-    private final ExecutionEvents runtime;
+    private final Execution runtime;
 
     // optional
     private boolean documentRelative;
@@ -78,7 +78,7 @@ public final class UriExpansion {
     private TreeAdapter adapter;
     private Map<String, Boolean> defined;
 
-    private UriExpansion(final Context activeContext, final DocumentLoader loader, final ExecutionEvents runtime) {
+    private UriExpansion(final Context activeContext, final DocumentLoader loader, final Execution runtime) {
         this.activeContext = activeContext;
         this.loader = loader;
         this.runtime = runtime;
@@ -104,7 +104,7 @@ public final class UriExpansion {
     public static final UriExpansion with(
             final Context activeContext,
             final DocumentLoader loader,
-            final ExecutionEvents runtime) {
+            final Execution runtime) {
         return new UriExpansion(activeContext, loader, runtime);
     }
 

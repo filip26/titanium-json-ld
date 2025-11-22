@@ -18,10 +18,6 @@ package com.apicatalog.jsonld.custom;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -36,9 +32,9 @@ import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.StaticLoader;
-import com.apicatalog.jsonld.processor.ExecutionEvents;
-import com.apicatalog.jsonld.processor.ExecutionEvents.TermMapper;
 import com.apicatalog.jsonld.processor.Expander;
+import com.apicatalog.jsonld.runtime.Execution;
+import com.apicatalog.jsonld.runtime.TermMapCollector;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
@@ -70,55 +66,7 @@ class TermMapTest {
 
         final var termMap = new LinkedHashMap<String, Object>();
 
-        var termMapper = new TermMapper() {
-
-            final Deque<Object> path = new ArrayDeque<>();
-
-            @Override
-            public void onBeginMap(String key) {
-                path.push(escapeJsonPointerSegment(key));
-            }
-
-            @Override
-            public void onEndMap(String key) {
-                path.pop();
-            }
-
-            @Override
-            public void onBeginList(String key) {
-                if (key != null) {
-                    path.push(key);
-                }
-            }
-
-            @Override
-            public void onEndList(String key) {
-                if (key != null) {
-                    path.pop();
-                }
-            }
-
-            @Override
-            public void onTerm(String key, String uri) {
-
-                if (path.isEmpty()) {
-                    termMap.put("/" + escapeJsonPointerSegment(key), uri);
-
-                } else {
-                    var pointer = new ArrayList<String>(path.size());
-                    path.stream().map(Object::toString).forEach(pointer::add);
-                    Collections.reverse(pointer);
-                    pointer.add(escapeJsonPointerSegment(key));
-
-                    termMap.put("/" + String.join("/", pointer), uri);
-
-                    if (path.peek() instanceof Integer order) {
-                        path.pop();
-                        path.push(order + 1);
-                    }
-                }
-            }
-        };
+        var termMapper = new TermMapCollector(termMap::put);
         try {
             var options = testCase.getOptions();
             
@@ -130,7 +78,7 @@ class TermMapTest {
                     .fallback(options.loader())
                     .build());
                     
-            var runtime = ExecutionEvents.of(options).termMapper(termMapper);
+            var runtime = Execution.of(options).add(termMapper);
 
             var expanded = Expander.expand(
                     Document.load(testCase.input, options.loader()),
@@ -203,22 +151,5 @@ class TermMapTest {
 
         fail("Expected " + expected.node() + ", but was" + result);
         return false;
-    }
-
-    /** Escape a single reference token (RFC6901): ~ -> ~0 and / -> ~1 */
-    static String escapeJsonPointerSegment(String s) {
-        Objects.requireNonNull(s, "segment");
-        int n = s.length();
-        StringBuilder sb = new StringBuilder(n + 4); // small growth room
-        for (int i = 0; i < n; ++i) {
-            char c = s.charAt(i);
-            if (c == '~')
-                sb.append("~0");
-            else if (c == '/')
-                sb.append("~1");
-            else
-                sb.append(c);
-        }
-        return sb.toString();
     }
 }

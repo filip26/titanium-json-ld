@@ -40,8 +40,8 @@ import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.StaticLoader;
-import com.apicatalog.jsonld.processor.ExecutionEvents;
 import com.apicatalog.jsonld.processor.Expander;
+import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.TreeIOException;
@@ -88,7 +88,7 @@ class ExecutionTest {
 
         var keys = new ArrayList<Collection<String>>();
 
-        var runtime = ExecutionEvents.of(options);
+        var runtime = Execution.of(options);
         runtime.contextKeyCollector(keys::add);
 
         var expanded = Expander.expand(document, options, runtime);

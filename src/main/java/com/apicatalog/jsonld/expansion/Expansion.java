@@ -28,7 +28,7 @@ import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LdAdapter;
-import com.apicatalog.jsonld.processor.ExecutionEvents;
+import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
@@ -47,7 +47,7 @@ public final class Expansion {
             boolean fromMap,
             URI baseUrl,
             Options options,
-            ExecutionEvents runtime) {
+            Execution runtime) {
 
         /**
          * The {@code frameExpansion} flag.

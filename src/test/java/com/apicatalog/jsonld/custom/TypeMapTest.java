@@ -15,40 +15,26 @@
  */
 package com.apicatalog.jsonld.custom;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.time.Duration;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Deque;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.apicatalog.jsonld.JakartaTestSuite;
-import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdException.ErrorCode;
-import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.StaticLoader;
-import com.apicatalog.jsonld.processor.ExecutionEvents;
-import com.apicatalog.jsonld.processor.ExecutionEvents.TermMapper;
-import com.apicatalog.jsonld.processor.ExecutionEvents.TypeMapper;
 import com.apicatalog.jsonld.processor.Expander;
+import com.apicatalog.jsonld.runtime.Execution;
+import com.apicatalog.jsonld.runtime.TypeMapCollector;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.TreeIOException;
@@ -87,57 +73,9 @@ class TypeMapTest {
 
         var typeMap = new LinkedHashMap<String, Object>();
 
-        var typeMapper = new TypeMapper() {
+        var typeMapper = new TypeMapCollector(typeMap::put);
 
-            final Deque<Object> path = new ArrayDeque<>();
-
-
-            @Override
-            public void onBeginMap(String key) {
-                path.push(TermMapTest.escapeJsonPointerSegment(key));
-            }
-
-            @Override
-            public void onEndMap(String key) {
-                path.pop();
-            }
-
-            @Override
-            public void onBeginList(String key) {
-                if (key != null) {
-                    path.push(key);
-                }
-            }
-
-            @Override
-            public void onEndList(String key) {
-                if (key != null) {
-                    path.pop();
-                }
-            }
-            
-            @Override
-            public void onType(String key, String uri) {
-                if (path.isEmpty()) {
-                    typeMap.put("/" + TermMapTest.escapeJsonPointerSegment(key), uri);
-
-                } else {
-                    var pointer = new ArrayList<String>(path.size());
-                    path.stream().map(Object::toString).forEach(pointer::add);
-                    Collections.reverse(pointer);
-                    pointer.add(TermMapTest.escapeJsonPointerSegment(key));
-
-                    typeMap.put("/" + String.join("/", pointer), uri);
-
-                    if (path.peek() instanceof Integer order) {
-                        path.pop();
-                        path.push(order + 1);
-                    }
-                }
-            }
-        };
-
-        var runtime = ExecutionEvents.of(options).keyTypeMapper(typeMapper);
+        var runtime = Execution.of(options).add(typeMapper);
 
         var expanded = Expander.expand(document, options, runtime);
         assertNotNull(expanded);
@@ -159,7 +97,7 @@ class TypeMapTest {
             try (final JsonWriter jsonWriter = JunitRunner.JSON_WRITER_FACTORY.createWriter(out)) {
                 jsonWriter.write(new JakartaMaterializer().node(typeMap, NativeAdapter.instance()));
             }
-            
+
             System.out.println(out);
         }
 

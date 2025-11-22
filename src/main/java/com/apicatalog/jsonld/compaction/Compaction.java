@@ -33,7 +33,7 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LdAdapter;
-import com.apicatalog.jsonld.processor.ExecutionEvents;
+import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
 /**
@@ -54,13 +54,13 @@ public final class Compaction {
     // required
     private final Context context;
     private final Options options;
-    private final ExecutionEvents runtime;
+    private final Execution runtime;
 
     // optional
     private boolean compactArrays;
     private boolean ordered;
 
-    private Compaction(final Context context, final Options options, final ExecutionEvents runtime) {
+    private Compaction(final Context context, final Options options, final Execution runtime) {
         this.context = context;
         this.options = options;
         this.runtime = runtime;
@@ -70,7 +70,7 @@ public final class Compaction {
         this.ordered = false;
     }
 
-    public static Compaction with(final Context activeContext, final Options options, final ExecutionEvents runtime) {
+    public static Compaction with(final Context activeContext, final Options options, final Execution runtime) {
         return new Compaction(activeContext, options, runtime);
     }
 

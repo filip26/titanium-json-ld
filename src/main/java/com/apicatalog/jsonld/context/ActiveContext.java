@@ -25,7 +25,7 @@ import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.processor.ExecutionEvents;
+import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.tree.io.TreeAdapter;
 
 /**
@@ -156,12 +156,12 @@ public final class ActiveContext implements Context {
     }
 
     @Override
-    public ContextBuilder newContext(DocumentLoader loader, final ExecutionEvents runtime) {
+    public ContextBuilder newContext(DocumentLoader loader, final Execution runtime) {
         return ContextBuilder.with(this, loader, runtime);
     }
 
     @Override
-    public void newTerm(final String term, final Object localContext, final TreeAdapter adapter, final Map<String, Boolean> defined, DocumentLoader loader, final ExecutionEvents runtime) throws JsonLdException {
+    public void newTerm(final String term, final Object localContext, final TreeAdapter adapter, final Map<String, Boolean> defined, DocumentLoader loader, final Execution runtime) throws JsonLdException {
         TermDefinitionBuilder.with(this, localContext, adapter, defined, loader, runtime).create(term);
     }
 

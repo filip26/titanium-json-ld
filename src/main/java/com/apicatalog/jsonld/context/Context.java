@@ -30,7 +30,7 @@ import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.processor.ExecutionEvents;
+import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.java.NativeAdapter;
@@ -74,9 +74,9 @@ public interface Context {
             TreeAdapter adapter,
             Map<String, Boolean> defined,
             DocumentLoader loader,
-            final ExecutionEvents runtime) throws JsonLdException;
+            final Execution runtime) throws JsonLdException;
 
-    ContextBuilder newContext(DocumentLoader loader, final ExecutionEvents runtime);
+    ContextBuilder newContext(DocumentLoader loader, final Execution runtime);
 
     InverseContext getInverseContext();
 
@@ -249,7 +249,7 @@ public interface Context {
         Context ctx;
 
         DocumentLoader loader;
-        ExecutionEvents runtime;
+        Execution runtime;
 
         public Builder(Version version) {
             this(null, null, version);
@@ -268,7 +268,7 @@ public interface Context {
             return this;
         }
 
-        public Builder runtime(ExecutionEvents runtime) {
+        public Builder runtime(Execution runtime) {
             this.runtime = runtime;
             return this;
         }

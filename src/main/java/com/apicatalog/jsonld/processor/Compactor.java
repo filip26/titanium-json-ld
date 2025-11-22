@@ -26,6 +26,7 @@ import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.compaction.UriCompaction;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.tree.io.TreeIO;
 
 /**
@@ -42,7 +43,7 @@ public final class Compactor {
     public static final Collection<?> expand(
             final TreeIO input,
             final Options options,
-            final ExecutionEvents runtime) throws JsonLdException {
+            final Execution runtime) throws JsonLdException {
 
         final var expansionOptions = Options.copyOf(options)
                 .ordered(false)
@@ -64,7 +65,7 @@ public final class Compactor {
             final Document input,
             final Document context,
             final Options options,
-            final ExecutionEvents runtime) throws JsonLdException {
+            final Execution runtime) throws JsonLdException {
 
         final var expandedInput = Expander.expand(
                 input,
@@ -86,7 +87,7 @@ public final class Compactor {
             final URI baseUrl,
             final TreeIO context,
             final Options options,
-            final ExecutionEvents runtime) throws JsonLdException {
+            final Execution runtime) throws JsonLdException {
 
         URI contextBase = baseUrl;
 
@@ -131,7 +132,7 @@ public final class Compactor {
             final Context context,
             final TreeIO contextSource,
             final Options options,
-            final ExecutionEvents runtime) throws JsonLdException {
+            final Execution runtime) throws JsonLdException {
 
         var activeContext = context;
 
